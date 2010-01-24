@@ -1,9 +1,10 @@
-﻿"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
+﻿'''
+This file is part of ICE Security Management
 
-Replace these with more appropriate tests for your application.
-"""
+Created on 24 janv. 2010
+
+@author: diabeteman
+'''
 
 from django.test import TestCase
 

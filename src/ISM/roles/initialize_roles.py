@@ -1,4 +1,12 @@
-﻿from ISM.roles.models import RoleType, Role
+﻿'''
+This file is part of ICE Security Management
+
+Created on 24 janv. 2010
+
+@author: diabeteman
+'''
+
+from ISM.roles.models import RoleType, Role
 
 
 def init():

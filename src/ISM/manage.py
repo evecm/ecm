@@ -1,3 +1,11 @@
+'''
+This file is part of ICE Security Management
+
+Created on 24 janv. 2010
+
+@author: diabeteman
+'''
+
 #!/usr/bin/env python
 from django.core.management import execute_manager
 try:

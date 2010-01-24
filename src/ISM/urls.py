@@ -1,4 +1,12 @@
-from django.conf.urls.defaults import *
+'''
+This file is part of ICE Security Management
+
+Created on 24 janv. 2010
+
+@author: diabeteman
+'''
+
+from django.conf.urls.defaults import patterns, include
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin

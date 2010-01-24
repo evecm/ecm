@@ -1,3 +1,11 @@
+'''
+This file is part of ICE Security Management
+
+Created on 24 janv. 2010
+
+@author: diabeteman
+'''
+
 from ISM.roles.models import Role, Character, Title, RoleType, RoleMembership, TitleMembership, TitleComposition
 from django.contrib import admin
 
