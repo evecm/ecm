@@ -54,7 +54,7 @@ def init():
     Role(roleID=144115188075855872, roleName="roleInfrastructureTacticalOfficer", description="Can operate defensive starbase structures", roleType_id=RoleType.objects.filter(typeName='roles')[0].id).save()
     Role(roleID=288230376151711744, roleName="roleStarbaseCaretaker", description="Can refuel starbases and take from silo bins", roleType_id=RoleType.objects.filter(typeName='roles')[0].id).save()
     Role(roleID=576460752303423488, roleName="roleFittingManager", description="Can add and delete fittings", roleType_id=RoleType.objects.filter(typeName='roles')[0].id).save()
-    
+
     # grantableRoles
     print "Creating grantableRoles..."
     Role(roleID=128, roleName="rolePersonnelManager", description="Can accept applications to join the corporation.", roleType_id=RoleType.objects.filter(typeName='grantableRoles')[0].id).save()
@@ -82,7 +82,7 @@ def init():
     Role(roleID=144115188075855872, roleName="roleInfrastructureTacticalOfficer", description="Can operate defensive starbase structures", roleType_id=RoleType.objects.filter(typeName='grantableRoles')[0].id).save()
     Role(roleID=288230376151711744, roleName="roleStarbaseCaretaker", description="Can refuel starbases and take from silo bins", roleType_id=RoleType.objects.filter(typeName='grantableRoles')[0].id).save()
     Role(roleID=576460752303423488, roleName="roleFittingManager", description="Can add and delete fittings", roleType_id=RoleType.objects.filter(typeName='grantableRoles')[0].id).save()
-    
+
     # rolesAtHQ
     print "Creating rolesAtHQ..."
     Role(roleID=1, roleName="roleDirector", description="Can do anything the CEO can do. Including giving roles to anyone.", roleType_id=RoleType.objects.filter(typeName='rolesAtHQ')[0].id).save()
@@ -107,7 +107,7 @@ def init():
     Role(roleID=70368744177664, roleName="roleContainerCanTake5", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='rolesAtHQ')[0].id).save()
     Role(roleID=140737488355328, roleName="roleContainerCanTake6", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='rolesAtHQ')[0].id).save()
     Role(roleID=281474976710656, roleName="roleContainerCanTake7", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='rolesAtHQ')[0].id).save()
-    
+
     # grantableRolesAtHQ
     print "Creating grantableRolesAtHQ..."
     Role(roleID=8192, roleName="roleHangarCanTake1", description="Can take items from this divisions hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtHQ')[0].id).save()
@@ -131,7 +131,7 @@ def init():
     Role(roleID=70368744177664, roleName="roleContainerCanTake5", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtHQ')[0].id).save()
     Role(roleID=140737488355328, roleName="roleContainerCanTake6", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtHQ')[0].id).save()
     Role(roleID=281474976710656, roleName="roleContainerCanTake7", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtHQ')[0].id).save()
-    
+
     # rolesAtBase
     print "Creating rolesAtBase..."
     Role(roleID=1, roleName="roleDirector", description="Can do anything the CEO can do. Including giving roles to anyone.", roleType_id=RoleType.objects.filter(typeName='rolesAtBase')[0].id).save()
@@ -156,7 +156,7 @@ def init():
     Role(roleID=70368744177664, roleName="roleContainerCanTake5", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='rolesAtBase')[0].id).save()
     Role(roleID=140737488355328, roleName="roleContainerCanTake6", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='rolesAtBase')[0].id).save()
     Role(roleID=281474976710656, roleName="roleContainerCanTake7", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='rolesAtBase')[0].id).save()
-    
+
     # grantableRolesAtBase
     print "Creating grantableRolesAtBase..."
     Role(roleID=8192, roleName="roleHangarCanTake1", description="Can take items from this divisions hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtBase')[0].id).save()
@@ -180,7 +180,7 @@ def init():
     Role(roleID=70368744177664, roleName="roleContainerCanTake5", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtBase')[0].id).save()
     Role(roleID=140737488355328, roleName="roleContainerCanTake6", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtBase')[0].id).save()
     Role(roleID=281474976710656, roleName="roleContainerCanTake7", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtBase')[0].id).save()
-    
+
     # rolesAtOther
     print "Creating rolesAtOther..."
     Role(roleID=1, roleName="roleDirector", description="Can do anything the CEO can do. Including giving roles to anyone.", roleType_id=RoleType.objects.filter(typeName='rolesAtOther')[0].id).save()
@@ -205,7 +205,7 @@ def init():
     Role(roleID=70368744177664, roleName="roleContainerCanTake5", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='rolesAtOther')[0].id).save()
     Role(roleID=140737488355328, roleName="roleContainerCanTake6", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='rolesAtOther')[0].id).save()
     Role(roleID=281474976710656, roleName="roleContainerCanTake7", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='rolesAtOther')[0].id).save()
-    
+
     # grantableRolesAtOther
     print "Creating grantableRolesAtOther..."
     Role(roleID=8192, roleName="roleHangarCanTake1", description="Can take items from this divisions hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtOther')[0].id).save()
