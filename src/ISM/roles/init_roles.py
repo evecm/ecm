@@ -7,8 +7,9 @@ Created on 24 janv. 2010
 '''
 
 from ISM.roles.models import RoleType, Role
+from django.db import transaction
 
-
+@transaction.commit_manually
 def init():
     #---------------------#
     # ROLE TYPES CREATION #
@@ -230,3 +231,5 @@ def init():
     Role(roleID=140737488355328, roleName="roleContainerCanTake6", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtOther')[0].id).save()
     Role(roleID=281474976710656, roleName="roleContainerCanTake7", description="Can take containers from this divisional hangar", roleType_id=RoleType.objects.filter(typeName='grantableRolesAtOther')[0].id).save()
     print ""
+    
+    transaction.commit()
