@@ -85,6 +85,7 @@ INSTALLED_APPS = (
     'django.contrib.databrowse',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.databrowse',
     'django.contrib.sessions',
     'django.contrib.sites',
     'ISM.roles',

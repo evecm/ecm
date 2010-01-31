@@ -19,10 +19,19 @@ class Character(models.Model):
     def __unicode__(self):
         return self.name
     
+    
 #______________________________________________________________________________
 class Hangar(models.Model):
     hangarID = models.PositiveIntegerField(primary_key=True)
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
+#______________________________________________________________________________
+class Wallet(models.Model):
+    walletID = models.PositiveIntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
 
     def __unicode__(self):
         return self.name
@@ -30,9 +39,13 @@ class Hangar(models.Model):
 #______________________________________________________________________________
 class RoleType(models.Model):
     typeName = models.CharField(max_length=64, unique=True)
+    dispName = models.CharField(max_length=64)
 
     def __unicode__(self):
-        return self.typeName
+        if self.dispName:
+            return self.dispName
+        else:
+            return self.typeName
     
 #______________________________________________________________________________
 class Title(models.Model):
@@ -49,19 +62,30 @@ class Role(models.Model):
     roleType = models.ForeignKey(RoleType, db_index=True)
     roleID = models.IntegerField()
     roleName = models.CharField(max_length=64)
+    dispName = models.CharField(max_length=64)
     members = models.ManyToManyField(Character, through='RoleMembership')
     titles = models.ManyToManyField(Title, through='TitleComposition')
     description = models.CharField(max_length=256)
     hangar = models.ForeignKey(Hangar, null=True, blank=True)
+    wallet = models.ForeignKey(Wallet, null=True, blank=True)
 
     def __unicode__(self):
-        return unicode(self.roleName) + (' on ' + self.hangar.name if self.hangar else '') + ' -- ' + unicode(self.roleType)
+        name = self.dispName or self.roleName
+        if self.hangar or self.wallet:
+            division = ' on ' + (self.hangar or self.wallet)
+        return name + (division or '') + ' -- ' + unicode(self.roleType)
     
 #______________________________________________________________________________
 class RoleMembership(models.Model):
     character = models.ForeignKey(Character)
     role = models.ForeignKey(Role)
 
+    def roleName(self):
+        return self.role.dispName
+
+    def roleType(self):
+        return self.role.roleType
+    
     def __unicode__(self):
         return unicode(self.character) + u' has ' + unicode(self.role)
     
@@ -77,6 +101,12 @@ class TitleMembership(models.Model):
 class TitleComposition(models.Model):
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
+
+    def roleName(self):
+        return self.role.dispName
+
+    def roleType(self):
+        return self.role.roleType
 
     def __unicode__(self):
         return unicode(self.title) + u' has ' + unicode(self.role)

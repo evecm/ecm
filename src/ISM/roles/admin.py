@@ -6,24 +6,62 @@ Created on 24 janv. 2010
 @author: diabeteman
 '''
 
-from ISM.roles.models import Role, Character, Title, RoleType, RoleMembership, TitleMembership, TitleComposition, Hangar
+from ISM.roles.models import Role, Character, Title, RoleType, RoleMembership, TitleMembership, TitleComposition, Hangar, Wallet
+
 from django.contrib import admin
 from django.contrib import databrowse
 
-admin.site.register(Hangar)
-admin.site.register(Role)
-admin.site.register(Title)
-admin.site.register(Character)
-admin.site.register(RoleType)
-admin.site.register(RoleMembership)
-admin.site.register(TitleMembership)
-admin.site.register(TitleComposition)
+class RoleAdmin(admin.ModelAdmin):
+    fields = ['dispName', 'description', 'roleType']
+    list_display = ['dispName', 'roleType', 'description']
+    search_fields = ['roleType']
+    list_filter = ['roleType']
 
-databrowse.site.register(Hangar)
+class TitleAdmin(admin.ModelAdmin):
+    list_display = ['titleName', 'tiedToBase']
+
+class HangarAdmin(admin.ModelAdmin):
+    list_display = ['hangarID', 'name']
+
+class WalletAdmin(admin.ModelAdmin):
+    list_display = ['walletID', 'name']
+
+class CharacterAdmin(admin.ModelAdmin):
+    list_display = ['name', 'characterID', 'nickname', 'baseID', 'lastLogin', 'corpDate']
+    search_fields = ['name', 'baseID', 'nickname', 'lastLogin']
+    list_filter = ['baseID']
+
+class RoleMembershipAdmin(admin.ModelAdmin):
+    list_display = ['character', 'roleName', 'roleType']
+    search_fields = ['character', 'role']
+    list_filter = ['character', 'role']
+
+class TitleMembershipAdmin(admin.ModelAdmin):
+    list_display = ['character', 'title']
+    search_fields = ['character', 'title']
+    list_filter = ['character', 'title']
+
+class TitleCompositionAdmin(admin.ModelAdmin):
+    list_display = ['title', 'roleName', 'roleType']
+    search_fields = ['title', 'role']
+    list_filter = ['title', 'role']
+
+admin.site.register(Role, RoleAdmin)
+admin.site.register(Title, TitleAdmin)
+admin.site.register(Character, CharacterAdmin)
+admin.site.register(RoleType)
+admin.site.register(Hangar, HangarAdmin)
+admin.site.register(Wallet, WalletAdmin)
+admin.site.register(RoleMembership, RoleMembershipAdmin)
+admin.site.register(TitleMembership, TitleMembershipAdmin)
+admin.site.register(TitleComposition, TitleCompositionAdmin)
+
 databrowse.site.register(Role)
 databrowse.site.register(Title)
 databrowse.site.register(Character)
 databrowse.site.register(RoleType)
+databrowse.site.register(Hangar)
 databrowse.site.register(RoleMembership)
 databrowse.site.register(TitleMembership)
 databrowse.site.register(TitleComposition)
+
