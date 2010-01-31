@@ -18,16 +18,20 @@ class Character(models.Model):
 
     def __unicode__(self):
         return self.name
-    def __str__(self):
-        return self.name
     
 #______________________________________________________________________________
-class RoleType(models.Model):
-    typeName = models.CharField(max_length=64)
+class Hangar(models.Model):
+    hangarID = models.PositiveIntegerField(primary_key=True)
+    name = models.CharField(max_length=64)
 
     def __unicode__(self):
-        return self.typeName
-    def __str__(self):
+        return self.name
+
+#______________________________________________________________________________
+class RoleType(models.Model):
+    typeName = models.CharField(max_length=64, unique=True)
+
+    def __unicode__(self):
         return self.typeName
     
 #______________________________________________________________________________
@@ -39,8 +43,6 @@ class Title(models.Model):
 
     def __unicode__(self):
         return self.titleName
-    def __str__(self):
-        return self.titleName
     
 #______________________________________________________________________________
 class Role(models.Model):
@@ -50,11 +52,10 @@ class Role(models.Model):
     members = models.ManyToManyField(Character, through='RoleMembership')
     titles = models.ManyToManyField(Title, through='TitleComposition')
     description = models.CharField(max_length=256)
+    hangar = models.ForeignKey(Hangar, null=True, blank=True)
 
     def __unicode__(self):
-        return unicode(self.roleName) + u'/' + unicode(self.roleType)
-    def __str__(self):
-        return str(self.roleName) + '/' + str(self.roleType)
+        return unicode(self.roleName) + (' on ' + self.hangar.name if self.hangar else '') + ' -- ' + unicode(self.roleType)
     
 #______________________________________________________________________________
 class RoleMembership(models.Model):
@@ -63,8 +64,6 @@ class RoleMembership(models.Model):
 
     def __unicode__(self):
         return unicode(self.character) + u' has ' + unicode(self.role)
-    def __str__(self):
-        return str(self.roleName) + ' has ' + str(self.role)
     
 #______________________________________________________________________________
 class TitleMembership(models.Model):
@@ -73,8 +72,6 @@ class TitleMembership(models.Model):
 
     def __unicode__(self):
         return unicode(self.character) + u' is ' + unicode(self.title)
-    def __str__(self):
-        return str(self.character) + ' is ' + str(self.title)
     
 #______________________________________________________________________________
 class TitleComposition(models.Model):
@@ -83,6 +80,4 @@ class TitleComposition(models.Model):
 
     def __unicode__(self):
         return unicode(self.title) + u' has ' + unicode(self.role)
-    def __str__(self):
-        return str(self.title) + ' has ' + str(self.role)
 
