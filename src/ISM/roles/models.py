@@ -71,8 +71,11 @@ class Role(models.Model):
 
     def __unicode__(self):
         name = self.dispName or self.roleName
-        if self.hangar or self.wallet:
-            division = ' on ' + (self.hangar or self.wallet)
+        division = None
+        if self.hangar:
+            division = ' on ' + self.hangar.name
+        elif self.wallet:
+            division = ' on ' + self.wallet.name
         return name + (division or '') + ' -- ' + unicode(self.roleType)
     
 #______________________________________________________________________________
