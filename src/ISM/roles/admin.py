@@ -1,7 +1,7 @@
 ﻿'''
 This file is part of ICE Security Management
 
-Created on 24 janv. 2010
+Created on 24 jan. 2010
 
 @author: diabeteman
 '''
@@ -13,7 +13,7 @@ from django.contrib import databrowse
 
 class RoleAdmin(admin.ModelAdmin):
     fields = ['dispName', 'description', 'roleType']
-    list_display = ['dispName', 'roleType', 'description']
+    list_display = ['dispName', 'hangar', 'wallet', 'roleType', 'description']
     search_fields = ['roleType']
     list_filter = ['roleType']
 
@@ -42,7 +42,7 @@ class TitleMembershipAdmin(admin.ModelAdmin):
     list_filter = ['character', 'title']
 
 class TitleCompositionAdmin(admin.ModelAdmin):
-    list_display = ['title', 'roleName', 'roleType']
+    list_display = ['title', 'roleName', 'roleType', 'hangar', 'wallet']
     search_fields = ['title', 'role']
     list_filter = ['title', 'role']
 

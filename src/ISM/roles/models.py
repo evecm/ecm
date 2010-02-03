@@ -1,7 +1,7 @@
 ﻿'''
 This file is part of ICE Security Management
 
-Created on 24 janv. 2010
+Created on 24 jan. 2010
 @author: diabeteman
 '''
 
@@ -110,7 +110,13 @@ class TitleComposition(models.Model):
 
     def roleType(self):
         return self.role.roleType
-
+    
+    def hangar(self):
+        return self.role.hangar
+    
+    def wallet(self):
+        return self.role.wallet
+    
     def __unicode__(self):
         return unicode(self.title) + u' has ' + unicode(self.role)
 

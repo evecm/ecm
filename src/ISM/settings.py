@@ -1,8 +1,7 @@
 ﻿'''
 This file is part of ICE Security Management
 
-Created on 24 janv. 2010
-
+Created on 24 jan. 2010
 @author: diabeteman
 '''
 
@@ -12,7 +11,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('diabeteman', 'diabeteman@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -29,7 +28,7 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/Paris'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -43,12 +42,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = 'D:/dev/ice_security/src/ISM/media'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/stuff/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -74,6 +73,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'ISM.urls'
 
 TEMPLATE_DIRS = (
+    'D:/dev/ice_security/src/ISM/templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
