@@ -16,17 +16,26 @@
       <th>{{ t.titleName }}</th>
     {% endfor %}
     </tr>
-    {% for r in roles %}
-      <tr>
-        <th>{{ r.dispName }}</th>
+    {% for type in types %}
+      <tr class=role-type >
+        <td>{{ type.name }}</td>
         {% for t in corp_titles %}
-          {% if t in r.titles %}
-        <td class="cell-has-role" title="{{ t.titleName }}"></td>
+        <td>{{ t.titleName }}</td>
+        {% endfor %}
+      </tr>
+      {% for role in type.roles %}
+      <tr class="role" >
+        <th>{{ role.name }}</th>
+        {% for t in corp_titles %}
+          {% if t.titleID in role.titles %}
+          
+        <td class="cell-has-role" title="{{ t.titleName }}" ></td>
           {% else %}
-        <td class="cell-no-role" title="{{ t.titleName }}"></td>
+        <td class="cell-no-role" title="{{ t.titleName }}" ></td>
           {% endif %}
         {% endfor %}
       </tr>
+      {% endfor %}
     {% endfor %}
   </table>
   {% else %}
