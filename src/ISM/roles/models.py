@@ -82,12 +82,6 @@ class Role(models.Model):
 class RoleMembership(models.Model):
     character = models.ForeignKey(Character)
     role = models.ForeignKey(Role)
-
-    def roleName(self):
-        return self.role.dispName
-
-    def roleType(self):
-        return self.role.roleType
     
     def __unicode__(self):
         return unicode(self.character) + u' has ' + unicode(self.role)
@@ -104,19 +98,41 @@ class TitleMembership(models.Model):
 class TitleComposition(models.Model):
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
-
-    def roleName(self):
-        return self.role.dispName
-
-    def roleType(self):
-        return self.role.roleType
     
-    def hangar(self):
-        return self.role.hangar
-    
-    def wallet(self):
-        return self.role.wallet
+    def __eq__(self, other):
+        return self.title.titleID == other.title.titleID \
+                 and self.role.id == other.role.id
     
     def __unicode__(self):
         return unicode(self.title) + u' has ' + unicode(self.role)
+    
+#______________________________________________________________________________
+class TitleCompoDiff(models.Model):
+    isNew = models.BooleanField() # true if role is new in title, false if role was removed
+    date = models.DateTimeField(db_index=True) # date of change
+    title = models.ForeignKey(Title)
+    role = models.ForeignKey(Role)
+    
+    def __unicode__(self):
+        if self.isNew: return unicode(self.title) + u' gets ' + unicode(self.role)
+        else         : return unicode(self.title) + u' looses ' + unicode(self.role)
+#______________________________________________________________________________
+class TitleMemberDiff(models.Model):
+    isNew = models.BooleanField() # true if title is new for member, false if title was removed
+    date = models.DateTimeField(db_index=True) # date of change
+    member = models.ForeignKey(Character)
+    title = models.ForeignKey(Title)
 
+    def __unicode__(self):
+        return unicode(self.character) + u' is ' + unicode(self.title)
+    
+#______________________________________________________________________________
+class RoleMemberDiff(models.Model):
+    isNew = models.BooleanField() # true if role is new for member, false if role was removed
+    date = models.DateTimeField(db_index=True) # date of change
+    member = models.ForeignKey(Character)
+    role = models.ForeignKey(Role)
+
+    def __unicode__(self):
+        return unicode(self.character) + u' has ' + unicode(self.role)
+    

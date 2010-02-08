@@ -5,7 +5,6 @@ Created on 3 fev. 2010
 @author: diabeteman
 '''
 
-from ISM.roles.models import Title
 from django.shortcuts import render_to_response
 
 

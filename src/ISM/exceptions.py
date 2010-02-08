@@ -25,7 +25,7 @@ class MalformedXmlResponse(UserWarning):
 #______________________________________________________________________________
 class DatabaseCorrupted(UserWarning):
     '''
-    The database contents are inconsistent.
+    The database content is inconsistent.
     '''
     def __init__(self, message):
         self.message = message
