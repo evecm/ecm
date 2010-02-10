@@ -9,7 +9,7 @@ import xml.dom.minidom
 from xml.dom.minidom import Node
 
 from ISM.roles.models import Role, Title, RoleType, TitleComposition, TitleCompoDiff
-from ISM.roles import parse_utils
+from ISM.parsers import parse_utils
 from ISM.exceptions import MalformedXmlResponse, DatabaseCorrupted
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -25,30 +25,35 @@ def parse(xmlFile):
        xmlFile  : can be either a string or a physical file.
        
     """
+    doc = xml.dom.minidom.parse(xmlFile)
+    parse_utils.checkApiVersion(doc)
+    # parse date as a big_integer
+    date = parse_utils.getCurrentTime(doc)
+
+    titles = parse_utils.reachRowset(doc, "titles")
+
+
+    newList = []
+    
     try:
-        doc = xml.dom.minidom.parse(xmlFile)
-        parse_utils.checkApiVersion(doc)
-    
-        # parse date
-        date = parse_utils.getCurrentTime(doc)
-    
-        # parse titles
-        titles = parse_utils.reachResult(doc, "titles")
-    
-   
-        newList = []
+        # old composition of the titles from the database
         oldList = list(TitleComposition.objects.all())
         
         for title in titles.childNodes:
             if not title.nodeType == Node.ELEMENT_NODE:
                 continue
             newList.extend(parseOneTitle(node=title))
-        
-        diffs = getDiffs(newList, oldList, date)
-        
-        for d in diffs: d.save()
-        TitleComposition.objects.all().delete()
-        for c in newList: c.save()
+
+        if len(oldList) != 0 :
+            diffs = getDiffs(newList, oldList, date)
+            if diffs :
+                for d in diffs: d.save()
+                TitleComposition.objects.all().delete()
+                for c in newList: c.save()
+            # if no diff, we do nothing
+        else:
+            # 1st import
+            for c in newList: c.save()
             
         transaction.commit()
     except:
@@ -57,15 +62,24 @@ def parse(xmlFile):
 
 #______________________________________________________________________________
 def parseOneTitle(node):
+    '''
+    Parses all the roles that compose a single title. 
+    This method also updates the name of the title if needed.
+    
+    @param node: a dom node which contains all roles that compose a title
+      
+    @return: a list of TitleComposition objects. 
+    '''
     roleList = []
     
-    # retrieve title name and change it if different. The change will not be
-    # logged in the database as we dont really care about that...
-    t_id = node.getAttribute("titleID")
+    t_id = int(node.getAttribute("titleID"))
     t_name = node.getAttribute("titleName")
     if not t_id or not t_name:
         raise MalformedXmlResponse
+    
     try:
+        # retrieve title name and change it if different. The change will 
+        # not be stored in the database as we dont really care about that...
         title = Title.objects.get(titleID=t_id)
         if not title.titleName == t_name:
             title.titleName = t_name
@@ -84,10 +98,19 @@ def parseOneTitle(node):
             
 #______________________________________________________________________________
 def parseCateg(node, title):
-    c_name = node.getAttribute("name")
+    '''
+    Parses all the roles that compose a single title from one RoleType. 
+    
+    @param node: a dom node which contains all roles within a RoleType for a Title
+    @param title: the Title concerned object 
+      
+    @return: a list of TitleComposition objects. 
+    '''
     
     subList = []
     
+    # the name of the RoleType
+    c_name = node.getAttribute("name")
     try:
         categ = RoleType.objects.get(typeName=c_name)
     except ObjectDoesNotExist:
@@ -96,7 +119,7 @@ def parseCateg(node, title):
     for role_node in node.childNodes:
         if not role_node.nodeType == Node.ELEMENT_NODE:
             continue
-        r_id = role_node.getAttribute("roleID")
+        r_id = int(role_node.getAttribute("roleID"))
         
         try:
             aRole = Role.objects.get(roleID=r_id, roleType=categ)
@@ -114,9 +137,9 @@ def getDiffs(newList, oldList, date):
     diffs    = []
     
     for c in removed:
-        diffs.append(TitleCompoDiff(isNew=False, date=date, title=c.title, role=c.role))
+        diffs.append(TitleCompoDiff(new=False, date=date, title=c.title, role=c.role))
     for c in added:
-        diffs.append(TitleCompoDiff(isNew=True, date=date, title=c.title, role=c.role))
+        diffs.append(TitleCompoDiff(new=True, date=date, title=c.title, role=c.role))
         
     return diffs
     
