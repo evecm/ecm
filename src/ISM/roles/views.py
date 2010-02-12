@@ -23,7 +23,13 @@ def titles(request):
         for r in Role.objects.filter(roleType=t) :
             if r.roleID == 1 : continue
             ro = _Role()
-            ro.name = r.dispName
+            if r.hangar :
+                ro.name = r.dispName % r.hangar.name
+            elif r.wallet :
+                ro.name = r.dispName % r.wallet.name
+            else :
+                ro.name = r.dispName
+            
             ro.titles = [ tt['titleID'] for tt in r.titles.values() ]
             ty.roles.append(ro)
         types.append(ty)
@@ -46,3 +52,4 @@ class _Role():
 
 class _Title():
     pass
+	

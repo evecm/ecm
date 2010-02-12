@@ -6,9 +6,9 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-import roles.views.titles
-import roles.views.titleDetails
-import ISM.settings.MEDIA_ROOT
+from ISM.roles.views import titles, titleDetails
+from ISM.views import home
+from ISM.settings import MEDIA_ROOT
 from django.conf.urls.defaults import patterns, include
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -18,11 +18,11 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
-    (r'^$', ISM.views.home),
-    (r'^stuff/(?P<path>.*)$', django.views.static.serve, {'document_root': ISM.settings.MEDIA_ROOT}),
+    (r'^$', home),
+    (r'^stuff/(?P<path>.*)$', django.views.static.serve, {'document_root': MEDIA_ROOT}),
 
-    (r'^titles/$', roles.views.titles),
-    (r'^titles/(?P<title_id>\d+)/$', roles.views.titleDetails),
+    (r'^titles/$', titles),
+    (r'^titles/(?P<title_id>\d+)/$', titleDetails),
     (r'^browse/(.*)', databrowse.site.root),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
