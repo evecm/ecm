@@ -27,15 +27,16 @@ def parse(xmlFile):
     try:
         doc = xml.dom.minidom.parse(xmlFile)
         checkApiVersion(doc)
+        result = getNode(doc, "result")
         
-        id        = int(getText(getNode(doc, "corporationID")))
-        name      =     getText(getNode(doc, "corporationName"))
-        tick      =     getText(getNode(doc, "ticker"))
-        ceo       = int(getText(getNode(doc, "ceoID")))
-        hq        = int(getText(getNode(doc, "stationID")))
-        alliance  =     getText(getNode(doc, "allianceName"))
-        tax       = int(getText(getNode(doc, "taxRate")))
-        memberLim =     getText(getNode(doc, "memberLimit"))
+        id        = int(getText(getNode(result, "corporationID")))
+        name      =     getText(getNode(result, "corporationName"))
+        tick      =     getText(getNode(result, "ticker"))
+        ceo       = int(getText(getNode(result, "ceoID")))
+        hq        = int(getText(getNode(result, "stationID")))
+        alliance  =     getText(getNode(result, "allianceName"))
+        tax       = int(getText(getNode(result, "taxRate")))
+        memberLim =     getText(getNode(result, "memberLimit"))
 
         try:
             corp = Corp.objects.get(corporationID=id)
@@ -53,7 +54,7 @@ def parse(xmlFile):
                   stationID=hq,     allianceName=alliance,
                   taxRate=tax,      memberLimit=memberLim ).save()
 
-        hangars = reachRowset(doc, "divisions")
+        hangars = reachRowset(result, "divisions")
         for h in hangars.childNodes :
             if not h.nodeType == Node.ELEMENT_NODE:
                 continue
@@ -68,7 +69,7 @@ def parse(xmlFile):
                 Hangar(hangarID=h_id, name=h_name).save()
         
         
-        wallets = reachRowset(doc, "walletDivisions")
+        wallets = reachRowset(result, "walletDivisions")
         for w in wallets.childNodes :
             if not w.nodeType == Node.ELEMENT_NODE:
                 continue

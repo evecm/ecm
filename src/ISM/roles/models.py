@@ -33,6 +33,9 @@ class Member(models.Model):
 class RoleType(models.Model):
     typeName = models.CharField(max_length=64, unique=True)
     dispName = models.CharField(max_length=64)
+    
+    def __eq__(self, other):
+        return self.id == other.id
 
     def __unicode__(self):
         if self.dispName:
@@ -46,7 +49,10 @@ class Title(models.Model):
     titleName = models.CharField(max_length=256)
     members = models.ManyToManyField(Member, through='TitleMembership')
     tiedToBase = models.IntegerField(default=0)
-
+    
+    def __eq__(self, other):
+        return self.titleID == other.titleID
+    
     def __unicode__(self):
         return self.titleName
     
@@ -61,6 +67,9 @@ class Role(models.Model):
     description = models.CharField(max_length=256)
     hangar = models.ForeignKey(Hangar, null=True, blank=True)
     wallet = models.ForeignKey(Wallet, null=True, blank=True)
+    
+    def __eq__(self, other):
+        return self.id == other.id
 
     def __unicode__(self):
         name = self.dispName or self.roleName
@@ -76,6 +85,9 @@ class RoleMembership(models.Model):
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
     
+    def __eq__(self, other):
+        return self.member == other.member and self.role == other.role
+    
     def __unicode__(self):
         return unicode(self.member) + u' has ' + unicode(self.role)
     
@@ -84,6 +96,9 @@ class TitleMembership(models.Model):
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
 
+    def __eq__(self, other):
+        return self.member == other.member and self.title == other.title
+    
     def __unicode__(self):
         return unicode(self.member) + u' is ' + unicode(self.title)
     

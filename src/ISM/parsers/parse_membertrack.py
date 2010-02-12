@@ -8,7 +8,7 @@ Created on 9 feb. 2010
 import xml.dom.minidom
 from xml.dom.minidom import Node
 
-from ISM.parsers.parse_utils import getCurrentTime, checkApiVersion, reachRowset, dateToInt
+from ISM.parsers.parse_utils import getCurrentTime, checkApiVersion, reachRowset, dateToInt, getNode
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import transaction
@@ -29,7 +29,8 @@ def parse(xmlFile):
     # parse date as a big_integer
     date = getCurrentTime(doc)
 
-    members = reachRowset(doc, "members")
+    result = getNode(doc, "result")
+    members = reachRowset(result, "members")
     newList = []
     
     try:

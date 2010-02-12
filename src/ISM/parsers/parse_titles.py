@@ -9,7 +9,7 @@ import xml.dom.minidom
 from xml.dom.minidom import Node
 
 from ISM.roles.models import Role, Title, RoleType, TitleComposition, TitleCompoDiff
-from ISM.parsers import parse_utils
+from ISM.parsers.parse_utils import getNode, reachRowset, checkApiVersion, getCurrentTime
 from ISM.exceptions import MalformedXmlResponse, DatabaseCorrupted
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -26,11 +26,12 @@ def parse(xmlFile):
        
     """
     doc = xml.dom.minidom.parse(xmlFile)
-    parse_utils.checkApiVersion(doc)
+    checkApiVersion(doc)
     # parse date as a big_integer
-    date = parse_utils.getCurrentTime(doc)
+    date = getCurrentTime(doc)
 
-    titles = parse_utils.reachRowset(doc, "titles")
+    result = getNode(doc, "result")
+    titles = reachRowset(result, "titles")
 
 
     newList = []

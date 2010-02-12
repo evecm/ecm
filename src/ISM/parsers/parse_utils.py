@@ -49,18 +49,16 @@ def checkApiVersion(doc):
         raise WrongApiVersion
 
 #______________________________________________________________________________
-def reachRowset(doc, name):
+def reachRowset(node, name):
     """
-    Returns the <rowset name="?" > node with given name from a document
+    Returns the <rowset name="?" > node with given name from a parent node
     """
-    titles = getNode(doc, "result")
 
-    for n in titles.getElementsByTagName("rowset"):
+    for n in node.getElementsByTagName("rowset"):
         if n.getAttribute("name") == name:
             return n
     raise MalformedXmlResponse
 
-    
 #______________________________________________________________________________
 def getNode(doc, tagName):
     node = doc.getElementsByTagName(tagName)
