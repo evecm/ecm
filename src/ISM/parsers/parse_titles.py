@@ -15,7 +15,7 @@ from ISM.exceptions import MalformedXmlResponse, DatabaseCorrupted
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import transaction
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 @transaction.commit_manually
 def parse(xmlFile):
     """
@@ -61,7 +61,7 @@ def parse(xmlFile):
         transaction.rollback()
         raise
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def parseOneTitle(node):
     '''
     Parses all the roles that compose a single title. 
@@ -97,7 +97,7 @@ def parseOneTitle(node):
         
     return roleList
             
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def parseCateg(node, title):
     '''
     Parses all the roles that compose a single title from one RoleType. 
@@ -131,7 +131,7 @@ def parseCateg(node, title):
         
     return subList
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def getDiffs(newList, oldList, date):
     removed  = [ c for c in oldList if c not in newList ]
     added    = [ c for c in newList if c not in oldList ]

@@ -14,7 +14,7 @@ from ISM.parsers.parse_utils import checkApiVersion, getText, getNode, reachRows
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 @transaction.commit_manually
 def parse(xmlFile):
     """

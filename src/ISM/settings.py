@@ -90,4 +90,5 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'ISM.roles',
     'ISM.corp',
+    'ISM.api',
 )

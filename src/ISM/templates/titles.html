@@ -28,7 +28,6 @@
         <th>{{ role.name }}</th>
         {% for t in corp_titles %}
           {% if t.titleID in role.titles %}
-          
         <td class="cell-has-role" title="{{ t.titleName }}" ></td>
           {% else %}
         <td class="cell-no-role" title="{{ t.titleName }}" ></td>

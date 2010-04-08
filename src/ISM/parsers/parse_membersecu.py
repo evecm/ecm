@@ -25,7 +25,7 @@ for r in Role.objects.all() :
 
 DATE = 0
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 @transaction.commit_manually
 def parse(xmlFile):
     """
@@ -66,7 +66,7 @@ def parse(xmlFile):
         transaction.rollback()
         raise
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def parseOneMemberRoles(node):
     roleList = []
     
@@ -78,7 +78,7 @@ def parseOneMemberRoles(node):
             roleList.append(RoleMembership(member_id=node.charID, role_id=r_id))
     
     return roleList
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def parseOneMemberTitles(node):
     titleList = []
     
@@ -90,7 +90,7 @@ def parseOneMemberTitles(node):
             
     return titleList
     
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def getRoleMemberDiffs(newList, oldList):
     removed  = [ r for r in oldList if r not in newList ]
     added    = [ r for r in newList if r not in oldList ]
@@ -105,7 +105,7 @@ def getRoleMemberDiffs(newList, oldList):
         
     return diffs
     
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def getTitleMemberDiffs(newList, oldList):
     removed  = [ t for t in oldList if t not in newList ]
     added    = [ t for t in newList if t not in oldList ]
@@ -120,7 +120,7 @@ def getTitleMemberDiffs(newList, oldList):
         
     return diffs
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def storeRoleDiffs(oldList, newList):
     if len(oldList) != 0 :
         diffs = getRoleMemberDiffs(newList, oldList)
@@ -133,7 +133,7 @@ def storeRoleDiffs(oldList, newList):
         # 1st import
         for rm in newList: rm.save()
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def storeTitleDiffs(oldList, newList):
     if len(oldList) != 0 :
         diffs = getTitleMemberDiffs(newList, oldList)

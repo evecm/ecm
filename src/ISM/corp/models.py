@@ -7,23 +7,25 @@ Created on 8 feb. 2010
 
 from django.db import models
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class Hangar(models.Model):
     hangarID = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
+    accessLvl = models.PositiveIntegerField(default=100)
 
     def __unicode__(self):
         return self.name
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class Wallet(models.Model):
     walletID = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
-
+    accessLvl = models.PositiveIntegerField(default=100)
+    
     def __unicode__(self):
         return self.name
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class Corp(models.Model):
     corporationID = models.IntegerField(primary_key=True)
     corporationName = models.CharField(max_length=256)

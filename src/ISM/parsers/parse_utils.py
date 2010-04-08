@@ -5,13 +5,13 @@ Created on 08 fev. 2010
 @author: diabeteman
 """
 
-from ISM.api.constants import API_VERSION
+from ISM.constants import API_VERSION
 from ISM.exceptions import WrongApiVersion, MalformedXmlResponse
 
 import time
 from xml.dom.minidom import Node
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def getCachedDate(doc):
     """
     Retrieve the cachedUntil date (as a long integer) from a document
@@ -21,7 +21,7 @@ def getCachedDate(doc):
     dateString = getText(cachedUntil)
     return dateToInt(dateString)
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def getCurrentTime(doc):
     """
     Retrieve the cachedUntil date (as a long integer) from a document
@@ -31,11 +31,11 @@ def getCurrentTime(doc):
     dateString = getText(currentTime)
     return dateToInt(dateString)
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def dateToInt(dateString):
     return time.mktime(time.strptime(dateString, '%Y-%m-%d %H:%M:%S'))
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def checkApiVersion(doc):
     """
     Check if the API version matches
@@ -48,7 +48,7 @@ def checkApiVersion(doc):
     else:
         raise WrongApiVersion
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def reachRowset(node, name):
     """
     Returns the <rowset name="?" > node with given name from a parent node
@@ -59,14 +59,14 @@ def reachRowset(node, name):
             return n
     raise MalformedXmlResponse
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def getNode(doc, tagName):
     node = doc.getElementsByTagName(tagName)
     if len(node) == 1:
         return node[0]
     else:
         raise MalformedXmlResponse
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def getText(node):
     text = ""
     for n in node.childNodes:

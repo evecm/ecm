@@ -10,11 +10,10 @@ from xml.dom.minidom import Node
 
 from ISM.parsers.parse_utils import getCurrentTime, checkApiVersion, reachRowset, dateToInt, getNode
 
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import transaction
 from ISM.roles.models import Member, MemberDiff
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 @transaction.commit_manually
 def parse(xmlFile):
     """
@@ -59,7 +58,7 @@ def parse(xmlFile):
         raise
 
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def parseOneMember(node):
     
     id       =       int(node.getAttribute("characterID"))
@@ -77,7 +76,7 @@ def parseOneMember(node):
                   lastLogoff=logoff, locationID=locID,  ship=ship )
 
     
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 def getDiffs(newList, oldList, date):
     removed  = [ m for m in oldList if m not in newList ]
     added    = [ m for m in newList if m not in oldList ]

@@ -11,6 +11,7 @@ from django.db import models
 
 #______________________________________________________________________________
 class Member(models.Model):
+    
     characterID = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100, db_index=True)
     nickname = models.CharField(max_length=256, default="")
@@ -21,6 +22,30 @@ class Member(models.Model):
     locationID = models.IntegerField()
     ship = models.CharField(max_length=100, default="")
 
+    def getTitles(self):
+        t_mem = TitleMembership.objects.filter(characterID=self.characterID)
+        ids = [ t.titleID for t in t_mem ]
+        return Title.objects.filter(titleID__in=ids)
+    
+    def getRoles(self):
+        r_mem = RoleMembership.objects.filter(characterID=self.characterID)
+        ids = [ r.id for r in r_mem ]
+        return Role.objects.filter(role_id__in=ids)
+    
+    def getImpliedRoles(self):
+        roles = self.getRoles()
+        for t in self.getTitles():
+            for r in t.getRoles():
+                if r not in roles:
+                    roles.append(r)
+        return roles
+    
+    def getAccessLvl(self):
+        roles = self.getImpiedRoles()
+        lvl = 0
+        for r in roles: lvl += r.getAccessLvl()
+        return lvl
+    
     def __eq__(self, other):
         return self.characterID == other.characterID
 
@@ -50,6 +75,17 @@ class Title(models.Model):
     members = models.ManyToManyField(Member, through='TitleMembership')
     tiedToBase = models.IntegerField(default=0)
     
+    def getRoles(self):
+        t_compos = TitleComposition.objects.filter(titleID=self.titleID)
+        ids = [ tc.role_id for tc in t_compos ]
+        return Role.objects.filter(role_id__in=ids)
+        
+    def getAccessLvl(self):
+        roles = self.getRoles()
+        lvl = 0
+        for r in roles : lvl += r.getAccessLvl()
+        return lvl
+    
     def __eq__(self, other):
         return self.titleID == other.titleID
     
@@ -67,6 +103,12 @@ class Role(models.Model):
     description = models.CharField(max_length=256)
     hangar = models.ForeignKey(Hangar, null=True, blank=True)
     wallet = models.ForeignKey(Wallet, null=True, blank=True)
+    accessLvl = models.PositiveSmallIntegerField(default=0)
+    
+    def getAccessLvl(self):
+        if   self.hangar: return self.hangar.accessLvl
+        elif self.wallet: return self.wallet.accessLvl
+        else:             return self.accessLvl
     
     def __eq__(self, other):
         return self.id == other.id
@@ -74,10 +116,8 @@ class Role(models.Model):
     def __unicode__(self):
         name = self.dispName or self.roleName
         division = None
-        if self.hangar:
-            division = ' on ' + self.hangar.name
-        elif self.wallet:
-            division = ' on ' + self.wallet.name
+        if self.hangar:   division = ' on ' + self.hangar.name
+        elif self.wallet: division = ' on ' + self.wallet.name
         return name + (division or '') + ' -- ' + unicode(self.roleType)
     
 #______________________________________________________________________________
@@ -154,7 +194,8 @@ class TitleMemberDiff(models.Model):
     date = models.BigIntegerField(db_index=True, default=0)
 
     def __unicode__(self):
-        return unicode(self.member) + u' is ' + unicode(self.title)
+        if self.new: return '%s got %s' % (self.member.name, self.title.titleName)
+        else       : return '%s lost %s' % (self.member.name, self.title.titleName)
     
 #______________________________________________________________________________
 class RoleMemberDiff(models.Model):
@@ -164,7 +205,8 @@ class RoleMemberDiff(models.Model):
     new = models.BooleanField(db_index=True, default=True)
     # date of change
     date = models.BigIntegerField(db_index=True, default=0)
-
+    
     def __unicode__(self):
-        return unicode(self.member) + u' has ' + unicode(self.role)
+        if self.new: return '%s got %s' % (self.member.name, self.role.dispName)
+        else       : return '%s lost %s' % (self.member.name, self.role.dispName)
     
