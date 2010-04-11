@@ -42,17 +42,17 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = 'D:/dev/ice_security/src/ISM/media'
+#MEDIA_ROOT = ''
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/stuff/'
+#MEDIA_URL = ''
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+#ADMIN_MEDIA_PREFIX = ''
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
@@ -73,7 +73,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'ISM.urls'
 
 TEMPLATE_DIRS = (
-    'D:/dev/ice_security/src/ISM/templates',
+ #   'D:/dev/ice_security/src/ISM/templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -88,7 +88,9 @@ INSTALLED_APPS = (
     'django.contrib.databrowse',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'ISM.roles',
-    'ISM.corp',
-    'ISM.api',
+    
+    'ISM.server.data.api',
+    'ISM.server.data.corp',
+    'ISM.server.data.assets',
+    'ISM.server.data.roles',
 )

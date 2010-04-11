@@ -16,7 +16,8 @@
 #----------------------------------------------------------------------------
 # Put your userID and apiKey (full access) here before running this script.
 YOUR_USERID = 3173522
-YOUR_APIKEY = "FCA49992139A456B9A494C3DFD9AE786581775E784B14E468AE569313F9B2A6C"
+YOUR_APIKEY = "4F125BC3A12945C0826EDB7D4D0E01CEFC65BEFC1F494D9D84D89CE201AB7421"
+CHAR_ID = 1888774537
 
 import time
 import tempfile
@@ -25,10 +26,11 @@ import zlib
 import os
 from os.path import join, exists
 from httplib import HTTPException
+from ISM.server.logic.api.cache import CacheHandler
 
-import eveapi
+from ISM.lib import eveapi
 
-api = eveapi.EVEAPIConnection()
+api = eveapi.EVEAPIConnection(cacheHandler=CacheHandler(debug=True))
 
 #----------------------------------------------------------------------------
 print

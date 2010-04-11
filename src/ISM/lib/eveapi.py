@@ -553,8 +553,8 @@ class Row(object):
     def __getitem__(self, this):
         return self._row[self._cols.index(this)]
 
-    def __str__(self):
-        return "Row(" + ','.join(map(lambda k, v: "%s:%s" % (str(k), str(v)), self._cols, self._row)) + ")"
+    def __unicode__(self):
+        return "Row(" + ','.join(map(lambda k, v: "%s:%s" % (unicode(k), unicode(v)), self._cols, self._row)) + ")"
 
 
 class Rowset(object):
@@ -659,7 +659,7 @@ class Rowset(object):
     def sort(self, *args, **kw):
         self._rows.sort(*args, **kw)
 
-    def __str__(self):
+    def __unicode__(self):
         return ("Rowset(columns=[%s], rows=%d)" % (','.join(self._cols), len(self)))
 
     def __getstate__(self):

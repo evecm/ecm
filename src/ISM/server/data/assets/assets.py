@@ -5,8 +5,8 @@ Created on 18 mar. 2010
 @author: diabeteman
 '''
 
-from ISM.assets import db
-from ISM.assets.models import DbAsset
+from ISM.server.logic import db
+from ISM.server.data.assets.models import DbAsset
 
 #------------------------------------------------------------------------------
 class Item(object):

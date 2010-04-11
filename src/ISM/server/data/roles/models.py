@@ -5,7 +5,7 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-from ISM.corp.models import Hangar, Wallet
+from ISM.server.data.corp.models import Hangar, Wallet
 
 from django.db import models
 
@@ -114,11 +114,7 @@ class Role(models.Model):
         return self.id == other.id
 
     def __unicode__(self):
-        name = self.dispName or self.roleName
-        division = None
-        if self.hangar:   division = ' on ' + self.hangar.name
-        elif self.wallet: division = ' on ' + self.wallet.name
-        return name + (division or '') + ' -- ' + unicode(self.roleType)
+        return unicode(self.roleName)
     
 #______________________________________________________________________________
 class RoleMembership(models.Model):
@@ -129,7 +125,7 @@ class RoleMembership(models.Model):
         return self.member == other.member and self.role == other.role
     
     def __unicode__(self):
-        return unicode(self.member) + u' has ' + unicode(self.role)
+        return '%s has %s (%s)' % (unicode(self.member), unicode(self.role), unicode(self.role.roleType))
     
 #______________________________________________________________________________
 class TitleMembership(models.Model):

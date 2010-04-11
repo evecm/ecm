@@ -5,18 +5,21 @@ Created on 23 mar. 2010
 @author: diabeteman
 '''
 from ISM.lib import eveapi
-from ISM.api.models import APIKey
+from ISM.server.data.api.models import APIKey
+from ISM.server.logic.api.cache import CacheHandler
 
-
-CACHE_HANDLER, PROXY, USER_ID, API_KEY, CHAR_ID = None
+class API:
+    USER_ID = None
+    API_KEY = None
+    CHAR_ID = None
 
 for a in APIKey.objects.all():
-    USER_ID = a.userID
-    CHAR_ID = a.charID
-    API_KEY = a.apiKey
+    API.USER_ID = a.userID
+    API.CHAR_ID = a.charID
+    API.API_KEY = a.key
     break
 
-def connect():
-    api = eveapi.EVEAPIConnection(cacheHandler=CACHE_HANDLER, proxy=PROXY)
-    return api.auth(userID=USER_ID, apiKey=API_KEY)
+def connect(debug=False,proxy =None):
+    api = eveapi.EVEAPIConnection(cacheHandler=CacheHandler(debug=debug), proxy=proxy)
+    return api.auth(userID=API.USER_ID, apiKey=API.API_KEY)
     
