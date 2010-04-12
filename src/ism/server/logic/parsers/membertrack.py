@@ -4,9 +4,9 @@ This file is part of ICE Security Management
 Created on 9 feb. 2010
 @author: diabeteman
 '''
-from ISM.server.data.roles.models import Member, MemberDiff
-from ISM.server.logic.api import connection
-from ISM.server.logic.api.connection import API
+from ism.server.data.roles.models import Member, MemberDiff
+from ism.server.logic.api import connection
+from ism.server.logic.api.connection import API
 from django.db import transaction
 
 DEBUG = False # DEBUG mode

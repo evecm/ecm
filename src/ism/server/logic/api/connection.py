@@ -4,9 +4,9 @@ This file is part of ICE Security Management
 Created on 23 mar. 2010
 @author: diabeteman
 '''
-from ISM.lib import eveapi
-from ISM.server.data.api.models import APIKey
-from ISM.server.logic.api.cache import CacheHandler
+from ism.lib import eveapi
+from ism.server.data.api.models import APIKey
+from ism.server.logic.api.cache import CacheHandler
 
 class API:
     USER_ID = None

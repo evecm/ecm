@@ -6,9 +6,9 @@ Created on 23 mar. 2010
 '''
 
 
-from ISM.server.data.assets.models import DbAsset
-from ISM.server.logic.api import connection
-from ISM.server.logic.api.connection import API
+from ism.server.data.assets.models import DbAsset
+from ism.server.logic.api import connection
+from ism.server.logic.api.connection import API
 from django.db import transaction
 
 DEBUG = False # DEBUG mode

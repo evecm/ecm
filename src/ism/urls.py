@@ -6,9 +6,9 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-from ISM.roles.views import titles, titleDetails
-from ISM.views import home
-from ISM.settings import MEDIA_ROOT
+from ism.roles.views import titles, titleDetails
+from ism.views import home
+from ism.settings import MEDIA_ROOT
 from django.conf.urls.defaults import patterns, include
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin

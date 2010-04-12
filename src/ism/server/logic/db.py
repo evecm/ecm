@@ -5,9 +5,10 @@ Created on 18 mars 2010
 @author: diabeteman
 '''
 
+from ism.server.data.assets.constants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
+from ism.constants import EVE_DB_FILE
 import sqlite3
-from ISM.constants import EVE_DB_FILE
-from ISM.constants import CONQUERABLE_STATIONS, STATIONS_IDS, OUTPOSTS_IDS
+
 
 CONN_EVE = sqlite3.connect(EVE_DB_FILE)
 

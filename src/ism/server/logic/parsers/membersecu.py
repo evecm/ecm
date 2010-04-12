@@ -4,11 +4,11 @@ This file is part of ICE Security Management
 Created on 11 feb. 2010
 @author: diabeteman
 '''
-from ISM.server.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
+from ism.server.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff
-from ISM.server.logic.api import connection
-from ISM.server.logic.api.connection import API
-from ISM.server.logic.parsers import utils
+from ism.server.logic.api import connection
+from ism.server.logic.api.connection import API
+from ism.server.logic.parsers import utils
 from django.db import transaction
 
 DEBUG = False # DEBUG mode

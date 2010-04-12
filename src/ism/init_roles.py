@@ -5,8 +5,9 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-from ISM.roles.models import RoleType, Role
-from ISM.corp.models import Hangar, Wallet
+
+from ism.server.data.corp.models import Hangar, Wallet
+from ism.server.data.roles.models import RoleType, Role
 from django.db import transaction
 
 @transaction.commit_manually

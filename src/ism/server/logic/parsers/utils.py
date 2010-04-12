@@ -5,9 +5,7 @@ Created on 08 fev. 2010
 @author: diabeteman
 """
 
-from ISM.server.data.roles.models import RoleType, Role
-from ISM.server.logic.exceptions import WrongApiVersion
-import time
+from ism.server.data.roles.models import RoleType, Role
 
 _ROLE_TYPES = None
 _ALL_ROLES = None

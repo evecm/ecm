@@ -5,7 +5,7 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-# Django settings for ISM project.
+# Django settings for ism project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -17,7 +17,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'db/ISM.db'             # Or path to database file if using sqlite3.
+DATABASE_NAME = 'db/ism.db'             # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -70,10 +70,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-ROOT_URLCONF = 'ISM.urls'
+ROOT_URLCONF = 'ism.urls'
 
 TEMPLATE_DIRS = (
- #   'D:/dev/ice_security/src/ISM/templates',
+ #   'D:/dev/ice_security/src/ism/templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -89,8 +89,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     
-    'ISM.server.data.api',
-    'ISM.server.data.corp',
-    'ISM.server.data.assets',
-    'ISM.server.data.roles',
+    'ism.server.data.api',
+    'ism.server.data.corp',
+    'ism.server.data.assets',
+    'ism.server.data.roles',
 )

@@ -6,8 +6,8 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-from ISM.server.data.corp.models import Hangar, Wallet
-from ISM.server.data.roles.models import Role, Title, Member, RoleType, RoleMembership, \
+from ism.server.data.corp.models import Hangar, Wallet
+from ism.server.data.roles.models import Role, Title, Member, RoleType, RoleMembership, \
     TitleMembership, TitleComposition
 from django.contrib import admin, databrowse
 

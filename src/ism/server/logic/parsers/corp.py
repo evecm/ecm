@@ -4,9 +4,9 @@ This file is part of ICE Security Management
 Created on 8 feb. 2010
 @author: diabeteman
 '''
-from ISM.server.data.corp.models import Corp, Hangar, Wallet
-from ISM.server.logic.api import connection
-from ISM.server.logic.api.connection import API
+from ism.server.data.corp.models import Corp, Hangar, Wallet
+from ism.server.logic.api import connection
+from ism.server.logic.api.connection import API
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction

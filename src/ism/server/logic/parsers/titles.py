@@ -5,11 +5,11 @@ Created on 24 jan. 2010
 @author: diabeteman
 """
 
-from ISM.server.data.roles.models import TitleComposition, Title, RoleType, Role, TitleCompoDiff
-from ISM.server.logic.api import connection
-from ISM.server.logic.api.connection import API
-from ISM.server.logic.exceptions import DatabaseCorrupted, MalformedXmlResponse
-from ISM.server.logic.parsers import utils
+from ism.server.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
+from ism.server.logic.api import connection
+from ism.server.logic.api.connection import API
+from ism.server.logic.exceptions import DatabaseCorrupted
+from ism.server.logic.parsers import utils
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction
 
