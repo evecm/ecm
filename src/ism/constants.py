@@ -9,4 +9,4 @@ Created on 24 jan. 2010
 import os.path
 
 EVE_DB_FILE = os.path.join(os.path.dirname(__file__), 'db/EVE.db')
-
+API_VERSION = "2"

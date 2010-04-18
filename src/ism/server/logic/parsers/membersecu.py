@@ -10,6 +10,9 @@ from ism.server.logic.api import connection
 from ism.server.logic.api.connection import API
 from ism.server.logic.parsers import utils
 from django.db import transaction
+from ism.server.logic.parsers.utils import checkApiVersion
+
+from datetime import datetime
 
 DEBUG = False # DEBUG mode
 
@@ -30,8 +33,13 @@ def update(debug=False):
         api = connection.connect(debug=debug)
         # retrieve /corp/MemberTracking.xml.aspx
         memberSecuApi = api.corp.MemberSecurity(characterID=API.CHAR_ID)
-    
-        date = memberSecuApi._meta.currentTime
+        checkApiVersion(memberSecuApi._meta.version)
+        
+        currentTime = memberSecuApi._meta.currentTime
+        cachedUntil = memberSecuApi._meta.cachedUntil
+        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
+        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+        
 
         newRoleList = []
         newTitleList = []
@@ -43,9 +51,10 @@ def update(debug=False):
             newRoleList.extend(parseOneMemberRoles(member))
             newTitleList.extend(parseOneMemberTitles(member))
         
-        storeRoleDiffs(oldList=oldRoleList, newList=newRoleList, date=date)
-        storeTitleDiffs(oldList=oldTitleList, newList=newTitleList, date=date)
-            
+        storeRoleDiffs(oldList=oldRoleList, newList=newRoleList, date=currentTime)
+        storeTitleDiffs(oldList=oldTitleList, newList=newTitleList, date=currentTime)
+        
+        if DEBUG : print "saving data to the database..."
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
     except:

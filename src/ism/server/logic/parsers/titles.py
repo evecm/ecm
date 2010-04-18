@@ -5,13 +5,16 @@ Created on 24 jan. 2010
 @author: diabeteman
 """
 
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.db import transaction
 from ism.server.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
 from ism.server.logic.api import connection
 from ism.server.logic.api.connection import API
 from ism.server.logic.exceptions import DatabaseCorrupted
 from ism.server.logic.parsers import utils
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.db import transaction
+from ism.server.logic.parsers.utils import checkApiVersion
+
+from datetime import datetime
 
 DEBUG = False # DEBUG mode
 
@@ -33,10 +36,14 @@ def update(debug=False):
         api = connection.connect(debug=debug)
         # retrieve /corp/Titles.xml.aspx
         titlesApi = api.corp.Titles(characterID=API.CHAR_ID)
-    
-        date = titlesApi._meta.currentTime
-        newList = []
+        checkApiVersion(titlesApi._meta.version)
         
+        currentTime = titlesApi._meta.currentTime
+        cachedUntil = titlesApi._meta.cachedUntil
+        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
+        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+        
+        newList = []
         # we get all the old TitleComposition from the database
         oldList = list(TitleComposition.objects.all())
         
@@ -44,7 +51,7 @@ def update(debug=False):
             newList.extend(parseOneTitle(titleApi=title))
 
         if len(oldList) != 0 :
-            diffs = getDiffs(newList, oldList, date)
+            diffs = getDiffs(newList, oldList, currentTime)
             if diffs :
                 for d in diffs: d.save()
                 TitleComposition.objects.all().delete()

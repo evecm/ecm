@@ -9,7 +9,7 @@ from ism.server.data.corp.models import Hangar, Wallet
 
 from django.db import models
 
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class Member(models.Model):
     
     characterID = models.PositiveIntegerField(primary_key=True)
@@ -53,8 +53,7 @@ class Member(models.Model):
         return self.name
 
 
-
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class RoleType(models.Model):
     typeName = models.CharField(max_length=64, unique=True)
     dispName = models.CharField(max_length=64)
@@ -68,7 +67,7 @@ class RoleType(models.Model):
         else:
             return self.typeName
     
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class Title(models.Model):
     titleID = models.IntegerField(primary_key=True)
     titleName = models.CharField(max_length=256)
@@ -92,7 +91,7 @@ class Title(models.Model):
     def __unicode__(self):
         return self.titleName
     
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class Role(models.Model):
     roleType = models.ForeignKey(RoleType, db_index=True)
     roleID = models.IntegerField()
@@ -116,7 +115,7 @@ class Role(models.Model):
     def __unicode__(self):
         return unicode(self.roleName)
     
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class RoleMembership(models.Model):
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
@@ -127,7 +126,7 @@ class RoleMembership(models.Model):
     def __unicode__(self):
         return '%s has %s (%s)' % (unicode(self.member), unicode(self.role), unicode(self.role.roleType))
     
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class TitleMembership(models.Model):
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
@@ -138,7 +137,7 @@ class TitleMembership(models.Model):
     def __unicode__(self):
         return unicode(self.member) + u' is ' + unicode(self.title)
     
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class TitleComposition(models.Model):
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
@@ -153,7 +152,7 @@ class TitleComposition(models.Model):
 #========================#
 #  DIFF HISTORY CLASSES  #
 #========================#
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class TitleCompoDiff(models.Model):
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
@@ -166,7 +165,7 @@ class TitleCompoDiff(models.Model):
         if self.new: return unicode(self.title) + u' gets ' + unicode(self.role)
         else       : return unicode(self.title) + u' looses ' + unicode(self.role)
         
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class MemberDiff(models.Model):
     characterID = models.PositiveIntegerField(db_index=True)
     name = models.CharField(max_length=100, db_index=True)
@@ -180,7 +179,7 @@ class MemberDiff(models.Model):
         if self.new: return '%s corped' % self.name
         else       : return '%s leaved' % self.name
         
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class TitleMemberDiff(models.Model):
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
@@ -193,7 +192,7 @@ class TitleMemberDiff(models.Model):
         if self.new: return '%s got %s' % (self.member.name, self.title.titleName)
         else       : return '%s lost %s' % (self.member.name, self.title.titleName)
     
-#______________________________________________________________________________
+#------------------------------------------------------------------------------
 class RoleMemberDiff(models.Model):
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)

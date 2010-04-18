@@ -391,7 +391,11 @@ class _Parser(object):
             # We're at the root. The first tag has to be "eveapi" or we can't
             # really assume the rest of the xml is going to be what we expect.
             if name != "eveapi":
-                raise RuntimeError("Invalid API response")
+                raise MalformedXmlResponse("Invalid API response")
+            try:
+                this.version = attributes[attributes.index("version")+1]
+            except KeyError:
+                raise MalformedXmlResponse("Invalid API response")
             self.root = this
 
         if isinstance(self.container, Rowset) and (self.container.__catch == this._name):
@@ -785,3 +789,12 @@ class FilterRowset(object):
         self._cols, self._rows, self._items, self.key, self.key2 = state
         self._bind()
 
+       
+#------------------------------------------------------------------------------
+class MalformedXmlResponse(UserWarning):
+    '''
+    Unexpected format when reading an API xml response.
+    '''
+    def __init__(self, message):
+        self.message = message
+        

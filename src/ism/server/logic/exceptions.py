@@ -7,6 +7,16 @@ Created on 24 jan. 2010
 '''
 
 #------------------------------------------------------------------------------
+class DatabaseCorrupted(UserWarning):
+    '''
+    The database content is inconsistent.
+    '''
+    def __init__(self, message):
+        self.message = message
+
+
+
+#------------------------------------------------------------------------------
 class WrongApiVersion(UserWarning):
     '''
     The API version does not match.
@@ -14,18 +24,3 @@ class WrongApiVersion(UserWarning):
     def __init__(self, message):
         self.message = message
         
-#------------------------------------------------------------------------------
-class MalformedXmlResponse(UserWarning):
-    '''
-    Unexpected format when reading an API xml response.
-    '''
-    def __init__(self, message):
-        self.message = message
-
-#------------------------------------------------------------------------------
-class DatabaseCorrupted(UserWarning):
-    '''
-    The database content is inconsistent.
-    '''
-    def __init__(self, message):
-        self.message = message

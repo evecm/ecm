@@ -10,6 +10,9 @@ from ism.server.logic.api.connection import API
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+from ism.server.logic.parsers.utils import checkApiVersion
+
+from datetime import datetime
 
 DEBUG = False # DEBUG mode
 
@@ -28,7 +31,14 @@ def update(debug=False):
         api = connection.connect(debug=debug)
         # retrieve /corp/CorporationSheet.xml.aspx
         corpApi = api.corp.CorporationSheet(characterID=API.CHAR_ID)
+        checkApiVersion(corpApi._meta.version)
 
+        currentTime = corpApi._meta.currentTime
+        cachedUntil = corpApi._meta.cachedUntil
+        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
+        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+
+        if DEBUG : print "parsing api response..."
         try:
             # try to retrieve the db stored corp info
             corp = Corp.objects.get(corporationID=corpApi.corporationID)
@@ -87,13 +97,14 @@ def update(debug=False):
                 if not wallet.name == w_name:
                     wallet.name = w_name
                     wallet.save()
-                    if DEBUG: print "*  %s *" % wallet.name
+                    if DEBUG: print "*  %s" % wallet.name
                 else: 
                     if DEBUG: print "   %s" % wallet.name
             except ObjectDoesNotExist: 
                 Wallet(walletID=w_id, name=w_name).save()
         
         # all ok
+        if DEBUG : print "saving data to the database..."
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
     except:

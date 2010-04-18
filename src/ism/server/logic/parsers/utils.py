@@ -6,6 +6,8 @@ Created on 08 fev. 2010
 """
 
 from ism.server.data.roles.models import RoleType, Role
+from ism.server.logic.exceptions import WrongApiVersion
+from ism.constants import API_VERSION
 
 _ROLE_TYPES = None
 _ALL_ROLES = None
@@ -27,3 +29,9 @@ def allRoles():
         for role in Role.objects.all() :
             _ALL_ROLES[(role.roleID, role.roleType_id)] = role
     return _ALL_ROLES
+
+#------------------------------------------------------------------------------
+def checkApiVersion(version):
+    if version != API_VERSION:
+        print version
+        raise WrongApiVersion(version)

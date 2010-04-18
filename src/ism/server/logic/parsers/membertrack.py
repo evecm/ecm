@@ -4,10 +4,12 @@ This file is part of ICE Security Management
 Created on 9 feb. 2010
 @author: diabeteman
 '''
+from django.db import transaction
 from ism.server.data.roles.models import Member, MemberDiff
 from ism.server.logic.api import connection
 from ism.server.logic.api.connection import API
-from django.db import transaction
+from ism.server.logic.parsers.utils import checkApiVersion
+from datetime import datetime
 
 DEBUG = False # DEBUG mode
 
@@ -28,8 +30,13 @@ def update(debug=False):
         api = connection.connect(debug=debug)
         # retrieve /corp/MemberTracking.xml.aspx
         membersApi = api.corp.MemberTracking(characterID=API.CHAR_ID)
-    
-        date = membersApi._meta.currentTime
+        checkApiVersion(membersApi._meta.version)
+        
+        currentTime = membersApi._meta.currentTime
+        cachedUntil = membersApi._meta.cachedUntil
+        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
+        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+        
         newList = []
         
         # we get the old member list from the database
@@ -39,7 +46,7 @@ def update(debug=False):
             newList.append(parseOneMember(member=member))
         
         if len(oldList) != 0 :
-            diffs = getDiffs(newList, oldList, date)
+            diffs = getDiffs(newList, oldList, currentTime)
             for d in diffs: d.save()
             # to be sure to store the nicknames change, etc.
             # even if there are no diff, we still overwrite the members 
