@@ -12,8 +12,9 @@ from ism.server.logic.api.connection import API
 from django.db import transaction
 from ism.server.logic.parsers.utils import checkApiVersion
 from ism.server.logic.assets.constants import STATIONS_IDS, DELIVERIES_FLAG, OFFICE_TYPEID,\
-                                              HANGAR_FLAG, DELIVERIES_HANGAR_ID, BOOKMARK_TYPEID
-
+                                              HANGAR_FLAG, DELIVERIES_HANGAR_ID, BOOKMARK_TYPEID,\
+                                              NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
+                                              CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS
 from datetime import datetime
 
 DEBUG = False # DEBUG mode
@@ -59,12 +60,10 @@ def update(debug=False):
         if len(oldList) != 0 :
             if DEBUG : print "computing diffs since last asset scan..."
             diffs = getAssetDiffs(newList, oldList, date=currentTime)
-            if diffs :
-                if DEBUG : print "saving changes to the database..."
-                for assetDiff in diffs : assetDiff.save()
-                DbAsset.objects.all().delete()
-                for asset in newList : asset.save()
-            # if no diff, we do nothing
+            if DEBUG : print "saving changes to the database..."
+            for assetDiff in diffs : assetDiff.save()
+            DbAsset.objects.all().delete()
+            for asset in newList : asset.save()
         else :
             # 1st import, no diff to write
             if DEBUG : print "saving data to the database..."
@@ -85,7 +84,7 @@ def getAssetDiffs(newList, oldList, date):
     if DEBUG:
         print "REMOVED ASSETS:"
         if not removed : print "(none)"
-        else : print "  %9s %7s %7s %10s" % ("station","hangar","item","quantity")
+        else : print "  %15s %7s %15s %10s" % ("station", "hangar", "item", "quantity")
     for remasset in removed:
         if DEBUG: print "- " + repr(remasset)
         diffs.append(DbAssetDiff(locationID = remasset.locationID,
@@ -97,7 +96,7 @@ def getAssetDiffs(newList, oldList, date):
     if DEBUG:
         print "ADDED ASSETS:"
         if not added : print "(none)"
-        else : print "  %9s %7s %7s %10s" % ("station","hangar","item","quantity")
+        else : print "  %15s %7s %15s %10s" % ("station", "hangar", "item", "quantity")
     for addasset in added:
         if DEBUG: print "+ " + repr(addasset)
         diffs.append(DbAssetDiff(locationID = addasset.locationID,
@@ -114,15 +113,15 @@ def isInDeliveries(item, assetList):
     if item.typeID == BOOKMARK_TYPEID : 
         return # we don't give a flying @#!$ about the bookmarks...
     asset = assetFromRow(item)
-    asset.locationID = item.locationID
+    asset.locationID = locationIDtoStationID(item.locationID)
     asset.hangarID = DELIVERIES_HANGAR_ID
+    assetList.append(asset)
     try :
         fillContents(container=asset, item=item, assetList=assetList)
         asset.hasContents = True
     except AttributeError :
         pass
     
-    assetList.append(asset)
 
 #------------------------------------------------------------------------------
 def isOffice(office, assetList):
@@ -136,17 +135,18 @@ def isOffice(office, assetList):
 def isInHangar(item, assetList, locationID=None):
     asset = assetFromRow(item)
     if locationID : # we come from isOffice() and the item has no locationID attribute
-        asset.locationID = locationID
+        asset.locationID = locationIDtoStationID(locationID)
     else : # we come from the update() method and the item has a locationID attribute
-        asset.locationID = item.locationID
+        asset.locationID = locationIDtoStationID(item.locationID)
     asset.hangarID = HANGAR_FLAG[item.flag]
+    assetList.append(asset)
+
     try :
         fillContents(container=asset, item=item, assetList=assetList)
         asset.hasContents = True
     except AttributeError :
         pass
     
-    assetList.append(asset)
        
 #------------------------------------------------------------------------------
 def fillContents(container, item, assetList):
@@ -157,6 +157,7 @@ def fillContents(container, item, assetList):
         _asset.locationID = container.locationID
         _asset.hangarID = container.hangarID
         _asset.container1 = container.itemID
+        assetList.append(_asset)
         
         try :
             for __item in _item.contents :
@@ -174,7 +175,6 @@ def fillContents(container, item, assetList):
         except AttributeError :
             continue
                 
-        assetList.append(_asset)
         
         
 #------------------------------------------------------------------------------
@@ -188,4 +188,33 @@ def assetFromRow(row):
 #------------------------------------------------------------------------------
 def hasContents(row):
     return len(row._cols) == len(row._row)
+    
+    
+#------------------------------------------------------------------------------
+def locationIDtoStationID(id):
+    """
+    to convert locationIDs starting 66 to stationIDs from staStations 
+                                                    subtract 6000001 from the locationID
+    to convert locationIDs starting 67 to stationIDs from the eveAPI 
+                            ConquerableStationList subtract 6000000 from the locationID
+    
+    source : http://www.eveonline.com/ingameboard.asp?a=topic&threadID=667487
+    """
+    if id <  NPC_LOCATION_IDS :
+        return id
+    if id >= CONQUERABLE_LOCATION_IDS :
+        return id - CONQUERABLE_LOCATION_OFFSET
+    if id >= NPC_LOCATION_IDS :
+        return id - NPC_LOCATION_OFFSET
+    
+    
+    
+    
+    
+    
+        
+    
+    
+    
+    
     

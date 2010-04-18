@@ -5,9 +5,10 @@ Created on 18 mars 2010
 @author: diabeteman
 '''
 
-from ism.server.data.assets.constants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
+from ism.server.logic.assets.constants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
 from ism.constants import EVE_DB_FILE
 import sqlite3
+from ism.server.data.outposts.models import Outpost
 
 
 CONN_EVE = sqlite3.connect(EVE_DB_FILE)
@@ -42,12 +43,8 @@ def resolveStationName(stationID):
             station = row
             break
         if station[1] in CONQUERABLE_STATIONS :
-            cursor.execute(QUERY_OUTPOST % stationID)
-            for row in cursor :
-                return row[0]
+            return Outpost(stationID=stationID).stationName
         else :
             return station[0]
     else :
-        cursor.execute(QUERY_OUTPOST % stationID)
-        for row in cursor :
-            return row[0]
+        return Outpost(stationID=stationID).stationName

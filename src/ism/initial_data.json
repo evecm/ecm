@@ -1,117 +1,5 @@
 [
   {
-    "pk": 1000, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1001, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1002, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1003, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1004, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1005, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1006, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1000, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1001, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1002, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1003, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1004, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1005, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1006, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
     "pk": 1, 
     "model": "roles.roletype", 
     "fields": {
@@ -2693,6 +2581,128 @@
       "dispName": "Container Take: %s", 
       "roleName": "roleContainerCanTake7", 
       "hangar": 1006
+    }
+  }, 
+  {
+    "pk": 1000, 
+    "model": "corp.hangar", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1001, 
+    "model": "corp.hangar", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1002, 
+    "model": "corp.hangar", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1003, 
+    "model": "corp.hangar", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1004, 
+    "model": "corp.hangar", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1005, 
+    "model": "corp.hangar", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1006, 
+    "model": "corp.hangar", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1000, 
+    "model": "corp.wallet", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1001, 
+    "model": "corp.wallet", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1002, 
+    "model": "corp.wallet", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1003, 
+    "model": "corp.wallet", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1004, 
+    "model": "corp.wallet", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1005, 
+    "model": "corp.wallet", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1006, 
+    "model": "corp.wallet", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": ""
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "api.apikey", 
+    "fields": {
+      "userID": 3173522, 
+      "name": "diabeteman", 
+      "key": "4F125BC3A12945C0826EDB7D4D0E01CEFC65BEFC1F494D9D84D89CE201AB7421", 
+      "charID": 1888774537
     }
   }
 ]
