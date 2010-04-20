@@ -82,11 +82,8 @@ def getAssetDiffs(newList, oldList, date):
     
     diffs    = []
     if DEBUG:
-        print "REMOVED ASSETS:"
-        if not removed : print "(none)"
-        else : print "  %15s %7s %15s %10s" % ("station", "hangar", "item", "quantity")
+        print "REMOVED ASSETS: %d" % len(removed)
     for remasset in removed:
-        if DEBUG: print "- " + repr(remasset)
         diffs.append(DbAssetDiff(locationID = remasset.locationID,
                                  hangarID = remasset.hangarID,
                                  typeID = remasset.typeID,
@@ -94,11 +91,8 @@ def getAssetDiffs(newList, oldList, date):
                                  date = date,
                                  new = False))
     if DEBUG:
-        print "ADDED ASSETS:"
-        if not added : print "(none)"
-        else : print "  %15s %7s %15s %10s" % ("station", "hangar", "item", "quantity")
+        print "ADDED ASSETS: %d" % len(added)
     for addasset in added:
-        if DEBUG: print "+ " + repr(addasset)
         diffs.append(DbAssetDiff(locationID = addasset.locationID,
                                  hangarID = addasset.hangarID,
                                  typeID = addasset.typeID,
@@ -191,7 +185,7 @@ def hasContents(row):
     
     
 #------------------------------------------------------------------------------
-def locationIDtoStationID(id):
+def locationIDtoStationID(locationID):
     """
     to convert locationIDs starting 66 to stationIDs from staStations 
                                                     subtract 6000001 from the locationID
@@ -200,21 +194,10 @@ def locationIDtoStationID(id):
     
     source : http://www.eveonline.com/ingameboard.asp?a=topic&threadID=667487
     """
-    if id <  NPC_LOCATION_IDS :
-        return id
-    if id >= CONQUERABLE_LOCATION_IDS :
-        return id - CONQUERABLE_LOCATION_OFFSET
-    if id >= NPC_LOCATION_IDS :
-        return id - NPC_LOCATION_OFFSET
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
+    if locationID <  NPC_LOCATION_IDS :
+        return locationID
+    if locationID >= CONQUERABLE_LOCATION_IDS :
+        return locationID - CONQUERABLE_LOCATION_OFFSET
+    if locationID >= NPC_LOCATION_IDS :
+        return locationID - NPC_LOCATION_OFFSET
     
