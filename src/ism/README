@@ -1,0 +1,23 @@
+A very brief walk through of how to get this running:
+
+Install Pyjamas
+
+Edit Pyjamas Path in client/build.bat
+
+Install libcommon from Pimentech
+
+
+Create the tables:
+    * python manage.py syncdb
+
+Build the javascript:
+    * cd client
+    * build.bat
+
+Run the server:
+    * python manage.py runserver
+
+
+Test it out:
+
+    * In your browser, goto: http://127.0.0.1:8000/site_media/output/ISM.html
