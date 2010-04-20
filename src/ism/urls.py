@@ -1,4 +1,4 @@
-﻿'''
+'''
 This file is part of ICE Security Management
 
 Created on 24 jan. 2010
@@ -24,6 +24,10 @@ urlpatterns = patterns('',
     (r'^titles/$', titles),
     (r'^titles/(?P<title_id>\d+)/$', titleDetails),
     (r'^browse/(.*)', databrowse.site.root),
+    
+    #Edited by Naskaya
+    (r'^services/$', 'ISM.view.entrypoint.service'),
+    (r'^ISM/(?P<path>.*)$', django.views.static.serve, {'document_root': settings.STATIC}),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
