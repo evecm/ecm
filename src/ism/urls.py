@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     (r'^browse/(.*)', databrowse.site.root),
     
     #Edited by Naskaya
-    (r'^services/$', 'ISM.view.entrypoint.service'),
+    (r'^services/$', 'ism.server.view.entrypoint.service'),
     (r'^ISM/(?P<path>.*)$', django.views.static.serve, {'document_root': settings.STATIC}),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
