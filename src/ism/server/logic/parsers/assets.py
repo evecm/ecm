@@ -40,34 +40,36 @@ def update(debug=False):
         if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
         if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
         
-        newList = []
-        
         if DEBUG : print "fetching old assets from the database..."
-        oldList = list(DbAsset.objects.all())
+        oldItems = {}
+        for a in DbAsset.objects.all():
+            oldItems[a] = a
         
+        newItems = {}
+
         if DEBUG : print "parsing api response..."
         for row in apiAssets.assets :
             if row.locationID >= STATIONS_IDS :
                 if row.typeID == BOOKMARK_TYPEID :
                     continue # we don't give a flying @#!$ about the bookmarks...
                 elif row.flag == DELIVERIES_FLAG :
-                    isInDeliveries(item=row, assetList=newList)
+                    isInDeliveries(item=row, newItems=newItems)
                 elif row.typeID == OFFICE_TYPEID :
-                    isOffice(office=row, assetList=newList)
+                    isOffice(office=row, newItems=newItems)
                 elif row.flag in HANGAR_FLAG.keys() :
-                    isInHangar(item=row, assetList=newList)
+                    isInHangar(item=row, newItems=newItems)
         
-        if len(oldList) != 0 :
+        if len(oldItems) != 0 :
             if DEBUG : print "computing diffs since last asset scan..."
-            diffs = getAssetDiffs(newList, oldList, date=currentTime)
+            diffs = getAssetDiffs(newItems, oldItems, date=currentTime)
             if DEBUG : print "saving changes to the database..."
             for assetDiff in diffs : assetDiff.save()
             DbAsset.objects.all().delete()
-            for asset in newList : asset.save()
+            for asset in newItems.values() : asset.save()
         else :
             # 1st import, no diff to write
             if DEBUG : print "saving data to the database..."
-            for asset in newList : asset.save()
+            for asset in newItems : asset.save()
             
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
@@ -76,10 +78,25 @@ def update(debug=False):
         raise
     
 #------------------------------------------------------------------------------
-def getAssetDiffs(newList, oldList, date):
-    removed  = [ a for a in oldList if a not in newList ]
-    added    = [ a for a in newList if a not in oldList ]
+def getAssetDiffs(newItems, oldItems, date):
+    removed, added = __calcDiffs(newItems, oldItems)
+    return __storeDiffs(removed, added, date)
     
+def __calcDiffs(newItems, oldItems):
+    removed  = []
+    added    = []
+
+    for a in oldItems.values():
+        try:    newItems[a]
+        except: removed.append(a)
+    for a in newItems.values():
+        try:    oldItems[a]
+        except: added.append(a)
+
+    return removed, added
+
+
+def __storeDiffs(removed, added, date):
     diffs    = []
     if DEBUG:
         print "REMOVED ASSETS: %d" % len(removed)
@@ -99,51 +116,50 @@ def getAssetDiffs(newList, oldList, date):
                                  quantity = addasset.quantity,
                                  date = date,
                                  new = True))
-        
     return diffs
-    
+
 #------------------------------------------------------------------------------
-def isInDeliveries(item, assetList):
+def isInDeliveries(item, newItems):
     if item.typeID == BOOKMARK_TYPEID : 
         return # we don't give a flying @#!$ about the bookmarks...
     asset = assetFromRow(item)
     asset.locationID = locationIDtoStationID(item.locationID)
     asset.hangarID = DELIVERIES_HANGAR_ID
-    assetList.append(asset)
+    newItems[asset] = asset
     try :
-        fillContents(container=asset, item=item, assetList=assetList)
+        fillContents(container=asset, item=item, newItems=newItems)
         asset.hasContents = True
     except AttributeError :
         pass
     
 
 #------------------------------------------------------------------------------
-def isOffice(office, assetList):
+def isOffice(office, newItems):
     if hasContents(office) :
         for item in office.contents :
             if item.typeID == BOOKMARK_TYPEID : 
                 continue # we don't give a flying @#!$ about the bookmarks...
-            isInHangar(item=item, assetList=assetList, locationID=office.locationID)
+            isInHangar(item=item, newItems=newItems, locationID=office.locationID)
 
 #------------------------------------------------------------------------------
-def isInHangar(item, assetList, locationID=None):
+def isInHangar(item, newItems, locationID=None):
     asset = assetFromRow(item)
     if locationID : # we come from isOffice() and the item has no locationID attribute
         asset.locationID = locationIDtoStationID(locationID)
     else : # we come from the update() method and the item has a locationID attribute
         asset.locationID = locationIDtoStationID(item.locationID)
     asset.hangarID = HANGAR_FLAG[item.flag]
-    assetList.append(asset)
+    newItems[asset] = asset
 
     try :
-        fillContents(container=asset, item=item, assetList=assetList)
+        fillContents(container=asset, item=item, newItems=newItems)
         asset.hasContents = True
     except AttributeError :
         pass
     
        
 #------------------------------------------------------------------------------
-def fillContents(container, item, assetList):
+def fillContents(container, item, newItems):
     for _item in item.contents :
         if _item.typeID == BOOKMARK_TYPEID : 
             continue # we don't give a flying @#!$ about the bookmarks...
@@ -151,7 +167,7 @@ def fillContents(container, item, assetList):
         _asset.locationID = container.locationID
         _asset.hangarID = container.hangarID
         _asset.container1 = container.itemID
-        assetList.append(_asset)
+        newItems[_asset] = _asset
         
         try :
             for __item in _item.contents :
@@ -163,7 +179,7 @@ def fillContents(container, item, assetList):
                 __asset.hangarID = container.hangarID
                 __asset.container1 = container.itemID
                 __asset.container2 = _asset.itemID
-                assetList.append(__asset)
+                newItems[__asset] = __asset
             
             _asset.hasContents = True
         except AttributeError :

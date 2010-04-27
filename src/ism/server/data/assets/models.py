@@ -21,12 +21,35 @@ class DbAsset(models.Model):
     singleton = models.BooleanField(default=False) # true if assembled 
     hasContents = models.BooleanField(default=False) # true if item container
 
-    def __eq__(self, other):
-        return self.locationID == other.locationID\
-           and self.hangarID   == other.hangarID\
-           and self.typeID     == other.typeID\
-           and self.quantity   == other.quantity
+    def __init__(self, itemID=None, locationID=0, hangarID=0, container1=0, container2=0, 
+                 typeID=0, quantity=0, flag=0, singleton=0, hasContents=False):
+        self.h = None
+        self.itemID = itemID
+        self.locationID = locationID
+        self.hangarID = hangarID
+        self.container1 = container1
+        self.container2 = container2
+        self.typeID = typeID
+        self.quantity = quantity
+        self.flag = flag
+        self.singleton = singleton
+        self.hasContents = hasContents
 
+    def __hash__(self):
+        if not self.h : 
+            self.h = self.locationID + self.hangarID + self.typeID + self.quantity
+        return self.h
+
+    def __eq__(self, other):
+        if self.locationID == other.locationID:
+            if self.hangarID == other.hangarID:
+                if self.typeID == other.typeID:
+                    if self.quantity == other.quantity:
+                        return True
+                    else: return False
+                else: return False
+            else: return False
+        else: return False
 #------------------------------------------------------------------------------
 class DbAssetDiff(models.Model):
     locationID = models.PositiveIntegerField() # ID of the station
