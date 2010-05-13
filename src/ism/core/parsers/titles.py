@@ -7,12 +7,12 @@ Created on 24 jan. 2010
 
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction
-from ism.server.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
-from ism.server.logic.api import connection
-from ism.server.logic.api.connection import API
-from ism.server.logic.exceptions import DatabaseCorrupted
-from ism.server.logic.parsers import utils
-from ism.server.logic.parsers.utils import checkApiVersion
+from ism.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
+from ism.core.api import connection
+from ism.core.api.connection import API
+from ism.core.exceptions import DatabaseCorrupted
+from ism.core.parsers import utils
+from ism.core.parsers.utils import checkApiVersion
 
 from datetime import datetime
 

@@ -4,13 +4,13 @@ This file is part of ICE Security Management
 Created on 8 feb. 2010
 @author: diabeteman
 '''
-from ism.server.data.corp.models import Corp, Hangar, Wallet
-from ism.server.logic.api import connection
-from ism.server.logic.api.connection import API
+from ism.data.corp.models import Corp, Hangar, Wallet
+from ism.core.api import connection
+from ism.core.api.connection import API
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from ism.server.logic.parsers.utils import checkApiVersion
+from ism.core.parsers.utils import checkApiVersion
 
 from datetime import datetime
 

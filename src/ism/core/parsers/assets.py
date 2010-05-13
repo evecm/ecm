@@ -6,12 +6,12 @@ Created on 23 mar. 2010
 '''
 
 
-from ism.server.data.assets.models import DbAsset, DbAssetDiff
-from ism.server.logic.api import connection
-from ism.server.logic.api.connection import API
+from ism.data.assets.models import DbAsset, DbAssetDiff
+from ism.core.api import connection
+from ism.core.api.connection import API
 from django.db import transaction
-from ism.server.logic.parsers.utils import checkApiVersion, calcDiffs
-from ism.server.logic.assets.constants import STATIONS_IDS, DELIVERIES_FLAG, OFFICE_TYPEID,\
+from ism.core.parsers.utils import checkApiVersion, calcDiffs
+from ism.core.assets.constants import STATIONS_IDS, DELIVERIES_FLAG, OFFICE_TYPEID,\
                                               HANGAR_FLAG, DELIVERIES_HANGAR_ID, BOOKMARK_TYPEID,\
                                               NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
                                               CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS

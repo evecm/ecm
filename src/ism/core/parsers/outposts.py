@@ -4,12 +4,11 @@ This file is part of ICE Security Management
 Created on 18 apr. 2010
 @author: diabeteman
 '''
-from ism.server.logic.api import connection
-from ism.server.logic.api.connection import API
-from ism.server.logic.parsers.utils import checkApiVersion
+from ism.core.api import connection
+from ism.core.parsers.utils import checkApiVersion
 
 from datetime import datetime
-from ism.server.data.assets.models import Outpost
+from ism.data.assets.models import Outpost
 
 from django.db import transaction
 

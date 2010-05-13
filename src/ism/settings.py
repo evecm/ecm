@@ -89,8 +89,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     
-    'ism.server.data.api',
-    'ism.server.data.assets',
-    'ism.server.data.corp',
-    'ism.server.data.roles',
+    'ism.data.api',
+    'ism.data.assets',
+    'ism.data.corp',
+    'ism.data.roles',
 )

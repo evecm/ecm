@@ -5,7 +5,7 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-from ism.server.data.corp.models import Hangar, Wallet
+from ism.data.corp.models import Hangar, Wallet
 
 from django.db import models
 

@@ -5,10 +5,10 @@ Created on 9 feb. 2010
 @author: diabeteman
 '''
 from django.db import transaction
-from ism.server.data.roles.models import Member, MemberDiff
-from ism.server.logic.api import connection
-from ism.server.logic.api.connection import API
-from ism.server.logic.parsers.utils import checkApiVersion
+from ism.data.roles.models import Member, MemberDiff
+from ism.core.api import connection
+from ism.core.api.connection import API
+from ism.core.parsers.utils import checkApiVersion
 from datetime import datetime
 
 DEBUG = False # DEBUG mode
