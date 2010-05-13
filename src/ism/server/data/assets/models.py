@@ -21,8 +21,8 @@ class DbAsset(models.Model):
     singleton = models.BooleanField(default=False) # true if assembled 
     hasContents = models.BooleanField(default=False) # true if item container
 
-    def __init__(self, itemID=None, locationID=0, hangarID=0, container1=0, container2=0, 
-                 typeID=0, quantity=0, flag=0, singleton=0, hasContents=False):
+    def __init__(self, itemID, locationID=0, hangarID=0, container1=None, container2=None, 
+                 typeID=0, quantity=0, flag=0, singleton=False, hasContents=False):
         self.h = None
         self.itemID = itemID
         self.locationID = locationID
@@ -37,7 +37,7 @@ class DbAsset(models.Model):
 
     def __hash__(self):
         if not self.h : 
-            self.h = self.locationID + self.hangarID + self.typeID + self.quantity
+            self.h = self.locationID - self.typeID + self.hangarID * self.quantity
         return self.h
 
     def __eq__(self, other):

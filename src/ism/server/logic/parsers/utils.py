@@ -35,3 +35,29 @@ def checkApiVersion(version):
     if version != API_VERSION:
         print version
         raise WrongApiVersion(version)
+    
+#------------------------------------------------------------------------------   
+def calcDiffs(newItems, oldItems):
+    """
+    Quick way to compare 2 hashtables.
+    
+    This method returns 2 lists, added and removed items 
+    when comparing the old and the new set
+    """
+    
+    removed  = []
+    added    = []
+
+    for a in oldItems.values():
+        try:
+            newItems[a] # is a still in the newItems?
+        except KeyError: # KeyError -> a has disappeared
+            removed.append(a)
+    for a in newItems.values():
+        try:
+            oldItems[a] # was a in the oldItems already?
+        except KeyError: # KeyError -> a is new
+            added.append(a)
+
+    return removed, added
+

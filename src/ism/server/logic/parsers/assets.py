@@ -10,7 +10,7 @@ from ism.server.data.assets.models import DbAsset, DbAssetDiff
 from ism.server.logic.api import connection
 from ism.server.logic.api.connection import API
 from django.db import transaction
-from ism.server.logic.parsers.utils import checkApiVersion
+from ism.server.logic.parsers.utils import checkApiVersion, calcDiffs
 from ism.server.logic.assets.constants import STATIONS_IDS, DELIVERIES_FLAG, OFFICE_TYPEID,\
                                               HANGAR_FLAG, DELIVERIES_HANGAR_ID, BOOKMARK_TYPEID,\
                                               NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
@@ -31,6 +31,9 @@ def update(debug=False):
     DEBUG = debug
     
     try:
+        if DEBUG : 
+            import time
+            start = time.time()
         api = connection.connect(debug=debug)
         apiAssets = api.corp.AssetList(characterID=API.CHAR_ID)
         checkApiVersion(apiAssets._meta.version)
@@ -40,14 +43,15 @@ def update(debug=False):
         if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
         if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
         
-        if DEBUG : print "fetching old assets from the database..."
+        if DEBUG : print "fetching old assets from the database...",
         oldItems = {}
         for a in DbAsset.objects.all():
             oldItems[a] = a
         
         newItems = {}
-
-        if DEBUG : print "parsing api response..."
+        if DEBUG : print "%d assets fetched" % len(oldItems.keys())
+        
+        if DEBUG : print "parsing api response...",
         for row in apiAssets.assets :
             if row.locationID >= STATIONS_IDS :
                 if row.typeID == BOOKMARK_TYPEID :
@@ -58,6 +62,7 @@ def update(debug=False):
                     isOffice(office=row, newItems=newItems)
                 elif row.flag in HANGAR_FLAG.keys() :
                     isInHangar(item=row, newItems=newItems)
+        if DEBUG : print "%d assets parsed" % len(newItems.keys())
         
         if len(oldItems) != 0 :
             if DEBUG : print "computing diffs since last asset scan..."
@@ -65,37 +70,21 @@ def update(debug=False):
             if DEBUG : print "saving changes to the database..."
             for assetDiff in diffs : assetDiff.save()
             DbAsset.objects.all().delete()
-            for asset in newItems.values() : asset.save()
-        else :
-            # 1st import, no diff to write
-            if DEBUG : print "saving data to the database..."
-            for asset in newItems : asset.save()
+        for asset in newItems.values() : asset.save()
             
+        if DEBUG : print "saving data to the database...",
         transaction.commit()
-        if DEBUG: print "DATABASE UPDATED!"
+        if DEBUG: print "done"
+        if DEBUG : print "computed in %f seconds" % (time.time() - start)
     except:
         transaction.rollback()
         raise
     
 #------------------------------------------------------------------------------
 def getAssetDiffs(newItems, oldItems, date):
-    removed, added = __calcDiffs(newItems, oldItems)
+    removed, added = calcDiffs(newItems, oldItems)
     return __storeDiffs(removed, added, date)
     
-def __calcDiffs(newItems, oldItems):
-    removed  = []
-    added    = []
-
-    for a in oldItems.values():
-        try:    newItems[a]
-        except: removed.append(a)
-    for a in newItems.values():
-        try:    oldItems[a]
-        except: added.append(a)
-
-    return removed, added
-
-
 def __storeDiffs(removed, added, date):
     diffs    = []
     if DEBUG:

@@ -19,9 +19,21 @@ class Member(models.Model):
     corpDate = models.PositiveIntegerField(db_index=True, default=0)
     lastLogin = models.PositiveIntegerField(db_index=True, default=0)
     lastLogoff = models.PositiveIntegerField(db_index=True, default=0)
-    locationID = models.IntegerField()
+    locationID = models.IntegerField(default=0)
     ship = models.CharField(max_length=100, default="")
 
+    def __init__(self, characterID, name="", nickname="", baseID=0, corpDate=0, 
+                 lastLogin=0, lastLogoff=0, locationID=0, ship=""):
+        self.characterID = characterID
+        self.name = name
+        self.nickname = nickname
+        self.baseID = baseID
+        self.corpDate = corpDate
+        self.lastLogin = lastLogin
+        self.lastLogoff = lastLogoff
+        self.locationID = locationID
+        self.ship = ship
+    
     def getTitles(self):
         t_mem = TitleMembership.objects.filter(characterID=self.characterID)
         ids = [ t.titleID for t in t_mem ]
@@ -46,6 +58,9 @@ class Member(models.Model):
         for r in roles: lvl += r.getAccessLvl()
         return lvl
     
+    def __hash__(self):
+        return self.characterID
+
     def __eq__(self, other):
         return self.characterID == other.characterID
 
@@ -57,6 +72,9 @@ class Member(models.Model):
 class RoleType(models.Model):
     typeName = models.CharField(max_length=64, unique=True)
     dispName = models.CharField(max_length=64)
+    
+    def __hash__(self):
+        return self.id
     
     def __eq__(self, other):
         return self.id == other.id
@@ -85,6 +103,9 @@ class Title(models.Model):
         for r in roles : lvl += r.getAccessLvl()
         return lvl
     
+    def __hash__(self):
+        return self.titleID
+    
     def __eq__(self, other):
         return self.titleID == other.titleID
     
@@ -109,6 +130,9 @@ class Role(models.Model):
         elif self.wallet: return self.wallet.accessLvl
         else:             return self.accessLvl
     
+    def __hash__(self):
+        return self.id
+    
     def __eq__(self, other):
         return self.id == other.id
 
@@ -119,6 +143,16 @@ class Role(models.Model):
 class RoleMembership(models.Model):
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
+    
+    def __init__(self, member, role):
+        self.member = member
+        self.role = role
+        self.h = None
+
+    def __hash__(self):
+        if not self.h:
+            self.h = self.member.characterID * self.role.id
+        return self.h
     
     def __eq__(self, other):
         return self.member == other.member and self.role == other.role
@@ -131,6 +165,16 @@ class TitleMembership(models.Model):
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
 
+    def __init__(self, member, title):
+        self.member = member
+        self.title = title
+        self.h = None
+        
+    def __hash__(self):
+        if not self.h:
+            self.h = self.member.characterID * self.title.titleID
+        return self.h
+    
     def __eq__(self, other):
         return self.member == other.member and self.title == other.title
     
@@ -141,6 +185,16 @@ class TitleMembership(models.Model):
 class TitleComposition(models.Model):
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
+    
+    def __init__(self, title, role):
+        self.title = title
+        self.role = role
+        self.h = None
+        
+    def __hash__(self):
+        if not self.h:
+            self.h = self.title.titleID + self.role.id 
+        return self.h 
     
     def __eq__(self, other):
         return self.title.titleID == other.title.titleID and self.role.id == other.role.id

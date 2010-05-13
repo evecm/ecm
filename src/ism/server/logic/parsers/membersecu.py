@@ -10,7 +10,7 @@ from ism.server.logic.api import connection
 from ism.server.logic.api.connection import API
 from ism.server.logic.parsers import utils
 from django.db import transaction
-from ism.server.logic.parsers.utils import checkApiVersion
+from ism.server.logic.parsers.utils import checkApiVersion, calcDiffs
 
 from datetime import datetime
 
@@ -40,19 +40,29 @@ def update(debug=False):
         if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
         if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
         
-
-        newRoleList = []
-        newTitleList = []
+        oldRoles  = {}
+        oldTitles = {}
+        
         # we fetch the old data from the database
-        oldRoleList = list(RoleMembership.objects.all())
-        oldTitleList = list(TitleMembership.objects.all())
+        for role in RoleMembership.objects.all():
+            oldRoles[role] = role
+        for title in TitleMembership.objects.all():
+            oldTitles[title] = title
+        
+        newRoles  = {}
+        newTitles = {}
         
         for member in memberSecuApi.member:
-            newRoleList.extend(parseOneMemberRoles(member))
-            newTitleList.extend(parseOneMemberTitles(member))
+            # A.update(B) works as a merge of 2 hashtables A and B in A
+            # if a key is already present in A, it takes B's value
+            newRoles.update(parseOneMemberRoles(member)) 
+            newTitles.update(parseOneMemberTitles(member))
         
-        storeRoleDiffs(oldList=oldRoleList, newList=newRoleList, date=currentTime)
-        storeTitleDiffs(oldList=oldTitleList, newList=newTitleList, date=currentTime)
+        # Store role changes 
+        storeRoles(currentTime, oldRoles, newRoles)
+        
+        # Store title changes 
+        storeTitles(currentTime, oldTitles, newTitles)
         
         if DEBUG : print "saving data to the database..."
         transaction.commit()
@@ -63,7 +73,7 @@ def update(debug=False):
 
 #------------------------------------------------------------------------------
 def parseOneMemberRoles(member):
-    roleList = []
+    roles = {}
     
     ROLE_TYPES = utils.roleTypes()
     ALL_ROLES  = utils.allRoles()
@@ -78,28 +88,27 @@ def parseOneMemberRoles(member):
             # we have to resolve the global role id from the category id and the role sub id.
             globalRoleID = ALL_ROLES[(roleSubID, roleCategory.id)].id
             # then we can create a new membership item for the current member and this role
-            roleList.append(RoleMembership(member_id=memberID, role_id=globalRoleID))
+            membership = RoleMembership(member_id=memberID, role_id=globalRoleID)
+            roles[membership] = membership
     
-    return roleList
+    return roles
 
 #------------------------------------------------------------------------------
 def parseOneMemberTitles(member):
-    titleList = []
+    titles = {}
     
     # we get the character ID so we can link the memberships to him
     memberID = member["characterID"]
     
     for title in member["titles"] :
         titleID = title["titleID"]
-        titleList.append(TitleMembership(member_id=memberID, title_id=titleID))
+        membership = TitleMembership(member_id=memberID, title_id=titleID)
+        titles[membership] = membership
             
-    return titleList
+    return titles
 
 #------------------------------------------------------------------------------
-def getRoleMemberDiffs(newList, oldList, date):
-    removed  = [ r for r in oldList if r not in newList ]
-    added    = [ r for r in newList if r not in oldList ]
-    
+def __storeRoleDiffs(date, removed, added):
     diffs    = []
     if DEBUG:
         print "REMOVED ROLES:"
@@ -119,55 +128,58 @@ def getRoleMemberDiffs(newList, oldList, date):
                                     new=True, date=date))
         
     return diffs
-    
+
+def getRoleMemberDiffs(newTitles, oldTitles, date):
+    removed, added = calcDiffs(newItems=newTitles, oldItems=oldTitles)
+    return __storeRoleDiffs(date, removed, added)
 #------------------------------------------------------------------------------
-def getTitleMemberDiffs(newList, oldList, date):
-    removed  = [ t for t in oldList if t not in newList ]
-    added    = [ t for t in newList if t not in oldList ]
-    
-    diffs    = []
+def __storeTitleDiffs(date, removed, added):
+    diffs = []
     if DEBUG:
         print "REMOVED TITLES:"
-        if not removed : print "(none)"
+        if not removed: print "(none)"
     for remtitle in removed:
         if DEBUG: print "- " + unicode(remtitle)
-        diffs.append(TitleMemberDiff(title_id  = remtitle.title_id, 
-                                     member_id = remtitle.member_id, 
+        diffs.append(TitleMemberDiff(title_id=remtitle.title_id, 
+                                     member_id=remtitle.member_id, 
                                      new=False, date=date))
+    
     if DEBUG:
         print "ADDED TITLES:"
-        if not added : print "(none)"
+        if not added: print "(none)"
     for addtitle in added:
         if DEBUG: print "+ " + unicode(addtitle)
-        diffs.append(TitleMemberDiff(title_id  = addtitle.title_id, 
-                                     member_id = addtitle.member_id, 
+        diffs.append(TitleMemberDiff(title_id=addtitle.title_id, 
+                                     member_id=addtitle.member_id, 
                                      new=True, date=date))
-        
+    
     return diffs
 
+def getTitleMemberDiffs(newTitles, oldTitles, date):
+    removed, added = calcDiffs(newItems=newTitles, oldItems=oldTitles)
+    return __storeTitleDiffs(date, removed, added)
 #------------------------------------------------------------------------------
-def storeRoleDiffs(oldList, newList, date):
-    if len(oldList) != 0 :
-        diffs = getRoleMemberDiffs(newList, oldList, date)
-        if diffs :
-            for d in diffs: d.save()
+def storeRoles(date, oldRoles, newRoles):
+    if len(oldRoles) != 0:
+        roleDiffs = getRoleMemberDiffs(date, oldRoles, newRoles)
+        if roleDiffs:
+            for d in roleDiffs: d.save()
             RoleMembership.objects.all().delete()
-            for rm in newList: rm.save()
+            for rm in newRoles.values(): rm.save()
         # if no diff, we do nothing
     else:
         # 1st import, no diff to write
-        for rm in newList: rm.save()
+        for rm in newRoles.values(): rm.save()
 
 #------------------------------------------------------------------------------
-def storeTitleDiffs(oldList, newList, date):
-    if len(oldList) != 0 :
-        diffs = getTitleMemberDiffs(newList, oldList, date)
-        if diffs :
-            for d in diffs: d.save()
+def storeTitles(date, oldTitles, newTitles):
+    if len(oldTitles) != 0:
+        titleDiffs = getTitleMemberDiffs(newTitles, oldTitles, date)
+        if titleDiffs:
+            for d in titleDiffs: d.save()
             TitleMembership.objects.all().delete()
-            for tm in newList: tm.save()
+            for tm in newTitles.values(): tm.save()
         # if no diff, we do nothing
     else:
         # 1st import, no diff to write
-        for tm in newList: tm.save()
-
+        for tm in newTitles.values(): tm.save()
