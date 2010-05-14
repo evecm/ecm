@@ -59,7 +59,6 @@ class DbAssetDiff(models.Model):
     date = models.PositiveIntegerField()
     new = models.BooleanField()
     
-
 #------------------------------------------------------------------------------
 class Outpost(models.Model):
     stationID = models.PositiveIntegerField(primary_key=True)
@@ -71,3 +70,5 @@ class Outpost(models.Model):
     
     def __unicode__(self):
         return self.stationName
+    
+    

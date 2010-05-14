@@ -1,0 +1,220 @@
+﻿
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<!--  ICE Security Management     -->
+<!--  Date:    May 14, 2010       -->
+<!--  Author:  diabeteman         -->
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="cache-control" content="no-cache" />
+  <meta http-equiv="expires" content="3600" />
+  <meta name="revisit-after" content="2 days" />
+  <meta name="author" content="diabeteman" />
+  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="./css/layout1_setup.css" />
+  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="./css/layout1_text.css" />
+  <script type="text/javascript" src="/media/js/ieflickerhack.js"></script>  
+  <link rel="icon" type="image/png" href="/media/img/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="/media/img/favicon.png" />
+  <title>{% block title %}ICE Security Management{% endblock %}</title>
+</head>
+
+<!-- Global IE fix to avoid layout crash when single word size wider than column width -->
+<!--[if IE]><style type="text/css"> body {word-wrap: break-word;}</style><![endif]-->
+
+<body>
+  <!-- Main Page Container -->
+  <div class="page-container">
+
+    <!-- A. HEADER -->      
+    <div class="header">
+      
+      <!-- A.1 HEADER MIDDLE -->
+      <div class="header-middle">    
+   
+        <!-- Sitelogo and sitename -->
+        <a class="sitelogo" href="/" title="Go to Start page"></a>
+        <div class="sitename">
+          <h1><a href="/" title="Go to Start page">ICE Security Management</span></a></h1>
+          <h2>ICE is Coming to EVE</h2>
+        </div>
+
+        <div class="nav0">Logged in as <b>{{user.name}}</b></div>
+        
+        <!-- header links -->
+        <div class="nav1">
+          <ul>
+            <li><a href="/logout" title="Log out from ISM">Logout</a></li>
+            <li><a href="/admin" title="Restricted area :-)">Administration</a></li>
+            <li><a href="mailto:postmaster@ism.com" title="Contact the administrator">Contact</a></li>
+          </ul>
+        </div>              
+      </div>
+      
+      <!-- A.2 HEADER BOTTOM -->
+      <div class="header-bottom">
+      
+        <!-- Navigation Level 2 (Drop-down menus) -->
+        <div class="nav2">
+	
+          <!-- Navigation item -->
+          <ul>
+            <li><a href="/">Home</a></li>
+          </ul>
+          
+          <!-- Navigation item -->
+          <ul>
+            <li><a href="#">Page Layouts<!--[if IE 7]><!--></a><!--<![endif]-->
+              <!--[if lte IE 6]><table><tr><td><![endif]-->
+                <ul>
+                  <li><a href="layout1.html">Layout-1 (1-col)</a></li>
+                  <li><a href="layout2.html">Layout-2 (2-col)</a></li>
+                  <li><a href="layout3.html">Layout-3 (2-col)</a></li>
+                  <li><a href="layout4.html">Layout-4 (3-col)</a></li>
+                  <li><a href="layout5.html">Layout-5 (3-col)</a></li>                                    
+                </ul>
+              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
+            </li>
+          </ul>          
+
+          <!-- Navigation item -->
+          <ul>
+            <li><a href="#">Header Layouts<!--[if IE 7]><!--></a><!--<![endif]-->
+              <!--[if lte IE 6]><table><tr><td><![endif]-->
+                <ul>
+                  <li><a href="header1.html">Header-1 (T+M+B)</a></li>
+                  <li><a href="header2.html">Header-2 (T+M)</a></li>
+                  <li><a href="header3.html">Header-3 (T+B)</a></li>
+                  <li><a href="header4.html">Header-4 (M+B)</a></li>
+                  <li><a href="header5.html">Header-5 (T)</a></li>
+                  <li><a href="header6.html">Header-6 (M)</a></li>
+                  <li><a href="header7.html">Header-7 (B)</a></li>
+                </ul>
+              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
+            </li>
+          </ul>          
+        </div>
+	  </div>
+
+      <!-- A.3 HEADER BREADCRUMBS -->
+
+      <!-- Breadcrumbs -->
+      <div class="header-breadcrumbs">
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Webdesign</a></li>
+          <li><a href="#">Templates</a></li>
+          <li>Multiflex-3</li>
+        </ul>
+
+        <!-- Search form -->                  
+        <div class="searchform">
+          <form action="index.html" method="get">
+            <fieldset>
+              <input name="field" class="field"  value=" Search..." />
+              <input type="submit" name="button" class="button" value="GO!" />
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- B. MAIN -->
+    <div class="main">
+  
+      <!-- B.1 MAIN CONTENT -->
+      <div class="main-content">
+        
+        <!-- Pagetitle -->
+        <h1 class="pagetitle">Multiflex-3 / Layout-1</h1>
+
+        <!-- Content unit - One column -->
+        <h1 class="block">3 - Tables</h1>
+        <div class="column1-unit">
+          <table>
+            <tr><th class="top" scope="col">Heading 1</th><th class="top" scope="col">Heading 2</th><th class="top" scope="col">Heading 3</th><th class="top" scope="col">Heading 4</th></tr>
+            <tr><th scope="row">Category 1</th><td>Data</td><td>Data</td><td>Data</td></tr>
+            <tr><th scope="row">Category 2</th><td>Data</td><td>Data</td><td>Data</td></tr>
+            <tr><th scope="row">Category 3</th><td>Data</td><td>Data</td><td>Data</td></tr>
+          </table>
+          <p class="caption"><strong>Table x.x.</strong> Caption</p>
+        </div>          
+        <hr class="clear-contentunit" />        
+                                             
+        <!-- Content unit - One column -->
+        <h1 class="block">4 - Paragraph text</h1>
+        <div class="column1-unit">
+          <h1>Heading h1</h1>
+          <h3>Heading h3</h3>
+          <h2>Heading h2</h2>
+          <h3>Heading h3</h3>
+          <h4>Heading h4</h4>
+          <h5>Heading h5</h5>                                
+          <h6>Heading h6</h6>
+                
+          <h5>Paragraph text</h5>
+          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+
+          <h5>Detail text line</h5>
+          <p class="details">Read more  ... </p>
+							
+          <h5>Quote</h5>
+          <blockquote>
+            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+          </blockquote>
+
+          <h5>Bullet list</h5>
+          <ul>
+            <li>Bullet 1</li>
+            <li>Bullet 2</li>
+          </ul>
+
+          <h5>Ordered list</h5>
+          <ol>
+            <li>Fact 1</li>
+            <li>Fact 2</li>
+          </ol>
+
+          <h5>Text orientation</h5>
+          <p>Text left.</p>
+          <p class="center">Text center.</p>
+          <p class="right">Text right.</p>
+        </div>
+        <hr class="clear-contentunit" />        
+
+        <!-- Content unit - One column -->
+        <h1 class="block">7 - Miscellaneous</h1>        
+        <div class="column1-unit">
+          <h1>Login form</h1>
+          <div class="loginform">
+            <form method="post" action="index.html"> 
+              <p><input type="hidden" name="rememberme" value="0" /></p>
+              <fieldset>
+                <p><label for="username_1" class="top">User:</label><br />
+                  <input type="text" name="username_1" id="username_1" tabindex="1" class="field" onkeypress="return webLoginEnter(document.loginfrm.password);" value="" /></p>
+    	        <p><label for="password_1" class="top">Password:</label><br />
+                  <input type="password" name="password_1" id="password_1" tabindex="2" class="field" onkeypress="return webLoginEnter(document.loginfrm.cmdweblogin);" value="" /></p>
+    	        <p><input type="checkbox" name="checkbox_1" id="checkbox_1" class="checkbox" tabindex="3" size="1" value="" onclick="webLoginCheckRemember()" /><label for="checkbox_1" class="right">Remember me</label></p>
+    	        <p><input type="submit" name="cmdweblogin" class="button" value="LOGIN"  /></p>
+	            <p><a href="#" onclick="webLoginShowForm(2);return false;" id="forgotpsswd_1">Password forgotten?</a></p>
+  	        </fieldset>
+            </form>
+          </div>
+        </div>      
+      </div>
+    </div>
+      
+    <!-- C. FOOTER AREA -->      
+
+    <div class="footer">
+      <p>Copyright &copy; 2010 ICE is Coming to EVE | All Rights Reserved</p>
+      <p class="credits">Design by <a href="http://www.diabeteman.com/">diabeteman</a> | Powered by <a href="http://www.python.org/">Python</a> and <a href="http://www.djangoproject.com/">Django</a>
+    </div>      
+  </div> 
+  
+</body>
+</html>
+
+
+
