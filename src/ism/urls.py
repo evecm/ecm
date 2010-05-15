@@ -9,22 +9,21 @@ Created on 24 jan. 2010
 from ism.view import home
 from ism import settings
 
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls.defaults import patterns, include
 from django.views import static
-
 from django.contrib import admin
-from django.contrib import databrowse
+from django.contrib import auth
 admin.autodiscover()
 
 
 urlpatterns = patterns('',
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
-    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-
+    (r'^%s$' % settings.LOGIN_URL[1:], 'django.contrib.auth.views.login', {'template_name' : 'login.html'}),
     # ISM views
     (r'^$', home.home),
-    (r'^media/(?P<path>.*)$', static.serve, {'document_root' : settings.MEDIA_ROOT, 'show_indexes' : True}),
+    (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], static.serve, {'document_root' : settings.MEDIA_ROOT}),
 )

@@ -1,4 +1,4 @@
-﻿
+﻿<!-- {% block page %}{% endblock %} -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
@@ -17,12 +17,11 @@
   <script type="text/javascript" src="{{ MEDIA_URL }}js/ieflickerhack.js"></script>  
   <link rel="icon" type="image/png" href="{{ MEDIA_URL }}img/favicon.png" />
   <link rel="shortcut icon" type="image/png" href="{{ MEDIA_URL }}img/favicon.png" />
-  <title>{% block title %}ICE Security Management{% endblock %}</title>
+  <title>ISM - {{ PAGE_TITLE }}</title>
 </head>
 
 <!-- Global IE fix to avoid layout crash when single word size wider than column width -->
 <!--[if IE]><style type="text/css"> body {word-wrap: break-word;}</style><![endif]-->
-
 <body>
   <!-- Main Page Container -->
   <div class="page-container">
@@ -40,12 +39,20 @@
           <h2>ICE is Coming to EVE</h2>
         </div>
 
-        <div class="nav0">Logged in as <b>{{user}}</b></div>
-        
+        <!-- logged user -->
+        <div class="nav0">
+            {% if user.is_authenticated %}Logged in as <b>{{ user.username }}</b>
+            {% else %}Please log in.
+            {% endif %}
+        </div>
         <!-- header links -->
         <div class="nav1">
           <ul>
+            {% if USER %}
+            <li><a href="/login" title="Login to ISM">Logout</a></li>
+            {% else %}
             <li><a href="/logout" title="Log out from ISM">Logout</a></li>
+            {% endif %}
             <li><a href="/admin" title="Restricted area :-)">Administration</a></li>
             <li><a href="mailto:postmaster@ism.com" title="Contact the administrator">Contact</a></li>
           </ul>
@@ -65,14 +72,11 @@
           
           <!-- Navigation item -->
           <ul>
-            <li><a href="#">Page Layouts<!--[if IE 7]><!--></a><!--<![endif]-->
+            <li><a href="/members">Members<!--[if IE 7]><!--></a><!--<![endif]-->
               <!--[if lte IE 6]><table><tr><td><![endif]-->
                 <ul>
-                  <li><a href="layout1.html">Layout-1 (1-col)</a></li>
-                  <li><a href="layout2.html">Layout-2 (2-col)</a></li>
-                  <li><a href="layout3.html">Layout-3 (2-col)</a></li>
-                  <li><a href="layout4.html">Layout-4 (3-col)</a></li>
-                  <li><a href="layout5.html">Layout-5 (3-col)</a></li>                                    
+                  <li><a href="/members/list">Member List</a></li>
+                  <li><a href="/members/history">History</a></li>
                 </ul>
               <!--[if lte IE 6]></td></tr></table></a><![endif]-->
             </li>
@@ -80,20 +84,42 @@
 
           <!-- Navigation item -->
           <ul>
-            <li><a href="#">Header Layouts<!--[if IE 7]><!--></a><!--<![endif]-->
+            <li><a href="/roles">Roles<!--[if IE 7]><!--></a><!--<![endif]-->
               <!--[if lte IE 6]><table><tr><td><![endif]-->
                 <ul>
-                  <li><a href="header1.html">Header-1 (T+M+B)</a></li>
-                  <li><a href="header2.html">Header-2 (T+M)</a></li>
-                  <li><a href="header3.html">Header-3 (T+B)</a></li>
-                  <li><a href="header4.html">Header-4 (M+B)</a></li>
-                  <li><a href="header5.html">Header-5 (T)</a></li>
-                  <li><a href="header6.html">Header-6 (M)</a></li>
-                  <li><a href="header7.html">Header-7 (B)</a></li>
+                  <li><a href="/roles/all">All Members</a></li>
+                  <li><a href="/roles/search">Search Members</a></li>
+                  <li><a href="/roles/changes">Changes</a></li>
                 </ul>
               <!--[if lte IE 6]></td></tr></table></a><![endif]-->
             </li>
-          </ul>          
+          </ul>      
+
+          <!-- Navigation item -->
+          <ul>
+            <li><a href="/titles">Titles<!--[if IE 7]><!--></a><!--<![endif]-->
+              <!--[if lte IE 6]><table><tr><td><![endif]-->
+                <ul>
+                  <li><a href="/titles/composition">Composition</a></li>
+                  <li><a href="/titles/changes">Changes</a></li>
+                </ul>
+              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
+            </li>
+          </ul>    
+
+          <!-- Navigation item -->
+          <ul>
+            <li><a href="/assets">Assets<!--[if IE 7]><!--></a><!--<![endif]-->
+              <!--[if lte IE 6]><table><tr><td><![endif]-->
+                <ul>
+                  <li><a href="/assets/stations">Stations</a></li>
+                  <li><a href="/assets/search">Search</a></li>
+                  <li><a href="/assets/changes">Changes</a></li>
+                </ul>
+              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
+            </li>
+          </ul>    
+
         </div>
 	  </div>
 
@@ -102,22 +128,12 @@
       <!-- Breadcrumbs -->
       <div class="header-breadcrumbs">
         <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Webdesign</a></li>
-          <li><a href="#">Templates</a></li>
-          <li>Multiflex-3</li>
+          {% block breadcrumbs %}
+          {# insert a list of breadcrumbs here #}
+          {% endblock %}
         </ul>
-
-        <!-- Search form -->                  
-        <div class="searchform">
-          <form action="index.html" method="get">
-            <fieldset>
-              <input name="field" class="field"  value=" Search..." />
-              <input type="submit" name="button" class="button" value="GO!" />
-            </fieldset>
-          </form>
-        </div>
       </div>
+ 
     </div>
 
     <!-- B. MAIN -->
@@ -127,81 +143,11 @@
       <div class="main-content">
         
         <!-- Pagetitle -->
-        <h1 class="pagetitle">Multiflex-3 / Layout-1</h1>
-
-        <!-- Content unit - One column -->
-        <h1 class="block">3 - Tables</h1>
-        <div class="column1-unit">
-          <table>
-            <tr><th class="top" scope="col">Heading 1</th><th class="top" scope="col">Heading 2</th><th class="top" scope="col">Heading 3</th><th class="top" scope="col">Heading 4</th></tr>
-            <tr><th scope="row">Category 1</th><td>Data</td><td>Data</td><td>Data</td></tr>
-            <tr><th scope="row">Category 2</th><td>Data</td><td>Data</td><td>Data</td></tr>
-            <tr><th scope="row">Category 3</th><td>Data</td><td>Data</td><td>Data</td></tr>
-          </table>
-          <p class="caption"><strong>Table x.x.</strong> Caption</p>
-        </div>          
-        <hr class="clear-contentunit" />        
-                                             
-        <!-- Content unit - One column -->
-        <h1 class="block">4 - Paragraph text</h1>
-        <div class="column1-unit">
-          <h1>Heading h1</h1>
-          <h3>Heading h3</h3>
-          <h2>Heading h2</h2>
-          <h3>Heading h3</h3>
-          <h4>Heading h4</h4>
-          <h5>Heading h5</h5>                                
-          <h6>Heading h6</h6>
-                
-          <h5>Paragraph text</h5>
-          <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
-
-          <h5>Detail text line</h5>
-          <p class="details">Read more  ... </p>
-							
-          <h5>Quote</h5>
-          <blockquote>
-            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam at libero. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
-          </blockquote>
-
-          <h5>Bullet list</h5>
-          <ul>
-            <li>Bullet 1</li>
-            <li>Bullet 2</li>
-          </ul>
-
-          <h5>Ordered list</h5>
-          <ol>
-            <li>Fact 1</li>
-            <li>Fact 2</li>
-          </ol>
-
-          <h5>Text orientation</h5>
-          <p>Text left.</p>
-          <p class="center">Text center.</p>
-          <p class="right">Text right.</p>
-        </div>
-        <hr class="clear-contentunit" />        
-
-        <!-- Content unit - One column -->
-        <h1 class="block">7 - Miscellaneous</h1>        
-        <div class="column1-unit">
-          <h1>Login form</h1>
-          <div class="loginform">
-            <form method="post" action="index.html"> 
-              <p><input type="hidden" name="rememberme" value="0" /></p>
-              <fieldset>
-                <p><label for="username_1" class="top">User:</label><br />
-                  <input type="text" name="username_1" id="username_1" tabindex="1" class="field" onkeypress="return webLoginEnter(document.loginfrm.password);" value="" /></p>
-    	        <p><label for="password_1" class="top">Password:</label><br />
-                  <input type="password" name="password_1" id="password_1" tabindex="2" class="field" onkeypress="return webLoginEnter(document.loginfrm.cmdweblogin);" value="" /></p>
-    	        <p><input type="checkbox" name="checkbox_1" id="checkbox_1" class="checkbox" tabindex="3" size="1" value="" onclick="webLoginCheckRemember()" /><label for="checkbox_1" class="right">Remember me</label></p>
-    	        <p><input type="submit" name="cmdweblogin" class="button" value="LOGIN"  /></p>
-	            <p><a href="#" onclick="webLoginShowForm(2);return false;" id="forgotpsswd_1">Password forgotten?</a></p>
-  	        </fieldset>
-            </form>
-          </div>
-        </div>      
+        <h1 class="pagetitle">{{ PAGE_TITLE }}</h1>
+        {% block main_content %}
+        {# main page content here #}
+        {% endblock %}
+         
       </div>
     </div>
       
@@ -215,6 +161,5 @@
   
 </body>
 </html>
-
 
 

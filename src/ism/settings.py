@@ -11,7 +11,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('diabeteman', 'diabeteman@gmail.com'),
+    ('admin', 'admin@ism.com'),
 )
 
 MANAGERS = ADMINS
@@ -47,7 +47,7 @@ MEDIA_ROOT = 'D:/dev/ice_security/src/ism/media/'
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "/media/"
+MEDIA_URL = "/static/"
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -71,7 +71,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'ism.urls'
-
+LOGIN_URL = '/login/'
 TEMPLATE_DIRS = (
     'D:/dev/ice_security/src/ism/templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
