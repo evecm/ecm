@@ -1,9 +1,43 @@
 {% extends "base.html" %}
 
+{% block headtitle %}Home{% endblock %}
+
 {% block breadcrumbs %}
-{# insert a list of breadcrumbs here #}
+<li>Home</li>
 {% endblock %}
 
 {% block main_content %}
-{# main page content here #}
+<h1 class="pagetitle">Last Member Moves</h1>
+
+<h1>New Members</h1>
+{% if last_corped_members %}
+<ul>
+{% for m in last_corped_members %}
+<li>                   <span class="bold">{{      m.name     }}</span>
+    {% if m.nickname %}<span class="italic"> ({{  m.nickname }})</span>{% endif %}
+                       <span class="time"> - {{   m.date     }}</span></li>
+{% endfor %}
+</ul>
+{% else %}
+<p>No new member in the database.</p>
+{% endif %}
+
+<h1>Resigned/Expelled Members</h1>
+{% if last_expelled_members %}
+<ul>
+{% for m in last_expelled_members %}
+<li>                   <span class="bold">{{      m.name     }}</span>
+    {% if m.nickname %}<span class="italic"> ({{  m.nickname }})</span>{% endif %}
+                       <span class="time"> - {{   m.date     }}</span></li>
+{% endfor %}
+<ul>
+{% else %}
+<p>No resigned/expelled member in the database.</p>
+{% endif %}
+
+
+<h1 class="pagetitle">Last Role Changes</h1>
+
+<h1 class="pagetitle">Last Title Changes</h1>
+
 {% endblock %}

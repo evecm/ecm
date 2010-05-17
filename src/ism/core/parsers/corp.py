@@ -10,7 +10,7 @@ from ism.core.api.connection import API
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from ism.core.parsers.utils import checkApiVersion
+from ism.core.parsers.utils import checkApiVersion, markUpdated
 
 from datetime import datetime
 
@@ -62,7 +62,10 @@ def update(debug=False):
                          taxRate         = corpApi.taxRate,      
                          memberLimit     = corpApi.memberLimit )
             corp.save()
-
+        
+        # we store the update time of the table
+        markUpdated(model=Corp, date_int=currentTime)
+        
         if DEBUG: 
             print "==============="
             print "= CORPORATION ="
@@ -88,6 +91,9 @@ def update(debug=False):
             except ObjectDoesNotExist: 
                 Hangar(hangarID=h_id, name=h_name).save()
         
+        # we store the update time of the table
+        markUpdated(model=Hangar, date_int=currentTime)
+        
         if DEBUG: print "WALLET DIVISIONS:"
         for walletDiv in corpApi.walletDivisions :
             w_id   = walletDiv.accountKey
@@ -102,6 +108,9 @@ def update(debug=False):
                     if DEBUG: print "   %s" % wallet.name
             except ObjectDoesNotExist: 
                 Wallet(walletID=w_id, name=w_name).save()
+        
+        # we store the update time of the table
+        markUpdated(model=Wallet, date_int=currentTime)
         
         # all ok
         if DEBUG : print "saving data to the database..."

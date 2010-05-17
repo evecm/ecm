@@ -10,7 +10,7 @@ from ism.core.api import connection
 from ism.core.api.connection import API
 from ism.core.parsers import utils
 from django.db import transaction
-from ism.core.parsers.utils import checkApiVersion, calcDiffs
+from ism.core.parsers.utils import checkApiVersion, calcDiffs, markUpdated
 
 from datetime import datetime
 
@@ -164,12 +164,20 @@ def storeRoles(date, oldRoles, newRoles):
         roleDiffs = getRoleMemberDiffs(date, oldRoles, newRoles)
         if roleDiffs:
             for d in roleDiffs: d.save()
+            # we store the update time of the table
+            markUpdated(model=RoleMemberDiff, date_int=date)
+            
             RoleMembership.objects.all().delete()
             for rm in newRoles.values(): rm.save()
+            # we store the update time of the table
+            markUpdated(model=RoleMembership, date_int=date)
+        
         # if no diff, we do nothing
     else:
         # 1st import, no diff to write
         for rm in newRoles.values(): rm.save()
+        # we store the update time of the table
+        markUpdated(model=RoleMembership, date_int=date)
 
 #------------------------------------------------------------------------------
 def storeTitles(date, oldTitles, newTitles):
@@ -177,9 +185,17 @@ def storeTitles(date, oldTitles, newTitles):
         titleDiffs = getTitleMemberDiffs(newTitles, oldTitles, date)
         if titleDiffs:
             for d in titleDiffs: d.save()
+            # we store the update time of the table
+            markUpdated(model=TitleMemberDiff, date_int=date)
+            
             TitleMembership.objects.all().delete()
             for tm in newTitles.values(): tm.save()
+            # we store the update time of the table
+            markUpdated(model=TitleMembership, date_int=date)
         # if no diff, we do nothing
     else:
         # 1st import, no diff to write
         for tm in newTitles.values(): tm.save()
+        # we store the update time of the table
+        markUpdated(model=TitleMembership, date_int=date)
+        

@@ -12,12 +12,14 @@
   <meta http-equiv="expires" content="3600" />
   <meta name="revisit-after" content="2 days" />
   <meta name="author" content="diabeteman" />
-  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="{{ MEDIA_URL }}css/layout1_setup.css" />
-  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="{{ MEDIA_URL }}css/layout1_text.css" />
-  <script type="text/javascript" src="{{ MEDIA_URL }}js/ieflickerhack.js"></script>  
-  <link rel="icon" type="image/png" href="{{ MEDIA_URL }}img/favicon.png" />
-  <link rel="shortcut icon" type="image/png" href="{{ MEDIA_URL }}img/favicon.png" />
-  <title>ISM - {{ PAGE_TITLE }}</title>
+  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/layout1_setup.css" />
+  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/layout1_text.css" />
+  <script type="text/javascript" src="/static/js/jquery.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
+  <link rel="icon" type="image/png" href="/static/img/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="/static/img/favicon.png" />
+  <title>ISM - {% block headtitle %}{% endblock %}</title>
+  {% block header_scripts %}{% endblock %}
 </head>
 
 <!-- Global IE fix to avoid layout crash when single word size wider than column width -->
@@ -48,9 +50,7 @@
         <!-- header links -->
         <div class="nav1">
           <ul>
-            {% if USER %}
-            <li><a href="/login" title="Login to ISM">Logout</a></li>
-            {% else %}
+            {% if user.is_authenticated %}
             <li><a href="/logout" title="Log out from ISM">Logout</a></li>
             {% endif %}
             <li><a href="/admin" title="Restricted area :-)">Administration</a></li>
@@ -58,7 +58,7 @@
           </ul>
         </div>              
       </div>
-      
+      {% block menu %}
       <!-- A.2 HEADER BOTTOM -->
       <div class="header-bottom">
       
@@ -122,7 +122,7 @@
 
         </div>
 	  </div>
-
+      {% endblock %}
       <!-- A.3 HEADER BREADCRUMBS -->
 
       <!-- Breadcrumbs -->
@@ -141,13 +141,11 @@
   
       <!-- B.1 MAIN CONTENT -->
       <div class="main-content">
-        
         <!-- Pagetitle -->
-        <h1 class="pagetitle">{{ PAGE_TITLE }}</h1>
+        {% block pagetitle %}{% endblock %}
         {% block main_content %}
         {# main page content here #}
         {% endblock %}
-         
       </div>
     </div>
       

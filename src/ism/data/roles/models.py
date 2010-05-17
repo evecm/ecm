@@ -21,19 +21,7 @@ class Member(models.Model):
     lastLogoff = models.PositiveIntegerField(db_index=True, default=0)
     locationID = models.IntegerField(default=0)
     ship = models.CharField(max_length=100, default="")
-
-    def __init__(self, characterID, name="", nickname="", baseID=0, corpDate=0, 
-                 lastLogin=0, lastLogoff=0, locationID=0, ship=""):
-        self.characterID = characterID
-        self.name = name
-        self.nickname = nickname
-        self.baseID = baseID
-        self.corpDate = corpDate
-        self.lastLogin = lastLogin
-        self.lastLogoff = lastLogoff
-        self.locationID = locationID
-        self.ship = ship
-    
+ 
     def getTitles(self):
         t_mem = TitleMembership.objects.filter(characterID=self.characterID)
         ids = [ t.titleID for t in t_mem ]
@@ -63,6 +51,9 @@ class Member(models.Model):
 
     def __eq__(self, other):
         return self.characterID == other.characterID
+    
+    def __cmp__(self, other):
+        return cmp(self.name.lower(), other.name.lower())
 
     def __unicode__(self):
         return self.name
@@ -144,10 +135,7 @@ class RoleMembership(models.Model):
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
     
-    def __init__(self, member, role):
-        self.member = member
-        self.role = role
-        self.h = None
+    h = None
 
     def __hash__(self):
         if not self.h:
@@ -164,11 +152,8 @@ class RoleMembership(models.Model):
 class TitleMembership(models.Model):
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
-
-    def __init__(self, member, title):
-        self.member = member
-        self.title = title
-        self.h = None
+    
+    h = None
         
     def __hash__(self):
         if not self.h:
@@ -186,11 +171,8 @@ class TitleComposition(models.Model):
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
     
-    def __init__(self, title, role):
-        self.title = title
-        self.role = role
-        self.h = None
-        
+    h = None
+    
     def __hash__(self):
         if not self.h:
             self.h = self.title.titleID + self.role.id 

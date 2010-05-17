@@ -70,14 +70,29 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
+
+# file system cache backend path for unix
+#CACHE_BACKEND = 'file:///var/tmp/django_cache'
+# file system cache backend path for windows
+#CACHE_BACKEND = 'file://C:/Users/diabeteman/AppData/Local/Temp/django_cache'
+#NO CACHE FOR DEV USAGE
+CACHE_BACKEND = 'dummy://'
+
+
 ROOT_URLCONF = 'ism.urls'
 LOGIN_URL = '/login/'
+LOGOUT_URL = '/logout/'
 TEMPLATE_DIRS = (
     'D:/dev/ice_security/src/ism/templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.auth",
+)
+
+TEMPLATE_STRING_IF_INVALID = '%s'
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -93,4 +108,5 @@ INSTALLED_APPS = (
     'ism.data.assets',
     'ism.data.corp',
     'ism.data.roles',
+    'ism.data.common',
 )

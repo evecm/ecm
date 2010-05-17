@@ -27,7 +27,7 @@
 
 /* HEADER */
 .header {width:1000px; font-family:"trebuchet ms",arial,sans-serif;}
-.header-middle {width:1000px; height:90px; background:#1259a2; overflow:visible !important /*Firefox*/; overflow:hidden /*IE6*/;}
+.header-middle {width:1000px; height:90px; background:#1259a2 url(../img/header.png) no-repeat; overflow:visible !important /*Firefox*/; overflow:hidden /*IE6*/;}
 .header-bottom {width:1000px; height:40px; background:rgb(255,255,255);}
 .header-breadcrumbs {clear:both; width:1000px; padding:1.0em 0 1.5em 0;}
 

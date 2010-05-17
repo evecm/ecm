@@ -10,7 +10,7 @@ from ism.data.assets.models import DbAsset, DbAssetDiff
 from ism.core.api import connection
 from ism.core.api.connection import API
 from django.db import transaction
-from ism.core.parsers.utils import checkApiVersion, calcDiffs
+from ism.core.parsers.utils import checkApiVersion, calcDiffs, markUpdated
 from ism.core.assets.constants import STATIONS_IDS, DELIVERIES_FLAG, OFFICE_TYPEID,\
                                               HANGAR_FLAG, DELIVERIES_HANGAR_ID, BOOKMARK_TYPEID,\
                                               NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
@@ -67,10 +67,18 @@ def update(debug=False):
         if len(oldItems) != 0 :
             if DEBUG : print "computing diffs since last asset scan..."
             diffs = getAssetDiffs(newItems, oldItems, date=currentTime)
-            if DEBUG : print "saving changes to the database..."
-            for assetDiff in diffs : assetDiff.save()
+            if diffs:
+                for assetDiff in diffs : 
+                    assetDiff.save()
+                # we store the update time of the table
+                markUpdated(model=DbAssetDiff, date_int=currentTime)
             DbAsset.objects.all().delete()
         for asset in newItems.values() : asset.save()
+        
+        # we store the update time of the table
+        markUpdated(model=DbAsset, date_int=currentTime)
+        
+        
             
         if DEBUG : print "saving data to the database...",
         transaction.commit()

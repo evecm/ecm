@@ -8,7 +8,7 @@ from django.db import transaction
 from ism.data.roles.models import Member, MemberDiff
 from ism.core.api import connection
 from ism.core.api.connection import API
-from ism.core.parsers.utils import checkApiVersion
+from ism.core.parsers.utils import checkApiVersion, markUpdated
 from datetime import datetime
 
 DEBUG = False # DEBUG mode
@@ -47,14 +47,16 @@ def update(debug=False):
         
         if len(oldList) != 0 :
             diffs = getDiffs(newList, oldList, currentTime)
-            for d in diffs: d.save()
-            # to be sure to store the nicknames change, etc.
-            # even if there are no diff, we still overwrite the members 
+            if diffs:
+                for d in diffs: d.save()
+                # we store the update time of the table
+                markUpdated(model=MemberDiff, date_int=currentTime)
             Member.objects.all().delete()
-            for c in newList: c.save()
-        else:
-            # 1st import
-            for c in newList: c.save()
+            # to be sure to store the nicknames change, etc.
+            # even if there are no diff, we always overwrite the members 
+        for c in newList: c.save()
+        # we store the update time of the table
+        markUpdated(model=Member, date_int=currentTime)
             
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"

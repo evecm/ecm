@@ -12,9 +12,10 @@ from ism.core.api import connection
 from ism.core.api.connection import API
 from ism.core.exceptions import DatabaseCorrupted
 from ism.core.parsers import utils
-from ism.core.parsers.utils import checkApiVersion
+from ism.core.parsers.utils import checkApiVersion, markUpdated
 
 from datetime import datetime
+from ism.data.common.models import UpdateDate
 
 DEBUG = False # DEBUG mode
 
@@ -54,13 +55,19 @@ def update(debug=False):
             diffs = getDiffs(newList, oldList, currentTime)
             if diffs :
                 for d in diffs: d.save()
+                # we store the update time of the table
+                markUpdated(model=TitleCompoDiff, date_int=currentTime)
+                 
                 TitleComposition.objects.all().delete()
                 for c in newList: c.save()
+                # we store the update time of the table
+                markUpdated(model=TitleComposition, date_int=currentTime)
             # if no diff, we do nothing
         else:
             # 1st import
             for c in newList: c.save()
-            
+            # we store the update time of the table
+            markUpdated(model=TitleComposition, date_int=currentTime)
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
     except:

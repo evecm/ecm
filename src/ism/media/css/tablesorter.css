@@ -1,0 +1,15 @@
+/* tables */
+
+.main-content table.tablesorter thead tr .hdr {
+	background-image: url(../img/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+.main-content table.tablesorter thead tr .hdrSortUp {
+	background-image: url(../img/asc.gif);
+}
+.main-content table.tablesorter thead tr .hdrSortDown {
+	background-image: url(../img/desc.gif);
+}
+

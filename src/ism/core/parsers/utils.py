@@ -8,6 +8,12 @@ Created on 08 fev. 2010
 from ism.data.roles.models import RoleType, Role
 from ism.core.exceptions import WrongApiVersion
 from ism.constants import API_VERSION
+from ism.data.common.models import UpdateDate
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from ism.core.exceptions import DatabaseCorrupted
+from datetime import datetime
+
+
 
 _ROLE_TYPES = None
 _ALL_ROLES = None
@@ -61,3 +67,20 @@ def calcDiffs(newItems, oldItems):
 
     return removed, added
 
+#------------------------------------------------------------------------------   
+def markUpdated(model, date_int):
+    """
+    Tag a model's table in the database as 'updated'
+    With the update date and the previous update date as well.
+    """
+    date = datetime.fromtimestamp(date_int)
+    try:
+        update = UpdateDate.objects.get(model_name=model.__name__)
+        if not update.update_date == date:
+            update.prev_update = update.update_date
+            update.update_date = date
+            update.save()
+    except ObjectDoesNotExist:
+        update = UpdateDate(model_name=model.__name__, update_date=date).save()
+    except MultipleObjectsReturned:
+        raise DatabaseCorrupted

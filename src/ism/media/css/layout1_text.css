@@ -33,6 +33,10 @@
 .main-content p.right {text-align:right;}
 .main-content p.details {clear:both; margin:-0.25em 0 1.0em 0; line-height:1.0em; font-size:110%;}
 .main-content blockquote {clear:both; margin:0 30px 0.6em 30px; font-size:90%;}
+.bold{font-weight:bold;}
+.italic{font-style:italic;}
+.time{color:#aaa;}
+
 
 .main-content table {clear:both; width:900px; margin:2.0em 0 0.2em 20px; table-layout: fixed; border-collapse:collapse; empty-cells:show; background-color:rgb(233,232,244);}
 .main-content table th.top {height:3.5em; padding:0 7px 0 7px; empty-cells:show; background-color:rgb(175,175,175); text-align:left; color:rgb(255,255,255); font-weight:bold; font-size:110%;}
@@ -59,7 +63,7 @@ p.caption {clear:both; margin:0.5em 0 2.0em 20px; text-align:left; color:rgb(80,
 .contactform input.button {float:right; width:9.0em; margin-right:20px; padding:1px !important /*Non-IE6*/; padding:0 /*IE6*/; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:110%;}
 .contactform input.button:hover {cursor: pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
 
-.loginform {width:160px; margin:-10px 20px 0 20px;}
+.loginform {width:250px; margin:-10px 20px 0 20px; }
 .loginform p {clear:both; margin:0; padding:0;}
 .loginform fieldset {width:160px; border:none;}
 .loginform label.top {float:left; width:125px; margin:0 0 2px 0; font-size:110%;}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Home{% endblock %}
+
+
+
+{% block header_scripts %}
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/tablesorter.css" />
+<script type="text/javascript">
+$(document).ready(function() 
+    { 
+        $("#members_table").tablesorter( {sortList : [[0,0]]} , 
+                                        {cssHeader : "hdr"} ,
+                                           {cssAsc : "hdrSortUp"} ,
+                                          {cssDesc : "hdrSortDown"} ); 
+    } 
+);
+
+
+
+
+</script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li>Members</li>
+<li>List</li>
+{% endblock %}
+
+{% block main_content %}
+<p class="center">{{ member_list|length }} members found on {{ scan_date }}</p>
+
+<table id="members_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" width="16%">Name</th>
+      <th class="top" scope="col" width="24%">Nickname</th>
+      <th class="top" scope="col" width="10%">Corp Date</th>
+      <th class="top" scope="col" width="10%">Last Login</th>
+      <th class="top" scope="col" width="10%">Last Logoff</th>
+      <th class="top" scope="col" width="20%">Location</th>
+      <th class="top" scope="col" width="10%">Ship</th>
+    </tr>
+  </thead>
+  <tbody> 
+{% for m in member_list %}
+    <tr>
+      <th scope="row">{{ m.name }}</th>
+      <td>{{ m.nickname|truncatewords:"6" }}</td>
+      <td>{{ m.corpDate }}</td>
+      <td>{{ m.lastLogin }}</td>
+      <td>{{ m.lastLogoff }}</td>
+      <td>{{ m.location|truncatewords:"5" }}</td>
+      <td>{{ m.ship }}</td>
+    </tr>
+{% endfor %}
+  </tbody> 
+</table>
+
+{% endblock %}

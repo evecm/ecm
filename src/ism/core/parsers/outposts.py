@@ -5,7 +5,7 @@ Created on 18 apr. 2010
 @author: diabeteman
 '''
 from ism.core.api import connection
-from ism.core.parsers.utils import checkApiVersion
+from ism.core.parsers.utils import checkApiVersion, markUpdated
 
 from datetime import datetime
 from ism.data.assets.models import Outpost
@@ -36,6 +36,7 @@ def update(debug=False):
         if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
         
         if DEBUG : print "parsing api response..."
+        Outpost.objects.all().delete()
         for outpost in apiOutposts.outposts :
             Outpost(stationID=outpost.stationID,
                     stationName=outpost.stationName,
@@ -43,6 +44,8 @@ def update(debug=False):
                     solarSystemID=outpost.solarSystemID,
                     corporationID=outpost.corporationID,
                     corporationName=outpost.corporationName).save()
+        # we store the update time of the table
+        markUpdated(model=Outpost, date_int=currentTime)
                     
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"

@@ -21,19 +21,7 @@ class DbAsset(models.Model):
     singleton = models.BooleanField(default=False) # true if assembled 
     hasContents = models.BooleanField(default=False) # true if item container
 
-    def __init__(self, itemID, locationID=0, hangarID=0, container1=None, container2=None, 
-                 typeID=0, quantity=0, flag=0, singleton=False, hasContents=False):
-        self.h = None
-        self.itemID = itemID
-        self.locationID = locationID
-        self.hangarID = hangarID
-        self.container1 = container1
-        self.container2 = container2
-        self.typeID = typeID
-        self.quantity = quantity
-        self.flag = flag
-        self.singleton = singleton
-        self.hasContents = hasContents
+    h = None
 
     def __hash__(self):
         if not self.h : 

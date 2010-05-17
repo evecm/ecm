@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
 
-{% block breadcrumbs %}
-<li>Login</li>
-{% endblock %}
+{% block headtitle %}Login{% endblock %}
 
+{% block menu %}{% endblock %}
 
 {% block main_content %}
+
+{% block pagetitle %}{% endblock %}
 
 {% if form.errors %}
 <p>Your username and password didn't match. Please try again.</p>
