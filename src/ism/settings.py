@@ -17,7 +17,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'db/ISM.db'             # Or path to database file if using sqlite3.
+DATABASE_NAME = '/var/django/ism/db/ISM.db'             # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -43,11 +43,12 @@ USE_I18N = True
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 LOCAL_DEVELOPMENT = True
-MEDIA_ROOT = 'D:/dev/ice_security/src/ism/media/'
+MEDIA_ROOT = '/var/django/ism/media/'
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = "/static/"
+APPEND_SLASH=False
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -83,7 +84,7 @@ ROOT_URLCONF = 'ism.urls'
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'
 TEMPLATE_DIRS = (
-    'D:/dev/ice_security/src/ism/templates',
+    '/var/django/ism/templates',
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -92,7 +93,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.auth",
 )
 
-TEMPLATE_STRING_IF_INVALID = '%s'
+#TEMPLATE_STRING_IF_INVALID = '%s'
 
 INSTALLED_APPS = (
     'django.contrib.admin',

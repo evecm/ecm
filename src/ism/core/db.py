@@ -11,7 +11,6 @@ import sqlite3
 from ism.data.assets.models import Outpost
 
 
-CONN_EVE = sqlite3.connect(EVE_DB_FILE)
 
 QUERY_ONE_TYPENAME = 'SELECT typeName FROM invTypes WHERE typeID=%d;'
 QUERY_TYPENAMES = 'SELECT typeID, typeName FROM invTypes WHERE typeID IN %s;'
@@ -19,12 +18,14 @@ QUERY_STATION = 'SELECT stationName, stationTypeID FROM staStations WHERE statio
 QUERY_SYSTEM = 'SELECT solarSystemName FROM mapSolarSystems WHERE solarSystemID=%d;'
 
 def resolveTypeName(typeID):
+    CONN_EVE = sqlite3.connect(EVE_DB_FILE)
     cursor = CONN_EVE.cursor()
     cursor.execute(QUERY_ONE_TYPENAME % typeID)
     for row in cursor :
         return row[0]
     
 def resolveTypeNames(typeIDs):
+    CONN_EVE = sqlite3.connect(EVE_DB_FILE)
     cursor = CONN_EVE.cursor()
     cursor.execute(QUERY_TYPENAMES % str(typeIDs))
     names = {}
@@ -33,6 +34,7 @@ def resolveTypeNames(typeIDs):
     return names
     
 def resolveLocationName(locationID):
+    CONN_EVE = sqlite3.connect(EVE_DB_FILE)
     cursor = CONN_EVE.cursor()
     if locationID < STATIONS_IDS :
         cursor.execute(QUERY_SYSTEM % locationID)
