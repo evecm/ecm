@@ -18,7 +18,7 @@ from ism.core.assets.constants import STATIONS_IDS, DELIVERIES_FLAG, OFFICE_TYPE
 from datetime import datetime
 
 DEBUG = False # DEBUG mode
-RESULT = 
+
 #------------------------------------------------------------------------------
 @transaction.commit_manually
 def update(debug=False):
