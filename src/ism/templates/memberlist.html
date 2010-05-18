@@ -17,8 +17,24 @@ $(document).ready(function()
 );
 
 
-
-
+function filter (phrase, _id){
+	var words = phrase.value.toLowerCase().split(" ");
+	var table = document.getElementById(_id);
+	var ele;
+	for (var r = 1; r < table.rows.length; r++){
+		ele = table.rows[r].innerHTML.replace(/<[^>]+>/g,"");
+		var displayStyle = 'none';
+		for (var i = 0; i < words.length; i++) {
+			if (ele.toLowerCase().indexOf(words[i])>=0) {
+				displayStyle = '';
+			} else {
+				displayStyle = 'none';
+				break;
+			}
+		}
+		table.rows[r].style.display = displayStyle;
+	}
+}
 </script>
 {% endblock %}
 
@@ -30,6 +46,20 @@ $(document).ready(function()
 
 {% block main_content %}
 <p class="center">{{ member_list|length }} members found on {{ scan_date }}</p>
+
+
+<form class="filter">
+    <input 
+        type="text" 
+        name="filt" 
+        title="Type any string to filter out the lines in the table. The filter is not case sensitive and searches through all the columns." 
+        id="filterstring" 
+        value="Filter" 
+        onkeyup="filter(this, 'members_table', '1')" 
+        onclick="document.getElementById('filterstring').select()">
+    </input>
+</form>
+
 
 <table id="members_table">
   <thead> 
@@ -46,7 +76,7 @@ $(document).ready(function()
   <tbody> 
 {% for m in member_list %}
     <tr>
-      <th scope="row">{{ m.name }}</th>
+      <td class="left">{{ m.name }}</th>
       <td>{{ m.nickname|truncatewords:"6" }}</td>
       <td>{{ m.corpDate }}</td>
       <td>{{ m.lastLogin }}</td>

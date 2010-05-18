@@ -38,20 +38,114 @@
 .time{color:#aaa;}
 
 
-.main-content table {clear:both; width:900px; margin:2.0em 0 0.2em 20px; table-layout: fixed; border-collapse:collapse; empty-cells:show; background-color:rgb(233,232,244);}
-.main-content table th.top {height:3.5em; padding:0 7px 0 7px; empty-cells:show; background-color:rgb(175,175,175); text-align:left; color:rgb(255,255,255); font-weight:bold; font-size:110%;}
-.main-content table th {height:3.0em; padding:2px 20px 2px 7px; border-left:solid 2px rgb(255,255,255); border-right:solid 2px rgb(255,255,255); border-top:solid 2px rgb(255,255,255); border-bottom:solid 2px rgb(255,255,255); background-color:rgb(225,225,225); text-align:left; color:rgb(80,80,80); font-weight:bold; font-size:110%;}
-.main-content table td {height:3.0em; padding:2px 7px 2px 7px; border-left:solid 2px rgb(255,255,255); border-right:solid 2px rgb(255,255,255); border-top:solid 2px rgb(255,255,255); border-bottom:solid 2px rgb(255,255,255); background-color:rgb(225,225,225); text-align:left; font-weight:normal; color:rgb(80,80,80); font-size:110%;}
-p.caption {clear:both; margin:0.5em 0 2.0em 20px; text-align:left; color:rgb(80,80,80); font-size:110%;}
-.main-content table tr:hover * {background-color:rgb(210,210,210); }
-.main-content table tr:hover th.top { background-color:rgb(175,175,175); }
+/**********/
+/* TABLES */
+/**********/
+
+.main-content table {
+	width:100%;
+    margin-top:1.0em;
+    margin-bottom:0.2em;
+    border-collapse:collapse;
+    empty-cells:show;
+    font-size:110%;
+    background-color:rgb(233,233,233);
+}
+
+
+.main-content table thead tr .header {
+	height:3.5em;
+    padding:0 20px 0 7px;
+    border-collapse:collapse;
+    empty-cells:show;
+    text-align:left;
+    color:rgb(255,255,255);
+    font-weight:bold;
+	background-image: url(../img/sort-none.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+    background-color:rgb(175,175,175);
+	cursor: pointer;
+    font-family:verdana,arial,sans-serif;
+    border-left:solid 2px rgb(255,255,255);
+    border-right:solid 2px rgb(255,255,255);
+    border-top:solid 2px rgb(255,255,255);
+    border-bottom:solid 2px rgb(255,255,255);
+}
+
+.main-content table thead tr .headerSortUp {
+	background-image: url(../img/sort-asc.gif);
+	background-color:rgb(155,155,155);
+}
+
+.main-content table thead tr .headerSortDown {
+	background-image: url(../img/sort-desc.gif);
+	background-color:rgb(155,155,155);
+}
+
+.main-content table td.left {
+    height:3.0em;
+    border-left:solid 2px rgb(255,255,255);
+    border-right:solid 2px rgb(255,255,255);
+    border-top:solid 2px rgb(255,255,255);
+    border-bottom:solid 2px rgb(255,255,255);
+    text-align:left; color:rgb(80,80,80);
+    font-weight:bold;
+}
+
+.main-content table tr.row:hover {
+    background-color:#CCCCCC;
+}
+
+.main-content table tr.row {
+    background-color:#e1e1e1;
+}
+
+.main-content table tr.row-red {
+    background-color:#ffc4c4;
+}
+
+.main-content table tr.row-red:hover {
+    background-color:#ffa1a1;
+}
+
+.main-content table tr.row-green {
+    background-color: #cbf4cb;
+}
+.main-content table tr.row-green:hover {
+    background-color: #bae7ba;
+}
+
+.main-content table td {
+    height:3.0em;
+    padding:2px 7px 2px 7px;
+    border-left:solid 2px rgb(255,255,255);
+    border-right:solid 2px rgb(255,255,255);
+    border-top:solid 2px rgb(255,255,255);
+    border-bottom:solid 2px rgb(255,255,255);
+    text-align:left; font-weight:normal;
+    vertical-align:middle;
+    color:rgb(80,80,80);
+}
+.main-content table td img{
+	border:0px;
+    height:24px;
+    width:24px;
+    background-position:center;
+}}
 
 
 
 .main-content ul {list-style:none; margin:0.5em 0 1.0em 0;}
-.main-content ul li {margin:0 0 0.2em 2px; padding:0 0 0 12px; background:url(../img/bg_bullet_full_1.gif) no-repeat 0 0.5em; line-height:1.4em; font-size:120%;}
+.main-content ul li {margin:0 0 0.2em 2px; padding:0 0 0 12px; line-height:1.4em; font-size:120%;}
+.main-content ul li.green {background:url(../img/plus.png) no-repeat 0 0.5em;}
+.main-content ul li.red {background:url(../img/minus.png) no-repeat 0 0.5em;}
 .main-content ol {margin:0.5em 0 1.0em 20px !important /*Non-IE6*/; margin:0.5em 0 1.0em 25px /*IE6*/;}
 .main-content ol li {list-style-position:outside; margin:0 0 0.2em 0; line-height:1.4em; font-size:120%;}
+
+form.filter {height:2em;width:400px;margin-top:10px;color:rgb(160,160,160);font-size:110%;font-weight: bold;}
+form.filter input { border:1px solid #AAAAAA; background-color:#EEEEEE; width:300px; font-weight: bold; color:rgb(160,160,160);font-size:120%;}
+
 
 .contactform {width:418px; margin:2.0em 0 0 0; padding:10px 10px 0 10px; border:solid 1px rgb(200,200,200); background-color:rgb(240,240,240);}
 .contactform fieldset {padding:20px 0 0 0 !important /*Non-IE6*/; padding:0 /*IE6*/; margin:0 0 20px 0; border:solid 1px rgb(220,220,220);}

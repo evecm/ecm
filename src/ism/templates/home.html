@@ -13,9 +13,9 @@
 {% if last_corped_members %}
 <ul>
 {% for m in last_corped_members %}
-<li>                   <span class="bold">{{      m.name     }}</span>
-    {% if m.nickname %}<span class="italic"> ({{  m.nickname }})</span>{% endif %}
-                       <span class="time"> - {{   m.date     }}</span></li>
+<li class="green">     <span class="bold">{{      m.name                       }}</span>
+    {% if m.nickname %}<span class="italic"> ({{  m.nickname|truncatewords:"5" }})</span>{% endif %}
+                       <span class="time"> - {{   m.date                       }}</span></li>
 {% endfor %}
 </ul>
 {% else %}
@@ -26,9 +26,9 @@
 {% if last_expelled_members %}
 <ul>
 {% for m in last_expelled_members %}
-<li>                   <span class="bold">{{      m.name     }}</span>
-    {% if m.nickname %}<span class="italic"> ({{  m.nickname }})</span>{% endif %}
-                       <span class="time"> - {{   m.date     }}</span></li>
+<li class="red">       <span class="bold">{{      m.name                       }}</span>
+    {% if m.nickname %}<span class="italic"> ({{  m.nickname|truncatewords:"5" }})</span>{% endif %}
+                       <span class="time"> - {{   m.date                       }}</span></li>
 {% endfor %}
 <ul>
 {% else %}
