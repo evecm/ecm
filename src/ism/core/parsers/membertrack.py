@@ -45,6 +45,7 @@ def update(debug=False):
         for member in membersApi.members:
             newList.append(parseOneMember(member=member))
         
+        diffs = 0
         if len(oldList) != 0 :
             diffs = getDiffs(newList, oldList, currentTime)
             if diffs:
@@ -60,6 +61,9 @@ def update(debug=False):
             
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
+
+        return "%s [ISM] %d members parsed, %d changes since last scan" % (str(datetime.datetime.now()), 
+                                                                          len(newList), len(diffs))
     except:
         # mayday, error
         transaction.rollback()

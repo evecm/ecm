@@ -116,6 +116,8 @@ def update(debug=False):
         if DEBUG : print "saving data to the database..."
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
+
+        return "%s [ISM] corp info parsed" % (str(datetime.datetime.now()))
     except:
         # error catched, rollback changes
         transaction.rollback()

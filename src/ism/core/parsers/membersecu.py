@@ -59,14 +59,17 @@ def update(debug=False):
             newTitles.update(parseOneMemberTitles(member))
         
         # Store role changes 
-        storeRoles(currentTime, oldRoles, newRoles)
+        roleDiffs = storeRoles(currentTime, oldRoles, newRoles)
         
         # Store title changes 
-        storeTitles(currentTime, oldTitles, newTitles)
+        titleDiffs = storeTitles(currentTime, oldTitles, newTitles)
         
         if DEBUG : print "saving data to the database..."
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
+
+        return "%s [ISM] %d role changes, %d title changes" % (str(datetime.datetime.now()), 
+                                                                  roleDiffs, titleDiffs)
     except:
         transaction.rollback()
         raise
@@ -171,13 +174,14 @@ def storeRoles(date, oldRoles, newRoles):
             for rm in newRoles.values(): rm.save()
             # we store the update time of the table
             markUpdated(model=RoleMembership, date_int=date)
-        
         # if no diff, we do nothing
+        return len(roleDiffs)
     else:
         # 1st import, no diff to write
         for rm in newRoles.values(): rm.save()
         # we store the update time of the table
         markUpdated(model=RoleMembership, date_int=date)
+        return 0
 
 #------------------------------------------------------------------------------
 def storeTitles(date, oldTitles, newTitles):
@@ -193,9 +197,11 @@ def storeTitles(date, oldTitles, newTitles):
             # we store the update time of the table
             markUpdated(model=TitleMembership, date_int=date)
         # if no diff, we do nothing
+        return len(roleDiffs)
     else:
         # 1st import, no diff to write
         for tm in newTitles.values(): tm.save()
         # we store the update time of the table
         markUpdated(model=TitleMembership, date_int=date)
+        return 0
         

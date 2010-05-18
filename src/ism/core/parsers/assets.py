@@ -18,7 +18,7 @@ from ism.core.assets.constants import STATIONS_IDS, DELIVERIES_FLAG, OFFICE_TYPE
 from datetime import datetime
 
 DEBUG = False # DEBUG mode
-
+RESULT = 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
 def update(debug=False):
@@ -27,7 +27,7 @@ def update(debug=False):
     
     If there's an error, nothing is written in the database
     """
-    global DEBUG
+    global DEBUG, RESULT
     DEBUG = debug
     
     try:
@@ -63,7 +63,8 @@ def update(debug=False):
                 elif row.flag in HANGAR_FLAG.keys() :
                     isInHangar(item=row, newItems=newItems)
         if DEBUG : print "%d assets parsed" % len(newItems.keys())
-        
+
+        diffs = 0
         if len(oldItems) != 0 :
             if DEBUG : print "computing diffs since last asset scan..."
             diffs = getAssetDiffs(newItems, oldItems, date=currentTime)
@@ -84,6 +85,9 @@ def update(debug=False):
         transaction.commit()
         if DEBUG: print "done"
         if DEBUG : print "computed in %f seconds" % (time.time() - start)
+
+        return "%s [ISM] %d assets parsed, %d changes since last scan" % (str(datetime.datetime.now()), 
+                                                                          len(newItems), len(diffs))
     except:
         transaction.rollback()
         raise

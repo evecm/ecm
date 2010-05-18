@@ -56,12 +56,12 @@ def calcDiffs(newItems, oldItems):
 
     for a in oldItems.values():
         try:
-            newItems[a] # is a still in the newItems?
+            dummyvariable = newItems[a] # is a still in the newItems?
         except KeyError: # KeyError -> a has disappeared
             removed.append(a)
     for a in newItems.values():
         try:
-            oldItems[a] # was a in the oldItems already?
+            dummyvariable = oldItems[a] # was a in the oldItems already?
         except KeyError: # KeyError -> a is new
             added.append(a)
 
