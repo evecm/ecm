@@ -10,7 +10,7 @@ import setenv
 
 # imports and code below
 
-from ism.core.parsers import corp
+from ism.core.parsers import assets
 
-corp.update()
+assets.update()
 
