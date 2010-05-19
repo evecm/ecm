@@ -86,7 +86,7 @@ def update(debug=False):
         if DEBUG: print "done"
         if DEBUG : print "computed in %f seconds" % (time.time() - start)
 
-        return "%s [ISM] %d assets parsed, %d changes since last scan" % (str(datetime.datetime.now()), 
+        return "%s [ISM] %d assets parsed, %d changes since last scan" % (str(datetime.now()), 
                                                                           len(newItems), len(diffs))
     except:
         transaction.rollback()

@@ -12,5 +12,5 @@ import setenv
 
 from ism.core.parsers import assets
 
-assets.update()
+print assets.update()
 

@@ -12,5 +12,5 @@ import setenv
 
 from ism.core.parsers import corp
 
-corp.update()
+print corp.update()
 

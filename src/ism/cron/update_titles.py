@@ -12,5 +12,5 @@ import setenv
 
 from ism.core.parsers import titles
 
-titles.update()
+print titles.update()
 

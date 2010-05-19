@@ -62,7 +62,7 @@ def update(debug=False):
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
 
-        return "%s [ISM] %d members parsed, %d changes since last scan" % (str(datetime.datetime.now()), 
+        return "%s [ISM] %d members parsed, %d changes since last scan" % (str(datetime.now()), 
                                                                           len(newList), len(diffs))
     except:
         # mayday, error

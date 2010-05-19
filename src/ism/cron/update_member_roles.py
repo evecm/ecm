@@ -12,5 +12,5 @@ import setenv
 
 from ism.core.parsers import membersecu
 
-membersecu.update()
+print membersecu.update()
 

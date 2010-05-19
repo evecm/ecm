@@ -12,5 +12,5 @@ import setenv
 
 from ism.core.parsers import outposts
 
-outposts.update()
+print outposts.update()
 

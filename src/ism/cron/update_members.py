@@ -12,5 +12,5 @@ import setenv
 
 from ism.core.parsers import membertrack
 
-membertrack.update()
+print membertrack.update()
 
