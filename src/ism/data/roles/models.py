@@ -139,7 +139,10 @@ class RoleMembership(models.Model):
 
     def __hash__(self):
         if not self.h:
-            self.h = self.member.characterID * self.role.id
+            try:
+                self.h = self.member.characterID * self.role.id
+            except:
+                self.h = -1
         return self.h
     
     def __eq__(self, other):
@@ -157,7 +160,10 @@ class TitleMembership(models.Model):
         
     def __hash__(self):
         if not self.h:
-            self.h = self.member.characterID * self.title.titleID
+            try:
+                self.h = self.member.characterID * self.title.titleID
+            except:
+                self.h = -1
         return self.h
     
     def __eq__(self, other):
