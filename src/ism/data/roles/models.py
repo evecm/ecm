@@ -139,14 +139,13 @@ class RoleMembership(models.Model):
 
     def __hash__(self):
         if not self.h:
-            try:
-                self.h = self.member.characterID * self.role.id
-            except:
-                self.h = -1
+            try:    self.h = self.member.characterID * self.role.id
+            except: self.h = -1
         return self.h
     
     def __eq__(self, other):
-        return self.member == other.member and self.role == other.role
+        try: return self.member == other.member and self.role == other.role
+        except: return False
     
     def __unicode__(self):
         return '%s has %s (%s)' % (unicode(self.member), unicode(self.role), unicode(self.role.roleType))
@@ -167,8 +166,8 @@ class TitleMembership(models.Model):
         return self.h
     
     def __eq__(self, other):
-        return self.member == other.member and self.title == other.title
-    
+        try: return self.member == other.member and self.title == other.title
+        except: return False
     def __unicode__(self):
         return unicode(self.member) + u' is ' + unicode(self.title)
     
