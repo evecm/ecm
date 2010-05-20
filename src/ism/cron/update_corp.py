@@ -12,5 +12,7 @@ import setenv
 
 from ism.core.parsers import corp
 
-print corp.update()
+from datetime import datetime
+
+print str(datetime.now()) + " [ISM] " + corp.update()
 

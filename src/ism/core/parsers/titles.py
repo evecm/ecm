@@ -72,8 +72,7 @@ def update(debug=False, cache=False):
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
 
-        return "%s [ISM] %d roles in titles parsed, %d changes since last scan" % (str(datetime.now()), 
-                                                                          len(newList), len(diffs))
+        return "%d roles in titles parsed, %d changes since last scan" % (len(newList), len(diffs))
     except:
         # mayday, error
         transaction.rollback()

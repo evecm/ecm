@@ -12,5 +12,7 @@ import setenv
 
 from ism.core.parsers import membertrack
 
-print membertrack.update()
+from datetime import datetime
+
+print str(datetime.now()) + " [ISM] " + membertrack.update()
 

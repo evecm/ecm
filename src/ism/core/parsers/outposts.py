@@ -49,7 +49,7 @@ def update(debug=False, cache=False):
                     
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
-        return "%s [ISM] %d outposts parsed" % (str(datetime.now()), len(apiOutposts.outposts))
+        return "%d outposts parsed" % len(apiOutposts.outposts)
     except:
         transaction.rollback()
         raise

@@ -68,8 +68,7 @@ def update(debug=False, cache=False):
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
 
-        return "%s [ISM] %d role changes, %d title changes" % (str(datetime.now()), 
-                                                                  roleDiffs, titleDiffs)
+        return "%d role changes, %d title changes" % (roleDiffs, titleDiffs)
     except:
         transaction.rollback()
         raise

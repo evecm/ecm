@@ -12,5 +12,7 @@ import setenv
 
 from ism.core.parsers import titles
 
-print titles.update()
+from datetime import datetime
+
+print str(datetime.now()) + " [ISM] " + titles.update()
 

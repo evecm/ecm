@@ -12,5 +12,7 @@ import setenv
 
 from ism.core.parsers import outposts
 
-print outposts.update()
+from datetime import datetime
+
+print str(datetime.now()) + " [ISM] " + outposts.update()
 
