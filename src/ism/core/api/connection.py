@@ -19,7 +19,9 @@ for a in APIKey.objects.all():
     API.API_KEY = a.key
     break
 
-def connect(debug=False,proxy =None):
-    api = eveapi.EVEAPIConnection(cacheHandler=CacheHandler(debug=debug), proxy=proxy)
+def connect(debug=False,proxy =None,cache=True):
+    if cache : handler = CacheHandler(debug=debug)
+    else     : handler = None
+    api = eveapi.EVEAPIConnection(cacheHandler=handler, proxy=proxy)
     return api.auth(userID=API.USER_ID, apiKey=API.API_KEY)
     

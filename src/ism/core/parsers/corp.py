@@ -18,7 +18,7 @@ DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False):
+def update(debug=False, cache=False):
     """
     Fetch a /corp/CorporationSheet.xml.aspx api response, parse it and store it to 
     the database.
@@ -28,7 +28,7 @@ def update(debug=False):
     
     try:
         # connect to eve API
-        api = connection.connect(debug=debug)
+        api = connection.connect(debug=debug, cache=cache)
         # retrieve /corp/CorporationSheet.xml.aspx
         corpApi = api.corp.CorporationSheet(characterID=API.CHAR_ID)
         checkApiVersion(corpApi._meta.version)

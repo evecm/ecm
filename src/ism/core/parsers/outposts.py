@@ -16,7 +16,7 @@ DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False):
+def update(debug=False, cache=False):
     """
     Retrieve all corp assets and calculate the changes.
     
@@ -26,7 +26,7 @@ def update(debug=False):
     DEBUG = debug
     
     try:
-        api = connection.connect(debug=debug)
+        api = connection.connect(debug=debug, cache=cache)
         apiOutposts = api.eve.ConquerableStationList()
         checkApiVersion(apiOutposts._meta.version)
         

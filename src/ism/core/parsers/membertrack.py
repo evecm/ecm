@@ -15,7 +15,7 @@ DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False):
+def update(debug=False, cache=False):
     """
     Retrieve all corp members, with all basic information about them.
     If some members have left or have arrived we also store the diff in the database.
@@ -27,7 +27,7 @@ def update(debug=False):
     
     try:
         # connect to eve API
-        api = connection.connect(debug=debug)
+        api = connection.connect(debug=debug, cache=cache)
         # retrieve /corp/MemberTracking.xml.aspx
         membersApi = api.corp.MemberTracking(characterID=API.CHAR_ID)
         checkApiVersion(membersApi._meta.version)

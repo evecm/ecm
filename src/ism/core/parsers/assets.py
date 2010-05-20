@@ -21,7 +21,7 @@ DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False):
+def update(debug=False, cache=False):
     """
     Retrieve all corp assets and calculate the changes.
     
@@ -34,7 +34,7 @@ def update(debug=False):
         if DEBUG : 
             import time
             start = time.time()
-        api = connection.connect(debug=debug)
+        api = connection.connect(debug=debug, cache=cache)
         apiAssets = api.corp.AssetList(characterID=API.CHAR_ID)
         checkApiVersion(apiAssets._meta.version)
         

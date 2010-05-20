@@ -18,7 +18,7 @@ DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False):
+def update(debug=False, cache=False):
     """
     Retrieve all corp members' titles and roles.
     We store all the changes in the database
@@ -30,7 +30,7 @@ def update(debug=False):
     
     try:
         # connect to eve API
-        api = connection.connect(debug=debug)
+        api = connection.connect(debug=debug, cache=cache)
         # retrieve /corp/MemberTracking.xml.aspx
         memberSecuApi = api.corp.MemberSecurity(characterID=API.CHAR_ID)
         checkApiVersion(memberSecuApi._meta.version)

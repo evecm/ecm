@@ -21,7 +21,7 @@ DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False):
+def update(debug=False, cache=False):
     """
     Retrieve all corp titles, their names and their role composition.
     If there are changes in the composition of the titles, 
@@ -34,7 +34,7 @@ def update(debug=False):
     
     try:
         # connect to eve API
-        api = connection.connect(debug=debug)
+        api = connection.connect(debug=debug, cache=cache)
         # retrieve /corp/Titles.xml.aspx
         titlesApi = api.corp.Titles(characterID=API.CHAR_ID)
         checkApiVersion(titlesApi._meta.version)
