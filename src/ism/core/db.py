@@ -46,7 +46,7 @@ def resolveLocationName(locationID):
         for row in cursor :
             station = row
             break
-        if station[1] in CONQUERABLE_STATIONS :
+        if station == None or station[1] in CONQUERABLE_STATIONS :
             return Outpost.objects.get(stationID=locationID).stationName
         else :
             return station[0]

@@ -10,6 +10,9 @@ import time
 def print_time(time_in_seconds):
     return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time_in_seconds))
 
+def print_time_min(time_in_seconds):
+    return time.strftime("%Y %b %d - %H:%M", time.gmtime(time_in_seconds))
+
 def print_date(time_in_seconds):
     return time.strftime("%Y-%m-%d", time.gmtime(time_in_seconds))
 

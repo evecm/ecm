@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Home{% endblock %}
+{% block headtitle %}Stations{% endblock %}
 
 
 
@@ -9,10 +9,7 @@
 <script type="text/javascript">
 $(document).ready(function() 
     { 
-        $("#members_table").tablesorter( {sortList : [[0,0]]} , 
-                                        {cssHeader : "hdr"} ,
-                                           {cssAsc : "hdrSortUp"} ,
-                                          {cssDesc : "hdrSortDown"} ); 
+        $("#stations_table").tablesorter( {sortList : [[0,0]]} ); 
     } 
 );
 
@@ -40,12 +37,12 @@ function filter (phrase, _id){
 
 
 {% block breadcrumbs %}
-<li>Members</li>
-<li>List</li>
+<li><a href="/assets/" >Assets</a></li>
+<li><a href="/assets/" >Stations</a></li>
 {% endblock %}
 
 {% block main_content %}
-<p class="center">{{ member_list|length }} members found on {{ scan_date }}</p>
+<p class="center">{{ station_list|length }} stations found on {{ scan_date }}</p>
 
 
 <form class="filter">
@@ -55,34 +52,24 @@ function filter (phrase, _id){
         title="Type any string to filter out the lines in the table. The filter is not case sensitive and searches through all the columns." 
         id="filterstring" 
         value="Filter" 
-        onkeyup="filter(this, 'members_table', '1')" 
+        onkeyup="filter(this, 'stations_table', '1')" 
         onclick="document.getElementById('filterstring').select()">
     </input>
 </form>
 
 
-<table id="members_table">
+<table id="stations_table">
   <thead> 
     <tr>
-      <th class="top" scope="col" width="16%">Name</th>
-      <th class="top" scope="col" width="24%">Nickname</th>
-      <th class="top" scope="col" width="10%">Corp Date</th>
-      <th class="top" scope="col" width="10%">Last Login</th>
-      <th class="top" scope="col" width="10%">Last Logoff</th>
-      <th class="top" scope="col" width="20%">Location</th>
-      <th class="top" scope="col" width="10%">Ship</th>
+      <th class="top" scope="col" width="80%">Station</th>
+      <th class="top" scope="col" width="20%">Items</th>
     </tr>
   </thead>
   <tbody> 
-{% for m in member_list %}
+{% for s in station_list %}
     <tr class="row">
-      <td class="left">{{ m.name }}</th>
-      <td>{{ m.nickname|truncatewords:"6" }}</td>
-      <td>{{ m.corpDate }}</td>
-      <td>{{ m.lastLogin }}</td>
-      <td>{{ m.lastLogoff }}</td>
-      <td>{{ m.location|truncatewords:"5" }}</td>
-      <td>{{ m.ship }}</td>
+      <td class="left"><a href="/assets/{{ s.locationID }}/" >{{ s.name }}</a></td>
+      <td>{{ s.items }}</td>
     </tr>
 {% endfor %}
   </tbody> 

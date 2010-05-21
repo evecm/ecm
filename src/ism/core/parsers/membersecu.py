@@ -196,7 +196,7 @@ def storeTitles(date, oldTitles, newTitles):
             # we store the update time of the table
             markUpdated(model=TitleMembership, date_int=date)
         # if no diff, we do nothing
-        return len(roleDiffs)
+        return len(titleDiffs)
     else:
         # 1st import, no diff to write
         for tm in newTitles.values(): tm.save()

@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 
 from ism.data.roles.models import MemberDiff, RoleMemberDiff, TitleCompoDiff
-from ism.core.utils import print_time
+from ism.core.utils import print_time_min
 
 #------------------------------------------------------------------------------
 @login_required
@@ -29,41 +29,41 @@ def home(request):
 def getLastCorpedMembers(count=10):
     members = MemberDiff.objects.filter(new=True).order_by('-id')[:count]
     for m in members:
-        m.date = print_time(m.date)
+        m.date = print_time_min(m.date)
     return members
 
 #------------------------------------------------------------------------------
 def getLastExpelledMembers(count=10):
     members = MemberDiff.objects.filter(new=False).order_by('-id')[:count]
     for m in members:
-        m.date = print_time(m.date)
+        m.date = print_time_min(m.date)
     return members
 
 #------------------------------------------------------------------------------
 def getLastRoleAdds(count=10):
     roles = RoleMemberDiff.objects.filter(new=True).order_by('-id')[:count]
     for r in roles:
-        r.date = print_time(r.date)
+        r.date = print_time_min(r.date)
     return roles
 
 #------------------------------------------------------------------------------
 def getLastRoleRemovals(count=10):
     roles = RoleMemberDiff.objects.filter(new=False).order_by('-id')[:count]
     for r in roles:
-        r.date = print_time(r.date)
+        r.date = print_time_min(r.date)
     return roles
 
 #------------------------------------------------------------------------------
 def getLastTitleRoleAdds(count=10):
     titles = TitleCompoDiff.objects.filter(new=True).order_by('-id')[:count]
     for t in titles:
-        t.date = print_time(t.date)
+        t.date = print_time_min(t.date)
     return titles
 
 #------------------------------------------------------------------------------
 def getLastTitleRoleRemovals(count=10):
     titles = TitleCompoDiff.objects.filter(new=False).order_by('-id')[:count]
     for t in titles:
-        t.date = print_time(t.date)
+        t.date = print_time_min(t.date)
     return titles
 #------------------------------------------------------------------------------
