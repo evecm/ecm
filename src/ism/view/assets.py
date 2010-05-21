@@ -6,7 +6,6 @@ Created on 21 mai 2010
 '''
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
-from django.core.context_processors import csrf
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 
@@ -18,7 +17,6 @@ from ism.data.corp.models import Hangar
 
 
 @login_required
-@csrf_protect
 @cache_page(60 * 15) # 15 minutes cache
 def stations(request):
     data = {  'station_list' : getStations(),
@@ -26,7 +24,6 @@ def stations(request):
     return render_to_response("stations.html", data, context_instance=RequestContext(request))
 
 @login_required
-@csrf_protect
 @cache_page(60 * 15) # 15 minutes cache
 def station_assets(request, stationID):
     data = {  'item_list' : getStationItems(int(stationID)),

@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 from ism.settings import MEDIA_URL
 
 from django.contrib.auth.decorators import login_required
-from django.core.context_processors import csrf
+from django.views.decorators.csrf import csrf_protect
 
 @login_required
 @csrf_protect

@@ -16,6 +16,7 @@
 <div class="loginform">
 
   <form method="post" action="{% url django.contrib.auth.views.login %}">
+  {% csrf_token %}
   <p><input type="hidden" name="rememberme" value="0" /></p>
   <fieldset>
     <p> <span class="top">{{ form.username.label_tag }}</span><br />
