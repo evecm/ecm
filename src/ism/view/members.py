@@ -8,6 +8,7 @@ Created on 16 mai 2010
 
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
+from django.core.context_processors import csrf
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.db.models.aggregates import Max
@@ -21,6 +22,7 @@ from ism.data.common.models import UpdateDate
 
 
 @login_required
+@csrf_protect
 @cache_page(60 * 15) # 15 minutes cache
 def list(request):
     data = {  'member_list' : getMembers(),

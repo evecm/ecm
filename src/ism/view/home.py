@@ -7,6 +7,7 @@ Created on 3 fev. 2010
 
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
+from django.core.context_processors import csrf
 from django.template.context import RequestContext
 
 from ism.data.roles.models import MemberDiff, RoleMemberDiff, TitleCompoDiff
@@ -14,6 +15,7 @@ from ism.core.utils import print_time_min
 
 #------------------------------------------------------------------------------
 @login_required
+@csrf_protect
 def home(request):
     data = {   'last_corped_members' : getLastCorpedMembers(),
              'last_expelled_members' : getLastExpelledMembers(),
