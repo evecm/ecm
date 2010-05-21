@@ -14,5 +14,5 @@ from ism.core.parsers import titles
 
 from datetime import datetime
 
-print str(datetime.now()) + " [ISM] " + titles.update()
+print datetime.now().strftime("%Y-%m-%d ~ %H:%M:%S") + " [ISM] " + titles.update()
 

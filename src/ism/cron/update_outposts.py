@@ -14,5 +14,5 @@ from ism.core.parsers import outposts
 
 from datetime import datetime
 
-print str(datetime.now()) + " [ISM] " + outposts.update()
+print datetime.now().strftime("%Y-%m-%d ~ %H:%M:%S") + " [ISM] " + outposts.update()
 

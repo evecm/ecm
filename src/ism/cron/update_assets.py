@@ -14,5 +14,5 @@ from ism.core.parsers import assets
 
 from datetime import datetime
 
-print str(datetime.now()) + " [ISM] " + assets.update()
+print datetime.now().strftime("%Y-%m-%d ~ %H:%M:%S") + " [ISM] " + assets.update()
 

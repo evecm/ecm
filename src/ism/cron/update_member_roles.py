@@ -14,5 +14,5 @@ from ism.core.parsers import membersecu
 
 from datetime import datetime
 
-print str(datetime.now()) + " [ISM] " + membersecu.update()
+print datetime.now().strftime("%Y-%m-%d ~ %H:%M:%S") + " [ISM] " + membersecu.update()
 

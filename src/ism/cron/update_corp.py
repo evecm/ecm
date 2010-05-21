@@ -14,5 +14,5 @@ from ism.core.parsers import corp
 
 from datetime import datetime
 
-print str(datetime.now()) + " [ISM] " + corp.update()
+print datetime.now().strftime("%Y-%m-%d ~ %H:%M:%S") + " [ISM] " + corp.update()
 

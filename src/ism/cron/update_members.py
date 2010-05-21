@@ -14,5 +14,5 @@ from ism.core.parsers import membertrack
 
 from datetime import datetime
 
-print str(datetime.now()) + " [ISM] " + membertrack.update()
+print datetime.now().strftime("%Y-%m-%d ~ %H:%M:%S") + " [ISM] " + membertrack.update()
 
