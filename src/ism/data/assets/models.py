@@ -38,12 +38,35 @@ class DbAsset(models.Model):
                 else: return False
             else: return False
         else: return False
+    
+    def __cmp__(self, other):
+        locdiff = cmp(self.locationID, other.locationID)
+        if not locdiff:
+            hangardiff = cmp(self.hangarID, other.hangarID)
+            if not hangardiff:
+                return cmp(self.typeID, other.typeID)
+            else:
+                return hangardiff
+        else:
+            return locdiff
+    
+    def lookslike(self, other):
+        """
+        This is NOT a real equality, this method is used to find duplicates in diffs
+        """
+        if self.locationID == other.locationID:
+            if self.hangarID == other.hangarID:
+                if self.typeID == other.typeID:
+                    return True
+                else: return False
+            else: return False
+        else: return False 
 #------------------------------------------------------------------------------
 class DbAssetDiff(models.Model):
     locationID = models.PositiveIntegerField() # ID of the station
     hangarID = models.PositiveIntegerField() # hangar division
     typeID = models.PositiveIntegerField(default=0) # item type ID from the EVE database
-    quantity = models.PositiveIntegerField(default=0)
+    quantity = models.IntegerField(default=0)
     date = models.PositiveIntegerField()
     new = models.BooleanField()
     

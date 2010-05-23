@@ -93,30 +93,61 @@ def update(debug=False, cache=False):
     
 #------------------------------------------------------------------------------
 def getAssetDiffs(newItems, oldItems, date):
-    removed, added = calcDiffs(newItems, oldItems)
-    return __storeDiffs(removed, added, date)
     
-def __storeDiffs(removed, added, date):
-    diffs    = []
-    if DEBUG:
-        print "REMOVED ASSETS: %d" % len(removed)
+    removed, added = calcDiffs(newItems, oldItems)
+    __removeDuplicates(removed)
+    __removeDuplicates(added)
+    
+    diffs = []
+    
+    # so we don't get an Attribute error when calling addasset.duplicate
+    for a in added: a.duplicate = False 
+    
     for remasset in removed:
-        diffs.append(DbAssetDiff(locationID = remasset.locationID,
-                                 hangarID = remasset.hangarID,
-                                 typeID = remasset.typeID,
-                                 quantity = remasset.quantity,
-                                 date = date,
-                                 new = False))
-    if DEBUG:
-        print "ADDED ASSETS: %d" % len(added)
+        added_qty = 0
+        for addasset in added:
+            if not addasset.duplicate and addasset.lookslike(remasset):
+                # if there is a match (there cannot be more than one), the added asset 
+                # was already in the removed assets. We tag the added asset to duplicate 
+                # and take it in consideration when creating the "removed" DbAssetDiff
+                addasset.duplicate = True
+                added_qty = addasset.quantity
+                break
+        if (added_qty - remasset.quantity): 
+            # if the added asset doesn't negates the removed one, we create a diff
+            diffs.append(DbAssetDiff(locationID = remasset.locationID,
+                                     hangarID = remasset.hangarID,
+                                     typeID = remasset.typeID,
+                                     quantity = added_qty - remasset.quantity,
+                                     date = date,
+                                     new = False))
     for addasset in added:
-        diffs.append(DbAssetDiff(locationID = addasset.locationID,
-                                 hangarID = addasset.hangarID,
-                                 typeID = addasset.typeID,
-                                 quantity = addasset.quantity,
-                                 date = date,
-                                 new = True))
+        if not addasset.duplicate:
+            diffs.append(DbAssetDiff(locationID = addasset.locationID,
+                                     hangarID = addasset.hangarID,
+                                     typeID = addasset.typeID,
+                                     quantity = addasset.quantity,
+                                     date = date,
+                                     new = True))
     return diffs
+
+#------------------------------------------------------------------------------
+def __removeDuplicates(assetlist):
+    assetlist.sort()
+    # we sort assets by locationID, hangarID then typeID in order to merge duplicates
+    try:
+        i = 0
+        while(True):
+            if assetlist[i].lookslike(assetlist[i + 1]):
+                # the assets are sorted so we can merge and delete the duplicate one
+                assetlist[i].quantity += assetlist[i + 1].quantity
+                del assetlist[i + 1]
+            else:
+                i += 1
+    except IndexError: 
+        # when we reach the end of the list we WILL get an IndexError, 
+        # this is the only way to stop the loop :-)
+        pass
 
 #------------------------------------------------------------------------------
 def isInDeliveries(item, newItems):
@@ -135,11 +166,13 @@ def isInDeliveries(item, newItems):
 
 #------------------------------------------------------------------------------
 def isOffice(office, newItems):
-    if hasContents(office) :
+    try :
         for item in office.contents :
             if item.typeID == BOOKMARK_TYPEID : 
                 continue # we don't give a flying @#!$ about the bookmarks...
             isInHangar(item=item, newItems=newItems, locationID=office.locationID)
+    except AttributeError :
+        pass
 
 #------------------------------------------------------------------------------
 def isInHangar(item, newItems, locationID=None):
@@ -195,11 +228,6 @@ def assetFromRow(row):
                    flag        = row.flag,
                    singleton   = row.singleton)
      
-#------------------------------------------------------------------------------
-def hasContents(row):
-    return len(row._cols) == len(row._row)
-    
-    
 #------------------------------------------------------------------------------
 def locationIDtoStationID(locationID):
     """
