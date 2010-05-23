@@ -2584,6 +2584,14 @@
     }
   }, 
   {
+    "pk": 1, 
+    "model": "corp.hangar", 
+    "fields": {
+      "accessLvl": 1000, 
+      "name": "Deliveries"
+    }
+  }, 
+   {
     "pk": 1000, 
     "model": "corp.hangar", 
     "fields": {
@@ -2591,7 +2599,7 @@
       "name": ""
     }
   }, 
-  {
+   {
     "pk": 1001, 
     "model": "corp.hangar", 
     "fields": {

@@ -137,9 +137,19 @@
 
 
 .main-content ul {list-style:none; margin:0.5em 0 1.0em 0;}
-.main-content ul li {margin:0 0 0.2em 2px; padding:0 0 0 12px; line-height:1.4em; font-size:120%;}
-.main-content ul li.green {background:url(../img/plus.png) no-repeat 0 0.5em;}
-.main-content ul li.red {background:url(../img/minus.png) no-repeat 0 0.5em;}
+.main-content ul li {
+    margin:0 0 0.2em 2px; 
+    padding:0 0 0 12px; 
+    line-height:1.4em; 
+    font-size:120%;
+    list-style-image: url(../img/bg_bullet_arrow.gif);
+}
+.main-content ul li.green {
+    list-style-image:url(../img/plus.png);
+}
+.main-content ul li.red {
+    list-style-image:url(../img/minus.png);
+}
 .main-content ol {margin:0.5em 0 1.0em 20px !important /*Non-IE6*/; margin:0.5em 0 1.0em 25px /*IE6*/;}
 .main-content ol li {list-style-position:outside; margin:0 0 0.2em 0; line-height:1.4em; font-size:120%;}
 
