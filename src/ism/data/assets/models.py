@@ -6,7 +6,7 @@ Created on 18 mar. 2010
 '''
 
 from django.db import models
-
+from datetime import datetime
 
 #------------------------------------------------------------------------------
 class DbAsset(models.Model):
@@ -67,7 +67,7 @@ class DbAssetDiff(models.Model):
     hangarID = models.PositiveIntegerField() # hangar division
     typeID = models.PositiveIntegerField(default=0) # item type ID from the EVE database
     quantity = models.IntegerField(default=0)
-    date = models.PositiveIntegerField()
+    date = models.DateTimeField(db_index=True, default=datetime.now())
     new = models.BooleanField()
     
 #------------------------------------------------------------------------------

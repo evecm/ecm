@@ -8,6 +8,7 @@ Created on 24 jan. 2010
 from ism.data.corp.models import Hangar, Wallet
 
 from django.db import models
+from datetime import datetime
 
 #------------------------------------------------------------------------------
 class Member(models.Model):
@@ -16,9 +17,9 @@ class Member(models.Model):
     name = models.CharField(max_length=100, db_index=True)
     nickname = models.CharField(max_length=256, default="")
     baseID = models.PositiveIntegerField(db_index=True, default=0)
-    corpDate = models.PositiveIntegerField(db_index=True, default=0)
-    lastLogin = models.PositiveIntegerField(db_index=True, default=0)
-    lastLogoff = models.PositiveIntegerField(db_index=True, default=0)
+    corpDate = models.DateTimeField(db_index=True, default=datetime.now())
+    lastLogin = models.DateTimeField(db_index=True, default=datetime.now())
+    lastLogoff = models.DateTimeField(db_index=True, default=datetime.now())
     locationID = models.IntegerField(default=0)
     ship = models.CharField(max_length=100, default="")
  
@@ -200,7 +201,7 @@ class TitleCompoDiff(models.Model):
     # true if role is new in title, false if role was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
-    date = models.PositiveIntegerField(db_index=True, default=0)
+    date = models.DateTimeField(db_index=True, default=datetime.now())
     
     def __unicode__(self):
         if self.new: return unicode(self.title) + u' gets ' + unicode(self.role)
@@ -214,7 +215,7 @@ class MemberDiff(models.Model):
     # true if title is new for member, false if title was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
-    date = models.PositiveIntegerField(db_index=True, default=0)
+    date = models.DateTimeField(db_index=True, default=datetime.now())
     
     def __unicode__(self):
         if self.new: return '%s corped' % self.name
@@ -227,7 +228,7 @@ class TitleMemberDiff(models.Model):
     # true if title is new for member, false if title was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
-    date = models.PositiveIntegerField(db_index=True, default=0)
+    date = models.DateTimeField(db_index=True, default=datetime.now())
 
     def __unicode__(self):
         if self.new: return '%s got %s' % (self.member.name, self.title.titleName)
@@ -240,7 +241,7 @@ class RoleMemberDiff(models.Model):
     # true if role is new for member, false if role was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
-    date = models.PositiveIntegerField(db_index=True, default=0)
+    date = models.DateTimeField(db_index=True, default=datetime.now())
     
     def __unicode__(self):
         if self.new: return '%s got %s' % (self.member.name, self.role.dispName)

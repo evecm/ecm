@@ -68,12 +68,11 @@ def calcDiffs(newItems, oldItems):
     return removed, added
 
 #------------------------------------------------------------------------------   
-def markUpdated(model, date_int):
+def markUpdated(model, date):
     """
     Tag a model's table in the database as 'updated'
     With the update date and the previous update date as well.
     """
-    date = datetime.fromtimestamp(date_int)
     try:
         update = UpdateDate.objects.get(model_name=model.__name__)
         if not update.update_date == date:

@@ -32,10 +32,10 @@ def update(debug=False, cache=False):
         membersApi = api.corp.MemberTracking(characterID=API.CHAR_ID)
         checkApiVersion(membersApi._meta.version)
         
-        currentTime = membersApi._meta.currentTime
-        cachedUntil = membersApi._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
-        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+        currentTime = datetime.fromtimestamp(membersApi._meta.currentTime)
+        cachedUntil = datetime.fromtimestamp(membersApi._meta.cachedUntil)
+        if DEBUG : print "current time : %s" % str(currentTime)
+        if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
         newList = []
         
@@ -45,19 +45,19 @@ def update(debug=False, cache=False):
         for member in membersApi.members:
             newList.append(parseOneMember(member=member))
         
-        diffs = 0
+        diffs = []
         if len(oldList) != 0 :
             diffs = getDiffs(newList, oldList, currentTime)
             if diffs:
                 for d in diffs: d.save()
                 # we store the update time of the table
-                markUpdated(model=MemberDiff, date_int=currentTime)
+                markUpdated(model=MemberDiff, date=currentTime)
             Member.objects.all().delete()
             # to be sure to store the nicknames change, etc.
             # even if there are no diff, we always overwrite the members 
         for c in newList: c.save()
         # we store the update time of the table
-        markUpdated(model=Member, date_int=currentTime)
+        markUpdated(model=Member, date=currentTime)
             
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
@@ -75,10 +75,10 @@ def parseOneMember(member):
     id       = member["characterID"]
     name     = member["name"]
     nick     = member["title"]
-    corpDate = member["startDateTime"]
+    corpDate = datetime.fromtimestamp(member["startDateTime"])
     base     = member["baseID"]
-    login    = member["logonDateTime"]
-    logoff   = member["logoffDateTime"]
+    login    = datetime.fromtimestamp(member["logonDateTime"])
+    logoff   = datetime.fromtimestamp(member["logoffDateTime"])
     locID    = member["locationID"]
     ship     = member["shipType"]
     

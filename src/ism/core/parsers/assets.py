@@ -38,10 +38,10 @@ def update(debug=False, cache=False):
         apiAssets = api.corp.AssetList(characterID=API.CHAR_ID)
         checkApiVersion(apiAssets._meta.version)
         
-        currentTime = apiAssets._meta.currentTime
-        cachedUntil = apiAssets._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
-        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+        currentTime = datetime.fromtimestamp(apiAssets._meta.currentTime)
+        cachedUntil = datetime.fromtimestamp(apiAssets._meta.cachedUntil)
+        if DEBUG : print "current time : %s" % str(currentTime)
+        if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
         if DEBUG : print "fetching old assets from the database...",
         oldItems = {}
@@ -64,7 +64,7 @@ def update(debug=False, cache=False):
                     isInHangar(item=row, newItems=newItems)
         if DEBUG : print "%d assets parsed" % len(newItems.keys())
 
-        diffs = 0
+        diffs = []
         if len(oldItems) != 0 :
             if DEBUG : print "computing diffs since last asset scan..."
             diffs = getAssetDiffs(newItems, oldItems, date=currentTime)
@@ -72,12 +72,12 @@ def update(debug=False, cache=False):
                 for assetDiff in diffs : 
                     assetDiff.save()
                 # we store the update time of the table
-                markUpdated(model=DbAssetDiff, date_int=currentTime)
+                markUpdated(model=DbAssetDiff, date=currentTime)
             DbAsset.objects.all().delete()
         for asset in newItems.values() : asset.save()
         
         # we store the update time of the table
-        markUpdated(model=DbAsset, date_int=currentTime)
+        markUpdated(model=DbAsset, date=currentTime)
         
         
             

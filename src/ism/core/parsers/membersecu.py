@@ -35,10 +35,10 @@ def update(debug=False, cache=False):
         memberSecuApi = api.corp.MemberSecurity(characterID=API.CHAR_ID)
         checkApiVersion(memberSecuApi._meta.version)
         
-        currentTime = memberSecuApi._meta.currentTime
-        cachedUntil = memberSecuApi._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
-        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+        currentTime = datetime.fromtimestamp(memberSecuApi._meta.currentTime)
+        cachedUntil = datetime.fromtimestamp(memberSecuApi._meta.cachedUntil)
+        if DEBUG : print "current time : %s" % str(currentTime)
+        if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
         oldRoles  = {}
         oldTitles = {}
@@ -167,19 +167,19 @@ def storeRoles(date, oldRoles, newRoles):
         if roleDiffs:
             for d in roleDiffs: d.save()
             # we store the update time of the table
-            markUpdated(model=RoleMemberDiff, date_int=date)
+            markUpdated(model=RoleMemberDiff, date=date)
             
             RoleMembership.objects.all().delete()
             for rm in newRoles.values(): rm.save()
             # we store the update time of the table
-            markUpdated(model=RoleMembership, date_int=date)
+            markUpdated(model=RoleMembership, date=date)
         # if no diff, we do nothing
         return len(roleDiffs)
     else:
         # 1st import, no diff to write
         for rm in newRoles.values(): rm.save()
         # we store the update time of the table
-        markUpdated(model=RoleMembership, date_int=date)
+        markUpdated(model=RoleMembership, date=date)
         return 0
 
 #------------------------------------------------------------------------------
@@ -189,18 +189,18 @@ def storeTitles(date, oldTitles, newTitles):
         if titleDiffs:
             for d in titleDiffs: d.save()
             # we store the update time of the table
-            markUpdated(model=TitleMemberDiff, date_int=date)
+            markUpdated(model=TitleMemberDiff, date=date)
             
             TitleMembership.objects.all().delete()
             for tm in newTitles.values(): tm.save()
             # we store the update time of the table
-            markUpdated(model=TitleMembership, date_int=date)
+            markUpdated(model=TitleMembership, date=date)
         # if no diff, we do nothing
         return len(titleDiffs)
     else:
         # 1st import, no diff to write
         for tm in newTitles.values(): tm.save()
         # we store the update time of the table
-        markUpdated(model=TitleMembership, date_int=date)
+        markUpdated(model=TitleMembership, date=date)
         return 0
         

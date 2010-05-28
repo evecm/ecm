@@ -15,7 +15,6 @@ from ism.core.parsers import utils
 from ism.core.parsers.utils import checkApiVersion, markUpdated
 
 from datetime import datetime
-from ism.data.common.models import UpdateDate
 
 DEBUG = False # DEBUG mode
 
@@ -39,10 +38,10 @@ def update(debug=False, cache=False):
         titlesApi = api.corp.Titles(characterID=API.CHAR_ID)
         checkApiVersion(titlesApi._meta.version)
         
-        currentTime = titlesApi._meta.currentTime
-        cachedUntil = titlesApi._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
-        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+        currentTime = datetime.fromtimestamp(titlesApi._meta.currentTime)
+        cachedUntil = datetime.fromtimestamp(titlesApi._meta.cachedUntil)
+        if DEBUG : print "current time : %s" % str(currentTime)
+        if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
         newList = []
         # we get all the old TitleComposition from the database
@@ -51,24 +50,24 @@ def update(debug=False, cache=False):
         for title in titlesApi.titles:
             newList.extend(parseOneTitle(titleApi=title))
 
-        diffs = 0
+        diffs = []
         if len(oldList) != 0 :
             diffs = getDiffs(newList, oldList, currentTime)
             if diffs :
                 for d in diffs: d.save()
                 # we store the update time of the table
-                markUpdated(model=TitleCompoDiff, date_int=currentTime)
+                markUpdated(model=TitleCompoDiff, date=currentTime)
                  
                 TitleComposition.objects.all().delete()
                 for c in newList: c.save()
                 # we store the update time of the table
-                markUpdated(model=TitleComposition, date_int=currentTime)
+                markUpdated(model=TitleComposition, date=currentTime)
             # if no diff, we do nothing
         else:
             # 1st import
             for c in newList: c.save()
             # we store the update time of the table
-            markUpdated(model=TitleComposition, date_int=currentTime)
+            markUpdated(model=TitleComposition, date=currentTime)
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
 

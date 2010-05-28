@@ -30,10 +30,10 @@ def update(debug=False, cache=False):
         apiOutposts = api.eve.ConquerableStationList()
         checkApiVersion(apiOutposts._meta.version)
         
-        currentTime = apiOutposts._meta.currentTime
-        cachedUntil = apiOutposts._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
-        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+        currentTime = datetime.fromtimestamp(apiOutposts._meta.currentTime)
+        cachedUntil = datetime.fromtimestamp(apiOutposts._meta.cachedUntil)
+        if DEBUG : print "current time : %s" % str(currentTime)
+        if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
         if DEBUG : print "parsing api response..."
         Outpost.objects.all().delete()
@@ -45,7 +45,7 @@ def update(debug=False, cache=False):
                     corporationID=outpost.corporationID,
                     corporationName=outpost.corporationName).save()
         # we store the update time of the table
-        markUpdated(model=Outpost, date_int=currentTime)
+        markUpdated(model=Outpost, date=currentTime)
                     
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"

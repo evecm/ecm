@@ -33,10 +33,10 @@ def update(debug=False, cache=False):
         corpApi = api.corp.CorporationSheet(characterID=API.CHAR_ID)
         checkApiVersion(corpApi._meta.version)
 
-        currentTime = corpApi._meta.currentTime
-        cachedUntil = corpApi._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(datetime.fromtimestamp(currentTime))
-        if DEBUG : print "cached util  : %s" % str(datetime.fromtimestamp(cachedUntil))
+        currentTime = datetime.fromtimestamp(corpApi._meta.currentTime)
+        cachedUntil = datetime.fromtimestamp(corpApi._meta.cachedUntil)
+        if DEBUG : print "current time : %s" % str(currentTime)
+        if DEBUG : print "cached util  : %s" % str(cachedUntil)
 
         if DEBUG : print "parsing api response..."
         try:
@@ -64,7 +64,7 @@ def update(debug=False, cache=False):
             corp.save()
         
         # we store the update time of the table
-        markUpdated(model=Corp, date_int=currentTime)
+        markUpdated(model=Corp, date=currentTime)
         
         if DEBUG: 
             print "==============="
@@ -92,7 +92,7 @@ def update(debug=False, cache=False):
                 Hangar(hangarID=h_id, name=h_name).save()
         
         # we store the update time of the table
-        markUpdated(model=Hangar, date_int=currentTime)
+        markUpdated(model=Hangar, date=currentTime)
         
         if DEBUG: print "WALLET DIVISIONS:"
         for walletDiv in corpApi.walletDivisions :
@@ -110,7 +110,7 @@ def update(debug=False, cache=False):
                 Wallet(walletID=w_id, name=w_name).save()
         
         # we store the update time of the table
-        markUpdated(model=Wallet, date_int=currentTime)
+        markUpdated(model=Wallet, date=currentTime)
         
         # all ok
         if DEBUG : print "saving data to the database..."
