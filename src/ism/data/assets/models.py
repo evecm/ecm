@@ -10,14 +10,14 @@ from datetime import datetime
 
 #------------------------------------------------------------------------------
 class DbAsset(models.Model):
-    itemID = models.PositiveIntegerField(primary_key=True) # supposed to be unique
-    locationID = models.PositiveIntegerField() # ID of the station
-    hangarID = models.PositiveIntegerField() # hangar division
-    container1 = models.PositiveIntegerField(null=True, blank=True) # first container or ship
-    container2 = models.PositiveIntegerField(null=True, blank=True) # second container or ship
+    itemID = models.BigIntegerField(primary_key=True) # supposed to be unique
+    locationID = models.BigIntegerField() # ID of the station
+    hangarID = models.PositiveSmallIntegerField() # hangar division
+    container1 = models.BigIntegerField(null=True, blank=True) # first container or ship
+    container2 = models.BigIntegerField(null=True, blank=True) # second container or ship
     typeID = models.PositiveIntegerField(default=0) # item type ID from the EVE database
     quantity = models.PositiveIntegerField(default=0)
-    flag = models.PositiveIntegerField(default=0) # used to determine the state or path of the asset
+    flag = models.PositiveSmallIntegerField(default=0) # used to determine the state or path of the asset
     singleton = models.BooleanField(default=False) # true if assembled 
     hasContents = models.BooleanField(default=False) # true if item container
 
@@ -63,23 +63,13 @@ class DbAsset(models.Model):
         else: return False 
 #------------------------------------------------------------------------------
 class DbAssetDiff(models.Model):
-    locationID = models.PositiveIntegerField() # ID of the station
-    hangarID = models.PositiveIntegerField() # hangar division
+    locationID = models.BigIntegerField() # ID of the station
+    hangarID = models.PositiveSmallIntegerField() # hangar division
     typeID = models.PositiveIntegerField(default=0) # item type ID from the EVE database
     quantity = models.IntegerField(default=0)
     date = models.DateTimeField(db_index=True, default=datetime.now())
     new = models.BooleanField()
     
-#------------------------------------------------------------------------------
-class Outpost(models.Model):
-    stationID = models.PositiveIntegerField(primary_key=True)
-    stationName = models.CharField(max_length=256, default="")
-    stationTypeID = models.PositiveIntegerField()
-    solarSystemID = models.PositiveIntegerField()
-    corporationID = models.PositiveIntegerField()
-    corporationName = models.CharField(max_length=256, default="")
-    
-    def __unicode__(self):
-        return self.stationName
+
     
     

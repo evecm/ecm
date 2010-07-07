@@ -10,11 +10,10 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
-from django.db.models.aggregates import Max
 
 
-from ism.core.utils import limit_text_size, print_date, print_time
-from ism.data.roles.models import Member, MemberDiff
+from ism.core.utils import print_date
+from ism.data.roles.models import Member
 from ism.core.db import resolveLocationName
 from ism.data.common.models import UpdateDate
 

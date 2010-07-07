@@ -7,8 +7,7 @@ Created on 18 apr. 2010
 from ism.core.api import connection
 from ism.core.parsers.utils import checkApiVersion, markUpdated
 
-from datetime import datetime
-from ism.data.assets.models import Outpost
+from ism.data.common.models import Outpost
 
 from django.db import transaction
 
@@ -30,8 +29,8 @@ def update(debug=False, cache=False):
         apiOutposts = api.eve.ConquerableStationList()
         checkApiVersion(apiOutposts._meta.version)
         
-        currentTime = datetime.fromtimestamp(apiOutposts._meta.currentTime)
-        cachedUntil = datetime.fromtimestamp(apiOutposts._meta.cachedUntil)
+        currentTime = apiOutposts._meta.currentTime
+        cachedUntil = apiOutposts._meta.cachedUntil
         if DEBUG : print "current time : %s" % str(currentTime)
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
         

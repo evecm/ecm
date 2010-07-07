@@ -9,8 +9,8 @@ from django.db import models
 
 #------------------------------------------------------------------------------
 class Hangar(models.Model):
-    hangarID = models.PositiveIntegerField(primary_key=True)
-    name = models.CharField(max_length=100)
+    hangarID = models.PositiveSmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=128)
     accessLvl = models.PositiveIntegerField(default=100)
 
     def __unicode__(self):
@@ -18,8 +18,8 @@ class Hangar(models.Model):
 
 #------------------------------------------------------------------------------
 class Wallet(models.Model):
-    walletID = models.PositiveIntegerField(primary_key=True)
-    name = models.CharField(max_length=100)
+    walletID = models.PositiveSmallIntegerField(primary_key=True)
+    name = models.CharField(max_length=128)
     accessLvl = models.PositiveIntegerField(default=100)
     
     def __unicode__(self):
@@ -27,11 +27,11 @@ class Wallet(models.Model):
 
 #------------------------------------------------------------------------------
 class Corp(models.Model):
-    corporationID = models.IntegerField(primary_key=True)
+    corporationID = models.BigIntegerField(primary_key=True)
     corporationName = models.CharField(max_length=256)
     ticker = models.CharField(max_length=8)
-    ceoID = models.IntegerField()
-    stationID = models.IntegerField()
+    ceoID = models.BigIntegerField()
+    stationID = models.PositiveIntegerField()
     allianceName = models.CharField(max_length=256)
     taxRate = models.PositiveSmallIntegerField()
     memberLimit = models.SmallIntegerField()

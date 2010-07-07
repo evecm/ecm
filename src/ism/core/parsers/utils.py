@@ -11,7 +11,6 @@ from ism.constants import API_VERSION
 from ism.data.common.models import UpdateDate
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from ism.core.exceptions import DatabaseCorrupted
-from datetime import datetime
 
 
 
@@ -39,7 +38,6 @@ def allRoles():
 #------------------------------------------------------------------------------
 def checkApiVersion(version):
     if version != API_VERSION:
-        print version
         raise WrongApiVersion(version)
     
 #------------------------------------------------------------------------------   

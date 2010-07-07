@@ -6,12 +6,19 @@ Created on 17 mai 2010
 '''
 
 
-from django.contrib import admin, databrowse
-from ism.data.common.models import UpdateDate
+from django.contrib import admin
+from ism.data.common.models import UpdateDate, RefType, Outpost
 
 class UpdateDateAdmin(admin.ModelAdmin):
     list_display = ['model_name', 'update_date', 'prev_update']
     
+class RefTypeAdmin(admin.ModelAdmin):
+    list_display = ['refTypeID', 'refTypeName']
+    
+class OutpostAdmin(admin.ModelAdmin):
+    list_display = ['stationID', 'stationName', 'stationTypeID', 'solarSystemID', 
+                    'corporationID', 'corporationName']
     
 admin.site.register(UpdateDate, UpdateDateAdmin)
-databrowse.site.register(UpdateDate)
+admin.site.register(RefType, RefTypeAdmin)
+admin.site.register(Outpost, OutpostAdmin)

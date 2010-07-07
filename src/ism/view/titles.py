@@ -16,3 +16,5 @@ from django.views.decorators.csrf import csrf_protect
 def titles(request):
     return render_to_response("titles.html", {'MEDIA_URL' : MEDIA_URL,
                                               'PAGE_TITLE' : 'Home'})
+    
+    

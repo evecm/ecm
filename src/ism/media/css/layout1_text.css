@@ -141,7 +141,7 @@
     margin:0 0 0.2em 2px; 
     padding:0 0 0 12px; 
     line-height:1.4em; 
-    font-size:120%;
+   /* font-size:120%; */
     list-style-image: url(../img/bg_bullet_arrow.gif);
 }
 .main-content ul li.green {

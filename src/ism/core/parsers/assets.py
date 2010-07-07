@@ -11,12 +11,10 @@ from ism.core.api import connection
 from ism.core.api.connection import API
 from django.db import transaction
 from ism.core.parsers.utils import checkApiVersion, calcDiffs, markUpdated
-from ism.core.assets.constants import STATIONS_IDS, DELIVERIES_FLAG, OFFICE_TYPEID,\
-                                              HANGAR_FLAG, DELIVERIES_HANGAR_ID, BOOKMARK_TYPEID,\
-                                              NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
-                                              CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS
-from datetime import datetime
-
+from ism.core.assets.constants import STATIONS_IDS, OFFICE_TYPEID,\
+                                      HANGAR_FLAG, BOOKMARK_TYPEID,\
+                                      NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
+                                      CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS
 DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
@@ -38,8 +36,8 @@ def update(debug=False, cache=False):
         apiAssets = api.corp.AssetList(characterID=API.CHAR_ID)
         checkApiVersion(apiAssets._meta.version)
         
-        currentTime = datetime.fromtimestamp(apiAssets._meta.currentTime)
-        cachedUntil = datetime.fromtimestamp(apiAssets._meta.cachedUntil)
+        currentTime = apiAssets._meta.currentTime
+        cachedUntil = apiAssets._meta.cachedUntil
         if DEBUG : print "current time : %s" % str(currentTime)
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
@@ -56,8 +54,6 @@ def update(debug=False, cache=False):
             if row.locationID >= STATIONS_IDS :
                 if row.typeID == BOOKMARK_TYPEID :
                     continue # we don't give a flying @#!$ about the bookmarks...
-                elif row.flag == DELIVERIES_FLAG :
-                    isInDeliveries(item=row, newItems=newItems)
                 elif row.typeID == OFFICE_TYPEID :
                     isOffice(office=row, newItems=newItems)
                 elif row.flag in HANGAR_FLAG.keys() :
@@ -148,21 +144,6 @@ def __removeDuplicates(assetlist):
         # when we reach the end of the list we WILL get an IndexError, 
         # this is the only way to stop the loop :-)
         pass
-
-#------------------------------------------------------------------------------
-def isInDeliveries(item, newItems):
-    if item.typeID == BOOKMARK_TYPEID : 
-        return # we don't give a flying @#!$ about the bookmarks...
-    asset = assetFromRow(item)
-    asset.locationID = locationIDtoStationID(item.locationID)
-    asset.hangarID = DELIVERIES_HANGAR_ID
-    newItems[asset] = asset
-    try :
-        fillContents(container=asset, item=item, newItems=newItems)
-        asset.hasContents = True
-    except AttributeError :
-        pass
-    
 
 #------------------------------------------------------------------------------
 def isOffice(office, newItems):

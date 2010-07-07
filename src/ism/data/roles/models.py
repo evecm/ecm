@@ -13,15 +13,15 @@ from datetime import datetime
 #------------------------------------------------------------------------------
 class Member(models.Model):
     
-    characterID = models.PositiveIntegerField(primary_key=True)
-    name = models.CharField(max_length=100, db_index=True)
+    characterID = models.BigIntegerField(primary_key=True)
+    name = models.CharField(max_length=128, db_index=True)
     nickname = models.CharField(max_length=256, default="")
-    baseID = models.PositiveIntegerField(db_index=True, default=0)
+    baseID = models.BigIntegerField(db_index=True, default=0)
     corpDate = models.DateTimeField(db_index=True, default=datetime.now())
     lastLogin = models.DateTimeField(db_index=True, default=datetime.now())
     lastLogoff = models.DateTimeField(db_index=True, default=datetime.now())
-    locationID = models.IntegerField(default=0)
-    ship = models.CharField(max_length=100, default="")
+    locationID = models.BigIntegerField(default=0)
+    ship = models.CharField(max_length=128, default="")
  
     def getTitles(self):
         t_mem = TitleMembership.objects.filter(characterID=self.characterID)
@@ -79,10 +79,10 @@ class RoleType(models.Model):
     
 #------------------------------------------------------------------------------
 class Title(models.Model):
-    titleID = models.IntegerField(primary_key=True)
+    titleID = models.BigIntegerField(primary_key=True)
     titleName = models.CharField(max_length=256)
     members = models.ManyToManyField(Member, through='TitleMembership')
-    tiedToBase = models.IntegerField(default=0)
+    tiedToBase = models.BigIntegerField(default=0)
     
     def getRoles(self):
         t_compos = TitleComposition.objects.filter(titleID=self.titleID)
@@ -209,7 +209,7 @@ class TitleCompoDiff(models.Model):
         
 #------------------------------------------------------------------------------
 class MemberDiff(models.Model):
-    characterID = models.PositiveIntegerField(db_index=True)
+    characterID = models.BigIntegerField(db_index=True)
     name = models.CharField(max_length=100, db_index=True)
     nickname = models.CharField(max_length=256, db_index=True)
     # true if title is new for member, false if title was removed

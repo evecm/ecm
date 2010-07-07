@@ -54,28 +54,16 @@ function filter (phrase, _id){
         id="filterstring" 
         value="Filter" 
         onkeyup="filter(this, 'items_table', '1')" 
-        onclick="document.getElementById('filterstring').select()">
-    </input>
+        onclick="document.getElementById('filterstring').select()" />
 </form>
 
-
-<table id="items_table">
-  <thead> 
-    <tr>
-      <th class="top" scope="col" width="30%">Hangar</th>
-      <th class="top" scope="col" width="50%">Item</th>
-      <th class="top" scope="col" width="20%">Quantity</th>
-    </tr>
-  </thead>
-  <tbody> 
-{% for i in item_list %}
-    <tr class="row">
-      <td>{{ i.hangar }}</td>
-      <td>{{ i.name }}</td>
-      <td>{{ i.quantity }}</td>
-    </tr>
+{% for h in hangar_list %}
+  <ul>
+    <li><a href="/assets/{{ station_id }}/{{ h.hangarID }}">{{ h.name }}</a> - 
+        <span class="italic">({{ h.itemCount }} items)</span>
+    <div id="div_{{ h.hangarID }}" ></div>
+    </li>
+  </ul>
 {% endfor %}
-  </tbody> 
-</table>
 
 {% endblock %}

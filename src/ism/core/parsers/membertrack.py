@@ -9,7 +9,6 @@ from ism.data.roles.models import Member, MemberDiff
 from ism.core.api import connection
 from ism.core.api.connection import API
 from ism.core.parsers.utils import checkApiVersion, markUpdated
-from datetime import datetime
 
 DEBUG = False # DEBUG mode
 
@@ -32,8 +31,8 @@ def update(debug=False, cache=False):
         membersApi = api.corp.MemberTracking(characterID=API.CHAR_ID)
         checkApiVersion(membersApi._meta.version)
         
-        currentTime = datetime.fromtimestamp(membersApi._meta.currentTime)
-        cachedUntil = datetime.fromtimestamp(membersApi._meta.cachedUntil)
+        currentTime = membersApi._meta.currentTime
+        cachedUntil = membersApi._meta.cachedUntil
         if DEBUG : print "current time : %s" % str(currentTime)
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
@@ -75,10 +74,10 @@ def parseOneMember(member):
     id       = member["characterID"]
     name     = member["name"]
     nick     = member["title"]
-    corpDate = datetime.fromtimestamp(member["startDateTime"])
+    corpDate = member["startDateTime"]
     base     = member["baseID"]
-    login    = datetime.fromtimestamp(member["logonDateTime"])
-    logoff   = datetime.fromtimestamp(member["logoffDateTime"])
+    login    = member["logonDateTime"]
+    logoff   = member["logoffDateTime"]
     locID    = member["locationID"]
     ship     = member["shipType"]
     

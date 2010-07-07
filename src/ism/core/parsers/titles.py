@@ -38,8 +38,8 @@ def update(debug=False, cache=False):
         titlesApi = api.corp.Titles(characterID=API.CHAR_ID)
         checkApiVersion(titlesApi._meta.version)
         
-        currentTime = datetime.fromtimestamp(titlesApi._meta.currentTime)
-        cachedUntil = datetime.fromtimestamp(titlesApi._meta.cachedUntil)
+        currentTime = titlesApi._meta.currentTime
+        cachedUntil = titlesApi._meta.cachedUntil
         if DEBUG : print "current time : %s" % str(currentTime)
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
         

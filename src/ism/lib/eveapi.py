@@ -81,8 +81,9 @@ import urllib
 import copy
 
 from xml.parsers import expat
-from time import strptime
-from calendar import timegm
+#from time import strptime
+#from calendar import timegm
+from datetime import datetime
 
 proxy = None
 
@@ -326,10 +327,8 @@ def _autocast(s):
     if len(s) == 19 and s[10] == ' ':
         # it could be a date string
         try:
-            return max(0, int(timegm(strptime(s, "%Y-%m-%d %H:%M:%S"))))
-        except OverflowError:
-            pass
-        except ValueError:
+            return datetime.strptime(s, "%Y-%m-%d %H:%M:%S") 
+        except:
             pass
 
     # couldn't cast. return string unchanged.

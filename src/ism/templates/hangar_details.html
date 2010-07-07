@@ -1,0 +1,17 @@
+<table class="innerTable" id="table_{{ hangar_id }}" > 
+  <thead>
+    <tr>
+      <th class="top" scope="col" width="50%">Item</th>
+      <th class="top" scope="col" width="20%">Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for i in item_list %}
+    <tr class="row">
+      <td>{{ i.name }}</td>
+      <td>{{ i.quantity }}</td>
+    </tr>
+    <div id="container_"></div>
+{% endfor %}
+  </tbody>
+</table>

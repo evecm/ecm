@@ -12,8 +12,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from ism.core.parsers.utils import checkApiVersion, markUpdated
 
-from datetime import datetime
-
 DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
@@ -33,8 +31,8 @@ def update(debug=False, cache=False):
         corpApi = api.corp.CorporationSheet(characterID=API.CHAR_ID)
         checkApiVersion(corpApi._meta.version)
 
-        currentTime = datetime.fromtimestamp(corpApi._meta.currentTime)
-        cachedUntil = datetime.fromtimestamp(corpApi._meta.cachedUntil)
+        currentTime = corpApi._meta.currentTime
+        cachedUntil = corpApi._meta.cachedUntil
         if DEBUG : print "current time : %s" % str(currentTime)
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
 

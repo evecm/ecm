@@ -12,8 +12,6 @@ from ism.core.parsers import utils
 from django.db import transaction
 from ism.core.parsers.utils import checkApiVersion, calcDiffs, markUpdated
 
-from datetime import datetime
-
 DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
@@ -35,8 +33,8 @@ def update(debug=False, cache=False):
         memberSecuApi = api.corp.MemberSecurity(characterID=API.CHAR_ID)
         checkApiVersion(memberSecuApi._meta.version)
         
-        currentTime = datetime.fromtimestamp(memberSecuApi._meta.currentTime)
-        cachedUntil = datetime.fromtimestamp(memberSecuApi._meta.cachedUntil)
+        currentTime = memberSecuApi._meta.currentTime
+        cachedUntil = memberSecuApi._meta.cachedUntil
         if DEBUG : print "current time : %s" % str(currentTime)
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
