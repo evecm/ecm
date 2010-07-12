@@ -22,16 +22,17 @@ class Member(models.Model):
     lastLogoff = models.DateTimeField(db_index=True, default=datetime.now())
     locationID = models.BigIntegerField(default=0)
     ship = models.CharField(max_length=128, default="")
- 
+    accessLvl = models.PositiveIntegerField(default=0)
+
     def getTitles(self):
-        t_mem = TitleMembership.objects.filter(characterID=self.characterID)
-        ids = [ t.titleID for t in t_mem ]
-        return Title.objects.filter(titleID__in=ids)
+        t_mem = TitleMembership.objects.filter(member=self)
+        ids = [ t.title_id for t in t_mem ]
+        return list(Title.objects.filter(titleID__in=ids))
     
     def getRoles(self):
-        r_mem = RoleMembership.objects.filter(characterID=self.characterID)
-        ids = [ r.id for r in r_mem ]
-        return Role.objects.filter(role_id__in=ids)
+        r_mem = RoleMembership.objects.filter(member=self)
+        ids = [ r.role_id for r in r_mem ]
+        return list(Role.objects.filter(id__in=ids))
     
     def getImpliedRoles(self):
         roles = self.getRoles()
@@ -83,11 +84,12 @@ class Title(models.Model):
     titleName = models.CharField(max_length=256)
     members = models.ManyToManyField(Member, through='TitleMembership')
     tiedToBase = models.BigIntegerField(default=0)
+    accessLvl = models.PositiveIntegerField(default=0)
     
     def getRoles(self):
-        t_compos = TitleComposition.objects.filter(titleID=self.titleID)
+        t_compos = TitleComposition.objects.filter(title=self)
         ids = [ tc.role_id for tc in t_compos ]
-        return Role.objects.filter(role_id__in=ids)
+        return Role.objects.filter(id__in=ids)
         
     def getAccessLvl(self):
         roles = self.getRoles()
@@ -121,6 +123,11 @@ class Role(models.Model):
         if   self.hangar: return self.hangar.accessLvl
         elif self.wallet: return self.wallet.accessLvl
         else:             return self.accessLvl
+    
+    def getTitles(self):
+        t_compos = TitleComposition.objects.filter(role=self)
+        ids = [ tc.title_id for tc in t_compos ]
+        return Title.objects.filter(titleID__in=ids)
     
     def __hash__(self):
         return self.id

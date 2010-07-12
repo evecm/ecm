@@ -40,10 +40,18 @@ def update(debug=False, cache=False):
         
         # we get the old member list from the database
         oldList = list(Member.objects.all())
+        oldAccessLvls = {}
+
+        for m in oldList:
+            oldAccessLvls[m.characterID] = m.accessLvl
 
         for member in membersApi.members:
             newList.append(parseOneMember(member=member))
         
+        for m in newList:
+            try:    m.accessLvl = oldAccessLvls[m.characterID]
+            except: continue
+
         diffs = []
         if len(oldList) != 0 :
             diffs = getDiffs(newList, oldList, currentTime)

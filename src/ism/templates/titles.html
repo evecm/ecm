@@ -52,23 +52,25 @@ function filter (phrase, _id){
 <table id="titles_table">
   <thead> 
     <tr>
-      <th class="top" scope="col" width="30%">Name</th>
-      <th class="top" scope="col" width="30%">Access Level</th>
-{% for icon in title_icons %}
-      <th class="top" scope="col"><img src="{{ icon }}"></img></th>
+      <th class="top" scope="col" >Role Name</th>
+      <th class="top" scope="col" >Access Level</th>
+{% for t in title_list %}
+      <th class="top title-col" scope="col" ><img src="{{ t.icon }}"></img></th>
 {% endfor %}
     </tr>
   </thead>
   <tbody> 
 {% for r in role_list %}
     <tr class="row">
-      <td class="left">{{ r.name }}</th>
+      <td class="left" title="{{ r.description }}">{{ r.name }}</td>
       <td>{{ r.accessLvl }}</td>
-      <td>{{ m.corpDate }}</td>
-      <td>{{ m.lastLogin }}</td>
-      <td>{{ m.lastLogoff }}</td>
-      <td>{{ m.location|truncatewords:"5" }}</td>
-      <td>{{ m.ship }}</td>
+  {% for t in title_list %}
+      <td class="title-col" title="{{ t.name }}">
+        {% if r.id in t.roles %}
+        <img src="/static/img/redlens.png"></img>
+        {% endif %}
+      </td>
+  {% endfor %}
     </tr>
 {% endfor %}
   </tbody> 

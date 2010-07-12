@@ -6,7 +6,7 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-from ism.view import home, members, assets
+from ism.view import home, members, assets, titles
 from ism import settings
 
 from django.conf.urls.defaults import patterns, include
@@ -29,7 +29,7 @@ urlpatterns = patterns('',
     (r'^$', home.home),
     (r'^members/$', members.list),
     
-    
+    (r'^titles/$', titles.titles),
     
     
     (r'^assets/$', assets.stations),

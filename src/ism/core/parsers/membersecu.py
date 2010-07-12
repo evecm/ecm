@@ -5,7 +5,7 @@ Created on 11 feb. 2010
 @author: diabeteman
 '''
 from ism.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
-    TitleMemberDiff
+    TitleMemberDiff, Member
 from ism.core.api import connection
 from ism.core.api.connection import API
 from ism.core.parsers import utils
@@ -61,7 +61,12 @@ def update(debug=False, cache=False):
         
         # Store title changes 
         titleDiffs = storeTitles(currentTime, oldTitles, newTitles)
-        
+       
+        # update members access levels
+        for m in Member.objects.all():
+            m.accessLvl = m.getAccessLvl()
+            m.save() 
+
         if DEBUG : print "saving data to the database..."
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"

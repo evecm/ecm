@@ -34,9 +34,20 @@ def getMembers():
         m.lastLogin = print_date(m.lastLogin)
         m.lastLogoff = print_date(m.lastLogoff)
         m.location = resolveLocationName(m.locationID)
+        m.color = __getRowColor(m.accessLvl)
     return member_list
-    
-    
+
+
+def __getRowColor(level):
+    if   level ==     0 : return "row"
+    elif level <  14000 : return "row-blue"
+    elif level <  20000 : return "row-green"
+    elif level <  30000 : return "row-yellow"
+    elif level <  40000 : return "row-orange"
+    elif level <  60000 : return "row-red"
+    elif level < 200000 : return "row-purple"
+    else                : return "row-black"
+
 def getScanDate():
     date = UpdateDate.objects.get(model_name=Member.__name__) 
     return date.update_date

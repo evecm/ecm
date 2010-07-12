@@ -68,6 +68,12 @@ def update(debug=False, cache=False):
             for c in newList: c.save()
             # we store the update time of the table
             markUpdated(model=TitleComposition, date=currentTime)
+        
+        # update titles access levels
+        for t in Title.objects.all():
+            t.accessLvl = t.getAccessLvl()
+            t.save()
+            
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
 

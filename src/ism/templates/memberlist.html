@@ -64,8 +64,9 @@ function filter (phrase, _id){
 <table id="members_table">
   <thead> 
     <tr>
-      <th class="top" scope="col" width="16%">Name</th>
-      <th class="top" scope="col" width="24%">Nickname</th>
+      <th class="top" scope="col" width="15%">Name</th>
+      <th class="top" scope="col" width="20%">Nickname</th>
+      <th class="top" scope="col" width="5%" >Access Level</th>
       <th class="top" scope="col" width="10%">Corp Date</th>
       <th class="top" scope="col" width="10%">Last Login</th>
       <th class="top" scope="col" width="10%">Last Logoff</th>
@@ -78,6 +79,7 @@ function filter (phrase, _id){
     <tr class="row">
       <td class="left">{{ m.name }}</th>
       <td>{{ m.nickname|truncatewords:"6" }}</td>
+      <td class="{{ m.color }}">{{ m.accessLvl }}</td>
       <td>{{ m.corpDate }}</td>
       <td>{{ m.lastLogin }}</td>
       <td>{{ m.lastLogoff }}</td>
