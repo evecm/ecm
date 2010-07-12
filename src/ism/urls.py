@@ -27,12 +27,17 @@ urlpatterns = patterns('',
     
     
     (r'^$', home.home),
-    (r'^members/list/$', members.list),
+    (r'^members/$', members.list),
+    
+    
+    
+    
     (r'^assets/$', assets.stations),
     (r'^assets/(\d+)/$', assets.hangars),
     (r'^assets/(\d+)/(\d+)/$', assets.hangar_contents),
     (r'^assets/(\d+)/(\d+)/(\d+)/$', assets.can1_contents),
     (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)/$', assets.can2_contents),
-    
+    (r'^assets/search/$', assets.search_items),
+
     (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], static.serve, {'document_root' : settings.MEDIA_ROOT}),
 )

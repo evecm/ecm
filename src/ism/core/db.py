@@ -14,6 +14,7 @@ QUERY_ONE_TYPENAME = 'SELECT t.typeName, g.categoryID FROM invTypes t, invGroups
 QUERY_TYPENAMES = 'SELECT t.typeName, g.categoryID FROM invTypes t, invGroups g WHERE t.typeID IN %s AND t.groupID=g.groupID;'
 QUERY_STATION = 'SELECT stationName, stationTypeID FROM staStations WHERE stationID=%d;'
 QUERY_SYSTEM = 'SELECT solarSystemName FROM mapSolarSystems WHERE solarSystemID=%d;'
+QUERY_SEARCH_TYPE = 'SELECT typeID FROM invTypes WHERE published=1 AND typeName LIKE "%%%s%%";'
 
 CACHE_TYPES = {}
 CACHE_LOCATIONS = {}
@@ -42,6 +43,12 @@ def resolveTypeNames(typeIDs):
     for row in cursor :
         names[int(row[0])] = row[1]
     return names
+#------------------------------------------------------------------------------
+def getMatchingIdsFromString(string):
+    CONN_EVE = sqlite3.connect(EVE_DB_FILE)
+    cursor = CONN_EVE.cursor()
+    cursor.execute(QUERY_SEARCH_TYPE % string)
+    return [ id[0] for id in cursor ]
 #------------------------------------------------------------------------------
 def resolveLocationName(locationID):
     try:

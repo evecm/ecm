@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Titles{% endblock %}
+
+
+
+{% block header_scripts %}
+<script type="text/javascript">
+function filter (phrase, _id){
+    var words = phrase.value.toLowerCase().split(" ");
+    var table = document.getElementById(_id);
+    var ele;
+    for (var r = 1; r < table.rows.length; r++){
+        ele = table.rows[r].innerHTML.replace(/<[^>]+>/g,"");
+        var displayStyle = 'none';
+        for (var i = 0; i < words.length; i++) {
+            if (ele.toLowerCase().indexOf(words[i])>=0) {
+                displayStyle = '';
+            } else {
+                displayStyle = 'none';
+                break;
+            }
+        }
+        table.rows[r].style.display = displayStyle;
+    }
+}
+</script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/titles/">Titles</a></li>
+{% endblock %}
+
+{% block main_content %}
+
+<p class="center">Last update on {{ scan_date }}</p>
+
+<form class="filter">
+    <input 
+        type="text" 
+        name="filt" 
+        title="Type any string to filter out the lines in the table. The filter is not case sensitive and searches through all the columns." 
+        id="filterstring" 
+        value="Filter" 
+        onkeyup="filter(this, 'titles_table', '1')" 
+        onclick="document.getElementById('filterstring').select()">
+    </input>
+</form>
+
+<table id="titles_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" width="30%">Name</th>
+      <th class="top" scope="col" width="30%">Access Level</th>
+{% for icon in title_icons %}
+      <th class="top" scope="col"><img src="{{ icon }}"></img></th>
+{% endfor %}
+    </tr>
+  </thead>
+  <tbody> 
+{% for r in role_list %}
+    <tr class="row">
+      <td class="left">{{ r.name }}</th>
+      <td>{{ r.accessLvl }}</td>
+      <td>{{ m.corpDate }}</td>
+      <td>{{ m.lastLogin }}</td>
+      <td>{{ m.lastLogoff }}</td>
+      <td>{{ m.location|truncatewords:"5" }}</td>
+      <td>{{ m.ship }}</td>
+    </tr>
+{% endfor %}
+  </tbody> 
+</table>
+
+{% endblock %}

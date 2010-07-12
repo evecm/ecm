@@ -1,5 +1,5 @@
 /*
- * jsTree 1.0-rc1
+ * jsTree 1.0-rc2
  * http://jstree.com/
  *
  * Copyright (c) 2010 Ivan Bozhanov (vakata.com)
@@ -8,8 +8,8 @@
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  *
- * $Date: 2010-07-01 10:51:11 +0300 (четв, 01 юли 2010) $
- * $Revision: 191 $
+ * $Date: 2010-07-09 13:35:01 +0200 (ven., 09 juil. 2010) $
+ * $Revision: 197 $
  */
 
 /*jslint browser: true, onevar: true, undef: true, bitwise: true, strict: true */
@@ -82,7 +82,7 @@
 })(jQuery);
 
 /* 
- * jsTree core 1.0
+ * jsTree core
  */
 (function ($) {
 	// private variables 
@@ -286,6 +286,14 @@
 		if(/msie/.test(u) && parseInt(v, 10) == 7) { 
 			css_string += '.jstree li a { border-width:0 !important; padding:0px 2px !important; } ';
 		}
+		// correct ff2 lack of display:inline-block
+		if(!/compatible/.test(u) && /mozilla/.test(u) && parseFloat(v, 10) < 1.9) {
+			css_string += '' + 
+				'.jstree ins { display:-moz-inline-stack; position:relative; } ' + 
+				'.jstree a { display:-moz-inline-block; } ' + 
+				'.jstree .jstree-no-icons .jstree-checkbox { display:-moz-inline-stack !important; } ';
+				/* this shouldn't be here as it is theme specific */
+		}
 		$.vakata.css.add_sheet({ str : css_string });
 	});
 
@@ -298,10 +306,12 @@
 			html_titles	: false,
 			animation	: 500,
 			initially_open : [],
+			open_parents : true,
 			rtl			: false,
 			strings		: {
 				loading		: "Loading ...",
-				new_node	: "New node"
+				new_node	: "New node",
+				multiple_selection : "Multiple selection"
 			}
 		},
 		_fn : { 
@@ -310,7 +320,7 @@
 				if(this._get_settings().core.rtl) {
 					this.get_container().addClass("jstree-rtl").css("direction", "rtl");
 				}
-				this.get_container().html("<ul><li class='jstree-last jstree-leaf'><ins>&#160;</ins><a class='jstree-loading' href='#'><ins class='jstree-icon'>&#160;</ins>" + this._get_settings().core.strings.loading + "</a></li></ul>");
+				this.get_container().html("<ul><li class='jstree-last jstree-leaf'><ins>&#160;</ins><a class='jstree-loading' href='#'><ins class='jstree-icon'>&#160;</ins>" + this._get_string("loading") + "</a></li></ul>");
 				this.data.core.li_height = this.get_container().find("ul li.jstree-closed, ul li.jstree-leaf").eq(0).height() || 18;
 
 				this.get_container()
@@ -373,7 +383,7 @@
 			save_opened : function () {
 				var _this = this;
 				this.data.core.to_open = [];
-				this.get_container().find(".jstree-open").each(function () { 
+				this.get_container().find("li.jstree-open").each(function () { 
 					_this.data.core.to_open.push("#" + this.id.toString().replace(/^#/,"").replace('\\/','/').replace('/','\\/')); 
 				});
 				this.__callback(_this.data.core.to_open);
@@ -489,9 +499,20 @@
 				return p;
 			},
 
+			// string functions
+			_get_string : function (key) {
+				return this._get_settings().core.strings[key] || key;
+			},
+
 			is_open		: function (obj) { obj = this._get_node(obj); return obj && obj !== -1 && obj.hasClass("jstree-open"); },
 			is_closed	: function (obj) { obj = this._get_node(obj); return obj && obj !== -1 && obj.hasClass("jstree-closed"); },
 			is_leaf		: function (obj) { obj = this._get_node(obj); return obj && obj !== -1 && obj.hasClass("jstree-leaf"); },
+			correct_state	: function (obj) {
+				obj = this._get_node(obj);
+				if(!obj || obj === -1) { return false; }
+				obj.removeClass("jstree-closed jstree-open").addClass("jstree-leaf").children("ul").remove();
+				this.__callback({ "obj" : obj });
+			},
 			// open/close
 			open_node	: function (obj, callback, skip_animation) {
 				obj = this._get_node(obj);
@@ -504,6 +525,11 @@
 					this.load_node(obj, function () { t.open_node(obj, callback, skip_animation); }, callback);
 				}
 				else {
+					if(this._get_settings().core.open_parents) {
+						obj.parentsUntil(".jstree",".jstree-closed").each(function () {
+							t.open_node(this, false, true);
+						});
+					}
 					if(s) { obj.children("ul").css("display","none"); }
 					obj.removeClass("jstree-closed").addClass("jstree-open").children("a").removeClass("jstree-loading");
 					if(s) { obj.children("ul").stop(true).slideDown(s, function () { this.style.display = ""; }); }
@@ -545,11 +571,11 @@
 				// so that callback is fired AFTER all nodes are open
 				if(original_obj.find('li.jstree-closed').length === 0) { this.__callback({ "obj" : original_obj }); }
 			},
-			close_all	: function (obj) {
+			close_all	: function (obj, skip_animation) {
 				var _this = this;
 				obj = obj ? this._get_node(obj) : this.get_container();
 				if(!obj || obj === -1) { obj = this.get_container(); }
-				obj.find("li.jstree-open").andSelf().each(function () { _this.close_node(this); });
+				obj.find("li.jstree-open").andSelf().each(function () { _this.close_node(this, skip_animation); });
 				this.__callback({ "obj" : obj });
 			},
 			clean_node	: function (obj) {
@@ -593,7 +619,7 @@
 				if(!js) { js = {}; }
 				if(js.attr) { d.attr(js.attr); }
 				if(js.state) { d.addClass("jstree-" + js.state); }
-				if(!js.data) { js.data = s.strings.new_node; }
+				if(!js.data) { js.data = this._get_string("new_node"); }
 				if(!$.isArray(js.data)) { tmp = js.data; js.data = []; js.data.push(tmp); }
 				$.each(js.data, function (i, m) {
 					tmp = $("<a>");
@@ -769,7 +795,7 @@
 				var obj = prepared_move, ret = true;
 				if(obj.or[0] === obj.o[0]) { return false; }
 				obj.o.each(function () { 
-					if(obj.r.parentsUntil(".jstree").andSelf().filter("li").index(this) !== -1) { ret = false; return false; }
+					if(obj.r.parentsUntil(".jstree", "li").andSelf().index(this) !== -1) { ret = false; return false; }
 				});
 				return ret;
 			},
@@ -819,7 +845,7 @@
 //*/
 
 /* 
- * jsTree ui plugin 1.0
+ * jsTree ui plugin
  * This plugins handles selecting/deselecting/hovering/dehovering nodes
  */
 (function ($) {
@@ -854,7 +880,7 @@
 				.bind("close_node.jstree", $.proxy(function (event, data) { 
 						var s = this._get_settings().ui,
 							obj = this._get_node(data.rslt.obj),
-							clk = (obj && obj.length) ? obj.children("ul").find(".jstree-clicked") : $(),
+							clk = (obj && obj.length) ? obj.children("ul").find("a.jstree-clicked") : $(),
 							_this = this;
 						if(s.selected_parent_close === false || !clk.length) { return; }
 						clk.each(function () { 
@@ -865,20 +891,21 @@
 				.bind("delete_node.jstree", $.proxy(function (event, data) { 
 						var s = this._get_settings().ui.select_prev_on_delete,
 							obj = this._get_node(data.rslt.obj),
-							clk = (obj && obj.length) ? obj.find(".jstree-clicked") : [],
+							clk = (obj && obj.length) ? obj.find("a.jstree-clicked") : [],
 							_this = this;
 						clk.each(function () { _this.deselect_node(this); });
 						if(s && clk.length) { this.select_node(data.rslt.prev); }
 					}, this))
 				.bind("move_node.jstree", $.proxy(function (event, data) { 
 						if(data.rslt.cy) { 
-							data.rslt.oc.find(".jstree-clicked").removeClass("jstree-clicked");
+							data.rslt.oc.find("a.jstree-clicked").removeClass("jstree-clicked");
 						}
 					}, this));
 		},
 		defaults : {
 			select_limit : -1, // 0, 1, 2 ... or -1 for unlimited
 			select_multiple_modifier : "ctrl", // on, or ctrl, shift, alt
+			select_range_modifier : "shift",
 			selected_parent_close : "select_parent", // false, "deselect", "select_parent"
 			select_prev_on_delete : true,
 			disable_selecting_children : false,
@@ -930,14 +957,26 @@
 				if(obj == -1 || !obj || !obj.length) { return false; }
 				var s = this._get_settings().ui,
 					is_multiple = (s.select_multiple_modifier == "on" || (s.select_multiple_modifier !== false && e && e[s.select_multiple_modifier + "Key"])),
+					is_range = (s.select_range_modifier !== false && e && e[s.select_range_modifier + "Key"] && this.data.ui.last_selected && this.data.ui.last_selected[0] !== obj[0] && this.data.ui.last_selected.parent()[0] === obj.parent()[0]),
 					is_selected = this.is_selected(obj),
-					proceed = true;
+					proceed = true,
+					t = this;
 				if(check) {
-					if(s.disable_selecting_children && is_multiple && obj.parents("li", this.get_container()).children(".jstree-clicked").length) {
+					if(s.disable_selecting_children && is_multiple && obj.parentsUntil(".jstree","li").children("a.jstree-clicked").length) {
 						return false;
 					}
 					proceed = false;
 					switch(!0) {
+						case (is_range):
+							this.data.ui.last_selected.addClass("jstree-last-selected");
+							obj = obj[ obj.index() < this.data.ui.last_selected.index() ? "nextUntil" : "prevUntil" ](".jstree-last-selected").andSelf();
+							this.data.ui.last_selected.removeClass("jstree-last-selected");
+							this.data.ui.selected.each(function () {
+								if(this !== t.data.ui.last_selected[0]) { t.deselect_node(this); }
+							});
+							is_selected = false;
+							proceed = true;
+							break;
 						case (is_selected && !is_multiple): 
 							this.deselect_all();
 							is_selected = false;
@@ -960,9 +999,9 @@
 					}
 				}
 				if(proceed && !is_selected) {
+					if(!is_range) { this.data.ui.last_selected = obj; }
 					obj.children("a").addClass("jstree-clicked");
 					this.data.ui.selected = this.data.ui.selected.add(obj);
-					this.data.ui.last_selected = obj;
 					this.__callback({ "obj" : obj });
 				}
 			},
@@ -984,14 +1023,14 @@
 			},
 			is_selected : function (obj) { return this.data.ui.selected.index(this._get_node(obj)) >= 0; },
 			get_selected : function (context) { 
-				return context ? $(context).find(".jstree-clicked").parent() : this.data.ui.selected; 
+				return context ? $(context).find("a.jstree-clicked").parent() : this.data.ui.selected; 
 			},
 			deselect_all : function (context) {
-				if(context) { $(context).find(".jstree-clicked").removeClass("jstree-clicked"); } 
-				else { this.get_container().find(".jstree-clicked").removeClass("jstree-clicked"); }
+				var ret = context ? $(context).find("a.jstree-clicked").parent() : this.get_container().find("a.jstree-clicked").parent();
+				ret.children("a.jstree-clicked").removeClass("jstree-clicked");
 				this.data.ui.selected = $([]);
 				this.data.ui.last_selected = false;
-				this.__callback();
+				this.__callback({ "obj" : ret });
 			}
 		}
 	});
@@ -1001,7 +1040,7 @@
 //*/
 
 /* 
- * jsTree CRRM plugin 1.0
+ * jsTree CRRM plugin
  * Handles creating/renaming/removing/moving nodes by user interaction.
  */
 (function ($) {
@@ -1067,6 +1106,10 @@
 							else {
 								h2.width(Math.min(h1.text("pW" + this.value).width(),w));
 							}
+						},
+						"keypress" : function(event) {
+							var key = event.keyCode || event.which;
+							if(key == 13) { return false; }
 						}
 					})
 				).children("input"); 
@@ -1166,7 +1209,7 @@
 })(jQuery);
 
 /* 
- * jsTree themes plugin 1.0
+ * jsTree themes plugin
  * Handles loading and setting themes, as well as detecting path to themes, etc.
  */
 (function ($) {
@@ -1245,7 +1288,7 @@
 //*/
 
 /*
- * jsTree hotkeys plugin 1.0
+ * jsTree hotkeys plugin
  * Enables keyboard navigation for all tree instances
  * Depends on the jstree ui & jquery hotkeys plugins
  */
@@ -1378,9 +1421,9 @@
 							var ef = this.get_settings().json_data.ajax.error; 
 							if(ef) { ef.call(this, x, t, e); }
 							if(obj != -1 && obj.length) {
-								obj.children(".jstree-loading").removeClass("jstree-loading");
+								obj.children("a.jstree-loading").removeClass("jstree-loading");
 								obj.data("jstree-is-loading",false);
-								if(t === "success" && s.correct_state) { obj.removeClass("jstree-open jstree-closed").addClass("jstree-leaf"); }
+								if(t === "success" && s.correct_state) { this.correct_state(obj); }
 							}
 							else {
 								if(t === "success" && s.correct_state) { this.get_container().children("ul").empty(); }
@@ -1390,13 +1433,13 @@
 						success_func = function (d, t, x) {
 							var sf = this.get_settings().json_data.ajax.success; 
 							if(sf) { d = sf.call(this,d,t,x) || d; }
-							if(d === "" || (!$.isArray(d) && !$.isPlainObject(d))) {
+							if(d === "" || (d && d.toString && d.toString().replace(/^[\s\n]+$/,"") == "") || (!$.isArray(d) && !$.isPlainObject(d))) {
 								return error_func.call(this, x, t, "");
 							}
 							d = this._parse_json(d);
 							if(d) {
 								if(obj === -1 || !obj) { this.get_container().children("ul").empty().append(d.children()); }
-								else { obj.append(d).children(".jstree-loading").removeClass("jstree-loading"); obj.data("jstree-is-loading",false); }
+								else { obj.append(d).children("a.jstree-loading").removeClass("jstree-loading"); obj.data("jstree-is-loading",false); }
 								this.clean_node(obj);
 								if(s_call) { s_call.call(this); }
 							}
@@ -1408,10 +1451,10 @@
 									}
 								}
 								else {
-									obj.children(".jstree-loading").removeClass("jstree-loading");
+									obj.children("a.jstree-loading").removeClass("jstree-loading");
 									obj.data("jstree-is-loading",false);
 									if(s.correct_state) { 
-										obj.removeClass("jstree-open jstree-closed").addClass("jstree-leaf"); 
+										this.correct_state(obj);
 										if(s_call) { s_call.call(this); } 
 									}
 								}
@@ -1572,7 +1615,7 @@
 //*/
 
 /* 
- * jsTree languages plugin 1.0
+ * jsTree languages plugin
  * Adds support for multiple language versions in one tree
  * This basically allows for many titles coexisting in one node, but only one of them being visible at any given time
  * This is useful for maintaining the same structure in many languages (hence the name of the plugin)
@@ -1602,6 +1645,16 @@
 			},
 			get_lang : function () {
 				return this.data.languages.current_language;
+			},
+			_get_string : function (key, lang) {
+				var langs = this._get_settings().languages,
+					s = this._get_settings().core.strings;
+				if($.isArray(langs) && langs.length) {
+					lang = (lang && $.inArray(lang,langs) != -1) ? lang : this.data.languages.current_language;
+				}
+				if(s[lang] && s[lang][key]) { return s[lang][key]; }
+				if(s[key]) { return s[key]; }
+				return key;
 			},
 			get_text : function (obj, lang) {
 				obj = this._get_node(obj) || this.data.ui.last_selected;
@@ -1684,7 +1737,7 @@
 //*/
 
 /*
- * jsTree cookies plugin 1.0
+ * jsTree cookies plugin
  * Stores the currently opened/selected nodes in a cookie and then restores them
  * Depends on the jquery.cookie plugin
  */
@@ -1757,7 +1810,7 @@
 //*/
 
 /*
- * jsTree sort plugin 1.0
+ * jsTree sort plugin
  * Sorts items alphabetically (or using any other function)
  */
 (function ($) {
@@ -1792,7 +1845,7 @@
 //*/
 
 /*
- * jsTree DND plugin 1.0
+ * jsTree DND plugin
  * Drag and drop plugin for moving/copying nodes
  */
 (function ($) {
@@ -1878,6 +1931,8 @@
 			$(document).triggerHandler("drag.vakata", { "event" : e, "data" : $.vakata.dnd.user_data });
 		},
 		drag_stop : function (e) {
+			if(sli) { clearInterval(sli); }
+			if(sti) { clearInterval(sti); }
 			$(document).unbind("mousemove", $.vakata.dnd.drag);
 			$(document).unbind("mouseup", $.vakata.dnd.drag_stop);
 			$(document).triggerHandler("drag_stop.vakata", { "event" : e, "data" : $.vakata.dnd.user_data });
@@ -2003,6 +2058,10 @@
 
 			$(document)
 				.bind("drag_stop.vakata", $.proxy(function () {
+						if(this.data.dnd.to1) { clearTimeout(this.data.dnd.to1); }
+						if(this.data.dnd.to2) { clearTimeout(this.data.dnd.to2); }
+						if(this.data.dnd.i1) { clearInterval(this.data.dnd.i1); }
+						if(this.data.dnd.i2) { clearInterval(this.data.dnd.i2); }
 						this.data.dnd.after		= false;
 						this.data.dnd.before	= false;
 						this.data.dnd.inside	= false;
@@ -2011,6 +2070,8 @@
 						this.data.dnd.w			= false;
 						this.data.dnd.to1		= false;
 						this.data.dnd.to2		= false;
+						this.data.dnd.i1		= false;
+						this.data.dnd.i2		= false;
 						this.data.dnd.active	= false;
 						this.data.dnd.foreign	= false;
 						if(m) { m.css({ "top" : "-2000px" }); }
@@ -2185,7 +2246,7 @@
 			start_drag : function (obj, e) {
 				o = this._get_node(obj);
 				if(this.data.ui && this.is_selected(o)) { o = this._get_node(null, true); }
-				$.vakata.dnd.drag_start(e, { jstree : true, obj : o }, "<ins class='jstree-icon'></ins>" + (o.length > 1 ? "Multiple selection" : this.get_text(o)) );
+				$.vakata.dnd.drag_start(e, { jstree : true, obj : o }, "<ins class='jstree-icon'></ins>" + (o.length > 1 ? this._get_string("multiple_selection") : this.get_text(o)) );
 				if(this.data.themes) { 
 					m.attr("class", "jstree-" + this.data.themes.theme); 
 					$.vakata.dnd.helper.attr("class", "jstree-dnd-helper jstree-" + this.data.themes.theme); 
@@ -2219,7 +2280,7 @@
 //*/
 
 /*
- * jsTree checkbox plugin 1.0
+ * jsTree checkbox plugin
  * Inserts checkboxes in front of every node
  * Depends on the ui plugin
  * DOES NOT WORK NICELY WITH MULTITREE DRAG'N'DROP
@@ -2246,7 +2307,7 @@
 					}, this));
 		},
 		__destroy : function () {
-			this.get_container().find(".jstree-checkbox").remove();
+			this.get_container().find("ins.jstree-checkbox").remove();
 		},
 		_fn : {
 			_prepare_checkboxes : function (obj) {
@@ -2262,6 +2323,7 @@
 			},
 			change_state : function (obj, state) {
 				obj = this._get_node(obj);
+				if(!obj || obj === -1) { return; }
 				state = (state === false || state === true) ? state : obj.hasClass("jstree-checked");
 				if(state) { obj.find("li").andSelf().removeClass("jstree-checked jstree-undetermined").addClass("jstree-unchecked"); }
 				else { 
@@ -2272,7 +2334,7 @@
 				obj.parentsUntil(".jstree", "li").each(function () {
 					var $this = $(this);
 					if(state) {
-						if($this.children("ul").children(".jstree-checked, .jstree-undetermined").length) {
+						if($this.children("ul").children("li.jstree-checked, li.jstree-undetermined").length) {
 							$this.parentsUntil(".jstree", "li").andSelf().removeClass("jstree-checked jstree-unchecked").addClass("jstree-undetermined");
 							return false;
 						}
@@ -2281,7 +2343,7 @@
 						}
 					}
 					else {
-						if($this.children("ul").children(".jstree-unchecked, .jstree-undetermined").length) {
+						if($this.children("ul").children("li.jstree-unchecked, li.jstree-undetermined").length) {
 							$this.parentsUntil(".jstree", "li").andSelf().removeClass("jstree-checked jstree-unchecked").addClass("jstree-undetermined");
 							return false;
 						}
@@ -2586,9 +2648,9 @@
 							var ef = this.get_settings().xml_data.ajax.error; 
 							if(ef) { ef.call(this, x, t, e); }
 							if(obj !== -1 && obj.length) {
-								obj.children(".jstree-loading").removeClass("jstree-loading");
+								obj.children("a.jstree-loading").removeClass("jstree-loading");
 								obj.data("jstree-is-loading",false);
-								if(t === "success" && s.correct_state) { obj.removeClass("jstree-open jstree-closed").addClass("jstree-leaf"); }
+								if(t === "success" && s.correct_state) { this.correct_state(obj); }
 							}
 							else {
 								if(t === "success" && s.correct_state) { this.get_container().children("ul").empty(); }
@@ -2599,7 +2661,7 @@
 							d = x.responseText;
 							var sf = this.get_settings().xml_data.ajax.success; 
 							if(sf) { d = sf.call(this,d,t,x) || d; }
-							if(d == "") {
+							if(d == "" || (d && d.toString && d.toString().replace(/^[\s\n]+$/,"") == "")) {
 								return error_func.call(this, x, t, "");
 							}
 							this.parse_xml(d, $.proxy(function (d) {
@@ -2608,16 +2670,16 @@
 									if(d.length > 10) {
 										d = $(d);
 										if(obj === -1 || !obj) { this.get_container().children("ul").empty().append(d.children()); }
-										else { obj.children(".jstree-loading").removeClass("jstree-loading"); obj.append(d); obj.data("jstree-is-loading",false); }
+										else { obj.children("a.jstree-loading").removeClass("jstree-loading"); obj.append(d); obj.data("jstree-is-loading",false); }
 										if(s.clean_node) { this.clean_node(obj); }
 										if(s_call) { s_call.call(this); }
 									}
 									else {
 										if(obj && obj !== -1) { 
-											obj.children(".jstree-loading").removeClass("jstree-loading");
+											obj.children("a.jstree-loading").removeClass("jstree-loading");
 											obj.data("jstree-is-loading",false);
 											if(s.correct_state) { 
-												obj.removeClass("jstree-open jstree-closed").addClass("jstree-leaf"); 
+												this.correct_state(obj);
 												if(s_call) { s_call.call(this); } 
 											}
 										}
@@ -2712,7 +2774,7 @@
 //*/
 
 /*
- * jsTree search plugin 1.0
+ * jsTree search plugin
  * Enables both sync and async search on the tree
  * DOES NOT WORK WITH JSON PROGRESSIVE RENDER
  */
@@ -2738,7 +2800,7 @@
 					success_func = function () { };
 				this.data.search.str = str;
 
-				if(!skip_async && s.ajax !== false && this.get_container().find(".jstree-closed:eq(0)").length > 0) {
+				if(!skip_async && s.ajax !== false && this.get_container().find("li.jstree-closed:eq(0)").length > 0) {
 					this.search.supress_callback = true;
 					error_func = function () { };
 					success_func = function (d, t, x) {
@@ -2759,7 +2821,7 @@
 				}
 				if(this.data.search.result.length) { this.clear_search(); }
 				this.data.search.result = this.get_container().find("a" + (this.data.languages ? "." + this.get_lang() : "" ) + ":" + (s.case_insensitive ? "jstree_contains" : "contains") + "(" + this.data.search.str + ")");
-				this.data.search.result.addClass("jstree-search").parents(".jstree-closed").each(function () {
+				this.data.search.result.addClass("jstree-search").parent().parents(".jstree-closed").each(function () {
 					t.open_node(this, false, true);
 				});
 				this.__callback({ nodes : this.data.search.result, str : str });
@@ -2796,7 +2858,30 @@
 //*/
 
 /*
- * jsTree contextmenu plugin 1.0
+ * jsTree advanced search plugin
+ * Enables hiding all the non-matching nodes! NOTE: This is heavy on the DOM/browser!
+ */
+(function ($) {
+	$.jstree.plugin("adv_search", {
+		__init : function () {
+			if(!this.data.search) { throw "jsTree adv_search: jsTree search plugin not included."; }
+			this.get_container()
+				.bind("search.jstree", function (e, data) {
+					$(this).find("li").hide().removeClass("jstree-last");
+					data.rslt.nodes.parentsUntil(".jstree").andSelf().show()
+						.filter("ul").each(function () { $(this).children("li:visible").eq(-1).addClass("jstree-last"); });
+				})
+				.bind("clear_search.jstree", function () {
+					$(this).find("li").css("display","");
+					$(this).jstree("clean_node", -1);
+				});
+		}
+	});
+})(jQuery);
+//*/
+
+/* 
+ * jsTree contextmenu plugin
  */
 (function ($) {
 	$.vakata.context = {
@@ -3060,7 +3145,7 @@
 //*/
 
 /* 
- * jsTree types plugin 1.0
+ * jsTree types plugin
  * Adds support types of nodes
  * You can set an attribute on each li node, that represents its type.
  * According to the type setting the node may get custom icon/validation rules
@@ -3101,7 +3186,7 @@
 								( 
 									(s[t] && typeof s[t][data.func] !== "undefined") || 
 									(s["default"] && typeof s["default"][data.func] !== "undefined")
-								) && !this._check(data.func, data.args[0])
+								) && this._check(data.func, data.args[0]) === false
 							) {
 								e.stopImmediatePropagation();
 								return false;
@@ -3304,9 +3389,9 @@
 							var ef = this.get_settings().html_data.ajax.error; 
 							if(ef) { ef.call(this, x, t, e); }
 							if(obj != -1 && obj.length) {
-								obj.children(".jstree-loading").removeClass("jstree-loading");
+								obj.children("a.jstree-loading").removeClass("jstree-loading");
 								obj.data("jstree-is-loading",false);
-								if(t === "success" && s.correct_state) { obj.removeClass("jstree-open jstree-closed").addClass("jstree-leaf"); }
+								if(t === "success" && s.correct_state) { this.correct_state(obj); }
 							}
 							else {
 								if(t === "success" && s.correct_state) { this.get_container().children("ul").empty(); }
@@ -3316,23 +3401,23 @@
 						success_func = function (d, t, x) {
 							var sf = this.get_settings().html_data.ajax.success; 
 							if(sf) { d = sf.call(this,d,t,x) || d; }
-							if(d == "") {
+							if(d == "" || (d && d.toString && d.toString().replace(/^[\s\n]+$/,"") == "")) {
 								return error_func.call(this, x, t, "");
 							}
 							if(d) {
 								d = $(d);
 								if(!d.is("ul")) { d = $("<ul>").append(d); }
 								if(obj == -1 || !obj) { this.get_container().children("ul").empty().append(d.children()).find("li, a").filter(function () { return this.firstChild.tagName !== "INS"; }).prepend("<ins class='jstree-icon'>&#160;</ins>").end().filter("a").children("ins:first-child").not(".jstree-icon").addClass("jstree-icon"); }
-								else { obj.children(".jstree-loading").removeClass("jstree-loading"); obj.append(d).find("li, a").filter(function () { return this.firstChild.tagName !== "INS"; }).prepend("<ins class='jstree-icon'>&#160;</ins>").end().filter("a").children("ins:first-child").not(".jstree-icon").addClass("jstree-icon"); obj.data("jstree-is-loading",false); }
+								else { obj.children("a.jstree-loading").removeClass("jstree-loading"); obj.append(d).find("li, a").filter(function () { return this.firstChild.tagName !== "INS"; }).prepend("<ins class='jstree-icon'>&#160;</ins>").end().filter("a").children("ins:first-child").not(".jstree-icon").addClass("jstree-icon"); obj.data("jstree-is-loading",false); }
 								this.clean_node(obj);
 								if(s_call) { s_call.call(this); }
 							}
 							else {
 								if(obj && obj !== -1) {
-									obj.children(".jstree-loading").removeClass("jstree-loading");
+									obj.children("a.jstree-loading").removeClass("jstree-loading");
 									obj.data("jstree-is-loading",false);
 									if(s.correct_state) { 
-										obj.removeClass("jstree-open jstree-closed").addClass("jstree-leaf"); 
+										this.correct_state(obj);
 										if(s_call) { s_call.call(this); } 
 									}
 								}
@@ -3362,7 +3447,7 @@
 //*/
 
 /* 
- * jsTree themeroller plugin 1.0
+ * jsTree themeroller plugin
  * Adds support for jQuery UI themes. Include this at the end of your plugins list, also make sure "themes" is not included.
  */
 (function ($) {
@@ -3384,15 +3469,30 @@
 						this._themeroller();
 					}, this))
 				.bind("close_node.jstree", $.proxy(function (e, data) {
-						data.rslt.obj.children("ins").removeClass(s.opened).addClass(s.closed);
+						this._themeroller(data.rslt.obj);
+					}, this))
+				.bind("correct_state.jstree", $.proxy(function (e, data) {
+						data.rslt.obj
+							.children("ins.jstree-icon").removeClass(s.opened + " " + s.closed + " ui-icon").end()
+							.find("> a > ins.ui-icon")
+								.filter(function() { 
+									return this.className.toString()
+										.replace(s.item_clsd,"").replace(s.item_open,"").replace(s.item_leaf,"")
+										.indexOf("ui-icon-") === -1; 
+								}).removeClass(s.item_open + " " + s.item_clsd).addClass(s.item_leaf || "jstree-no-icon");
 					}, this))
 				.bind("select_node.jstree", $.proxy(function (e, data) {
 						data.rslt.obj.children("a").addClass(s.item_a);
 					}, this))
 				.bind("deselect_node.jstree deselect_all.jstree", $.proxy(function (e, data) {
 						this.get_container()
-							.find("." + s.item_a).removeClass(s.item_a).end()
-							.find(".jstree-clicked").addClass(s.item_a);
+							.find("a." + s.item_a).removeClass(s.item_a).end()
+							.find("a.jstree-clicked").addClass(s.item_a);
+					}, this))
+				.bind("hover_node.jstree", $.proxy(function (e, data) {
+						this.get_container()
+							.find("a." + s.item_h).not(data.rslt.obj).removeClass(s.item_h);
+						data.rslt.obj.children("a").addClass(s.item_h);
 					}, this))
 				.bind("move_node.jstree", $.proxy(function (e, data) {
 						this._themeroller(data.rslt.o);
@@ -3414,30 +3514,65 @@
 				var s = this._get_settings().themeroller;
 				obj = !obj || obj == -1 ? this.get_container() : this._get_node(obj).parent();
 				obj
-					.find("li.jstree-closed > ins.jstree-icon").removeClass(s.opened).addClass("ui-icon " + s.closed).end()
-					.find("li.jstree-open > ins.jstree-icon").removeClass(s.closed).addClass("ui-icon " + s.opened).end()
-					.find("a").addClass(s.item)
-						.children("ins.jstree-icon").addClass("ui-icon " + s.item_icon);
+					.find("li.jstree-closed")
+						.children("ins.jstree-icon").removeClass(s.opened).addClass("ui-icon " + s.closed).end()
+						.children("a").addClass(s.item)
+							.children("ins.jstree-icon").addClass("ui-icon")
+								.filter(function() { 
+									return this.className.toString()
+										.replace(s.item_clsd,"").replace(s.item_open,"").replace(s.item_leaf,"")
+										.indexOf("ui-icon-") === -1; 
+								}).removeClass(s.item_leaf + " " + s.item_open).addClass(s.item_clsd || "jstree-no-icon")
+								.end()
+							.end()
+						.end()
+					.end()
+					.find("li.jstree-open")
+						.children("ins.jstree-icon").removeClass(s.closed).addClass("ui-icon " + s.opened).end()
+						.children("a").addClass(s.item)
+							.children("ins.jstree-icon").addClass("ui-icon")
+								.filter(function() { 
+									return this.className.toString()
+										.replace(s.item_clsd,"").replace(s.item_open,"").replace(s.item_leaf,"")
+										.indexOf("ui-icon-") === -1; 
+								}).removeClass(s.item_leaf + " " + s.item_clsd).addClass(s.item_open || "jstree-no-icon")
+								.end()
+							.end()
+						.end()
+					.end()
+					.find("li.jstree-leaf")
+						.children("ins.jstree-icon").removeClass(s.closed + " ui-icon " + s.opened).end()
+						.children("a").addClass(s.item)
+							.children("ins.jstree-icon").addClass("ui-icon")
+								.filter(function() { 
+									return this.className.toString()
+										.replace(s.item_clsd,"").replace(s.item_open,"").replace(s.item_leaf,"")
+										.indexOf("ui-icon-") === -1; 
+								}).removeClass(s.item_clsd + " " + s.item_open).addClass(s.item_leaf || "jstree-no-icon");
 			}
 		},
 		defaults : {
-			"opened" : "ui-icon-triangle-1-se",
-			"closed" : "ui-icon-triangle-1-e",
-			"item" : "ui-state-default",
-			"item_h" : "ui-state-hover",
-			"item_a" : "ui-state-active",
-			"item_icon" : "ui-icon-folder-collapsed"
+			"opened"	: "ui-icon-triangle-1-se",
+			"closed"	: "ui-icon-triangle-1-e",
+			"item"		: "ui-state-default",
+			"item_h"	: "ui-state-hover",
+			"item_a"	: "ui-state-active",
+			"item_open"	: "ui-icon-folder-open",
+			"item_clsd"	: "ui-icon-folder-collapsed",
+			"item_leaf"	: "ui-icon-document"
 		}
 	});
 	$(function() {
-		var css_string = '.jstree .ui-icon { overflow:visible; } .jstree a { padding:0 2px; }';
+		var css_string = '' + 
+			'.jstree .ui-icon { overflow:visible; } .jstree a { padding:0 2px; } ' + 
+			'.jstree .jstree-no-icon { display:none; }';
 		$.vakata.css.add_sheet({ str : css_string });
 	});
 })(jQuery);
 //*/
 
 /* 
- * jsTree unique plugin 1.0
+ * jsTree unique plugin
  * Forces different names amongst siblings (still a bit experimental)
  * NOTE: does not check language versions (it will not be possible to have nodes with the same title, even in different languages)
  */
@@ -3465,7 +3600,7 @@
 									if(!p || p === -1) { p = this.get_container(); }
 								}
 								if(typeof data.args[2] === "string") { nms.push(data.args[2]); }
-								else if(!data.args[2] || !data.args[2].data) { nms.push(this._get_settings().core.strings.new_node); }
+								else if(!data.args[2] || !data.args[2].data) { nms.push(this._get_string("new_node")); }
 								else { nms.push(data.args[2].data); }
 								res = this._check_unique(nms, p.find("> ul > li"));
 							}

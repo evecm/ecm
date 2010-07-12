@@ -8,26 +8,6 @@
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/tablesorter.css" />
 <script type="text/javascript" src="/static/js/jquery.js"></script>
 <script type="text/javascript" src="/static/js/jquery.jstree.js"></script>
-<script type="text/javascript">
-function filter (phrase, _id){
-    var words = phrase.value.toLowerCase().split(" ");
-    var table = document.getElementById(_id);
-    var ele;
-    for (var r = 1; r < table.rows.length; r++){
-        ele = table.rows[r].innerHTML.replace(/<[^>]+>/g,"");
-        var displayStyle = 'none';
-        for (var i = 0; i < words.length; i++) {
-            if (ele.toLowerCase().indexOf(words[i])>=0) {
-                displayStyle = '';
-            } else {
-                displayStyle = 'none';
-                break;
-            }
-        }
-        table.rows[r].style.display = displayStyle;
-    }
-}
-</script>
 {% endblock %}
 
 
@@ -40,15 +20,11 @@ function filter (phrase, _id){
 <p class="center">{{ item_count }} items found on {{ scan_date }}</p>
 
 
-<form class="filter">
-    <input 
-        type="text" 
-        name="filt" 
-        title="Type any string to filter out the lines in the table. The filter is not case sensitive and searches through all the columns." 
-        id="filterstring" 
-        value="Filter" 
-        onkeyup="filter(this, 'stations_table', '1')" 
-        onclick="document.getElementById('filterstring').select()" />
+<form id="search_form" >
+    <input type="text" id="search_text" value="" />
+    <input type="button" id="search_button" value="Search" />
+    <input type="button" id="clear_search" value="Reset" />
+    <input type="button" id="close_all"   value="Close All" />
 </form>
 
 <div id="assets_tree"></div>
@@ -56,12 +32,13 @@ function filter (phrase, _id){
 <script type="text/javascript">
 
 $(function () {
+
+
     $("#assets_tree").jstree({ 
-        "plugins" : [ "themes" , "json_data" , "ui",  "types" , "sort"],
+        "plugins" : [ "themes" , "json_data" , "search" , "adv_search" , "ui",  "types" , "sort" ],
         "core" : { 
             "animation" : 150,
-            "html_titles" : true,
-            
+            "html_titles" : true
         },
         "ui" : {
             "select_limit" : 1
@@ -69,6 +46,12 @@ $(function () {
         "themes" : {
             "theme" : "default",
             "dots" : false
+        },
+        "search" : {
+            "case_insensitive" : true,
+            "ajax" : {
+                "url" : "/assets/search/"
+            }
         },
         "types" : {
             "max_depth" : -2,
@@ -159,6 +142,18 @@ $(function () {
                     "close_node"  : true,
                     "create_node" : false,
                     "delete_node" : false
+                },
+                "skill" : {
+                    "icon" : { 
+                        "image" : "/static/img/skill.png" 
+                    },
+                    "valid_children" : "none",
+                    "max_depth" : 0,
+                    "select_node" : true,
+                    "open_node"   : true,
+                    "close_node"  : true,
+                    "create_node" : false,
+                    "delete_node" : false
                 }
             }
         },
@@ -167,7 +162,7 @@ $(function () {
                 {% for s in station_list %}
                 {
                     "data" : '<b>{{ s.name }}</b><i> - ({{ s.items }} items)</i>',
-                    "attr" : { "id" : "node_{{ s.locationID }}/" , "rel" : "station" , "class" : "station-row" },
+                    "attr" : { "id" : "{{ s.locationID }}_" , "rel" : "station" , "class" : "station-row" },
                     "state" : "closed"
                 },
                 {% endfor %}
@@ -175,12 +170,34 @@ $(function () {
             "ajax" : {
                 "url" : function(node) { 
                     var url = "/assets/";
-                    url += node.attr ? node.attr("id").replace("node_", "") : "";
+                    url += node.attr ? node.attr("id").replace(/_/g, "/") : "";
                     return url; 
                 }
             }
         }
     });
+
+    $("#search_button").click(function() {
+    	$("#assets_tree").jstree("search", document.getElementById("search_text").value);
+    });
+
+    $("#clear_search").click(function() {
+        document.getElementById("search_text").value = "";
+        $("#assets_tree").jstree("clear_search");
+    });
+
+    $("#close_all").click(function() {
+        $("#assets_tree").jstree("close_all");
+    });
+
+
+    
+
+});
+
+$("#search_form").submit(function() {
+    $("#assets_tree").jstree("search", document.getElementById("search_text").value);
+    return false;
 });
 
 </script>

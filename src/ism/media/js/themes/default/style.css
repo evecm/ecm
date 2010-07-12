@@ -7,7 +7,13 @@
 .jstree-default a {color:black; font-weight:normal; text-decoration:none;}
 .jstree-default a:hover {color:black; font-weight:normal; text-decoration:none;}
 .jstree-default a:visited {color:black; font-weight:normal; text-decoration:none;}
- 
+
+.jstree-default a.jstree-search { background-color:yellow; }
+
+#assets_tree {
+    margin-top: 20px;
+    clear: both;
+}
  
 .station-row > a { 
     width:95%;
@@ -48,8 +54,6 @@
 
 .jstree-default .jstree-no-icons a .jstree-icon { display:none; }
 
-.jstree-default .jstree-search { font-style:italic; }
-
 .jstree-default .jstree-no-icons .jstree-checkbox { display:inline-block; }
 .jstree-default .jstree-no-checkboxes .jstree-checkbox { display:none !important; }
 .jstree-default .jstree-checked > a > .jstree-checkbox { background-position:-38px -19px; }
@@ -63,8 +67,6 @@
 #vakata-dragged.jstree-default .jstree-ok { background:url("d.png") -2px -53px no-repeat !important; }
 #vakata-dragged.jstree-default .jstree-invalid { background:url("d.png") -18px -53px no-repeat !important; }
 #jstree-marker.jstree-default { background:url("d.png") -41px -57px no-repeat !important; }
-
-.jstree-default a.jstree-search { color:aqua; }
 
 #vakata-contextmenu.jstree-default-context, 
 #vakata-contextmenu.jstree-default-context li ul { background:#f0f0f0; border:1px solid #979797; -moz-box-shadow: 1px 1px 2px #999; -webkit-box-shadow: 1px 1px 2px #999; box-shadow: 1px 1px 2px #999; }
