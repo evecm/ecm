@@ -137,9 +137,14 @@ class Role(models.Model):
         return self.id == other.id
 
     def __unicode__(self):
-        if self.dispName:
-            return "%s - %s" % (self.dispName, unicode(self.roleType))
-        else:
+        try:
+            name = self.dispName
+            if r.hangar_id :
+                name = name % Hangar.objects.get(hangarID=self.hangar.id).name
+            elif r.wallet_id : 
+                name = name % Wallet.objects.get(walletID=self.wallet.id).name
+            return "%s - %s" % (name, unicode(self.roleType))
+        except:
             return self.typeName
     
 #------------------------------------------------------------------------------
