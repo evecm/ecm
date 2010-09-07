@@ -54,7 +54,7 @@ class Outpost(models.Model):
 class ColorThreshold(models.Model):
     
     color = models.CharField(max_length=64)
-    threshold = models.IntegerField(primary_key=True)
+    threshold = models.IntegerField()
     
     def __unicode__(self):
         return unicode("%s -> %d" % (self.color, self.threshold))
