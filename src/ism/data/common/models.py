@@ -8,6 +8,7 @@ Created on 17 mai 2010
 
 
 from django.db import models
+from django.core.validators import RegexValidator
 
 
 #------------------------------------------------------------------------------
@@ -47,3 +48,13 @@ class Outpost(models.Model):
     
     def __unicode__(self):
         return self.stationName
+
+
+#------------------------------------------------------------------------------
+class ColorThreshold(models.Model):
+    
+    color = models.CharField(max_length=64)
+    threshold = models.IntegerField(primary_key=True)
+    
+    def __unicode__(self):
+        return unicode("%s -> %d" % (self.color, self.threshold))

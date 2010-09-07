@@ -7,19 +7,20 @@ Created on 21 mai 2010
 import json
 
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 
-from ism.core import db
+from ism.core import db, utils
 from ism.data.common.models import UpdateDate
 from ism.data.assets.models import DbAsset
 from ism.data.corp.models import Hangar
+from ism import settings
+from django.views.decorators.csrf import csrf_protect
 
 SQL_STATIONS = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset GROUP BY locationID;"
 SQL_HANGARS = "SELECT itemID, hangarID, count(*) AS items FROM assets_dbasset WHERE locationID=%d GROUP BY hangarID ORDER BY hangarID;"
-
 
 HANGAR = {}
 for h in Hangar.objects.all():
@@ -33,45 +34,52 @@ CATEGORY_ICONS = { 2 : "can" ,
                   16 : "skill" }
 
 #------------------------------------------------------------------------------
-@login_required
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @cache_page(60 * 15) # 15 minutes cache
+@csrf_protect
 def stations(request):
+    print request
     data = {  'station_list' : getStations(),
                 'item_count' : getItemCount(),
                  'scan_date' : getScanDate() }
     return render_to_response("assets.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
-@login_required
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @cache_page(60 * 15) # 15 minutes cache
+@csrf_protect
 def hangars(request, stationID):
     json_data = json.dumps(getStationHangars(int(stationID)))
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@login_required
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @cache_page(60 * 15) # 15 minutes cache
+@csrf_protect
 def hangar_contents(request, stationID, hangarID):
     json_data = json.dumps(getHangarContents(int(stationID), int(hangarID)))
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@login_required
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @cache_page(60 * 15) # 15 minutes cache
+@csrf_protect
 def can1_contents(request, stationID, hangarID, container1):
     json_data = json.dumps(getCan1Contents(int(stationID), int(hangarID), int(container1)))
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@login_required
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @cache_page(60 * 15) # 15 minutes cache
+@csrf_protect
 def can2_contents(request, stationID, hangarID, container1, container2):
     json_data = json.dumps(getCan2Contents(int(stationID), int(hangarID), int(container1), int(container2)))
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@login_required
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @cache_page(60 * 15) # 15 minutes cache
+@csrf_protect
 def search_items(request):
     json_data = json.dumps(search(request.GET.get("search_string", "no-item")))
     return HttpResponse(json_data)

@@ -44,7 +44,10 @@ def update(debug=False, cache=False):
             corp.ticker           = corpApi.ticker
             corp.ceoID            = corpApi.ceoID
             corp.stationID        = corpApi.stationID
-            corp.allianceName     = corpApi.allianceName
+            try: 
+                corp.allianceName = corpApi.allianceName
+            except:
+                corp.allianceName = ""
             corp.taxRate          = corpApi.taxRate
             corp.memberLimit      = corpApi.memberLimit
             corp.save()

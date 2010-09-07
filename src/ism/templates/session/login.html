@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+
+{% block headtitle %}Login{% endblock %}
+
+{% block menu %}{% endblock %}
+
+{% block main_content %}
+
+{% block pagetitle %}{% endblock %}
+
+
+
+<div class="loginform">
+
+    {% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+  <form method="post" action="{% url django.contrib.auth.views.login %}">
+  {% csrf_token %}
+  <fieldset>
+    <p> <span class="top">{{ form.username.label_tag }}</span><br />
+        <span class="field">{{ form.username }}</span></p>
+    <p><span class="top">{{ form.password.label_tag }}</span><br />
+        <span class="field">{{ form.password }}</span></p>
+    <p><input type="checkbox" name="rememberme" value="0" />Remember Me</p>
+    <p><input type="submit" name="cmdweblogin" class="button" value="login"  /></p>
+  </fieldset>
+  <input type="hidden" name="next" value="{{ next }}" />
+  </form>
+</div>
+
+{% endblock %}

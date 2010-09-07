@@ -6,7 +6,7 @@ Created on 18 mars 2010
 '''
 
 from ism.core.assets.constants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
-from ism.constants import EVE_DB_FILE
+from ism import constants
 import sqlite3
 from ism.data.common.models import Outpost
 
@@ -28,7 +28,7 @@ def resolveTypeName(typeID):
     try:
         return CACHE_TYPES[typeID]
     except KeyError:
-        CONN_EVE = sqlite3.connect(EVE_DB_FILE)
+        CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
         cursor = CONN_EVE.cursor()
         cursor.execute(QUERY_ONE_TYPENAME % typeID)
         for row in cursor :
@@ -36,7 +36,7 @@ def resolveTypeName(typeID):
             return CACHE_TYPES[typeID]
 #------------------------------------------------------------------------------
 def resolveTypeNames(typeIDs):
-    CONN_EVE = sqlite3.connect(EVE_DB_FILE)
+    CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
     cursor = CONN_EVE.cursor()
     cursor.execute(QUERY_TYPENAMES % str(typeIDs))
     names = {}
@@ -45,7 +45,7 @@ def resolveTypeNames(typeIDs):
     return names
 #------------------------------------------------------------------------------
 def getMatchingIdsFromString(string):
-    CONN_EVE = sqlite3.connect(EVE_DB_FILE)
+    CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
     cursor = CONN_EVE.cursor()
     cursor.execute(QUERY_SEARCH_TYPE % string)
     return [ id[0] for id in cursor ]
@@ -54,7 +54,7 @@ def resolveLocationName(locationID):
     try:
         return CACHE_LOCATIONS[locationID]
     except KeyError:
-        CONN_EVE = sqlite3.connect(EVE_DB_FILE)
+        CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
         cursor = CONN_EVE.cursor()
         if locationID < STATIONS_IDS :
             cursor.execute(QUERY_SYSTEM % locationID)

@@ -60,6 +60,13 @@ function filter (phrase, _id){
     </tr>
   </thead>
   <tbody> 
+    <tr class="row">
+    <td class="left" >Access Level</td>
+      <td>-</td>
+    {% for t in title_list %}
+      <td class="row-{{ t.color }}" title="{{ t.name }}">{{ t.accessLvl }}</td>
+    {% endfor %}
+    </tr>
 {% for r in role_list %}
     <tr class="row">
       <td class="left" title="{{ r.description }}">{{ r.name }}</td>

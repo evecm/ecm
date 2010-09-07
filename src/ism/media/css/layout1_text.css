@@ -183,14 +183,14 @@ form.filter input { border:1px solid #AAAAAA; background-color:#EEEEEE; width:30
 .contactform input.button {float:right; width:9.0em; margin-right:20px; padding:1px !important /*Non-IE6*/; padding:0 /*IE6*/; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:110%;}
 .contactform input.button:hover {cursor: pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
 
-.loginform {width:250px; margin:-10px 20px 0 20px; }
+.loginform {margin:10px 20px 0 20px; }
 .loginform p {clear:both; margin:0; padding:0;}
-.loginform fieldset {width:160px; border:none;}
-.loginform label.top {float:left; width:125px; margin:0 0 2px 0; font-size:110%;}
-.loginform label.right {float:left; width:125px; margin:5px 0 0 0; padding:0 0 0 3px; /*IE6*/; font-size:110%;}
-.loginform input.field {width:158px; margin:0 0 5px 0; padding:0.1em 0 0.2em 0 !important /*Non-IE6*/; padding:0.2em 0 0.3em 0 /*IE6*/; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
+.loginform fieldset {width:180px; border:none; margin: 10px auto 0 auto;}
+.loginform label.top {float:left; margin:0 0 2px 0; font-size:110%;}
+.loginform label.right {float:left; margin:5px 0 0 0; padding:0 0 0 3px; /*IE6*/; font-size:110%;}
+.loginform input.field {margin:0 0 5px 0; padding:0.1em 0 0.2em 0 !important /*Non-IE6*/; padding:0.2em 0 0.3em 0 /*IE6*/; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
 .loginform input.checkbox {float:left; margin:5px 0 0 0 !important /*Non-IE6*/; margin:2px 0 0 -3px /*IE6*/; border:none;}
-.loginform input.button {float:left; width:5.0em; margin:10px 0 5px 0; padding:1px; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:110%;}
+.loginform input.button {float:left; margin:10px 0 5px 0; padding:1px 1.0em; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:110%;}
 .loginform input.button:hover {cursor:pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
 
 /********************/

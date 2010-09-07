@@ -11,9 +11,11 @@ from django.template.context import RequestContext
 
 from ism.data.roles.models import MemberDiff, RoleMemberDiff, TitleCompoDiff, Member
 from ism.core.utils import print_time_min
+from django.views.decorators.csrf import csrf_protect
 
 #------------------------------------------------------------------------------
 @login_required
+@csrf_protect
 def home(request):
     data = {               'members' : getLastMembers(),
                     'last_role_adds' : getLastRoleAdds(),
@@ -28,11 +30,11 @@ def getLastMembers(count=10):
     members = []
     queryset = list(MemberDiff.objects.all().order_by('-id'))[:count]
     for m in queryset:
-        if m.new:
+        try:
             memb = Member.objects.get(characterID=m.characterID)
             m.nickname = memb.nickname
             m.date = print_time_min(memb.corpDate)
-        else:
+        except:
             m.date = print_time_min(m.date)
         members.append(m)
     members.sort(key=lambda m: m.date, reverse=True)

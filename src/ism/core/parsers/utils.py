@@ -6,11 +6,10 @@ Created on 08 fev. 2010
 """
 
 from ism.data.roles.models import RoleType, Role
-from ism.core.exceptions import WrongApiVersion
-from ism.constants import API_VERSION
+from ism.core.exceptions import WrongApiVersion, DatabaseCorrupted
+from ism import constants
 from ism.data.common.models import UpdateDate
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from ism.core.exceptions import DatabaseCorrupted
 
 
 
@@ -37,7 +36,7 @@ def allRoles():
 
 #------------------------------------------------------------------------------
 def checkApiVersion(version):
-    if version != API_VERSION:
+    if version != constants.API_VERSION:
         raise WrongApiVersion(version)
     
 #------------------------------------------------------------------------------   

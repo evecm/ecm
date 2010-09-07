@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Assets{% endblock %}
+{% block headtitle %}Assets Changes{% endblock %}
 
 
 
@@ -13,6 +13,7 @@
 
 {% block breadcrumbs %}
 <li><a href="/assets/" >Assets</a></li>
+<li><a href="/assets/changes/" >Changes</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -24,6 +25,7 @@
     <input type="button" id="search_button" value="Search" />
     <input type="button" id="clear_search" value="Reset" />
     <input type="button" id="close_all"   value="Close All" />
+    <input type="button" id="open_all"   value="Open All" />
 </form>
 
 <div id="assets_tree"></div>
@@ -190,8 +192,9 @@ $(function () {
         $("#assets_tree").jstree("close_all");
     });
 
-
-    
+    $("#open_all").click(function() {
+        $("#assets_tree").jstree("open_all");
+    });
 
 });
 

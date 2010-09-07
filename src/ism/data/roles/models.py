@@ -9,6 +9,7 @@ from ism.data.corp.models import Hangar, Wallet
 
 from django.db import models
 from datetime import datetime
+from ism.core import utils
 
 #------------------------------------------------------------------------------
 class Member(models.Model):
@@ -136,7 +137,10 @@ class Role(models.Model):
         return self.id == other.id
 
     def __unicode__(self):
-        return unicode(self.roleName)
+        if self.dispName:
+            return "%s - %s" % (self.dispName, unicode(self.roleType))
+        else:
+            return self.typeName
     
 #------------------------------------------------------------------------------
 class RoleMembership(models.Model):

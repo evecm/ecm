@@ -77,9 +77,9 @@ function filter (phrase, _id){
   <tbody> 
 {% for m in member_list %}
     <tr class="row">
-      <td class="left">{{ m.name }}</th>
+      <td class="left"><a href="/members/{{ m.characterID }}/">{{ m.name }}</a></th>
       <td>{{ m.nickname|truncatewords:"6" }}</td>
-      <td class="{{ m.color }}">{{ m.accessLvl }}</td>
+      <td class="row-{{ m.color }}">{{ m.accessLvl }}</td>
       <td>{{ m.corpDate }}</td>
       <td>{{ m.lastLogin }}</td>
       <td>{{ m.lastLogoff }}</td>

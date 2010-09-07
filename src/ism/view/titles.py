@@ -7,16 +7,18 @@ Created on 11 juil. 2010
 
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.csrf import csrf_protect
 
-from ism.settings import MEDIA_URL
 from ism.data.roles.models import TitleComposition, Role, Title
 from ism.data.corp.models import Hangar, Wallet
 from ism.data.common.models import UpdateDate
-from ism.core import image
+from ism.core import image, utils
+from ism import settings
+from ism.core.utils import getAccessColor
 
-@login_required
+#------------------------------------------------------------------------------
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @csrf_protect
 def titles(request):
     data = {  'title_list' : getTitles(),
@@ -25,9 +27,7 @@ def titles(request):
             }
     return render_to_response("titles.html", data, context_instance=RequestContext(request))
 
-
-
-
+#------------------------------------------------------------------------------
 def getTitles():
     titlesDb = Title.objects.all().order_by("titleID")
     titles = []
@@ -37,16 +37,20 @@ def getTitles():
         title.name = t.titleName
         title.icon = image.getImage(t.titleName)
         title.roles = [ tc.role_id for tc in TitleComposition.objects.filter(title=t) ]
+        title.accessLvl = t.accessLvl   
+        title.color = getAccessColor(t.accessLvl)
         titles.append(title)
     
     return titles
-    
+
+#------------------------------------------------------------------------------
 def getRoles():
     rolesDb = Role.objects.all().order_by("id")
     class R: pass
     roles = []
     for r in rolesDb:
         if r.roleID == 1: continue # we don't want directors here
+        if r.roleType_id in (2,4,6,8): continue # don't want grantable roles neither
         role = R()
         role.id = r.id
         role.name = r.dispName
@@ -60,7 +64,8 @@ def getRoles():
         
     return roles
     
-    
+#------------------------------------------------------------------------------
 def getScanDate():
     date = UpdateDate.objects.get(model_name=TitleComposition.__name__) 
     return date.update_date
+#------------------------------------------------------------------------------

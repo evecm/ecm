@@ -1,5 +1,61 @@
 [
   {
+    "pk": -1, 
+    "model": "common.colorthreshold", 
+    "fields": {
+      "color": "black"
+    }
+  }, 
+  {
+    "pk": 0, 
+    "model": "common.colorthreshold", 
+    "fields": {
+      "color": "white"
+    }
+  }, 
+  {
+    "pk": 14000, 
+    "model": "common.colorthreshold", 
+    "fields": {
+      "color": "blue"
+    }
+  }, 
+  {
+    "pk": 20000, 
+    "model": "common.colorthreshold", 
+    "fields": {
+      "color": "green"
+    }
+  }, 
+  {
+    "pk": 30000, 
+    "model": "common.colorthreshold", 
+    "fields": {
+      "color": "yellow"
+    }
+  }, 
+  {
+    "pk": 40000, 
+    "model": "common.colorthreshold", 
+    "fields": {
+      "color": "orange"
+    }
+  }, 
+  {
+    "pk": 60000, 
+    "model": "common.colorthreshold", 
+    "fields": {
+      "color": "red"
+    }
+  }, 
+  {
+    "pk": 200000, 
+    "model": "common.colorthreshold", 
+    "fields": {
+      "color": "purple"
+    }
+  }, 
+  {
     "pk": 1, 
     "model": "roles.roletype", 
     "fields": {
@@ -2581,126 +2637,6 @@
       "dispName": "Container Take: %s", 
       "roleName": "roleContainerCanTake7", 
       "hangar": 1006
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": "Deliveries"
-    }
-  }, 
-   {
-    "pk": 1000, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-   {
-    "pk": 1001, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1002, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1003, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1004, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1005, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1006, 
-    "model": "corp.hangar", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1000, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1001, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1002, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1003, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1004, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1005, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
-    }
-  }, 
-  {
-    "pk": 1006, 
-    "model": "corp.wallet", 
-    "fields": {
-      "accessLvl": 1000, 
-      "name": ""
     }
   }, 
   {

@@ -5,6 +5,17 @@ Created on 16 mai 2010
 @author: diabeteman
 '''
 
+from ism import settings
+from django.contrib.auth.models import Group
+from ism.data.common.models import ColorThreshold
+
+try:
+    DIRECTOR_GROUP_ID = Group.objects.get(name=settings.DIRECTOR_GROUP_NAME)
+except:
+    g = Group(name=settings.DIRECTOR_GROUP_NAME).save()
+    DIRECTOR_GROUP_ID = g.id
+
+
 def print_time(date):
     return date.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -19,3 +30,21 @@ def limit_text_size(text, max_size):
         return text
     else:
         return text[:(max_size - 3)] + "..."
+
+
+def isDirector(user):
+    try:
+        g = user.groups.get(name=settings.DIRECTOR_GROUP_NAME)
+        if g:
+            return True
+        else:
+            return False
+    except:
+        return False
+    
+def getAccessColor(accessLvl):
+    colorThresholds = list(ColorThreshold.objects.all().order_by("threshold"))    
+    for t in colorThresholds:
+        if accessLvl <= t.threshold:
+            return t.color
+    return colorThresholds[0]

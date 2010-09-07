@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Member Details - {{ member.name }}{% endblock %}
+
+
+
+{% block header_scripts %}
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/members/">Members</a></li>
+<li><a href="/members/{{ member.characterID }}/">{{ member.name }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">{{ member.name }}</h1>
+<p class="italic" >{{ member.nickname }}</p>
+<p>
+  <span class="bold">Corp Date:</span> {{ member.corpDate }}<br/>
+  <span class="bold">Last Login:</span> {{ member.lastLogin }}<br/>
+  <span class="bold">Last Logoff:</span> {{ member.lastLogoff }}
+</p>
+
+
+<h2>Access Level</h2>
+
+<table><tr class="row">
+<td class="row-{{ member.color }}">
+  <b>
+    {% if member.is_director %}
+    DIRECTOR
+    {% else %}
+    {{ member.accessLvl }}
+    {% endif %}
+  </b>
+</td>
+</tr></table>
+
+<h2>Titles</h2>
+<ul>
+{% for title in member.titles %}
+<li>{{ title }}</li>
+{% endfor %}
+</ul>
+
+<h2>Extra Roles</h2>
+<ul>
+{% for role in member.roles %}
+<li>{{ role }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
