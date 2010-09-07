@@ -13,7 +13,8 @@ try:
     DIRECTOR_GROUP_ID = Group.objects.get(name=settings.DIRECTOR_GROUP_NAME)
 except:
     g = Group(name=settings.DIRECTOR_GROUP_NAME).save()
-    DIRECTOR_GROUP_ID = g.id
+    if g: DIRECTOR_GROUP_ID = g.id
+    else: DIRECTOR_GROUP_ID = 1
 
 
 def print_time(date):
