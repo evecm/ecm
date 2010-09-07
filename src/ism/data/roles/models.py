@@ -137,12 +137,15 @@ class Role(models.Model):
         return self.id == other.id
 
     def __unicode__(self):
-        name = self.dispName
-        if self.hangar_id :
-            name = name % Hangar.objects.get(hangarID=self.hangar_id).name
-        elif self.wallet_id : 
-            name = name % Wallet.objects.get(walletID=self.wallet_id).name
-        return "%s - %s" % (name, unicode(self.roleType))
+        try:
+            name = self.dispName
+            if self.hangar_id :
+                name = name % Hangar.objects.get(hangarID=self.hangar_id).name
+            elif self.wallet_id : 
+                name = name % Wallet.objects.get(walletID=self.wallet_id).name
+            return "%s - %s" % (name, unicode(self.roleType))
+        except:
+            return self.roleName
     
 #------------------------------------------------------------------------------
 class RoleMembership(models.Model):
