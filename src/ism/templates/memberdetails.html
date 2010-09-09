@@ -22,7 +22,7 @@
   <span class="bold">Last Login:</span> {{ member.lastLogin }}<br/>
   <span class="bold">Last Logoff:</span> {{ member.lastLogoff }}
 </p>
-
+<p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ scan_date }}</p>
 
 <h2>Access Level</h2>
 
@@ -37,6 +37,14 @@
   </b>
 </td>
 </tr></table>
+
+
+<h2>Base Office</h2>
+{% if member.baseID %}
+{{ member.base }}
+{% else %}
+None
+{% endif %}
 
 <h2>Titles</h2>
 <ul>

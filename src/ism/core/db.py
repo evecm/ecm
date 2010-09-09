@@ -74,4 +74,8 @@ def resolveLocationName(locationID):
         else :
             CACHE_LOCATIONS[locationID] = Outpost.objects.get(stationID=locationID).stationName
         
-        return CACHE_LOCATIONS[locationID]
+        try:
+            return CACHE_LOCATIONS[locationID]
+        except KeyError:
+            # locationID was not valid
+            return ""

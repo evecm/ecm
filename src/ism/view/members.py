@@ -34,7 +34,10 @@ def list(request):
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @csrf_protect
 def details(request, characterID):
-    data = {  'member' : getMember(int(characterID)) }
+    data = {  
+        'member' : getMember(int(characterID)),
+        'scan_date' : getScanDate() 
+    }
     return render_to_response("memberdetails.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
@@ -47,6 +50,7 @@ def getMember(id):
     member.lastLogin = print_time_min(member.lastLogin)
     member.lastLogoff = print_time_min(member.lastLogoff)
     member.location = resolveLocationName(member.locationID)
+    member.base = resolveLocationName(member.baseID)
     member.color = getAccessColor(member.accessLvl)
     member.roles = member.getRoles()
     member.titles = member.getTitles()
@@ -63,6 +67,10 @@ def getMembers():
         m.lastLogoff = print_date(m.lastLogoff)
         m.location = resolveLocationName(m.locationID)
         m.color = getAccessColor(m.accessLvl)
+        roles = m.getRoles()
+        m.is_director = 1 in [role.id for role in roles]
+        m.extraRoles = len(roles)
+        
     return member_list
 
 #------------------------------------------------------------------------------
