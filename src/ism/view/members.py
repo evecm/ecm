@@ -71,7 +71,7 @@ def getLastMembers(since_id, count=100):
     for m in queryset:
         try:
             memb = Member.objects.get(characterID=m.characterID)
-            m.url = "/members/%d/" % m.characterID
+            m.url = "/members/%d" % m.characterID
             m.date = print_time_min(m.date)
         except:
             m.date = print_time_min(m.date)
