@@ -32,7 +32,7 @@ def getLastMembers(count=10):
     for m in queryset:
         try:
             memb = Member.objects.get(characterID=m.characterID)
-            m.nickname = memb.nickname
+            m.url = "/members/%d/" % m.characterID
             m.date = print_time_min(memb.corpDate)
         except:
             m.date = print_time_min(m.date)

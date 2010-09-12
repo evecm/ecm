@@ -3,17 +3,21 @@
 {% block headtitle %}Home{% endblock %}
 
 {% block breadcrumbs %}
-<li>Home</li>
+<li><a href="/">Home</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1>Last Member Moves</h1>
+<h1 class="pagetitle">Last Member Moves</h1>
 <ul>
 {% for m in members %}
   <li class="{% if m.new %}green{% else %}red{% endif %}">
-                       <span class="bold">{{      m.name                       }}</span>
-    {% if m.nickname %}<span class="italic"> ({{  m.nickname|truncatewords:"5" }})</span>{% endif %}
-                       <span class="time"> - {{   m.date                       }}</span></li>
+                       {% if m.url %}
+                       <a href="{{ m.url }}">{{ m.name }}</a>
+                       {% else %}
+                       <span class="bold">{{ m.name }}</span>
+                       {% endif %}
+    {% if m.nickname %}<span class="italic"> ({{ m.nickname|truncatewords:"5" }})</span>{% endif %}
+                       <span class="time"> - {{ m.date }}</span></li>
 {% endfor %}
 </ul>
 {% endblock %}

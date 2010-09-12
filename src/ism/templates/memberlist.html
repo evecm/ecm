@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Home{% endblock %}
+{% block headtitle %}Members{% endblock %}
 
 
 
@@ -29,14 +29,12 @@ $.tablesorter.addParser({
 
 
 $(document).ready(function() { 
-    $("#members_table").tablesorter(
-        {
+    $("#members_table").tablesorter({
             sortList : [[0,0]] , 
-            headers : {2: {sorter : "accessLvl"}, 3: {sorter : "digit"}} 
-        }
-    ); 
-  } 
-);
+            headers : {2: {sorter : "accessLvl"}, 
+                       3: {sorter : "digit"}} 
+    }); 
+});
 
 
 function filter (phrase, _id){
@@ -62,7 +60,8 @@ function filter (phrase, _id){
 
 
 {% block breadcrumbs %}
-<li><a href="/members/">Members</a></li>
+<li><a href="/">Home</a></li>
+<li><a href="/members">Members</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -97,7 +96,7 @@ function filter (phrase, _id){
   <tbody> 
 {% for m in member_list %}
     <tr class="row">
-      <td class="left"><a href="/members/{{ m.characterID }}/">{{ m.name }}</a></td>
+      <td class="left"><a href="/members/{{ m.characterID }}">{{ m.name }}</a></td>
       <td>{{ m.nickname|truncatewords:"6" }}</td>
       <td class="row-{{ m.color }}">{% if m.is_director %}<b>DIRECTOR</b>{% else %}{{ m.accessLvl }}{% endif %}</td>
       <td {% if m.extraRoles %}class="row-red"{% endif %}>{{ m.extraRoles }}</td>

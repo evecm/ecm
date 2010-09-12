@@ -10,8 +10,9 @@
 
 
 {% block breadcrumbs %}
-<li><a href="/members/">Members</a></li>
-<li><a href="/members/{{ member.characterID }}/">{{ member.name }}</a></li>
+<li><a href="/">Home</a></li>
+<li><a href="/members">Members</a></li>
+<li><a href="/members/{{ member.characterID }}">{{ member.name }}</a></li>
 {% endblock %}
 
 {% block main_content %}

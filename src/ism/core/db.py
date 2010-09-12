@@ -38,7 +38,7 @@ def resolveTypeName(typeID):
 def resolveTypeNames(typeIDs):
     CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
     cursor = CONN_EVE.cursor()
-    cursor.execute(QUERY_TYPENAMES % str(typeIDs))
+    cursor.execute(QUERY_TYPENAMES % str(tuple(typeIDs)))
     names = {}
     for row in cursor :
         names[int(row[0])] = row[1]

@@ -16,7 +16,7 @@ ILLEGAL_RE = re.compile(r"['\s\":/\\;,\?!\*\^#&\(\)\[\]\{\}]")
 TRANSPARENT = (0,0,0,0)
 WHITE = (255,255,255,255)
 
-def generateImage(text, width=30):
+def generateImage(text, filename, width=30):
     font = ImageFont.truetype(FONT_FILE, 15)
     
     length = len(text)*10 + 10
@@ -26,9 +26,6 @@ def generateImage(text, width=30):
     draw.text((5,5), text, font=font, fill=WHITE)
     image = image.rotate(90)
     
-    filename = unicodedata.normalize("NFKD", text).encode("ascii", "ignore")
-    filename = ILLEGAL_RE.subn("_", filename)[0] + ".png"
-        
     image.save(os.path.join(IMG_DIR, filename), "PNG")
     
     return settings.MEDIA_URL + "img/gen/" + filename
@@ -40,6 +37,6 @@ def getImage(text):
     if os.path.exists(os.path.join(IMG_DIR, filename)):
         return settings.MEDIA_URL + "img/gen/" + filename
     else:
-        return generateImage(text)
+        return generateImage(text, filename)
 
         

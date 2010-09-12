@@ -20,7 +20,9 @@ from ism import settings
 from django.views.decorators.csrf import csrf_protect
 
 SQL_STATIONS = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset GROUP BY locationID;"
+SQL_STATIONS_FILTERED = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset WHERE hangarID in %s GROUP BY locationID;"
 SQL_HANGARS = "SELECT itemID, hangarID, count(*) AS items FROM assets_dbasset WHERE locationID=%d GROUP BY hangarID ORDER BY hangarID;"
+SQL_HANGARS_FILTERED = "SELECT itemID, hangarID, count(*) AS items FROM assets_dbasset WHERE locationID=%d AND hangarID in %s GROUP BY hangarID ORDER BY hangarID;"
 
 HANGAR = {}
 for h in Hangar.objects.all():
@@ -38,8 +40,20 @@ CATEGORY_ICONS = { 2 : "can" ,
 @cache_page(60 * 15) # 15 minutes cache
 @csrf_protect
 def stations(request):
-    print request
-    data = {  'station_list' : getStations(),
+    
+    all_hangars = Hangar.objects.all()
+    try: 
+        divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
+        divisions_str = request.GET["divisions"]
+        for h in all_hangars: h.checked = (h.hangarID in divisions)
+    except: 
+        divisions, divisions_str = None, None
+        for h in all_hangars: h.checked = False
+    
+    data = {  'station_list' : getStations(divisions),
+                 'divisions' : divisions, # divisions to show
+             'divisions_str' : divisions_str,
+                   'hangars' : all_hangars,
                 'item_count' : getItemCount(),
                  'scan_date' : getScanDate() }
     return render_to_response("assets.html", data, context_instance=RequestContext(request))
@@ -49,7 +63,12 @@ def stations(request):
 @cache_page(60 * 15) # 15 minutes cache
 @csrf_protect
 def hangars(request, stationID):
-    json_data = json.dumps(getStationHangars(int(stationID)))
+    
+    try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
+    except: divisions = None
+    
+    json_data = json.dumps(getStationHangars(int(stationID), divisions))
+    
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
@@ -81,12 +100,24 @@ def can2_contents(request, stationID, hangarID, container1, container2):
 @cache_page(60 * 15) # 15 minutes cache
 @csrf_protect
 def search_items(request):
-    json_data = json.dumps(search(request.GET.get("search_string", "no-item")))
+    
+    try: divisions = tuple([ int(div) for div in request.GET["divisions"].split(",") ])
+    except: divisions = None
+    
+    search_string = request.GET.get("search_string", "no-item")
+    
+    json_data = json.dumps(search(search_string, divisions))
+    
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-def getStations():
-    raw_list = DbAsset.objects.raw(SQL_STATIONS)
+def getStations(divisions):
+    if divisions:
+        str_divisions = str(divisions).replace("[", "(").replace("]", ")")
+        raw_list = DbAsset.objects.raw(SQL_STATIONS_FILTERED % str_divisions)
+    else:
+        raw_list = DbAsset.objects.raw(SQL_STATIONS)
+        
     class S: 
         locationID = 0
         name = None
@@ -105,13 +136,20 @@ def getItemCount():
     return len(DbAsset.objects.all())
 
 #------------------------------------------------------------------------------
-def getStationHangars(stationID):
-    raw_list = DbAsset.objects.raw(SQL_HANGARS % stationID)
+def getStationHangars(stationID, divisions):
+    if divisions:
+        str_divisions = str(divisions).replace("[", "(").replace("]", ")")
+        sql = SQL_HANGARS_FILTERED % (stationID, str_divisions)
+        print sql
+        raw_list = DbAsset.objects.raw(sql)
+    else:
+        raw_list = DbAsset.objects.raw(SQL_HANGARS % stationID)
+        
     hangar_list = []
     for h in raw_list:
         hangar = {}
         hangar["data"] = '<b>%s</b><i> - (%d items)</i>' % (HANGAR[h.hangarID], h.items)
-        id = "%d_%d_" % (stationID, h.hangarID) 
+        id = "_%d_%d" % (stationID, h.hangarID) 
         hangar["attr"] = { "id" : id , "rel" : "hangar" , "href" : "" , "class" : "hangar-row" }
         hangar["state"] = "closed"
         hangar_list.append(hangar)
@@ -130,7 +168,7 @@ def getHangarContents(stationID, hangarID):
         
         if i.hasContents:
             item["data"] = "%s" % name
-            id = "%d_%d_%d_" % (stationID, hangarID, i.itemID)
+            id = "_%d_%d_%d" % (stationID, hangarID, i.itemID)
             item["attr"] = { "id" : id , "rel" : icon , "href" : "" }
             item["state"] = "closed"
         elif i.singleton:
@@ -156,7 +194,7 @@ def getCan1Contents(stationID, hangarID, container1):
         
         if i.hasContents:
             item["data"] = name
-            id = "%d_%d_%d_%d_" % (stationID, hangarID, container1, i.itemID)
+            id = "_%d_%d_%d_%d" % (stationID, hangarID, container1, i.itemID)
             item["attr"] = { "id" : id , "rel" : icon , "href" : "", "class" : "%s-row" % icon  }
             item["state"] = "closed"
         elif i.singleton:
@@ -188,22 +226,25 @@ def getCan2Contents(stationID, hangarID, container1, container2):
     return json_data
 
 #------------------------------------------------------------------------------  
-def search(searchStr):
-    matchingIDs = db.getMatchingIdsFromString(searchStr)
-    matching_items = DbAsset.objects.filter(typeID__in=matchingIDs)
+def search(search_string, divisions):
+    matchingIDs = db.getMatchingIdsFromString(search_string)
+    if divisions:
+        matching_items = DbAsset.objects.filter(typeID__in=matchingIDs, hangarID__in=divisions)
+    else:
+        matching_items = DbAsset.objects.filter(typeID__in=matchingIDs)
 
     json_data = []
 
     for i in matching_items:
-        nodeid = "#%d_" % i.locationID
+        nodeid = "#_%d" % i.locationID
         json_data.append(nodeid)
-        nodeid = nodeid + "%d_" % i.hangarID
+        nodeid = nodeid + "_%d" % i.hangarID
         json_data.append(nodeid)
         if i.container1:
-            nodeid = nodeid + "%d_" % i.container1
+            nodeid = nodeid + "_%d" % i.container1
             json_data.append(nodeid)
             if i.container2:
-                nodeid = nodeid + "%d_" % i.container2
+                nodeid = nodeid + "_%d" % i.container2
                 json_data.append(nodeid)
 
     return json_data

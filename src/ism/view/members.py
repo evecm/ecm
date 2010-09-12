@@ -7,13 +7,13 @@ Created on 16 mai 2010
 
 
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 
 
 from ism.core.utils import print_time_min, print_date, getAccessColor
-from ism.data.roles.models import Member
+from ism.data.roles.models import Member, MemberDiff
 from ism.core.db import resolveLocationName
 from ism.data.common.models import UpdateDate
 from ism import settings
@@ -24,7 +24,7 @@ from ism.core import utils
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @csrf_protect
-def list(request):
+def all(request):
     data = {  'member_list' : getMembers(),
                 'scan_date' : getScanDate(),
             }
@@ -39,6 +39,45 @@ def details(request, characterID):
         'scan_date' : getScanDate() 
     }
     return render_to_response("memberdetails.html", data, context_instance=RequestContext(request))
+
+#------------------------------------------------------------------------------
+@login_required
+@csrf_protect
+def history(request):
+    
+    try:    since_id = int(request.GET["since_id"])
+    except: since_id = -1
+    
+    members = getLastMembers(since_id)
+    last_id = members[0].id
+    first_id = members[-1].id
+    
+    data = {
+        'member_list' : members,
+        'last_id' : last_id,
+        'first_id' : first_id,
+        'scan_date' : getScanDate() 
+    }
+    return render_to_response("memberhistory.html", data, context_instance=RequestContext(request))
+
+#------------------------------------------------------------------------------
+def getLastMembers(since_id, count=100):
+    members = []
+    
+    if since_id != -1:
+        queryset = list(MemberDiff.objects.filter(id__lt=since_id).order_by('-id'))[:count]
+    else:
+        queryset = list(MemberDiff.objects.all().order_by('-id'))[:count]
+    for m in queryset:
+        try:
+            memb = Member.objects.get(characterID=m.characterID)
+            m.url = "/members/%d/" % m.characterID
+            m.date = print_time_min(m.date)
+        except:
+            m.date = print_time_min(m.date)
+        members.append(m)
+    members.sort(key=lambda m: m.date, reverse=True)
+    return members
 
 #------------------------------------------------------------------------------
 def getMember(id):
