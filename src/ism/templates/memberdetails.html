@@ -51,6 +51,8 @@ None
 <ul>
 {% for title in member.titles %}
 <li>{{ title }}</li>
+{% empty %}
+<p>No titles</p>
 {% endfor %}
 </ul>
 
@@ -58,6 +60,8 @@ None
 <ul>
 {% for role in member.roles %}
 <li>{{ role }}</li>
+{% empty %}
+<p>No extra roles</p>
 {% endfor %}
 </ul>
 

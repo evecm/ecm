@@ -11,7 +11,6 @@ import setenv
 # imports and code below
 
 from ism.core.parsers import membersecu
-from ism.data.roles.models import Member
 from datetime import datetime
 
 

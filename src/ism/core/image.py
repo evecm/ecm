@@ -5,7 +5,6 @@ Created on 7 juil. 2010
 @author: diabeteman
 '''
 from ism import settings
-from ism.core import db
 
 from PIL import ImageFont, ImageDraw, Image
 import os.path, unicodedata, re

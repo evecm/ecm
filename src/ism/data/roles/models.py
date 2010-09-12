@@ -9,7 +9,6 @@ from ism.data.corp.models import Hangar, Wallet
 
 from django.db import models
 from datetime import datetime
-from ism.core import utils
 
 #------------------------------------------------------------------------------
 class Member(models.Model):
@@ -26,13 +25,14 @@ class Member(models.Model):
     accessLvl = models.PositiveIntegerField(default=0)
 
     def getTitles(self):
-        t_mem = TitleMembership.objects.filter(member=self)
-        ids = [ t.title_id for t in t_mem ]
+        ids = TitleMembership.objects.filter(member=self).values_list("title", flat=True)
         return list(Title.objects.filter(titleID__in=ids))
     
-    def getRoles(self):
-        r_mem = RoleMembership.objects.filter(member=self)
-        ids = [ r.role_id for r in r_mem ]
+    def getRoles(self, ignore_director=False):
+        if ignore_director:
+            ids = RoleMembership.objects.filter(member=self).exclude(role__roleID=1).values_list("role", flat=True)
+        else:
+            ids = RoleMembership.objects.filter(member=self).values_list("role", flat=True)
         return list(Role.objects.filter(id__in=ids))
     
     def getImpliedRoles(self):
@@ -42,6 +42,10 @@ class Member(models.Model):
                 if r not in roles:
                     roles.append(r)
         return roles
+    
+    def isDirector(self):
+        roles = RoleMembership.objects.filter(member=self, role__roleID=1)
+        return len(roles) > 0
     
     def getAccessLvl(self):
         roles = self.getImpliedRoles()
@@ -88,8 +92,7 @@ class Title(models.Model):
     accessLvl = models.PositiveIntegerField(default=0)
     
     def getRoles(self):
-        t_compos = TitleComposition.objects.filter(title=self)
-        ids = [ tc.role_id for tc in t_compos ]
+        ids = TitleComposition.objects.filter(title=self).values_list("title", flat=True)
         return Role.objects.filter(id__in=ids)
         
     def getAccessLvl(self):

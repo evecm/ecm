@@ -8,7 +8,6 @@ Created on 17 mai 2010
 
 
 from django.db import models
-from django.core.validators import RegexValidator
 
 
 #------------------------------------------------------------------------------

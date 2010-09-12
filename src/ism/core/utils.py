@@ -16,23 +16,45 @@ except:
     if g: DIRECTOR_GROUP_ID = g.id
     else: DIRECTOR_GROUP_ID = 1
 
-
+#------------------------------------------------------------------------------
 def print_time(date):
     return date.strftime("%Y-%m-%d %H:%M:%S")
 
+#------------------------------------------------------------------------------
 def print_time_min(date):
     return date.strftime("%Y %b %d - %H:%M")
 
+#------------------------------------------------------------------------------
 def print_date(date):
     return date.strftime("%Y-%m-%d")
 
+#------------------------------------------------------------------------------
 def limit_text_size(text, max_size):
     if len(text) < max_size:
         return text
     else:
         return text[:(max_size - 3)] + "..."
 
+#------------------------------------------------------------------------------
+def print_integer(number, thousand_separator=" "):
+    if type(number) not in [type(0), type(0L)]:
+        raise TypeError("Parameter must be an integer.")
+    if number < 0:
+        return '-' + print_integer(-number)
+    result = ''
+    while number >= 1000:
+        number, r = divmod(number, 1000)
+        result = "%s%03d%s" % (thousand_separator, r, result)
+    return "%d%s" % (number, result)
 
+#------------------------------------------------------------------------------
+def print_float(number, thousand_separator=" ", decimal_separator=","):
+    if type(number) != type(0.0):
+        raise TypeError("Parameter must be a float.")
+    decimal_part = ("%.2f" % abs(number - int(number)))[2:]
+    return print_integer(int(number), thousand_separator) + decimal_separator + decimal_part
+
+#------------------------------------------------------------------------------
 def isDirector(user):
     try:
         g = user.groups.get(name=settings.DIRECTOR_GROUP_NAME)
@@ -42,7 +64,8 @@ def isDirector(user):
             return False
     except:
         return False
-    
+
+#------------------------------------------------------------------------------
 def getAccessColor(accessLvl):
     colorThresholds = list(ColorThreshold.objects.all().order_by("threshold"))    
     for t in colorThresholds:

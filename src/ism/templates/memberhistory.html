@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Members History</h1>
+<h1 class="pagetitle">Members History <span class="time">- last update {{ scan_date }}</span></h1>
 <ul>
 {% for m in member_list %}
   <li class="{% if m.new %}green{% else %}red{% endif %}">

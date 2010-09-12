@@ -6,6 +6,7 @@ Created on 21 mai 2010
 '''
 import json
 
+
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import user_passes_test
 from django.template.context import RequestContext
@@ -54,13 +55,11 @@ def stations(request):
                  'divisions' : divisions, # divisions to show
              'divisions_str' : divisions_str,
                    'hangars' : all_hangars,
-                'item_count' : getItemCount(),
                  'scan_date' : getScanDate() }
     return render_to_response("assets.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
-@cache_page(60 * 15) # 15 minutes cache
 @csrf_protect
 def hangars(request, stationID):
     
@@ -73,7 +72,6 @@ def hangars(request, stationID):
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
-@cache_page(60 * 15) # 15 minutes cache
 @csrf_protect
 def hangar_contents(request, stationID, hangarID):
     json_data = json.dumps(getHangarContents(int(stationID), int(hangarID)))
@@ -81,7 +79,6 @@ def hangar_contents(request, stationID, hangarID):
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
-@cache_page(60 * 15) # 15 minutes cache
 @csrf_protect
 def can1_contents(request, stationID, hangarID, container1):
     json_data = json.dumps(getCan1Contents(int(stationID), int(hangarID), int(container1)))
@@ -89,7 +86,6 @@ def can1_contents(request, stationID, hangarID, container1):
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
-@cache_page(60 * 15) # 15 minutes cache
 @csrf_protect
 def can2_contents(request, stationID, hangarID, container1, container2):
     json_data = json.dumps(getCan2Contents(int(stationID), int(hangarID), int(container1), int(container2)))
@@ -97,7 +93,6 @@ def can2_contents(request, stationID, hangarID, container1, container2):
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
-@cache_page(60 * 15) # 15 minutes cache
 @csrf_protect
 def search_items(request):
     
@@ -132,10 +127,6 @@ def getStations(divisions):
     return station_list
 
 #------------------------------------------------------------------------------
-def getItemCount():
-    return len(DbAsset.objects.all())
-
-#------------------------------------------------------------------------------
 def getStationHangars(stationID, divisions):
     if divisions:
         str_divisions = str(divisions).replace("[", "(").replace("]", ")")
@@ -165,9 +156,8 @@ def getHangarContents(stationID, hangarID):
         name, category = db.resolveTypeName(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
         except: icon = "item"
-        
         if i.hasContents:
-            item["data"] = "%s" % name
+            item["data"] = name
             id = "_%d_%d_%d" % (stationID, hangarID, i.itemID)
             item["attr"] = { "id" : id , "rel" : icon , "href" : "" }
             item["state"] = "closed"
@@ -175,7 +165,7 @@ def getHangarContents(stationID, hangarID):
             item["data"] = name
             item["attr"] = { "rel" : icon , "href" : ""  }
         else:
-            item["data"] = "%s <i>- (x %d)</i>" % (name, i.quantity)
+            item["data"] = "%s <i>- (x %s)</i>" % (name, utils.print_integer(i.quantity))
             item["attr"] = { "rel" : icon , "href" : "" }
         json_data.append(item)
         
@@ -201,7 +191,7 @@ def getCan1Contents(stationID, hangarID, container1):
             item["data"] = name
             item["attr"] = { "rel" : icon , "href" : ""  }
         else:
-            item["data"] = "%s <i>- (x %d)</i>" % (name, i.quantity)
+            item["data"] = "%s <i>- (x %s)</i>" % (name, utils.print_integer(i.quantity))
             item["attr"] = { "rel" : icon , "href" : ""  }
             
         json_data.append(item)
@@ -218,8 +208,10 @@ def getCan2Contents(stationID, hangarID, container1, container2):
         name, category = db.resolveTypeName(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
         except: icon = "item"
-        if i.singleton: item["data"] = name
-        else:           item["data"] = "%s <i>- (x %d)</i>" % (name, i.quantity)
+        if i.singleton: 
+            item["data"] = name
+        else:
+            item["data"] = "%s <i>- (x %s)</i>" % (name, utils.print_integer(i.quantity))
         item["attr"] = { "rel" : icon , "href" : ""  }
         json_data.append(item)
         

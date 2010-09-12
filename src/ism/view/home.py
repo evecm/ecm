@@ -31,11 +31,13 @@ def getLastMembers(count=10):
     queryset = list(MemberDiff.objects.all().order_by('-id'))[:count]
     for m in queryset:
         try:
-            memb = Member.objects.get(characterID=m.characterID)
+            Member.objects.get(characterID=m.characterID)
+            # if this call doesn't fail then the member is corped 
+            # we can have a link to his/her details
             m.url = "/members/%d" % m.characterID
-            m.date = print_time_min(memb.corpDate)
         except:
-            m.date = print_time_min(m.date)
+            pass
+        m.date = print_time_min(m.date)
         members.append(m)
     members.sort(key=lambda m: m.date, reverse=True)
     return members

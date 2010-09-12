@@ -65,8 +65,7 @@ function filter (phrase, _id){
 {% endblock %}
 
 {% block main_content %}
-<p class="center">{{ member_list|length }} members found on {{ scan_date }}</p>
-
+<h1 class="pagetitle">Member List <span class="time">- last update {{ scan_date }}</span></h1>
 
 <form class="filter">
     <input 
