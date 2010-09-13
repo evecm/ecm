@@ -92,7 +92,7 @@ class Title(models.Model):
     accessLvl = models.PositiveIntegerField(default=0)
     
     def getRoles(self):
-        ids = TitleComposition.objects.filter(title=self).values_list("title", flat=True)
+        ids = TitleComposition.objects.filter(title=self).values_list("role", flat=True)
         return Role.objects.filter(id__in=ids)
         
     def getAccessLvl(self):
