@@ -40,7 +40,7 @@ def checkApiVersion(version):
         raise WrongApiVersion(version)
     
 #------------------------------------------------------------------------------   
-def calcDiffs(newItems, oldItems):
+def calcDiffs(oldItems, newItems):
     """
     Quick way to compare 2 hashtables.
     
@@ -51,16 +51,16 @@ def calcDiffs(newItems, oldItems):
     removed  = []
     added    = []
 
-    for a in oldItems.values():
+    for item in oldItems.values():
         try:
-            dummyvariable = newItems[a] # is a still in the newItems?
-        except KeyError: # KeyError -> a has disappeared
-            removed.append(a)
-    for a in newItems.values():
+            newItems[item] # is "item" still in the newItems?
+        except KeyError: # KeyError -> "item" has disappeared
+            removed.append(item)
+    for item in newItems.values():
         try:
-            dummyvariable = oldItems[a] # was a in the oldItems already?
-        except KeyError: # KeyError -> a is new
-            added.append(a)
+            oldItems[item] # was "item" in the oldItems already?
+        except KeyError: # KeyError -> "item" is new
+            added.append(item)
 
     return removed, added
 

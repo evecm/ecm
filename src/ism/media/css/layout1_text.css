@@ -42,7 +42,7 @@
 /* TABLES */
 /**********/
 
-.main-content table {
+.main-content table.table {
 	width:100%;
     margin-top:1.0em;
     margin-bottom:0.2em;
@@ -54,7 +54,7 @@
 }
 
 
-.main-content table thead tr .header {
+.main-content table.table thead tr .header {
 	height:3.5em;
     padding:0 20px 0 7px;
     border-collapse:collapse;
@@ -74,17 +74,17 @@
     border-bottom:solid 2px rgb(255,255,255);
 }
 
-.main-content table thead tr .headerSortUp {
+.main-content table.table thead tr .headerSortUp {
 	background-image: url(../img/sort-asc.gif);
 	background-color:rgb(155,155,155);
 }
 
-.main-content table thead tr .headerSortDown {
+.main-content table.table thead tr .headerSortDown {
 	background-image: url(../img/sort-desc.gif);
 	background-color:rgb(155,155,155);
 }
 
-.main-content table td.left {
+.main-content table.table td.left {
     height:3.0em;
     border-left:solid 2px rgb(255,255,255);
     border-right:solid 2px rgb(255,255,255);
@@ -94,8 +94,8 @@
     font-weight:bold;
 }
 
-.main-content table tr.row { background-color:#e1e1e1; }
-.main-content table tr.row:hover { background-color:#CCCCCC; }
+.main-content table.table tr.row { background-color:#e1e1e1; }
+.main-content table.table tr.row:hover { background-color:#CCCCCC; }
 
 .row-blue { background-color: #dafffd; }
 .row-blue:hover { background-color: #aff4f1; }
@@ -121,7 +121,7 @@
 .row-black { background-color: #1e1e1e; color: #fff; }
 .row-black:hover { background-color: #4a4a4a; color: #fff; }
 
-.main-content table td {
+.main-content table.table td {
     height:2.0em;
     padding:0px 5px 0px 5px;
     border-left:solid 2px rgb(255,255,255);
@@ -131,13 +131,13 @@
     text-align:left; font-weight:normal;
     vertical-align:middle;  
 }
-.main-content table td img{
+.main-content table.table td img{
 	border:0px;
     height:24px;
     width:24px;
     background-position:center;
 }
-.main-content table thead tr .top { 
+.main-content table.table thead tr .top { 
 	font-size: 120%; 
 	background-color:rgb(155,155,155);  
 	vertical-align: baseline; 
@@ -147,11 +147,31 @@
     border-top:solid 2px rgb(255,255,255);
     border-bottom:solid 2px rgb(255,255,255);
 }
-.main-content table thead tr .title-col img { border: none;  padding: 0px;}
-.main-content table thead tr .title-col { width: 24px;  padding: 0px;  text-align:center; vertical-align: baseline;}
-.main-content table tbody tr .title-col img { border: none; padding: 0px;  }
-.main-content table tbody tr .title-col { width: 24px; text-align: center; padding: 0px;  text-align:center; vertical-align: middle; }
+.main-content table.table thead tr .title-col img { border: none;  padding: 0px;}
+.main-content table.table thead tr .title-col { width: 24px;  padding: 0px;  text-align:center; vertical-align: baseline;}
+.main-content table.table tbody tr .title-col img { border: none; padding: 0px;  }
+.main-content table.table tbody tr .title-col { width: 24px; text-align: center; padding: 0px;  text-align:center; vertical-align: middle; }
 
+.main-content table.transparent {
+    width:100%;
+    border-collapse:collapse;
+    empty-cells:show;
+}
+
+
+.main-content table.transparent td {
+    margin:1.0em;
+    border-collapse:collapse;
+    empty-cells:show;
+    text-align:left;
+}
+
+
+
+/***********
+ *  LISTS  *
+ ***********/
+ 
 .main-content ul {list-style:none; margin:0.5em 0 1.0em 0;}
 .main-content ul li {
     margin:0 0 0.2em 2px; 
@@ -168,6 +188,15 @@
 }
 .main-content ol {margin:0.5em 0 1.0em 20px !important /*Non-IE6*/; margin:0.5em 0 1.0em 25px /*IE6*/;}
 .main-content ol li {list-style-position:outside; margin:0 0 0.2em 0; line-height:1.4em; font-size:120%;}
+
+
+
+
+
+/***********
+ *  FORMS  *
+ ***********/
+
 
 form.filter {height:2em;width:400px;margin-top:10px;color:rgb(160,160,160);font-size:110%;font-weight: bold;}
 form.filter input { border:1px solid #AAAAAA; background-color:#EEEEEE; width:300px; font-weight: bold; color:rgb(160,160,160);font-size:120%;}

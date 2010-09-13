@@ -9,12 +9,16 @@ Created on 23 mar. 2010
 from ism.data.assets.models import DbAsset, DbAssetDiff
 from ism.core.api import connection
 from ism.core.api.connection import API
-from django.db import transaction
-from ism.core.parsers.utils import checkApiVersion, calcDiffs, markUpdated
+from ism.core.parsers import utils
 from ism.core.assets.constants import STATIONS_IDS, OFFICE_TYPEID,\
                                       HANGAR_FLAG, BOOKMARK_TYPEID,\
                                       NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
                                       CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS
+                                      
+from django.db import transaction
+
+
+
 DEBUG = False # DEBUG mode
 
 #------------------------------------------------------------------------------
@@ -34,7 +38,7 @@ def update(debug=False, cache=False):
             start = time.time()
         api = connection.connect(debug=debug, cache=cache)
         apiAssets = api.corp.AssetList(characterID=API.CHAR_ID)
-        checkApiVersion(apiAssets._meta.version)
+        utils.checkApiVersion(apiAssets._meta.version)
         
         currentTime = apiAssets._meta.currentTime
         cachedUntil = apiAssets._meta.cachedUntil
@@ -63,17 +67,17 @@ def update(debug=False, cache=False):
         diffs = []
         if len(oldItems) != 0 :
             if DEBUG : print "computing diffs since last asset scan..."
-            diffs = getAssetDiffs(newItems, oldItems, date=currentTime)
+            diffs = getAssetDiffs(newItems=newItems, oldItems=oldItems, date=currentTime)
             if diffs:
                 for assetDiff in diffs : 
                     assetDiff.save()
                 # we store the update time of the table
-                markUpdated(model=DbAssetDiff, date=currentTime)
+                utils.markUpdated(model=DbAssetDiff, date=currentTime)
             DbAsset.objects.all().delete()
         for asset in newItems.values() : asset.save()
         
         # we store the update time of the table
-        markUpdated(model=DbAsset, date=currentTime)
+        utils.markUpdated(model=DbAsset, date=currentTime)
         
         
             
@@ -88,9 +92,8 @@ def update(debug=False, cache=False):
         raise
     
 #------------------------------------------------------------------------------
-def getAssetDiffs(newItems, oldItems, date):
-    
-    removed, added = calcDiffs(newItems, oldItems)
+def getAssetDiffs(oldItems, newItems, date):
+    removed, added = utils.calcDiffs(oldItems=oldItems, newItems=newItems)
     __removeDuplicates(removed)
     __removeDuplicates(added)
     
@@ -221,8 +224,8 @@ def locationIDtoStationID(locationID):
     """
     if locationID <  NPC_LOCATION_IDS :
         return locationID
-    if locationID >= CONQUERABLE_LOCATION_IDS :
+    elif locationID >= CONQUERABLE_LOCATION_IDS :
         return locationID - CONQUERABLE_LOCATION_OFFSET
-    if locationID >= NPC_LOCATION_IDS :
+    elif locationID >= NPC_LOCATION_IDS :
         return locationID - NPC_LOCATION_OFFSET
     

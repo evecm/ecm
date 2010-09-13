@@ -52,6 +52,9 @@ class Member(models.Model):
         lvl = 0
         for r in roles: lvl += r.getAccessLvl()
         return lvl
+
+    def getTitleChanges(self):
+        return TitleMemberDiff.objects.filter(member=self).order_by("-id")
     
     def __hash__(self):
         return self.characterID

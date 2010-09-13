@@ -95,6 +95,7 @@ def getMember(id):
     member.roles = member.getRoles(ignore_director=True)
     member.titles = member.getTitles()
     member.is_director = member.isDirector()
+    member.title_changes = member.getTitleChanges()
     
     return member
         

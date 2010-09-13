@@ -8,7 +8,8 @@ from django.db import transaction
 from ism.data.roles.models import Member, MemberDiff
 from ism.core.api import connection
 from ism.core.api.connection import API
-from ism.core.parsers.utils import checkApiVersion, markUpdated
+from ism.core.parsers import utils
+
 
 DEBUG = False # DEBUG mode
 
@@ -29,47 +30,50 @@ def update(debug=False, cache=False):
         api = connection.connect(debug=debug, cache=cache)
         # retrieve /corp/MemberTracking.xml.aspx
         membersApi = api.corp.MemberTracking(characterID=API.CHAR_ID)
-        checkApiVersion(membersApi._meta.version)
+        utils.checkApiVersion(membersApi._meta.version)
         
         currentTime = membersApi._meta.currentTime
         cachedUntil = membersApi._meta.cachedUntil
         if DEBUG : print "current time : %s" % str(currentTime)
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
-        newList = []
+        newMembers = {}
         
+        oldMembers = {}
         # we get the old member list from the database
-        oldList = list(Member.objects.all())
+        for m in Member.objects.all(): oldMembers[m] = m
+        
         oldAccessLvls = {}
 
-        for m in oldList:
+        for m in oldMembers.values():
             oldAccessLvls[m.characterID] = m.accessLvl
 
         for member in membersApi.members:
-            newList.append(parseOneMember(member=member))
+            m = parseOneMember(member=member)
+            newMembers[m] = m
         
-        for m in newList:
+        for m in newMembers.values():
             try:    m.accessLvl = oldAccessLvls[m.characterID]
             except: continue
 
         diffs = []
-        if len(oldList) != 0 :
-            diffs = getDiffs(newList, oldList, currentTime)
+        if len(oldMembers) != 0 :
+            diffs = getDiffs(oldMembers, newMembers, currentTime)
             if diffs:
                 for d in diffs: d.save()
                 # we store the update time of the table
-                markUpdated(model=MemberDiff, date=currentTime)
+                utils.markUpdated(model=MemberDiff, date=currentTime)
             Member.objects.all().delete()
-            # to be sure to store the nicknames change, etc.
-            # even if there are no diff, we always overwrite the members 
-        for c in newList: c.save()
+        # to be sure to store the nicknames change, etc.
+        # even if there are no diff, we always overwrite the members 
+        for m in newMembers.values(): m.save()
         # we store the update time of the table
-        markUpdated(model=Member, date=currentTime)
+        utils.markUpdated(model=Member, date=currentTime)
             
         transaction.commit()
         if DEBUG: print "DATABASE UPDATED!"
 
-        return "%d members parsed, %d changes since last scan" % (len(newList), len(diffs))
+        return "%d members parsed, %d changes since last scan" % (len(newMembers), len(diffs))
     except:
         # mayday, error
         transaction.rollback()
@@ -78,7 +82,6 @@ def update(debug=False, cache=False):
 
 #------------------------------------------------------------------------------
 def parseOneMember(member):
-    
     id       = member["characterID"]
     name     = member["name"]
     nick     = member["title"]
@@ -94,9 +97,8 @@ def parseOneMember(member):
                   lastLogoff=logoff, locationID=locID,  ship=ship )
     
 #------------------------------------------------------------------------------
-def getDiffs(newList, oldList, date):
-    removed  = [ r for r in oldList if r not in newList ]
-    added    = [ a for a in newList if a not in oldList ]
+def getDiffs(oldMembers, newMembers, date):
+    removed, added = utils.calcDiffs(oldItems=oldMembers, newItems=newMembers)
     
     diffs    = []
     if DEBUG:

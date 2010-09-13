@@ -27,7 +27,7 @@
 
 <h2>Access Level</h2>
 
-<table><tr class="row">
+<table class="table" ><tr class="row">
 <td class="row-{{ member.color }}">
   <b>
     {% if member.is_director %}
@@ -47,14 +47,31 @@
 None
 {% endif %}
 
-<h2>Titles</h2>
-<ul>
-{% for title in member.titles %}
-<li>{{ title }}</li>
-{% empty %}
-<p>No titles</p>
-{% endfor %}
-</ul>
+<table class="transparent">
+  <tr>
+    <td>
+      <h2>Titles</h2>
+      <ul>
+      {% for title in member.titles %}
+        <li>{{ title }}</li>
+        {% empty %}
+        <p>No titles</p>
+      {% endfor %}
+      </ul>
+    </td>
+    <td>
+      <h2>Titles Changes</h2>
+      <ul>
+      {% for change in member.title_changes %}
+        <li class="{% if change.new %}green{% else %}red{% endif %}">{{ change.title }}
+          <span class="time">- {{ change.date }}</span></li>
+        {% empty %}
+        <p>No titles changes</p>
+      {% endfor %}
+      </ul>
+    </td>
+  </tr>
+</table>
 
 <h2>Extra Roles</h2>
 <ul>

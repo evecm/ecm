@@ -9,8 +9,8 @@ from ism.data.roles.models import RoleMembership, TitleMembership, RoleMemberDif
 from ism.core.api import connection
 from ism.core.api.connection import API
 from ism.core.parsers import utils
+
 from django.db import transaction
-from ism.core.parsers.utils import checkApiVersion, calcDiffs, markUpdated
 
 DEBUG = False # DEBUG mode
 
@@ -31,7 +31,7 @@ def update(debug=False, cache=False):
         api = connection.connect(debug=debug, cache=cache)
         # retrieve /corp/MemberTracking.xml.aspx
         memberSecuApi = api.corp.MemberSecurity(characterID=API.CHAR_ID)
-        checkApiVersion(memberSecuApi._meta.version)
+        utils.checkApiVersion(memberSecuApi._meta.version)
         
         currentTime = memberSecuApi._meta.currentTime
         cachedUntil = memberSecuApi._meta.cachedUntil
@@ -57,10 +57,10 @@ def update(debug=False, cache=False):
             newTitles.update(parseOneMemberTitles(member))
         
         # Store role changes 
-        roleDiffs = storeRoles(currentTime, oldRoles, newRoles)
+        roleDiffs = storeRoles(oldRoles, newRoles, currentTime)
         
         # Store title changes 
-        titleDiffs = storeTitles(currentTime, oldTitles, newTitles)
+        titleDiffs = storeTitles(oldTitles, newTitles, currentTime)
        
         # update members access levels
         for m in Member.objects.all():
@@ -113,7 +113,7 @@ def parseOneMemberTitles(member):
     return titles
 
 #------------------------------------------------------------------------------
-def __storeRoleDiffs(date, removed, added):
+def __storeRoleDiffs(removed, added, date):
     diffs    = []
     if DEBUG:
         print "REMOVED ROLES:"
@@ -134,11 +134,11 @@ def __storeRoleDiffs(date, removed, added):
         
     return diffs
 
-def getRoleMemberDiffs(newTitles, oldTitles, date):
-    removed, added = calcDiffs(newItems=newTitles, oldItems=oldTitles)
-    return __storeRoleDiffs(date, removed, added)
+def getRoleMemberDiffs(oldRoles, newRoles, date):
+    removed, added = utils.calcDiffs(newItems=newRoles, oldItems=oldRoles)
+    return __storeRoleDiffs(removed, added, date)
 #------------------------------------------------------------------------------
-def __storeTitleDiffs(date, removed, added):
+def __storeTitleDiffs(removed, added, date):
     diffs = []
     if DEBUG:
         print "REMOVED TITLES:"
@@ -160,50 +160,50 @@ def __storeTitleDiffs(date, removed, added):
     
     return diffs
 
-def getTitleMemberDiffs(newTitles, oldTitles, date):
-    removed, added = calcDiffs(newItems=newTitles, oldItems=oldTitles)
-    return __storeTitleDiffs(date, removed, added)
+def getTitleMemberDiffs(oldTitles, newTitles, date):
+    removed, added = utils.calcDiffs(newItems=newTitles, oldItems=oldTitles)
+    return __storeTitleDiffs(removed, added, date)
 #------------------------------------------------------------------------------
-def storeRoles(date, oldRoles, newRoles):
+def storeRoles(oldRoles, newRoles, date):
     if len(oldRoles) != 0:
-        roleDiffs = getRoleMemberDiffs(date, oldRoles, newRoles)
+        roleDiffs = getRoleMemberDiffs(oldRoles, newRoles, date)
         if roleDiffs:
             for d in roleDiffs: d.save()
             # we store the update time of the table
-            markUpdated(model=RoleMemberDiff, date=date)
+            utils.markUpdated(model=RoleMemberDiff, date=date)
             
             RoleMembership.objects.all().delete()
             for rm in newRoles.values(): rm.save()
             # we store the update time of the table
-            markUpdated(model=RoleMembership, date=date)
+            utils.markUpdated(model=RoleMembership, date=date)
         # if no diff, we do nothing
         return len(roleDiffs)
     else:
         # 1st import, no diff to write
         for rm in newRoles.values(): rm.save()
         # we store the update time of the table
-        markUpdated(model=RoleMembership, date=date)
+        utils.markUpdated(model=RoleMembership, date=date)
         return 0
 
 #------------------------------------------------------------------------------
-def storeTitles(date, oldTitles, newTitles):
+def storeTitles(oldTitles, newTitles, date):
     if len(oldTitles) != 0:
-        titleDiffs = getTitleMemberDiffs(newTitles, oldTitles, date)
+        titleDiffs = getTitleMemberDiffs(oldTitles, newTitles, date)
         if titleDiffs:
             for d in titleDiffs: d.save()
             # we store the update time of the table
-            markUpdated(model=TitleMemberDiff, date=date)
+            utils.markUpdated(model=TitleMemberDiff, date=date)
             
             TitleMembership.objects.all().delete()
             for tm in newTitles.values(): tm.save()
             # we store the update time of the table
-            markUpdated(model=TitleMembership, date=date)
+            utils.markUpdated(model=TitleMembership, date=date)
         # if no diff, we do nothing
         return len(titleDiffs)
     else:
         # 1st import, no diff to write
         for tm in newTitles.values(): tm.save()
         # we store the update time of the table
-        markUpdated(model=TitleMembership, date=date)
+        utils.markUpdated(model=TitleMembership, date=date)
         return 0
         
