@@ -83,31 +83,33 @@ def getLastMembers(since_id, count=100):
 #------------------------------------------------------------------------------
 def getMember(id):
     try:
+        colorThresholds = list(ColorThreshold.objects.all().order_by("threshold"))
         member = Member.objects.get(characterID=id)
+        member.corpDate = print_time_min(member.corpDate)
+        member.lastLogin = print_time_min(member.lastLogin)
+        member.lastLogoff = print_time_min(member.lastLogoff)
+        member.location = resolveLocationName(member.locationID)
+        member.base = resolveLocationName(member.baseID)
+        member.color = getAccessColor(member.accessLvl)
+        member.roles = member.getRoles(ignore_director=True)
+        member.titles = member.getTitles()
+        member.is_director = member.isDirector()
+        member.title_changes = member.getTitleChanges()
     except:
         member = Member(name="No member for id: %d" % id)
-    member.corpDate = print_time_min(member.corpDate)
-    member.lastLogin = print_time_min(member.lastLogin)
-    member.lastLogoff = print_time_min(member.lastLogoff)
-    member.location = resolveLocationName(member.locationID)
-    member.base = resolveLocationName(member.baseID)
-    member.color = getAccessColor(member.accessLvl)
-    member.roles = member.getRoles(ignore_director=True)
-    member.titles = member.getTitles()
-    member.is_director = member.isDirector()
-    member.title_changes = member.getTitleChanges()
     
     return member
         
 #------------------------------------------------------------------------------
 def getMembers():
     member_list = Member.objects.all()
+    colorThresholds = list(ColorThreshold.objects.all().order_by("threshold"))
     for m in member_list:
         m.corpDate = print_date(m.corpDate)
         m.lastLogin = print_date(m.lastLogin)
         m.lastLogoff = print_date(m.lastLogoff)
         m.location = resolveLocationName(m.locationID)
-        m.color = getAccessColor(m.accessLvl)
+        m.color = getAccessColor(m.accessLvl, colorThresholds)
         m.is_director = m.isDirector()
         m.extraRoles = len(m.getRoles(ignore_director=True))
         

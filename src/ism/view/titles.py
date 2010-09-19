@@ -31,6 +31,7 @@ def titles(request):
 def getTitles():
     titlesDb = Title.objects.all().order_by("titleID")
     titles = []
+    colorThresholds = list(ColorThreshold.objects.all().order_by("threshold"))
     class T: pass
     for t in titlesDb:
         title = T()
@@ -38,7 +39,7 @@ def getTitles():
         title.icon = image.getImage(t.titleName)
         title.roles = [ tc.role_id for tc in TitleComposition.objects.filter(title=t) ]
         title.accessLvl = t.accessLvl   
-        title.color = getAccessColor(t.accessLvl)
+        title.color = getAccessColor(t.accessLvl, colorThresholds)
         titles.append(title)
     
     return titles

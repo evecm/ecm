@@ -7,7 +7,6 @@ Created on 16 mai 2010
 
 from ism import settings
 from django.contrib.auth.models import Group
-from ism.data.common.models import ColorThreshold
 
 try:
     DIRECTOR_GROUP_ID = Group.objects.get(name=settings.DIRECTOR_GROUP_NAME)
@@ -66,8 +65,7 @@ def isDirector(user):
         return False
 
 #------------------------------------------------------------------------------
-def getAccessColor(accessLvl):
-    colorThresholds = list(ColorThreshold.objects.all().order_by("threshold"))    
+def getAccessColor(accessLvl, colorThresholds):
     for t in colorThresholds:
         if accessLvl <= t.threshold:
             return t.color
