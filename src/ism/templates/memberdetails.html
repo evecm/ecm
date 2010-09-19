@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">{{ member.name }}</h1>
+<h1 class="pagetitle {%if not member.corped %}error{% endif %}">{{ member.name }}</h1>
 <p class="italic" >{{ member.nickname }}</p>
 <p>
   <span class="bold">Corp Date:</span> {{ member.corpDate }}<br/>

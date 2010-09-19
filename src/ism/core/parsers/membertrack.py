@@ -52,14 +52,20 @@ def update(debug=False, cache=False):
             m = parseOneMember(member=member)
             newMembers[m] = m
         
+        diffs, leaved = getDiffs(oldMembers, newMembers, currentTime)
+        # "leaved" is the list of members that leaved (not a list of MemberDiff but real Member objects)
+        # If we delete the old members each time, then all the diffs in roles/titles will not match
+        # as the foreign keys will be gone from the members table... 
+        for L in leaved: 
+            L.corped = False
+            newMembers[L] = L
+        
         for m in newMembers.values():
             try:    m.accessLvl = oldAccessLvls[m.characterID]
             except: continue
 
-        diffs = []
-        if len(oldMembers) != 0 :
-            diffs = getDiffs(oldMembers, newMembers, currentTime)
-            if diffs:
+        if len(oldMembers) > 0 :
+            if len(diffs) > 0 :
                 for d in diffs: d.save()
                 # we store the update time of the table
                 utils.markUpdated(model=MemberDiff, date=currentTime)
@@ -94,13 +100,14 @@ def parseOneMember(member):
     
     return Member(characterID=id,    name=name,         nickname=nick,
                   baseID=base,       corpDate=corpDate, lastLogin=login,
-                  lastLogoff=logoff, locationID=locID,  ship=ship )
+                  lastLogoff=logoff, locationID=locID,  ship=ship)
     
 #------------------------------------------------------------------------------
 def getDiffs(oldMembers, newMembers, date):
     removed, added = utils.calcDiffs(oldItems=oldMembers, newItems=newMembers)
     
-    diffs    = []
+    diffs  = []
+    
     if DEBUG:
         print "RESIGNED MEMBERS:"
         if not removed : print "(none)"
@@ -119,5 +126,5 @@ def getDiffs(oldMembers, newMembers, date):
                                 name        = newmember.name,
                                 nickname    = newmember.nickname, 
                                 new=True, date=date))
-    return diffs
+    return diffs, removed
     

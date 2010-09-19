@@ -23,6 +23,7 @@ class Member(models.Model):
     locationID = models.BigIntegerField(default=0)
     ship = models.CharField(max_length=128, default="")
     accessLvl = models.PositiveIntegerField(default=0)
+    corped = models.BooleanField(default=True)
 
     def getTitles(self):
         ids = TitleMembership.objects.filter(member=self).values_list("title", flat=True)

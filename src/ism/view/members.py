@@ -102,7 +102,7 @@ def getMember(id):
         
 #------------------------------------------------------------------------------
 def getMembers():
-    member_list = Member.objects.all()
+    member_list = Member.objects.filter(corped=True)
     colorThresholds = list(ColorThreshold.objects.all().order_by("threshold"))
     for m in member_list:
         m.corpDate = print_date(m.corpDate)

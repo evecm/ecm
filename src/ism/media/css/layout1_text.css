@@ -36,7 +36,7 @@
 .bold{font-weight:bold;}
 .italic{font-style:italic;}
 .time{color:#aaa;}
-
+.error{color:#fff; background-color:f00;}
 
 /**********/
 /* TABLES */
