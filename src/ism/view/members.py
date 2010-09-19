@@ -90,7 +90,7 @@ def getMember(id):
         member.lastLogoff = print_time_min(member.lastLogoff)
         member.location = resolveLocationName(member.locationID)
         member.base = resolveLocationName(member.baseID)
-        member.color = getAccessColor(member.accessLvl)
+        member.color = getAccessColor(member.accessLvl, colorThresholds)
         member.roles = member.getRoles(ignore_director=True)
         member.titles = member.getTitles()
         member.is_director = member.isDirector()
