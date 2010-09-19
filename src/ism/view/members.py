@@ -14,7 +14,7 @@ from django.template.context import RequestContext
 from ism.core.utils import print_time_min, print_date, getAccessColor
 from ism.data.roles.models import Member, MemberDiff
 from ism.core.db import resolveLocationName
-from ism.data.common.models import UpdateDate
+from ism.data.common.models import UpdateDate, ColorThreshold
 from ism import settings
 from django.views.decorators.csrf import csrf_protect
 from ism.core import utils

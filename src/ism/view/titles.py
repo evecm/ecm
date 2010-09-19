@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from ism.data.roles.models import TitleComposition, Role, Title
 from ism.data.corp.models import Hangar, Wallet
-from ism.data.common.models import UpdateDate
+from ism.data.common.models import UpdateDate, ColorThreshold
 from ism.core import image, utils
 from ism import settings
 from ism.core.utils import getAccessColor
