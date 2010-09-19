@@ -38,16 +38,18 @@ def update(debug=False, cache=False):
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
         newMembers = {}
-        
         oldMembers = {}
-        # we get the old member list from the database
-        for m in Member.objects.all(): oldMembers[m] = m
-        
+        notCorped  = {}
         oldAccessLvls = {}
-
-        for m in oldMembers.values():
+        
+        # we get the old member list from the database
+        for m in Member.objects.all(): 
+            if m.corped:
+                oldMembers[m] = m
+            else:
+                notCorped[m] = m
             oldAccessLvls[m.characterID] = m.accessLvl
-
+            
         for member in membersApi.members:
             m = parseOneMember(member=member)
             newMembers[m] = m
@@ -60,19 +62,33 @@ def update(debug=False, cache=False):
             L.corped = False
             newMembers[L] = L
         
+        for m in notCorped.values():
+            try:
+                # if the previously "not corped" members can now be found in the "new members"
+                # we do nothing
+                newMembers[m]
+            except KeyError:
+                # if the previously "not corped" members still cannot be found in the "new members"
+                # we add them again to the members list
+                newMembers[m] = m
+        
         for m in newMembers.values():
-            try:    m.accessLvl = oldAccessLvls[m.characterID]
-            except: continue
+            try:
+                m.accessLvl = oldAccessLvls[m.characterID]
+            except:
+                continue
 
         if len(oldMembers) > 0 :
             if len(diffs) > 0 :
-                for d in diffs: d.save()
+                for d in diffs:
+                    d.save()
                 # we store the update time of the table
                 utils.markUpdated(model=MemberDiff, date=currentTime)
             Member.objects.all().delete()
         # to be sure to store the nicknames change, etc.
         # even if there are no diff, we always overwrite the members 
-        for m in newMembers.values(): m.save()
+        for m in newMembers.values():
+            m.save()
         # we store the update time of the table
         utils.markUpdated(model=Member, date=currentTime)
             
