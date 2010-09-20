@@ -1,4 +1,5 @@
-﻿'''
+﻿#!/usr/bin/env python
+'''
 This file is part of ICE Security Management
 
 Created on 24 jan. 2010
@@ -6,7 +7,6 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-#!/usr/bin/env python
 from django.core.management import execute_manager
 try:
     import settings # Assumed to be in the same directory.
