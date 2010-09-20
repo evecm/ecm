@@ -1,8 +1,8 @@
 import os
 import sys
 
-sys.path.append('/var/django')
-sys.path.append('/var/django/ism')
+sys.path.append('/var/ice')
+sys.path.append('/var/ice/ism')
 sys.path.append('/usr/local/lib/python2.6/dist-packages')
 sys.path.append('/usr/local/lib/python2.6/dist-packages/django')
 
