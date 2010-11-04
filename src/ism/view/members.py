@@ -77,7 +77,7 @@ def getLastMembers(since_id, count=100):
             pass
         m.date = print_time_min(m.date)
         members.append(m)
-    members.sort(key=lambda m: m.date, reverse=True)
+    
     return members
 
 #------------------------------------------------------------------------------
