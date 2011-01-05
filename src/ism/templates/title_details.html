@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Title Details - {{ title.titleName }}{% endblock %}
+
+
+
+{% block header_scripts %}
+<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
+
+<script type="text/javascript">
+const colorThresholds = {{ colorThresholds|safe }};
+const title_id = "{{ title.titleID }}";
+</script>
+
+<script type="text/javascript" src="/static/js/title_details_table.js"></script>
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/titles">Titles</a></li>
+<li><a href="/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">{{ title.titleName }}{% if title.lastModified %}<span class="time"> - last modification {{ title.lastModified }}</span>{% endif %}</h1>
+
+<a href="/titles/{{ title.titleID }}/members" style="font-size:110%;" >Show all members having this title</a>
+
+<h2>Access Level</h2>
+
+<table class="table" >
+  <tr class="row">
+    <td class="row-{{ title.color }}"><b>{{ title.accessLvl }}</b></td>
+  </tr>
+</table>
+
+<h2>Roles</h2>
+
+<table class="table display" id="title_composition_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" >Role</th>
+      <th class="top" scope="col" >Category</th>
+      <th class="top" scope="col" >Access Level</th>
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Role</th>
+      <th>Category</th>
+      <th>Access Level</th>
+    </tr>
+  </tfoot>
+</table>
+
+<h2>Modifications</h2>
+
+{% if title.lastModified %}
+<table class="table display" id="title_compo_diff_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" >Change</th>
+      <th class="top" scope="col" >Role</th>
+      <th class="top" scope="col" >Category</th>
+      <th class="top" scope="col" >Modification Date</th>
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="4" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Change</th>
+      <th>Role</th>
+      <th>Category</th>
+      <th>Modification Date</th>
+    </tr>
+  </tfoot>
+</table>
+{% else %}
+<p>No changes</p>
+{% endif %}
+
+{% endblock %}

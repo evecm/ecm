@@ -1,0 +1,55 @@
+const director_access_lvl = 999999999999;
+
+
+// disable multi column sorting
+$('#members_table thead th').click(function(event) {
+    if (!$(event.target).hasClass('sorthandle')) {
+        event.shiftKey = false;
+    }
+});
+
+// dataTable setup
+$(document).ready(function() {
+	table = $('#members_table').dataTable( {
+		"bProcessing": true,
+		"bServerSide": true,
+        "bAutoWidth": false,
+        "iDisplayLength": 25,
+		"sAjaxSource": "/titles/" + title_id + "/members_data",
+        "sDom": 'lprtip',
+        "aoColumns": [
+            { "sTitle": "Name",         "sWidth": "25%", "sType": "html" },
+            { "sTitle": "Nickname",     "sWidth": "20%", "sType": "string",       "bSortable": false     },
+            { "sTitle": "Access Level", "sWidth": "10%", "sType": "access-level", "bSearchable": false   },
+            { "sTitle": "Extra Roles",  "sWidth": "5%",  "sType": "numeric",      "bSearchable": false   },
+            { "sTitle": "Corp Date",    "sWidth": "10%", "sType": "string",       "bSearchable": false   },
+            { "sTitle": "Last Login",   "sWidth": "10%", "sType": "string",       "bSearchable": false   },
+            { "sTitle": "Location",     "sWidth": "20%", "sType": "string",       "bSearchable": false   },
+            { "sTitle": "Ship",         "sWidth": "5%",  "sType": "string" }
+        ],
+        "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            /* apply color to all access level cells */
+            accessLvl = aData[2];
+            if ( accessLvl == director_access_lvl ) {
+				$('td:eq(2)', nRow).html( '<b>DIRECTOR</b>' );
+            }
+            $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl));
+            if (aData[3] > 0) {
+                $('td:eq(3)', nRow).addClass("row-red");
+            }
+            return nRow;
+		}
+    } );
+
+} );
+
+// utility function for getting color from access level
+function getAccessColor(accessLvl) {
+    for (var i=0 ; i < colorThresholds.length ; i++) {
+        if (accessLvl <= colorThresholds[i]["threshold"]) {
+            return colorThresholds[i]["color"];
+        }
+    }
+    return colorThresholds[0]["color"]
+}
+

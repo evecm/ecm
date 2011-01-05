@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Title Members - {{ title.titleName }}{% endblock %}
+
+{% block header_scripts %}
+<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
+
+<script type="text/javascript">
+const colorThresholds = {{ colorThresholds|safe }};
+const title_id = {{ title.titleID }};
+</script>
+
+<script type="text/javascript" src="/static/js/title_members_table.js"></script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/titles">Titles</a></li>
+<li><a href="/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
+<li><a href="/titles/{{ title.titleID }}/members">Members</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Members having the title <i>{{ title.titleName }}</i></h1>
+
+<table class="table display" id="members_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" >Name</th>
+      <th class="top" scope="col" >Nickname</th>
+      <th class="top" scope="col" >Access Level</th>
+      <th class="top" scope="col" >Extra Roles</th>
+      <th class="top" scope="col" >Corp Date</th>
+      <th class="top" scope="col" >Last Login</th>
+      <th class="top" scope="col" >Location</th>
+      <th class="top" scope="col" >Ship</th>
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Name</th>
+      <th>Nickname</th>
+      <th>Access Level</th>
+      <th>Extra Roles</th>
+      <th>Corp Date</th>
+      <th>Last Login</th>
+      <th>Location</th>
+      <th>Ship</th>
+    </tr>
+  </tfoot>
+</table>
+
+{% endblock %}

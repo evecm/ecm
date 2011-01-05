@@ -13,6 +13,8 @@ from datetime import datetime
 #------------------------------------------------------------------------------
 class Member(models.Model):
     
+    DIRECTOR_ACCESS_LVL = 999999999999;
+
     characterID = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=128, db_index=True)
     nickname = models.CharField(max_length=256, default="")
@@ -20,10 +22,11 @@ class Member(models.Model):
     corpDate = models.DateTimeField(db_index=True, default=datetime.now())
     lastLogin = models.DateTimeField(db_index=True, default=datetime.now())
     lastLogoff = models.DateTimeField(db_index=True, default=datetime.now())
-    locationID = models.BigIntegerField(default=0)
+    location = models.CharField(max_length=256, default="")
     ship = models.CharField(max_length=128, default="")
     accessLvl = models.PositiveIntegerField(default=0)
     corped = models.BooleanField(default=True)
+    extraRoles = models.PositiveIntegerField(default=0)
 
     def getTitles(self):
         ids = TitleMembership.objects.filter(member=self).values_list("title", flat=True)
@@ -49,6 +52,8 @@ class Member(models.Model):
         return len(roles) > 0
     
     def getAccessLvl(self):
+        if self.isDirector():
+            return DIRECTOR_ACCESS_LVL
         roles = self.getImpliedRoles()
         lvl = 0
         for r in roles: lvl += r.getAccessLvl()
@@ -154,6 +159,18 @@ class Role(models.Model):
         except:
             return self.roleName
     
+    def getDispName(self):
+        try:
+            name = self.dispName
+            if self.hangar_id :
+                name = name % Hangar.objects.get(hangarID=self.hangar_id).name
+            elif self.wallet_id : 
+                name = name % Wallet.objects.get(walletID=self.wallet_id).name
+            return name
+        except:
+            return self.roleName
+
+
 #------------------------------------------------------------------------------
 class RoleMembership(models.Model):
     member = models.ForeignKey(Member)
@@ -269,4 +286,4 @@ class RoleMemberDiff(models.Model):
     def __unicode__(self):
         if self.new: return '%s got %s' % (self.member.name, self.role.dispName)
         else       : return '%s lost %s' % (self.member.name, self.role.dispName)
-    
+

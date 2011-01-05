@@ -65,6 +65,7 @@ def update(debug=False, cache=False):
         # update members access levels
         for m in Member.objects.all():
             m.accessLvl = m.getAccessLvl()
+            m.extraRoles = len(m.getRoles(ignore_director=True))
             m.save() 
 
         if DEBUG : print "saving data to the database..."

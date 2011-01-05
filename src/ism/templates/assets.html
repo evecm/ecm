@@ -80,6 +80,7 @@ $(function () {
                     "close_node"  : true
                 },
                 "hangar" : {
+                    "class" : "hangar-row",
                     "icon" : { 
                         "image" : "/static/img/hangar.png" 
                     },
@@ -172,7 +173,7 @@ $(function () {
             "data" : [
                 {% for s in station_list %}
                 {
-                    "data" : '<b>{{ s.name }}</b><i> - ({{ s.items }} items)</i>',
+                    "data" : '<b>{{ s.name }}</b><i> - ({{ s.items }} item{{ s.items|pluralize }})</i>',
                     "attr" : { "id" : "_{{ s.locationID }}" , "rel" : "station" , "class" : "station-row" },
                     "state" : "closed"
                 },

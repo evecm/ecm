@@ -13,5 +13,5 @@ from django.contrib.auth import logout
 #------------------------------------------------------------------------------
 def logout_view(request):
     logout(request)
-    return render_to_response("login.html")
+    return render_to_response("session/login.html")
 #------------------------------------------------------------------------------

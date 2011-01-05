@@ -90,8 +90,8 @@ CACHE_BACKEND = 'dummy://'
 
 
 ROOT_URLCONF = 'ism.urls'
-LOGIN_URL = '/user/login/'
-LOGOUT_URL = '/user/logout/'
+LOGIN_URL = '/user/login'
+LOGOUT_URL = '/user/logout'
 TEMPLATE_DIRS = (
         resolvePath('templates/'),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".

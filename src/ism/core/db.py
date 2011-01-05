@@ -28,6 +28,7 @@ def resolveTypeName(typeID):
     try:
         return CACHE_TYPES[typeID]
     except KeyError:
+        #print "type cache miss", typeID
         CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
         cursor = CONN_EVE.cursor()
         cursor.execute(QUERY_ONE_TYPENAME % typeID)
@@ -54,6 +55,7 @@ def resolveLocationName(locationID):
     try:
         return CACHE_LOCATIONS[locationID]
     except KeyError:
+        #print "location cache miss", locationID
         CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
         cursor = CONN_EVE.cursor()
         if locationID < STATIONS_IDS :

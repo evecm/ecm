@@ -94,32 +94,30 @@
     font-weight:bold;
 }
 
-.main-content table.table tr.row { background-color:#e1e1e1; }
-.main-content table.table tr.row:hover { background-color:#CCCCCC; }
+/*.main-content table.table tr.row { background-color:#e1e1e1; }*/
+/*.main-content table.table tr.row:hover { background-color:#CCCCCC; }*/
 
-.row-blue { background-color: #dafffd; }
-.row-blue:hover { background-color: #aff4f1; }
+/*.row-blue { background-color: #dafffd; }*/
+.row-blue { background-color: #aff4f1; }
 
-.row-green { background-color: #d2ffde; }
-.row-green:hover { background-color: #aff2c1; }
+/*.row-green { background-color: #d2ffde; }*/
+.row-green { background-color: #aff2c1; }
 
-.row-yellow { background-color:#ffffc6;}
-.row-yellow:hover { background-color:#f5f583; }
+/*.row-yellow { background-color:#ffffc6;}*/
+.row-yellow { background-color:#f5f583; }
 
-.row-orange { background-color:#ffe7c6;}
-.row-orange:hover { background-color:#ffd69a; }
+/*.row-orange { background-color:#ffe7c6;}*/
+.row-orange { background-color:#ffd69a; }
 
-.row-red { background-color:#ffc4c4;}
-.row-red:hover { background-color:#ffa1a1; }
+/*.row-red { background-color:#ffc4c4;}*/
+.row-red { background-color:#ffa1a1; }
 
-.row-purple { background-color:#e4d3ff;}
-.row-purple:hover { background-color:#c8aaf6; }
+/*.row-purple { background-color:#e4d3ff;}*/
+.row-purple { background-color:#c8aaf6; }
 
+/*.row-black { background-color: #1e1e1e; color: #fff; }*/
 .row-black { background-color: #1e1e1e; color: #fff; }
-.row-black:hover { background-color: #4a4a4a; color: #fff; }
 
-.row-black { background-color: #1e1e1e; color: #fff; }
-.row-black:hover { background-color: #4a4a4a; color: #fff; }
 
 .main-content table.table td {
     height:2.0em;
@@ -133,8 +131,6 @@
 }
 .main-content table.table td img{
 	border:0px;
-    height:24px;
-    width:24px;
     background-position:center;
 }
 .main-content table.table thead tr .top { 
@@ -166,6 +162,11 @@
     text-align:left;
 }
 
+.main-content table.transparent img {
+    display: block;
+    margin: 0 auto; 
+    border: none;
+}
 
 
 /***********
@@ -231,6 +232,18 @@ form.filter input { border:1px solid #AAAAAA; background-color:#EEEEEE; width:30
 .filter_form div span {display:inline; padding:3px;}
 .filter_form input.button {padding:1px 5px; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); }
 .filter_form input.button:hover {cursor:pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
+
+
+
+select.date_selector {
+    font-family:"trebuchet ms",arial,sans-serif; 
+    color:rgb(100,100,100); 
+    font-weight:bold; 
+    font-size:100%; 
+}
+
+
+
 
 /********************/
 /*  COMMON CLASSES  */

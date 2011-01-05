@@ -9,7 +9,7 @@ from ism.data.roles.models import Member, MemberDiff
 from ism.core.api import connection
 from ism.core.api.connection import API
 from ism.core.parsers import utils
-
+from ism.core.db import resolveLocationName
 
 DEBUG = False # DEBUG mode
 
@@ -111,12 +111,12 @@ def parseOneMember(member):
     base     = member["baseID"]
     login    = member["logonDateTime"]
     logoff   = member["logoffDateTime"]
-    locID    = member["locationID"]
+    location = resolveLocationName(member["locationID"])
     ship     = member["shipType"]
     
     return Member(characterID=id,    name=name,         nickname=nick,
                   baseID=base,       corpDate=corpDate, lastLogin=login,
-                  lastLogoff=logoff, locationID=locID,  ship=ship)
+                  lastLogoff=logoff, location=location, ship=ship)
     
 #------------------------------------------------------------------------------
 def getDiffs(oldMembers, newMembers, date):

@@ -1,36 +1,55 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Assets Changes{% endblock %}
+{% block headtitle %}Asset Changes on {{ date }}{% endblock %}
 
 
 
 {% block header_scripts %}
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/tablesorter.css" />
 <script type="text/javascript" src="/static/js/jquery.js"></script>
 <script type="text/javascript" src="/static/js/jquery.jstree.js"></script>
 {% endblock %}
 
 
 {% block breadcrumbs %}
-<li><a href="/assets/" >Assets</a></li>
-<li><a href="/assets/changes/" >Changes</a></li>
+<li><a href="/">Home</a></li>
+<li><a href="/assets" >Assets</a></li>
+<li><a href="/assets/changes" >Changes</a></li>
+<li><a href="/assets/changes/{{ date_str }}" >{{ date }}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<p class="center">{{ item_count }} items found on {{ scan_date }}</p>
-
-
-<form id="search_form" >
+<div>
+    <h1 class="pagetitle">Asset Changes on <select id="date_selector" class="date_selector">
+        {% for d in dates %}
+        <option value="{{ d.value }}" {% if d.value == date_str %}selected="selected"{% endif %}>{{ d.show }}</option>
+        {% endfor %}
+    </select>
+</h1>
+</div>
+<form id="search_form" class="search_form">
     <input type="text" id="search_text" value="" />
-    <input type="button" id="search_button" value="Search" />
-    <input type="button" id="clear_search" value="Reset" />
-    <input type="button" id="close_all"   value="Close All" />
-    <input type="button" id="open_all"   value="Open All" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+    <input type="button" class="button" id="close_all"   value="Close All" />
+    <input type="button" class="button" id="expand_all"   value="Expand All" />
+</form>
+
+<form id="filter_form" class="filter_form" >
+    {% for h in hangars %}
+    <div>
+        <input type="checkbox" id="{{ h.hangarID }}" value="{{ h.hangarID }}" class="hangar-checkbox"
+        {% if h.checked %}checked="true"{% endif %} /><span class="checkbox-name">{{ h.name }}</span>
+    </div>
+    {% endfor %}
+    <div><input type="button" class="button" id="filter_divisions" value="Filter Hangars" /></div>
+    <div><input type="button" class="button" id="reset_filter_divisions" value="Reset" /></div>
 </form>
 
 <div id="assets_tree"></div>
 
 <script type="text/javascript">
+
+
 
 $(function () {
 
@@ -51,7 +70,7 @@ $(function () {
         "search" : {
             "case_insensitive" : true,
             "ajax" : {
-                "url" : "/assets/search/"
+                "url" : "/assets/changes/{{ date_str }}/search{% if divisions %}?divisions={{ divisions_str }}{% endif %}"
             }
         },
         "types" : {
@@ -70,6 +89,7 @@ $(function () {
                     "close_node"  : true
                 },
                 "hangar" : {
+                    "class" : "hangar-row",
                     "icon" : { 
                         "image" : "/static/img/hangar.png" 
                     },
@@ -78,27 +98,9 @@ $(function () {
                     "open_node"   : true,
                     "close_node"  : true
                 },
-                "ship" : {
+                "added" : {
                     "icon" : { 
-                        "image" : "/static/img/ship.png" 
-                    },
-                    "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint","item" ],
-                    "max_depth" : 2,
-                    "open_node"   : true,
-                    "close_node"  : true
-                },
-                "can" : {
-                    "icon" : { 
-                        "image" : "/static/img/can.png" 
-                    },
-                    "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint","item" ],
-                    "max_depth" : 1,
-                    "open_node"   : true,
-                    "close_node"  : true
-                },
-                "item" : {
-                    "icon" : { 
-                        "image" : "/static/img/item.png" 
+                        "image" : "/static/img/plus-tree-icon.png" 
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -108,45 +110,9 @@ $(function () {
                     "create_node" : false,
                     "delete_node" : false
                 },
-                "mineral" : {
+                "removed" : {
                     "icon" : { 
-                        "image" : "/static/img/mineral.png" 
-                    },
-                    "valid_children" : "none",
-                    "max_depth" : 0,
-                    "select_node" : true,
-                    "open_node"   : true,
-                    "close_node"  : true,
-                    "create_node" : false,
-                    "delete_node" : false
-                },
-                "blueprint" : {
-                    "icon" : { 
-                        "image" : "/static/img/blueprint.png" 
-                    },
-                    "valid_children" : "none",
-                    "max_depth" : 0,
-                    "select_node" : true,
-                    "open_node"   : true,
-                    "close_node"  : true,
-                    "create_node" : false,
-                    "delete_node" : false
-                },
-                "ammo" : {
-                    "icon" : { 
-                        "image" : "/static/img/ammo.png" 
-                    },
-                    "valid_children" : "none",
-                    "max_depth" : 0,
-                    "select_node" : true,
-                    "open_node"   : true,
-                    "close_node"  : true,
-                    "create_node" : false,
-                    "delete_node" : false
-                },
-                "skill" : {
-                    "icon" : { 
-                        "image" : "/static/img/skill.png" 
+                        "image" : "/static/img/minus-tree-icon.png" 
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -162,47 +128,94 @@ $(function () {
             "data" : [
                 {% for s in station_list %}
                 {
-                    "data" : '<b>{{ s.name }}</b><i> - ({{ s.items }} items)</i>',
-                    "attr" : { "id" : "{{ s.locationID }}_" , "rel" : "station" , "class" : "station-row" },
+                    "data" : '<b>{{ s.name }}</b><i> - ({{ s.items }} item{{ s.items|pluralize }} changed)</i>',
+                    "attr" : { "id" : "_{{ s.locationID }}" , "rel" : "station" , "class" : "station-row" },
                     "state" : "closed"
                 },
                 {% endfor %}
             ],
             "ajax" : {
                 "url" : function(node) { 
-                    var url = "/assets/";
+                    var url = "/assets/changes/{{ date_str }}";
                     url += node.attr ? node.attr("id").replace(/_/g, "/") : "";
+                    {% if divisions %}
+                    url += "?divisions={{ divisions_str }}"; 
+                    {% endif %}
                     return url; 
                 }
             }
         }
     });
-
-
-    $("#search_button").click(function() {
-    	$("#assets_tree").jstree("search", document.getElementById("search_text").value);
-    });
-
-    $("#clear_search").click(function() {
-        document.getElementById("search_text").value = "";
-        $("#assets_tree").jstree("clear_search");
-    });
-
-    $("#close_all").click(function() {
-        $("#assets_tree").jstree("close_all");
-    });
-
-    $("#open_all").click(function() {
-        $("#assets_tree").jstree("open_all");
-    });
-
 });
+
+
+function getDivisionsStr() {
+    var checkboxes = $(".hangar-checkbox");
+    var divisions = ""
+    for (i=0 ; i < checkboxes.length ; i++) {
+        if (checkboxes[i].checked) {
+            divisions += "," + checkboxes[i].id
+        }
+    }
+    if (divisions.length != 0) {
+        return divisions.substring(1);
+    } else {
+        return divisions;
+    }
+}
+
 
 $("#search_form").submit(function() {
-    $("#assets_tree").jstree("search", document.getElementById("search_text").value);
+    $("#assets_tree").jstree("search", $("#search_text").val());
     return false;
 });
+
+$("#clear_search").click(function() {
+    $("#search_text").val("");
+    $("#assets_tree").jstree("clear_search");
+});
+
+$("#close_all").click(function() {
+    $("#assets_tree").jstree("close_all");
+});
+
+$("#expand_all").click(function() {
+    $("#assets_tree").jstree("open_all");
+});
+
+
+
+$("#filter_divisions").click(function() {
+    var divisions = getDivisionsStr();
+    var url = "/assets/changes/{{ date_str }}";
+    if (divisions.length != 0) {
+        url += "?divisions=" + divisions;
+    }
+    window.location = url;
+});
+
+$("#reset_filter_divisions").click(function() {
+	window.location = "/assets/changes/{{ date_str }}";
+});
+
+$("#date_selector").change(function () {
+    var divisions = getDivisionsStr();
+    var url = "/assets/changes/" + $("#date_selector option:selected").val();
+    if (divisions.length != 0) {
+        url += "?divisions=" + divisions;
+    }
+    window.location = url;
+});
+
 
 </script>
 
 {% endblock %}
+
+
+
+
+
+
+
+

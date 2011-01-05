@@ -5,26 +5,13 @@
 
 
 {% block header_scripts %}
+<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
+
 <script type="text/javascript">
-function filter (phrase, _id){
-    var words = phrase.value.toLowerCase().split(" ");
-    var table = document.getElementById(_id);
-    var ele;
-    for (var r = 1; r < table.rows.length; r++){
-        ele = table.rows[r].innerHTML.replace(/<[^>]+>/g,"");
-        var displayStyle = 'none';
-        for (var i = 0; i < words.length; i++) {
-            if (ele.toLowerCase().indexOf(words[i])>=0) {
-                displayStyle = '';
-            } else {
-                displayStyle = 'none';
-                break;
-            }
-        }
-        table.rows[r].style.display = displayStyle;
-    }
-}
+const colorThresholds = {{ colorThresholds|safe }};
 </script>
+<script type="text/javascript" src="/static/js/titles_table.js"></script>
 {% endblock %}
 
 
@@ -34,52 +21,35 @@ function filter (phrase, _id){
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Corporation Titles <span class="time">- last update {{ scan_date }}</span></h1>
+<h1 class="pagetitle">Corporation Titles <span class="time">- last change {{ scan_date }}</span></h1>
 
-<form class="filter">
-    <input 
-        type="text" 
-        name="filt" 
-        title="Type any string to filter out the lines in the table. The filter is not case sensitive and searches through all the columns." 
-        id="filterstring" 
-        value="Filter" 
-        onkeyup="filter(this, 'titles_table', '1')" 
-        onclick="document.getElementById('filterstring').select()">
-    </input>
-</form>
 
-<table class="table" id="titles_table">
+
+<table class="table display" id="titles_table">
   <thead> 
     <tr>
-      <th class="top" scope="col" >Role Name</th>
+      <th class="top" scope="col" >Title Name</th>
       <th class="top" scope="col" >Access Level</th>
-{% for t in title_list %}
-      <th class="top title-col" scope="col" ><img src="{{ t.icon }}"></img></th>
-{% endfor %}
+      <th class="top" scope="col" >Members</th>
+      <th class="top" scope="col" >Role Count</th>
+      <th class="top" scope="col" >Last Modified</th>
     </tr>
   </thead>
   <tbody> 
-    <tr class="row">
-    <td class="left" >Access Level</td>
-      <td>-</td>
-    {% for t in title_list %}
-      <td class="row-{{ t.color }}" title="{{ t.name }}">{{ t.accessLvl }}</td>
-    {% endfor %}
+    <tr>
+      <td colspan="5" class="dataTables_empty">Loading data from server...</td>
     </tr>
-{% for r in role_list %}
-    <tr class="row">
-      <td class="left" title="{{ r.description }}">{{ r.name }}</td>
-      <td>{{ r.accessLvl }}</td>
-  {% for t in title_list %}
-      <td class="title-col" title="{{ t.name }}">
-        {% if r.id in t.roles %}
-        <img src="/static/img/redlens.png"></img>
-        {% endif %}
-      </td>
-  {% endfor %}
-    </tr>
-{% endfor %}
   </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Title Name</th>
+      <th>Access Level</th>
+      <th>Members</th>
+      <th>Role Count</th>
+      <th>Last Modified</th>
+    </tr>
+  </tfoot>
 </table>
+
 
 {% endblock %}

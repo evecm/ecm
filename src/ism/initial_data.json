@@ -20,7 +20,7 @@
     "model": "common.colorthreshold", 
     "fields": {
       "color": "blue",
-      "threshold" : 14000
+      "threshold" : 5000
     }
   }, 
   {
@@ -28,7 +28,7 @@
     "model": "common.colorthreshold", 
     "fields": {
       "color": "green",
-      "threshold" : 20000
+      "threshold" : 12000
     }
   }, 
   {
@@ -52,7 +52,7 @@
     "model": "common.colorthreshold", 
     "fields": {
       "color": "red",
-      "threshold" : 60000
+      "threshold" : 600000
     }
   }, 
   {
@@ -60,7 +60,7 @@
     "model": "common.colorthreshold", 
     "fields": {
       "color": "purple",
-      "threshold" : 200000
+      "threshold" : 3000000
     }
   }, 
   {

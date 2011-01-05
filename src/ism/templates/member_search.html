@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Members{% endblock %}
+
+
+
+{% block header_scripts %}
+<script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
+
+<script type="text/javascript">
+const colorThresholds = {{ colorThresholds|safe }};
+</script>
+
+<script type="text/javascript" src="/static/js/members_table.js"></script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/members">Members</a></li>
+<li><a href="/members/search">Search</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Search Members</h1>
+
+<form id="filter_form" class="filter_form" >
+    {% for t in titles %}
+    <div>
+        <input type="checkbox" id="{{ t.titleID }}" value="{{ t.titleID }}" class="hangar-checkbox"
+        {% if h.checked %}checked="true"{% endif %} /><span class="checkbox-name">{{ t.titleName }}</span>
+    </div>
+    {% endfor %}
+    <div><input type="button" class="button" id="filter_divisions" value="Filter Hangars" /></div>
+    <div><input type="button" class="button" id="reset_filter_divisions" value="Reset" /></div>
+</form>
+
+<table class="table display" id="members_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" >Name</th>
+      <th class="top" scope="col" >Nickname</th>
+      <th class="top" scope="col" >Access Level</th>
+      <th class="top" scope="col" >Extra Roles</th>
+      <th class="top" scope="col" >Corp Date</th>
+      <th class="top" scope="col" >Last Login</th>
+      <th class="top" scope="col" >Location</th>
+      <th class="top" scope="col" >Ship</th>
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Name</th>
+      <th>Nickname</th>
+      <th>Access Level</th>
+      <th>Extra Roles</th>
+      <th>Corp Date</th>
+      <th>Last Login</th>
+      <th>Location</th>
+      <th>Ship</th>
+    </tr>
+  </tfoot>
+
+</table>
+
+{% endblock %}

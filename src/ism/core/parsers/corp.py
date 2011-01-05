@@ -37,32 +37,54 @@ def update(debug=False, cache=False):
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
 
         if DEBUG : print "parsing api response..."
+        
+        try: 
+            allianceName = corpApi.allianceName
+            allianceID   = corpApi.allianceID
+            allianceTicker = ""
+            alliancesApi = api.eve.AllianceList()
+            for a in alliancesApi.alliances:
+                if a.allianceID == allianceID:
+                    allianceTicker = a.shortName
+                    break
+        except:
+            allianceName = "-"
+            allianceID   = 0
+            allianceTicker = "-"
+
         try:
             # try to retrieve the db stored corp info
             corp = Corp.objects.get(corporationID=corpApi.corporationID)
-            corp.corporationName  = corpApi.corporationName
-            corp.ticker           = corpApi.ticker
-            corp.ceoID            = corpApi.ceoID
-            corp.stationID        = corpApi.stationID
-            try: 
-                corp.allianceName = corpApi.allianceName
-            except:
-                corp.allianceName = ""
-            corp.taxRate          = corpApi.taxRate
-            corp.memberLimit      = corpApi.memberLimit
-            corp.save()
-            
+            corp.corporationName = corpApi.corporationName
+            corp.ticker          = corpApi.ticker
+            corp.ceoID           = corpApi.ceoID
+            corp.ceoName         = corpApi.ceoName
+            corp.stationID       = corpApi.stationID
+            corp.stationName     = corpApi.stationName
+            corp.allianceID      = allianceID
+            corp.allianceName    = allianceName
+            corp.allianceTicker  = allianceTicker
+            corp.description     = corpApi.description
+            corp.taxRate         = corpApi.taxRate
+            corp.memberLimit     = corpApi.memberLimit
+
         except ObjectDoesNotExist:
             # no corp parsed yet
             corp = Corp( corporationID   = corpApi.corporationID, 
                          corporationName = corpApi.corporationName,
                          ticker          = corpApi.ticker,      
                          ceoID           = corpApi.ceoID,
+                         ceoName         = corpApi.ceoName,
                          stationID       = corpApi.stationID,     
-                         allianceName    = corpApi.allianceName,
+                         stationName     = corpApi.stationName,     
+                         description     = corpApi.description,
+                         allianceID      = allianceID,
+                         allianceName    = allianceName,
+                         allianceTicker  = allianceTicker,
                          taxRate         = corpApi.taxRate,      
                          memberLimit     = corpApi.memberLimit )
-            corp.save()
+        
+        corp.save()
         
         # we store the update time of the table
         markUpdated(model=Corp, date=currentTime)

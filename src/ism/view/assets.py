@@ -5,11 +5,12 @@ Created on 21 mai 2010
 @author: diabeteman
 '''
 import json
-
+from datetime import datetime
 
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import user_passes_test
 from django.template.context import RequestContext
+from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 
@@ -38,14 +39,14 @@ CATEGORY_ICONS = { 2 : "can" ,
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
-@cache_page(60 * 15) # 15 minutes cache
+@cache_page(3 * 60 * 60 * 15) # 3 hours cache
 @csrf_protect
 def stations(request):
     
     all_hangars = Hangar.objects.all()
     try: 
-        divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
         divisions_str = request.GET["divisions"]
+        divisions = [ int(div) for div in divisions_str.split(",") ]
         for h in all_hangars: h.checked = (h.hangarID in divisions)
     except: 
         divisions, divisions_str = None, None
@@ -60,6 +61,7 @@ def stations(request):
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@cache_page(3 * 60 * 60 * 15) # 3 hours cache
 @csrf_protect
 def hangars(request, stationID):
     
@@ -72,6 +74,7 @@ def hangars(request, stationID):
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@cache_page(3 * 60 * 60 * 15) # 3 hours cache
 @csrf_protect
 def hangar_contents(request, stationID, hangarID):
     json_data = json.dumps(getHangarContents(int(stationID), int(hangarID)))
@@ -79,6 +82,7 @@ def hangar_contents(request, stationID, hangarID):
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@cache_page(3 * 60 * 60 * 15) # 3 hours cache
 @csrf_protect
 def can1_contents(request, stationID, hangarID, container1):
     json_data = json.dumps(getCan1Contents(int(stationID), int(hangarID), int(container1)))
@@ -86,6 +90,7 @@ def can1_contents(request, stationID, hangarID, container1):
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@cache_page(3 * 60 * 60 * 15) # 3 hours cache
 @csrf_protect
 def can2_contents(request, stationID, hangarID, container1, container2):
     json_data = json.dumps(getCan2Contents(int(stationID), int(hangarID), int(container1), int(container2)))
@@ -93,6 +98,7 @@ def can2_contents(request, stationID, hangarID, container1, container2):
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@cache_page(3 * 60 * 60 * 15) # 3 hours cache
 @csrf_protect
 def search_items(request):
     
@@ -131,7 +137,6 @@ def getStationHangars(stationID, divisions):
     if divisions:
         str_divisions = str(divisions).replace("[", "(").replace("]", ")")
         sql = SQL_HANGARS_FILTERED % (stationID, str_divisions)
-        print sql
         raw_list = DbAsset.objects.raw(sql)
     else:
         raw_list = DbAsset.objects.raw(SQL_HANGARS % stationID)
@@ -139,9 +144,9 @@ def getStationHangars(stationID, divisions):
     hangar_list = []
     for h in raw_list:
         hangar = {}
-        hangar["data"] = '<b>%s</b><i> - (%d items)</i>' % (HANGAR[h.hangarID], h.items)
+        hangar["data"] = '<b>%s</b><i> - (%d item%s)</i>' % (HANGAR[h.hangarID], h.items, pluralize(h.items))
         id = "_%d_%d" % (stationID, h.hangarID) 
-        hangar["attr"] = { "id" : id , "rel" : "hangar" , "href" : "" , "class" : "hangar-row" }
+        hangar["attr"] = { "id" : id , "rel" : "hangar" , "href" : "" }
         hangar["state"] = "closed"
         hangar_list.append(hangar)
     
@@ -240,8 +245,9 @@ def search(search_string, divisions):
                 json_data.append(nodeid)
 
     return json_data
-#------------------------------------------------------------------------------  
+
+#------------------------------------------------------------------------------
 def getScanDate():
     date = UpdateDate.objects.get(model_name=DbAsset.__name__) 
-    return date.update_date
+    return utils.print_time_min(date.update_date)
 #------------------------------------------------------------------------------

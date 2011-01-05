@@ -38,13 +38,35 @@ def limit_text_size(text, max_size):
 def print_integer(number, thousand_separator=" "):
     if type(number) not in [type(0), type(0L)]:
         raise TypeError("Parameter must be an integer.")
-    if number < 0:
-        return '-' + print_integer(-number)
+    
+    number = abs(number)
+
     result = ''
     while number >= 1000:
         number, r = divmod(number, 1000)
         result = "%s%03d%s" % (thousand_separator, r, result)
+    
     return "%d%s" % (number, result)
+
+#------------------------------------------------------------------------------
+def print_quantity(number, thousand_separator=" "):
+    if type(number) not in [type(0), type(0L)]:
+        raise TypeError("Parameter must be an integer.")
+    
+    negative = number < 0
+    number = abs(number)
+
+    result = ''
+    while number >= 1000:
+        number, r = divmod(number, 1000)
+        result = "%s%03d%s" % (thousand_separator, r, result)
+    
+    if negative:
+        return "- %d%s" % (number, result)
+    else:
+        return "+ %d%s" % (number, result)
+
+
 
 #------------------------------------------------------------------------------
 def print_float(number, thousand_separator=" ", decimal_separator=","):
@@ -69,4 +91,5 @@ def getAccessColor(accessLvl, colorThresholds):
     for t in colorThresholds:
         if accessLvl <= t.threshold:
             return t.color
-    return colorThresholds[0]
+    return colorThresholds[0].color
+

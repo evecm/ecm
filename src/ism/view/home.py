@@ -10,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 
 from ism.data.roles.models import MemberDiff, RoleMemberDiff, TitleCompoDiff, Member
+from ism.data.corp.models import Corp
+
 from ism.core.utils import print_time_min
 from django.views.decorators.csrf import csrf_protect
 
@@ -17,7 +19,9 @@ from django.views.decorators.csrf import csrf_protect
 @login_required
 @csrf_protect
 def home(request):
-    data = {               'members' : getLastMembers(),
+    data = {                  'corp' : Corp.objects.all()[0],
+                       'memberCount' : Member.objects.filter(corped=True).count(),
+                           'members' : getLastMembers(),
                     'last_role_adds' : getLastRoleAdds(),
                 'last_role_removals' : getLastRoleRemovals(),
               'last_title_role_adds' : getLastTitleRoleAdds(),

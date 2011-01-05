@@ -6,7 +6,40 @@
 <li><a href="/">Home</a></li>
 {% endblock %}
 
+
+
 {% block main_content %}
+
+<h1 class="pagetitle">Welcome to ICE Security Management</h1>
+
+<table class="transparent" >
+  <thead>
+    <tr>
+        <th width="50%" >Corporation</td>
+        <th width="50%" >Alliance</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+        <td><img src="http://image.eveonline.com/Corporation/{{ corp.corporationID }}_128.png"></img></td>
+        <td>{% if corp.allianceID %}<img src="http://image.eveonline.com/Alliance/{{ corp.allianceID }}_128.png"></img>{% endif %}</td>
+    </tr>
+    <tr>
+        <td>{{ corp.corporationName }} [{{ corp.ticker }}]</td>
+        <td>{{ corp.allianceName }} &lt;{{ corp.allianceTicker }}&gt;</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+    <li><b>CEO:</b> <a href="/members/{{ corp.ceoID }}">{{ corp.ceoName }}</a></li>
+    <li><b>Tax Rate:</b> {{ corp.taxRate }}%</li>
+    <li><b>Member Count:</b> {{ memberCount }} / {{ corp.memberLimit }}</li>
+    <li><b>Description:</b> {{ corp.description|safe }}</li>
+</ul>
+
+
+
 <h1 class="pagetitle">Last Member Moves</h1>
 <ul>
 {% for m in members %}
