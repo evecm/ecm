@@ -34,7 +34,7 @@ def update(debug=False, cache=False):
         utils.checkApiVersion(memberSecuApi._meta.version)
         
         currentTime = memberSecuApi._meta.currentTime
-        cachedUntil = memberSecuApi._meta.cachedUntil
+        cachedUntil = memberSecuApi.cachedUntil
         if DEBUG : print "current time : %s" % str(currentTime)
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
@@ -50,7 +50,7 @@ def update(debug=False, cache=False):
         newRoles  = {}
         newTitles = {}
         
-        for member in memberSecuApi.member:
+        for member in memberSecuApi.members:
             # A.update(B) works as a merge of 2 hashtables A and B in A
             # if a key is already present in A, it takes B's value
             newRoles.update(parseOneMemberRoles(member)) 
@@ -78,19 +78,20 @@ def update(debug=False, cache=False):
         raise
 
 #------------------------------------------------------------------------------
+
+ROLE_TYPES = utils.roleTypes()
+ALL_ROLES  = utils.allRoles()
+
 def parseOneMemberRoles(member):
     roles = {}
-    
-    ROLE_TYPES = utils.roleTypes()
-    ALL_ROLES  = utils.allRoles()
     # we get the character ID so we can link the memberships to him
-    memberID = member["characterID"]
+    memberID = member.characterID
     
     for roleCategory in ROLE_TYPES.values() :
         # we analyse each role category for this member
         for role in member[roleCategory.typeName] :
             # each role has a sub id within its category
-            roleSubID = role["roleID"]
+            roleSubID = role.roleID
             # we have to resolve the global role id from the category id and the role sub id.
             globalRoleID = ALL_ROLES[(roleSubID, roleCategory.id)].id
             # then we can create a new membership item for the current member and this role
@@ -106,9 +107,8 @@ def parseOneMemberTitles(member):
     # we get the character ID so we can link the memberships to him
     memberID = member["characterID"]
     
-    for title in member["titles"] :
-        titleID = title["titleID"]
-        membership = TitleMembership(member_id=memberID, title_id=titleID)
+    for title in member.titles:
+        membership = TitleMembership(member_id=memberID, title_id=title.titleID)
         titles[membership] = membership
             
     return titles
