@@ -34,7 +34,7 @@ def update(debug=False, cache=False):
         utils.checkApiVersion(memberSecuApi._meta.version)
         
         currentTime = memberSecuApi._meta.currentTime
-        cachedUntil = memberSecuApi.cachedUntil
+        cachedUntil = memberSecuApi._meta.cachedUntil
         if DEBUG : print "current time : %s" % str(currentTime)
         if DEBUG : print "cached util  : %s" % str(cachedUntil)
         
