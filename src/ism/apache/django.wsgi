@@ -1,10 +1,9 @@
-import os
+import os, os.path
 import sys
 
-sys.path.append('/var/ice')
-sys.path.append('/var/ice/ism')
-sys.path.append('/usr/local/lib/python2.6/dist-packages')
-sys.path.append('/usr/local/lib/python2.6/dist-packages/django')
+apache_dir = os.path.abspath(os.path.dirname(__file__))
+install_dir = os.path.join(apache_dir, "../../")
+sys.path.append(install_dir)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'ism.settings'
 
