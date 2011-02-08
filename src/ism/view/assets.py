@@ -5,7 +5,6 @@ Created on 21 mai 2010
 @author: diabeteman
 '''
 import json
-from datetime import datetime
 
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import user_passes_test

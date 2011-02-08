@@ -32,7 +32,7 @@ urlpatterns = patterns('',
     (r'^members/history$',  members.history),
     (r'^members/history_data$',  members.history_data),
     (r'^members/(\d+)$',    members.details),
-    (r'^members/search$',    members.search),
+    #(r'^members/search$',    members.search),
     
     (r'^titles$',                        titles.all),
     (r'^titles/all_data$',               titles.all_data),

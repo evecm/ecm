@@ -154,6 +154,14 @@
     empty-cells:show;
 }
 
+.main-content table.transparent th {
+    margin:1.0em;
+    border-collapse:collapse;
+    empty-cells:show;
+    text-align:left;
+    font-weight: bold;
+    font-size: 120%;
+}
 
 .main-content table.transparent td {
     margin:1.0em;
@@ -163,8 +171,8 @@
 }
 
 .main-content table.transparent img {
-    display: block;
-    margin: 0 auto; 
+    text-align:center;
+    display:inline;
     border: none;
 }
 

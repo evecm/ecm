@@ -53,7 +53,7 @@ class Member(models.Model):
     
     def getAccessLvl(self):
         if self.isDirector():
-            return DIRECTOR_ACCESS_LVL
+            return self.DIRECTOR_ACCESS_LVL
         roles = self.getImpliedRoles()
         lvl = 0
         for r in roles: lvl += r.getAccessLvl()

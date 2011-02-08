@@ -15,11 +15,20 @@ from ism.data.corp.models import Corp
 from ism.core.utils import print_time_min
 from django.views.decorators.csrf import csrf_protect
 
+import re
+
+SHOWINFO_PATTERN = re.compile(r"showinfo:1383//(\d+)", re.IGNORECASE + re.DOTALL)
+
+
 #------------------------------------------------------------------------------
 @login_required
 @csrf_protect
 def home(request):
-    data = {                  'corp' : Corp.objects.all()[0],
+    corp = Corp.objects.all()[0]
+    
+    corp.description, count = re.subn(SHOWINFO_PATTERN, r"/members/\1", corp.description)
+    
+    data = {                  'corp' : corp,
                        'memberCount' : Member.objects.filter(corped=True).count(),
                            'members' : getLastMembers(),
                     'last_role_adds' : getLastRoleAdds(),

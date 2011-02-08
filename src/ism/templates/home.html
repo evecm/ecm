@@ -15,18 +15,18 @@
 <table class="transparent" >
   <thead>
     <tr>
-        <th width="50%" >Corporation</td>
-        <th width="50%" >Alliance</td>
+        <th width="250px" >Corporation</th>
+{% if corp.allianceID %}<th width="250px" >Alliance</th>{% endif %}
     </tr>
   </thead>
   <tbody>
     <tr>
         <td><img src="http://image.eveonline.com/Corporation/{{ corp.corporationID }}_128.png"></img></td>
-        <td>{% if corp.allianceID %}<img src="http://image.eveonline.com/Alliance/{{ corp.allianceID }}_128.png"></img>{% endif %}</td>
+{% if corp.allianceID %}<td><img src="http://image.eveonline.com/Alliance/{{ corp.allianceID }}_128.png"></img></td>{% endif %}
     </tr>
     <tr>
-        <td>{{ corp.corporationName }} [{{ corp.ticker }}]</td>
-        <td>{{ corp.allianceName }} &lt;{{ corp.allianceTicker }}&gt;</td>
+        <td><p>{{ corp.corporationName }} [{{ corp.ticker }}]</p></td>
+{% if corp.allianceID %}<td><p>{{ corp.allianceName }} &lt;{{ corp.allianceTicker }}&gt;</p></td>{% endif %}
     </tr>
   </tbody>
 </table>
