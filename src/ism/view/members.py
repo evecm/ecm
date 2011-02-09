@@ -197,6 +197,8 @@ def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
     
     member_list = []
     for m in members:
+        titles = ["Titles"]
+        titles.extend([str(t) for t in m.getTitles()])
         memb = [
             '<a href="/members/%d">%s</a>' % (m.characterID, m.name),
             truncate_words(m.nickname, 5),
@@ -206,7 +208,7 @@ def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
             print_date(m.lastLogin),
             truncate_words(m.location, 5),
             m.ship,
-            "\n".join([str(t) for t in m.getTitles()])
+            "|".join(titles)
         ] 
 
         member_list.append(memb)

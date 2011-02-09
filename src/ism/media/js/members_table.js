@@ -41,9 +41,16 @@ $(document).ready(function() {
                 $('td:eq(3)', nRow).addClass("row-red");
             }
             /* set tooltip on each row */
+            $('td:eq(8)', nRow).hide()
             titles = aData[8]
             $(nRow).attr("title", titles)
-            $('td:eq(8)', nRow).hide()
+            $(nRow).cluetip({
+                splitTitle: '|',
+                dropShadow: false, 
+                cluetipClass: 'jtip',
+                positionBy: 'mouse',
+                tracking: true
+            });
             return nRow;
 		}
     } );
