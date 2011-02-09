@@ -27,7 +27,8 @@ $(document).ready(function() {
             { "sTitle": "Corp Date",    "sWidth": "10%", "sType": "string",       "bSearchable": false   },
             { "sTitle": "Last Login",   "sWidth": "10%", "sType": "string",       "bSearchable": false   },
             { "sTitle": "Location",     "sWidth": "20%", "sType": "string",       "bSearchable": false   },
-            { "sTitle": "Ship",         "sWidth": "5%",  "sType": "string" }
+            { "sTitle": "Ship",         "sWidth": "5%",  "sType": "string" },
+            { "bVisible": false },
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             /* apply color to all access level cells */
@@ -39,6 +40,10 @@ $(document).ready(function() {
             if (aData[3] > 0) {
                 $('td:eq(3)', nRow).addClass("row-red");
             }
+            /* set tooltip on each row */
+            titles = aData[8]
+            $(nRow).attr("title", titles)
+            $('td:eq(8)', nRow).hide()
             return nRow;
 		}
     } );

@@ -205,7 +205,8 @@ def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
             print_date(m.corpDate),
             print_date(m.lastLogin),
             truncate_words(m.location, 5),
-            m.ship
+            m.ship,
+            "\n".join([str(t) for t in m.getTitles()])
         ] 
 
         member_list.append(memb)

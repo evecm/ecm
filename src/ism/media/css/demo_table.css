@@ -181,12 +181,21 @@ table.display td.center {
 
 
 tr.odd {
-	background-color: #E2E4FF;
+	background-color: #eaebf7;
 }
 
 tr.even {
 	background-color: white;
 }
+tr.odd:hover {
+	background-color: #cccde3;
+}
+tr.even:hover {
+	background-color: #cccde3;
+}
+
+
+
 
 tr.odd.row-red {
 	background-color: #ffa1a1;
