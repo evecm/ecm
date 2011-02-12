@@ -198,7 +198,12 @@ def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
     member_list = []
     for m in members:
         titles = ["Titles"]
-        titles.extend([str(t) for t in m.getTitles()])
+        titles.extend([ str(t) for t in m.getTitles() ])
+        if m.extraRoles: 
+            roles = [ str(r) for r in m.getRoles(ignore_director=True) ]
+            if len(roles): roles.insert(0, "Roles")
+        else:
+            roles = []
         memb = [
             '<a href="/members/%d">%s</a>' % (m.characterID, m.name),
             truncate_words(m.nickname, 5),
@@ -208,7 +213,8 @@ def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
             print_date(m.lastLogin),
             truncate_words(m.location, 5),
             m.ship,
-            "|".join(titles)
+            "|".join(titles),
+            "|".join(roles)
         ] 
 
         member_list.append(memb)

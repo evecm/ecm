@@ -29,6 +29,7 @@ $(document).ready(function() {
             { "sTitle": "Location",     "sWidth": "20%", "sType": "string",       "bSearchable": false   },
             { "sTitle": "Ship",         "sWidth": "5%",  "sType": "string" },
             { "bVisible": false },
+            { "bVisible": false }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             /* apply color to all access level cells */
@@ -40,17 +41,35 @@ $(document).ready(function() {
             if (aData[3] > 0) {
                 $('td:eq(3)', nRow).addClass("row-red");
             }
-            /* set tooltip on each row */
+            
+            /* set titles tooltip on each row */
             $('td:eq(8)', nRow).hide()
             titles = aData[8]
-            $(nRow).attr("title", titles)
-            $(nRow).cluetip({
-                splitTitle: '|',
-                dropShadow: false, 
-                cluetipClass: 'jtip',
-                positionBy: 'mouse',
-                tracking: true
-            });
+            if (titles != "") {
+                $('td:eq(2)', nRow).attr("title", titles)
+                $('td:eq(2)', nRow).cluetip({
+                    splitTitle: '|',
+                    dropShadow: false, 
+                    cluetipClass: 'jtip',
+                    positionBy: 'mouse',
+                    tracking: true
+                });
+            }
+            
+            /* set roles tooltip on each row */
+            $('td:eq(9)', nRow).hide()
+            roles = aData[9]
+            if (roles != "") {
+                $('td:eq(3)', nRow).attr("title", roles)
+                $('td:eq(3)', nRow).cluetip({
+                    splitTitle: '|',
+                    dropShadow: false, 
+                    cluetipClass: 'jtip',
+                    positionBy: 'mouse',
+                    tracking: true
+                });
+            }
+            
             return nRow;
 		}
     } );
