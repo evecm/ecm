@@ -6,7 +6,7 @@ Created on 18 apr. 2010
 '''
 from ism.core.api import connection
 from ism.core.parsers.utils import checkApiVersion, markUpdated
-
+from ism.core import db
 from ism.data.common.models import Outpost
 
 from django.db import transaction
@@ -47,6 +47,7 @@ def update(debug=False, cache=False):
         markUpdated(model=Outpost, date=currentTime)
                     
         transaction.commit()
+        db.invalidateCache()
         if DEBUG: print "DATABASE UPDATED!"
         return "%d outposts parsed" % len(apiOutposts.outposts)
     except:
