@@ -9,6 +9,7 @@ from ism.core.assets.constants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_ST
 from ism import constants
 import sqlite3
 from ism.data.common.models import Outpost
+import threading
 
 QUERY_ONE_TYPENAME = 'SELECT t.typeName, g.categoryID FROM invTypes t, invGroups g WHERE t.typeID=%d AND t.groupID=g.groupID;'
 QUERY_TYPENAMES = 'SELECT t.typeName, g.categoryID FROM invTypes t, invGroups g WHERE t.typeID IN %s AND t.groupID=g.groupID;'
@@ -17,24 +18,39 @@ QUERY_SYSTEM = 'SELECT solarSystemName FROM mapSolarSystems WHERE solarSystemID=
 QUERY_SEARCH_TYPE = 'SELECT typeID FROM invTypes WHERE published=1 AND typeName LIKE "%%%s%%";'
 
 CACHE_TYPES = {}
+LOCK_TYPES = threading.RLock()
 CACHE_LOCATIONS = {}
+LOCK_LOCATIONS = threading.RLock()
+
 #------------------------------------------------------------------------------
 def invalidateCache():
-    CACHE_LOCATIONS.clear()
+    with LOCATIONS_LOCK: CACHE_LOCATIONS.clear()
     # no need for invalidating the type cache.
     # the EVE database is not going to change at runtime (^^)
 #------------------------------------------------------------------------------
+def getCachedType(id):
+    with LOCK_TYPES: return CACHE_TYPES[id]
+#------------------------------------------------------------------------------
+def setCachedType(id, name):
+    with LOCK_TYPES: CACHE_TYPES[id] = name
+#------------------------------------------------------------------------------
+def getCachedLocation(id):
+    with LOCK_LOCATIONS: return CACHE_LOCATIONS[id]
+#------------------------------------------------------------------------------
+def setCachedLocation(id, name):
+    with LOCK_LOCATIONS: CACHE_LOCATIONS[id] = name
+#------------------------------------------------------------------------------
 def resolveTypeName(typeID):
     try:
-        return CACHE_TYPES[typeID]
+        return getCachedType(typeID)
     except KeyError:
         #print "type cache miss", typeID
         CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
         cursor = CONN_EVE.cursor()
         cursor.execute(QUERY_ONE_TYPENAME % typeID)
         for row in cursor :
-            CACHE_TYPES[typeID] = (row[0], row[1])
-            return CACHE_TYPES[typeID]
+            setCachedType(typeID, (row[0], row[1]))
+            return getCachedType(typeID)
 #------------------------------------------------------------------------------
 def resolveTypeNames(typeIDs):
     CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
@@ -53,7 +69,7 @@ def getMatchingIdsFromString(string):
 #------------------------------------------------------------------------------
 def resolveLocationName(locationID):
     try:
-        return CACHE_LOCATIONS[locationID]
+        return getCachedLocation(locationID)
     except KeyError:
         #print "location cache miss", locationID
         CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
@@ -61,7 +77,7 @@ def resolveLocationName(locationID):
         if locationID < STATIONS_IDS :
             cursor.execute(QUERY_SYSTEM % locationID)
             for row in cursor :
-                CACHE_LOCATIONS[locationID] = row[0]
+                setCachedLocation(locationID, row[0])
                 break
         elif locationID < OUTPOSTS_IDS :
             cursor.execute(QUERY_STATION % locationID)
@@ -70,14 +86,14 @@ def resolveLocationName(locationID):
                 station = row
                 break
             if station == None or station[1] in CONQUERABLE_STATIONS :
-                CACHE_LOCATIONS[locationID] = Outpost.objects.get(stationID=locationID).stationName
+                setCachedLocation(locationID, Outpost.objects.get(stationID=locationID).stationName)
             else :
-                CACHE_LOCATIONS[locationID] = station[0]
+                setCachedLocation(locationID, station[0])
         else :
-            CACHE_LOCATIONS[locationID] = Outpost.objects.get(stationID=locationID).stationName
+            setCachedLocation(locationID, Outpost.objects.get(stationID=locationID).stationName)
         
         try:
-            return CACHE_LOCATIONS[locationID]
+            return getCachedLocation(locationID)
         except KeyError:
             # locationID was not valid
             return ""
