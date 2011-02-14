@@ -21,8 +21,8 @@ CACHE_TYPES = {}
 LOCK_TYPES = threading.RLock()
 CACHE_LOCATIONS = {}
 LOCK_LOCATIONS = threading.RLock()
-LOCK_OUTPOSTS = {}
-CACHE_OUTPOSTS = threading.RLock()
+CACHE_OUTPOSTS = {}
+LOCK_OUTPOSTS = threading.RLock()
 
 #------------------------------------------------------------------------------
 def invalidateCache():
