@@ -21,11 +21,13 @@ CACHE_TYPES = {}
 LOCK_TYPES = threading.RLock()
 CACHE_LOCATIONS = {}
 LOCK_LOCATIONS = threading.RLock()
+LOCK_OUTPOSTS = {}
+CACHE_OUTPOSTS = threading.RLock()
 
 #------------------------------------------------------------------------------
 def invalidateCache():
-    with LOCATIONS_LOCK: CACHE_LOCATIONS.clear()
-    # no need for invalidating the type cache.
+    with LOCK_OUTPOSTS: CACHE_OUTPOSTS.clear()
+    # no need for invalidating the other caches
     # the EVE database is not going to change at runtime (^^)
 #------------------------------------------------------------------------------
 def getCachedType(id):
@@ -35,10 +37,16 @@ def setCachedType(id, name):
     with LOCK_TYPES: CACHE_TYPES[id] = name
 #------------------------------------------------------------------------------
 def getCachedLocation(id):
-    with LOCK_LOCATIONS: return CACHE_LOCATIONS[id]
+    try:
+        with LOCK_LOCATIONS: return CACHE_LOCATIONS[id]
+    except KeyError:
+        with LOCK_OUTPOSTS: return CACHE_OUTPOSTS[id]
 #------------------------------------------------------------------------------
 def setCachedLocation(id, name):
     with LOCK_LOCATIONS: CACHE_LOCATIONS[id] = name
+#------------------------------------------------------------------------------
+def setCachedOutpost(id, name):
+    with LOCK_OUTPOSTS: CACHE_OUTPOSTS[id] = name
 #------------------------------------------------------------------------------
 def resolveTypeName(typeID):
     try:
@@ -86,11 +94,11 @@ def resolveLocationName(locationID):
                 station = row
                 break
             if station == None or station[1] in CONQUERABLE_STATIONS :
-                setCachedLocation(locationID, Outpost.objects.get(stationID=locationID).stationName)
+                setCachedOutpost(locationID, Outpost.objects.get(stationID=locationID).stationName)
             else :
                 setCachedLocation(locationID, station[0])
         else :
-            setCachedLocation(locationID, Outpost.objects.get(stationID=locationID).stationName)
+            setCachedOutpost(locationID, Outpost.objects.get(stationID=locationID).stationName)
         
         try:
             return getCachedLocation(locationID)
