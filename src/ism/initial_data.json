@@ -2651,10 +2651,10 @@
     "pk": 1, 
     "model": "api.apikey", 
     "fields": {
-      "userID": 3173522, 
-      "name": "diabeteman", 
-      "key": "4F125BC3A12945C0826EDB7D4D0E01CEFC65BEFC1F494D9D84D89CE201AB7421", 
-      "charID": 1888774537
+      "userID": 0, 
+      "name": "", 
+      "key": "", 
+      "charID": 0
     }
   }
 ]

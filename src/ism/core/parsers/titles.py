@@ -5,16 +5,14 @@ Created on 24 jan. 2010
 @author: diabeteman
 """
 
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from ism.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
 from ism.core.api import connection
 from ism.core.api.connection import API
-from ism.core.exceptions import DatabaseCorrupted
 from ism.core.parsers import utils
 from ism.core.parsers.utils import checkApiVersion, markUpdated
 
-from datetime import datetime
 
 DEBUG = False # DEBUG mode
 
@@ -103,8 +101,6 @@ def parseOneTitle(titleApi):
             # if the titleName has changed, we update it
             title.titleName = name
             title.save()
-    except MultipleObjectsReturned:
-        raise DatabaseCorrupted
     except ObjectDoesNotExist:
         # the title doesn't exist yet, we create it
         title = Title.objects.create(titleID=id, titleName=name)
@@ -138,7 +134,7 @@ def parseRoleType(title, roleType, roles):
             role = Role.objects.get(roleID=r_id, roleType=roleType.id)
         except ObjectDoesNotExist:
             # if the role does not exist, the database might be corrupted (or API changed?)
-            raise DatabaseCorrupted, "role with id=%s does not exist" % r_id
+            raise ValueError("role with id=%s does not exist" % r_id)
         
         # we create a new TitleComposition for the current title
         subList.append(TitleComposition(title=title, role=role))

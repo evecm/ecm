@@ -25,9 +25,25 @@
 # OTHER DEALINGS IN THE SOFTWARE
 #
 #-----------------------------------------------------------------------------
+# Version: 1.1.5 - 27 Januari 2011
+# - Now supports (and defaults to) HTTPS. Non-SSL proxies will still work by
+#   explicitly specifying http:// in the url.
+#
+# Version: 1.1.4 - 1 December 2010
+# - Empty explicit CDATA tags are now properly handled.
+# - _autocast now receives the name of the variable it's trying to typecast,
+#   enabling custom/future casting functions to make smarter decisions.
+#
+# Version: 1.1.3 - 6 November 2010
+# - Added support for anonymous CDATA inside row tags. This makes the body of
+#   mails in the rows of char/MailBodies available through the .data attribute.
+#
+# Version: 1.1.2 - 2 July 2010
+# - Fixed __str__ on row objects to work properly with unicode strings.
+#
 # Version: 1.1.1 - 10 Januari 2010
 # - Fixed bug that causes nested tags to not appear in rows of rowsets created
-#    from normal Elements. This should fix the corp.MemberSecurity method,
+#   from normal Elements. This should fix the corp.MemberSecurity method,
 #   which now returns all data for members. [jehed]
 #
 # Version: 1.1.0 - 15 Januari 2009
@@ -95,7 +111,7 @@ class Error(StandardError):
         self.args = (message.rstrip("."),)
 
 
-def EVEAPIConnection(url="api.eve-online.com", cacheHandler=None, proxy=None):
+def EVEAPIConnection(url="api.eveonline.com", cacheHandler=None, proxy=None):
     # Creates an API object through which you can call remote functions.
     #
     # The following optional arguments may be provided:
@@ -131,8 +147,12 @@ def EVEAPIConnection(url="api.eve-online.com", cacheHandler=None, proxy=None):
     #          this object.
     #
 
+    scheme = "https"
     if url.lower().startswith("http://"):
+        scheme = "http"
         url = url[7:]
+    elif url.lower().startswith("https://"):
+        url = url[8:]
 
     if "/" in url:
         url, path = url.split("/", 1)
@@ -141,6 +161,7 @@ def EVEAPIConnection(url="api.eve-online.com", cacheHandler=None, proxy=None):
 
     ctx = _RootContext(None, path, {}, {})
     ctx._handler = cacheHandler
+    ctx._scheme = scheme
     ctx._host = url
     ctx._proxy = proxy or globals()["proxy"]
     return ctx
@@ -276,18 +297,23 @@ class _RootContext(_Context):
             response = None
 
         if response is None:
+            if self._scheme == "https":
+                connectionclass = httplib.HTTPSConnection
+            else:
+                connectionclass = httplib.HTTPConnection
+
             if self._proxy is None:
-                http = httplib.HTTPConnection(self._host)
+                http = connectionclass(self._host)
                 if kw:
                     http.request("POST", path, urllib.urlencode(kw), {"Content-type": "application/x-www-form-urlencoded"})
                 else:
                     http.request("GET", path)
             else:
-                http = httplib.HTTPConnection(*self._proxy)
+                http = connectionclass(*self._proxy)
                 if kw:
-                    http.request("POST", 'http://'+self._host+path, urllib.urlencode(kw), {"Content-type": "application/x-www-form-urlencoded"})
+                    http.request("POST", 'https://'+self._host+path, urllib.urlencode(kw), {"Content-type": "application/x-www-form-urlencoded"})
                 else:
-                    http.request("GET", 'http://'+self._host+path)
+                    http.request("GET", 'https://'+self._host+path)
 
             response = http.getresponse()
             if response.status != 200:
@@ -304,44 +330,59 @@ class _RootContext(_Context):
         else:
             store = False
 
-        return _ParseXML(response, True, store and (lambda obj: cache.store(self._host, path, kw, response, obj)))
-
+        retrieve_fallback = cache and getattr(cache, "retrieve_fallback", False)
+        if retrieve_fallback:
+            # implementor is handling fallbacks...
+            try:
+                return _ParseXML(response, True, store and (lambda obj: cache.store(self._host, path, kw, response, obj)))
+            except Error, e:
+                response = retrieve_fallback(self._host, path, kw, reason=e)
+                if response is not None:
+                    return response
+                raise
+        else:
+            # implementor is not handling fallbacks...
+            return _ParseXML(response, True, store and (lambda obj: cache.store(self._host, path, kw, response, obj)))
 
 #-----------------------------------------------------------------------------
 # XML Parser
 #-----------------------------------------------------------------------------
 
-def _autocast(s):
+def _autocast(key, value):
     # attempts to cast an XML string to the most probable type.
     try:
-        if s.strip("-").isdigit():
-            return int(s)
+        if value.strip("-").isdigit():
+            return int(value)
     except ValueError:
         pass
 
     try:
-        return float(s)
+        return float(value)
     except ValueError:
         pass
 
-    if len(s) == 19 and s[10] == ' ':
+    if len(value) == 19 and value[10] == ' ':
         # it could be a date string
         try:
-            return datetime.strptime(s, "%Y-%m-%d %H:%M:%S") 
+            return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
         except:
             pass
 
     # couldn't cast. return string unchanged.
-    return s
+    return value
+
 
 
 class _Parser(object):
 
     def Parse(self, data, isStream=False):
         self.container = self.root = None
+        self._cdata = False
         p = expat.ParserCreate()
         p.StartElementHandler = self.tag_start
         p.CharacterDataHandler = self.tag_cdata
+        p.StartCdataSectionHandler = self.tag_cdatasection_enter
+        p.EndCdataSectionHandler = self.tag_cdatasection_exit
         p.EndElementHandler = self.tag_end
         p.ordered_attributes = True
         p.buffer_text = True
@@ -351,7 +392,20 @@ class _Parser(object):
         else:
             p.Parse(data, True)
         return self.root
-        
+
+
+    def tag_cdatasection_enter(self):
+        # encountered an explicit CDATA tag.
+        self._cdata = True
+
+    def tag_cdatasection_exit(self):
+        if self._cdata:
+            # explicit CDATA without actual data. expat doesn't seem
+            # to trigger an event for this case, so do it manually.
+            # (_cdata is set False by this call)
+            self.tag_cdata("")
+        else:
+            self._cdata = False
 
     def tag_start(self, name, attributes):
         # <hack>
@@ -402,7 +456,7 @@ class _Parser(object):
             if not self.container._cols:
                 self.container._cols = attributes[0::2]
 
-            self.container.append([_autocast(attributes[i]) for i in range(1, len(attributes), 2)])
+            self.container.append([_autocast(attributes[i], attributes[i+1]) for i in xrange(0, len(attributes), 2)])
             this._isrow = True
             this._attributes = this._attributes2 = None
         else:
@@ -414,13 +468,26 @@ class _Parser(object):
 
 
     def tag_cdata(self, data):
-        if data == "\r\n" or data.strip() != data:
-            return
+        if self._cdata:
+            # unset cdata flag to indicate it's been handled.
+            self._cdata = False
+        else:
+            if data in ("\r\n", "\n") or data.strip() != data:
+                return
 
         this = self.container
-        data = _autocast(data)
+        data = _autocast(this._name, data)
 
-        if this._attributes:
+        if this._isrow:
+            # sigh. anonymous data inside rows makes Entity cry.
+            # for the love of Jove, CCP, learn how to use rowsets.
+            parent = this.__parent
+            _row = parent._rows[-1]
+            _row.append(data)
+            if len(parent._cols) < len(_row):
+                parent._cols.append("data")
+
+        elif this._attributes:
             # this tag has attributes, so we can't simply assign the cdata
             # as an attribute to the parent tag, as we'll lose the current
             # tag's attributes then. instead, we'll assign the data as
@@ -431,7 +498,6 @@ class _Parser(object):
             # we won't be doing anything with this actual tag so we can just
             # bind it to its parent (done by __tag_end)
             setattr(this.__parent, this._name, data)
-
 
     def tag_end(self, name):
         this = self.container
@@ -476,7 +542,7 @@ class _Parser(object):
             # multiples of some tag or attribute. Code below handles this case.
             elif isinstance(sibling, Rowset):
                 # its doppelganger is a rowset, append this as a row to that.
-                row = [_autocast(attributes[i]) for i in range(1, len(attributes), 2)]
+                row = [_autocast(attributes[i], attributes[i+1]) for i in xrange(0, len(attributes), 2)]
                 row.extend([getattr(this, col) for col in attributes2])
                 sibling.append(row)
             elif isinstance(sibling, Element):
@@ -485,11 +551,11 @@ class _Parser(object):
                 # into a Rowset, adding the sibling element and this one.
                 rs = Rowset()
                 rs.__catch = rs._name = this._name
-                row = [_autocast(attributes[i]) for i in range(1, len(attributes), 2)]+[getattr(this, col) for col in attributes2]
+                row = [_autocast(attributes[i], attributes[i+1]) for i in xrange(0, len(attributes), 2)]+[getattr(this, col) for col in attributes2]
                 rs.append(row)
-                row = [getattr(sibling, attributes[i]) for i in range(0, len(attributes), 2)]+[getattr(sibling, col) for col in attributes2]
+                row = [getattr(sibling, attributes[i]) for i in xrange(0, len(attributes), 2)]+[getattr(sibling, col) for col in attributes2]
                 rs.append(row)
-                rs._cols = [attributes[i] for i in range(0, len(attributes), 2)]+[col for col in attributes2]
+                rs._cols = [attributes[i] for i in xrange(0, len(attributes), 2)]+[col for col in attributes2]
                 setattr(self.container, this._name, rs)
             else:
                 # something else must have set this attribute already.
@@ -497,8 +563,8 @@ class _Parser(object):
                 pass
 
         # Now fix up the attributes and be done with it.
-        for i in range(1, len(attributes), 2):
-            this.__dict__[attributes[i-1]] = _autocast(attributes[i])
+        for i in xrange(0, len(attributes), 2):
+            this.__dict__[attributes[i]] = _autocast(attributes[i], attributes[i+1])
 
         return
 
@@ -520,7 +586,7 @@ class Element(object):
     def __str__(self):
         return "<Element '%s'>" % self._name
 
-
+_fmt = u"%s:%s".__mod__
 class Row(object):
     # A Row is a single database record associated with a Rowset.
     # The fields in the record are accessed as attributes by their respective
@@ -556,8 +622,8 @@ class Row(object):
     def __getitem__(self, this):
         return self._row[self._cols.index(this)]
 
-    def __unicode__(self):
-        return "Row(" + ','.join(map(lambda k, v: "%s:%s" % (unicode(k), unicode(v)), self._cols, self._row)) + ")"
+    def __str__(self):
+        return "Row(" + ','.join(map(_fmt, zip(self._cols, self._row))) + ")"
 
 
 class Rowset(object):
@@ -581,7 +647,7 @@ class Rowset(object):
     #     specify reversed=True.
     #
     #   SortedBy(column, reverse=True)
-    #     Same as SortBy, except this retuens a new rowset object instead of
+    #     Same as SortBy, except this returns a new rowset object instead of
     #     sorting in-place.
     #
     #   Select(columns, row=False)
@@ -662,7 +728,7 @@ class Rowset(object):
     def sort(self, *args, **kw):
         self._rows.sort(*args, **kw)
 
-    def __unicode__(self):
+    def __str__(self):
         return ("Rowset(columns=[%s], rows=%d)" % (','.join(self._cols), len(self)))
 
     def __getstate__(self):
@@ -788,7 +854,7 @@ class FilterRowset(object):
         self._cols, self._rows, self._items, self.key, self.key2 = state
         self._bind()
 
-       
+
 #------------------------------------------------------------------------------
 class MalformedXmlResponse(UserWarning):
     '''

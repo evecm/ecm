@@ -10,7 +10,7 @@ from ism.data.assets.models import DbAsset, DbAssetDiff
 from ism.core.api import connection
 from ism.core.api.connection import API
 from ism.core.parsers import utils
-from ism.core.assets.constants import STATIONS_IDS, OFFICE_TYPEID,\
+from ism.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
                                       HANGAR_FLAG, BOOKMARK_TYPEID,\
                                       NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
                                       CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS

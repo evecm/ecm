@@ -5,11 +5,16 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-import os, os.path
+import os.path
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 def resolvePath(relativePath):
     return str(os.path.join(ROOT, relativePath)).replace("\\", "/")
+
+
+EVE_DB_FILE = resolvePath('db/EVE.db')
+EVE_API_VERSION = "2"
+
 
 # Django settings for ism project.
 

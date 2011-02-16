@@ -15,13 +15,11 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.text import truncate_words
 from django.http import HttpResponse
 
-from ism.data.roles.models import TitleComposition, Role, Title, TitleCompoDiff, Member
-from ism.data.corp.models import Hangar, Wallet
+from ism.data.roles.models import TitleComposition, Title, TitleCompoDiff, Member
 from ism.data.common.models import UpdateDate, ColorThreshold
 from ism.core import utils
 from ism.core.utils import print_time_min, print_date, getAccessColor
 from ism import settings
-from ism.core.utils import getAccessColor, print_time_min
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
@@ -45,7 +43,6 @@ all_columns = [ "titleName", "accessLvl" ]
 @csrf_protect
 def all_data(request):
     try:
-        sSearch = request.GET["sSearch"]
         sEcho = int(request.GET["sEcho"])
         try:
             column = int(request.GET["iSortCol_0"])

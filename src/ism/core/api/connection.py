@@ -13,11 +13,10 @@ class API:
     API_KEY = None
     CHAR_ID = None
 
-for a in APIKey.objects.all():
-    API.USER_ID = a.userID
-    API.CHAR_ID = a.charID
-    API.API_KEY = a.key
-    break
+_api = APIKey.objects.get(id=1)
+API.USER_ID = _api.userID
+API.CHAR_ID = _api.charID
+API.API_KEY = _api.key
 
 def connect(debug=False,proxy =None,cache=True):
     if cache : handler = CacheHandler(debug=debug)

@@ -5,8 +5,8 @@ Created on 18 mars 2010
 @author: diabeteman
 '''
 
-from ism.core.assets.constants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
-from ism import constants
+from ism.core.parsers.assetsconstants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
+from ism import settings
 import sqlite3
 from ism.data.common.models import Outpost
 import threading
@@ -53,7 +53,7 @@ def resolveTypeName(typeID):
         return getCachedType(typeID)
     except KeyError:
         #print "type cache miss", typeID
-        CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
+        CONN_EVE = sqlite3.connect(settings.EVE_DB_FILE)
         cursor = CONN_EVE.cursor()
         cursor.execute(QUERY_ONE_TYPENAME % typeID)
         for row in cursor :
@@ -61,7 +61,7 @@ def resolveTypeName(typeID):
             return getCachedType(typeID)
 #------------------------------------------------------------------------------
 def resolveTypeNames(typeIDs):
-    CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
+    CONN_EVE = sqlite3.connect(settings.EVE_DB_FILE)
     cursor = CONN_EVE.cursor()
     cursor.execute(QUERY_TYPENAMES % str(tuple(typeIDs)))
     names = {}
@@ -70,7 +70,7 @@ def resolveTypeNames(typeIDs):
     return names
 #------------------------------------------------------------------------------
 def getMatchingIdsFromString(string):
-    CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
+    CONN_EVE = sqlite3.connect(settings.EVE_DB_FILE)
     cursor = CONN_EVE.cursor()
     cursor.execute(QUERY_SEARCH_TYPE % string)
     return [ id[0] for id in cursor ]
@@ -80,7 +80,7 @@ def resolveLocationName(locationID):
         return getCachedLocation(locationID)
     except KeyError:
         #print "location cache miss", locationID
-        CONN_EVE = sqlite3.connect(constants.EVE_DB_FILE)
+        CONN_EVE = sqlite3.connect(settings.EVE_DB_FILE)
         cursor = CONN_EVE.cursor()
         if locationID < STATIONS_IDS :
             cursor.execute(QUERY_SYSTEM % locationID)

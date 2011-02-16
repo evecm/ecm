@@ -6,8 +6,7 @@ Created on 08 fev. 2010
 """
 
 from ism.data.roles.models import RoleType, Role
-from ism.core.exceptions import WrongApiVersion, DatabaseCorrupted
-from ism import constants
+from ism.settings import EVE_API_VERSION
 from ism.data.common.models import UpdateDate
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
@@ -36,8 +35,8 @@ def allRoles():
 
 #------------------------------------------------------------------------------
 def checkApiVersion(version):
-    if version != constants.API_VERSION:
-        raise WrongApiVersion(version)
+    if version != EVE_API_VERSION:
+        raise DeprecationWarning("Wrong EVE API version. Expected '%s', got '%s'." % (EVE_API_VERSION, version))
     
 #------------------------------------------------------------------------------   
 def calcDiffs(oldItems, newItems):
@@ -79,4 +78,4 @@ def markUpdated(model, date):
     except ObjectDoesNotExist:
         update = UpdateDate(model_name=model.__name__, update_date=date).save()
     except MultipleObjectsReturned:
-        raise DatabaseCorrupted
+        raise Exception

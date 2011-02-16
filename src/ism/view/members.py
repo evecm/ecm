@@ -221,38 +221,6 @@ def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
     
     return total_members, filtered_members, member_list
 
-
-#------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
-@cache_page(60 * 60 * 15) # 1 hour cache
-@csrf_protect
-def search(request):
-    colorThresholds = []
-    for c in ColorThreshold.objects.all().order_by("threshold"):
-        colorThresholds.append({ "threshold" : c.threshold, "color" : c.color })
-
-    all_titles = Title.objects.all()
-
-
-
-    try: 
-        titles_str = request.GET["titles"]
-        titles = [ int(t) for t in titles_str.split(",") ]
-        for t in all_titles: t.checked = (t.titleID in titles)
-    except: 
-        titles, titles_str = None, None
-        for t in all_titles: t.checked = False 
-
-
-    data = {
-        'scan_date' : getScanDate(),
-        'titles' : all_titles,
-        'titles_str' : titles_str,
-         
-        'colorThresholds' : json.dumps(colorThresholds)
-    }
-    return render_to_response("member_list.html", data, context_instance=RequestContext(request))
-
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
 @cache_page(60 * 60 * 15) # 1 hour cache
