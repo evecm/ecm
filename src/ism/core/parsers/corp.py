@@ -102,7 +102,10 @@ def update(cache=False):
         for hangarDiv in corpApi.divisions :
             h_id   = hangarDiv.accountKey
             h_name = hangarDiv.description
-            h = Hangar(hangarID=h_id, name=h_name)
+            try:
+                h = Hangar.objects.get(hangarID=h_id)
+            except ObjectDoesNotExist:
+                h = Hangar(hangarID=h_id, name=h_name)
             logger.debug("  %s [%d]", h.name, h.hangarID)
             h.save()
         
@@ -113,7 +116,10 @@ def update(cache=False):
         for walletDiv in corpApi.walletDivisions :
             w_id   = walletDiv.accountKey
             w_name = walletDiv.description
-            w = Wallet(walletID=w_id, name=w_name)
+            try:
+                w = Wallet.objects.get(walletID=w_id)
+            except ObjectDoesNotExist:
+                w = Wallet(walletID=w_id, name=w_name)
             logger.debug("  %s [%d]", w.name, w.walletID)
             w.save()
         
