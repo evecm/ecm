@@ -55,11 +55,9 @@ $(document).ready(function() {
             { "sTitle": "Access Level", "sWidth": "20%", "sType": "numeric" }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            if (aData[0] == true) {
-                $(nRow).addClass("row-green");
+            if (aData[0] == "true") {
                 $('td:eq(0)', nRow).html('<img src="/static/img/plus.png"></img>');
             } else {
-                $(nRow).addClass("row-red");
                 $('td:eq(0)', nRow).html('<img src="/static/img/minus.png"></img>');
             }
             return nRow;
