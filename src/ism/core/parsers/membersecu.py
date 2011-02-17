@@ -9,35 +9,39 @@ from ism.data.roles.models import RoleMembership, TitleMembership, RoleMemberDif
 from ism.core.api import connection
 from ism.core.api.connection import API
 from ism.core.parsers import utils
+from ism import settings
 
 from django.db import transaction
 
-DEBUG = False # DEBUG mode
+import logging.config
+
+logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
+logger = logging.getLogger("parser_membersecu")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False, cache=False):
+def update(cache=False):
     """
     Retrieve all corp members' titles and roles.
     We store all the changes in the database
     
     If there's an error, nothing is written in the database
     """
-    global DEBUG
-    DEBUG = debug
     
     try:
+        logger.info("fetching /corp/MemberSecurity.xml.aspx...")
         # connect to eve API
-        api = connection.connect(debug=debug, cache=cache)
+        api = connection.connect(cache=cache)
         # retrieve /corp/MemberTracking.xml.aspx
         memberSecuApi = api.corp.MemberSecurity(characterID=API.CHAR_ID)
         utils.checkApiVersion(memberSecuApi._meta.version)
         
         currentTime = memberSecuApi._meta.currentTime
         cachedUntil = memberSecuApi._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(currentTime)
-        if DEBUG : print "cached util  : %s" % str(cachedUntil)
+        logger.debug("current time : %s", str(currentTime))
+        logger.debug("cached util : %s", str(cachedUntil))
         
+        logger.debug("parsing api response...")
         oldRoles  = {}
         oldTitles = {}
         
@@ -61,6 +65,7 @@ def update(debug=False, cache=False):
         
         # Store title changes 
         titleDiffs = storeTitles(oldTitles, newTitles, currentTime)
+        logger.info("%d role changes, %d title changes", roleDiffs, titleDiffs)
        
         # update members access levels
         for m in Member.objects.all():
@@ -68,11 +73,11 @@ def update(debug=False, cache=False):
             m.extraRoles = len(m.getRoles(ignore_director=True))
             m.save() 
 
-        if DEBUG : print "saving data to the database..."
+        logger.debug("saving data to the database...")
         transaction.commit()
-        if DEBUG: print "DATABASE UPDATED!"
+        logger.debug("DATABASE UPDATED!")
+        logger.info("member roles/titles updated")
 
-        return "%d role changes, %d title changes" % (roleDiffs, titleDiffs)
     except:
         transaction.rollback()
         raise
@@ -116,19 +121,19 @@ def parseOneMemberTitles(member):
 #------------------------------------------------------------------------------
 def __storeRoleDiffs(removed, added, date):
     diffs    = []
-    if DEBUG:
-        print "REMOVED ROLES:"
-        if not removed : print "(none)"
+    logger.debug("REMOVED ROLES:")
+    if not removed : 
+        logger.debug("(none)")
     for remrole in removed:
-        if DEBUG: print "- " + unicode(remrole)
+        logger.debug("- " + unicode(remrole))
         diffs.append(RoleMemberDiff(role_id   = remrole.role_id, 
                                     member_id = remrole.member_id, 
                                     new=False, date=date))
-    if DEBUG:
-        print "ADDED ROLES:"
-        if not added : print "(none)"
+    logger.debug("ADDED ROLES:")
+    if not added : 
+        logger.debug("(none)")
     for addrole in added:
-        if DEBUG: print "+ " + unicode(addrole)
+        logger.debug("+ " + unicode(addrole))
         diffs.append(RoleMemberDiff(role_id   = addrole.role_id, 
                                     member_id = addrole.member_id, 
                                     new=True, date=date))
@@ -141,20 +146,20 @@ def getRoleMemberDiffs(oldRoles, newRoles, date):
 #------------------------------------------------------------------------------
 def __storeTitleDiffs(removed, added, date):
     diffs = []
-    if DEBUG:
-        print "REMOVED TITLES:"
-        if not removed: print "(none)"
+    logger.debug("REMOVED TITLES:")
+    if not removed: 
+        logger.debug("(none)")
     for remtitle in removed:
-        if DEBUG: print "- " + unicode(remtitle)
+        logger.debug("- " + unicode(remtitle))
         diffs.append(TitleMemberDiff(title_id=remtitle.title_id, 
                                      member_id=remtitle.member_id, 
                                      new=False, date=date))
     
-    if DEBUG:
-        print "ADDED TITLES:"
-        if not added: print "(none)"
+    logger.debug("ADDED TITLES:")
+    if not added: 
+        logger.debug("(none)")
     for addtitle in added:
-        if DEBUG: print "+ " + unicode(addtitle)
+        logger.debug("+ " + unicode(addtitle))
         diffs.append(TitleMemberDiff(title_id=addtitle.title_id, 
                                      member_id=addtitle.member_id, 
                                      new=True, date=date))
@@ -191,7 +196,8 @@ def storeTitles(oldTitles, newTitles, date):
     if len(oldTitles) != 0:
         titleDiffs = getTitleMemberDiffs(oldTitles, newTitles, date)
         if titleDiffs:
-            for d in titleDiffs: d.save()
+            for d in titleDiffs: 
+                d.save()
             # we store the update time of the table
             utils.markUpdated(model=TitleMemberDiff, date=date)
             

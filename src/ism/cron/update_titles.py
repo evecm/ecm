@@ -12,7 +12,4 @@ import setenv
 
 from ism.core.parsers import titles
 
-from datetime import datetime
-
-print datetime.now().strftime("%Y-%m-%d ~ %H:%M:%S") + " [ISM] " + titles.update()
-
+titles.update()

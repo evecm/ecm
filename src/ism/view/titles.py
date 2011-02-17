@@ -42,16 +42,13 @@ all_columns = [ "titleName", "accessLvl" ]
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
 @csrf_protect
 def all_data(request):
+    sEcho = int(request.GET["sEcho"])
     try:
-        sEcho = int(request.GET["sEcho"])
-        try:
-            column = int(request.GET["iSortCol_0"])
-            ascending = (request.GET["sSortDir_0"] == "asc")
-        except:
-            column = 0
-            ascending = True
+        column = int(request.GET["iSortCol_0"])
+        ascending = (request.GET["sSortDir_0"] == "asc")
     except:
-        pass
+        column = 0
+        ascending = True
 
     titles = getTitles(sort_by=all_columns[column], asc=ascending)
     json_data = {

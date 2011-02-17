@@ -18,8 +18,8 @@ API.USER_ID = _api.userID
 API.CHAR_ID = _api.charID
 API.API_KEY = _api.key
 
-def connect(debug=False,proxy =None,cache=True):
-    if cache : handler = CacheHandler(debug=debug)
+def connect(proxy=None, cache=True):
+    if cache : handler = CacheHandler()
     else     : handler = None
     api = eveapi.EVEAPIConnection(cacheHandler=handler, proxy=proxy)
     return api.auth(userID=API.USER_ID, apiKey=API.API_KEY)

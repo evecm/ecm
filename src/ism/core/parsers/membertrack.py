@@ -10,33 +10,37 @@ from ism.core.api import connection
 from ism.core.api.connection import API
 from ism.core.parsers import utils
 from ism.core.db import resolveLocationName
+from ism import settings
 
-DEBUG = False # DEBUG mode
+import logging.config
+
+logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
+logger = logging.getLogger("parser_membertrack")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False, cache=False):
+def update(cache=False):
     """
     Retrieve all corp members, with all basic information about them.
     If some members have left or have arrived we also store the diff in the database.
     
     If there's an error, nothing is written in the database
     """
-    global DEBUG
-    DEBUG = debug
     
     try:
+        logger.info("fetching /corp/MemberTracking.xml.aspx...")
         # connect to eve API
-        api = connection.connect(debug=debug, cache=cache)
+        api = connection.connect(cache=cache)
         # retrieve /corp/MemberTracking.xml.aspx
         membersApi = api.corp.MemberTracking(characterID=API.CHAR_ID)
         utils.checkApiVersion(membersApi._meta.version)
         
         currentTime = membersApi._meta.currentTime
         cachedUntil = membersApi._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(currentTime)
-        if DEBUG : print "cached util  : %s" % str(cachedUntil)
+        logger.debug("current time : %s", str(currentTime))
+        logger.debug("cached util : %s", str(cachedUntil))
         
+        logger.debug("parsing api response...")
         newMembers = {}
         oldMembers = {}
         notCorped  = {}
@@ -61,7 +65,9 @@ def update(debug=False, cache=False):
         for L in leaved: 
             L.corped = False
             newMembers[L] = L
-        
+            
+        logger.info("%d members parsed, %d changes since last scan", len(newMembers), len(diffs))
+
         for m in notCorped.values():
             try:
                 # if the previously "not corped" members can now be found in the "new members"
@@ -73,29 +79,31 @@ def update(debug=False, cache=False):
                 newMembers[m] = m
         
         for m in newMembers.values():
-            try:
+            try: 
+                # we restore the old access levels from the database
                 m.accessLvl = oldAccessLvls[m.characterID]
-            except:
+            except KeyError:
+                # 'm' is a brand new member, his/her access level didn't exist before
+                # we leave it to the default value '0'
                 continue
 
-        if len(oldMembers) > 0 :
-            if len(diffs) > 0 :
-                for d in diffs:
-                    d.save()
-                # we store the update time of the table
-                utils.markUpdated(model=MemberDiff, date=currentTime)
-            Member.objects.all().delete()
+        if len(oldMembers) > 0 and len(diffs) > 0 :
+            for d in diffs:
+                d.save()
+            # we store the update time of the table
+            utils.markUpdated(model=MemberDiff, date=currentTime)
         # to be sure to store the nicknames change, etc.
         # even if there are no diff, we always overwrite the members 
         for m in newMembers.values():
             m.save()
         # we store the update time of the table
         utils.markUpdated(model=Member, date=currentTime)
-            
+        
+        logger.debug("saving to database...")
         transaction.commit()
-        if DEBUG: print "DATABASE UPDATED!"
-
-        return "%d members parsed, %d changes since last scan" % (len(newMembers), len(diffs))
+        logger.debug("DATABASE UPDATED!")
+        logger.info("members updated")
+    
     except:
         # mayday, error
         transaction.rollback()
@@ -124,20 +132,18 @@ def getDiffs(oldMembers, newMembers, date):
     
     diffs  = []
     
-    if DEBUG:
-        print "RESIGNED MEMBERS:"
-        if not removed : print "(none)"
+    logger.debug("RESIGNED MEMBERS:")
+    if not removed : logger.debug("(none)")
     for oldmember in removed:
-        if DEBUG: print "- %s (%s)" % (oldmember.name, oldmember.nickname)
+        logger.debug("- %s (%s)", oldmember.name, oldmember.nickname)
         diffs.append(MemberDiff(characterID = oldmember.characterID, 
                                 name        = oldmember.name,
                                 nickname    = oldmember.nickname, 
                                 new=False, date=date))
-    if DEBUG:
-        print "NEW MEMBERS:"
-        if not removed : print "(none)"
+    logger.debug("NEW MEMBERS:")
+    if not removed : logger.debug("(none)")
     for newmember in added:
-        if DEBUG: print "+ %s (%s)" % (newmember.name, newmember.nickname)
+        logger.debug("+ %s (%s)", newmember.name, newmember.nickname)
         diffs.append(MemberDiff(characterID = newmember.characterID, 
                                 name        = newmember.name,
                                 nickname    = newmember.nickname, 

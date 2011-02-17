@@ -12,32 +12,35 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from ism.core.parsers.utils import checkApiVersion, markUpdated
 
-DEBUG = False # DEBUG mode
+from ism import settings
+
+import logging.config
+
+logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
+logger = logging.getLogger("parser_corp")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False, cache=False):
+def update(cache=False):
     """
     Fetch a /corp/CorporationSheet.xml.aspx api response, parse it and store it to 
     the database.
     """
-    global DEBUG
-    DEBUG = debug
     
     try:
+        logger.info("fetching /corp/CorporationSheet.xml.aspx...")
         # connect to eve API
-        api = connection.connect(debug=debug, cache=cache)
+        api = connection.connect(cache=cache)
         # retrieve /corp/CorporationSheet.xml.aspx
         corpApi = api.corp.CorporationSheet(characterID=API.CHAR_ID)
         checkApiVersion(corpApi._meta.version)
 
         currentTime = corpApi._meta.currentTime
         cachedUntil = corpApi._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(currentTime)
-        if DEBUG : print "cached util  : %s" % str(cachedUntil)
+        logger.debug("current time : %s", str(currentTime))
+        logger.debug("cached util : %s", str(cachedUntil))
 
-        if DEBUG : print "parsing api response..."
-        
+        logger.debug("parsing api response...")
         try: 
             allianceName = corpApi.allianceName
             allianceID   = corpApi.allianceID
@@ -89,58 +92,39 @@ def update(debug=False, cache=False):
         # we store the update time of the table
         markUpdated(model=Corp, date=currentTime)
         
-        if DEBUG: 
-            print "==============="
-            print "= CORPORATION ="
-            print "==============="
-            print "name: %s [%s]" % (corp.corporationName, corp.ticker)
-            print "alliance: %s" % corp.allianceName
-            print "CEO: %s" % corpApi.ceoName
-            print "tax rate: %d%%" % corp.taxRate
-            print "member limit: %d" % corp.memberLimit
+        logger.debug("name: %s [%s]", corp.corporationName, corp.ticker)
+        logger.debug("alliance: %s <%s>", corp.allianceName, corp.allianceTicker)
+        logger.debug("CEO: %s", corpApi.ceoName)
+        logger.debug("tax rate: %d%%", corp.taxRate)
+        logger.debug("member limit: %d", corp.memberLimit)
             
-        if DEBUG: print "HANGAR DIVISIONS:"
+        logger.debug("HANGAR DIVISIONS:")
         for hangarDiv in corpApi.divisions :
             h_id   = hangarDiv.accountKey
             h_name = hangarDiv.description
-            try:
-                hangar = Hangar.objects.get(hangarID=h_id)
-                if not hangar.name == h_name:
-                    hangar.name = h_name
-                    hangar.save()
-                    if DEBUG: print "*  %s" % hangar.name
-                else: 
-                    if DEBUG: print "   %s" % hangar.name
-            except ObjectDoesNotExist: 
-                Hangar(hangarID=h_id, name=h_name).save()
+            h = Hangar(hangarID=h_id, name=h_name)
+            logger.debug("  %s [%d]", h.name, h.hangarID)
+            h.save()
         
         # we store the update time of the table
         markUpdated(model=Hangar, date=currentTime)
         
-        if DEBUG: print "WALLET DIVISIONS:"
+        logger.debug("WALLET DIVISIONS:")
         for walletDiv in corpApi.walletDivisions :
             w_id   = walletDiv.accountKey
             w_name = walletDiv.description
-            try:
-                wallet = Wallet.objects.get(walletID=w_id)
-                if not wallet.name == w_name:
-                    wallet.name = w_name
-                    wallet.save()
-                    if DEBUG: print "*  %s" % wallet.name
-                else: 
-                    if DEBUG: print "   %s" % wallet.name
-            except ObjectDoesNotExist: 
-                Wallet(walletID=w_id, name=w_name).save()
+            w = Wallet(walletID=w_id, name=w_name)
+            logger.debug("  %s [%d]", w.name, w.walletID)
+            w.save()
         
         # we store the update time of the table
         markUpdated(model=Wallet, date=currentTime)
         
         # all ok
-        if DEBUG : print "saving data to the database..."
+        logger.debug("saving data to the database...")
         transaction.commit()
-        if DEBUG: print "DATABASE UPDATED!"
-
-        return "corp info parsed"
+        logger.debug("DATABASE UPDATED!")
+        logger.info("corp info updated")
     except:
         # error catched, rollback changes
         transaction.rollback()

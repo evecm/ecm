@@ -16,44 +16,41 @@ from ism.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
                                       CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS
                                       
 from django.db import transaction
+from ism import settings
 
+import logging.config
 
-
-DEBUG = False # DEBUG mode
+logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
+logger = logging.getLogger("parser_assets")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False, cache=False):
+def update(cache=False):
     """
     Retrieve all corp assets and calculate the changes.
     
     If there's an error, nothing is written in the database
     """
-    global DEBUG, RESULT
-    DEBUG = debug
-    
     try:
-        if DEBUG : 
-            import time
-            start = time.time()
-        api = connection.connect(debug=debug, cache=cache)
+        logger.info("fetching /corp/AssetList.xml.aspx...")
+        api = connection.connect(cache=cache)
         apiAssets = api.corp.AssetList(characterID=API.CHAR_ID)
         utils.checkApiVersion(apiAssets._meta.version)
         
         currentTime = apiAssets._meta.currentTime
         cachedUntil = apiAssets._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(currentTime)
-        if DEBUG : print "cached util  : %s" % str(cachedUntil)
+        logger.debug("current time : %s", str(currentTime))
+        logger.debug("cached util : %s", str(cachedUntil))
         
-        if DEBUG : print "fetching old assets from the database...",
+        logger.debug("fetching old assets from the database...")
         oldItems = {}
         for a in DbAsset.objects.all():
             oldItems[a] = a
         
         newItems = {}
-        if DEBUG : print "%d assets fetched" % len(oldItems.keys())
+        logger.debug("%d assets fetched", len(oldItems.keys()))
         
-        if DEBUG : print "parsing api response...",
+        logger.info("parsing api response...")
         for row in apiAssets.assets :
             if row.locationID >= STATIONS_IDS :
                 if row.typeID == BOOKMARK_TYPEID :
@@ -62,11 +59,11 @@ def update(debug=False, cache=False):
                     isOffice(office=row, newItems=newItems)
                 elif row.flag in HANGAR_FLAG.keys() :
                     isInHangar(item=row, newItems=newItems)
-        if DEBUG : print "%d assets parsed" % len(newItems.keys())
+        logger.info("%d assets parsed", len(newItems.keys()))
 
         diffs = []
         if len(oldItems) != 0 :
-            if DEBUG : print "computing diffs since last asset scan..."
+            logger.debug("computing diffs since last asset scan...")
             diffs = getAssetDiffs(newItems=newItems, oldItems=oldItems, date=currentTime)
             if diffs:
                 for assetDiff in diffs : 
@@ -78,15 +75,13 @@ def update(debug=False, cache=False):
         
         # we store the update time of the table
         utils.markUpdated(model=DbAsset, date=currentTime)
-        
-        
             
-        if DEBUG : print "saving data to the database...",
+        logger.info("%d changes since last scan", len(diffs))
+        logger.debug("saving to database...")
         transaction.commit()
-        if DEBUG: print "done"
-        if DEBUG : print "computed in %f seconds" % (time.time() - start)
+        logger.debug("DATABASE UPDATED!")
+        logger.info("assets updated")
 
-        return "%d assets parsed, %d changes since last scan" % (len(newItems), len(diffs))
     except:
         transaction.rollback()
         raise

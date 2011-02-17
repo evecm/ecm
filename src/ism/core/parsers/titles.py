@@ -13,12 +13,16 @@ from ism.core.api.connection import API
 from ism.core.parsers import utils
 from ism.core.parsers.utils import checkApiVersion, markUpdated
 
+from ism import settings
 
-DEBUG = False # DEBUG mode
+import logging.config
+
+logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
+logger = logging.getLogger("parser_titles")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(debug=False, cache=False):
+def update(cache=False):
     """
     Retrieve all corp titles, their names and their role composition.
     If there are changes in the composition of the titles, 
@@ -26,20 +30,20 @@ def update(debug=False, cache=False):
     
     If there's an error, nothing is written in the database
     """
-    global DEBUG
-    DEBUG = debug
-    
     try:
+        logger.info("fetching /corp/Titles.xml.aspx...")
         # connect to eve API
-        api = connection.connect(debug=debug, cache=cache)
+        api = connection.connect(cache=cache)
         # retrieve /corp/Titles.xml.aspx
         titlesApi = api.corp.Titles(characterID=API.CHAR_ID)
         checkApiVersion(titlesApi._meta.version)
         
         currentTime = titlesApi._meta.currentTime
         cachedUntil = titlesApi._meta.cachedUntil
-        if DEBUG : print "current time : %s" % str(currentTime)
-        if DEBUG : print "cached util  : %s" % str(cachedUntil)
+        logger.debug("current time : %s", str(currentTime))
+        logger.debug("cached util : %s", str(cachedUntil))
+        
+        logger.debug("parsing api response...")
         
         newList = []
         # we get all the old TitleComposition from the database
@@ -72,10 +76,10 @@ def update(debug=False, cache=False):
             t.accessLvl = t.getAccessLvl()
             t.save()
             
+        logger.info("%d roles in titles parsed, %d changes since last scan", len(newList), len(diffs))
         transaction.commit()
-        if DEBUG: print "DATABASE UPDATED!"
-
-        return "%d roles in titles parsed, %d changes since last scan" % (len(newList), len(diffs))
+        logger.debug("DATABASE UPDATED!")
+        logger.info("titles updated")
     except:
         # mayday, error
         transaction.rollback()
@@ -147,19 +151,17 @@ def getDiffs(newList, oldList, date):
     added    = [ a for a in newList if a not in oldList ]
     diffs    = []
     
-    if DEBUG:
-        print "REMOVED ROLES TO TITLES:"
-        if not removed : print "(none)"
+    logger.debug("REMOVED ROLES TO TITLES:")
+    if not removed : logger.debug("(none)")
     for oldcompo in removed:
-        if DEBUG: print "- %s" % unicode(oldcompo)
+        logger.debug("- %s", unicode(oldcompo))
         diffs.append(TitleCompoDiff(title = oldcompo.title, 
                                     role  = oldcompo.role,
                                     new=False, date=date))
-    if DEBUG:
-        print "ADDED ROLES TO TITLES:"
-        if not removed : print "(none)"
+    logger.debug("ADDED ROLES TO TITLES:")
+    if not removed : logger.debug("(none)")
     for newcompo in added:
-        if DEBUG: print "+ %s" % unicode(newcompo)
+        logger.debug("+ %s", unicode(newcompo))
         diffs.append(TitleCompoDiff(title = newcompo.title, 
                                     role  = newcompo.role,
                                     new=True, date=date))

@@ -11,6 +11,5 @@ import setenv
 # imports and code below
 
 from ism.core.parsers import assets
-from datetime import datetime
 
-print datetime.now().strftime("%Y-%m-%d ~ %H:%M:%S") + " [ISM] " + assets.update()
+assets.update()

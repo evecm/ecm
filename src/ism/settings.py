@@ -14,7 +14,7 @@ def resolvePath(relativePath):
 
 EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
-
+LOGGING_CONFIG_FILE = resolvePath("logging.ini")
 
 # Django settings for ism project.
 

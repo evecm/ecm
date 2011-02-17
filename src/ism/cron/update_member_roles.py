@@ -11,10 +11,6 @@ import setenv
 # imports and code below
 
 from ism.core.parsers import membersecu
-from datetime import datetime
 
-
-logString = datetime.now().strftime("%Y-%m-%d ~ %H:%M:%S") + " [ISM] " + membersecu.update()
-
-print logString
+membersecu.update()
 
