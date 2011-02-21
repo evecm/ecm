@@ -105,6 +105,7 @@ TEMPLATE_DIRS = (
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.auth",
+    "ism.core.context_processors.corporation_name"
 )
 
 #TEMPLATE_STRING_IF_INVALID = '%s'

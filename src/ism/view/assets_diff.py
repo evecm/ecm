@@ -48,7 +48,7 @@ def stations(request, date_str):
     all_hangars = Hangar.objects.all()
     try: 
         divisions_str = request.GET["divisions"]
-        divisions = tuple([ int(div) for div in divisions_str.split(",") ])
+        divisions = [ int(div) for div in divisions_str.split(",") ]
         for h in all_hangars: h.checked = (h.hangarID in divisions)
     except: 
         divisions, divisions_str = None, None
@@ -81,7 +81,7 @@ def hangars(request, date_str, stationID):
     
     date = datetime.strptime(date_str, DATE_PATTERN)
 
-    try: divisions = tuple([ int(div) for div in request.GET["divisions"].split(",") ])
+    try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
     except: divisions = None
     
     json_data = json.dumps(getStationHangars(date, int(stationID), divisions))
@@ -105,7 +105,7 @@ def search_items(request, date_str):
     
     date = datetime.strptime(date_str, DATE_PATTERN)
 
-    try: divisions = tuple([ int(div) for div in request.GET["divisions"].split(",") ])
+    try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
     except: divisions = None
     
     search_string = request.GET.get("search_string", "no-item")
@@ -122,7 +122,8 @@ SQL_STATIONS_DIFF_FILTERED = "SELECT id, locationID, count(*) AS items, date FRO
 def getStations(date, divisions):
 
     if divisions:
-        raw_list = DbAssetDiff.objects.raw(SQL_STATIONS_DIFF_FILTERED % (utils.print_time(date), str(divisions)))
+        str_divisions = str(divisions).replace("[", "(").replace("]", ")")
+        raw_list = DbAssetDiff.objects.raw(SQL_STATIONS_DIFF_FILTERED % (utils.print_time(date), str_divisions))
     else:
         raw_list = DbAssetDiff.objects.raw(SQL_STATIONS_DIFF % utils.print_time(date))
         
@@ -148,7 +149,8 @@ SQL_HANGARS_FILTERED = "SELECT id, hangarID, count(*) AS items FROM assets_dbass
 
 def getStationHangars(date, stationID, divisions):
     if divisions:
-        sql = SQL_HANGARS_FILTERED % (utils.print_time(date), stationID, str(divisions))
+        str_divisions = str(divisions).replace("[", "(").replace("]", ")")
+        sql = SQL_HANGARS_FILTERED % (utils.print_time(date), stationID, str_divisions)
         raw_list = DbAssetDiff.objects.raw(sql)
     else:
         raw_list = DbAssetDiff.objects.raw(SQL_HANGARS % (utils.print_time(date), stationID))

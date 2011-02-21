@@ -78,8 +78,12 @@ def update(cache=False):
         logger.debug("DATABASE UPDATED!")
         logger.info("member roles/titles updated")
 
-    except:
+    except Exception, e:
+        # error catched, rollback changes
         transaction.rollback()
+        import sys, traceback
+        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
+        logger.error("".join(errortrace))
         raise
 
 #------------------------------------------------------------------------------

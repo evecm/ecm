@@ -159,6 +159,12 @@ class Role(models.Model):
         except:
             return self.roleName
     
+    def __getattr__(self, attr_name):
+        if attr_name == "name":
+            return self.getDispName()
+        else:
+            raise AttributeError("Role has no attribute %s" % attr_name)
+    
     def getDispName(self):
         try:
             name = self.dispName

@@ -80,9 +80,12 @@ def update(cache=False):
         transaction.commit()
         logger.debug("DATABASE UPDATED!")
         logger.info("titles updated")
-    except:
-        # mayday, error
+    except Exception, e:
+        # error catched, rollback changes
         transaction.rollback()
+        import sys, traceback
+        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
+        logger.error("".join(errortrace))
         raise
 
 #------------------------------------------------------------------------------

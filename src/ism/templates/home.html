@@ -6,51 +6,52 @@
 <li><a href="/">Home</a></li>
 {% endblock %}
 
-
-
 {% block main_content %}
 
-<h1 class="pagetitle">Welcome to ICE Security Management</h1>
+<h1 class="pagetitle">{{ corp_name }} <span class="time">- EVE Security Management</span></h1>
 
 <table class="transparent" >
-  <thead>
-    <tr>
-        <th width="250px" >Corporation</th>
-{% if corp.allianceID %}<th width="250px" >Alliance</th>{% endif %}
-    </tr>
-  </thead>
   <tbody>
     <tr>
-        <td><img src="http://image.eveonline.com/Corporation/{{ corp.corporationID }}_128.png"></img></td>
-{% if corp.allianceID %}<td><img src="http://image.eveonline.com/Alliance/{{ corp.allianceID }}_128.png"></img></td>{% endif %}
-    </tr>
-    <tr>
-        <td><p>{{ corp.corporationName }} [{{ corp.ticker }}]</p></td>
-{% if corp.allianceID %}<td><p>{{ corp.allianceName }} &lt;{{ corp.allianceTicker }}&gt;</p></td>{% endif %}
+      <td>
+        <h1><a href="/members/history">Last Member Moves</a></h1>
+        <ul>
+        {% for m in last_member_changes %}
+          <li class="{% if m.new %}green{% else %}red{% endif %}">
+                               {% if m.url %}
+                               <a href="{{ m.url }}">{{ m.name }}</a>
+                               {% else %}
+                               <span class="bold">{{ m.name }}</span>
+                               {% endif %}
+            {% if m.nickname %}<span class="italic"> ({{ m.nickname|truncatewords:"5" }})</span>{% endif %}
+                               <span class="time"> - {{ m.date }}</span></li>
+        {% endfor %}
+        </ul>
+      </td>
+      <td>
+        <h1><a href="/members/accesschanges">Last Role Access Changes</a></h1>
+        <ul>
+        {% for a in role_access_changes %}
+          <li class="{% if a.new %}green{% else %}red{% endif %}">
+                               <span class="bold">{{ a.role }}</span>
+                               <span> on </span>
+                               <a href="/members/{{ a.member_id }}">{{ a.member }}</a>
+                               <span class="time"> - {{ a.date }}</span></li>
+        {% endfor %}
+        </ul>
+        <h1><a href="/members/accesschanges">Last Title Access Changes</a></h1>
+        <ul>
+        {% for a in title_access_changes %}
+          <li class="{% if a.new %}green{% else %}red{% endif %}">
+              <a href="/titles/{{ a.title_id }}">{{ a.title }}</a>
+              <span> on </span>
+              <a href="/members/{{ a.member_id }}">{{ a.member }}</a>
+              <span class="time"> - {{ a.date }}</span></li>
+        {% endfor %}
+        </ul>
+      </td>
     </tr>
   </tbody>
 </table>
 
-<ul>
-    <li><b>CEO:</b> <a href="/members/{{ corp.ceoID }}">{{ corp.ceoName }}</a></li>
-    <li><b>Tax Rate:</b> {{ corp.taxRate }}%</li>
-    <li><b>Member Count:</b> {{ memberCount }} / {{ corp.memberLimit }}</li>
-    <li><b>Description:</b> {{ corp.description|safe }}</li>
-</ul>
-
-
-
-<h1 class="pagetitle">Last Member Moves</h1>
-<ul>
-{% for m in members %}
-  <li class="{% if m.new %}green{% else %}red{% endif %}">
-                       {% if m.url %}
-                       <a href="{{ m.url }}">{{ m.name }}</a>
-                       {% else %}
-                       <span class="bold">{{ m.name }}</span>
-                       {% endif %}
-    {% if m.nickname %}<span class="italic"> ({{ m.nickname|truncatewords:"5" }})</span>{% endif %}
-                       <span class="time"> - {{ m.date }}</span></li>
-{% endfor %}
-</ul>
 {% endblock %}

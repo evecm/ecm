@@ -55,6 +55,10 @@ def update(cache=False):
         db.invalidateCache()
         logger.debug("DATABASE UPDATED!")
         logger.info("outposts updated")
-    except:
+    except Exception, e:
+        # error catched, rollback changes
         transaction.rollback()
+        import sys, traceback
+        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
+        logger.error("".join(errortrace))
         raise

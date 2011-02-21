@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Corporation Details{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/corp">Corporation Details</a></li>
+{% endblock %}
+
+
+
+{% block main_content %}
+
+<h1 class="pagetitle">{{ corp.corporationName }} Details</h1>
+
+<table class="transparent" >
+  <thead>
+    <tr>
+        <th width="250px" >Corporation</th>
+{% if corp.allianceID %}<th width="250px" >Alliance</th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+        <td><img src="http://image.eveonline.com/Corporation/{{ corp.corporationID }}_128.png"></img></td>
+{% if corp.allianceID %}<td><img src="http://image.eveonline.com/Alliance/{{ corp.allianceID }}_128.png"></img></td>{% endif %}
+    </tr>
+    <tr>
+        <td><p>{{ corp.corporationName }} [{{ corp.ticker }}]</p></td>
+{% if corp.allianceID %}<td><p>{{ corp.allianceName }} &lt;{{ corp.allianceTicker }}&gt;</p></td>{% endif %}
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+    <li><b>CEO:</b> <a href="/members/{{ corp.ceoID }}">{{ corp.ceoName }}</a></li>
+    <li><b>Tax Rate:</b> {{ corp.taxRate }}%</li>
+    <li><b>Member Count:</b> {{ memberCount }} / {{ corp.memberLimit }}</li>
+    <li><b>Description:</b> {{ corp.description|safe }}</li>
+</ul>
+{% endblock %}

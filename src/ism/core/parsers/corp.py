@@ -57,7 +57,8 @@ def update(cache=False):
 
         try:
             # try to retrieve the db stored corp info
-            corp = Corp.objects.get(corporationID=corpApi.corporationID)
+            corp = Corp.objects.get(id=1)
+            corporationID=corpApi.corporationID
             corp.corporationName = corpApi.corporationName
             corp.ticker          = corpApi.ticker
             corp.ceoID           = corpApi.ceoID
@@ -73,7 +74,8 @@ def update(cache=False):
 
         except ObjectDoesNotExist:
             # no corp parsed yet
-            corp = Corp( corporationID   = corpApi.corporationID, 
+            corp = Corp( id              = 1,
+                         corporationID   = corpApi.corporationID, 
                          corporationName = corpApi.corporationName,
                          ticker          = corpApi.ticker,      
                          ceoID           = corpApi.ceoID,
@@ -131,7 +133,10 @@ def update(cache=False):
         transaction.commit()
         logger.debug("DATABASE UPDATED!")
         logger.info("corp info updated")
-    except:
+    except Exception, e:
         # error catched, rollback changes
         transaction.rollback()
+        import sys, traceback
+        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
+        logger.error("".join(errortrace))
         raise

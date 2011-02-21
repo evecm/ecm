@@ -6,7 +6,7 @@ Created on 08 fev. 2010
 """
 
 from ism.data.roles.models import RoleType, Role
-from ism.settings import EVE_API_VERSION
+from ism import settings 
 from ism.data.common.models import UpdateDate
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
@@ -35,8 +35,9 @@ def allRoles():
 
 #------------------------------------------------------------------------------
 def checkApiVersion(version):
-    if version != EVE_API_VERSION:
-        raise DeprecationWarning("Wrong EVE API version. Expected '%s', got '%s'." % (EVE_API_VERSION, version))
+    if version != settings.EVE_API_VERSION:
+        raise DeprecationWarning("Wrong EVE API version. "
+                "Expected '%s', got '%s'." % (settings.EVE_API_VERSION, version))
     
 #------------------------------------------------------------------------------   
 def calcDiffs(oldItems, newItems):

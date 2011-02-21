@@ -9,77 +9,73 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 
-from ism.data.roles.models import MemberDiff, RoleMemberDiff, TitleCompoDiff, Member
-from ism.data.corp.models import Corp
+from ism.data.roles.models import MemberDiff, RoleMemberDiff, TitleCompoDiff, Member,\
+    TitleMemberDiff
 
 from ism.core.utils import print_time_min
 from django.views.decorators.csrf import csrf_protect
-
-import re
-
-SHOWINFO_PATTERN = re.compile(r"showinfo:1383//(\d+)", re.IGNORECASE + re.DOTALL)
 
 
 #------------------------------------------------------------------------------
 @login_required
 @csrf_protect
 def home(request):
-    corp = Corp.objects.all()[0]
-    
-    corp.description, count = re.subn(SHOWINFO_PATTERN, r"/members/\1", corp.description)
-    
-    data = {                  'corp' : corp,
-                       'memberCount' : Member.objects.filter(corped=True).count(),
-                           'members' : getLastMembers(),
-                    'last_role_adds' : getLastRoleAdds(),
-                'last_role_removals' : getLastRoleRemovals(),
-              'last_title_role_adds' : getLastTitleRoleAdds(),
-          'last_title_role_removals' : getLastTitleRoleRemovals()  }
+    data = {           'memberCount' : Member.objects.filter(corped=True).count(),
+               'last_member_changes' : getLastMemberChanges(),
+               'role_access_changes' : getLastRoleChanges(),
+              'title_access_changes' : getLastTitleChanges(),
+          'last_title_compo_changes' : getLastTitleCompoChanges() }
     
     return render_to_response("home.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
-def getLastMembers(count=10):
+def getLastMemberChanges(count=20):
     members = []
     queryset = list(MemberDiff.objects.all().order_by('-id'))[:count]
     for m in queryset:
         try:
             Member.objects.get(characterID=m.characterID)
-            # if this call doesn't fail then the member is corped 
+            # if this call doesn't fail then the member exists in the database
             # we can have a link to his/her details
             m.url = "/members/%d" % m.characterID
         except:
             pass
         m.date = print_time_min(m.date)
         members.append(m)
-    members.sort(key=lambda m: m.date, reverse=True)
     return members
 
 #------------------------------------------------------------------------------
-def getLastRoleAdds(count=10):
-    roles = RoleMemberDiff.objects.filter(new=True).order_by('-id')[:count]
+def getLastRoleChanges(count=10):
+    roles = RoleMemberDiff.objects.all().order_by('-id')[:count]
     for r in roles:
+        try:
+            Member.objects.get(characterID=r.member_id)
+            # if this call doesn't fail then the member exists in the database
+            # we can have a link to his/her details
+            r.url = "/members/%d" % r.member_id
+        except:
+            pass
         r.date = print_time_min(r.date)
     return roles
 
 #------------------------------------------------------------------------------
-def getLastRoleRemovals(count=10):
-    roles = RoleMemberDiff.objects.filter(new=False).order_by('-id')[:count]
-    for r in roles:
-        r.date = print_time_min(r.date)
-    return roles
-
-#------------------------------------------------------------------------------
-def getLastTitleRoleAdds(count=10):
-    titles = TitleCompoDiff.objects.filter(new=True).order_by('-id')[:count]
+def getLastTitleChanges(count=10):
+    titles = TitleMemberDiff.objects.all().order_by('-id')[:count]
     for t in titles:
+        try:
+            Member.objects.get(characterID=t.member_id)
+            # if this call doesn't fail then the member exists in the database
+            # we can have a link to his/her details
+            t.url = "/members/%d" % t.member_id
+        except:
+            pass
         t.date = print_time_min(t.date)
     return titles
 
 #------------------------------------------------------------------------------
-def getLastTitleRoleRemovals(count=10):
-    titles = TitleCompoDiff.objects.filter(new=False).order_by('-id')[:count]
+def getLastTitleCompoChanges(count=10):
+    titles = TitleCompoDiff.objects.all().order_by('-id')[:count]
     for t in titles:
         t.date = print_time_min(t.date)
     return titles
-#------------------------------------------------------------------------------
+

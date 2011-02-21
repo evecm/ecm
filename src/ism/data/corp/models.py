@@ -27,7 +27,7 @@ class Wallet(models.Model):
 
 #------------------------------------------------------------------------------
 class Corp(models.Model):
-    corporationID = models.BigIntegerField(primary_key=True)
+    corporationID = models.BigIntegerField()
     corporationName = models.CharField(max_length=256)
     ticker = models.CharField(max_length=8)
     ceoID = models.BigIntegerField()
