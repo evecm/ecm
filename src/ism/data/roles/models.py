@@ -240,8 +240,17 @@ class TitleComposition(models.Model):
 #========================#
 #  DIFF HISTORY CLASSES  #
 #========================#
+class Diff():
+
+    def __getattr__(self, attr_name):
+        try:
+            return self.__dict__[attr_name]
+        except KeyError:
+            raise AttributeError("%s has no attribute %s" % (self.__class__.__name__, attr_name))
+
+
 #------------------------------------------------------------------------------
-class TitleCompoDiff(models.Model):
+class TitleCompoDiff(models.Model, Diff):
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
     # true if role is new in title, false if role was removed
@@ -254,7 +263,7 @@ class TitleCompoDiff(models.Model):
         else       : return unicode(self.title) + u' looses ' + unicode(self.role)
         
 #------------------------------------------------------------------------------
-class MemberDiff(models.Model):
+class MemberDiff(models.Model, Diff):
     characterID = models.BigIntegerField(db_index=True)
     name = models.CharField(max_length=100, db_index=True)
     nickname = models.CharField(max_length=256, db_index=True)
@@ -268,7 +277,7 @@ class MemberDiff(models.Model):
         else       : return '%s leaved' % self.name
         
 #------------------------------------------------------------------------------
-class TitleMemberDiff(models.Model):
+class TitleMemberDiff(models.Model, Diff):
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
     # true if title is new for member, false if title was removed
@@ -281,7 +290,7 @@ class TitleMemberDiff(models.Model):
         else       : return '%s lost %s' % (self.member.name, self.title.titleName)
     
 #------------------------------------------------------------------------------
-class RoleMemberDiff(models.Model):
+class RoleMemberDiff(models.Model, Diff):
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
     # true if role is new for member, false if role was removed

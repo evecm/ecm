@@ -11,6 +11,7 @@ $('#history_table thead th').click(function(event) {
 // dataTable setup
 $(document).ready(function() {
 	table = $('#history_table').dataTable( {
+		"sPaginationType": "full_numbers",
 		"bProcessing": true,
 		"bServerSide": true,
         "bAutoWidth": false,
@@ -21,7 +22,7 @@ $(document).ready(function() {
             { "sTitle": "Corped/Leaved","sWidth": "15%", "sType": "html" ,  "bSortable": false },
             { "sTitle": "Name",         "sWidth": "30%", "sType": "html" ,  "bSortable": false },
             { "sTitle": "Nickname",     "sWidth": "30%", "sType": "string", "bSortable": false },
-            { "sTitle": "Corp/Leave Date",    "sWidth": "25%", "sType": "string", "bSearchable": false , "bSortable": false },
+            { "sTitle": "Corp/Leave Date",    "sWidth": "25%", "sType": "string", "bSearchable": false , "bSortable": false }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             if (aData[0] == "true") {

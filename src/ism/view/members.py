@@ -8,7 +8,7 @@ Created on 16 mai 2010
 import json
 
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
 from django.template.context import RequestContext
 from django.http import HttpResponse
@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.db.models import Q
 
 from ism.core.utils import print_time_min, print_date, getAccessColor
-from ism.data.roles.models import Member, MemberDiff
+from ism.data.roles.models import Member, MemberDiff, RoleMemberDiff, TitleMemberDiff
 from ism.core.db import resolveLocationName
 from ism.data.common.models import UpdateDate, ColorThreshold
 from ism import settings
@@ -89,10 +89,16 @@ def all_data(request):
 @cache_page(60 * 60 * 15) # 1 hour cache
 @csrf_protect
 def details(request, characterID):
-    data = {
-        'member' : getMember(int(characterID)),
-        'scan_date' : getScanDate() 
-    }
+    
+    member = getMember(int(characterID))
+    
+    if member.corped:
+        member.date = getScanDate()
+    else:
+        d = MemberDiff.objects.filter(characterID=member.characterID, new=False).order_by("-id")[0]
+        member.date = utils.print_time_min(d.date)
+    
+    data = { 'member' : member }
     return render_to_response("member_details.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
@@ -122,6 +128,59 @@ def history_data(request):
         "iTotalRecords" : total_members,
         "iTotalDisplayRecords" : total_members,
         "aaData" : members
+    }
+    
+    return HttpResponse(json.dumps(json_data))
+
+#------------------------------------------------------------------------------
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@cache_page(60 * 60 * 15) # 1 hour cache
+@csrf_protect
+def access_changes(request):
+    data = {
+        'scan_date' : getScanDate() 
+    }
+    return render_to_response("access_changes.html", data, context_instance=RequestContext(request))
+
+
+#------------------------------------------------------------------------------
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@cache_page(60 * 60 * 15) # 1 hour cache
+@csrf_protect
+def access_changes_data(request):
+    iDisplayStart = int(request.GET["iDisplayStart"])
+    iDisplayLength = int(request.GET["iDisplayLength"])
+    sEcho = int(request.GET["sEcho"])
+
+    count, changes = getAccessChanges(first_id=iDisplayStart, 
+                                      last_id=iDisplayStart + iDisplayLength - 1)
+    json_data = {
+        "sEcho" : sEcho,
+        "iTotalRecords" : count,
+        "iTotalDisplayRecords" : count,
+        "aaData" : changes
+    }
+    
+    return HttpResponse(json.dumps(json_data))
+
+
+#------------------------------------------------------------------------------
+@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@cache_page(60 * 60 * 15) # 1 hour cache
+@csrf_protect
+def access_changes_member_data(request, characterID):
+    iDisplayStart = int(request.GET["iDisplayStart"])
+    iDisplayLength = int(request.GET["iDisplayLength"])
+    sEcho = int(request.GET["sEcho"])
+
+    count, changes = getMemberAccessChanges(characterID=int(characterID),
+                                            first_id=iDisplayStart, 
+                                            last_id=iDisplayStart + iDisplayLength - 1)
+    json_data = {
+        "sEcho" : sEcho,
+        "iTotalRecords" : count,
+        "iTotalDisplayRecords" : count,
+        "aaData" : changes
     }
     
     return HttpResponse(json.dumps(json_data))
@@ -222,39 +281,62 @@ def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
     return total_members, filtered_members, member_list
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
-@cache_page(60 * 60 * 15) # 1 hour cache
-@csrf_protect
-def search_data(request):
-    try:
-        iDisplayStart = int(request.GET["iDisplayStart"])
-        iDisplayLength = int(request.GET["iDisplayLength"])
-        sSearch = request.GET["sSearch"]
-        sEcho = int(request.GET["sEcho"])
-        try:
-            column = int(request.GET["iSortCol_0"])
-            ascending = (request.GET["sSortDir_0"] == "asc")
-        except:
-            column = 0
-            ascending = True
-    except:
-        pass
-
-    total_members,\
-    filtered_members,\
-    members = getMembers(first_id=iDisplayStart, 
-                         last_id=iDisplayStart + iDisplayLength - 1,
-                         search_str=sSearch,
-                         sort_by=columns[column], 
-                         asc=ascending)
-    json_data = {
-        "sEcho" : sEcho,
-        "iTotalRecords" : total_members,
-        "iTotalDisplayRecords" : filtered_members,
-        "aaData" : members
-    }
+def getAccessChanges(first_id, last_id):
     
-    return HttpResponse(json.dumps(json_data))
+    roles = RoleMemberDiff.objects.all().order_by("-id")
+    titles = TitleMemberDiff.objects.all().order_by("-id")
+    
+    count = roles.count() + titles.count()
+    
+    changes = utils.merge_lists(list(roles), list(titles), "date")
+    changes = changes[first_id:last_id]
+    
+    change_list = []
+    for c in changes:
+        try:
+            access = '<a href="/titles/%d">%s</a>' % (c.title_id, unicode(c.title)) 
+        except AttributeError:
+            access = '<a href="/roles/%d">%s</a>' % (c.role_id, unicode(c.role))
+        
+        change = [
+            c.new,
+            '<a href="/members/%d">%s</a>' % (c.member.characterID, c.member.name),
+            access,
+            print_time_min(c.date)
+        ]
+
+        change_list.append(change)
+    
+    return count, change_list
+
+
+#------------------------------------------------------------------------------
+def getMemberAccessChanges(characterID, first_id, last_id):
+    
+    roles = RoleMemberDiff.objects.filter(member=characterID).order_by("-id")
+    titles = TitleMemberDiff.objects.filter(member=characterID).order_by("-id")
+    
+    count = roles.count() + titles.count()
+    
+    changes = utils.merge_lists(roles, titles, "date")
+    changes = changes[first_id:last_id]
+    
+    change_list = []
+    for c in changes:
+        try:
+            access = '<a href="/titles/%d">%s</a>' % (c.title_id, unicode(c.title)) 
+        except AttributeError:
+            access = '<a href="/roles/%d">%s</a>' % (c.role_id, unicode(c.role))
+        
+        change = [
+            c.new,
+            access,
+            print_time_min(c.date)
+        ] 
+
+        change_list.append(change)
+    
+    return count, change_list
 
 
 

@@ -11,6 +11,7 @@ $('#members_table thead th').click(function(event) {
 // dataTable setup
 $(document).ready(function() {
 	table = $('#members_table').dataTable( {
+		"sPaginationType": "full_numbers",
 		"bProcessing": true,
 		"bServerSide": true,
         "bAutoWidth": false,

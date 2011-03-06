@@ -6,7 +6,7 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-from ism.view import home, members, assets, assets_diff, titles, common
+from ism.view import home, members, assets, assets_diff, titles, common, roles
 from ism import settings
 
 from django.conf.urls.defaults import patterns, include
@@ -36,7 +36,10 @@ urlpatterns = patterns('',
     (r'^members/all_data$',                         members.all_data),
     (r'^members/history$',                          members.history),
     (r'^members/history_data$',                     members.history_data),
+    (r'^members/access_changes$',                   members.access_changes),
+    (r'^members/access_changes_data$',              members.access_changes_data),
     (r'^members/(\d+)$',                            members.details),
+    (r'^members/(\d+)/access_changes_data',         members.access_changes_member_data),
    #(r'^members/search$',                           members.search),
     
     (r'^titles$',                                   titles.all),
@@ -46,6 +49,9 @@ urlpatterns = patterns('',
     (r'^titles/(\d+)/compo_diff_data$',             titles.compo_diff_data),
     (r'^titles/(\d+)/members$',                     titles.members),
     (r'^titles/(\d+)/members_data$',                titles.members_data),
+    
+    (r'^roles$',                                    roles.all),
+    (r'^roles/general$',                            roles.general),
     
     (r'^assets$',                                   assets.stations),
     (r'^assets/(\d+)$',                             assets.hangars),

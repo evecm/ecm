@@ -5,7 +5,14 @@
 
 
 {% block header_scripts %}
+<script type="text/javascript" src="/static/js/lib/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
 
+<script type="text/javascript">
+const member_id = "{{ member.characterID }}";
+</script>
+
+<script type="text/javascript" src="/static/js/member_access_changes_table.js"></script>
 {% endblock %}
 
 
@@ -16,7 +23,7 @@
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle {%if not member.corped %}error{% endif %}">{{ member.name }}</h1>
+<h1 class="pagetitle {%if not member.corped %}error{% endif %}">{{ member.name }}{%if not member.corped %} NOT CORPED{% endif %}</h1>
 <p class="italic" >{{ member.nickname }}</p>
 
 <table class="transparent">
@@ -30,7 +37,7 @@
             <span class="bold">Last Login:</span> {{ member.lastLogin }}<br/>
             <span class="bold">Last Logoff:</span> {{ member.lastLogoff }}
             </p>
-            <p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ scan_date }}</p>
+            <p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ member.date }}</p>
         </td>
     </tr>
 </table>
@@ -70,26 +77,40 @@ None
       </ul>
     </td>
     <td>
-      <h2>Titles Changes</h2>
+      <h2>Extra Roles</h2>
       <ul>
-      {% for change in member.title_changes %}
-        <li class="{% if change.new %}green{% else %}red{% endif %}">{{ change.title }}
-          <span class="time">- {{ change.date }}</span></li>
+      {% for role in member.roles %}
+        <li>{{ role }}</li>
         {% empty %}
-        <p>No titles changes</p>
+        <p>No extra roles</p>
       {% endfor %}
       </ul>
     </td>
   </tr>
 </table>
 
-<h2>Extra Roles</h2>
-<ul>
-{% for role in member.roles %}
-<li>{{ role }}</li>
-{% empty %}
-<p>No extra roles</p>
-{% endfor %}
-</ul>
+<h2>Security Access Changes</h2>
+
+<table class="table display" id="access_changes_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" >Change</th>
+      <th class="top" scope="col" >Title/Role</th>
+      <th class="top" scope="col" >Date</th>
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Change</th>
+      <th>Title/Role</th>
+      <th>Date</th>
+    </tr>
+  </tfoot>
+</table>
 
 {% endblock %}

@@ -8,7 +8,7 @@
 <script type="text/javascript" src="/static/js/lib/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
 
-<script type="text/javascript" src="/static/js/history_table.js"></script>
+<script type="text/javascript" src="/static/js/access_changes_table.js"></script>
 {% endblock %}
 
 
@@ -16,7 +16,7 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/members">Members</a></li>
-<li><a href="/members/history">History</a></li>
+<li><a href="/members/access_changes">Security Access Changes</a></li>
 {% endblock %}
 
 
@@ -24,31 +24,30 @@
 
 
 {% block main_content %}
-<h1 class="pagetitle">Members History <span class="time">- last update {{ scan_date }}</span></h1>
+<h1 class="pagetitle">Security Access Changes <span class="time">- last update {{ scan_date }}</span></h1>
 
-<table class="table display" id="history_table">
+<table class="table display" id="access_changes_table">
   <thead> 
     <tr>
-      <th class="top" scope="col" >Corped/Leaved</th>
-      <th class="top" scope="col" >Name</th>
-      <th class="top" scope="col" >Nickname</th>
+      <th class="top" scope="col" >Change</th>
+      <th class="top" scope="col" >Member</th>
+      <th class="top" scope="col" >Title/Role</th>
       <th class="top" scope="col" >Date</th>
     </tr>
   </thead>
   <tbody> 
     <tr>
-      <td colspan="4" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
     </tr>
   </tbody> 
   <tfoot> 
     <tr>
-      <th>Corped/Leaved</th>
-      <th>Name</th>
-      <th>Nickname</th>
+      <th>Change</th>
+      <th>Member</th>
+      <th>Title/Role</th>
       <th>Date</th>
     </tr>
   </tfoot>
-
 </table>
 
 

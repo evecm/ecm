@@ -17,6 +17,7 @@
 
 /* MAIN CONTENT */
 .main-content h1.pagetitle {margin:0 0 0.4em 0; padding:0 0 2px 0; border-bottom:solid 7px rgb(225,225,225); font-family:"trebuchet ms",arial,sans-serif; color:rgb(100,100,100); font-weight:bold; font-size:220%;}
+.main-content h1.pagetitle.error{color:#fff; background-color:#f00; padding:0 0 2px 4px; }
 .main-content h1.block {clear:both; margin:1.0em 0 0em 0; padding:2px 0 2px 2px; background:rgb(190,190,190); font-family:"trebuchet ms",arial,sans-serif; color:rgb(255,255,255); font-weight:bold; font-size:220%;}
 .main-content h1 {clear:both; margin:1.0em 0 0.5em 0; font-family:"trebuchet ms",arial,sans-serif; color:rgb(80,80,80); font-weight:normal; font-size:210%;}
 .main-content h2 {clear:both; margin:1.0em 0 0.5em 0; font-family:"trebuchet ms",arial,sans-serif; color:rgb(80,80,80); font-weight:normal; font-size:170%;}
@@ -36,7 +37,7 @@
 .bold{font-weight:bold;}
 .italic{font-style:italic;}
 .time{color:#aaa;}
-.error{color:#fff; background-color:f00;}
+
 
 /**********/
 /* TABLES */

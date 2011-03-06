@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.text import truncate_words
 from django.http import HttpResponse
 
-from ism.data.roles.models import TitleComposition, Title, TitleCompoDiff, Member
+from ism.data.roles.models import TitleComposition, Title, TitleCompoDiff, TitleMembership, Member
 from ism.data.common.models import UpdateDate, ColorThreshold
 from ism.core import utils
 from ism.core.utils import print_time_min, print_date, getAccessColor
@@ -43,12 +43,8 @@ all_columns = [ "titleName", "accessLvl" ]
 @csrf_protect
 def all_data(request):
     sEcho = int(request.GET["sEcho"])
-    try:
-        column = int(request.GET["iSortCol_0"])
-        ascending = (request.GET["sSortDir_0"] == "asc")
-    except:
-        column = 0
-        ascending = True
+    column = int(request.GET["iSortCol_0"])
+    ascending = (request.GET["sSortDir_0"] == "asc")
 
     titles = getTitles(sort_by=all_columns[column], asc=ascending)
     json_data = {
@@ -74,7 +70,7 @@ def getTitles(sort_by="titleID", asc=True):
     titlesDb = titlesDb.extra(order_by=[sort_col])
 
     # fetch the number of members having each title
-    titlesDb = titlesDb.extra(select={"title_members" : "SELECT COUNT(*) FROM roles_titlemembership WHERE roles_titlemembership.title_id = roles_title.titleID"})
+    titlesDb = titlesDb.extra(select={"title_members" : "SELECT COUNT(*) FROM roles_titlemembership, roles_member WHERE roles_titlemembership.title_id = roles_title.titleID AND roles_titlemembership.member_id = roles_member.characterID AND roles_member.corped = 1"})
 
     titles = []
     for t in titlesDb:
@@ -126,18 +122,11 @@ composition_columns = [ "role_id" ]
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
 @csrf_protect
 def composition_data(request, id):
-    try:
-        iDisplayStart = int(request.GET["iDisplayStart"])
-        iDisplayLength = int(request.GET["iDisplayLength"])
-        sEcho = int(request.GET["sEcho"])
-        try:
-            column = int(request.GET["iSortCol_0"])
-            ascending = (request.GET["sSortDir_0"] == "asc")
-        except:
-            column = 0
-            ascending = True
-    except:
-        pass
+    iDisplayStart = int(request.GET["iDisplayStart"])
+    iDisplayLength = int(request.GET["iDisplayLength"])
+    sEcho = int(request.GET["sEcho"])
+    column = int(request.GET["iSortCol_0"])
+    ascending = (request.GET["sSortDir_0"] == "asc")
 
     total_compos, composition = getTitleComposition(id=int(id),
                                                     first_id=iDisplayStart,
@@ -195,18 +184,11 @@ diff_columns = [ "new", "role_id", "roleType", "date" ]
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
 @csrf_protect
 def compo_diff_data(request, id):
-    try:
-        iDisplayStart = int(request.GET["iDisplayStart"])
-        iDisplayLength = int(request.GET["iDisplayLength"])
-        sEcho = int(request.GET["sEcho"])
-        try:
-            column = int(request.GET["iSortCol_0"])
-            ascending = (request.GET["sSortDir_0"] == "asc")
-        except:
-            column = 0
-            ascending = True
-    except:
-        pass
+    iDisplayStart = int(request.GET["iDisplayStart"])
+    iDisplayLength = int(request.GET["iDisplayLength"])
+    sEcho = int(request.GET["sEcho"])
+    column = int(request.GET["iSortCol_0"])
+    ascending = (request.GET["sSortDir_0"] == "asc")
 
     total_diffs, diffs = getTitleCompoDiff(id=int(id),
                                            first_id=iDisplayStart,
@@ -286,18 +268,11 @@ members_columns = [
 @cache_page(60 * 60 * 15) # 1 hour cache
 @csrf_protect
 def members_data(request, id):
-    try:
-        iDisplayStart = int(request.GET["iDisplayStart"])
-        iDisplayLength = int(request.GET["iDisplayLength"])
-        sEcho = int(request.GET["sEcho"])
-        try:
-            column = int(request.GET["iSortCol_0"])
-            ascending = (request.GET["sSortDir_0"] == "asc")
-        except:
-            column = 0
-            ascending = True
-    except:
-        pass
+    iDisplayStart = int(request.GET["iDisplayStart"])
+    iDisplayLength = int(request.GET["iDisplayLength"])
+    sEcho = int(request.GET["sEcho"])
+    column = int(request.GET["iSortCol_0"])
+    ascending = (request.GET["sSortDir_0"] == "asc")
 
     total_members, members = getMembers(titleID=int(id),
                                         first_id=iDisplayStart, 
@@ -321,11 +296,9 @@ def getMembers(titleID, first_id, last_id, sort_by="name", asc=True):
 
     sort_col = "%s_nocase" % sort_by
     
-    members = Member.objects.filter(corped=True)
+    member_ids = TitleMembership.objects.filter(title=titleID).values_list("member", flat=True)
 
-    members = members.extra(where=["characterID=roles_titlemembership.member_id", 
-                                   "roles_titlemembership.title_id=%d" % titleID], 
-                            tables=["roles_titlemembership"])
+    members = Member.objects.filter(characterID__in=member_ids).filter(corped=True)
 
     # SQLite hack for making a case insensitive sort
     members = members.extra(select={sort_col : "%s COLLATE NOCASE" % sort_by})
