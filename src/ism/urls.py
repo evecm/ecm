@@ -6,12 +6,28 @@ Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-from ism.view import home, members, assets, assets_diff, titles, common, roles
-from ism import settings
-
 from django.conf.urls.defaults import patterns, include
-from django.views import static
 from django.contrib import admin
+from django.views import static
+from ism import settings
+from ism.view import home, common
+from ism.view.members import access as member_access,\
+                             details as member_details,\
+                             history as member_history,\
+                             list as member_list
+from ism.view.titles import details as title_details,\
+                            list as title_list,\
+                            members as title_members,\
+                            changes as title_changes
+from ism.view.roles import list as role_list,\
+                           details as role_details
+from ism.view.assets import normal as asset_normal,\
+                            diff as asset_diff
+
+
+
+ 
+
 admin.autodiscover()
 
 DATE = r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})"
@@ -31,40 +47,49 @@ urlpatterns = patterns('',
     
     (r'^$',                                         home.home),
     (r'^corp$',                                     common.corp),
+    
+    (r'^cron$',                                     common.trigger_scheduler),
+    (r'^tasks$',                                    common.task_list),
+    (r'^tasks/launch/([^/]+)$',                     common.launch_task),
 
-    (r'^members$',                                  members.all),
-    (r'^members/all_data$',                         members.all_data),
-    (r'^members/history$',                          members.history),
-    (r'^members/history_data$',                     members.history_data),
-    (r'^members/access_changes$',                   members.access_changes),
-    (r'^members/access_changes_data$',              members.access_changes_data),
-    (r'^members/(\d+)$',                            members.details),
-    (r'^members/(\d+)/access_changes_data',         members.access_changes_member_data),
-   #(r'^members/search$',                           members.search),
+    (r'^members$',                                  member_list.all),
+    (r'^members/data$',                             member_list.all_data),
+    (r'^members/history$',                          member_history.history),
+    (r'^members/history/data$',                     member_history.history_data),
+    (r'^members/access_changes$',                   member_access.access_changes),
+    (r'^members/access_changes/data$',              member_access.access_changes_data),
+    (r'^members/(\d+)$',                            member_details.details),
+    (r'^members/(\d+)/access_changes_data',         member_details.access_changes_member_data),
     
-    (r'^titles$',                                   titles.all),
-    (r'^titles/all_data$',                          titles.all_data),
-    (r'^titles/(\d+)$',                             titles.details),
-    (r'^titles/(\d+)/composition_data$',            titles.composition_data),
-    (r'^titles/(\d+)/compo_diff_data$',             titles.compo_diff_data),
-    (r'^titles/(\d+)/members$',                     titles.members),
-    (r'^titles/(\d+)/members_data$',                titles.members_data),
+    (r'^titles$',                                   title_list.all),
+    (r'^titles/data$',                              title_list.all_data),
+    (r'^titles/changes$',                           title_changes.changes),
+    (r'^titles/changes/data$',                      title_changes.changes_data),
+    (r'^titles/(\d+)$',                             title_details.details),
+    (r'^titles/(\d+)/composition_data$',            title_details.composition_data),
+    (r'^titles/(\d+)/compo_diff_data$',             title_details.compo_diff_data),
+    (r'^titles/(\d+)/members$',                     title_members.members),
+    (r'^titles/(\d+)/members/data$',                title_members.members_data),
     
-    (r'^roles$',                                    roles.all),
-    (r'^roles/general$',                            roles.general),
+    (r'^roles$',                                    role_list.root),
+    (r'^roles/update$',                             role_list.update_access_level),
+    (r'^roles/([a-zA-Z_]+)$',                       role_list.role_type),
+    (r'^roles/([a-zA-Z_]+)/data$',                  role_list.role_type_data),
+    (r'^roles/([a-zA-Z_]+)/(\d+)$',                 role_details.role),
+    (r'^roles/([a-zA-Z_]+)/(\d+)/data$',            role_details.role_data),
     
-    (r'^assets$',                                   assets.stations),
-    (r'^assets/(\d+)$',                             assets.hangars),
-    (r'^assets/(\d+)/(\d+)$',                       assets.hangar_contents),
-    (r'^assets/(\d+)/(\d+)/(\d+)$',                 assets.can1_contents),
-    (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)$',           assets.can2_contents),
-    (r'^assets/search$',                            assets.search_items),
+    (r'^assets$',                                   asset_normal.stations),
+    (r'^assets/(\d+)$',                             asset_normal.hangars),
+    (r'^assets/(\d+)/(\d+)$',                       asset_normal.hangar_contents),
+    (r'^assets/(\d+)/(\d+)/(\d+)$',                 asset_normal.can1_contents),
+    (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)$',           asset_normal.can2_contents),
+    (r'^assets/search$',                            asset_normal.search_items),
 
-    (r'^assets/changes$',                           assets_diff.last_stations),
-    (r'^assets/changes/' + DATE + '$',              assets_diff.stations),
-    (r'^assets/changes/' + DATE + '/(\d+)$',        assets_diff.hangars),
-    (r'^assets/changes/' + DATE + '/(\d+)/(\d+)$',  assets_diff.hangar_contents),
-    (r'^assets/changes/' + DATE + '/search$',       assets_diff.search_items),
+    (r'^assets/changes$',                           asset_diff.last_stations),
+    (r'^assets/changes/' + DATE + '$',              asset_diff.stations),
+    (r'^assets/changes/' + DATE + '/(\d+)$',        asset_diff.hangars),
+    (r'^assets/changes/' + DATE + '/(\d+)/(\d+)$',  asset_diff.hangar_contents),
+    (r'^assets/changes/' + DATE + '/search$',       asset_diff.search_items),
 
     # STATIC FILES SERVING FOR THE DEVELOPMENT SERVER
     (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], static.serve, {'document_root' : settings.MEDIA_ROOT}),

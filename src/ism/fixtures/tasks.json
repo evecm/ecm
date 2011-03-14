@@ -1,0 +1,74 @@
+[
+  {
+    "pk": "ism.core.parsers.membertrack.update",
+    "model": "scheduler.scheduledtask",
+    "fields": {
+      "is_active": true,
+      "is_running": false,
+      "priority": 30,
+      "frequency": 2,
+      "frequency_units": 3600,
+      "next_execution": "2011-03-10 23:30:39"
+    }
+  },
+  {
+    "pk": "ism.core.parsers.membersecu.update",
+    "model": "scheduler.scheduledtask",
+    "fields": {
+      "is_active": true,
+      "is_running": false,
+      "priority": 12,
+      "frequency": 2,
+      "frequency_units": 3600,
+      "next_execution": "2011-03-10 23:30:52"
+    }
+  },
+  {
+    "pk": "ism.core.parsers.assets.update",
+    "model": "scheduler.scheduledtask",
+    "fields": {
+      "is_active": true,
+      "is_running": false,
+      "priority": 0,
+      "frequency": 6,
+      "frequency_units": 3600,
+      "next_execution": "2011-03-11 03:24:13"
+    }
+  },
+  {
+    "pk": "ism.core.parsers.corp.update",
+    "model": "scheduler.scheduledtask",
+    "fields": {
+      "is_active": true,
+      "is_running": false,
+      "priority": 0,
+      "frequency": 12,
+      "frequency_units": 3600,
+      "next_execution": "2011-03-11 09:10:25"
+    }
+  },
+  {
+    "pk": "ism.core.parsers.outposts.update",
+    "model": "scheduler.scheduledtask",
+    "fields": {
+      "is_active": true,
+      "is_running": false,
+      "priority": 0,
+      "frequency": 12,
+      "frequency_units": 3600,
+      "next_execution": "2011-03-11 09:22:04"
+    }
+  },
+  {
+    "pk": "ism.core.parsers.titles.update",
+    "model": "scheduler.scheduledtask",
+    "fields": {
+      "is_active": true,
+      "is_running": false,
+      "priority": 0,
+      "frequency": 6,
+      "frequency_units": 3600,
+      "next_execution": "2011-03-11 03:30:13"
+    }
+  }
+]

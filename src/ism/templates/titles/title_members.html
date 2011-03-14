@@ -5,7 +5,9 @@
 {% block header_scripts %}
 <script type="text/javascript" src="/static/js/lib/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
-
+<script type="text/javascript" src="/static/js/access_color.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/jquery.cluetip.css" />
+<script type="text/javascript" src="/static/js/lib/jquery.cluetip.js"></script>
 <script type="text/javascript">
 const colorThresholds = {{ colorThresholds|safe }};
 const title_id = {{ title.titleID }};
@@ -36,11 +38,13 @@ const title_id = {{ title.titleID }};
       <th class="top" scope="col" >Last Login</th>
       <th class="top" scope="col" >Location</th>
       <th class="top" scope="col" >Ship</th>
+      <th class="top" scope="col" style="display:none;">Titles</th>
+      <th class="top" scope="col" style="display:none;">Roles</th>
     </tr>
   </thead>
   <tbody> 
     <tr>
-      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="10" class="dataTables_empty">Loading data from server...</td>
     </tr>
   </tbody> 
   <tfoot> 
@@ -53,8 +57,11 @@ const title_id = {{ title.titleID }};
       <th>Last Login</th>
       <th>Location</th>
       <th>Ship</th>
+      <th style="display:none;">Titles</th>
+      <th style="display:none;">Roles</th>
     </tr>
   </tfoot>
+
 </table>
 
 {% endblock %}

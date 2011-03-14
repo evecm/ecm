@@ -23,14 +23,13 @@ $(document).ready(function() {
 		"sAjaxSource": "/titles/" + title_id + "/composition_data",
         "sDom": 'lprtip',
         "aoColumns": [
-            { "sTitle": "Role",    "sWidth": "40%", "sType": "string"  },
-            { "sTitle": "Category",     "sWidth": "40%", "sType": "string", "bSortable" : false},
-            { "sTitle": "Access Level", "sWidth": "20%", "sType": "numeric", "bSortable" : false }
+            { "sTitle": "Role",    		"sWidth": "75%", "sType": "html" , 	"bSortable" : false },
+            { "sTitle": "Access Level", "sWidth": "25%", "sType": "numeric", "bSortable" : false }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             // apply color to all access level cells
-            accessLvl = aData[2];
-            $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl));
+            accessLvl = aData[1];
+            $('td:eq(1)', nRow).addClass("row-" + getAccessColor(accessLvl, colorThresholds));
             return nRow;
         }
     } );
@@ -49,10 +48,9 @@ $(document).ready(function() {
 		"sAjaxSource": "/titles/" + title_id + "/compo_diff_data",
         "sDom": 'lprtip',
         "aoColumns": [
-            { "sTitle": "Change",       "sWidth": "10%", "sType": "string" },
-            { "sTitle": "Role",    "sWidth": "40%", "sType": "string" },
-            { "sTitle": "Category",     "sWidth": "30%", "sType": "string" },
-            { "sTitle": "Access Level", "sWidth": "20%", "sType": "numeric" }
+            { "sTitle": "Change",       "sWidth": "10%", "sType": "html"  , 	"bSortable" : false},
+            { "sTitle": "Role",    		"sWidth": "65%", "sType": "html"  , 	"bSortable" : false},
+            { "sTitle": "Modification Date", "sWidth": "25%", "sType": "numeric"  , 	"bSortable" : false}
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             if (aData[0] == "true") {
@@ -65,14 +63,3 @@ $(document).ready(function() {
     } );
 
 } );
-
-// utility function for getting color from access level
-function getAccessColor(accessLvl) {
-    for (var i=0 ; i < colorThresholds.length ; i++) {
-        if (accessLvl <= colorThresholds[i]["threshold"]) {
-            return colorThresholds[i]["color"];
-        }
-    }
-    return colorThresholds[0]["color"]
-}
-

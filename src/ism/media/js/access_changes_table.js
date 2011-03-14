@@ -8,7 +8,7 @@ $(document).ready(function() {
         "iDisplayLength": 25,
         "bStateSave": true,
         "iCookieDuration": 60*60*24,
-		"sAjaxSource": "/members/access_changes_data",
+		"sAjaxSource": "/members/access_changes/data",
         "sDom": 'lprtip',
         "aoColumns": [
 			{ "sTitle": "Change",		"sWidth": "10%", "sType": "html" ,  "bSortable": false },

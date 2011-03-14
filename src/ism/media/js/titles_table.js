@@ -12,7 +12,7 @@ $(document).ready(function() {
 		"bServerSide": true,
         "bAutoWidth": false,
         "iDisplayLength": 25,
-		"sAjaxSource": "/titles/all_data",
+		"sAjaxSource": "/titles/data",
         "sDom": 'rt',
         "aoColumns": [
             { "sTitle": "Title Name",    "sWidth": "40%", "sType": "html" },
@@ -24,21 +24,9 @@ $(document).ready(function() {
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             /* apply color to all access level cells */
             accessLvl = aData[1];
-            $('td:eq(1)', nRow).addClass("row-" + getAccessColor(accessLvl));
+            $('td:eq(1)', nRow).addClass("row-" + getAccessColor(accessLvl, colorThresholds));
             return nRow;
 		}
     } );
 
 } );
-
-
-// utility function for getting color from access level
-function getAccessColor(accessLvl) {
-    for (var i=0 ; i < colorThresholds.length ; i++) {
-        if (accessLvl <= colorThresholds[i]["threshold"]) {
-            return colorThresholds[i]["color"];
-        }
-    }
-    return colorThresholds[0]["color"]
-}
-

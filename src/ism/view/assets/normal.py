@@ -14,21 +14,17 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 
 from ism.core import db, utils
-from ism.data.common.models import UpdateDate
 from ism.data.assets.models import DbAsset
 from ism.data.corp.models import Hangar
 from ism import settings
 from django.views.decorators.csrf import csrf_protect
+from ism.view import getScanDate
 
 SQL_STATIONS = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset GROUP BY locationID;"
 SQL_STATIONS_FILTERED = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset WHERE hangarID in %s GROUP BY locationID;"
 SQL_HANGARS = "SELECT itemID, hangarID, count(*) AS items FROM assets_dbasset WHERE locationID=%d GROUP BY hangarID ORDER BY hangarID;"
 SQL_HANGARS_FILTERED = "SELECT itemID, hangarID, count(*) AS items FROM assets_dbasset WHERE locationID=%d AND hangarID in %s GROUP BY hangarID ORDER BY hangarID;"
 
-HANGAR = {}
-for h in Hangar.objects.all():
-    HANGAR[h.hangarID] = h.name
-    
 CATEGORY_ICONS = { 2 : "can" , 
                    4 : "mineral" , 
                    6 : "ship" , 
@@ -55,8 +51,8 @@ def stations(request):
                  'divisions' : divisions, # divisions to show
              'divisions_str' : divisions_str,
                    'hangars' : all_hangars,
-                 'scan_date' : getScanDate() }
-    return render_to_response("assets.html", data, context_instance=RequestContext(request))
+                 'scan_date' : getScanDate(DbAsset.__name__) }
+    return render_to_response("assets/assets.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
@@ -143,7 +139,7 @@ def getStationHangars(stationID, divisions):
     hangar_list = []
     for h in raw_list:
         hangar = {}
-        hangar["data"] = '<b>%s</b><i> - (%d item%s)</i>' % (HANGAR[h.hangarID], h.items, pluralize(h.items))
+        hangar["data"] = '<b>%s</b><i> - (%d item%s)</i>' % (h.name, h.items, pluralize(h.items))
         id = "_%d_%d" % (stationID, h.hangarID) 
         hangar["attr"] = { "id" : id , "rel" : "hangar" , "href" : "" }
         hangar["state"] = "closed"
@@ -245,8 +241,3 @@ def search(search_string, divisions):
 
     return json_data
 
-#------------------------------------------------------------------------------
-def getScanDate():
-    date = UpdateDate.objects.get(model_name=DbAsset.__name__) 
-    return utils.print_time_min(date.update_date)
-#------------------------------------------------------------------------------

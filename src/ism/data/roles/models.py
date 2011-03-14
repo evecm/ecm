@@ -30,33 +30,33 @@ class Member(models.Model):
 
     def getTitles(self):
         ids = TitleMembership.objects.filter(member=self).values_list("title", flat=True)
-        return list(Title.objects.filter(titleID__in=ids))
+        return Title.objects.filter(titleID__in=ids)
     
     def getRoles(self, ignore_director=False):
         if ignore_director:
             ids = RoleMembership.objects.filter(member=self).exclude(role__roleID=1).values_list("role", flat=True)
         else:
             ids = RoleMembership.objects.filter(member=self).values_list("role", flat=True)
-        return list(Role.objects.filter(id__in=ids))
+        return Role.objects.filter(id__in=ids)
     
     def getImpliedRoles(self):
         roles = self.getRoles()
         for t in self.getTitles():
-            for r in t.getRoles():
-                if r not in roles:
-                    roles.append(r)
-        return roles
+            roles |= t.getRoles()
+        
+        return roles.distinct()
     
     def isDirector(self):
-        roles = RoleMembership.objects.filter(member=self, role__roleID=1)
-        return len(roles) > 0
+        return RoleMembership.objects.filter(member=self, role__roleID=1).count() > 0
     
     def getAccessLvl(self):
-        if self.isDirector():
-            return self.DIRECTOR_ACCESS_LVL
-        roles = self.getImpliedRoles()
         lvl = 0
-        for r in roles: lvl += r.getAccessLvl()
+        if self.isDirector():
+            lvl = self.DIRECTOR_ACCESS_LVL
+        else:
+            roles = self.getImpliedRoles()
+            for r in roles: 
+                lvl += r.getAccessLvl()
         return lvl
 
     def getTitleChanges(self):
@@ -137,11 +137,15 @@ class Role(models.Model):
         elif self.wallet: return self.wallet.accessLvl
         else:             return self.accessLvl
     
-    def getTitles(self):
-        t_compos = TitleComposition.objects.filter(role=self)
-        ids = [ tc.title_id for tc in t_compos ]
-        return Title.objects.filter(titleID__in=ids)
-    
+    def getMembersThroughTitles(self, with_direct_roles=False):
+        if with_direct_roles:
+            members = self.members.all()
+        else:
+            members = Member.objects.none()
+        for title in self.titles.all(): 
+            members |= title.members.all()
+        return members.distinct()
+            
     def __hash__(self):
         return self.id
     
@@ -195,7 +199,10 @@ class RoleMembership(models.Model):
         except: return False
     
     def __unicode__(self):
-        return '%s has %s (%s)' % (unicode(self.member), unicode(self.role), unicode(self.role.roleType))
+        try:
+            return u'%s has %s (%s)' % (unicode(self.member), unicode(self.role), unicode(self.role.roleType))
+        except:
+            return u'member_id:%d has %s (%s)' % (self.member_id, unicode(self.role), unicode(self.role.roleType))
     
 #------------------------------------------------------------------------------
 class TitleMembership(models.Model):
@@ -216,7 +223,10 @@ class TitleMembership(models.Model):
         try: return self.member == other.member and self.title == other.title
         except: return False
     def __unicode__(self):
-        return unicode(self.member) + u' is ' + unicode(self.title)
+        try:
+            return unicode(self.member) + u' is ' + unicode(self.title)
+        except:
+            return u'member_id:%d is %s' % (self.member_id, str(self.title))
     
 #------------------------------------------------------------------------------
 class TitleComposition(models.Model):
@@ -286,8 +296,12 @@ class TitleMemberDiff(models.Model, Diff):
     date = models.DateTimeField(db_index=True, default=datetime.now())
 
     def __unicode__(self):
-        if self.new: return '%s got %s' % (self.member.name, self.title.titleName)
-        else       : return '%s lost %s' % (self.member.name, self.title.titleName)
+        try: 
+            membername = self.member.name
+        except: 
+            membername = str(self.member_id)
+        if self.new: return '%s got %s' % (membername, self.title.titleName)
+        else       : return '%s lost %s' % (membername, self.title.titleName)
     
 #------------------------------------------------------------------------------
 class RoleMemberDiff(models.Model, Diff):
@@ -299,6 +313,10 @@ class RoleMemberDiff(models.Model, Diff):
     date = models.DateTimeField(db_index=True, default=datetime.now())
     
     def __unicode__(self):
-        if self.new: return '%s got %s' % (self.member.name, self.role.dispName)
-        else       : return '%s lost %s' % (self.member.name, self.role.dispName)
+        try: 
+            membername = self.member.name
+        except: 
+            membername = str(self.member_id)
+        if self.new: return '%s got %s' % (membername, self.role.name)
+        else       : return '%s lost %s' % (membername, self.role.name)
 

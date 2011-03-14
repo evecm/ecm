@@ -58,7 +58,7 @@ def update(cache=False):
         try:
             # try to retrieve the db stored corp info
             corp = Corp.objects.get(id=1)
-            corporationID=corpApi.corporationID
+            corp.corporationID   = corpApi.corporationID
             corp.corporationName = corpApi.corporationName
             corp.ticker          = corpApi.ticker
             corp.ceoID           = corpApi.ceoID

@@ -23,6 +23,7 @@
     <input type="text" id="search_text" value="" />
     <input type="button" class="button" id="search_button" value="Search" />
     <input type="button" class="button" id="clear_search" value="Reset" />
+    <input type="button" class="button" id="expand_all"   value="Expand All" />
     <input type="button" class="button" id="close_all"   value="Close All" />
 </form>
 
@@ -201,6 +202,10 @@ $("#search_form").submit(function() {
 $("#clear_search").click(function() {
     document.getElementById("search_text").value = "";
     $("#assets_tree").jstree("clear_search");
+});
+
+$("#expand_all").click(function() {
+    $("#assets_tree").jstree("open_all");
 });
 
 $("#close_all").click(function() {

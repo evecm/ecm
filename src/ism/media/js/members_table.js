@@ -18,7 +18,7 @@ $(document).ready(function() {
         "iDisplayLength": 25,
         "bStateSave": true,
         "iCookieDuration": 60*60*24,
-		"sAjaxSource": "/members/all_data",
+		"sAjaxSource": "/members/data",
         "sDom": 'lprtip',
         "aoColumns": [
             { "sTitle": "Name",         "sWidth": "25%", "sType": "html" },
@@ -38,7 +38,7 @@ $(document).ready(function() {
             if ( accessLvl == director_access_lvl ) {
 				$('td:eq(2)', nRow).html( '<b>DIRECTOR</b>' );
             }
-            $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl));
+            $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl, colorThresholds));
             if (aData[3] > 0) {
                 $('td:eq(3)', nRow).addClass("row-red");
             }
@@ -90,14 +90,4 @@ $(document).ready(function() {
     });
 
 } );
-
-// utility function for getting color from access level
-function getAccessColor(accessLvl) {
-    for (var i=0 ; i < colorThresholds.length ; i++) {
-        if (accessLvl <= colorThresholds[i]["threshold"]) {
-            return colorThresholds[i]["color"];
-        }
-    }
-    return colorThresholds[0]["color"]
-}
 

@@ -29,16 +29,16 @@
         </ul>
       </td>
       <td>
-        <h1><a href="/members/accesschanges">Last Access Changes</a></h1>
+        <h1><a href="/members/access_changes">Last Access Changes</a></h1>
         <ul>
         {% for a in last_access_changes %}
           <li class="{% if a.new %}green{% else %}red{% endif %}">
-                               <a href="/members/{{ a.member_id }}">{{ a.member }}</a>
+                               <a href="{{ a.member_url }}">{{ a.member_name }}</a>
                                <span> {% if a.new %}got{% else %}lost{% endif %} </span>
                                {% if a.title_id %}
-                               <a href="/titles/{{ a.title_id }}">{{ a.title }}</a>
+                               <a href="/titles/{{ a.title_id }}" class="title">{{ a.title }}</a>
                                {% else %}
-                               <a href="/roles/{{ a.role_id }}">{{ a.role }}</a>
+                               <a href="/roles/{{ a.role_id }}" class="role">{{ a.role }}</a>
                                {% endif %}
                                <span class="time"> - {{ a.date_str }}</span></li>
         {% endfor %}

@@ -16,7 +16,7 @@ $(document).ready(function() {
 		"bServerSide": true,
         "bAutoWidth": false,
         "iDisplayLength": 25,
-		"sAjaxSource": "/members/history_data",
+		"sAjaxSource": "/members/history/data",
         "sDom": 'lprtip',
         "aoColumns": [
             { "sTitle": "Corped/Leaved","sWidth": "15%", "sType": "html" ,  "bSortable": false },
@@ -49,14 +49,3 @@ $(document).ready(function() {
     });
 
 } );
-
-// utility function for getting color from access level
-function getAccessColor(accessLvl) {
-    for (var i=0 ; i < colorThresholds.length ; i++) {
-        if (accessLvl <= colorThresholds[i]["threshold"]) {
-            return colorThresholds[i]["color"];
-        }
-    }
-    return colorThresholds[0]["color"]
-}
-

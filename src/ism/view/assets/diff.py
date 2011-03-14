@@ -13,14 +13,14 @@ from django.contrib.auth.decorators import user_passes_test
 from django.template.context import RequestContext
 from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
 from ism.core import db, utils
-from ism.data.common.models import UpdateDate
 from ism.data.assets.models import DbAsset, DbAssetDiff
 from ism.data.corp.models import Hangar
 from ism import settings
 from django.views.decorators.csrf import csrf_protect
+from ism.view import getScanDate
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
@@ -43,8 +43,6 @@ def last_stations(request):
 @csrf_protect
 def stations(request, date_str):
     
-    date = datetime.strptime(date_str, DATE_PATTERN)
-    
     all_hangars = Hangar.objects.all()
     try: 
         divisions_str = request.GET["divisions"]
@@ -62,16 +60,22 @@ def stations(request, date_str):
             "show" : utils.print_time_min(d["date"])
         })
 
-    data = {  'station_list' : getStations(date, divisions),
+    date = datetime.strptime(date_str, DATE_PATTERN)
+    stations = getStations(date, divisions)
+
+    data = {  'station_list' : stations,
                  'divisions' : divisions, # divisions to show
              'divisions_str' : divisions_str,
                    'hangars' : all_hangars,
                      'dates' : dates,
                       'date' : utils.print_time_min(date),
                   'date_str' : date_str,
-                 'scan_date' : getScanDate() }
+                 'scan_date' : getScanDate(DbAsset.__name__) }
 
-    return render_to_response("assets_diff.html", data, context_instance=RequestContext(request))
+    if stations:
+        return render_to_response("assets/assets_diff.html", data, context_instance=RequestContext(request))
+    else:
+        return HttpResponseNotFound()
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
@@ -94,8 +98,11 @@ def hangars(request, date_str, stationID):
 @csrf_protect
 def hangar_contents(request, date_str, stationID, hangarID):
     date = datetime.strptime(date_str, DATE_PATTERN)
-    json_data = json.dumps(getHangarContents(date, int(stationID), int(hangarID)))
-    return HttpResponse(json_data)
+    hangar_contents = getHangarContents(date, int(stationID), int(hangarID))
+    if hangar_contents:
+        return HttpResponse(json.dumps(hangar_contents))
+    else:
+        return HttpResponseNotFound()
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
@@ -108,11 +115,14 @@ def search_items(request, date_str):
     try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
     except: divisions = None
     
-    search_string = request.GET.get("search_string", "no-item")
+    search_string = request.GET.get("search_string", None)
     
-    json_data = json.dumps(doSearch(date, search_string, divisions))
+    if not search_string:
+        return HttpResponseBadRequest()
     
-    return HttpResponse(json_data)
+    search_result = doSearch(date, search_string, divisions)
+    
+    return HttpResponse(json.dumps(search_result))
 
 #------------------------------------------------------------------------------
 
@@ -171,7 +181,7 @@ def getHangarContents(date, stationID, hangarID):
     json_data = []
     for i in item_list:
         item = {}
-        name, category = db.resolveTypeName(i.typeID)
+        name = db.resolveTypeName(i.typeID)[0]
         if i.quantity < 0:
             icon = "removed"
         else:
@@ -200,16 +210,5 @@ def doSearch(date, search_string, divisions):
         json_data.append(nodeid)
 
     return json_data
-
-
-
-#------------------------------------------------------------------------------
-def getScanDate():
-    date = UpdateDate.objects.get(model_name=DbAsset.__name__) 
-    return utils.print_time_min(date.update_date)
-#------------------------------------------------------------------------------
-
-
-
 
 

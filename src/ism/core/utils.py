@@ -87,6 +87,17 @@ def isDirector(user):
         return False
 
 #------------------------------------------------------------------------------
+def has_change_permission(user, model):
+    try:
+        g = user.groups.get(name=settings.DIRECTOR_GROUP_NAME)
+        if g:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+#------------------------------------------------------------------------------
 def getAccessColor(accessLvl, colorThresholds):
     for t in colorThresholds:
         if accessLvl <= t.threshold:
@@ -94,24 +105,38 @@ def getAccessColor(accessLvl, colorThresholds):
     return colorThresholds[0].color
 
 
-def merge_lists(list_a, list_b, attribute=None):
+def merge_lists(list_a, list_b, ascending=True, attribute=None):
     merged_list = []
-    a = list_a[:]
-    b = list_b[:]
-    
+    a = list(list_a)
+    b = list(list_b)
+                 
     if attribute:
-        while a and b:
-            if a[-1].__getattr__(attribute) <= b[-1].__getattr__(attribute):
-                merged_list.insert(0, a.pop())
-            else:
-                merged_list.insert(0, b.pop())
+        if ascending:
+            while a and b:
+                if a[0].__getattr__(attribute) < b[0].__getattr__(attribute):
+                    merged_list.append(a.pop(0))
+                else:
+                    merged_list.append(b.pop(0))
+        else:
+            while a and b:
+                if a[0].__getattr__(attribute) > b[0].__getattr__(attribute):
+                    merged_list.append(a.pop(0))
+                else:
+                    merged_list.append(b.pop(0))
     else:
-        while a and b:
-            if a[-1] <= b[-1]:
-                merged_list.insert(0, a.pop())
-            else:
-                merged_list.insert(0, b.pop())
+        if ascending:
+            while a and b:
+                if a[0] < b[0]:
+                    merged_list.append(a.pop(0))
+                else:
+                    merged_list.append(b.pop(0))
+        else:
+            while a and b:
+                if a[0] > b[0]:
+                    merged_list.append(a.pop(0))
+                else:
+                    merged_list.append(b.pop(0))
     
-    merged_list += a if a else b
+    merged_list += a or b
     
     return merged_list

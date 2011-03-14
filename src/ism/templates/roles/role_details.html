@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Role Details - {{ role }}{% endblock %}
+
+
+
+{% block header_scripts %}
+<script type="text/javascript" src="/static/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/static/js/lib/jquery.jeditable.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/jquery.cluetip.css" />
+<script type="text/javascript" src="/static/js/access_color.js"></script>
+
+<script type="text/javascript">
+const colorThresholds = {{ colorThresholds|safe }};
+const role_type = "{{ role.roleType.typeName }}";
+const role_id = "{{ role.roleID }}";
+const role_unique_id = {{ role.id }};
+</script>
+
+<script type="text/javascript" src="/static/js/role_details_table.js"></script>
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/roles">Roles</a></li>
+<li><a href="/roles/{{ role.roleType.typeName }}">{{ role.roleType.dispName }}</a></li>
+<li><a href="/roles/{{ role.roleType.typeName }}/{{ role.roleID }}">{{ role.name }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">{{ role }}</h1>
+
+<p class="italic">{{ role.description }}</p>
+
+<h1>Access Level</h1>
+
+<table class="table" >
+  <tr class="row">
+    <td class="bold" id="access_level_box" title="Click to edit...">{{ role.accessLvl }}</td>
+  </tr>
+</table>
+
+<h1>Members having the role <i>{{ role }}</i></h1>
+
+<ul>
+  <li>
+    <b>Assigned directly:</b>
+    {% if direct_member_count %}
+    {{ direct_member_count }} member{{ direct_member_count|pluralize }}
+    {% else %}
+    None
+    {% endif %}
+  </li>
+  <li>
+    <b>Assigned through titles:</b> 
+    {% if total_member_count %}
+    {{ total_member_count }} member{{ total_member_count|pluralize }}
+    {% else %}
+    None
+    {% endif %}
+  </li>
+</ul>
+
+<form id="search_form" class="search_form"> 
+    <input type="text" id="search_text" value="" /> 
+    <input type="button" class="button" id="search_button" value="Search" /> 
+    <input type="button" class="button" id="clear_search" value="Reset" /> 
+</form> 
+
+<table class="table display" id="members_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" >Name</th>
+      <th class="top" scope="col" >Nickname</th>
+      <th class="top" scope="col" >Access Level</th>
+      <th class="top" scope="col" >Extra Roles</th>
+      <th class="top" scope="col" >Corp Date</th>
+      <th class="top" scope="col" >Last Login</th>
+      <th class="top" scope="col" >Location</th>
+      <th class="top" scope="col" >Ship</th>
+      <th class="top" scope="col" style="display:none;">Titles</th>
+      <th class="top" scope="col" style="display:none;">Roles</th>
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="10" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Name</th>
+      <th>Nickname</th>
+      <th>Access Level</th>
+      <th>Extra Roles</th>
+      <th>Corp Date</th>
+      <th>Last Login</th>
+      <th>Location</th>
+      <th>Ship</th>
+      <th style="display:none;">Titles</th>
+      <th style="display:none;">Roles</th>
+    </tr>
+  </tfoot>
+
+</table>
+
+{% endblock %}

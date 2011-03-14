@@ -98,6 +98,19 @@
               <!--[if lte IE 6]></td></tr></table></a><![endif]-->
             </li>
           </ul>
+          
+          <!-- Navigation item -->
+          <ul>
+            <li><a href="/roles">Roles</a>
+              <!--[if lte IE 6]><table><tr><td><![endif]-->
+                <ul>
+                {% for rt in role_types %}
+                  <li><a href="/roles/{{ rt.typeName }}">{{ rt.dispName }}</a></li>
+                {% endfor %}
+                </ul>
+              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
+            </li>
+          </ul>
 
           <!-- Navigation item -->
           <ul>
@@ -109,6 +122,14 @@
               <!--[if lte IE 6]></td></tr></table></a><![endif]-->
             </li>
           </ul>    
+          
+          {% if user.is_superuser or user.is_staff %}
+                    <!-- Navigation item -->
+          <ul>
+            <li><a href="/tasks">Tasks<!--[if IE 7]><!--></a><!--<![endif]-->
+            </li>
+          </ul>
+          {% endif %}
 
         </div>
 	  </div>

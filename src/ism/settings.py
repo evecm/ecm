@@ -125,7 +125,9 @@ INSTALLED_APPS = (
     'ism.data.corp',
     'ism.data.roles',
     'ism.data.common',
+    'ism.data.scheduler',
 )
 
 
 DIRECTOR_GROUP_NAME = "Dirlos"
+CRON_USERNAME = "cron"

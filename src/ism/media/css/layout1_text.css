@@ -38,6 +38,17 @@
 .italic{font-style:italic;}
 .time{color:#aaa;}
 
+/*.main-content a.title {
+	padding-right: 18px;
+	background: url(../img/icon77_11.png) no-repeat right;
+}*/
+.main-content a.role {
+	padding-right: 18px;
+    background: url(../img/role.png) no-repeat right;
+    
+}
+
+
 
 /**********/
 /* TABLES */
