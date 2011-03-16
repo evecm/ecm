@@ -13,12 +13,12 @@ from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 
-from ism.core import db, utils
-from ism.data.assets.models import DbAsset
-from ism.data.corp.models import Hangar
-from ism import settings
+from esm.core import db, utils
+from esm.data.assets.models import DbAsset
+from esm.data.corp.models import Hangar
+from esm import settings
 from django.views.decorators.csrf import csrf_protect
-from ism.view import getScanDate
+from esm.view import getScanDate
 
 SQL_STATIONS = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset GROUP BY locationID;"
 SQL_STATIONS_FILTERED = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset WHERE hangarID in %s GROUP BY locationID;"
@@ -135,11 +135,15 @@ def getStationHangars(stationID, divisions):
         raw_list = DbAsset.objects.raw(sql)
     else:
         raw_list = DbAsset.objects.raw(SQL_HANGARS % stationID)
-        
+    
+    HANGAR = {}
+    for h in Hangar.objects.all():
+        HANGAR[h.hangarID] = h.name
+    
     hangar_list = []
     for h in raw_list:
         hangar = {}
-        hangar["data"] = '<b>%s</b><i> - (%d item%s)</i>' % (h.name, h.items, pluralize(h.items))
+        hangar["data"] = '<b>%s</b><i> - (%d item%s)</i>' % (HANGAR[h.hangarID], h.items, pluralize(h.items))
         id = "_%d_%d" % (stationID, h.hangarID) 
         hangar["attr"] = { "id" : id , "rel" : "hangar" , "href" : "" }
         hangar["state"] = "closed"

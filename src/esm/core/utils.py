@@ -5,7 +5,7 @@ Created on 16 mai 2010
 @author: diabeteman
 '''
 
-from ism import settings
+from esm import settings
 from django.contrib.auth.models import Group
 
 try:

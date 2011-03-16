@@ -7,7 +7,7 @@ Created on 24 jan. 2010
 '''
 
 
-from ism.data.roles.models import Role, Title, Member, RoleType, RoleMembership, MemberDiff,\
+from esm.data.roles.models import Role, Title, Member, RoleType, RoleMembership, MemberDiff,\
     TitleCompoDiff, TitleMemberDiff, RoleMemberDiff, TitleMembership, TitleComposition
 from django.contrib import admin
 

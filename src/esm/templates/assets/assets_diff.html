@@ -64,13 +64,13 @@ $(function () {
             "select_limit" : 1
         },
         "themes" : {
-            "theme" : "default",
+            "url" : "/static/css/jstree.css",
             "dots" : false
         },
         "search" : {
             "case_insensitive" : true,
             "ajax" : {
-                "url" : "/assets/changes/{{ date_str }}/search{% if divisions %}?divisions={{ divisions_str }}{% endif %}"
+                "url" : "/assets/changes/{{ date_str }}/search?since_weeks={{ since_weeks }}&to_weeks={{ to_weeks }}{% if divisions %}&divisions={{ divisions_str }}{% endif %}"
             }
         },
         "types" : {
@@ -138,8 +138,9 @@ $(function () {
                 "url" : function(node) { 
                     var url = "/assets/changes/{{ date_str }}";
                     url += node.attr ? node.attr("id").replace(/_/g, "/") : "";
+                    url += "?since_weeks={{ since_weeks }}&to_weeks={{ to_weeks }}";
                     {% if divisions %}
-                    url += "?divisions={{ divisions_str }}"; 
+                    url += "&divisions={{ divisions_str }}"; 
                     {% endif %}
                     return url; 
                 }
@@ -188,8 +189,9 @@ $("#expand_all").click(function() {
 $("#filter_divisions").click(function() {
     var divisions = getDivisionsStr();
     var url = "/assets/changes/{{ date_str }}";
+    url += "?since_weeks={{ since_weeks }}&to_weeks={{ to_weeks }}";
     if (divisions.length != 0) {
-        url += "?divisions=" + divisions;
+        url += "&divisions=" + divisions;
     }
     window.location = url;
 });
@@ -201,8 +203,9 @@ $("#reset_filter_divisions").click(function() {
 $("#date_selector").change(function () {
     var divisions = getDivisionsStr();
     var url = "/assets/changes/" + $("#date_selector option:selected").val();
+    url += "?since_weeks={{ since_weeks }}&to_weeks={{ to_weeks }}";
     if (divisions.length != 0) {
-        url += "?divisions=" + divisions;
+        url += "&divisions=" + divisions;
     }
     window.location = url;
 });

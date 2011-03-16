@@ -4,16 +4,16 @@ This file is part of ESM
 Created on 13 mars 2011
 @author: diabeteman
 '''
-from ism.data.roles.models import TitleComposition, TitleCompoDiff, Title
+from esm.data.roles.models import TitleComposition, TitleCompoDiff, Title
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
-from ism import settings
-from ism.core import utils
+from esm import settings
+from esm.core import utils
 from django.http import HttpResponse
 import json
-from ism.data.common.models import ColorThreshold
-from ism.core.utils import getAccessColor
+from esm.data.common.models import ColorThreshold
+from esm.core.utils import getAccessColor
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 

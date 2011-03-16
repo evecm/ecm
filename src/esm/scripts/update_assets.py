@@ -10,6 +10,6 @@ import setenv
 
 # imports and code below
 
-from ism.core.parsers import assets
+from esm.core.parsers import assets
 
 assets.update()

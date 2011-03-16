@@ -6,7 +6,7 @@ Created on 9 mars 2011
 '''
 
 from django.contrib import admin
-from ism.data.scheduler.models import ScheduledTask, GarbageCollector
+from esm.data.scheduler.models import ScheduledTask, GarbageCollector
 
 class ScheduledTaskOptions(admin.ModelAdmin):
     list_display = ["function_admin_display", 

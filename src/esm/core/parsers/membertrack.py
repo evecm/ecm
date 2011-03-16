@@ -5,12 +5,12 @@ Created on 9 feb. 2010
 @author: diabeteman
 '''
 from django.db import transaction
-from ism.data.roles.models import Member, MemberDiff
-from ism.core.api import connection
-from ism.core.api.connection import API
-from ism.core.parsers import utils
-from ism.core.db import resolveLocationName
-from ism import settings
+from esm.data.roles.models import Member, MemberDiff
+from esm.core.api import connection
+from esm.core.api.connection import API
+from esm.core.parsers import utils
+from esm.core.db import resolveLocationName
+from esm import settings
 
 import logging.config
 

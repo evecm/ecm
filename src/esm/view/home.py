@@ -9,10 +9,10 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 
-from ism.data.roles.models import MemberDiff, RoleMemberDiff, Member, TitleMemberDiff
+from esm.data.roles.models import MemberDiff, RoleMemberDiff, Member, TitleMemberDiff
 
 from django.views.decorators.csrf import csrf_protect
-from ism.core import utils
+from esm.core import utils
 
 
 #------------------------------------------------------------------------------

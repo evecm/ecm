@@ -8,16 +8,16 @@ Created on 13 mars 2011
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
-from ism.view import getScanDate
-from ism.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff, TitleComposition,\
+from esm.view import getScanDate
+from esm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff, TitleComposition,\
     TitleCompoDiff
 from django.shortcuts import render_to_response
-from ism.core import utils
-from ism import settings
+from esm.core import utils
+from esm import settings
 from django.template.context import RequestContext
 import json
 from django.http import HttpResponse, HttpResponseBadRequest
-from ism.core.utils import print_time_min
+from esm.core.utils import print_time_min
 
 
 

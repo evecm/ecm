@@ -6,17 +6,17 @@ Created on 23 mar. 2010
 '''
 
 
-from ism.data.assets.models import DbAsset, DbAssetDiff
-from ism.core.api import connection
-from ism.core.api.connection import API
-from ism.core.parsers import utils
-from ism.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
+from esm.data.assets.models import DbAsset, DbAssetDiff
+from esm.core.api import connection
+from esm.core.api.connection import API
+from esm.core.parsers import utils
+from esm.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
                                       HANGAR_FLAG, BOOKMARK_TYPEID,\
                                       NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
                                       CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS
                                       
 from django.db import transaction
-from ism import settings
+from esm import settings
 
 import logging.config
 

@@ -7,7 +7,7 @@ Created on 17 mai 2010
 
 
 from django.contrib import admin
-from ism.data.common.models import UpdateDate, RefType, Outpost, ColorThreshold
+from esm.data.common.models import UpdateDate, RefType, Outpost, ColorThreshold
 from django.contrib.auth.models import Permission
 
 class UpdateDateAdmin(admin.ModelAdmin):

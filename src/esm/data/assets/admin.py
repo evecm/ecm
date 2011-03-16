@@ -6,7 +6,7 @@ Created on 14 mai 2010
 '''
 
 from django.contrib import admin
-from ism.data.assets.models import DbAsset, DbAssetDiff
+from esm.data.assets.models import DbAsset, DbAssetDiff
 
 class DbAssetAdmin(admin.ModelAdmin):
     list_display = ['itemID', 'locationID', 'hangarID', 'container1', 'container2', 

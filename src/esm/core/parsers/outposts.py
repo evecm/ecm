@@ -4,11 +4,11 @@ This file is part of ICE Security Management
 Created on 18 apr. 2010
 @author: diabeteman
 '''
-from ism.core.api import connection
-from ism.core.parsers.utils import checkApiVersion, markUpdated
-from ism.core import db
-from ism.data.common.models import Outpost
-from ism import settings
+from esm.core.api import connection
+from esm.core.parsers.utils import checkApiVersion, markUpdated
+from esm.core import db
+from esm.data.common.models import Outpost
+from esm import settings
 
 from django.db import transaction
 

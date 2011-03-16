@@ -6,7 +6,7 @@ Created on 3 juin 2010
 '''
 
 
-from ism.data.wallets.models import JournalEntry
+from esm.data.wallets.models import JournalEntry
 from django.contrib import admin
 
 #------------------------------------------------------------------------------

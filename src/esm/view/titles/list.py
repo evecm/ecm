@@ -14,11 +14,11 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
 
-from ism.data.roles.models import TitleComposition, Title, TitleCompoDiff
-from ism.data.common.models import ColorThreshold
-from ism.core import utils
-from ism import settings
-from ism.view import getScanDate
+from esm.data.roles.models import TitleComposition, Title, TitleCompoDiff
+from esm.data.common.models import ColorThreshold
+from esm.core import utils
+from esm import settings
+from esm.view import getScanDate
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)

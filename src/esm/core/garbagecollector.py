@@ -8,8 +8,8 @@ from django.db import transaction
 
 
 import logging.config
-from ism import settings
-from ism.data.scheduler.models import GarbageCollector
+from esm import settings
+from esm.data.scheduler.models import GarbageCollector
 
 logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
 logger = logging.getLogger("garbage_collector")

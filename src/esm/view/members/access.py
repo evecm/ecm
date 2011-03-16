@@ -7,15 +7,15 @@ Created on 13 mars 2011
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
-from ism.view import getScanDate
-from ism.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
+from esm.view import getScanDate
+from esm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
 from django.shortcuts import render_to_response
-from ism.core import utils
-from ism import settings
+from esm.core import utils
+from esm import settings
 from django.template.context import RequestContext
 import json
 from django.http import HttpResponse
-from ism.core.utils import print_time_min
+from esm.core.utils import print_time_min
 
 
 
@@ -69,9 +69,9 @@ def getAccessChanges(first_id, last_id):
         try:
             access = '<a href="/titles/%d" class="title">%s</a>' % (c.title_id, unicode(c.title)) 
         except AttributeError:
-            role_type_id = c.role.roleType.id
+            role_type = c.role.roleType.typeName
             role_id = c.role.roleID
-            access = '<a href="/roles/%d/%d" class="role">%s</a>' % (role_type_id, role_id, unicode(c.role))
+            access = '<a href="/roles/%s/%d" class="role">%s</a>' % (role_type, role_id, unicode(c.role))
         
         try:
             member_url = '<a href="/members/%d">%s</a>' % (c.member.characterID, c.member.name)

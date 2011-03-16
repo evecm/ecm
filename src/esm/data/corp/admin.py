@@ -5,7 +5,7 @@ Created on 14 may 2010
 @author: diabeteman
 '''
 from django.contrib import admin, databrowse
-from ism.data.corp.models import Hangar, Wallet
+from esm.data.corp.models import Hangar, Wallet
 
 class HangarAdmin(admin.ModelAdmin):
     list_display = ['hangarID', 'name']

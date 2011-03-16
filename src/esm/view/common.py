@@ -14,15 +14,15 @@ from django.template.context import RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
-from ism.data.corp.models import Corp
-from ism.core.auth import basic_auth_required
-from ism.data.scheduler.models import ScheduledTask
-from ism.data.scheduler.threads import TaskThread
+from esm.data.corp.models import Corp
+from esm.core.auth import basic_auth_required
+from esm.data.scheduler.models import ScheduledTask
+from esm.data.scheduler.threads import TaskThread
 
 import re
 import httplib as http
 from datetime import datetime
-from ism import settings
+from esm import settings
 import time
 
 SHOWINFO_PATTERN = re.compile(r"showinfo:1383//(\d+)", re.IGNORECASE + re.DOTALL)

@@ -5,10 +5,10 @@ Created on 18 mars 2010
 @author: diabeteman
 '''
 
-from ism.core.parsers.assetsconstants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
-from ism import settings
+from esm.core.parsers.assetsconstants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
+from esm import settings
 import sqlite3
-from ism.data.common.models import Outpost
+from esm.data.common.models import Outpost
 import threading
 
 QUERY_ONE_TYPENAME = 'SELECT t.typeName, g.categoryID FROM invTypes t, invGroups g WHERE t.typeID=%d AND t.groupID=g.groupID;'

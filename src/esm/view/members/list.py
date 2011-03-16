@@ -16,13 +16,13 @@ from django.utils.text import truncate_words
 from django.views.decorators.csrf import csrf_protect
 from django.db.models import Q
 
-from ism.core.utils import print_date
-from ism.data.roles.models import Member
-from ism.data.common.models import ColorThreshold
-from ism import settings
-from ism.core import utils
-from ism.view import getScanDate
-from ism.view.members import member_table_columns
+from esm.core.utils import print_date
+from esm.data.roles.models import Member
+from esm.data.common.models import ColorThreshold
+from esm import settings
+from esm.core import utils
+from esm.view import getScanDate
+from esm.view.members import member_table_columns
 
 
 

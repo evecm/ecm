@@ -1,6 +1,6 @@
 [
   {
-    "pk": "ism.core.parsers.membertrack.update",
+    "pk": "esm.core.parsers.membertrack.update",
     "model": "scheduler.scheduledtask",
     "fields": {
       "is_active": true,
@@ -12,7 +12,7 @@
     }
   },
   {
-    "pk": "ism.core.parsers.membersecu.update",
+    "pk": "esm.core.parsers.membersecu.update",
     "model": "scheduler.scheduledtask",
     "fields": {
       "is_active": true,
@@ -24,7 +24,7 @@
     }
   },
   {
-    "pk": "ism.core.parsers.assets.update",
+    "pk": "esm.core.parsers.assets.update",
     "model": "scheduler.scheduledtask",
     "fields": {
       "is_active": true,
@@ -36,7 +36,7 @@
     }
   },
   {
-    "pk": "ism.core.parsers.corp.update",
+    "pk": "esm.core.parsers.corp.update",
     "model": "scheduler.scheduledtask",
     "fields": {
       "is_active": true,
@@ -48,7 +48,7 @@
     }
   },
   {
-    "pk": "ism.core.parsers.outposts.update",
+    "pk": "esm.core.parsers.outposts.update",
     "model": "scheduler.scheduledtask",
     "fields": {
       "is_active": true,
@@ -60,7 +60,7 @@
     }
   },
   {
-    "pk": "ism.core.parsers.titles.update",
+    "pk": "esm.core.parsers.titles.update",
     "model": "scheduler.scheduledtask",
     "fields": {
       "is_active": true,

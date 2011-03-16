@@ -9,19 +9,19 @@ Created on 24 jan. 2010
 from django.conf.urls.defaults import patterns, include
 from django.contrib import admin
 from django.views import static
-from ism import settings
-from ism.view import home, common
-from ism.view.members import access as member_access,\
+from esm import settings
+from esm.view import home, common
+from esm.view.members import access as member_access,\
                              details as member_details,\
                              history as member_history,\
                              list as member_list
-from ism.view.titles import details as title_details,\
+from esm.view.titles import details as title_details,\
                             list as title_list,\
                             members as title_members,\
                             changes as title_changes
-from ism.view.roles import list as role_list,\
+from esm.view.roles import list as role_list,\
                            details as role_details
-from ism.view.assets import normal as asset_normal,\
+from esm.view.assets import normal as asset_normal,\
                             diff as asset_diff
 
 
@@ -39,10 +39,14 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
 
-    # ISM views
-    (r'^%s$' % settings.LOGIN_URL[1:], 'django.contrib.auth.views.login', {'template_name' : 'session/login.html'}),
-    (r'^%s$' % settings.LOGOUT_URL[1:], 'django.contrib.auth.views.logout', {'next_page' : '/'}),
-    (r'^user/change_password$', 'django.contrib.auth.views.password_change', {'template_name' : 'session/password_change.html', 'post_change_redirect' : '/'}), 
+    # ESM views
+    (r'^%s$' % settings.LOGIN_URL[1:],      'django.contrib.auth.views.login', 
+                                            {'template_name' : 'common/login.html'}),
+    (r'^%s$' % settings.LOGOUT_URL[1:],     'django.contrib.auth.views.logout', 
+                                            {'next_page' : '/'}),
+    (r'^user/change_password$',             'django.contrib.auth.views.password_change', 
+                                            {'template_name' : 'common/password_change.html', 
+                                             'post_change_redirect' : '/'}), 
     
     
     (r'^$',                                         home.home),

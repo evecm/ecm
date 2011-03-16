@@ -8,7 +8,7 @@ from threading import Thread
 from datetime import datetime, timedelta
 
 import logging.config
-from ism import settings
+from esm import settings
 
 
 

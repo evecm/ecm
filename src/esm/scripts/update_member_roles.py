@@ -10,7 +10,7 @@ import setenv
 
 # imports and code below
 
-from ism.core.parsers import membersecu
+from esm.core.parsers import membersecu
 
 membersecu.update()
 

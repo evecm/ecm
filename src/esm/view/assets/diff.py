@@ -6,7 +6,7 @@ Created on 25 dev 2010
 '''
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import user_passes_test
@@ -15,27 +15,34 @@ from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
-from ism.core import db, utils
-from ism.data.assets.models import DbAsset, DbAssetDiff
-from ism.data.corp.models import Hangar
-from ism import settings
+from esm.core import db, utils
+from esm.data.assets.models import DbAsset, DbAssetDiff
+from esm.data.corp.models import Hangar
+from esm import settings
 from django.views.decorators.csrf import csrf_protect
-from ism.view import getScanDate
+from esm.view import getScanDate
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
-HANGAR = {}
-for h in Hangar.objects.all():
-    HANGAR[h.hangarID] = h.name
+
 
 #------------------------------------------------------------------------------
 def last_stations(request):
     # if called without date, redirect to the last date.
 
+    since_weeks = int(request.GET.get("since_weeks", "8"))
+    to_weeks = int(request.GET.get("to_weeks", "0"))
+    oldest_date = datetime.now() - timedelta(weeks=since_weeks)
+    newest_date = datetime.now() - timedelta(weeks=to_weeks)
+
     datesDb = DbAssetDiff.objects.values("date").distinct().order_by("-date")
+    datesDb = datesDb.filter(date__gte=oldest_date)
+    datesDb = datesDb.filter(date__lte=newest_date)
+    
     date_str = datetime.strftime(datesDb[0]["date"], DATE_PATTERN)
 
-    return redirect("/assets/changes/%s" % date_str)
+
+    return redirect("/assets/changes/%s?since_weeks=%d&to_weeks=%d" % (date_str, since_weeks, to_weeks))
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
@@ -52,12 +59,21 @@ def stations(request, date_str):
         divisions, divisions_str = None, None
         for h in all_hangars: h.checked = False
     
-    datesDb = DbAssetDiff.objects.values("date").distinct().order_by("-date")
+    since_weeks = int(request.GET.get("since_weeks", "8"))
+    to_weeks = int(request.GET.get("to_weeks", "0"))
+    
+    oldest_date = datetime.now() - timedelta(weeks=since_weeks)
+    newest_date = datetime.now() - timedelta(weeks=to_weeks)
+    
+    datesDb = DbAssetDiff.objects.values_list("date", flat=True).distinct().order_by("-date")
+    datesDb = datesDb.filter(date__gte=oldest_date)
+    datesDb = datesDb.filter(date__lte=newest_date)
+    
     dates = []
-    for d in datesDb:
+    for date in datesDb:
         dates.append({ 
-            "value" : datetime.strftime(d["date"], DATE_PATTERN),
-            "show" : utils.print_time_min(d["date"])
+            "value" : datetime.strftime(date, DATE_PATTERN),
+            "show" : utils.print_time_min(date)
         })
 
     date = datetime.strptime(date_str, DATE_PATTERN)
@@ -70,7 +86,9 @@ def stations(request, date_str):
                      'dates' : dates,
                       'date' : utils.print_time_min(date),
                   'date_str' : date_str,
-                 'scan_date' : getScanDate(DbAsset.__name__) }
+                 'scan_date' : getScanDate(DbAsset.__name__),
+               'since_weeks' : since_weeks,
+                  'to_weeks' : to_weeks }
 
     if stations:
         return render_to_response("assets/assets_diff.html", data, context_instance=RequestContext(request))
@@ -164,7 +182,11 @@ def getStationHangars(date, stationID, divisions):
         raw_list = DbAssetDiff.objects.raw(sql)
     else:
         raw_list = DbAssetDiff.objects.raw(SQL_HANGARS % (utils.print_time(date), stationID))
-        
+    
+    HANGAR = {}
+    for h in Hangar.objects.all():
+        HANGAR[h.hangarID] = h.name
+    
     hangar_list = []
     for h in raw_list:
         hangar = {}

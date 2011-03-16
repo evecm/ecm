@@ -4,15 +4,15 @@ This file is part of ICE Security Management
 Created on 8 feb. 2010
 @author: diabeteman
 '''
-from ism.data.corp.models import Corp, Hangar, Wallet
-from ism.core.api import connection
-from ism.core.api.connection import API
+from esm.data.corp.models import Corp, Hangar, Wallet
+from esm.core.api import connection
+from esm.core.api.connection import API
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from ism.core.parsers.utils import checkApiVersion, markUpdated
+from esm.core.parsers.utils import checkApiVersion, markUpdated
 
-from ism import settings
+from esm import settings
 
 import logging.config
 

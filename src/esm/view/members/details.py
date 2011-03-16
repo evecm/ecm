@@ -7,15 +7,15 @@ Created on 13 mars 2011
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
-from ism.core import utils
-from ism import settings
-from ism.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
-from ism.view import getScanDate
+from esm.core import utils
+from esm import settings
+from esm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
+from esm.view import getScanDate
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from ism.data.common.models import ColorThreshold
-from ism.core.utils import print_time_min, getAccessColor
-from ism.core.db import resolveLocationName
+from esm.data.common.models import ColorThreshold
+from esm.core.utils import print_time_min, getAccessColor
+from esm.core.db import resolveLocationName
 import json
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist

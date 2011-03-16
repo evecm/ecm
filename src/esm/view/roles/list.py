@@ -14,14 +14,14 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 
-from ism.data.roles.models import Role, RoleType
-from ism.data.common.models import ColorThreshold
-from ism.core import utils
-from ism import settings
+from esm.data.roles.models import Role, RoleType
+from esm.data.common.models import ColorThreshold
+from esm.core import utils
+from esm import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 import httplib as http
-from ism.data.corp.models import Hangar, Wallet
+from esm.data.corp.models import Hangar, Wallet
 
 
 ROLE_TYPES = {}

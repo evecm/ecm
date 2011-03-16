@@ -5,7 +5,6 @@
 
 
 {% block header_scripts %}
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/tablesorter.css" />
 <script type="text/javascript" src="/static/js/lib/jquery.js"></script>
 <script type="text/javascript" src="/static/js/lib/jquery.jstree.js"></script>
 {% endblock %}
@@ -55,7 +54,7 @@ $(function () {
             "select_limit" : 1
         },
         "themes" : {
-            "theme" : "default",
+            "url" : "/static/css/jstree.css",
             "dots" : false
         },
         "search" : {

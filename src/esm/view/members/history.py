@@ -4,19 +4,19 @@ This file is part of ESM
 Created on 13 mars 2011
 @author: diabeteman
 '''
-from ism.core import utils
-from ism import settings
+from esm.core import utils
+from esm import settings
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
-from ism.view import getScanDate
-from ism.data.roles.models import Member, MemberDiff
+from esm.view import getScanDate
+from esm.data.roles.models import Member, MemberDiff
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
 import json
 from django.utils.text import truncate_words
-from ism.core.utils import print_time_min
+from esm.core.utils import print_time_min
 
 
 

@@ -4,12 +4,12 @@ This file is part of ICE Security Management
 Created on 11 feb. 2010
 @author: diabeteman
 '''
-from ism.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
+from esm.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff, Member
-from ism.core.api import connection
-from ism.core.api.connection import API
-from ism.core.parsers import utils
-from ism import settings
+from esm.core.api import connection
+from esm.core.api.connection import API
+from esm.core.parsers import utils
+from esm import settings
 
 from django.db import transaction
 

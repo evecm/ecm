@@ -15,16 +15,16 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 
-from ism.data.roles.models import Role, RoleType, Member
-from ism.data.common.models import ColorThreshold
-from ism.core import utils
-from ism import settings
+from esm.data.roles.models import Role, RoleType, Member
+from esm.data.common.models import ColorThreshold
+from esm.core import utils
+from esm import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
 from django.utils.text import truncate_words
-from ism.core.utils import print_date
-from ism.view.members import member_table_columns
+from esm.core.utils import print_date
+from esm.view.members import member_table_columns
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)

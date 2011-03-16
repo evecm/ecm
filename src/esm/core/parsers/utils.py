@@ -5,9 +5,9 @@ Created on 08 fev. 2010
 @author: diabeteman
 """
 
-from ism.data.roles.models import RoleType, Role
-from ism import settings 
-from ism.data.common.models import UpdateDate
+from esm.data.roles.models import RoleType, Role
+from esm import settings 
+from esm.data.common.models import UpdateDate
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 import threading
 

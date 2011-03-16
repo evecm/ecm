@@ -10,6 +10,6 @@ import setenv
 
 # imports and code below
 
-from ism.core.parsers import titles
+from esm.core.parsers import titles
 
 titles.update()

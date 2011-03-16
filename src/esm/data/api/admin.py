@@ -5,7 +5,7 @@ Created on 14 mai 2010
 @author: diabeteman
 '''
 from django.contrib import admin, databrowse
-from ism.data.api.models import APIKey
+from esm.data.api.models import APIKey
 
 class APIKeyAdmin(admin.ModelAdmin):
     list_display = ['name', 'userID', 'charID', 'key']

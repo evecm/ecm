@@ -16,19 +16,19 @@ EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
 LOGGING_CONFIG_FILE = resolvePath("logging.ini")
 
-# Django settings for ism project.
+# Django settings for ESM project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('admin', 'admin@ism.com'),
+    ('admin', 'admin@esm.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = resolvePath('db/ISM.db')  # Or path to database file if using sqlite3.
+DATABASE_NAME = resolvePath('db/ESM.db')  # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -94,7 +94,7 @@ MIDDLEWARE_CLASSES = (
 CACHE_BACKEND = 'dummy://'
 
 
-ROOT_URLCONF = 'ism.urls'
+ROOT_URLCONF = 'esm.urls'
 LOGIN_URL = '/user/login'
 LOGOUT_URL = '/user/logout'
 TEMPLATE_DIRS = (
@@ -105,7 +105,7 @@ TEMPLATE_DIRS = (
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.auth",
-    "ism.core.context_processors.corporation_name"
+    "esm.core.context_processors.corporation_name"
 )
 
 #TEMPLATE_STRING_IF_INVALID = '%s'
@@ -120,12 +120,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     
-    'ism.data.api',
-    'ism.data.assets',
-    'ism.data.corp',
-    'ism.data.roles',
-    'ism.data.common',
-    'ism.data.scheduler',
+    'esm.data.api',
+    'esm.data.assets',
+    'esm.data.corp',
+    'esm.data.roles',
+    'esm.data.common',
+    'esm.data.scheduler',
 )
 
 
