@@ -15,7 +15,7 @@ import httplib as http
 def basic_auth_required(username=None):
     def func_wrapper(view_function):
         def decorator(request, *args, **kwargs):
-            if not request.user:
+            if request.user in (False, None, AnonymousUser()):
                 auth_string = request.META.get('HTTP_AUTHORIZATION', None)
             
                 if not auth_string:
