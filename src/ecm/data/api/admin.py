@@ -1,11 +1,11 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 14 mai 2010
 @author: diabeteman
 '''
 from django.contrib import admin, databrowse
-from esm.data.api.models import APIKey
+from ecm.data.api.models import APIKey
 
 class APIKeyAdmin(admin.ModelAdmin):
     list_display = ['name', 'userID', 'charID', 'key']

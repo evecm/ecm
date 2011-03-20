@@ -1,12 +1,12 @@
 '''
-This file is part of ESM
+This file is part of ECM
 
 Created on 9 mars 2011
 @author: diabeteman
 '''
 
 from django.contrib import admin
-from esm.data.scheduler.models import ScheduledTask, GarbageCollector
+from ecm.data.scheduler.models import ScheduledTask, GarbageCollector
 
 class ScheduledTaskOptions(admin.ModelAdmin):
     list_display = ["function_admin_display", 

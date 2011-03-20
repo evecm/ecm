@@ -1,5 +1,5 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 25 dev 2010
 @author: diabeteman
@@ -15,12 +15,12 @@ from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
-from esm.core import db, utils
-from esm.data.assets.models import DbAsset, DbAssetDiff
-from esm.data.corp.models import Hangar
-from esm import settings
+from ecm.core import db, utils
+from ecm.data.assets.models import DbAsset, DbAssetDiff
+from ecm.data.corp.models import Hangar
+from ecm import settings
 from django.views.decorators.csrf import csrf_protect
-from esm.view import getScanDate
+from ecm.view import getScanDate
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 

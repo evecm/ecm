@@ -1,14 +1,14 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 18 mars 2010
 @author: diabeteman
 '''
 
-from esm.core.parsers.assetsconstants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
-from esm import settings
+from ecm.core.parsers.assetsconstants import STATIONS_IDS, OUTPOSTS_IDS, CONQUERABLE_STATIONS
+from ecm import settings
 import sqlite3
-from esm.data.common.models import Outpost
+from ecm.data.common.models import Outpost
 import threading
 
 QUERY_ONE_TYPENAME = 'SELECT t.typeName, g.categoryID FROM invTypes t, invGroups g WHERE t.typeID=%d AND t.groupID=g.groupID;'

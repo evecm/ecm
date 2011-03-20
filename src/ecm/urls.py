@@ -1,5 +1,5 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 24 jan. 2010
 
@@ -9,19 +9,19 @@ Created on 24 jan. 2010
 from django.conf.urls.defaults import patterns, include
 from django.contrib import admin
 from django.views import static
-from esm import settings
-from esm.view import home, common
-from esm.view.members import access as member_access,\
+from ecm import settings
+from ecm.view import home, common
+from ecm.view.members import access as member_access,\
                              details as member_details,\
                              history as member_history,\
                              list as member_list
-from esm.view.titles import details as title_details,\
+from ecm.view.titles import details as title_details,\
                             list as title_list,\
                             members as title_members,\
                             changes as title_changes
-from esm.view.roles import list as role_list,\
+from ecm.view.roles import list as role_list,\
                            details as role_details
-from esm.view.assets import normal as asset_normal,\
+from ecm.view.assets import normal as asset_normal,\
                             diff as asset_diff
 
 
@@ -39,7 +39,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
 
-    # ESM views
+    # ECM views
     (r'^%s$' % settings.LOGIN_URL[1:],      'django.contrib.auth.views.login', 
                                             {'template_name' : 'common/login.html'}),
     (r'^%s$' % settings.LOGOUT_URL[1:],     'django.contrib.auth.views.logout', 

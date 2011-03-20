@@ -1,15 +1,15 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 11 feb. 2010
 @author: diabeteman
 '''
-from esm.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
+from ecm.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff, Member
-from esm.core.api import connection
-from esm.core.api.connection import API
-from esm.core.parsers import utils
-from esm import settings
+from ecm.core.api import connection
+from ecm.core.api.connection import API
+from ecm.core.parsers import utils
+from ecm import settings
 
 from django.db import transaction
 

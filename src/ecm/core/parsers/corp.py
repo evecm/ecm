@@ -1,18 +1,18 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 8 feb. 2010
 @author: diabeteman
 '''
-from esm.data.corp.models import Corp, Hangar, Wallet
-from esm.core.api import connection
-from esm.core.api.connection import API
+from ecm.data.corp.models import Corp, Hangar, Wallet
+from ecm.core.api import connection
+from ecm.core.api.connection import API
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from esm.core.parsers.utils import checkApiVersion, markUpdated
+from ecm.core.parsers.utils import checkApiVersion, markUpdated
 
-from esm import settings
+from ecm import settings
 
 import logging.config
 

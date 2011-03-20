@@ -1,22 +1,22 @@
 '''
-This file is part of ESM
+This file is part of ECM
 
 Created on 13 mars 2011
 @author: diabeteman
 '''
-from esm.core import utils
-from esm import settings
+from ecm.core import utils
+from ecm import settings
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
-from esm.view import getScanDate
-from esm.data.roles.models import Member, MemberDiff
+from ecm.view import getScanDate
+from ecm.data.roles.models import Member, MemberDiff
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
 import json
 from django.utils.text import truncate_words
-from esm.core.utils import print_time_min
+from ecm.core.utils import print_time_min
 
 
 

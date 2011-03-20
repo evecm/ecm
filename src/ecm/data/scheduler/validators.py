@@ -1,5 +1,5 @@
 '''
-This file is part of ESM
+This file is part of ECM
 
 Created on 9 mars 2011
 @author: diabeteman

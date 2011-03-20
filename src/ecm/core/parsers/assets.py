@@ -1,22 +1,22 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 23 mar. 2010
 @author: diabeteman
 '''
 
 
-from esm.data.assets.models import DbAsset, DbAssetDiff
-from esm.core.api import connection
-from esm.core.api.connection import API
-from esm.core.parsers import utils
-from esm.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
+from ecm.data.assets.models import DbAsset, DbAssetDiff
+from ecm.core.api import connection
+from ecm.core.api.connection import API
+from ecm.core.parsers import utils
+from ecm.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
                                       HANGAR_FLAG, BOOKMARK_TYPEID,\
                                       NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
                                       CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS
                                       
 from django.db import transaction
-from esm import settings
+from ecm import settings
 
 import logging.config
 

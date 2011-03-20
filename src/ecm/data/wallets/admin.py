@@ -1,12 +1,12 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 3 juin 2010
 @author: diabeteman
 '''
 
 
-from esm.data.wallets.models import JournalEntry
+from ecm.data.wallets.models import JournalEntry
 from django.contrib import admin
 
 #------------------------------------------------------------------------------

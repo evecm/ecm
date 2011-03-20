@@ -1,11 +1,11 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 24 jan. 2010
 @author: diabeteman
 '''
 
-from esm.data.corp.models import Hangar, Wallet
+from ecm.data.corp.models import Hangar, Wallet
 
 from django.db import models
 from datetime import datetime

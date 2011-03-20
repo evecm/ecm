@@ -1,5 +1,5 @@
 ﻿'''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 24 jan. 2010
 @author: diabeteman
@@ -16,19 +16,19 @@ EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
 LOGGING_CONFIG_FILE = resolvePath("logging.ini")
 
-# Django settings for ESM project.
+# Django settings for ECM project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('admin', 'admin@esm.com'),
+    ('admin', 'admin@ecm.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = resolvePath('db/ESM.db')  # Or path to database file if using sqlite3.
+DATABASE_NAME = resolvePath('db/ECM.db')  # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -94,7 +94,7 @@ MIDDLEWARE_CLASSES = (
 CACHE_BACKEND = 'dummy://'
 
 
-ROOT_URLCONF = 'esm.urls'
+ROOT_URLCONF = 'ecm.urls'
 LOGIN_URL = '/user/login'
 LOGOUT_URL = '/user/logout'
 TEMPLATE_DIRS = (
@@ -105,7 +105,7 @@ TEMPLATE_DIRS = (
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.auth",
-    "esm.core.context_processors.corporation_name"
+    "ecm.core.context_processors.corporation_name"
 )
 
 #TEMPLATE_STRING_IF_INVALID = '%s'
@@ -120,12 +120,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     
-    'esm.data.api',
-    'esm.data.assets',
-    'esm.data.corp',
-    'esm.data.roles',
-    'esm.data.common',
-    'esm.data.scheduler',
+    'ecm.data.api',
+    'ecm.data.assets',
+    'ecm.data.corp',
+    'ecm.data.roles',
+    'ecm.data.common',
+    'ecm.data.scheduler',
 )
 
 

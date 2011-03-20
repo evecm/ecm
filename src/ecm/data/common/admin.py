@@ -1,5 +1,5 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 17 mai 2010
 @author: diabeteman
@@ -7,7 +7,7 @@ Created on 17 mai 2010
 
 
 from django.contrib import admin
-from esm.data.common.models import UpdateDate, RefType, Outpost, ColorThreshold
+from ecm.data.common.models import UpdateDate, RefType, Outpost, ColorThreshold
 from django.contrib.auth.models import Permission
 
 class UpdateDateAdmin(admin.ModelAdmin):

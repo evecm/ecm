@@ -1,11 +1,11 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 16 mai 2010
 @author: diabeteman
 '''
 
-from esm import settings
+from ecm import settings
 from django.contrib.auth.models import Group
 
 try:

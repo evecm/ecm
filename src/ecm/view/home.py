@@ -1,5 +1,5 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 3 fev. 2010
 @author: diabeteman
@@ -9,10 +9,10 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 
-from esm.data.roles.models import MemberDiff, RoleMemberDiff, Member, TitleMemberDiff
+from ecm.data.roles.models import MemberDiff, RoleMemberDiff, Member, TitleMemberDiff
 
 from django.views.decorators.csrf import csrf_protect
-from esm.core import utils
+from ecm.core import utils
 
 
 #------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 10 apr. 2010
 @author: diabeteman

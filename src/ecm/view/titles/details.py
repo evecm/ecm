@@ -1,19 +1,19 @@
 '''
-This file is part of ESM
+This file is part of ECM
 
 Created on 13 mars 2011
 @author: diabeteman
 '''
-from esm.data.roles.models import TitleComposition, TitleCompoDiff, Title
+from ecm.data.roles.models import TitleComposition, TitleCompoDiff, Title
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
-from esm import settings
-from esm.core import utils
+from ecm import settings
+from ecm.core import utils
 from django.http import HttpResponse
 import json
-from esm.data.common.models import ColorThreshold
-from esm.core.utils import getAccessColor
+from ecm.data.common.models import ColorThreshold
+from ecm.core.utils import getAccessColor
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 

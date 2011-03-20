@@ -1,5 +1,5 @@
 '''
-This file is part of ESM
+This file is part of ECM
 
 Created on 14 mars 2011
 @author: diabeteman
@@ -8,8 +8,8 @@ from django.db import transaction
 
 
 import logging.config
-from esm import settings
-from esm.data.scheduler.models import GarbageCollector
+from ecm import settings
+from ecm.data.scheduler.models import GarbageCollector
 
 logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
 logger = logging.getLogger("garbage_collector")

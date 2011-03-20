@@ -1,5 +1,5 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 11 juil. 2010
 @author: diabeteman
@@ -14,11 +14,11 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
 
-from esm.data.roles.models import TitleComposition, Title, TitleCompoDiff
-from esm.data.common.models import ColorThreshold
-from esm.core import utils
-from esm import settings
-from esm.view import getScanDate
+from ecm.data.roles.models import TitleComposition, Title, TitleCompoDiff
+from ecm.data.common.models import ColorThreshold
+from ecm.core import utils
+from ecm import settings
+from ecm.view import getScanDate
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)

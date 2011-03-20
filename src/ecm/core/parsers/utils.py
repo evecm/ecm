@@ -1,13 +1,13 @@
 """
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 08 fev. 2010
 @author: diabeteman
 """
 
-from esm.data.roles.models import RoleType, Role
-from esm import settings 
-from esm.data.common.models import UpdateDate
+from ecm.data.roles.models import RoleType, Role
+from ecm import settings 
+from ecm.data.common.models import UpdateDate
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 import threading
 

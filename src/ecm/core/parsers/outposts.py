@@ -1,14 +1,14 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 18 apr. 2010
 @author: diabeteman
 '''
-from esm.core.api import connection
-from esm.core.parsers.utils import checkApiVersion, markUpdated
-from esm.core import db
-from esm.data.common.models import Outpost
-from esm import settings
+from ecm.core.api import connection
+from ecm.core.parsers.utils import checkApiVersion, markUpdated
+from ecm.core import db
+from ecm.data.common.models import Outpost
+from ecm import settings
 
 from django.db import transaction
 

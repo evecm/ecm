@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
-<!--  ICE Security Management     -->
+<!--  EVE Corporation Management     -->
 <!--  Date:    May 14, 2010       -->
 <!--  Author:  diabeteman         -->
 
@@ -17,7 +17,7 @@
   <script type="text/javascript" src="/static/js/lib/jquery.js"></script>
   <link rel="icon" type="image/png" href="/static/img/favicon.png" />
   <link rel="shortcut icon" type="image/png" href="/static/img/favicon.png" />
-  <title>ESM - {% block headtitle %}{% endblock %}</title>
+  <title>ECM - {% block headtitle %}{% endblock %}</title>
   {% block header_scripts %}{% endblock %}
 </head>
 
@@ -37,7 +37,7 @@
         <a class="sitelogo" href="/" title="Go to Start page"></a>
         <div class="sitename">
           <h1><a href="/corp" title="Go to Corporation Details">{{ corp_name }}</a></h1>
-          <h2>EVE Security Management</h2>
+          <h2>EVE Corporation Management</h2>
         </div>
 
         <!-- logged user -->
@@ -50,11 +50,11 @@
         <div class="nav1">
           <ul>
             {% if user.is_authenticated %}
-            <li><a href="/user/logout" title="Log out from ESM">Logout</a></li>
+            <li><a href="/user/logout" title="Log out from ECM">Logout</a></li>
             <li><a href="/user/change_password" >Change Password</a></li>
             {% endif %}
             <li><a href="/admin/" title="Restricted area :-)">Administration</a></li>
-            <li><a href="mailto:postmaster@esm.com" title="Contact the administrator">Contact</a></li>
+            <li><a href="mailto:postmaster@ecm.com" title="Contact the administrator">Contact</a></li>
           </ul>
         </div>              
       </div>

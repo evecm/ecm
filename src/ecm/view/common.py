@@ -1,5 +1,5 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 16 mai 2010
 @author: diabeteman
@@ -14,15 +14,15 @@ from django.template.context import RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
-from esm.data.corp.models import Corp
-from esm.core.auth import basic_auth_required
-from esm.data.scheduler.models import ScheduledTask
-from esm.data.scheduler.threads import TaskThread
+from ecm.data.corp.models import Corp
+from ecm.core.auth import basic_auth_required
+from ecm.data.scheduler.models import ScheduledTask
+from ecm.data.scheduler.threads import TaskThread
 
 import re
 import httplib as http
 from datetime import datetime
-from esm import settings
+from ecm import settings
 import time
 
 SHOWINFO_PATTERN = re.compile(r"showinfo:1383//(\d+)", re.IGNORECASE + re.DOTALL)

@@ -1,5 +1,5 @@
 '''
-This file is part of ESM
+This file is part of ECM
 
 Created on 13 mars 2011
 @author: diabeteman
@@ -7,15 +7,15 @@ Created on 13 mars 2011
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
-from esm.core import utils
-from esm import settings
-from esm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
-from esm.view import getScanDate
+from ecm.core import utils
+from ecm import settings
+from ecm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
+from ecm.view import getScanDate
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from esm.data.common.models import ColorThreshold
-from esm.core.utils import print_time_min, getAccessColor
-from esm.core.db import resolveLocationName
+from ecm.data.common.models import ColorThreshold
+from ecm.core.utils import print_time_min, getAccessColor
+from ecm.core.db import resolveLocationName
 import json
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist

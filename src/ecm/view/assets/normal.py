@@ -1,5 +1,5 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 21 mai 2010
 @author: diabeteman
@@ -13,12 +13,12 @@ from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 
-from esm.core import db, utils
-from esm.data.assets.models import DbAsset
-from esm.data.corp.models import Hangar
-from esm import settings
+from ecm.core import db, utils
+from ecm.data.assets.models import DbAsset
+from ecm.data.corp.models import Hangar
+from ecm import settings
 from django.views.decorators.csrf import csrf_protect
-from esm.view import getScanDate
+from ecm.view import getScanDate
 
 SQL_STATIONS = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset GROUP BY locationID;"
 SQL_STATIONS_FILTERED = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset WHERE hangarID in %s GROUP BY locationID;"

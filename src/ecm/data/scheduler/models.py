@@ -1,5 +1,5 @@
 '''
-This file is part of ESM
+This file is part of ECM
 
 Created on 9 march 2011
 @author: diabeteman
@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.db import models
-from esm.data.scheduler.validators import FunctionValidator, extract_function
+from ecm.data.scheduler.validators import FunctionValidator, extract_function
 import sys
 
 
@@ -25,13 +25,13 @@ class ScheduledTask(models.Model):
     )
     
     FUNCTION_CHOICES = (
-        ("esm.core.parsers.corp.update",        "Update corp details"),
-        ("esm.core.parsers.assets.update",      "Update assets"),
-        ("esm.core.parsers.membertrack.update", "Update members"),
-        ("esm.core.parsers.membersecu.update",  "Update security accesses"),
-        ("esm.core.parsers.outposts.update",    "Update ouposts"),
-        ("esm.core.parsers.titles.update",      "Update titles"),
-        ("esm.core.garbagecollector.run",       "Delete old records for the database")
+        ("ecm.core.parsers.corp.update",        "Update corp details"),
+        ("ecm.core.parsers.assets.update",      "Update assets"),
+        ("ecm.core.parsers.membertrack.update", "Update members"),
+        ("ecm.core.parsers.membersecu.update",  "Update security accesses"),
+        ("ecm.core.parsers.outposts.update",    "Update ouposts"),
+        ("ecm.core.parsers.titles.update",      "Update titles"),
+        ("ecm.core.garbagecollector.run",       "Delete old records for the database")
     )
     
     function = models.CharField(max_length=255, primary_key=True,
@@ -93,15 +93,14 @@ class GarbageCollector(models.Model):
     )
     
     DB_TABLE_CHOICES = (
-        ("esm.data.roles.models.RoleMemberDiff",    "Role membership history"),
-        ("esm.data.roles.models.TitleMemberDiff",   "Title membership history"),
-        ("esm.data.roles.models.MemberDiff",        "Member history"),
-        ("esm.data.roles.models.TitleCompoDiff",    "Titles modifications history"),
-        ("esm.data.assets.models.DbAssetDiff",      "Assets history")
+        ("ecm.data.roles.models.RoleMemberDiff",    "Role membership history"),
+        ("ecm.data.roles.models.TitleMemberDiff",   "Title membership history"),
+        ("ecm.data.roles.models.MemberDiff",        "Member history"),
+        ("ecm.data.roles.models.TitleCompoDiff",    "Titles modifications history"),
+        ("ecm.data.assets.models.DbAssetDiff",      "Assets history")
     )
     
-    db_table = models.CharField(max_length=255, primary_key=True,
-                             choices=DB_TABLE_CHOICES)
+    db_table = models.CharField(max_length=255, primary_key=True, choices=DB_TABLE_CHOICES)
     min_entries_threshold = models.PositiveIntegerField(default=10000)
     max_age_threshold = models.PositiveIntegerField()
     age_units = models.IntegerField(default=3600 * 24 * 7 * 30, choices=AGE_UNIT_CHOICES)

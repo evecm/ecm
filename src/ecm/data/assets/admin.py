@@ -1,12 +1,12 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 14 mai 2010
 @author: diabeteman
 '''
 
 from django.contrib import admin
-from esm.data.assets.models import DbAsset, DbAssetDiff
+from ecm.data.assets.models import DbAsset, DbAssetDiff
 
 class DbAssetAdmin(admin.ModelAdmin):
     list_display = ['itemID', 'locationID', 'hangarID', 'container1', 'container2', 

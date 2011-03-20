@@ -1,12 +1,12 @@
 '''
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 23 mar. 2010
 @author: diabeteman
 '''
-from esm.lib import eveapi
-from esm.data.api.models import APIKey
-from esm.core.api.cache import CacheHandler
+from ecm.lib import eveapi
+from ecm.data.api.models import APIKey
+from ecm.core.api.cache import CacheHandler
 
 class API:
     USER_ID = None

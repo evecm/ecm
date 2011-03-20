@@ -1,5 +1,5 @@
 ﻿"""
-This file is part of ICE Security Management
+This file is part of EVE Corporation Management
 
 Created on 24 jan. 2010
 @author: diabeteman
@@ -7,13 +7,13 @@ Created on 24 jan. 2010
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from esm.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
-from esm.core.api import connection
-from esm.core.api.connection import API
-from esm.core.parsers import utils
-from esm.core.parsers.utils import checkApiVersion, markUpdated
+from ecm.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
+from ecm.core.api import connection
+from ecm.core.api.connection import API
+from ecm.core.parsers import utils
+from ecm.core.parsers.utils import checkApiVersion, markUpdated
 
-from esm import settings
+from ecm import settings
 
 import logging.config
 

@@ -1,5 +1,5 @@
 '''
-This file is part of ESM
+This file is part of ECM
 
 Created on 2 march 2011
 @author: diabeteman
@@ -14,14 +14,14 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 
-from esm.data.roles.models import Role, RoleType
-from esm.data.common.models import ColorThreshold
-from esm.core import utils
-from esm import settings
+from ecm.data.roles.models import Role, RoleType
+from ecm.data.common.models import ColorThreshold
+from ecm.core import utils
+from ecm import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 import httplib as http
-from esm.data.corp.models import Hangar, Wallet
+from ecm.data.corp.models import Hangar, Wallet
 
 
 ROLE_TYPES = {}
