@@ -9,9 +9,7 @@ from datetime import datetime, timedelta
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.db import models
-from ecm.data.scheduler.validators import FunctionValidator, extract_function
-import sys
-
+from ecm.data.scheduler.validators import FunctionValidator, extract_function, extract_model
 
 
 class ScheduledTask(models.Model):
@@ -114,10 +112,7 @@ class GarbageCollector(models.Model):
     max_age_threshold_admin_display.short_description = "Max Age Threshold"
     
     def get_model(self):
-        module, model = self.db_table.rsplit('.', 1)
-        __import__(module)
-        mod = sys.modules[module]
-        return mod.__dict__[model]
+        return extract_model(self.db_table)
     
     def get_expiration_date(self):
         return datetime.now() + timedelta(self.max_age_threshold * self.age_units)

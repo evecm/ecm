@@ -7,7 +7,6 @@ Created on 9 feb. 2010
 from django.db import transaction
 from ecm.data.roles.models import Member, MemberDiff
 from ecm.core.api import connection
-from ecm.core.api.connection import API
 from ecm.core.parsers import utils
 from ecm.core.db import resolveLocationName
 from ecm import settings
@@ -19,7 +18,7 @@ logger = logging.getLogger("parser_membertrack")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(cache=False):
+def update():
     """
     Retrieve all corp members, with all basic information about them.
     If some members have left or have arrived we also store the diff in the database.
@@ -30,9 +29,9 @@ def update(cache=False):
     try:
         logger.info("fetching /corp/MemberTracking.xml.aspx...")
         # connect to eve API
-        api = connection.connect(cache=cache)
+        api = connection.connect()
         # retrieve /corp/MemberTracking.xml.aspx
-        membersApi = api.corp.MemberTracking(characterID=API.CHAR_ID)
+        membersApi = api.corp.MemberTracking(characterID=connection.get_api().charID)
         utils.checkApiVersion(membersApi._meta.version)
         
         currentTime = membersApi._meta.currentTime

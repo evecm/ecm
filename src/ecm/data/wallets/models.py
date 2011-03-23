@@ -6,10 +6,11 @@ Created on 3 juin 2010
 '''
 
 from django.db import models
+from ecm.data.corp.models import Wallet
 
 #------------------------------------------------------------------------------
 class JournalEntry(models.Model):
-    wallet        = models.PositiveSmallIntegerField() # accountKey
+    wallet        = models.ForeginKey(Wallet, db_index=True) # accountKey
     date          = models.DateTimeField()
     refTypeID     = models.PositiveSmallIntegerField() # type of transaction
     

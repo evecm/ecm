@@ -8,7 +8,6 @@ Created on 23 mar. 2010
 
 from ecm.data.assets.models import DbAsset, DbAssetDiff
 from ecm.core.api import connection
-from ecm.core.api.connection import API
 from ecm.core.parsers import utils
 from ecm.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
                                       HANGAR_FLAG, BOOKMARK_TYPEID,\
@@ -25,7 +24,7 @@ logger = logging.getLogger("parser_assets")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(cache=False):
+def update():
     """
     Retrieve all corp assets and calculate the changes.
     
@@ -33,8 +32,8 @@ def update(cache=False):
     """
     try:
         logger.info("fetching /corp/AssetList.xml.aspx...")
-        api = connection.connect(cache=cache)
-        apiAssets = api.corp.AssetList(characterID=API.CHAR_ID)
+        api = connection.connect()
+        apiAssets = api.corp.AssetList(characterID=connection.get_api().charID)
         utils.checkApiVersion(apiAssets._meta.version)
         
         currentTime = apiAssets._meta.currentTime

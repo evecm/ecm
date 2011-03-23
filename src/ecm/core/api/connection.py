@@ -7,20 +7,28 @@ Created on 23 mar. 2010
 from ecm.lib import eveapi
 from ecm.data.api.models import APIKey
 from ecm.core.api.cache import CacheHandler
+from django.core.exceptions import ObjectDoesNotExist
 
-class API:
-    USER_ID = None
-    API_KEY = None
-    CHAR_ID = None
+def get_api():
+    try:
+        return APIKey.objects.all().order_by("-id")[0]
+    except IndexError:
+        raise ObjectDoesNotExist("There is no APIKey registered in the database")
 
-_api = APIKey.objects.get(id=1)
-API.USER_ID = _api.userID
-API.CHAR_ID = _api.charID
-API.API_KEY = _api.key
+def set_api(api_new):
+    try:
+        api = APIKey.objects.all().order_by("-id")[0]
+    except IndexError:
+        api = APIKey()
+    api.name = api_new.name
+    api.userID = api_new.userID
+    api.charID = api_new.charID
+    api.key = api_new.key
+    api.save()
 
-def connect(proxy=None, cache=True):
+def connect(proxy=None, cache=False):
     if cache : handler = CacheHandler()
     else     : handler = None
-    api = eveapi.EVEAPIConnection(cacheHandler=handler, proxy=proxy)
-    return api.auth(userID=API.USER_ID, apiKey=API.API_KEY)
-    
+    conn = eveapi.EVEAPIConnection(cacheHandler=handler, proxy=proxy)
+    api = get_api()
+    return conn.auth(userID=api.userID, apiKey=api.key)

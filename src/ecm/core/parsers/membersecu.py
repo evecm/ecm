@@ -7,7 +7,6 @@ Created on 11 feb. 2010
 from ecm.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff, Member
 from ecm.core.api import connection
-from ecm.core.api.connection import API
 from ecm.core.parsers import utils
 from ecm import settings
 
@@ -20,7 +19,7 @@ logger = logging.getLogger("parser_membersecu")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(cache=False):
+def update():
     """
     Retrieve all corp members' titles and roles.
     We store all the changes in the database
@@ -31,9 +30,9 @@ def update(cache=False):
     try:
         logger.info("fetching /corp/MemberSecurity.xml.aspx...")
         # connect to eve API
-        api = connection.connect(cache=cache)
+        api = connection.connect()
         # retrieve /corp/MemberTracking.xml.aspx
-        memberSecuApi = api.corp.MemberSecurity(characterID=API.CHAR_ID)
+        memberSecuApi = api.corp.MemberSecurity(characterID=connection.get_api().charID)
         utils.checkApiVersion(memberSecuApi._meta.version)
         
         currentTime = memberSecuApi._meta.currentTime

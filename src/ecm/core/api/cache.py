@@ -9,6 +9,7 @@ import os
 import tempfile
 import time
 import zlib
+from datetime import datetime
 
 
 class CacheHandler(object):
@@ -69,11 +70,13 @@ class CacheHandler(object):
         # eveapi is asking us to cache an item
         key = hash((host, path, frozenset(params.items())))
 
-        cachedFor = obj.cachedUntil - obj.currentTime
-        if cachedFor:
-            self.log("%s: cached (%d seconds)" % (path, cachedFor))
 
-            cachedUntil = time.time() + cachedFor
+        cachedFor = obj.cachedUntil - obj.currentTime
+        
+        if cachedFor:
+            self.log("%s: cached (%s)" % (path, str(cachedFor)))
+
+            cachedUntil = datetime.now() + cachedFor
 
             # store in memory
             cached = self.cache[key] = (cachedUntil, doc)

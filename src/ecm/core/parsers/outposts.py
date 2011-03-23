@@ -19,7 +19,7 @@ logger = logging.getLogger("parser_outposts")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(cache=False):
+def update():
     """
     Retrieve all corp assets and calculate the changes.
     
@@ -28,7 +28,7 @@ def update(cache=False):
     
     try:
         logger.info("fetching /eve/ConquerableStationList.xml.aspx...")
-        api = connection.connect(cache=cache)
+        api = connection.connect()
         apiOutposts = api.eve.ConquerableStationList()
         checkApiVersion(apiOutposts._meta.version)
         

@@ -6,7 +6,6 @@ Created on 8 feb. 2010
 '''
 from ecm.data.corp.models import Corp, Hangar, Wallet
 from ecm.core.api import connection
-from ecm.core.api.connection import API
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
@@ -21,7 +20,7 @@ logger = logging.getLogger("parser_corp")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(cache=False):
+def update():
     """
     Fetch a /corp/CorporationSheet.xml.aspx api response, parse it and store it to 
     the database.
@@ -30,9 +29,9 @@ def update(cache=False):
     try:
         logger.info("fetching /corp/CorporationSheet.xml.aspx...")
         # connect to eve API
-        api = connection.connect(cache=cache)
+        api = connection.connect()
         # retrieve /corp/CorporationSheet.xml.aspx
-        corpApi = api.corp.CorporationSheet(characterID=API.CHAR_ID)
+        corpApi = api.corp.CorporationSheet(characterID=connection.get_api().charID)
         checkApiVersion(corpApi._meta.version)
 
         currentTime = corpApi._meta.currentTime

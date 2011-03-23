@@ -9,7 +9,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from ecm.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
 from ecm.core.api import connection
-from ecm.core.api.connection import API
 from ecm.core.parsers import utils
 from ecm.core.parsers.utils import checkApiVersion, markUpdated
 
@@ -22,7 +21,7 @@ logger = logging.getLogger("parser_titles")
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
-def update(cache=False):
+def update():
     """
     Retrieve all corp titles, their names and their role composition.
     If there are changes in the composition of the titles, 
@@ -33,9 +32,9 @@ def update(cache=False):
     try:
         logger.info("fetching /corp/Titles.xml.aspx...")
         # connect to eve API
-        api = connection.connect(cache=cache)
+        api = connection.connect()
         # retrieve /corp/Titles.xml.aspx
-        titlesApi = api.corp.Titles(characterID=API.CHAR_ID)
+        titlesApi = api.corp.Titles(characterID=connection.get_api().charID)
         checkApiVersion(titlesApi._meta.version)
         
         currentTime = titlesApi._meta.currentTime
