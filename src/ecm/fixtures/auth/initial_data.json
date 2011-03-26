@@ -1,0 +1,48 @@
+[
+  {
+    "pk": 1, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "admin", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": true, 
+      "is_staff": true, 
+      "last_login": "2011-03-26 01:04:41", 
+      "groups": [
+        1
+      ], 
+      "user_permissions": [], 
+      "password": "sha1$98818$f8cd111fbb55ec75bdca2cbc8f8b1e5e0ab30569", 
+      "email": "admin@ecm.com", 
+      "date_joined": "2010-07-09 23:38:15"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "cron", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2011-03-26 01:06:08", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$45fff$046175da2db53e0e3f2c35db23cd0d0c68fafd28", 
+      "email": "", 
+      "date_joined": "2011-03-26 01:06:08"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "auth.group", 
+    "fields": {
+      "name": "Directors", 
+      "permissions": []
+    }
+  }
+]

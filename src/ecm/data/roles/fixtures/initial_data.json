@@ -1,70 +1,6 @@
 [
   {
     "pk": 1, 
-    "model": "common.colorthreshold", 
-    "fields": {
-      "color": "black",
-      "threshold" : -1
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "common.colorthreshold", 
-    "fields": {
-      "color": "white",
-      "threshold" : 0
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "common.colorthreshold", 
-    "fields": {
-      "color": "blue",
-      "threshold" : 5000
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "common.colorthreshold", 
-    "fields": {
-      "color": "green",
-      "threshold" : 12000
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "common.colorthreshold", 
-    "fields": {
-      "color": "yellow",
-      "threshold" : 30000
-    }
-  }, 
-  {
-    "pk": 6, 
-    "model": "common.colorthreshold", 
-    "fields": {
-      "color": "orange",
-      "threshold" : 40000
-    }
-  }, 
-  {
-    "pk": 7, 
-    "model": "common.colorthreshold", 
-    "fields": {
-      "color": "red",
-      "threshold" : 600000
-    }
-  }, 
-  {
-    "pk": 8, 
-    "model": "common.colorthreshold", 
-    "fields": {
-      "color": "purple",
-      "threshold" : 3000000
-    }
-  }, 
-  {
-    "pk": 1, 
     "model": "roles.roletype", 
     "fields": {
       "typeName": "roles", 
@@ -133,7 +69,7 @@
     "fields": {
       "roleType": 1, 
       "description": "Can do anything the CEO can do. Including giving roles to anyone.", 
-      "accessLvl": 1000000, 
+      "accessLvl": 10000000, 
       "roleID": 1, 
       "wallet": null, 
       "dispName": "Director", 
@@ -175,7 +111,7 @@
     "fields": {
       "roleType": 1, 
       "description": "Can view the content of other members hangars (in stations where the corporation has an office)", 
-      "accessLvl": 5, 
+      "accessLvl": 10, 
       "roleID": 512, 
       "wallet": null, 
       "dispName": "Security Officer", 
@@ -847,7 +783,7 @@
     "fields": {
       "roleType": 3, 
       "description": "Can do anything the CEO can do. Including giving roles to anyone.", 
-      "accessLvl": 1000000, 
+      "accessLvl": 10000000, 
       "roleID": 1, 
       "wallet": null, 
       "dispName": "Director", 
@@ -1449,7 +1385,7 @@
     "fields": {
       "roleType": 5, 
       "description": "Can do anything the CEO can do. Including giving roles to anyone.", 
-      "accessLvl": 1000000, 
+      "accessLvl": 10000000, 
       "roleID": 1, 
       "wallet": null, 
       "dispName": "Director", 
@@ -2051,7 +1987,7 @@
     "fields": {
       "roleType": 7, 
       "description": "Can do anything the CEO can do. Including giving roles to anyone.", 
-      "accessLvl": 1000000, 
+      "accessLvl": 10000000, 
       "roleID": 1, 
       "wallet": null, 
       "dispName": "Director", 
@@ -2648,85 +2584,31 @@
     }
   }, 
   {
-    "pk": 1, 
-    "model": "api.apikey", 
+    "pk": 181, 
+    "model": "roles.role", 
     "fields": {
-      "userID": 0, 
-      "name": "", 
-      "key": "", 
-      "charID": 0
+      "roleType": 2, 
+      "description": "Can set standings for the corporation.", 
+      "accessLvl": 10000, 
+      "roleID": 17179869184, 
+      "wallet": null, 
+      "dispName": "Diplomat", 
+      "roleName": "roleDiplomat", 
+      "hangar": null
     }
-  },
+  }, 
   {
-    "pk": "ecm.core.parsers.membertrack.update",
-    "model": "scheduler.scheduledtask",
+    "pk": 182, 
+    "model": "roles.role", 
     "fields": {
-      "is_active": true,
-      "is_running": false,
-      "priority": 30,
-      "frequency": 2,
-      "frequency_units": 3600,
-      "next_execution": "2011-03-10 23:30:39"
-    }
-  },
-  {
-    "pk": "ecm.core.parsers.membersecu.update",
-    "model": "scheduler.scheduledtask",
-    "fields": {
-      "is_active": true,
-      "is_running": false,
-      "priority": 12,
-      "frequency": 2,
-      "frequency_units": 3600,
-      "next_execution": "2011-03-10 23:30:52"
-    }
-  },
-  {
-    "pk": "ecm.core.parsers.assets.update",
-    "model": "scheduler.scheduledtask",
-    "fields": {
-      "is_active": true,
-      "is_running": false,
-      "priority": 0,
-      "frequency": 6,
-      "frequency_units": 3600,
-      "next_execution": "2011-03-11 03:24:13"
-    }
-  },
-  {
-    "pk": "ecm.core.parsers.corp.update",
-    "model": "scheduler.scheduledtask",
-    "fields": {
-      "is_active": true,
-      "is_running": false,
-      "priority": 0,
-      "frequency": 12,
-      "frequency_units": 3600,
-      "next_execution": "2011-03-11 09:10:25"
-    }
-  },
-  {
-    "pk": "ecm.core.parsers.outposts.update",
-    "model": "scheduler.scheduledtask",
-    "fields": {
-      "is_active": true,
-      "is_running": false,
-      "priority": 0,
-      "frequency": 12,
-      "frequency_units": 3600,
-      "next_execution": "2011-03-11 09:22:04"
-    }
-  },
-  {
-    "pk": "ecm.core.parsers.titles.update",
-    "model": "scheduler.scheduledtask",
-    "fields": {
-      "is_active": true,
-      "is_running": false,
-      "priority": 0,
-      "frequency": 6,
-      "frequency_units": 3600,
-      "next_execution": "2011-03-11 03:30:13"
+      "roleType": 1, 
+      "description": "Can set standings for the corporation.", 
+      "accessLvl": 10000, 
+      "roleID": 17179869184, 
+      "wallet": null, 
+      "dispName": "Diplomat", 
+      "roleName": "roleDiplomat", 
+      "hangar": null
     }
   }
 ]

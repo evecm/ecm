@@ -108,6 +108,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "ecm.core.context_processors.corporation_name"
 )
 
+FIXTURE_DIRS = (
+    resolvePath("fixtures/auth/"),
+)
+
 #TEMPLATE_STRING_IF_INVALID = '%s'
 
 INSTALLED_APPS = (
@@ -129,5 +133,5 @@ INSTALLED_APPS = (
 )
 
 
-DIRECTOR_GROUP_NAME = "Dirlos"
+DIRECTOR_GROUP_NAME = "Directors"
 CRON_USERNAME = "cron"

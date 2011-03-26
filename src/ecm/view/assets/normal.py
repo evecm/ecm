@@ -47,12 +47,16 @@ def stations(request):
         divisions, divisions_str = None, None
         for h in all_hangars: h.checked = False
     
-    data = {  'station_list' : getStations(divisions),
+    stations = getStations(divisions)
+    data = {  'station_list' : stations,
                  'divisions' : divisions, # divisions to show
              'divisions_str' : divisions_str,
                    'hangars' : all_hangars,
                  'scan_date' : getScanDate(DbAsset.__name__) }
+    if stations:
     return render_to_response("assets/assets.html", data, context_instance=RequestContext(request))
+    else:
+        return render_to_response("assets/assets_no_data.html", context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
