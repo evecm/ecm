@@ -1,0 +1,83 @@
+[
+  {
+    "pk": "ecm.core.parsers.membertrack.update", 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 30, 
+      "frequency": 2, 
+      "frequency_units": 3600, 
+      "next_execution": "2011-03-22 00:29:58"
+    }
+  }, 
+  {
+    "pk": "ecm.core.parsers.membersecu.update", 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 12, 
+      "frequency": 2, 
+      "frequency_units": 3600, 
+      "next_execution": "2011-03-22 00:32:14"
+    }
+  }, 
+  {
+    "pk": "ecm.core.parsers.assets.update", 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 0, 
+      "frequency": 6, 
+      "frequency_units": 3600, 
+      "next_execution": "2011-03-22 04:32:36"
+    }
+  }, 
+  {
+    "pk": "ecm.core.parsers.corp.update", 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 0, 
+      "frequency": 12, 
+      "frequency_units": 3600, 
+      "next_execution": "2011-03-22 10:32:42"
+    }
+  }, 
+  {
+    "pk": "ecm.core.parsers.outposts.update", 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 0, 
+      "frequency": 12, 
+      "frequency_units": 3600, 
+      "next_execution": "2011-03-22 10:32:46"
+    }
+  }, 
+  {
+    "pk": "ecm.core.parsers.titles.update", 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 0, 
+      "frequency": 6, 
+      "frequency_units": 3600, 
+      "next_execution": "2011-03-22 04:32:50"
+    }
+  }, 
+  {
+    "pk": "ecm.data.roles.models.RoleMemberDiff", 
+    "model": "scheduler.garbagecollector", 
+    "fields": {
+      "age_units": 18144000, 
+      "min_entries_threshold": 10000, 
+      "max_age_threshold": 6
+    }
+  }
+]
