@@ -94,11 +94,13 @@ def resolveLocationName(locationID):
                 station = row
                 break
             if station == None or station[1] in CONQUERABLE_STATIONS :
-                setCachedOutpost(locationID, Outpost.objects.get(stationID=locationID).stationName)
+                o = Outpost.objects.get(stationID=locationID)
+                setCachedOutpost(locationID, "%s (%s)" %(o.stationName,resolveLocationName(o.solarSystemID)))
             else :
                 setCachedLocation(locationID, station[0])
         else :
-            setCachedOutpost(locationID, Outpost.objects.get(stationID=locationID).stationName)
+            o = Outpost.objects.get(stationID=locationID)
+            setCachedOutpost(locationID, "%s (%s)" %(o.stationName,resolveLocationName(o.solarSystemID)))
         
         try:
             return getCachedLocation(locationID)
