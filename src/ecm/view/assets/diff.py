@@ -39,10 +39,13 @@ def last_stations(request):
     datesDb = datesDb.filter(date__gte=oldest_date)
     datesDb = datesDb.filter(date__lte=newest_date)
     
-    date_str = datetime.strftime(datesDb[0]["date"], DATE_PATTERN)
+    try:
+        date_str = datetime.strftime(datesDb[0]["date"], DATE_PATTERN)
+        return redirect("/assets/changes/%s?since_weeks=%d&to_weeks=%d" % (date_str, since_weeks, to_weeks))
+    except:
+        return render_to_response("assets/assets_no_data.html", context_instance=RequestContext(request))
 
 
-    return redirect("/assets/changes/%s?since_weeks=%d&to_weeks=%d" % (date_str, since_weeks, to_weeks))
 
 #------------------------------------------------------------------------------
 @user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
