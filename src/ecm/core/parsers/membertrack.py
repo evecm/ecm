@@ -9,12 +9,9 @@ from ecm.data.roles.models import Member, MemberDiff
 from ecm.core.api import connection
 from ecm.core.parsers import utils
 from ecm.core.db import resolveLocationName
-from ecm import settings
 
-import logging.config
-
-logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
-logger = logging.getLogger("parser_membertrack")
+import logging
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
@@ -103,12 +100,10 @@ def update():
         logger.debug("DATABASE UPDATED!")
         logger.info("members updated")
     
-    except Exception, e:
+    except Exception:
         # error catched, rollback changes
         transaction.rollback()
-        import sys, traceback
-        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
-        logger.error("".join(errortrace))
+        logger.exception("update failed")
         raise
 
 

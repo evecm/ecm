@@ -54,7 +54,7 @@ def stations(request):
                    'hangars' : all_hangars,
                  'scan_date' : getScanDate(DbAsset.__name__) }
     if stations:
-    return render_to_response("assets/assets.html", data, context_instance=RequestContext(request))
+        return render_to_response("assets/assets.html", data, context_instance=RequestContext(request))
     else:
         return render_to_response("assets/assets_no_data.html", context_instance=RequestContext(request))
 

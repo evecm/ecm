@@ -40,7 +40,7 @@ def last_stations(request):
     datesDb = datesDb.filter(date__lte=newest_date)
     
     try:
-    date_str = datetime.strftime(datesDb[0]["date"], DATE_PATTERN)
+        date_str = datetime.strftime(datesDb[0]["date"], DATE_PATTERN)
         return redirect("/assets/changes/%s?since_weeks=%d&to_weeks=%d" % (date_str, since_weeks, to_weeks))
     except:
         return render_to_response("assets/assets_no_data.html", context_instance=RequestContext(request))

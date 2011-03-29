@@ -22,20 +22,6 @@ class UpdateDate(models.Model):
     def __unicode__(self):
         return "%s updated %s" % (unicode(self.model_name), unicode(self.date))
     
-    
-#------------------------------------------------------------------------------
-class RefType(models.Model):
-    """
-    Wallet journal entry transaction type
-    """
-    
-    refTypeID = models.PositiveSmallIntegerField(primary_key=True)
-    refTypeName = models.CharField(max_length=64)
-    
-    def __unicode__(self):
-        return unicode(self.refTypeName)
-    
-    
 #------------------------------------------------------------------------------
 class Outpost(models.Model):
     stationID = models.PositiveIntegerField(primary_key=True)

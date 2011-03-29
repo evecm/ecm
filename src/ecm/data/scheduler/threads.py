@@ -7,13 +7,8 @@ Created on 9 mars 2011
 from threading import Thread
 from datetime import datetime, timedelta
 
-import logging.config
-from ecm import settings
-
-
-
-logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
-logger = logging.getLogger("scheduler")
+import logging
+logger = logging.getLogger(__name__)
 
 
 

@@ -11,12 +11,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from ecm.core.parsers.utils import checkApiVersion, markUpdated
 
-from ecm import settings
-
-import logging.config
-
-logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
-logger = logging.getLogger("parser_corp")
+import logging
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
@@ -135,7 +131,5 @@ def update():
     except Exception, e:
         # error catched, rollback changes
         transaction.rollback()
-        import sys, traceback
-        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
-        logger.error("".join(errortrace))
+        logger.exception("update failed")
         raise

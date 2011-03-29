@@ -6,14 +6,14 @@ Created on 3 juin 2010
 '''
 
 
-from ecm.data.wallets.models import JournalEntry
+from ecm.data.wallets.models import AccountingEntry
 from django.contrib import admin
 
 #------------------------------------------------------------------------------
 
-class JournalEntryAdmin(admin.ModelAdmin):
-    list_display = ['wallet', 'date', 'refTypeID', 'ownerName1', 'ownerName2', 'amount', 'balance', 'reason']
-    search_fields = ['wallet', 'ownerName1', 'ownerName2', 'date']
-    list_filter = ['wallet']
+class AccountingEntryAdmin(admin.ModelAdmin):
+    list_display = ['wallet', 'date', 'type', 'ownerName1', 'ownerName2', 'amount', 'balance', 'reason']
+    search_fields = ['ownerName1', 'ownerName2', 'date']
+    list_filter = ['wallet', 'type']
     
-admin.site.register(JournalEntry, JournalEntryAdmin)
+admin.site.register(AccountingEntry, AccountingEntryAdmin)

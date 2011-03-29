@@ -9,10 +9,26 @@ from django.db import models
 from ecm.data.corp.models import Wallet
 
 #------------------------------------------------------------------------------
-class JournalEntry(models.Model):
-    wallet        = models.ForeginKey(Wallet, db_index=True) # accountKey
+class EntryType(models.Model):
+    """
+    Wallet journal entry transaction type
+    """
+    
+    refTypeID = models.PositiveSmallIntegerField(primary_key=True)
+    refTypeName = models.CharField(max_length=64)
+    
+    def __unicode__(self):
+        return unicode(self.refTypeName)
+
+
+#------------------------------------------------------------------------------
+class AccountingEntry(models.Model):
+    # should be the primary_key but I take some precautions with CCP and let this as a normal field
+    refID         = models.BigIntegerField()
+    
+    wallet        = models.ForeignKey(Wallet, db_index=True)
     date          = models.DateTimeField()
-    refTypeID     = models.PositiveSmallIntegerField() # type of transaction
+    type          = models.ForeignKey(EntryType, db_index=True) # type of transaction
     
     ownerName1    = models.CharField() # first party of the transaction
     ownerID1      = models.BigIntegerField()

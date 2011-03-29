@@ -15,12 +15,9 @@ from ecm.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
                                       CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS
                                       
 from django.db import transaction
-from ecm import settings
 
-import logging.config
-
-logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
-logger = logging.getLogger("parser_assets")
+import logging
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
@@ -84,9 +81,7 @@ def update():
     except Exception, e:
         # error catched, rollback changes
         transaction.rollback()
-        import sys, traceback
-        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
-        logger.error("".join(errortrace))
+        logger.exception("update failed")
         raise
     
 #------------------------------------------------------------------------------

@@ -14,7 +14,6 @@ def resolvePath(relativePath):
 
 EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
-LOGGING_CONFIG_FILE = resolvePath("logging.ini")
 
 # Django settings for ECM project.
 
@@ -27,12 +26,12 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = resolvePath('db/ECM.db')  # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': resolvePath('db/ECM.db')
+    }
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -72,8 +71,8 @@ SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.load_template_source',
 )
 
@@ -84,6 +83,35 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'ecm_formatter': {
+            'format': '%(asctime)s [%(levelname)-5s] %(name)s - %(message)s'
+        },
+    },
+    'handlers': {
+        'ecm_file_handler': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'ecm_formatter',
+            'level': 'INFO',
+            'filename': resolvePath('logs/ecm.log'),
+            'when': 'midnight', # roll over each day at midnight
+            'backupCount': 15, # keep 15 backup files
+        }
+    },
+    'loggers': {
+        'ecm': {
+            'handlers':['ecm_file_handler'],
+            'propagate': True,
+            'level':'INFO',
+        },
+    }
+}
+
 
 
 # file system cache backend path for unix
@@ -104,7 +132,7 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.core.context_processors.auth",
+    "django.contrib.auth.context_processors.auth",
     "ecm.core.context_processors.corporation_name"
 )
 

@@ -8,14 +8,11 @@ from ecm.data.roles.models import RoleMembership, TitleMembership, RoleMemberDif
     TitleMemberDiff, Member
 from ecm.core.api import connection
 from ecm.core.parsers import utils
-from ecm import settings
 
 from django.db import transaction
 
-import logging.config
-
-logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
-logger = logging.getLogger("parser_membersecu")
+import logging
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
@@ -80,9 +77,7 @@ def update():
     except Exception, e:
         # error catched, rollback changes
         transaction.rollback()
-        import sys, traceback
-        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
-        logger.error("".join(errortrace))
+        logger.exception("update failed")
         raise
 
 #------------------------------------------------------------------------------
