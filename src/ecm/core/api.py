@@ -1,9 +1,34 @@
-'''
-This file is part of EVE Corporation Management
+"""
+The MIT License - EVE Corporation Management
 
-Created on 10 apr. 2010
-@author: diabeteman
-'''
+Copyright (c) 2010 Robin Jarry
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
+__date__ = "2010-03-23"
+__author__ = "diabeteman"
+
+from ecm.lib import eveapi
+from ecm.data.common.models import APIKey
+from django.core.exceptions import ObjectDoesNotExist
+
 import cPickle
 import os
 import tempfile
@@ -11,7 +36,33 @@ import time
 import zlib
 from datetime import datetime
 
+#------------------------------------------------------------------------------
+def get_api():
+    try:
+        return APIKey.objects.all().order_by("-id")[0]
+    except IndexError:
+        raise ObjectDoesNotExist("There is no APIKey registered in the database")
 
+def set_api(api_new):
+    try:
+        api = APIKey.objects.all().order_by("-id")[0]
+    except IndexError:
+        api = APIKey()
+    api.name = api_new.name
+    api.userID = api_new.userID
+    api.charID = api_new.charID
+    api.key = api_new.key
+    api.save()
+
+def connect(proxy=None, cache=False):
+    if cache : handler = CacheHandler()
+    else     : handler = None
+    conn = eveapi.EVEAPIConnection(cacheHandler=handler, proxy=proxy)
+    api = get_api()
+    return conn.auth(userID=api.userID, apiKey=api.key)
+
+
+#------------------------------------------------------------------------------
 class CacheHandler(object):
     # Note: this is an example handler to demonstrate how to use them.
     # a -real- handler should probably be thread-safe and handle errors

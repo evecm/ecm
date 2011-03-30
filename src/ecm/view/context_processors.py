@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 The MIT License - EVE Corporation Management
 
@@ -23,11 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-__date__ = "2010-05-17"
-__author__ = "diabeteman"
+'''
+This file is part of ECM
 
-import setenv
+Created on 19 feb. 2011
+@author: diabeteman
+'''
 
-from ecm.core.parsers import outposts
+from ecm.data.corp.models import Corp
+from django.core.exceptions import ObjectDoesNotExist
 
-outposts.update()
+def corporation_name(request):
+    try:
+        return { "corp_name" : Corp.objects.get(id=1).corporationName }
+    except ObjectDoesNotExist:
+        return { "corp_name" : "No Corporation" }

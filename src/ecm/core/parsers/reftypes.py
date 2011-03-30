@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 The MIT License - EVE Corporation Management
 
@@ -23,11 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-__date__ = "2010-05-17"
+__date__ = "2010-03-29"
 __author__ = "diabeteman"
 
-import setenv
 
-from ecm.core.parsers import outposts
 
-outposts.update()
+
+

@@ -1,13 +1,34 @@
-'''
-This file is part of EVE Corporation Management
+"""
+The MIT License - EVE Corporation Management
 
-Created on 23 mar. 2010
-@author: diabeteman
-'''
+Copyright (c) 2010 Robin Jarry
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
+__date__ = "2010-03-23"
+__author__ = "diabeteman"
+
 
 
 from ecm.data.assets.models import DbAsset, DbAssetDiff
-from ecm.core.api import connection
+from ecm.core import api
 from ecm.core.parsers import utils
 from ecm.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
                                       HANGAR_FLAG, BOOKMARK_TYPEID,\
@@ -29,8 +50,8 @@ def update():
     """
     try:
         logger.info("fetching /corp/AssetList.xml.aspx...")
-        api = connection.connect()
-        apiAssets = api.corp.AssetList(characterID=connection.get_api().charID)
+        api_conn = api.connect()
+        apiAssets = api_conn.corp.AssetList(characterID=api.get_api().charID)
         utils.checkApiVersion(apiAssets._meta.version)
         
         currentTime = apiAssets._meta.currentTime
@@ -77,8 +98,7 @@ def update():
         transaction.commit()
         logger.debug("DATABASE UPDATED!")
         logger.info("assets updated")
-
-    except Exception, e:
+    except:
         # error catched, rollback changes
         transaction.rollback()
         logger.exception("update failed")
