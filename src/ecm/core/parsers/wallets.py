@@ -111,13 +111,9 @@ def fetch_entries(wallet, lastKnownID):
     # we sort the entries backwards in order to remove 
     # the ones we already have in the database
     entries.reverse()
-    i = 0
-    while i < len(entries):
-        if entries[i].refID > lastKnownID:
-            # no need to go further, as refIDs are sorted in increasing order
-            break
-        else:
-            # we already have this entry, no need to keep it
-            del entries[i]
+    
+    while not (len(entries) == 0 or entries[0].refID < lastKnownID):
+        # we already have this entry, no need to keep it
+        del entries[0]
     
     return entries
