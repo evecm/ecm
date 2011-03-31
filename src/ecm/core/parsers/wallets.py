@@ -108,9 +108,9 @@ def fetch_entries(wallet, lastKnownID):
         entries.extend(list(walletsApi.entries))
         minID = min([e.refID for e in walletsApi.entries])
     
-    # we sort the entries backwards in order to remove 
+    # we sort the entries by increasing refID in order to remove 
     # the ones we already have in the database
-    entries.reverse()
+    entries.sort(key=lambda e: e.refID)
     
     while not (len(entries) == 0 or entries[0].refID < lastKnownID):
         # we already have this entry, no need to keep it
