@@ -1,21 +1,39 @@
-'''
-This file is part of EVE Corporation Management
+# The MIT License - EVE Corporation Management
+# 
+# Copyright (c) 2010 Robin Jarry
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 
-Created on 11 feb. 2010
-@author: diabeteman
-'''
+__date__ = "2010-02-11"
+__author__ = "diabeteman"
+
+
+
 from ecm.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff, Member
-from ecm.core.api import connection
+from ecm.core import api
 from ecm.core.parsers import utils
-from ecm import settings
 
 from django.db import transaction
 
-import logging.config
-
-logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
-logger = logging.getLogger("parser_membersecu")
+import logging
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
@@ -30,9 +48,9 @@ def update():
     try:
         logger.info("fetching /corp/MemberSecurity.xml.aspx...")
         # connect to eve API
-        api = connection.connect()
+        api_conn = api.connect()
         # retrieve /corp/MemberTracking.xml.aspx
-        memberSecuApi = api.corp.MemberSecurity(characterID=connection.get_api().charID)
+        memberSecuApi = api_conn.corp.MemberSecurity(characterID=api.get_api().charID)
         utils.checkApiVersion(memberSecuApi._meta.version)
         
         currentTime = memberSecuApi._meta.currentTime
@@ -77,12 +95,10 @@ def update():
         logger.debug("DATABASE UPDATED!")
         logger.info("member roles/titles updated")
 
-    except Exception, e:
+    except:
         # error catched, rollback changes
         transaction.rollback()
-        import sys, traceback
-        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
-        logger.error("".join(errortrace))
+        logger.exception("update failed")
         raise
 
 #------------------------------------------------------------------------------

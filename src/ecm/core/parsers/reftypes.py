@@ -20,63 +20,51 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__date__ = "2010-04-08"
+__date__ = "2010-03-29"
 __author__ = "diabeteman"
 
 
-
-
-
-from ecm.core import api
-from ecm.core.parsers.utils import checkApiVersion, markUpdated
-from ecm.core import db
-from ecm.data.common.models import Outpost
-
 from django.db import transaction
-
+from ecm.core import api
+from ecm.core.parsers.utils import checkApiVersion
+from ecm.data.accounting.models import EntryType
 import logging
+
+
 logger = logging.getLogger(__name__)
+
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
 def update():
-    """
-    Retrieve all corp assets and calculate the changes.
-    
-    If there's an error, nothing is written in the database
-    """
-    
     try:
-        logger.info("fetching /eve/ConquerableStationList.xml.aspx...")
+        logger.info("fetching /eve/RefTypes.xml.aspx...")
+        # connect to eve API
         api_conn = api.connect()
-        apiOutposts = api_conn.eve.ConquerableStationList()
-        checkApiVersion(apiOutposts._meta.version)
-        
-        currentTime = apiOutposts._meta.currentTime
-        cachedUntil = apiOutposts._meta.cachedUntil
+        # retrieve /corp/CorporationSheet.xml.aspx
+        typesApi = api_conn.eve.RefTypes()
+        checkApiVersion(typesApi._meta.version)
+
+        currentTime = typesApi._meta.currentTime
+        cachedUntil = typesApi._meta.cachedUntil
         logger.debug("current time : %s", str(currentTime))
         logger.debug("cached util : %s", str(cachedUntil))
-        
         logger.debug("parsing api response...")
-        Outpost.objects.all().delete()
-        for outpost in apiOutposts.outposts :
-            Outpost(stationID=outpost.stationID,
-                    stationName=outpost.stationName,
-                    stationTypeID=outpost.stationTypeID,
-                    solarSystemID=outpost.solarSystemID,
-                    corporationID=outpost.corporationID,
-                    corporationName=outpost.corporationName).save()
-        # we store the update time of the table
-        markUpdated(model=Outpost, date=currentTime)
-                    
-        logger.info("%d outposts parsed", len(apiOutposts.outposts))
-        logger.debug("saving data to the database...")
+        
+        
+        for type in typesApi.refTypes:
+            entryType = EntryType()
+            entryType.refTypeID = type.refTypeID
+            entryType.refTypeName = type.refTypeName
+            entryType.save()
+        
+        logger.debug("Saving to database...")
         transaction.commit()
-        db.invalidateCache()
-        logger.debug("update sucessfull")
-        logger.info("outposts updated")
+        logger.info("Update successfull")
     except:
         # error catched, rollback changes
         transaction.rollback()
         logger.exception("update failed")
-        raise
+
+
+

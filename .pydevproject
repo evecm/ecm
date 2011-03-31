@@ -7,7 +7,5 @@
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/EVE Corp Management/src</path>
 </pydev_pathproperty>
-<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
-<path>C:\Users\diabeteman</path>
-</pydev_pathproperty>
+
 </pydev_project>

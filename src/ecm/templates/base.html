@@ -1,4 +1,4 @@
-﻿<!-- {% block page %}{% endblock %} -->
+<!-- {% block page %}{% endblock %} -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
@@ -122,15 +122,6 @@
               <!--[if lte IE 6]></td></tr></table></a><![endif]-->
             </li>
           </ul>    
-          
-          {% if user.is_superuser or user.is_staff %}
-                    <!-- Navigation item -->
-          <ul>
-            <li><a href="/tasks">Tasks<!--[if IE 7]><!--></a><!--<![endif]-->
-            </li>
-          </ul>
-          {% endif %}
-
         </div>
 	  </div>
       {% endblock %}
