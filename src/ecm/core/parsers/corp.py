@@ -1,22 +1,40 @@
-'''
-This file is part of EVE Corporation Management
+# The MIT License - EVE Corporation Management
+# 
+# Copyright (c) 2010 Robin Jarry
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 
-Created on 8 feb. 2010
-@author: diabeteman
-'''
+__date__ = "2010-02-08"
+__author__ = "diabeteman"
+
+
+
+
 from ecm.data.corp.models import Corp, Hangar, Wallet
-from ecm.core.api import connection
+from ecm.core import api
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from ecm.core.parsers.utils import checkApiVersion, markUpdated
 
-from ecm import settings
-
-import logging.config
-
-logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
-logger = logging.getLogger("parser_corp")
+import logging
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
@@ -29,9 +47,9 @@ def update():
     try:
         logger.info("fetching /corp/CorporationSheet.xml.aspx...")
         # connect to eve API
-        api = connection.connect()
+        api_conn = api.connect()
         # retrieve /corp/CorporationSheet.xml.aspx
-        corpApi = api.corp.CorporationSheet(characterID=connection.get_api().charID)
+        corpApi = api_conn.corp.CorporationSheet(characterID=api.get_api().charID)
         checkApiVersion(corpApi._meta.version)
 
         currentTime = corpApi._meta.currentTime
@@ -44,7 +62,7 @@ def update():
             allianceName = corpApi.allianceName
             allianceID   = corpApi.allianceID
             allianceTicker = ""
-            alliancesApi = api.eve.AllianceList()
+            alliancesApi = api_conn.eve.AllianceList()
             for a in alliancesApi.alliances:
                 if a.allianceID == allianceID:
                     allianceTicker = a.shortName
@@ -105,6 +123,7 @@ def update():
             h_name = hangarDiv.description
             try:
                 h = Hangar.objects.get(hangarID=h_id)
+                h.name = h_name
             except ObjectDoesNotExist:
                 h = Hangar(hangarID=h_id, name=h_name)
             logger.debug("  %s [%d]", h.name, h.hangarID)
@@ -119,6 +138,7 @@ def update():
             w_name = walletDiv.description
             try:
                 w = Wallet.objects.get(walletID=w_id)
+                w.name = w_name
             except ObjectDoesNotExist:
                 w = Wallet(walletID=w_id, name=w_name)
             logger.debug("  %s [%d]", w.name, w.walletID)
@@ -132,10 +152,8 @@ def update():
         transaction.commit()
         logger.debug("DATABASE UPDATED!")
         logger.info("corp info updated")
-    except Exception, e:
+    except:
         # error catched, rollback changes
         transaction.rollback()
-        import sys, traceback
-        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
-        logger.error("".join(errortrace))
+        logger.exception("update failed")
         raise

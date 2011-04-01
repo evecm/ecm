@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # The MIT License - EVE Corporation Management
 # 
 # Copyright (c) 2010 Robin Jarry
@@ -21,11 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__date__ = "2010-05-17"
+
+__date__ = "2010-06-03"
 __author__ = "diabeteman"
 
-import setenv
 
-from ecm.core.parsers import corp
+from ecm.data.accounting.models import JournalEntry, EntryType
+from django.contrib import admin
 
-corp.update()
+#------------------------------------------------------------------------------
+
+class JournalEntryAdmin(admin.ModelAdmin):
+    list_display = ['wallet', 'date', 'type', 'ownerName1', 'ownerName2', 'amount', 'balance', 'reason']
+    search_fields = ['ownerName1', 'ownerName2', 'date']
+    list_filter = ['wallet', 'type']
+
+class EntryTypeAdmin(admin.ModelAdmin):
+    list_display = ['refTypeID', 'refTypeName']
+    search_fields = ['refTypeName']
+
+admin.site.register(JournalEntry, JournalEntryAdmin)
+admin.site.register(EntryType, EntryTypeAdmin)

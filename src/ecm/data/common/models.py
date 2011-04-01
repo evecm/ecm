@@ -1,3 +1,25 @@
+# The MIT License - EVE Corporation Management
+# 
+# Copyright (c) 2010 Robin Jarry
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
 '''
 This file is part of EVE Corporation Management
 
@@ -8,6 +30,23 @@ Created on 17 mai 2010
 
 
 from django.db import models
+
+#------------------------------------------------------------------------------
+class APIKey(models.Model):
+    """
+    Represents API credentials that will be used to connect to CCP server
+    """
+    
+    name = models.CharField(max_length=64)
+    userID = models.IntegerField()
+    charID = models.IntegerField()
+    key = models.CharField(max_length=64)
+    
+    def __eq__(self, other):
+        return (self.userID == other.userID) and (self.charID == other.charID)
+
+    def __unicode__(self):
+        return u'%s - userID: %d apiKey: %s' % (self.name, self.userID, self.key)
 
 
 #------------------------------------------------------------------------------
@@ -21,20 +60,6 @@ class UpdateDate(models.Model):
     
     def __unicode__(self):
         return "%s updated %s" % (unicode(self.model_name), unicode(self.date))
-    
-    
-#------------------------------------------------------------------------------
-class RefType(models.Model):
-    """
-    Wallet journal entry transaction type
-    """
-    
-    refTypeID = models.PositiveSmallIntegerField(primary_key=True)
-    refTypeName = models.CharField(max_length=64)
-    
-    def __unicode__(self):
-        return unicode(self.refTypeName)
-    
     
 #------------------------------------------------------------------------------
 class Outpost(models.Model):

@@ -1,20 +1,38 @@
-'''
-This file is part of EVE Corporation Management
+# The MIT License - EVE Corporation Management
+# 
+# Copyright (c) 2010 Robin Jarry
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 
-Created on 9 feb. 2010
-@author: diabeteman
-'''
+__date__ = "2010-02-09"
+__author__ = "diabeteman"
+
+
+
 from django.db import transaction
 from ecm.data.roles.models import Member, MemberDiff
-from ecm.core.api import connection
+from ecm.core import api
 from ecm.core.parsers import utils
 from ecm.core.db import resolveLocationName
-from ecm import settings
 
-import logging.config
-
-logging.config.fileConfig(settings.LOGGING_CONFIG_FILE)
-logger = logging.getLogger("parser_membertrack")
+import logging
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
@@ -29,9 +47,9 @@ def update():
     try:
         logger.info("fetching /corp/MemberTracking.xml.aspx...")
         # connect to eve API
-        api = connection.connect()
+        api_conn = api.connect()
         # retrieve /corp/MemberTracking.xml.aspx
-        membersApi = api.corp.MemberTracking(characterID=connection.get_api().charID)
+        membersApi = api_conn.corp.MemberTracking(characterID=api.get_api().charID)
         utils.checkApiVersion(membersApi._meta.version)
         
         currentTime = membersApi._meta.currentTime
@@ -103,12 +121,10 @@ def update():
         logger.debug("DATABASE UPDATED!")
         logger.info("members updated")
     
-    except Exception, e:
+    except:
         # error catched, rollback changes
         transaction.rollback()
-        import sys, traceback
-        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
-        logger.error("".join(errortrace))
+        logger.exception("update failed")
         raise
 
 
