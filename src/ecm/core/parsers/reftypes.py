@@ -20,50 +20,51 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-__date__ = "2011-03-14"
+__date__ = "2010-03-29"
 __author__ = "diabeteman"
 
 
-
 from django.db import transaction
-
-
+from ecm.core import api
+from ecm.core.parsers.utils import checkApiVersion
+from ecm.data.accounting.models import EntryType
 import logging
-from ecm.data.scheduler.models import GarbageCollector
+
 
 logger = logging.getLogger(__name__)
 
 
+#------------------------------------------------------------------------------
 @transaction.commit_manually
-def run():
+def update():
     try:
-        count = 0
-        for collector in GarbageCollector.objects.all():
-            count += collect_garbage(collector)
+        logger.info("fetching /eve/RefTypes.xml.aspx...")
+        # connect to eve API
+        api_conn = api.connect()
+        # retrieve /corp/CorporationSheet.xml.aspx
+        typesApi = api_conn.eve.RefTypes()
+        checkApiVersion(typesApi._meta.version)
+
+        currentTime = typesApi._meta.currentTime
+        cachedUntil = typesApi._meta.cachedUntil
+        logger.debug("current time : %s", str(currentTime))
+        logger.debug("cached util : %s", str(cachedUntil))
+        logger.debug("parsing api response...")
         
-        logger.debug("commiting modifications to database...")
+        
+        for type in typesApi.refTypes:
+            entryType = EntryType()
+            entryType.refTypeID = type.refTypeID
+            entryType.refTypeName = type.refTypeName
+            entryType.save()
+        
+        logger.debug("Saving to database...")
         transaction.commit()
-        logger.info("%d old records deleted" % count)
+        logger.info("Update successfull")
     except:
         # error catched, rollback changes
         transaction.rollback()
-        logger.exception("cleanup failed")
-    
-    
-    
-def collect_garbage(collector):
-    logger.debug("collecting old records for model: %s" % collector.db_table)
-    model = collector.get_model()
-    count = model.objects.all().count()
-    
-    if count > collector.min_entries_threshold:
-        entries = model.objects.filter(date__lt=collector.get_expiration_date())
-        for entry in entries:
-            entry.delete()
-        
-        deleted_entries = entries.count()
-    else:
-        deleted_entries = 0
-    
-    logger.debug("%d entries will be deleted" % deleted_entries)    
-    return deleted_entries
+        logger.exception("update failed")
+
+
+
