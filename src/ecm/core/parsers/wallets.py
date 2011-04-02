@@ -60,7 +60,7 @@ def update_wallet(wallet):
     if not lastKnownID: lastKnownID = 0
     entries = fetch_entries(wallet, lastKnownID)
     
-    logger.info("parsing results...")
+    logger.debug("parsing results...")
     for e in entries: 
         entry = JournalEntry()
         entry.refID      = e.refID
@@ -77,7 +77,7 @@ def update_wallet(wallet):
         entry.balance    = e.balance
         entry.reason     = e.reason
         entry.save()
-    logger.debug("%d entries added in journal" % len(entries))
+    logger.info("%d entries added in journal" % len(entries))
 
 
 def fetch_entries(wallet, lastKnownID):
@@ -95,9 +95,10 @@ def fetch_entries(wallet, lastKnownID):
     minID = min([e.refID for e in walletsApi.entries])
     
     # after the first fetch, we perform "journal walking" 
-    # only if we got 256 entries in the response 
+    # only if we got 256 entries in the response (meaning more to come)
     # or if the lastKnownID is in the current 256 entries
-    while not (len(walletsApi.entries) < 256 or minID < lastKnownID):
+    # (entries are supposed to be sorted by decreasing refIDs)
+    while len(walletsApi.entries) == 256 and minID > lastKnownID:
         logger.info("fetching /corp/WalletJournal.xml.aspx "
                     "(accountKey=%d, fromID=%d)..." % (wallet.walletID, minID))
         walletsApi = api_conn.corp.WalletJournal(characterID=charID, 
@@ -108,16 +109,12 @@ def fetch_entries(wallet, lastKnownID):
         entries.extend(list(walletsApi.entries))
         minID = min([e.refID for e in walletsApi.entries])
     
-    # we sort the entries backwards in order to remove 
+    # we sort the entries by increasing refIDs in order to remove 
     # the ones we already have in the database
-    entries.reverse()
-    i = 0
-    while i < len(entries):
-        if entries[i].refID > lastKnownID:
-            # no need to go further, as refIDs are sorted in increasing order
-            break
-        else:
-            # we already have this entry, no need to keep it
-            del entries[i]
+    entries.sort(key=lambda e: e.refID)
+    
+    while len(entries) != 0 and entries[0].refID < lastKnownID:
+        # we already have this entry, no need to keep it
+        del entries[0]
     
     return entries

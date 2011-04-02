@@ -86,7 +86,21 @@ def print_quantity(number, thousand_separator=" "):
     else:
         return "+ %d%s" % (number, result)
 
-
+#------------------------------------------------------------------------------
+def print_delta(delta):
+    string = ""
+    
+    hours, remainder = divmod(delta.seconds, 3600)
+    minutes = divmod(remainder, 60)[0]
+    
+    if delta.days:  
+        string += "%d day" % delta.days
+        if delta.days > 1: 
+            string += "s"
+        string += " "
+    string += "%dh %dm" % (hours, minutes)
+    
+    return string
 
 #------------------------------------------------------------------------------
 def print_float(number, thousand_separator=" ", decimal_separator=","):

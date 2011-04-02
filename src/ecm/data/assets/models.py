@@ -20,13 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-This file is part of EVE Corporation Management
+__date__ = "2010-03-18"
+__author__ = "diabeteman"
 
-Created on 18 mar. 2010
-@author: diabeteman
-'''
-
+from ecm.core import db
 from django.db import models
 from datetime import datetime
 
@@ -44,6 +41,16 @@ class DbAsset(models.Model):
     hasContents = models.BooleanField(default=False) # true if item container
 
     h = None
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        try:
+            item = db.resolveTypeName(self.typeID)[0]
+            return "<%s x%d>" % (item, self.quantity)
+        except:
+            return "<DbAsset instance at %x>" % id(self)
 
     def __hash__(self):
         if not self.h : 

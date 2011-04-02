@@ -29,6 +29,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.db import models
 from ecm.data.scheduler.validators import FunctionValidator, extract_function, extract_model
+from ecm.core import utils
 
 
 class ScheduledTask(models.Model):
@@ -96,9 +97,7 @@ class ScheduledTask(models.Model):
         delta = self.next_execution - datetime.now()
         if delta < timedelta(0):
             delta = timedelta(0)
-        hours, remainder = divmod(delta.seconds, 3600)
-        minutes = divmod(remainder, 60)[0]
-        return "%dh %dm" % (hours, minutes)
+        return utils.print_delta(delta)
     next_execution_admin_display.short_description = "Next execution"
 
 
@@ -116,7 +115,8 @@ class GarbageCollector(models.Model):
         ("ecm.data.roles.models.TitleMemberDiff",   "Title membership history"),
         ("ecm.data.roles.models.MemberDiff",        "Member history"),
         ("ecm.data.roles.models.TitleCompoDiff",    "Titles modifications history"),
-        ("ecm.data.assets.models.DbAssetDiff",      "Assets history")
+        ("ecm.data.assets.models.DbAssetDiff",      "Assets history"),
+        ("ecm.data.accounting.models.JournalEntry", "Wallet journal"),
     )
     
     db_table = models.CharField(max_length=255, primary_key=True, choices=DB_TABLE_CHOICES)
@@ -136,7 +136,7 @@ class GarbageCollector(models.Model):
         return extract_model(self.db_table)
     
     def get_expiration_date(self):
-        return datetime.now() + timedelta(self.max_age_threshold * self.age_units)
+        return datetime.now() + timedelta(seconds=self.max_age_threshold * self.age_units)
     
     
     
