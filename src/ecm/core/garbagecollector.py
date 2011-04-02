@@ -44,13 +44,10 @@ def run():
         logger.debug("commiting modifications to database...")
         transaction.commit()
         logger.info("%d old records deleted" % count)
-    except Exception, e:
+    except:
         # error catched, rollback changes
         transaction.rollback()
-        import sys, traceback
-        errortrace = traceback.format_exception(type(e), e, sys.exc_traceback)
-        logger.error("".join(errortrace))
-        raise
+        logger.exception("cleanup failed")
     
     
     

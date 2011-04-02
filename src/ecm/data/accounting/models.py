@@ -48,9 +48,7 @@ class JournalEntry(models.Model):
     Represents a wallet journal entry that can be fetched from the API
     ad the following url http://api.eve-online.com/corp/WalletJournal.xml.aspx
     """
-    refID         = models.BigIntegerField()
-    # refID should be the primary_key but I take some precautions with CCP 
-    # and let this as a normal field
+    refID         = models.BigIntegerField() # the couple (refID, wallet_id) should be unique 
     wallet        = models.ForeignKey(Wallet, db_index=True)
     date          = models.DateTimeField()
     type          = models.ForeignKey(EntryType, db_index=True) # type of transaction
@@ -67,5 +65,3 @@ class JournalEntry(models.Model):
     class Meta:
         verbose_name = _("Journal Entry")
         verbose_name_plural = _("Journal Entries")
-
-
