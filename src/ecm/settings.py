@@ -103,6 +103,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
+if not os.path.exist(resolvePath("logs")):
+    os.makedirs(resolvePath("logs"))
 
 LOGGING = {
     'version': 1,
