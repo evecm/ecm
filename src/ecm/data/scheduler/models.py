@@ -29,7 +29,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.db import models
 from ecm.data.scheduler.validators import FunctionValidator, extract_function, extract_model
-from ecm.core import utils
+
 
 
 class ScheduledTask(models.Model):
@@ -94,6 +94,7 @@ class ScheduledTask(models.Model):
     launch_task_admin_display.short_description = "Launch"
     
     def next_execution_admin_display(self):
+        from ecm.core import utils
         delta = self.next_execution - datetime.now()
         if delta < timedelta(0):
             delta = timedelta(0)
