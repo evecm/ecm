@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block headtitle %}User Signup{% endblock %}
+
+{% block main_content %}
+
+
+<form class="signupform" action="/user/create_account" method="post" id="character_form" >{% csrf_token %}
+    {% if form.errors %}
+    <p class="error">{{ form.non_field_errors }}</p>
+    {% endif %} 
+    <fieldset>
+    
+    <span class="label">{{ form.userID.label_tag }}{{ form.userID.errors }}</span>
+    {{ form.userID }}
+    <!-- 
+    <input type="text" disabled="disabled" name="userID" value="{{ form.initial.userID }}"/>
+          -->     
+    <span class="label">{{ form.apiKey.label_tag }}{{ form.apiKey.errors }}</span>
+    {{ form.apiKey }}
+    <!--
+    <input type="text" disabled="disabled" name="apiKey" value="{{ form.initial.apiKey }}"/>
+            -->
+    <p>The API credentials you provided are valid. Please select the character that will be associated with your account as "Main".</p>
+    <p class="time italic">The other characters also members of {{ corp_name }} will be associated with your account as &quot;Alts&quot;.</p>
+    
+    {% for char in form.characters %}
+    <input type="radio" 
+           name="main_character_id" 
+           value="{{ char.characterID }}" 
+           {% if not char.is_corped %}disabled="disabled"{% endif %} />
+           <span {% if not char.is_corped %}class="time"{% endif %}>
+           <b>{{ char.name }}</b> - <i>{{ char.corporationName }}</i></span><br/>
+    {% endfor %}
+    
+    {{ form.character_ids }}    
+    
+    
+    <span class="label">{{ form.username.label_tag }}{{ form.username.errors }}</span>
+    {{ form.username }}
+
+    <span class="label">{{ form.email.label_tag }}{{ form.email.errors }}</span>
+    {{ form.email }}
+
+    <span class="label">{{ form.password1.label_tag }}{{ form.password1.errors }}</span>
+    {{ form.password1 }}
+
+    <span class="label">{{ form.password2.label_tag }}{{ form.password2.errors }}</span>
+    {{ form.password2 }}
+        
+    <p><input type="submit" class="button" value="Create account"  /></p>
+    
+    </fieldset>
+</form>
+    
+
+{% endblock %}

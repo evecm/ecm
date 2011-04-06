@@ -19,6 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+from ecm.data.common.fields import MultiIntegerField
+from ecm.data.roles.models import Member
 
 __date__ = "2011 4 6"
 __author__ = "diabeteman"
@@ -30,7 +32,7 @@ from ecm.data.common.models import UserAPIKey
 from ecm.lib import eveapi
 
 
-class UserSignupForm(forms.Form):
+class UserApiKeyForm(forms.Form):
     userID = forms.IntegerField(label="User ID")
     apiKey = forms.CharField(label="API Key", min_length=64, max_length=64)
     
@@ -65,6 +67,51 @@ class UserSignupForm(forms.Form):
                     raise forms.ValidationError("This account has no character member of %s" % corp.corporationName)
                     
             except eveapi.Error as e:
+                raise forms.ValidationError(str(e))
+
+        return cleaned_data
+
+class AccountCreationForm(forms.Form):
+    userID = forms.IntegerField(label="User ID")
+    apiKey = forms.CharField(label="API Key", min_length=64, max_length=64)
+    character_ids = MultiIntegerField(widget=forms.HiddenInput)
+    main_character_id = forms.IntegerField(label="Main Character")
+
+    username  = forms.SlugField(label="Login Name")
+    email = forms.EmailField(label="E-Mail address")
+    password1 = forms.CharField(widget=forms.PasswordInput, label="Password")
+    password2 = forms.CharField(widget=forms.PasswordInput, label="Password (repeat)")
+    
+    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        
+        userID = cleaned_data.get("userID")
+        apiKey = cleaned_data.get("apiKey")
+        character_ids = cleaned_data.get("character_ids")
+        main_character_id = cleaned_data.get("main_character_id")
+        username = cleaned_data.get("username")
+        email = cleaned_data.get("email")
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+        
+        if not None in (userID, apiKey, character_ids, main_character_id, 
+                        username, email, password1, password2):
+            # test if passwords don't match
+            if not password1 == password2:
+                raise forms.ValidationError("Passwords must match")
+            try:
+                chars = list(Member.objects.filter(characterID__in=character_ids))
+                alt_chars = []
+                main_char = None
+                
+                while len(chars):
+                    if chars[0].characterID == main_character_id:
+                        main_char = chars.pop(0)
+                    else:
+                        alt_chars.append(chars.pop(0))
+            
+            except Exception as e:
                 raise forms.ValidationError(str(e))
 
         return cleaned_data

@@ -66,8 +66,8 @@ urlpatterns = patterns('',
                                              'post_change_redirect' : '/'}), 
     
     
-    (r'^user/signup$',                              signup.create_account),
-    
+    (r'^user/enter_api_key$',                       signup.enter_api_key),
+    (r'^user/create_account$',                      signup.create_account),
     (r'^$',                                         home.home),
     (r'^corp$',                                     common.corp),
     

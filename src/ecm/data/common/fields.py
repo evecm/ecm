@@ -25,6 +25,22 @@ __author__ = "diabeteman"
 
 
 from django import forms
+from django.core.validators import validate_integer
 
 
 
+class MultiIntegerField(forms.Field):
+    def to_python(self, value):
+        "Normalize data to a list of integers."
+        # Return an empty list if no input was given.
+        if not value:
+            return []
+        else:
+            return [ int(i.strip()) for i in value.split(',') ]
+
+    def validate(self, value):
+        "Check if value consists only of valid emails."
+        # Use the parent's handling of required fields, etc.
+        super(MultiIntegerField, self).validate(value)
+        for i in value:
+            validate_integer(i)

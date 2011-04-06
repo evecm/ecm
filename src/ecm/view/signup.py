@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-from ecm.data.common.forms import UserSignupForm
 
 __date__ = "2011 4 5"
 __author__ = "diabeteman"
@@ -37,6 +36,7 @@ from ecm.data.corp.models import Corp
 from ecm.core.auth import basic_auth_required
 from ecm.data.scheduler.models import ScheduledTask
 from ecm.data.scheduler.threads import TaskThread
+from ecm.data.common.forms import UserApiKeyForm, AccountCreationForm
 
 import re
 import httplib as http
@@ -48,18 +48,39 @@ import time
 
 #------------------------------------------------------------------------------
 @csrf_protect
-def create_account(request):
+def enter_api_key(request):
     if request.method == 'POST':
-        form = UserSignupForm(request.POST)
+        form = UserApiKeyForm(request.POST)
         if form.is_valid(): # All validation rules pass
-            template = 'signup/select_character.html'
+            template = 'signup/create_account.html'
+            characters = form.characters
+            data = {
+                'userID': form.cleaned_data['userID'], 
+                'apiKey': form.cleaned_data['apiKey'],
+                'character_ids': ','.join([ str(char.characterID) for char in characters if char.is_corped ])
+            }
+            form = AccountCreationForm(initial=data)
+            form.characters = characters
         else:
-            template = 'signup/signup.html'
-    else:
-        form = UserSignupForm()
-        template = 'signup/signup.html'
+            template = 'signup/enter_api.html'
+    else: # request.method == 'GET'
+        form = UserApiKeyForm() # empty form
+        template = 'signup/enter_api.html'
         
     return render_to_response(template, 
                               { 'form': form }, 
                               context_instance=RequestContext(request))
-    
+
+#------------------------------------------------------------------------------
+@csrf_protect
+def create_account(request):
+    if request.method == 'POST':
+        form = AccountCreationForm(request.POST)
+        if form.is_valid(): # All validation rules pass
+            print "YEAH"
+    else: # request.method == 'GET'
+        return redirect('/user')
+        
+    return render_to_response('signup/create_account.html', 
+                              { 'form': form }, 
+                              context_instance=RequestContext(request))

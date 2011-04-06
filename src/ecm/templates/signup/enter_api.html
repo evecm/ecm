@@ -12,8 +12,10 @@
 
 
 <div class="signupform">
- 
-	<form action="/user/signup" method="post">{% csrf_token %}
+
+<p>Please enter valid API credentials:</p>
+
+	<form action="/user/enter_api_key" method="post" id="api_form">{% csrf_token %}
 	<fieldset>
     {% if form.errors %}
     <p class="error">{{ form.non_field_errors }}</p>
@@ -26,8 +28,10 @@
     
     <p><input type="submit" class="button" value="submit"  /></p>
     </fieldset>
-	
 	</form>
+	
 </div>
+
+
 
 {% endblock %}

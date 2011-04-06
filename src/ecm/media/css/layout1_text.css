@@ -212,9 +212,6 @@
 .main-content ol {margin:0.5em 0 1.0em 20px !important /*Non-IE6*/; margin:0.5em 0 1.0em 25px /*IE6*/;}
 .main-content ol li {list-style-position:outside; margin:0 0 0.2em 0; line-height:1.4em; font-size:120%;}
 
-.main-content ul.errorlist {list-style:none; margin: 0; padding: 0;}
-.main-content ul.errorlist li {margin: 0; padding: 0; list-style-image: none;}
-
 
 
 /***********
@@ -248,14 +245,29 @@ form.filter input { border:1px solid #AAAAAA; background-color:#EEEEEE; width:30
 
 
 .signupform {margin:10px 20px 0 20px; }
-.signupform p {clear:both; margin:0; padding:0;}
-.signupform fieldset {width:350px; border:none; margin: 10px auto 0 auto;}
-.signupform label.top {float:left; width:auto; margin:0 0 2px 0; font-size:110%;}
-.signupform label.right {float:left; width:auto; margin:5px 0 0 0; padding:0 0 0 3px; /*IE6*/; font-size:110%;}
-.signupform span.field input {margin:0 0 5px 0; width:100%; padding:0.1em 0 0.2em 0 !important /*Non-IE6*/; padding:0.2em 0 0.3em 0 /*IE6*/; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
-.signupform input.checkbox {float:left; margin:5px 0 0 0 !important /*Non-IE6*/; margin:2px 0 0 -3px /*IE6*/; border:none;}
-.signupform input.button {float:left; margin:10px 0 5px 0; padding:1px 1.0em; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:110%;}
-.signupform input.button:hover {cursor:pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
+.signupform p { margin:0; padding:0;}
+.signupform fieldset {border:none; margin: 10px auto 0 auto;}
+.signupform * .label { clear:both; display:block; }
+.signupform * .label label { }
+.signupform * .label ul.errorlist { display:inline-block; margin: 0; padding: 0; font-weight:bold; color:rgb(255,0,0);  }
+.signupform * .label ul.errorlist li { display:inline-block; list-style:none;}
+.signupform * label.top {float:left; width:auto; margin:0 0 2px 0; font-size:110%;}
+.signupform * label.right {float:left; width:auto; margin:5px 0 0 0; padding:0 0 0 3px; /*IE6*/; font-size:110%;}
+.signupform * input { clear:both; margin:0 0 5px 0; width:auto; padding:0.1em 0 0.2em 0 !important /*Non-IE6*/; padding:0.2em 0 0.3em 0 /*IE6*/; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
+.signupform * input.checkbox {float:left; margin:5px 0 0 0 !important /*Non-IE6*/; margin:2px 0 0 -3px /*IE6*/; border:none;}
+.signupform * input.button {float:left; margin:10px 0 5px 0; padding:1px 1.0em; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:110%;}
+.signupform * input.button:hover {cursor:pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
+
+
+
+
+
+
+
+
+
+
+
 
 .search_form input.button {margin:10px 0 5px 0; padding:1px 5px; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150);}
 .search_form input.button:hover {cursor:pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
