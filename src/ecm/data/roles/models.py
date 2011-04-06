@@ -23,17 +23,17 @@
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
-
-
 from ecm.data.corp.models import Hangar, Wallet
-
+from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
 
 #------------------------------------------------------------------------------
 class Member(models.Model):
-    
-    DIRECTOR_ACCESS_LVL = 999999999999;
+    """
+    Member of the corporation
+    """
+    DIRECTOR_ACCESS_LVL = 999999999999
 
     characterID = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=128, db_index=True)
@@ -46,20 +46,35 @@ class Member(models.Model):
     ship = models.CharField(max_length=128, default="")
     accessLvl = models.PositiveIntegerField(default=0)
     corped = models.BooleanField(default=True)
+    # cached value of self.getRoles().count() for performance
     extraRoles = models.PositiveIntegerField(default=0)
 
     def getTitles(self):
-        ids = TitleMembership.objects.filter(member=self).values_list("title", flat=True)
+        """
+        Convenience method to get all Titles assigned to one Member.
+        ManyToManyField cannot be used here as the 'Title' class is not defined yet
+        """
+        ids = TitleMembership.objects.filter(member=self).values_list("title", 
+                                                                      flat=True)
         return Title.objects.filter(titleID__in=ids)
     
     def getRoles(self, ignore_director=False):
+        """
+        Convenience method to get all Roles assigned to one Member.
+        ManyToManyField cannot be used here as the 'Role' class is not defined yet
+        """
         if ignore_director:
-            ids = RoleMembership.objects.filter(member=self).exclude(role__roleID=1).values_list("role", flat=True)
+            ids = RoleMembership.objects.filter(member=self)\
+                        .exclude(role__roleID=1).values_list("role", flat=True)
         else:
-            ids = RoleMembership.objects.filter(member=self).values_list("role", flat=True)
+            ids = RoleMembership.objects.filter(member=self)\
+                        .values_list("role", flat=True)
         return Role.objects.filter(id__in=ids)
     
     def getImpliedRoles(self):
+        """
+        Retrieve all Roles assigned to one Member directly or through Titles
+        """
         roles = self.getRoles()
         for t in self.getTitles():
             roles |= t.getRoles()
@@ -67,20 +82,24 @@ class Member(models.Model):
         return roles.distinct()
     
     def isDirector(self):
+        """
+        True if the Member has the role 'Director'
+        """
         return RoleMembership.objects.filter(member=self, role__roleID=1).count() > 0
     
     def getAccessLvl(self):
+        """
+        Calculates the security access level of a member. 
+        It is the sum of single access levels of each Role assigned to him/her.
+        """
         lvl = 0
         if self.isDirector():
-            lvl = self.DIRECTOR_ACCESS_LVL
+            lvl = Member.DIRECTOR_ACCESS_LVL
         else:
             roles = self.getImpliedRoles()
             for r in roles: 
                 lvl += r.getAccessLvl()
         return lvl
-
-    def getTitleChanges(self):
-        return TitleMemberDiff.objects.filter(member=self).order_by("-id")
     
     def __hash__(self):
         return self.characterID
@@ -97,6 +116,9 @@ class Member(models.Model):
 
 #------------------------------------------------------------------------------
 class RoleType(models.Model):
+    """
+    Category of Role
+    """
     typeName = models.CharField(max_length=64, unique=True)
     dispName = models.CharField(max_length=64)
     
@@ -111,53 +133,57 @@ class RoleType(models.Model):
             return self.dispName
         else:
             return self.typeName
-    
-#------------------------------------------------------------------------------
-class Title(models.Model):
-    titleID = models.BigIntegerField(primary_key=True)
-    titleName = models.CharField(max_length=256)
-    members = models.ManyToManyField(Member, through='TitleMembership')
-    tiedToBase = models.BigIntegerField(default=0)
-    accessLvl = models.PositiveIntegerField(default=0)
-    
-    def getRoles(self):
-        ids = TitleComposition.objects.filter(title=self).values_list("role", flat=True)
-        return Role.objects.filter(id__in=ids)
-        
-    def getAccessLvl(self):
-        roles = self.getRoles()
-        lvl = 0
-        for r in roles : lvl += r.getAccessLvl()
-        return lvl
-    
-    def __hash__(self):
-        return self.titleID
-    
-    def __eq__(self, other):
-        return self.titleID == other.titleID
-    
-    def __unicode__(self):
-        return self.titleName
-    
+
 #------------------------------------------------------------------------------
 class Role(models.Model):
+    """
+    A Role gives a Member access to a specific resource of the Corporation.
+    Such as the ability to view the content of a certain hangar division, 
+    to take money from a specific wallet division or the ability to operate 
+    starbase structures on behalf of the corporation.
+    
+    The potential risk of assigning a role to a member is represented by its accessLvl
+    The accessLvl is to be set by the administrators according to the corporation's policies
+        
+    When a Role is related to hangar or wallet divisions, the accessLvl of the Role is
+    that of the Hangar or Wallet division (not sure about my grammar here...)
+    """
     roleType = models.ForeignKey(RoleType, db_index=True)
     roleID = models.IntegerField()
     roleName = models.CharField(max_length=64)
     dispName = models.CharField(max_length=64)
-    members = models.ManyToManyField(Member, through='RoleMembership')
-    titles = models.ManyToManyField(Title, through='TitleComposition')
     description = models.CharField(max_length=256)
     hangar = models.ForeignKey(Hangar, null=True, blank=True)
     wallet = models.ForeignKey(Wallet, null=True, blank=True)
     accessLvl = models.PositiveSmallIntegerField(default=0)
     
+    members = models.ManyToManyField(Member, through='RoleMembership')
+    
     def getAccessLvl(self):
-        if   self.hangar: return self.hangar.accessLvl
-        elif self.wallet: return self.wallet.accessLvl
-        else:             return self.accessLvl
+        """
+        Returns the accessLvl of the Role. 
+        If the Role is related to a Hangar or Wallet division,
+        returns the accessLvl of this division.
+        """
+        if self.hangar:
+            return self.hangar.accessLvl
+        elif self.wallet:
+            return self.wallet.accessLvl
+        else:
+            return self.accessLvl
+        
+    def getTitles(self):
+        """
+        Returns all the corporation Titles that contain this Role.
+        """
+        ids = TitleComposition.objects.filter(role=self).values_list("title", flat=True)
+        return Title.objects.filter(titleID__in=ids)
     
     def getMembersThroughTitles(self, with_direct_roles=False):
+        """
+        Returns all Members that have this role assigned through Titles
+        If with_direct_roles=True, also returns the Members who have this Role assigned directly 
+        """
         if with_direct_roles:
             members = self.members.all()
         else:
@@ -166,6 +192,18 @@ class Role(models.Model):
             members |= title.members.all()
         return members.distinct()
             
+    def getDispName(self):
+        try:
+            name = self.dispName
+            if self.hangar_id :
+                name = name % Hangar.objects.get(hangarID=self.hangar_id).name
+            elif self.wallet_id : 
+                name = name % Wallet.objects.get(walletID=self.wallet_id).name
+            return name
+        except:
+            return self.roleName
+
+
     def __hash__(self):
         return self.id
     
@@ -186,23 +224,48 @@ class Role(models.Model):
     def __getattr__(self, attr_name):
         if attr_name == "name":
             return self.getDispName()
+        elif attr_name == "titles":
+            return self.getTitles()
         else:
             raise AttributeError("Role has no attribute %s" % attr_name)
     
-    def getDispName(self):
-        try:
-            name = self.dispName
-            if self.hangar_id :
-                name = name % Hangar.objects.get(hangarID=self.hangar_id).name
-            elif self.wallet_id : 
-                name = name % Wallet.objects.get(walletID=self.wallet_id).name
-            return name
-        except:
-            return self.roleName
+
 
 
 #------------------------------------------------------------------------------
+class Title(models.Model):
+    """
+    Corporation Title. Titles are an aggregation of multiple Roles
+    """
+    titleID = models.BigIntegerField(primary_key=True)
+    titleName = models.CharField(max_length=256)
+    tiedToBase = models.BigIntegerField(default=0)
+    accessLvl = models.PositiveIntegerField(default=0)
+
+    members = models.ManyToManyField(Member, through='TitleMembership')
+    roles = models.ManyToManyField(Role, through='TitleComposition')
+
+    def getAccessLvl(self):
+        lvl = 0
+        for r in self.roles : 
+            lvl += r.getAccessLvl()
+        return lvl
+    
+    def __hash__(self):
+        return self.titleID
+    
+    def __eq__(self, other):
+        return self.titleID == other.titleID
+    
+    def __unicode__(self):
+        return self.titleName
+    
+
+#------------------------------------------------------------------------------
 class RoleMembership(models.Model):
+    """
+    Represents the assignment of one Role to a Member.
+    """
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
     
@@ -215,17 +278,26 @@ class RoleMembership(models.Model):
         return self.h
     
     def __eq__(self, other):
-        try: return self.member == other.member and self.role == other.role
-        except: return False
+        try: 
+            return self.member == other.member and self.role == other.role
+        except: 
+            return False
     
     def __unicode__(self):
         try:
-            return u'%s has %s (%s)' % (unicode(self.member), unicode(self.role), unicode(self.role.roleType))
+            return u'%s has %s (%s)' % (unicode(self.member), 
+                                        unicode(self.role), 
+                                        unicode(self.role.roleType))
         except:
-            return u'member_id:%d has %s (%s)' % (self.member_id, unicode(self.role), unicode(self.role.roleType))
+            return u'member_id:%d has %s (%s)' % (self.member_id, 
+                                                  unicode(self.role), 
+                                                  unicode(self.role.roleType))
     
 #------------------------------------------------------------------------------
 class TitleMembership(models.Model):
+    """
+    Represents the assignment of one Title to a Member.
+    """
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
     
@@ -250,6 +322,9 @@ class TitleMembership(models.Model):
     
 #------------------------------------------------------------------------------
 class TitleComposition(models.Model):
+    """
+    Represents the association of one Role to a Title.
+    """
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
     
@@ -267,20 +342,28 @@ class TitleComposition(models.Model):
         return unicode(self.title) + u' has ' + unicode(self.role)
 
 
-#========================#
-#  DIFF HISTORY CLASSES  #
-#========================#
-class Diff():
+#------------------------------------------------------------------------------
+class CharacterOwnership(models.Model):
+    """
+    Associates EVE characters to ECM Users
+    """
+    user = models.ForeignKey(User)
+    character = models.ForeignKey(Member)
+    is_main_character = models.BooleanField(default=False)
 
-    def __getattr__(self, attr_name):
-        try:
-            return self.__dict__[attr_name]
-        except KeyError:
-            raise AttributeError("%s has no attribute %s" % (self.__class__.__name__, attr_name))
 
+    def main_or_alt_admin_display(self):
+        if self.is_main_character:
+            return "Main"
+        else:
+            return "Alt"
+    main_or_alt_admin_display.short_description = "Type"
 
 #------------------------------------------------------------------------------
-class TitleCompoDiff(models.Model, Diff):
+class TitleCompoDiff(models.Model):
+    """
+    Represents the unitary modification of a Title (added or removed Role)
+    """
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
     # true if role is new in title, false if role was removed
@@ -293,11 +376,14 @@ class TitleCompoDiff(models.Model, Diff):
         else       : return unicode(self.title) + u' looses ' + unicode(self.role)
         
 #------------------------------------------------------------------------------
-class MemberDiff(models.Model, Diff):
+class MemberDiff(models.Model):
+    """
+    Represents the arrival or departure of a member of the corporation
+    """
     characterID = models.BigIntegerField(db_index=True)
     name = models.CharField(max_length=100, db_index=True)
     nickname = models.CharField(max_length=256, db_index=True)
-    # true if title is new for member, false if title was removed
+    # true if member has been corped. False if he/she has leaved the corporation
     new = models.BooleanField(db_index=True, default=True)
     # date of change
     date = models.DateTimeField(db_index=True, default=datetime.now())
@@ -307,7 +393,10 @@ class MemberDiff(models.Model, Diff):
         else       : return '%s leaved' % self.name
         
 #------------------------------------------------------------------------------
-class TitleMemberDiff(models.Model, Diff):
+class TitleMemberDiff(models.Model):
+    """
+    Represents the change in the assignment of a Title to a Member
+    """
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
     # true if title is new for member, false if title was removed
@@ -324,7 +413,10 @@ class TitleMemberDiff(models.Model, Diff):
         else       : return '%s lost %s' % (membername, self.title.titleName)
     
 #------------------------------------------------------------------------------
-class RoleMemberDiff(models.Model, Diff):
+class RoleMemberDiff(models.Model):
+    """
+    Represents the change in the assignment of a Role to a Member
+    """
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
     # true if role is new for member, false if role was removed

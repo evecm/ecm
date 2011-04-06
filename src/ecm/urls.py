@@ -41,7 +41,7 @@ from ecm.view.roles import list as role_list,\
 from ecm.view.assets import normal as asset_normal,\
                             diff as asset_diff
 
-
+from ecm.view import signup
 
  
 
@@ -65,6 +65,8 @@ urlpatterns = patterns('',
                                             {'template_name' : 'common/password_change.html', 
                                              'post_change_redirect' : '/'}), 
     
+    
+    (r'^user/signup$',                              signup.create_account),
     
     (r'^$',                                         home.home),
     (r'^corp$',                                     common.corp),

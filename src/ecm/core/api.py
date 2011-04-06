@@ -41,6 +41,7 @@ def get_api():
     except IndexError:
         raise ObjectDoesNotExist("There is no APIKey registered in the database")
 
+#------------------------------------------------------------------------------
 def set_api(api_new):
     try:
         api = APIKey.objects.all().order_by("-id")[0]
@@ -52,13 +53,26 @@ def set_api(api_new):
     api.key = api_new.key
     api.save()
 
+#------------------------------------------------------------------------------
 def connect(proxy=None, cache=False):
+    """
+    Creates a connection to the web API with director credentials 
+    """
     if cache : handler = CacheHandler()
     else     : handler = None
     conn = eveapi.EVEAPIConnection(cacheHandler=handler, proxy=proxy)
     api = get_api()
     return conn.auth(userID=api.userID, apiKey=api.key)
 
+#------------------------------------------------------------------------------
+def connect_user(user_api, proxy=None, cache=False):
+    """
+    Creates a connection to the web API with a user's credentials
+    """
+    if cache : handler = CacheHandler()
+    else     : handler = None
+    conn = eveapi.EVEAPIConnection(cacheHandler=handler, proxy=proxy)
+    return conn.auth(userID=user_api.userID, apiKey=user_api.key)
 
 #------------------------------------------------------------------------------
 class CacheHandler(object):

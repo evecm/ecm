@@ -61,7 +61,7 @@ def extract_model(class_str):
     except ImportError:
         raise UserWarning("No such module '%s' in sys.path" % module)
     except KeyError:
-        raise UserWarning("Function '%s' not found in module '%s'" % (module, class_name))
+        raise UserWarning("Model '%s' not found in module '%s'" % (module, class_name))
 
 
 

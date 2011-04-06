@@ -52,9 +52,12 @@
             {% if user.is_authenticated %}
             <li><a href="/user/logout" title="Log out from ECM">Logout</a></li>
             <li><a href="/user/change_password" >Change Password</a></li>
+            {% else %}
+            <li><a href="/user/signup" >Create Account</a></li>
             {% endif %}
+            {% if user.is_staff or user.is_superuser %}
             <li><a href="/admin/" title="Restricted area :-)">Administration</a></li>
-            <li><a href="mailto:postmaster@ecm.com" title="Contact the administrator">Contact</a></li>
+            {% endif %}
           </ul>
         </div>              
       </div>

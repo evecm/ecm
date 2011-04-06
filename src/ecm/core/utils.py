@@ -147,13 +147,13 @@ def merge_lists(list_a, list_b, ascending=True, attribute=None):
     if attribute:
         if ascending:
             while a and b:
-                if a[0].__getattr__(attribute) < b[0].__getattr__(attribute):
+                if getattr(a[0], attribute) < getattr(b[0], attribute):
                     merged_list.append(a.pop(0))
                 else:
                     merged_list.append(b.pop(0))
         else:
             while a and b:
-                if a[0].__getattr__(attribute) > b[0].__getattr__(attribute):
+                if getattr(a[0], attribute) > getattr(b[0], attribute):
                     merged_list.append(a.pop(0))
                 else:
                     merged_list.append(b.pop(0))

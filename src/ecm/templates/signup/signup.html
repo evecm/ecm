@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+
+{% block headtitle %}User Signup{% endblock %}
+
+{% block menu %}{% endblock %}
+
+{% block main_content %}
+
+{% block pagetitle %}{% endblock %}
+
+
+
+<div class="signupform">
+ 
+	<form action="/user/signup" method="post">{% csrf_token %}
+	<fieldset>
+    {% if form.errors %}
+    <p class="error">{{ form.non_field_errors }}</p>
+    {% endif %}	
+    <p> <span class="top">{{ form.userID.label_tag }}</span><br />
+        <span class="field">{{ form.userID }}</span><div class="error">{{ form.userID.errors }}</div></p>
+    
+    <p><span class="top">{{ form.apiKey.label_tag }}</span><br />
+        <span class="field">{{ form.apiKey }}</span><div class="error">{{ form.apiKey.errors }}</div></p>
+    
+    <p><input type="submit" class="button" value="submit"  /></p>
+    </fieldset>
+	
+	</form>
+</div>
+
+{% endblock %}

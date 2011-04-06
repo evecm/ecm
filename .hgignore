@@ -1,0 +1,4 @@
+syntax: glob
+*.pyc
+src/ecm/db/ECM.db
+src/ecm/logs/ecm.log

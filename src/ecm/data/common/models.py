@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+from django.contrib.auth.models import User
 
 '''
 This file is part of EVE Corporation Management
@@ -36,7 +37,6 @@ class APIKey(models.Model):
     """
     Represents API credentials that will be used to connect to CCP server
     """
-    
     name = models.CharField(max_length=64)
     userID = models.IntegerField()
     charID = models.IntegerField()
@@ -48,6 +48,22 @@ class APIKey(models.Model):
     def __unicode__(self):
         return u'%s - userID: %d apiKey: %s' % (self.name, self.userID, self.key)
 
+#------------------------------------------------------------------------------
+class UserAPIKey(models.Model):
+    """
+    API credentials used to associate characters to users
+    """
+    user = models.ForeignKey(User)
+    userID = models.IntegerField()
+    key = models.CharField(max_length=64)
+    is_valid = models.BooleanField(default=True)
+    
+    def is_valid_admin_display(self):
+        if self.is_valid:
+            return "OK"
+        else:
+            return "Invalid"
+    is_valid_admin_display.short_description = "Valid"
 
 #------------------------------------------------------------------------------
 class UpdateDate(models.Model):
@@ -63,6 +79,9 @@ class UpdateDate(models.Model):
     
 #------------------------------------------------------------------------------
 class Outpost(models.Model):
+    """
+    Conquerable station fetched from CCP servers
+    """
     stationID = models.PositiveIntegerField(primary_key=True)
     stationName = models.CharField(max_length=256, default="")
     stationTypeID = models.PositiveIntegerField()
@@ -76,7 +95,9 @@ class Outpost(models.Model):
 
 #------------------------------------------------------------------------------
 class ColorThreshold(models.Model):
-    
+    """
+    Thresholds for security access level coloration.
+    """
     color = models.CharField(max_length=64)
     threshold = models.IntegerField()
     
