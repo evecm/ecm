@@ -19,18 +19,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+__date__ = '2010-05-17'
+__author__ = 'diabeteman'
+
+import re
+import random
+import datetime
+
 from django.contrib.auth.models import User
-
-'''
-This file is part of EVE Corporation Management
-
-Created on 17 mai 2010
-@author: diabeteman
-'''
-
-
-
-from django.db import models
+from django.db import models, transaction
+from django.conf import settings
+from django.utils.hashcompat import sha_constructor
 
 #------------------------------------------------------------------------------
 class APIKey(models.Model):
@@ -53,10 +53,10 @@ class UserAPIKey(models.Model):
     """
     API credentials used to associate characters to users
     """
-    user = models.ForeignKey(User)
-    userID = models.IntegerField()
+    userID = models.IntegerField(primary_key=True)
     key = models.CharField(max_length=64)
     is_valid = models.BooleanField(default=True)
+    user = models.ForeignKey(User)
     
     def is_valid_admin_display(self):
         if self.is_valid:
@@ -64,6 +64,9 @@ class UserAPIKey(models.Model):
         else:
             return "Invalid"
     is_valid_admin_display.short_description = "Valid"
+
+
+
 
 #------------------------------------------------------------------------------
 class UpdateDate(models.Model):
@@ -103,3 +106,84 @@ class ColorThreshold(models.Model):
     
     def __unicode__(self):
         return unicode("%s -> %d" % (self.color, self.threshold))
+
+
+
+
+
+#------------------------------------------------------------------------------
+
+SHA1_RE = re.compile('^[a-f0-9]{40}$')
+
+class RegistrationManager(models.Manager):
+    def activate_user(self, activation_key):
+        # Make sure the key we're trying conforms to the pattern of a
+        # SHA1 hash; if it doesn't, no point trying to look it up in
+        # the database.
+        if SHA1_RE.search(activation_key):
+            try:
+                profile = self.get(activation_key=activation_key)
+            except self.model.DoesNotExist:
+                raise ValueError("Activation key not found")
+            if not profile.activation_key_expired():
+                user = profile.user
+                user.is_active = True
+                user.save()
+                profile.activation_key = self.model.ACTIVATED
+                profile.save()
+                return user
+            else:
+                raise UserWarning("Activation key has expired")
+        else:
+            raise ValueError("Invalid activation key")
+    
+    def create_inactive_user(self, username, email, password):
+        new_user = User.objects.create_user(username, email, password)
+        new_user.is_active = False
+        new_user.save()
+
+        profile = self.create_profile(new_user)
+
+        return new_user, profile
+    create_inactive_user = transaction.commit_on_success(create_inactive_user)
+
+    def create_profile(self, user):
+        salt = sha_constructor(str(random.random())).hexdigest()[:5]
+        username = user.username
+        if isinstance(username, unicode):
+            username = username.encode('utf-8')
+        activation_key = sha_constructor(salt+username).hexdigest()
+        return self.create(user=user, activation_key=activation_key)
+        
+    def delete_expired_users(self):
+        for profile in self.all():
+            if profile.activation_key_expired():
+                user = profile.user
+                if not user.is_active:
+                    user.delete()
+                else:
+                    profile.delete()
+
+
+class RegistrationProfile(models.Model):
+
+    ACTIVATED = u"ALREADY_ACTIVATED"
+    
+    user = models.ForeignKey(User, unique=True, verbose_name='user')
+    activation_key = models.CharField('activation key', max_length=40)
+    
+    objects = RegistrationManager()
+    
+    class Meta:
+        verbose_name = 'registration profile'
+        verbose_name_plural = 'registration profiles'
+    
+    def __unicode__(self):
+        return u"Registration information for %s" % self.user
+    
+    def activation_key_expired(self):
+        expiration_date = datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
+        return self.activation_key == self.ACTIVATED or \
+               (self.user.date_joined + expiration_date <= datetime.datetime.now())
+    activation_key_expired.boolean = True
+

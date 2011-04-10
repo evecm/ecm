@@ -60,7 +60,7 @@ def connect(proxy=None, cache=False):
     """
     if cache : handler = CacheHandler()
     else     : handler = None
-    conn = eveapi.EVEAPIConnection(cacheHandler=handler, proxy=proxy)
+    conn = eveapi.EVEAPIConnection(scheme="https", cacheHandler=handler, proxy=proxy)
     api = get_api()
     return conn.auth(userID=api.userID, apiKey=api.key)
 
@@ -71,7 +71,7 @@ def connect_user(user_api, proxy=None, cache=False):
     """
     if cache : handler = CacheHandler()
     else     : handler = None
-    conn = eveapi.EVEAPIConnection(cacheHandler=handler, proxy=proxy)
+    conn = eveapi.EVEAPIConnection(scheme="http", cacheHandler=handler, proxy=proxy)
     return conn.auth(userID=user_api.userID, apiKey=user_api.key)
 
 #------------------------------------------------------------------------------

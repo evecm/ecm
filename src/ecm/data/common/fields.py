@@ -24,23 +24,29 @@ __date__ = "2011 4 6"
 __author__ = "diabeteman"
 
 
+import string
 from django import forms
-from django.core.validators import validate_integer
+from django.core.exceptions import ValidationError
 
+SPECIAL_CHARS = '!@#$%^&*()[]{}-_+=:;.,<>/"\'~'
 
+class PasswordField(forms.CharField):
 
-class MultiIntegerField(forms.Field):
-    def to_python(self, value):
-        "Normalize data to a list of integers."
-        # Return an empty list if no input was given.
-        if not value:
-            return []
-        else:
-            return [ int(i.strip()) for i in value.split(',') ]
-
+    def __init__(self, max_length=None, min_length=None, *args, **kwargs):
+        forms.CharField.__init__(self, 
+                                 max_length=max_length, 
+                                 min_length=max_length, 
+                                 widget=forms.PasswordInput, *args, **kwargs)
+    
     def validate(self, value):
-        "Check if value consists only of valid emails."
-        # Use the parent's handling of required fields, etc.
-        super(MultiIntegerField, self).validate(value)
-        for i in value:
-            validate_integer(i)
+        super(PasswordField, self).validate(value)
+        passwd = set(value)
+        if len(passwd) <= self.min_length:
+            raise ValidationError('Must be at least %d different characters' % self.min_length)
+        if not passwd.intersection(set(string.digits)):
+            raise ValidationError('Must contain at least one digit')
+        if not (passwd.intersection(set(string.ascii_lowercase)) 
+            and passwd.intersection(set(string.ascii_uppercase))):
+            raise ValidationError('Must contain lower and upper case characters')
+        if not passwd.intersection(set(SPECIAL_CHARS)):
+            raise ValidationError('Must contain at least one special character ' + SPECIAL_CHARS)

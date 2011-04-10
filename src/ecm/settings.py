@@ -65,6 +65,14 @@ TIME_ZONE = 'Europe/Paris'
 LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
+ECM_BASE_URL = "http://ecm.diabeteman.com"
+EMAIL_HOST = "localhost"
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = "" 
+EMAIL_HOST_PASSWORD = ""
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = "admin@ecm.com"
+ACCOUNT_ACTIVATION_DAYS = 2
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -167,6 +175,8 @@ FIXTURE_DIRS = (
 
 #TEMPLATE_STRING_IF_INVALID = '%s'
 
+CAPTCHA_LENGTH = 5
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
@@ -176,6 +186,8 @@ INSTALLED_APPS = (
     'django.contrib.databrowse',
     'django.contrib.sessions',
     'django.contrib.sites',
+    
+    'captcha',
     
     'ecm.data.assets',
     'ecm.data.corp',

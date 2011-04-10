@@ -19,68 +19,80 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+from django.core.mail import send_mail
+from django.core.mail.message import EmailMultiAlternatives
 
 __date__ = "2011 4 5"
 __author__ = "diabeteman"
 
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, HttpResponseRedirect
+from django.template.loader import render_to_string
+from django.db import transaction
+from django.conf import settings
 
-from ecm.data.corp.models import Corp
-from ecm.core.auth import basic_auth_required
-from ecm.data.scheduler.models import ScheduledTask
-from ecm.data.scheduler.threads import TaskThread
-from ecm.data.common.forms import UserApiKeyForm, AccountCreationForm
-
-import re
-import httplib as http
-from datetime import datetime
-from ecm import settings
-import time
-
-
+from ecm.data.common.models import UserAPIKey, RegistrationProfile
+from ecm.data.roles.models import CharacterOwnership
+from ecm.data.common.forms import AccountCreationForm
 
 #------------------------------------------------------------------------------
 @csrf_protect
-def enter_api_key(request):
-    if request.method == 'POST':
-        form = UserApiKeyForm(request.POST)
-        if form.is_valid(): # All validation rules pass
-            template = 'signup/create_account.html'
-            characters = form.characters
-            data = {
-                'userID': form.cleaned_data['userID'], 
-                'apiKey': form.cleaned_data['apiKey'],
-                'character_ids': ','.join([ str(char.characterID) for char in characters if char.is_corped ])
-            }
-            form = AccountCreationForm(initial=data)
-            form.characters = characters
-        else:
-            template = 'signup/enter_api.html'
-    else: # request.method == 'GET'
-        form = UserApiKeyForm() # empty form
-        template = 'signup/enter_api.html'
-        
-    return render_to_response(template, 
-                              { 'form': form }, 
-                              context_instance=RequestContext(request))
-
-#------------------------------------------------------------------------------
-@csrf_protect
+@transaction.commit_on_success
 def create_account(request):
     if request.method == 'POST':
         form = AccountCreationForm(request.POST)
-        if form.is_valid(): # All validation rules pass
-            print "YEAH"
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password1"]
+            email = form.cleaned_data["email"]
+            user, profile = RegistrationProfile.objects.create_inactive_user(username=username, 
+                                                                             email=email, 
+                                                                             password=password)
+            user_api = UserAPIKey()
+            user_api.userID = form.cleaned_data["userID"]
+            user_api.key = form.cleaned_data["apiKey"]
+            user_api.user = user
+            user_api.save()
+            
+            for char in form.characters:
+                if char.is_corped:
+                    owned = CharacterOwnership()
+                    owned.user = user
+                    owned.character_id = char.characterID
+                    owned.save()
+            
+            send_activation_email(request, profile)
+            
+            return render_to_response('signup/account_created.html', 
+                                      { 'form': form }, 
+                                      context_instance=RequestContext(request))
     else: # request.method == 'GET'
-        return redirect('/user')
+        form = AccountCreationForm()
         
     return render_to_response('signup/create_account.html', 
                               { 'form': form }, 
                               context_instance=RequestContext(request))
+
+
+def send_activation_email(request, user_profile):
+    ctx_dict = {'site': settings.ECM_BASE_URL,
+                'user_name': user_profile.user.username,
+                'activation_key': user_profile.activation_key,
+                'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS}
+    subject = render_to_string('common/activation_email_subject.txt',
+                               ctx_dict, context_instance=RequestContext(request))
+    # Email subject *must not* contain newlines
+    subject = ''.join(subject.splitlines())
+    
+    txt_content = render_to_string('common/activation_email.txt',
+                                   ctx_dict, context_instance=RequestContext(request))
+    html_content = render_to_string('common/activation_email.html',
+                                    ctx_dict, context_instance=RequestContext(request))
+    
+    msg = EmailMultiAlternatives(subject, 
+                                 body=txt_content,
+                                 to=[user_profile.user.email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()

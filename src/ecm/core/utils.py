@@ -107,7 +107,7 @@ def print_float(number, thousand_separator=" ", decimal_separator=","):
     if type(number) != type(0.0):
         raise TypeError("Parameter must be a float.")
     decimal_part = ("%.2f" % abs(number - int(number)))[2:]
-    return print_integer(int(number), thousand_separator) + decimal_separator + decimal_part
+    return print_quantity(int(number), thousand_separator) + decimal_separator + decimal_part
 
 #------------------------------------------------------------------------------
 def isDirector(user):

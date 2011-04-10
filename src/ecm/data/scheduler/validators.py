@@ -29,8 +29,7 @@ from django.core.exceptions import ValidationError
 import sys, inspect
 from django.db import models
 
-    
-
+#------------------------------------------------------------------------------
 def extract_function(function_str):
     try:
         module, function = function_str.rsplit('.', 1)
@@ -38,33 +37,17 @@ def extract_function(function_str):
         mod = sys.modules[module]
         func = mod.__dict__[function]
         if not inspect.isfunction(func):
-            raise UserWarning("'%s.%s' is not a function" % (module, function))
+            raise ValidationError("'%s.%s' is not a function" % (module, function))
         return func
     except ValueError:
-        raise UserWarning("No such module: '%s'" % function_str)
+        raise ValidationError("No such module: '%s'" % function_str)
     except ImportError:
-        raise UserWarning("No such module '%s' in sys.path" % module)
+        raise ValidationError("No such module '%s' in sys.path" % module)
     except KeyError:
-        raise UserWarning("Function '%s' not found in module '%s'" % (module, function))
-
-def extract_model(class_str):
-    try:
-        module, class_name = class_str.rsplit('.', 1)
-        __import__(module)
-        mod = sys.modules[module]
-        clazz = mod.__dict__[class_name]
-        if not (inspect.isclass(clazz) and issubclass(clazz, models.Model)):
-            raise UserWarning("'%s.%s' is not a django model" % (module, class_name))
-        return clazz
-    except ValueError:
-        raise UserWarning("No such module: '%s'" % class_str)
-    except ImportError:
-        raise UserWarning("No such module '%s' in sys.path" % module)
-    except KeyError:
-        raise UserWarning("Model '%s' not found in module '%s'" % (module, class_name))
-
-
-
+        raise ValidationError("Function '%s' not found in module '%s'" % (module, function))
+    
+    
+#------------------------------------------------------------------------------
 class FunctionValidator:
     message = 'Enter a valid python function'
     code = 'invalid'
@@ -79,7 +62,69 @@ class FunctionValidator:
         """
         Validates that the input matches a valid function
         """
-        try:
-            return extract_function(value)
-        except UserWarning as w:
-            raise ValidationError(str(w), code=self.code)
+        extract_function(value)
+        
+
+#------------------------------------------------------------------------------
+def extract_model(class_str):
+    try:
+        module, class_name = class_str.rsplit('.', 1)
+        __import__(module)
+        mod = sys.modules[module]
+        clazz = mod.__dict__[class_name]
+        if not (inspect.isclass(clazz) and issubclass(clazz, models.Model)):
+            raise ValidationError("'%s.%s' is not a django model" % (module, class_name))
+        return clazz
+    except ValueError:
+        raise ValidationError("No such module: '%s'" % class_str)
+    except ImportError:
+        raise ValidationError("No such module '%s' in sys.path" % module)
+    except KeyError:
+        raise ValidationError("Model '%s' not found in module '%s'" % (module, class_name))
+
+
+
+#------------------------------------------------------------------------------
+class ModelValidator:
+    message = 'Enter a valid django model'
+    code = 'invalid'
+
+    def __init__(self, message='Enter a valid django model', code=None):
+        if message is not None:
+            self.message = message
+        if code is not None:
+            self.code = code
+    
+    def __call__(self, value):
+        """
+        Validates that the input matches a django model
+        """
+        extract_model(value)
+        
+#------------------------------------------------------------------------------
+def extract_args(args_str):
+    args = eval(args_str) or {}
+    if type(args) != type({}):
+        raise ValidationError("args must be a dictionary")
+    for key in args.keys():
+        if not isinstance(key, basestring):
+            raise ValidationError("keys of the args dictionary must be strings")
+    return args
+
+#------------------------------------------------------------------------------
+class ArgsValidator:
+    message = 'Enter a valid arguments dictionary'
+    code = 'invalid'
+
+    def __init__(self, message='Enter a valid arguments dictionary', code=None):
+        if message is not None:
+            self.message = message
+        if code is not None:
+            self.code = code
+    
+    def __call__(self, value):
+        """
+        Validates that the input matches an arguments dictionary
+        """
+        extract_args(value)
+        

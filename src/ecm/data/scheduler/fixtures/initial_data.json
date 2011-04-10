@@ -1,8 +1,11 @@
 [
   {
-    "pk": "ecm.core.parsers.corp.update", 
+    "pk": 1, 
     "model": "scheduler.scheduledtask", 
     "fields": {
+      "function": "ecm.core.parsers.corp.update",
+      "args": "{}",
+      "one_shot": false,
       "is_active": true, 
       "is_running": false, 
       "priority": 200, 
@@ -12,9 +15,12 @@
     }
   }, 
   {
-    "pk": "ecm.core.parsers.outposts.update", 
+    "pk": 2, 
     "model": "scheduler.scheduledtask", 
     "fields": {
+      "function": "ecm.core.parsers.outposts.update", 
+      "args": "{}",
+      "one_shot": false,
       "is_active": true, 
       "is_running": false, 
       "priority": 100, 
@@ -24,9 +30,12 @@
     }
   }, 
   {
-    "pk": "ecm.core.parsers.reftypes.update", 
+    "pk": 3, 
     "model": "scheduler.scheduledtask", 
     "fields": {
+      "function": "ecm.core.parsers.reftypes.update", 
+      "args": "{}",
+      "one_shot": false,
       "is_active": true, 
       "is_running": false, 
       "priority": 100, 
@@ -36,9 +45,12 @@
     }
   }, 
   {
-    "pk": "ecm.core.parsers.membertrack.update", 
+    "pk": 4, 
     "model": "scheduler.scheduledtask", 
     "fields": {
+      "function": "ecm.core.parsers.membertrack.update", 
+      "args": "{}",
+      "one_shot": false,
       "is_active": true, 
       "is_running": false, 
       "priority": 50, 
@@ -48,9 +60,12 @@
     }
   }, 
   {
-    "pk": "ecm.core.parsers.membersecu.update", 
+    "pk": 5, 
     "model": "scheduler.scheduledtask", 
     "fields": {
+      "function": "ecm.core.parsers.membersecu.update", 
+      "args": "{}",
+      "one_shot": false,
       "is_active": true, 
       "is_running": false, 
       "priority": 20, 
@@ -60,9 +75,12 @@
     }
   }, 
   {
-    "pk": "ecm.core.parsers.titles.update", 
+    "pk": 6, 
     "model": "scheduler.scheduledtask", 
     "fields": {
+      "function": "ecm.core.parsers.titles.update", 
+      "args": "{}",
+      "one_shot": false,
       "is_active": true, 
       "is_running": false, 
       "priority": 10, 
@@ -72,9 +90,12 @@
     }
   }, 
   {
-    "pk": "ecm.core.parsers.assets.update", 
+    "pk": 7, 
     "model": "scheduler.scheduledtask", 
     "fields": {
+      "function": "ecm.core.parsers.assets.update", 
+      "args": "{}",
+      "one_shot": false,
       "is_active": true, 
       "is_running": false, 
       "priority": 0, 
@@ -84,9 +105,12 @@
     }
   }, 
   {
-    "pk": "ecm.core.parsers.wallets.update", 
+    "pk": 8, 
     "model": "scheduler.scheduledtask", 
     "fields": {
+      "function": "ecm.core.parsers.wallets.update", 
+      "args": "{}",
+      "one_shot": false,
       "is_active": true, 
       "is_running": false, 
       "priority": 0, 

@@ -19,8 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-from ecm.data.common.fields import MultiIntegerField
-from ecm.data.roles.models import Member
+from django.contrib.auth.models import User
+from ecm.data.common.fields import PasswordField
+from ecm.data.roles.models import CharacterOwnership
 
 __date__ = "2011 4 6"
 __author__ = "diabeteman"
@@ -30,91 +31,7 @@ from ecm.core import api
 from ecm.data.corp.models import Corp
 from ecm.data.common.models import UserAPIKey
 from ecm.lib import eveapi
-
-
-class UserApiKeyForm(forms.Form):
-    userID = forms.IntegerField(label="User ID")
-    apiKey = forms.CharField(label="API Key", min_length=64, max_length=64)
-    
-
-    
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        
-        userID = cleaned_data.get("userID")
-        apiKey = cleaned_data.get("apiKey")
-        
-        if userID and apiKey:
-            self.api = UserAPIKey(userID=userID, key=apiKey)
-            
-            try:
-                conn = api.connect_user(user_api=self.api)
-                resp = conn.account.Characters()
-                
-                corp = Corp.objects.get(id=1)
-
-                self.characters = []
-                for char in resp.characters:
-                    c = Character()
-                    c.name = char.name
-                    c.characterID = char.characterID
-                    c.corporationID = char.corporationID
-                    c.corporationName = char.corporationName
-                    c.is_corped = char.corporationID == corp.corporationID
-                    self.characters.append(c)
-                    
-                if not corp.corporationID in [ char.corporationID for char in self.characters ]:
-                    raise forms.ValidationError("This account has no character member of %s" % corp.corporationName)
-                    
-            except eveapi.Error as e:
-                raise forms.ValidationError(str(e))
-
-        return cleaned_data
-
-class AccountCreationForm(forms.Form):
-    userID = forms.IntegerField(label="User ID")
-    apiKey = forms.CharField(label="API Key", min_length=64, max_length=64)
-    character_ids = MultiIntegerField(widget=forms.HiddenInput)
-    main_character_id = forms.IntegerField(label="Main Character")
-
-    username  = forms.SlugField(label="Login Name")
-    email = forms.EmailField(label="E-Mail address")
-    password1 = forms.CharField(widget=forms.PasswordInput, label="Password")
-    password2 = forms.CharField(widget=forms.PasswordInput, label="Password (repeat)")
-    
-    
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        
-        userID = cleaned_data.get("userID")
-        apiKey = cleaned_data.get("apiKey")
-        character_ids = cleaned_data.get("character_ids")
-        main_character_id = cleaned_data.get("main_character_id")
-        username = cleaned_data.get("username")
-        email = cleaned_data.get("email")
-        password1 = cleaned_data.get("password1")
-        password2 = cleaned_data.get("password2")
-        
-        if not None in (userID, apiKey, character_ids, main_character_id, 
-                        username, email, password1, password2):
-            # test if passwords don't match
-            if not password1 == password2:
-                raise forms.ValidationError("Passwords must match")
-            try:
-                chars = list(Member.objects.filter(characterID__in=character_ids))
-                alt_chars = []
-                main_char = None
-                
-                while len(chars):
-                    if chars[0].characterID == main_character_id:
-                        main_char = chars.pop(0)
-                    else:
-                        alt_chars.append(chars.pop(0))
-            
-            except Exception as e:
-                raise forms.ValidationError(str(e))
-
-        return cleaned_data
+from captcha.fields import CaptchaField
 
 class Character:
     name = ""
@@ -122,3 +39,99 @@ class Character:
     corporationID = 0
     corporationName = "No Corporation"
     is_corped = False
+
+class AccountCreationForm(forms.Form):
+
+    username = forms.RegexField(label="Username", max_length=30, regex=r'^[\w.@+-]+$',
+                                help_text="Required. Less 30 characters. "
+                                          "Letters, digits and @/./+/-/_ only.",
+                                error_messages = {'invalid': "This field may contain only letters, "
+                                                  "numbers and @/./+/-/_ characters."})
+    email = forms.EmailField(label="E-Mail address")
+    password1 = PasswordField(label="Password", min_length=6)
+    password2 = PasswordField(label="Password (confirmation)", min_length=6,
+                                help_text="Enter the same password as above, for verification.")
+    userID = forms.IntegerField(label="User ID")
+    apiKey = forms.CharField(label="Limited API Key", min_length=64, max_length=64)
+    captcha = CaptchaField()
+    characters = []
+    
+
+    
+    def get_characters(self, userID, apiKey):
+        connection = api.connect_user(user_api=UserAPIKey(userID=userID, key=apiKey))
+        response = connection.account.Characters()
+        corp = Corp.objects.get(id=1)
+        characters = []
+        for char in response.characters:
+            c = Character()
+            c.name = char.name
+            c.characterID = char.characterID
+            c.corporationID = char.corporationID
+            c.corporationName = char.corporationName
+            c.is_corped = char.corporationID == corp.corporationID
+            characters.append(c)
+        return characters
+    
+    def clean_username(self):
+        """
+        Validate that the username is alphanumeric and is not already in use.
+        """
+        try:
+            User.objects.get(username__iexact=self.cleaned_data['username'])
+            raise forms.ValidationError("A user with that username already exists.")
+        except User.DoesNotExist:
+            return self.cleaned_data['username']
+    
+    def clean_email(self):
+        """
+        Validate that the supplied email address is unique for the site.
+        """
+        if User.objects.filter(email__iexact=self.cleaned_data['email']):
+            raise forms.ValidationError("This email address is already in use.")
+        return self.cleaned_data['email']
+    
+    def clean_userID(self):
+        """
+        Validate that the supplied userID is not already associated to another User.
+        """
+        if UserAPIKey.objects.filter(userID=self.cleaned_data['userID']):
+            raise forms.ValidationError("This EVE account is already registered.")
+        return self.cleaned_data['userID']
+    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        
+        userID = cleaned_data.get("userID")
+        apiKey = cleaned_data.get("apiKey")
+        username = cleaned_data.get("username")
+        email = cleaned_data.get("email")
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+        
+        if not None in (userID, apiKey, username, email, password1, password2):
+            # test if both password fields match
+            if not password1 == password2:
+                self._errors["password2"] = self.error_class(["Passwords don't match"])
+                del cleaned_data["password2"]
+            
+            # test if API credentials are valid and if EVE account contains 
+            # characters which are members of the corporation
+            try:
+                self.characters = self.get_characters(userID, apiKey)
+                if len([ c for c in self.characters if c.is_corped ]) == 0:
+                    self._errors["userID"] = self.error_class(["This EVE account has no character member of the corporation"])
+                    del cleaned_data["userID"]
+                else:
+                    ids = [ c.characterID for c in self.characters ]
+                    if CharacterOwnership.objects.filter(character__in=ids):
+                        self._errors["userID"] = self.error_class(["A character from this account is already registered"])
+                        del cleaned_data["userID"]
+            except eveapi.Error as e:
+                self._errors["userID"] = self.error_class([str(e)])
+                self._errors["apiKey"] = self.error_class([str(e)])
+                del cleaned_data["userID"]
+                del cleaned_data["apiKey"]
+
+        return cleaned_data
+

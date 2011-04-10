@@ -55,6 +55,7 @@ urlpatterns = patterns('',
     #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+    (r'^captcha/', include('captcha.urls')),
 
     # ECM views
     (r'^%s$' % settings.LOGIN_URL[1:],      'django.contrib.auth.views.login', 
@@ -66,7 +67,6 @@ urlpatterns = patterns('',
                                              'post_change_redirect' : '/'}), 
     
     
-    (r'^user/enter_api_key$',                       signup.enter_api_key),
     (r'^user/create_account$',                      signup.create_account),
     (r'^$',                                         home.home),
     (r'^corp$',                                     common.corp),

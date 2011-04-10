@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 class TaskThread(Thread):
     
     def __init__(self, tasks):
-        super(self.__class__,self).__init__()
+        super(self.__class__, self).__init__()
         self.tasks = tasks
         
     def run(self):
@@ -49,11 +49,14 @@ class TaskThread(Thread):
                 else:
                     task.is_running = True
                     task.save()
-                logger.info(task.function + " triggered")
-                task.get_function()()
-                logger.info(task.function + " done")
+                logger.info(unicode(task) + " triggered")
+                task.run()
+                logger.info(unicode(task) + " done")
             finally:
-                delta = task.frequency * task.frequency_units
-                task.next_execution = datetime.now() + timedelta(seconds=delta)
-                task.is_running = False
-                task.save()
+                if task.one_shot:
+                    task.delete()
+                else:
+                    delta = task.frequency * task.frequency_units
+                    task.next_execution = datetime.now() + timedelta(seconds=delta)
+                    task.is_running = False
+                    task.save()

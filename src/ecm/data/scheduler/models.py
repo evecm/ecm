@@ -24,11 +24,12 @@ __date__ = "2011-03-09"
 __author__ = "diabeteman"
 
 
+from ecm.data.scheduler.validators import FunctionValidator, extract_function, extract_model,\
+    ModelValidator, extract_args, ArgsValidator
 from datetime import datetime, timedelta
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.db import models
-from ecm.data.scheduler.validators import FunctionValidator, extract_function, extract_model
 
 
 class ScheduledTask(models.Model):
@@ -53,9 +54,11 @@ class ScheduledTask(models.Model):
         ("ecm.core.garbagecollector.run",       "Delete old records for the database")
     )
     
-    function = models.CharField(max_length=255, primary_key=True,
+    function = models.CharField(max_length=256,
                                 validators=[FunctionValidator()],
                                 choices=FUNCTION_CHOICES)
+    args = models.CharField(max_length=256, default="{}", validators=[ArgsValidator()])
+    one_shot = models.BooleanField(default=False)
     next_execution = models.DateTimeField(default=datetime.now())
     frequency = models.IntegerField()
     frequency_units = models.IntegerField(default=3600, choices=FREQUENCY_UNIT_CHOICES)
@@ -67,9 +70,6 @@ class ScheduledTask(models.Model):
         verbose_name = _("scheduled task")
         verbose_name_plural = _("scheduled tasks")
         ordering = ("-priority", "function")
-    
-    def get_function(self):
-        return extract_function(self.function)
     
     def __unicode__(self):
         return force_unicode(self.function)
@@ -99,8 +99,17 @@ class ScheduledTask(models.Model):
             delta = timedelta(0)
         return utils.print_delta(delta)
     next_execution_admin_display.short_description = "Next execution"
-
-
+    
+    def get_function(self):
+        return extract_function(self.function)
+    
+    def get_args(self):
+        return extract_args(self.args)
+    
+    def run(self):
+        func = self.get_function()
+        args = self.get_args()
+        return func(**args)
 
 class GarbageCollector(models.Model):
     
@@ -118,8 +127,9 @@ class GarbageCollector(models.Model):
         ("ecm.data.assets.models.DbAssetDiff",      "Assets history"),
         ("ecm.data.accounting.models.JournalEntry", "Wallet journal"),
     )
-    
-    db_table = models.CharField(max_length=255, primary_key=True, choices=DB_TABLE_CHOICES)
+    db_table = models.CharField(max_length=255, primary_key=True, 
+                                validators=[ModelValidator()],
+                                choices=DB_TABLE_CHOICES)
     min_entries_threshold = models.PositiveIntegerField(default=10000)
     max_age_threshold = models.PositiveIntegerField()
     age_units = models.IntegerField(default=3600 * 24 * 7 * 30, choices=AGE_UNIT_CHOICES)
@@ -132,12 +142,10 @@ class GarbageCollector(models.Model):
         return ugettext("%d %s") % (self.max_age_threshold, self.get_age_units_display())
     max_age_threshold_admin_display.short_description = "Max Age Threshold"
     
-    def get_model(self):
-        return extract_model(self.db_table)
-    
     def get_expiration_date(self):
         return datetime.now() + timedelta(seconds=self.max_age_threshold * self.age_units)
     
-    
+    def get_model(self):
+        return extract_model(self.db_table)
     
     

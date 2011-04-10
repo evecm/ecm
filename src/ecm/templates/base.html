@@ -53,7 +53,7 @@
             <li><a href="/user/logout" title="Log out from ECM">Logout</a></li>
             <li><a href="/user/change_password" >Change Password</a></li>
             {% else %}
-            <li><a href="/user/enter_api_key" >Create Account</a></li>
+            <li><a href="/user/create_account" >Create Account</a></li>
             {% endif %}
             {% if user.is_staff or user.is_superuser %}
             <li><a href="/admin/" title="Restricted area :-)">Administration</a></li>
@@ -63,11 +63,11 @@
       </div>
       {% block menu %}
       <!-- A.2 HEADER BOTTOM -->
+	{% if user.is_authenticated %}
       <div class="header-bottom">
       
         <!-- Navigation Level 2 (Drop-down menus) -->
         <div class="nav2">
-	
           <!-- Navigation item -->
           <ul>
             <li><a href="/">Home</a>
@@ -124,10 +124,13 @@
                 </ul>
               <!--[if lte IE 6]></td></tr></table></a><![endif]-->
             </li>
-          </ul>    
+          </ul>  
+         
+         
         </div>
 	  </div>
-      {% endblock %}
+       {% endif %} {# user.is_authenticated #}
+      {% endblock %} {# menu #}
       <!-- A.3 HEADER BREADCRUMBS -->
 
       <!-- Breadcrumbs -->

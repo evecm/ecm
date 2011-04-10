@@ -39,7 +39,21 @@ def run():
     try:
         count = 0
         for collector in GarbageCollector.objects.all():
-            count += collect_garbage(collector)
+            logger.info("collecting old records for model: %s" % collector.db_table)
+            model = collector.get_model()
+            count = model.objects.all().count()
+            
+            if count > collector.min_entries_threshold:
+                entries = model.objects.filter(date__lt=collector.get_expiration_date())
+                for entry in entries:
+                    entry.delete()
+                
+                deleted_entries = entries.count()
+            else:
+                deleted_entries = 0
+            
+            logger.info("%d entries will be deleted" % deleted_entries)    
+            count += deleted_entries
         
         logger.debug("commiting modifications to database...")
         transaction.commit()
@@ -49,21 +63,3 @@ def run():
         transaction.rollback()
         logger.exception("cleanup failed")
     
-    
-    
-def collect_garbage(collector):
-    logger.debug("collecting old records for model: %s" % collector.db_table)
-    model = collector.get_model()
-    count = model.objects.all().count()
-    
-    if count > collector.min_entries_threshold:
-        entries = model.objects.filter(date__lt=collector.get_expiration_date())
-        for entry in entries:
-            entry.delete()
-        
-        deleted_entries = entries.count()
-    else:
-        deleted_entries = 0
-    
-    logger.debug("%d entries will be deleted" % deleted_entries)    
-    return deleted_entries

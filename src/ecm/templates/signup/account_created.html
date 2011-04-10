@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+
+{% block headtitle %}Account Created{% endblock %}
+
+
+{% block main_content %}
+
+<h1 class="pagetitle">Account Created</h1>
+
+<p>Congratulations {{ form.cleaned_data.username }},</p>
+<p>You successfuly created an account. An activation email has been sent to 
+<b>{{ form.cleaned_data.email }}</b>. You should receive it within minutes from now.</p>
+
+{% endblock %}

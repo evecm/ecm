@@ -111,7 +111,7 @@ class Error(StandardError):
         self.args = (message.rstrip("."),)
 
 
-def EVEAPIConnection(url="api.eveonline.com", cacheHandler=None, proxy=None):
+def EVEAPIConnection(url="api.eveonline.com", cacheHandler=None, proxy=None, scheme="https"):
     # Creates an API object through which you can call remote functions.
     #
     # The following optional arguments may be provided:
@@ -147,7 +147,6 @@ def EVEAPIConnection(url="api.eveonline.com", cacheHandler=None, proxy=None):
     #          this object.
     #
 
-    scheme = "https"
     if url.lower().startswith("http://"):
         scheme = "http"
         url = url[7:]
