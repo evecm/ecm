@@ -90,7 +90,6 @@ def send_activation_email(request, user_profile):
                                    ctx_dict, context_instance=RequestContext(request))
     html_content = render_to_string('common/activation_email.html',
                                     ctx_dict, context_instance=RequestContext(request))
-    
     msg = EmailMultiAlternatives(subject, 
                                  body=txt_content,
                                  to=[user_profile.user.email])

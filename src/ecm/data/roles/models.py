@@ -358,6 +358,12 @@ class CharacterOwnership(models.Model):
         else:
             return "Alt"
     main_or_alt_admin_display.short_description = "Type"
+    
+    def __unicode__(self):
+        try:
+            return "%s owns %s" % (self.user.username, self.character.name)
+        except:
+            return "%d owns %d" % (self.user_id, self.character_id)
 
 #------------------------------------------------------------------------------
 class TitleCompoDiff(models.Model):

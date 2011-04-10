@@ -53,10 +53,10 @@ class UserAPIKey(models.Model):
     """
     API credentials used to associate characters to users
     """
+    user = models.ForeignKey(User)
     userID = models.IntegerField(primary_key=True)
     key = models.CharField(max_length=64)
     is_valid = models.BooleanField(default=True)
-    user = models.ForeignKey(User)
     
     def is_valid_admin_display(self):
         if self.is_valid:
@@ -64,9 +64,12 @@ class UserAPIKey(models.Model):
         else:
             return "Invalid"
     is_valid_admin_display.short_description = "Valid"
-
-
-
+    
+    def __unicode__(self):
+        try:
+            return "%s owns %d" % (self.user.username, self.userID)
+        except:
+            return "%d owns %d" % (self.user_id, self.userID)
 
 #------------------------------------------------------------------------------
 class UpdateDate(models.Model):
@@ -155,21 +158,12 @@ class RegistrationManager(models.Manager):
         activation_key = sha_constructor(salt+username).hexdigest()
         return self.create(user=user, activation_key=activation_key)
         
-    def delete_expired_users(self):
-        for profile in self.all():
-            if profile.activation_key_expired():
-                user = profile.user
-                if not user.is_active:
-                    user.delete()
-                else:
-                    profile.delete()
-
 
 class RegistrationProfile(models.Model):
 
     ACTIVATED = u"ALREADY_ACTIVATED"
     
-    user = models.ForeignKey(User, unique=True, verbose_name='user')
+    user = models.OneToOneField(User)
     activation_key = models.CharField('activation key', max_length=40)
     
     objects = RegistrationManager()

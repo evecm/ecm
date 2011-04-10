@@ -31,20 +31,29 @@ ROOT = os.path.abspath(os.path.dirname(__file__))
 def resolvePath(relativePath):
     return str(os.path.join(ROOT, relativePath)).replace("\\", "/")
 
-
+###############################################################################
+# ECM SETTINGS
+DIRECTOR_GROUP_NAME = "Directors"
+CRON_USERNAME = "cron"
 EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
+ECM_DOMAIN = "127.0.0.1:8000"
+ECM_HOST = ""
+ECM_BASE_URL = "http://" + ECM_HOST + ECM_DOMAIN
+ACCOUNT_ACTIVATION_DAYS = 2
 
-# Django settings for ECM project.
-
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-    ('admin', 'admin@ecm.com'),
-)
-
-MANAGERS = ADMINS
+###############################################################################
+# DJANGO SPECIFIC SETTINGS
+DEBUG = True # turn this OFF when on production !!!
+ADMINS = ()
+# for development, you can use python dummy smtp server, run this command:
+# >>> python -m smtpd -n -c DebuggingServer localhost:1025
+EMAIL_HOST = "localhost"
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = "" 
+EMAIL_HOST_PASSWORD = ""
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = "admin@" + ECM_DOMAIN
 
 DATABASES = {
     'default': {
@@ -53,55 +62,25 @@ DATABASES = {
     }
 }
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-TIME_ZONE = 'Europe/Paris'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
-
-SITE_ID = 1
-ECM_BASE_URL = "http://ecm.diabeteman.com"
-EMAIL_HOST = "localhost"
-EMAIL_PORT = 1025
-EMAIL_HOST_USER = "" 
-EMAIL_HOST_PASSWORD = ""
-EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = "admin@ecm.com"
-ACCOUNT_ACTIVATION_DAYS = 2
-
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
-USE_I18N = True
-
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
+USE_I18N = False # for optimizatrion
 LOCAL_DEVELOPMENT = True
-MEDIA_ROOT = resolvePath('media/')
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "/static/"
 APPEND_SLASH=False
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-#ADMIN_MEDIA_PREFIX = ''
-
-# Make this unique, and don't share it with anybody.
+TEMPLATE_DEBUG = DEBUG
+MANAGERS = ADMINS
+TIME_ZONE = 'Europe/Paris'
+LANGUAGE_CODE = 'en-us'
+SITE_ID = 1
+MEDIA_ROOT = resolvePath('media/')
+MEDIA_URL = "/static/"
 SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
+ROOT_URLCONF = 'ecm.urls'
+LOGIN_URL = '/user/login'
+LOGOUT_URL = '/user/logout'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -110,7 +89,50 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
+# file system cache backend path for unix
+#CACHE_BACKEND = 'file:///var/tmp/django_cache'
+# file system cache backend path for windows
+#CACHE_BACKEND = 'file://C:/Users/diabeteman/AppData/Local/Temp/django_cache'
+#NO CACHE FOR DEV USAGE
+CACHE_BACKEND = 'dummy://'
 
+TEMPLATE_DIRS = (
+        resolvePath('templates/'),
+)
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "ecm.view.context_processors.corporation_name",
+)
+
+FIXTURE_DIRS = (
+    resolvePath("fixtures/auth/"),
+)
+
+CAPTCHA_LENGTH = 5
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+
+INSTALLED_APPS = (
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+    'django.contrib.databrowse',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.databrowse',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    
+    'captcha',
+    
+    'ecm.data.assets',
+    'ecm.data.corp',
+    'ecm.data.roles',
+    'ecm.data.common',
+    'ecm.data.scheduler',
+    'ecm.data.accounting',
+)
+
+###############################################################################
+# LOGGING SETTINGS
 if not os.path.exists(resolvePath('logs')):
     os.makedirs(resolvePath('logs'))
 LOGGING = {
@@ -138,65 +160,10 @@ LOGGING = {
     },
     'loggers': {
         'ecm': {
-            'handlers':['ecm_file_handler', 'ecm_console_handler'],
+                                            # remove console handler on production
+            'handlers':['ecm_file_handler', 'ecm_console_handler'], 
             'propagate': True,
             'level':'DEBUG',
         },
     }
 }
-
-
-
-# file system cache backend path for unix
-#CACHE_BACKEND = 'file:///var/tmp/django_cache'
-# file system cache backend path for windows
-#CACHE_BACKEND = 'file://C:/Users/diabeteman/AppData/Local/Temp/django_cache'
-#NO CACHE FOR DEV USAGE
-CACHE_BACKEND = 'dummy://'
-
-
-ROOT_URLCONF = 'ecm.urls'
-LOGIN_URL = '/user/login'
-LOGOUT_URL = '/user/logout'
-TEMPLATE_DIRS = (
-        resolvePath('templates/'),
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "ecm.view.context_processors.corporation_name",
-)
-
-FIXTURE_DIRS = (
-    resolvePath("fixtures/auth/"),
-)
-
-#TEMPLATE_STRING_IF_INVALID = '%s'
-
-CAPTCHA_LENGTH = 5
-CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
-INSTALLED_APPS = (
-    'django.contrib.admin',
-    'django.contrib.admindocs',
-    'django.contrib.databrowse',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.databrowse',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    
-    'captcha',
-    
-    'ecm.data.assets',
-    'ecm.data.corp',
-    'ecm.data.roles',
-    'ecm.data.common',
-    'ecm.data.scheduler',
-    'ecm.data.accounting',
-)
-
-
-DIRECTOR_GROUP_NAME = "Directors"
-CRON_USERNAME = "cron"

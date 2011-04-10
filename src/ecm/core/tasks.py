@@ -30,12 +30,13 @@ from django.db import transaction
 
 import logging
 from ecm.data.scheduler.models import GarbageCollector
+from ecm.data.common.models import RegistrationProfile
 
 logger = logging.getLogger(__name__)
 
-
+#------------------------------------------------------------------------------
 @transaction.commit_manually
-def run():
+def collect_garbage():
     try:
         count = 0
         for collector in GarbageCollector.objects.all():
@@ -63,3 +64,25 @@ def run():
         transaction.rollback()
         logger.exception("cleanup failed")
     
+#------------------------------------------------------------------------------
+@transaction.commit_manually
+def cleanup_unregistered_users():
+    try:
+        logger.info("Deleting unregistered users...")
+        count = 0
+        for profile in RegistrationProfile.objects.all():
+            if profile.activation_key_expired():
+                user = profile.user
+                count += 1
+                if not user.is_active:
+                    logger.debug("activation key has exprired for '%s', deleting user..." % user.username)
+                    user.delete()
+                else:
+                    # user has activated his/her account. we delete the activation key
+                    profile.delete()
+        transaction.commit()
+        logger.info("%d unregistered users deleted")
+    except:
+        # error catched, rollback changes
+        transaction.rollback()
+        logger.exception("cleanup failed")
