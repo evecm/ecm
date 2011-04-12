@@ -53,6 +53,7 @@ class ScheduledTask(models.Model):
         ("ecm.core.parsers.reftypes.update",    "Update wallet transaction types"),
         ("ecm.core.tasks.collect_garbage",      "Delete old records for the database"),
         ("ecm.core.tasks.cleanup_unregistered_users", "Remove unregistered users"),
+        ("ecm.core.tasks.update_user_accesses", "Update user accesses from their in-game roles"),
     )
     
     function = models.CharField(max_length=256,

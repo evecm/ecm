@@ -25,7 +25,6 @@ __author__ = "diabeteman"
 
 
 from django.shortcuts import render_to_response, redirect
-from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
@@ -51,7 +50,7 @@ def logout_view(request):
     return render_to_response("common/login.html")
 #------------------------------------------------------------------------------
 @login_required
-@csrf_protect
+
 def corp(request):
     try:
         corp = Corp.objects.get(id=1)

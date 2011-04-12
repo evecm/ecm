@@ -25,15 +25,7 @@ __author__ = "diabeteman"
 
 
 
-from ecm import settings
-from django.contrib.auth.models import Group
 
-try:
-    DIRECTOR_GROUP_ID = Group.objects.get(name=settings.DIRECTOR_GROUP_NAME)
-except:
-    g = Group(name=settings.DIRECTOR_GROUP_NAME).save()
-    if g: DIRECTOR_GROUP_ID = g.id
-    else: DIRECTOR_GROUP_ID = 1
 
 #------------------------------------------------------------------------------
 def print_time(date):
@@ -110,29 +102,7 @@ def print_float(number, thousand_separator=" ", decimal_separator=","):
     return print_quantity(int(number), thousand_separator) + decimal_separator + decimal_part
 
 #------------------------------------------------------------------------------
-def isDirector(user):
-    try:
-        g = user.groups.get(name=settings.DIRECTOR_GROUP_NAME)
-        if g:
-            return True
-        else:
-            return False
-    except:
-        return False
-
-#------------------------------------------------------------------------------
-def has_change_permission(user, model):
-    try:
-        g = user.groups.get(name=settings.DIRECTOR_GROUP_NAME)
-        if g:
-            return True
-        else:
-            return False
-    except:
-        return False
-
-#------------------------------------------------------------------------------
-def getAccessColor(accessLvl, colorThresholds):
+def get_access_color(accessLvl, colorThresholds):
     for t in colorThresholds:
         if accessLvl <= t.threshold:
             return t.color

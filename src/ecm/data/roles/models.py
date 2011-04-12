@@ -247,7 +247,7 @@ class Title(models.Model):
 
     def getAccessLvl(self):
         lvl = 0
-        for r in self.roles : 
+        for r in self.roles.all() : 
             lvl += r.getAccessLvl()
         return lvl
     

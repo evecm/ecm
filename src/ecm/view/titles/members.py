@@ -23,30 +23,25 @@
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
-from django.contrib.auth.decorators import user_passes_test
-from django.views.decorators.cache import cache_page
-from django.views.decorators.csrf import csrf_protect
-from ecm.core import utils
-from ecm import settings
-from ecm.data.common.models import ColorThreshold
-from ecm.data.roles.models import Title, Member
 import json
+
+from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from ecm.view.members import member_table_columns
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.utils.text import truncate_words
-from ecm.core.utils import print_date
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 
-
-
+from ecm.core.utils import print_date
+from ecm.view.members import member_table_columns
+from ecm.data.common.models import ColorThreshold
+from ecm.data.roles.models import Title, Member
+from ecm.view import directors_only
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
-@csrf_protect
 def members(request, id):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
@@ -62,9 +57,8 @@ def members(request, id):
 
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
-@csrf_protect
 def members_data(request, id):
     try:
         iDisplayStart = int(request.GET["iDisplayStart"])

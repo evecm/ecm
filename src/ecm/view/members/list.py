@@ -26,28 +26,23 @@ __author__ = "diabeteman"
 import json
 
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
 from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.text import truncate_words
-from django.views.decorators.csrf import csrf_protect
 from django.db.models import Q
 
 from ecm.core.utils import print_date
 from ecm.data.roles.models import Member
 from ecm.data.common.models import ColorThreshold
-from ecm import settings
-from ecm.core import utils
-from ecm.view import getScanDate
+from ecm.view import getScanDate, directors_only
 from ecm.view.members import member_table_columns
 
 
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
-@csrf_protect
 def all(request):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
@@ -60,9 +55,9 @@ def all(request):
     return render_to_response("members/member_list.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
-@csrf_protect
+
 def all_data(request):
     try:
         iDisplayStart = int(request.GET["iDisplayStart"])

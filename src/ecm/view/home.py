@@ -28,14 +28,11 @@ from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 
 from ecm.data.roles.models import MemberDiff, RoleMemberDiff, Member, TitleMemberDiff
-
-from django.views.decorators.csrf import csrf_protect
 from ecm.core import utils
 
 
 #------------------------------------------------------------------------------
 @login_required
-@csrf_protect
 def home(request):
     data = {           'memberCount' : Member.objects.filter(corped=True).count(),
                'last_member_changes' : getLastMemberChanges(),

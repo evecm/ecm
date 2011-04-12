@@ -45,8 +45,7 @@ class PasswordField(forms.CharField):
             raise ValidationError('Must be at least %d different characters' % self.min_length)
         if not passwd.intersection(set(string.digits)):
             raise ValidationError('Must contain at least one digit')
-        if not (passwd.intersection(set(string.ascii_lowercase)) 
-            and passwd.intersection(set(string.ascii_uppercase))):
-            raise ValidationError('Must contain lower and upper case characters')
+        if not passwd.intersection(set(string.ascii_letters)):
+            raise ValidationError('Must contain at least one letter')
         if not passwd.intersection(set(SPECIAL_CHARS)):
             raise ValidationError('Must contain at least one special character ' + SPECIAL_CHARS)

@@ -27,21 +27,17 @@ import json
 
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
-from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
 
 from ecm.data.roles.models import TitleComposition, Title, TitleCompoDiff
 from ecm.data.common.models import ColorThreshold
 from ecm.core import utils
-from ecm import settings
-from ecm.view import getScanDate
+from ecm.view import getScanDate, directors_only
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
-@csrf_protect
 def all(request):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
@@ -55,9 +51,8 @@ def all(request):
 
 #------------------------------------------------------------------------------
 all_columns = [ "titleName", "accessLvl" ]
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
-@csrf_protect
 def all_data(request):
     sEcho = int(request.GET["sEcho"])
     column = int(request.GET["iSortCol_0"])

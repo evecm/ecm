@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Resource not found{% endblock %}
+
+{% block main_content %}
+<div class="center">
+<h1 class="pagetitle error">Resource not found</h1>
+
+<p>Sorry but the page you requested:</p>
+
+<p><a href="{{ request_path }}">{{ request_path }}</a></p>
+
+<p>cannot be found on the server.</p>
+</div>
+{% endblock %}

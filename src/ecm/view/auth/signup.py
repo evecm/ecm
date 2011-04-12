@@ -19,26 +19,23 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-from django.core.mail import send_mail
-from django.core.mail.message import EmailMultiAlternatives
 
 __date__ = "2011 4 5"
 __author__ = "diabeteman"
 
 
 from django.shortcuts import render_to_response
-from django.views.decorators.csrf import csrf_protect
 from django.template.context import RequestContext
 from django.template.loader import render_to_string
 from django.db import transaction
 from django.conf import settings
-
+from django.core.mail.message import EmailMultiAlternatives
 from ecm.data.common.models import UserAPIKey, RegistrationProfile
 from ecm.data.roles.models import CharacterOwnership
 from ecm.data.common.forms import AccountCreationForm
 
 #------------------------------------------------------------------------------
-@csrf_protect
+
 @transaction.commit_on_success
 def create_account(request):
     if request.method == 'POST':
@@ -65,15 +62,30 @@ def create_account(request):
             
             send_activation_email(request, profile)
             
-            return render_to_response('signup/account_created.html', 
+            return render_to_response('auth/account_created.html', 
                                       { 'form': form }, 
                                       context_instance=RequestContext(request))
     else: # request.method == 'GET'
         form = AccountCreationForm()
         
-    return render_to_response('signup/create_account.html', 
+    return render_to_response('auth/create_account.html', 
                               { 'form': form }, 
                               context_instance=RequestContext(request))
+
+#------------------------------------------------------------------------------
+def activate_account(request, activation_key):
+    try:
+        user = RegistrationProfile.objects.activate_user(activation_key)
+        return render_to_response('auth/account_activated.html', 
+                                  { 'activated_user' : user }, 
+                                  context_instance=RequestContext(request))
+    except (ValueError, UserWarning) as err:
+        return render_to_response('auth/activation_error.html', 
+                                  { 'activation_key': activation_key,
+                                   'error_reason': str(err) }, 
+                                  context_instance=RequestContext(request))
+    
+
 
 
 def send_activation_email(request, user_profile):
@@ -81,14 +93,14 @@ def send_activation_email(request, user_profile):
                 'user_name': user_profile.user.username,
                 'activation_key': user_profile.activation_key,
                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS}
-    subject = render_to_string('common/activation_email_subject.txt',
+    subject = render_to_string('auth/activation_email_subject.txt',
                                ctx_dict, context_instance=RequestContext(request))
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
     
-    txt_content = render_to_string('common/activation_email.txt',
+    txt_content = render_to_string('auth/activation_email.txt',
                                    ctx_dict, context_instance=RequestContext(request))
-    html_content = render_to_string('common/activation_email.html',
+    html_content = render_to_string('auth/activation_email.html',
                                     ctx_dict, context_instance=RequestContext(request))
     msg = EmailMultiAlternatives(subject, 
                                  body=txt_content,

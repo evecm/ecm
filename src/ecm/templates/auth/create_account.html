@@ -6,7 +6,7 @@
 
 <h1 class="pagetitle">Create Account</h1>
 
-<form class="signupform" action="/user/create_account" method="post" id="character_form" >{% csrf_token %}
+<form class="signupform" action="/account/create" method="post" id="character_form" >{% csrf_token %}
     {% if form.errors %}
     <p class="error">{{ form.non_field_errors }}</p>
     {% endif %} 

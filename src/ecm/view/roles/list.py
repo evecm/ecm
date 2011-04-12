@@ -24,38 +24,31 @@ __date__ = "2011-03-02"
 __author__ = "diabeteman"
 
 import json
+import httplib as http
 
 from django.shortcuts import render_to_response, redirect
 from django.template.context import RequestContext
-from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
-from django.views.decorators.csrf import csrf_protect
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 
 from ecm.data.roles.models import Role, RoleType
 from ecm.data.common.models import ColorThreshold
-from ecm.core import utils
-from ecm import settings
-from django.core.exceptions import ObjectDoesNotExist
-
-import httplib as http
+from ecm.view import directors_only
 from ecm.data.corp.models import Hangar, Wallet
-
 
 ROLE_TYPES = {}
 for t in RoleType.objects.all(): ROLE_TYPES[t.typeName] = t.id
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
-@csrf_protect
 def root(request):
     return redirect("/roles/roles")
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
-@csrf_protect
 def role_type(request, role_typeName):
     try:
         role_type = RoleType.objects.get(typeName=role_typeName)
@@ -74,9 +67,8 @@ def role_type(request, role_typeName):
 
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
-@csrf_protect
 def role_type_data(request, role_typeName):
     try:
         role_type = RoleType.objects.get(typeName=role_typeName)
@@ -120,9 +112,8 @@ def role_type_data(request, role_typeName):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: user.has_perm('roles.change_role'), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
-@csrf_protect
 def update_access_level(request):
     try:
         role_id = int(request.POST["id"])

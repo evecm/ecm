@@ -33,18 +33,17 @@ def resolvePath(relativePath):
 
 ###############################################################################
 # ECM SETTINGS
+DIRECTOR_GROUP_ID = 1 << 16 # 65536 (it is twice the max titleID)
 DIRECTOR_GROUP_NAME = "Directors"
 CRON_USERNAME = "cron"
 EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
-ECM_DOMAIN = "127.0.0.1:8000"
-ECM_HOST = ""
-ECM_BASE_URL = "http://" + ECM_HOST + ECM_DOMAIN
+ECM_BASE_URL = "http://127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
 
 ###############################################################################
 # DJANGO SPECIFIC SETTINGS
-DEBUG = True # turn this OFF when on production !!!
+DEBUG = True # turn this to False when on production !!!
 ADMINS = ()
 # for development, you can use python dummy smtp server, run this command:
 # >>> python -m smtpd -n -c DebuggingServer localhost:1025
@@ -53,7 +52,7 @@ EMAIL_PORT = 1025
 EMAIL_HOST_USER = "" 
 EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = "admin@" + ECM_DOMAIN
+DEFAULT_FROM_EMAIL = "admin@eve-corp-management.org"
 
 DATABASES = {
     'default': {
@@ -74,8 +73,9 @@ MEDIA_ROOT = resolvePath('media/')
 MEDIA_URL = "/static/"
 SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
 ROOT_URLCONF = 'ecm.urls'
-LOGIN_URL = '/user/login'
-LOGOUT_URL = '/user/logout'
+LOGIN_URL = '/account/login'
+LOGOUT_URL = '/account/logout'
+LOGIN_REDIRECT_URL = '/account'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

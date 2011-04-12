@@ -74,7 +74,7 @@ $(document).ready(function() {
                     oTable.fnUpdate( sValue, aPos[0], aPos[1] );
                 },
                 "submitdata": function ( value, settings ) {
-                    return { "id": this.parentNode.getAttribute('id') };
+                    return { "id": this.parentNode.getAttribute('id')};
                 },
                 tooltip   : 'Click to edit...'
             } );

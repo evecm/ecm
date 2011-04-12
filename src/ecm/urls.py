@@ -24,96 +24,106 @@ __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
 from django.conf.urls.defaults import patterns, include
+from django.conf import settings
 from django.contrib import admin
-from django.views import static
-from ecm import settings
-from ecm.view import home, common
-from ecm.view.members import access as member_access,\
-                             details as member_details,\
-                             history as member_history,\
-                             list as member_list
-from ecm.view.titles import details as title_details,\
-                            list as title_list,\
-                            members as title_members,\
-                            changes as title_changes
-from ecm.view.roles import list as role_list,\
-                           details as role_details
-from ecm.view.assets import normal as asset_normal,\
-                            diff as asset_diff
-
-from ecm.view import signup
-
- 
 
 admin.autodiscover()
 
+urlpatterns = patterns('',
+    ###########################################################################
+    # MISC VIEWS
+    (r'^admin/',                                    include(admin.site.urls)),
+    (r'^captcha/',                                  include('captcha.urls')),
+    # static file serving for the development server
+    (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:],  'django.views.static.serve', 
+                                                    {'document_root' : settings.MEDIA_ROOT}),
+)
+
+urlpatterns += patterns('django.contrib.auth.views',
+    ###########################################################################
+    # DJANGO BUILT-IN AUTH VIEWS
+    (r'^account/login$',                            'login', {'template_name' : 'auth/login.html'}),
+    (r'^account/logout$',                           'logout', {'next_page' : '/'}),
+    (r'^account/change_password$',                  'password_change', 
+                                                    {'template_name' : 'auth/password_change.html', 
+                                                     'post_change_redirect' : '/'}),
+)
+ 
+urlpatterns += patterns('ecm.view.auth',
+    ###########################################################################
+    # ECM AUTH + USER PROFILE VIEWS
+    (r'^account$',                                  'user_profile'),
+    (r'^account/create$',                           'signup.create_account'),
+    (r'^account/activate/(\w+)$',                   'signup.activate_account'),
+)
+
+urlpatterns += patterns('ecm.view',
+    ###########################################################################
+    # COMMON VIEWS
+    (r'^$',                                         'home.home'),
+    (r'^corp$',                                     'common.corp'),
+    (r'^cron$',                                     'common.trigger_scheduler'),
+    (r'^tasks$',                                    'common.task_list'),
+    (r'^tasks/launch/([^/]+)$',                     'common.launch_task'),
+)
+
+urlpatterns += patterns('ecm.view.members',
+    ###########################################################################
+    # MEMBERS VIEWS
+    (r'^members$',                                  'list.all'),
+    (r'^members/data$',                             'list.all_data'),
+    (r'^members/history$',                          'history.history'),
+    (r'^members/history/data$',                     'history.history_data'),
+    (r'^members/access_changes$',                   'access.access_changes'),
+    (r'^members/access_changes/data$',              'access.access_changes_data'),
+    (r'^members/(\d+)$',                            'details.details'),
+    (r'^members/(\d+)/access_changes_data',         'details.access_changes_member_data'),
+)
+
+urlpatterns += patterns('ecm.view.titles',
+    ###########################################################################
+    # TITLES VIEWS
+    (r'^titles$',                                   'list.all'),
+    (r'^titles/data$',                              'list.all_data'),
+    (r'^titles/changes$',                           'changes.changes'),
+    (r'^titles/changes/data$',                      'changes.changes_data'),
+    (r'^titles/(\d+)$',                             'details.details'),
+    (r'^titles/(\d+)/composition_data$',            'details.composition_data'),
+    (r'^titles/(\d+)/compo_diff_data$',             'details.compo_diff_data'),
+    (r'^titles/(\d+)/members$',                     'members.members'),
+    (r'^titles/(\d+)/members/data$',                'members.members_data'),
+)
+
+urlpatterns += patterns('ecm.view.roles',
+    ###########################################################################
+    # ROLES VIEWS
+    (r'^roles$',                                    'list.root'),
+    (r'^roles/update$',                             'list.update_access_level'),
+    (r'^roles/([a-zA-Z_]+)$',                       'list.role_type'),
+    (r'^roles/([a-zA-Z_]+)/data$',                  'list.role_type_data'),
+    (r'^roles/([a-zA-Z_]+)/(\d+)$',                 'details.role'),
+    (r'^roles/([a-zA-Z_]+)/(\d+)/data$',            'details.role_data'),
+)
+
+urlpatterns += patterns('ecm.view.assets.normal',
+    ###########################################################################
+    # ASSETS VIEWS
+    (r'^assets$',                                   'stations'),
+    (r'^assets/(\d+)$',                             'hangars'),
+    (r'^assets/(\d+)/(\d+)$',                       'hangar_contents'),
+    (r'^assets/(\d+)/(\d+)/(\d+)$',                 'can1_contents'),
+    (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)$',           'can2_contents'),
+    (r'^assets/search$',                            'search_items'),
+)
+
 DATE = r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})"
 
-urlpatterns = patterns('',
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    # Uncomment the next line to enable the admin:
-    (r'^admin/', include(admin.site.urls)),
-    (r'^captcha/', include('captcha.urls')),
-
-    # ECM views
-    (r'^%s$' % settings.LOGIN_URL[1:],      'django.contrib.auth.views.login', 
-                                            {'template_name' : 'common/login.html'}),
-    (r'^%s$' % settings.LOGOUT_URL[1:],     'django.contrib.auth.views.logout', 
-                                            {'next_page' : '/'}),
-    (r'^user/change_password$',             'django.contrib.auth.views.password_change', 
-                                            {'template_name' : 'common/password_change.html', 
-                                             'post_change_redirect' : '/'}), 
-    
-    
-    (r'^user/create_account$',                      signup.create_account),
-    (r'^$',                                         home.home),
-    (r'^corp$',                                     common.corp),
-    
-    (r'^cron$',                                     common.trigger_scheduler),
-    (r'^tasks$',                                    common.task_list),
-    (r'^tasks/launch/([^/]+)$',                     common.launch_task),
-
-    (r'^members$',                                  member_list.all),
-    (r'^members/data$',                             member_list.all_data),
-    (r'^members/history$',                          member_history.history),
-    (r'^members/history/data$',                     member_history.history_data),
-    (r'^members/access_changes$',                   member_access.access_changes),
-    (r'^members/access_changes/data$',              member_access.access_changes_data),
-    (r'^members/(\d+)$',                            member_details.details),
-    (r'^members/(\d+)/access_changes_data',         member_details.access_changes_member_data),
-    
-    (r'^titles$',                                   title_list.all),
-    (r'^titles/data$',                              title_list.all_data),
-    (r'^titles/changes$',                           title_changes.changes),
-    (r'^titles/changes/data$',                      title_changes.changes_data),
-    (r'^titles/(\d+)$',                             title_details.details),
-    (r'^titles/(\d+)/composition_data$',            title_details.composition_data),
-    (r'^titles/(\d+)/compo_diff_data$',             title_details.compo_diff_data),
-    (r'^titles/(\d+)/members$',                     title_members.members),
-    (r'^titles/(\d+)/members/data$',                title_members.members_data),
-    
-    (r'^roles$',                                    role_list.root),
-    (r'^roles/update$',                             role_list.update_access_level),
-    (r'^roles/([a-zA-Z_]+)$',                       role_list.role_type),
-    (r'^roles/([a-zA-Z_]+)/data$',                  role_list.role_type_data),
-    (r'^roles/([a-zA-Z_]+)/(\d+)$',                 role_details.role),
-    (r'^roles/([a-zA-Z_]+)/(\d+)/data$',            role_details.role_data),
-    
-    (r'^assets$',                                   asset_normal.stations),
-    (r'^assets/(\d+)$',                             asset_normal.hangars),
-    (r'^assets/(\d+)/(\d+)$',                       asset_normal.hangar_contents),
-    (r'^assets/(\d+)/(\d+)/(\d+)$',                 asset_normal.can1_contents),
-    (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)$',           asset_normal.can2_contents),
-    (r'^assets/search$',                            asset_normal.search_items),
-
-    (r'^assets/changes$',                           asset_diff.last_stations),
-    (r'^assets/changes/' + DATE + '$',              asset_diff.stations),
-    (r'^assets/changes/' + DATE + '/(\d+)$',        asset_diff.hangars),
-    (r'^assets/changes/' + DATE + '/(\d+)/(\d+)$',  asset_diff.hangar_contents),
-    (r'^assets/changes/' + DATE + '/search$',       asset_diff.search_items),
-
-    # STATIC FILES SERVING FOR THE DEVELOPMENT SERVER
-    (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], static.serve, {'document_root' : settings.MEDIA_ROOT}),
+urlpatterns += patterns('ecm.view.assets.diff',
+    ###########################################################################
+    # ASSET DIFF VIEWS
+    (r'^assets/changes$',                           'last_stations'),
+    (r'^assets/changes/' + DATE + '$',              'stations'),
+    (r'^assets/changes/' + DATE + '/(\d+)$',        'hangars'),
+    (r'^assets/changes/' + DATE + '/(\d+)/(\d+)$',  'hangar_contents'),
+    (r'^assets/changes/' + DATE + '/search$',       'search_items'),
 )

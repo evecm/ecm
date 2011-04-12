@@ -24,17 +24,14 @@ __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
 
-from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
-from django.views.decorators.csrf import csrf_protect
 from ecm.core import utils
-from ecm import settings
 from ecm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
-from ecm.view import getScanDate
+from ecm.view import getScanDate, directors_only
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from ecm.data.common.models import ColorThreshold
-from ecm.core.utils import print_time_min, getAccessColor
+from ecm.core.utils import print_time_min, get_access_color
 from ecm.core.db import resolveLocationName
 import json
 from django.http import HttpResponse
@@ -44,9 +41,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
-@csrf_protect
 def details(request, characterID):
     try:
         member = getMember(int(characterID))
@@ -64,9 +60,8 @@ def details(request, characterID):
 
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
-@csrf_protect
 def access_changes_member_data(request, characterID):
     iDisplayStart = int(request.GET["iDisplayStart"])
     iDisplayLength = int(request.GET["iDisplayLength"])
@@ -94,7 +89,7 @@ def getMember(id):
     member.lastLogin = print_time_min(member.lastLogin)
     member.lastLogoff = print_time_min(member.lastLogoff)
     member.base = resolveLocationName(member.baseID)
-    member.color = getAccessColor(member.accessLvl, colorThresholds)
+    member.color = get_access_color(member.accessLvl, colorThresholds)
     member.roles = member.getRoles(ignore_director=True)
     member.titles = member.getTitles()
     member.is_director = member.isDirector()

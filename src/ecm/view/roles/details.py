@@ -28,26 +28,21 @@ import json
 
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.cache import cache_page
-from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+from django.utils.text import truncate_words
 
 from ecm.data.roles.models import Role, RoleType, Member
 from ecm.data.common.models import ColorThreshold
-from ecm.core import utils
-from ecm import settings
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
-
-from django.utils.text import truncate_words
+from ecm.view import directors_only
 from ecm.core.utils import print_date
 from ecm.view.members import member_table_columns
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
-@csrf_protect
 def role(request, role_typeName, role_id):
     try:
         type = RoleType.objects.get(typeName=role_typeName)
@@ -69,9 +64,8 @@ def role(request, role_typeName, role_id):
 
 
 #------------------------------------------------------------------------------
-@user_passes_test(lambda user: utils.isDirector(user), login_url=settings.LOGIN_URL)
+@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
-@csrf_protect
 def role_data(request, role_typeName, role_id):
     try:
         iDisplayStart = int(request.GET["iDisplayStart"])

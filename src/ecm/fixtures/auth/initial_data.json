@@ -37,12 +37,4 @@
       "date_joined": "2011-03-26 01:06:08"
     }
   }, 
-  {
-    "pk": 1, 
-    "model": "auth.group", 
-    "fields": {
-      "name": "Directors", 
-      "permissions": []
-    }
-  }
 ]

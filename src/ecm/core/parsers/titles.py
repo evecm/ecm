@@ -24,9 +24,10 @@ __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
 
-
+from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+
 from ecm.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
 from ecm.core import api
 from ecm.core.parsers import utils
@@ -121,10 +122,20 @@ def parseOneTitle(titleApi):
             # if the titleName has changed, we update it
             title.titleName = name
             title.save()
-    except ObjectDoesNotExist:
+    except Title.DoesNotExist:
         # the title doesn't exist yet, we create it
         title = Title.objects.create(titleID=id, titleName=name)
-
+    try:
+        # retrieval of the group corresponding to the title from de DB
+        group = Group.objects.get(id=id)
+        if not group.name == name:
+            # if the titleName has changed, we update the group
+            group.name = name
+            group.save()
+    except Group.DoesNotExist:
+        # the group doesn't exist yet, we create it
+        Group.objects.create(id=id, name=name)
+    
     for roleType in utils.roleTypes().values():
         # for each role category, we extend the role composition list for the current title
         roleList.extend(parseRoleType( title    = title, 

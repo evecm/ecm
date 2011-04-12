@@ -38,7 +38,7 @@
 .italic{font-style:italic;}
 .time{color:#aaa;}
 .error{color:#f00;}
-
+.center {text-align:center;}
 
 /*.main-content a.title {
 	padding-right: 18px;
@@ -233,16 +233,16 @@ form.filter input { border:1px solid #AAAAAA; background-color:#EEEEEE; width:30
 .contactform input.button {float:right; width:9.0em; margin-right:20px; padding:1px !important /*Non-IE6*/; padding:0 /*IE6*/; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:110%;}
 .contactform input.button:hover {cursor: pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
 
-.loginform {margin:10px 20px 0 20px; }
-.loginform p {clear:both; margin:0; padding:0;}
-.loginform fieldset {width:180px; border:none; margin: 10px auto 0 auto;}
-.loginform label.top {float:left; margin:0 0 2px 0; font-size:110%;}
-.loginform label.right {float:left; margin:5px 0 0 0; padding:0 0 0 3px; /*IE6*/; font-size:110%;}
-.loginform input.field {margin:0 0 5px 0; padding:0.1em 0 0.2em 0 !important /*Non-IE6*/; padding:0.2em 0 0.3em 0 /*IE6*/; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
-.loginform input.checkbox {float:left; margin:5px 0 0 0 !important /*Non-IE6*/; margin:2px 0 0 -3px /*IE6*/; border:none;}
-.loginform input.button {float:left; margin:10px 0 5px 0; padding:1px 1.0em; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:110%;}
+.loginform {margin:10px auto 0 auto; width:500px; font-size: 110%; text-align: center;}
+.loginform fieldset {border:none; margin: 10px auto 0 auto; width:300px;}
+.loginform span.label { clear:both; display:block; }
+.loginform span.label ul.errorlist { display:inline-block; margin: 0; padding: 0; font-weight:bold; color:rgb(255,0,0);  }
+.loginform span.label ul.errorlist li { display:inline-block; list-style:none; padding: 0; margin: 0;}
+.loginform label {float:left; width:auto; margin:0 auto 0 auto; 0 0;}
+.loginform input { clear: both; float: left; margin:0 auto 5px auto; width:auto; padding:0.1em 0 0.2em 0; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
+.loginform input.checkbox {float:left; margin:5px auto 0 auto; border:none;}
+.loginform input.button {float:left; margin:10px auto 5px auto; padding:3px 5px; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:110%;}
 .loginform input.button:hover {cursor:pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
-
 
 .signupform {margin:10px 20px 0 20px; font-size: 110%;}
 .signupform fieldset {border:none; margin: 10px auto 0 auto;}

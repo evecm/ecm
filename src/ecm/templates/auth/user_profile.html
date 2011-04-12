@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+
+{% block headtitle %}User Profile{% endblock %}
+
+
+{% block main_content %}
+
+<h1 class="pagetitle">User Profile</h1>
+
+<p>Hello {{ user.username }}</p>
+
+<p>Click <a href="/account/change_password">here</a> to change your password.</p>
+
+<h2>Owned Characters</h2>
+<ul>
+{% for owned in characters %}
+<li><a href="/members/{{ owned.characterID }}">{{ owned }}</a></li>
+{% endfor %}
+</ul>
+
+<h2>EVE Account Credentials</h2>
+<ul>
+{% for key in api_keys %}
+<li>{{ key }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
