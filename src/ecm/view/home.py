@@ -24,15 +24,15 @@ __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
 from django.shortcuts import render_to_response
-from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 
 from ecm.data.roles.models import MemberDiff, RoleMemberDiff, Member, TitleMemberDiff
+from ecm.core.auth import user_has_titles
 from ecm.core import utils
 
 
 #------------------------------------------------------------------------------
-@login_required
+@user_has_titles()
 def home(request):
     data = {           'memberCount' : Member.objects.filter(corped=True).count(),
                'last_member_changes' : getLastMemberChanges(),

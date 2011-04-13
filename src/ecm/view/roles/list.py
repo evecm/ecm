@@ -34,21 +34,21 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadReque
 
 from ecm.data.roles.models import Role, RoleType
 from ecm.data.common.models import ColorThreshold
-from ecm.view import directors_only
+from ecm.core.auth import user_is_director
 from ecm.data.corp.models import Hangar, Wallet
 
 ROLE_TYPES = {}
 for t in RoleType.objects.all(): ROLE_TYPES[t.typeName] = t.id
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def root(request):
     return redirect("/roles/roles")
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def role_type(request, role_typeName):
     try:
         role_type = RoleType.objects.get(typeName=role_typeName)
@@ -67,8 +67,8 @@ def role_type(request, role_typeName):
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def role_type_data(request, role_typeName):
     try:
         role_type = RoleType.objects.get(typeName=role_typeName)
@@ -112,8 +112,8 @@ def role_type_data(request, role_typeName):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def update_access_level(request):
     try:
         role_id = int(request.POST["id"])

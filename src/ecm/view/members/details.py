@@ -24,26 +24,30 @@ __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
 
-from django.views.decorators.cache import cache_page
-from ecm.core import utils
-from ecm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
-from ecm.view import getScanDate, directors_only
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
-from ecm.data.common.models import ColorThreshold
-from ecm.core.utils import print_time_min, get_access_color
-from ecm.core.db import resolveLocationName
 import json
+
+from django.shortcuts import render_to_response
+from django.views.decorators.cache import cache_page
+from django.template.context import RequestContext
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-
+from ecm.core import utils
+from ecm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
+from ecm.view import getScanDate
+from ecm.data.common.models import ColorThreshold
+from ecm.core.utils import print_time_min, get_access_color
+from ecm.core.db import resolveLocationName
+from ecm.core.auth import user_owns_character
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
+@user_owns_character()
 def details(request, characterID):
+    request.user
+    
+    
     try:
         member = getMember(int(characterID))
         
@@ -60,8 +64,8 @@ def details(request, characterID):
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
+@user_owns_character()
 def access_changes_member_data(request, characterID):
     iDisplayStart = int(request.GET["iDisplayStart"])
     iDisplayLength = int(request.GET["iDisplayLength"])

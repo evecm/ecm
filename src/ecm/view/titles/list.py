@@ -33,11 +33,12 @@ from django.http import HttpResponse
 from ecm.data.roles.models import TitleComposition, Title, TitleCompoDiff
 from ecm.data.common.models import ColorThreshold
 from ecm.core import utils
-from ecm.view import getScanDate, directors_only
+from ecm.view import getScanDate
+from ecm.core.auth import user_is_director
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def all(request):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
@@ -51,8 +52,8 @@ def all(request):
 
 #------------------------------------------------------------------------------
 all_columns = [ "titleName", "accessLvl" ]
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def all_data(request):
     sEcho = int(request.GET["sEcho"])
     column = int(request.GET["iSortCol_0"])

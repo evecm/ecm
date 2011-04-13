@@ -37,11 +37,11 @@ from ecm.core.utils import print_date
 from ecm.view.members import member_table_columns
 from ecm.data.common.models import ColorThreshold
 from ecm.data.roles.models import Title, Member
-from ecm.view import directors_only
+from ecm.core.auth import user_is_director
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
+@user_is_director()
 def members(request, id):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
@@ -57,8 +57,8 @@ def members(request, id):
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
+@user_is_director()
 def members_data(request, id):
     try:
         iDisplayStart = int(request.GET["iDisplayStart"])

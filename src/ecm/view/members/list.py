@@ -33,16 +33,16 @@ from django.utils.text import truncate_words
 from django.db.models import Q
 
 from ecm.core.utils import print_date
-from ecm.data.roles.models import Member
+from ecm.data.roles.models import Member, CharacterOwnership
 from ecm.data.common.models import ColorThreshold
-from ecm.view import getScanDate, directors_only
+from ecm.view import getScanDate
 from ecm.view.members import member_table_columns
-
+from ecm.core.auth import user_is_director
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
+@user_is_director()
 def all(request):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
@@ -55,9 +55,8 @@ def all(request):
     return render_to_response("members/member_list.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
-
+@user_is_director()
 def all_data(request):
     try:
         iDisplayStart = int(request.GET["iDisplayStart"])
@@ -130,15 +129,22 @@ def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
             if len(roles): roles.insert(0, "Roles")
         else:
             roles = []
+        
+        try:
+            owned = CharacterOwnership.objects.get(character=m)
+            user = '<a href="/user/%d">%s</a>' % (owned.user.id, owned.user.username)
+        except CharacterOwnership.DoesNotExist:
+            user = '<span class="error bold">no owner</span>'
+        
         memb = [
             '<a href="/members/%d">%s</a>' % (m.characterID, m.name),
             truncate_words(m.nickname, 5),
+            user,
             m.accessLvl,
             m.extraRoles,
             print_date(m.corpDate),
             print_date(m.lastLogin),
             truncate_words(m.location, 5),
-            m.ship,
             "|".join(titles),
             "|".join(roles)
         ] 

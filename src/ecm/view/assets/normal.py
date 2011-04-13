@@ -36,7 +36,8 @@ from django.http import HttpResponse
 from ecm.core import db, utils
 from ecm.data.assets.models import DbAsset
 from ecm.data.corp.models import Hangar
-from ecm.view import getScanDate, directors_only
+from ecm.view import getScanDate
+from ecm.core.auth import user_is_director
 
 SQL_STATIONS = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset GROUP BY locationID;"
 SQL_STATIONS_FILTERED = "SELECT itemID, locationID, count(*) AS items FROM assets_dbasset WHERE hangarID in %s GROUP BY locationID;"
@@ -51,8 +52,8 @@ CATEGORY_ICONS = { 2 : "can" ,
                   16 : "skill" }
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def stations(request):
     
     all_hangars = Hangar.objects.all()
@@ -76,8 +77,8 @@ def stations(request):
         return render_to_response("assets/assets_no_data.html", context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def hangars(request, stationID):
     
     try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
@@ -88,29 +89,29 @@ def hangars(request, stationID):
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def hangar_contents(request, stationID, hangarID):
     json_data = json.dumps(getHangarContents(int(stationID), int(hangarID)))
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def can1_contents(request, stationID, hangarID, container1):
     json_data = json.dumps(getCan1Contents(int(stationID), int(hangarID), int(container1)))
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def can2_contents(request, stationID, hangarID, container1, container2):
     json_data = json.dumps(getCan2Contents(int(stationID), int(hangarID), int(container1), int(container2)))
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def search_items(request):
     
     try: divisions = tuple([ int(div) for div in request.GET["divisions"].split(",") ])

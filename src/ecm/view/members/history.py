@@ -23,24 +23,24 @@
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
+import json
 
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
-from ecm.view import getScanDate, directors_only
-from ecm.data.roles.models import Member, MemberDiff
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
-import json
 from django.utils.text import truncate_words
-from ecm.core.utils import print_time_min
 
+from ecm.view import getScanDate
+from ecm.data.roles.models import Member, MemberDiff
+from ecm.core.utils import print_time_min
+from ecm.core.auth import user_is_director
 
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
-
+@user_is_director()
 def history(request):
     data = {
         'scan_date' : getScanDate(Member.__name__) 
@@ -49,9 +49,8 @@ def history(request):
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
-
+@user_is_director()
 def history_data(request):
     iDisplayStart = int(request.GET["iDisplayStart"])
     iDisplayLength = int(request.GET["iDisplayLength"])

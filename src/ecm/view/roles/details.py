@@ -36,13 +36,13 @@ from django.utils.text import truncate_words
 
 from ecm.data.roles.models import Role, RoleType, Member
 from ecm.data.common.models import ColorThreshold
-from ecm.view import directors_only
+from ecm.core.auth import user_is_director
 from ecm.core.utils import print_date
 from ecm.view.members import member_table_columns
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def role(request, role_typeName, role_id):
     try:
         type = RoleType.objects.get(typeName=role_typeName)
@@ -64,8 +64,8 @@ def role(request, role_typeName, role_id):
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def role_data(request, role_typeName, role_id):
     try:
         iDisplayStart = int(request.GET["iDisplayStart"])

@@ -23,9 +23,7 @@
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
-from django.conf import settings
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.models import Group
+
 
 from ecm.core import utils
 from ecm.data.common.models import UpdateDate
@@ -38,26 +36,3 @@ def getScanDate(model_name):
     except:
         return "<no data>"
 
-#------------------------------------------------------------------------------
-def directors_only():
-    return user_passes_test(lambda user: user.is_superuser or is_director(user))
-
-
-#------------------------------------------------------------------------------
-try:
-    g = Group.objects.get(id=settings.DIRECTOR_GROUP_ID)
-    if g.name != settings.DIRECTOR_GROUP_NAME:
-        g.name = settings.DIRECTOR_GROUP_NAME
-        g.save()
-except Group.DoesNotExist:
-    Group.objects.create(id=settings.DIRECTOR_GROUP_ID, name=settings.DIRECTOR_GROUP_NAME)
-
-def is_director(user):
-    try:
-        g = user.groups.get(id=settings.DIRECTOR_GROUP_ID)
-        if g:
-            return True
-        else:
-            return False
-    except:
-        return False

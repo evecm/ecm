@@ -50,7 +50,6 @@ def logout_view(request):
     return render_to_response("common/login.html")
 #------------------------------------------------------------------------------
 @login_required
-
 def corp(request):
     try:
         corp = Corp.objects.get(id=1)

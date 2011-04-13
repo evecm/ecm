@@ -104,9 +104,6 @@ class Member(models.Model):
     def __hash__(self):
         return self.characterID
 
-    def __eq__(self, other):
-        return self.characterID == other.characterID
-    
     def __cmp__(self, other):
         return cmp(self.name.lower(), other.name.lower())
 
@@ -125,9 +122,6 @@ class RoleType(models.Model):
     def __hash__(self):
         return self.id
     
-    def __eq__(self, other):
-        return self.id == other.id
-
     def __unicode__(self):
         if self.dispName:
             return self.dispName
@@ -207,9 +201,6 @@ class Role(models.Model):
     def __hash__(self):
         return self.id
     
-    def __eq__(self, other):
-        return self.id == other.id
-
     def __unicode__(self):
         try:
             name = self.dispName
@@ -254,9 +245,6 @@ class Title(models.Model):
     def __hash__(self):
         return self.titleID
     
-    def __eq__(self, other):
-        return self.titleID == other.titleID
-    
     def __unicode__(self):
         return self.titleName
     
@@ -276,12 +264,6 @@ class RoleMembership(models.Model):
             try:    self.h = self.member.characterID * self.role.id
             except: self.h = -1
         return self.h
-    
-    def __eq__(self, other):
-        try: 
-            return self.member == other.member and self.role == other.role
-        except: 
-            return False
     
     def __unicode__(self):
         try:
@@ -311,9 +293,6 @@ class TitleMembership(models.Model):
                 self.h = -1
         return self.h
     
-    def __eq__(self, other):
-        try: return self.member == other.member and self.title == other.title
-        except: return False
     def __unicode__(self):
         try:
             return unicode(self.member) + u' is ' + unicode(self.title)
@@ -334,9 +313,6 @@ class TitleComposition(models.Model):
         if not self.h:
             self.h = self.title.titleID + self.role.id 
         return self.h 
-    
-    def __eq__(self, other):
-        return self.title.titleID == other.title.titleID and self.role.id == other.role.id
     
     def __unicode__(self):
         return unicode(self.title) + u' has ' + unicode(self.role)

@@ -23,20 +23,22 @@
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
+import json
+
 from django.views.decorators.cache import cache_page
-from ecm.view import getScanDate, directors_only
-from ecm.data.roles.models import TitleComposition, TitleCompoDiff
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-import json
 from django.http import HttpResponse, HttpResponseBadRequest
+
+from ecm.data.roles.models import TitleComposition, TitleCompoDiff
+from ecm.view import getScanDate
 from ecm.core.utils import print_time_min
+from ecm.core.auth import user_is_director
 
 
 
 #------------------------------------------------------------------------------
-@directors_only()
-@cache_page(60 * 60 * 15) # 1 hour cache
+@user_is_director()
 def changes(request):
     data = {
         'scan_date' : getScanDate(TitleComposition.__name__) 
@@ -44,8 +46,8 @@ def changes(request):
     return render_to_response("titles/changes.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
+@user_is_director()
 def changes_data(request):
     try:
         iDisplayStart = int(request.GET["iDisplayStart"])

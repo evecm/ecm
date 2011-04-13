@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # The MIT License - EVE Corporation Management
 # 
 # Copyright (c) 2010 Robin Jarry
@@ -24,8 +23,37 @@
 __date__ = "2010-05-17"
 __author__ = "diabeteman"
 
-import setenv
+import os, sys
 
-from ecm.core.parsers import corp
+scripts_dir = os.path.abspath(os.path.dirname(__file__))
+install_dir = os.path.abspath(os.path.join(scripts_dir, "../../"))
+sys.path.append(install_dir)
 
-corp.update()
+os.environ['DJANGO_SETTINGS_MODULE'] = 'ecm.settings'
+
+from ecm.core.parsers import assets, corp, membersecu, membertrack, outposts, reftypes, titles, wallets
+from ecm.core import tasks
+
+FUNCTIONS = {
+    "assets" : assets.update,
+    "corp" : corp.update,
+    "member_roles" : membersecu.update,
+    "members" : membertrack.update,
+    "outposts" : outposts.update,
+    "reftypes" : reftypes.update,
+    "titles" : titles.update,
+    "wallets" : wallets.update,
+    "user_access" : tasks.update_user_accesses,
+    "clean_unregistered_users" : tasks.cleanup_unregistered_users,
+}
+
+
+if __name__ == "__main__":
+    try:
+        FUNCTIONS[sys.argv[1]]()
+    except (IndexError, KeyError):
+        print >>sys.stderr, "usage: update.py",
+        func_names = FUNCTIONS.keys()
+        func_names.sort()
+        print >>sys.stderr, "{%s}" % "|".join(func_names)
+        sys.exit(1)

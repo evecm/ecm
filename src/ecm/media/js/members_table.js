@@ -18,37 +18,39 @@ $(document).ready(function() {
         "iDisplayLength": 25,
         "bStateSave": true,
         "iCookieDuration": 60*60*24,
-		"sAjaxSource": "/members/data",
+        "sAjaxSource": "/members/data",
         "sDom": 'lprtip',
         "aoColumns": [
             { "sTitle": "Name",         "sWidth": "25%", "sType": "html" },
             { "sTitle": "Nickname",     "sWidth": "20%", "sType": "string",       "bSortable": false     },
+            { "sTitle": "Player",       "sWidth": "5%",  "sType": "html" },
             { "sTitle": "Access Level", "sWidth": "10%", "sType": "access-level", "bSearchable": false   },
             { "sTitle": "Extra Roles",  "sWidth": "5%",  "sType": "numeric",      "bSearchable": false   },
             { "sTitle": "Corp Date",    "sWidth": "10%", "sType": "string",       "bSearchable": false   },
             { "sTitle": "Last Login",   "sWidth": "10%", "sType": "string",       "bSearchable": false   },
             { "sTitle": "Location",     "sWidth": "20%", "sType": "string",       "bSearchable": false   },
-            { "sTitle": "Ship",         "sWidth": "5%",  "sType": "string" },
             { "bVisible": false },
             { "bVisible": false }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             /* apply color to all access level cells */
-            accessLvl = aData[2];
+            accessLvl = aData[3];
             if ( accessLvl == director_access_lvl ) {
-				$('td:eq(2)', nRow).html( '<b>DIRECTOR</b>' );
+                $('td:eq(3)', nRow).html( '<b>DIRECTOR</b>' );
             }
-            $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl, colorThresholds));
-            if (aData[3] > 0) {
-                $('td:eq(3)', nRow).addClass("row-red");
+            $('td:eq(3)', nRow).addClass("row-" + getAccessColor(accessLvl, colorThresholds));
+            
+            /* set "red" all extra roles cells that are not == 0 */
+            if (aData[4] > 0) {
+                $('td:eq(4)', nRow).addClass("row-red");
             }
             
             /* set titles tooltip on each row */
             $('td:eq(8)', nRow).hide()
             titles = aData[8]
             if (titles != "") {
-                $('td:eq(2)', nRow).attr("title", titles)
-                $('td:eq(2)', nRow).cluetip({
+                $('td:eq(3)', nRow).attr("title", titles)
+                $('td:eq(3)', nRow).cluetip({
                     splitTitle: '|',
                     dropShadow: false, 
                     cluetipClass: 'jtip',
@@ -61,8 +63,8 @@ $(document).ready(function() {
             $('td:eq(9)', nRow).hide()
             roles = aData[9]
             if (roles != "") {
-                $('td:eq(3)', nRow).attr("title", roles)
-                $('td:eq(3)', nRow).cluetip({
+                $('td:eq(4)', nRow).attr("title", roles)
+                $('td:eq(4)', nRow).cluetip({
                     splitTitle: '|',
                     dropShadow: false, 
                     cluetipClass: 'jtip',

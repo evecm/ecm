@@ -23,22 +23,24 @@
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
-from django.views.decorators.cache import cache_page
-from ecm.view import getScanDate, directors_only
-from ecm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
-from django.shortcuts import render_to_response
-from ecm.core import utils
-from django.template.context import RequestContext
 import json
-from django.http import HttpResponse
-from ecm.core.utils import print_time_min
 
+from django.views.decorators.cache import cache_page
+from django.template.context import RequestContext
+from django.shortcuts import render_to_response
+from django.http import HttpResponse
+
+from ecm.view import getScanDate
+from ecm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
+from ecm.core import utils
+from ecm.core.utils import print_time_min
+from ecm.core.auth import user_is_director
 
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
+@user_is_director()
 def access_changes(request):
     data = {
         'scan_date' : getScanDate(TitleMembership.__name__) 
@@ -47,8 +49,8 @@ def access_changes(request):
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(60 * 60 * 15) # 1 hour cache
+@user_is_director()
 def access_changes_data(request):
     iDisplayStart = int(request.GET["iDisplayStart"])
     iDisplayLength = int(request.GET["iDisplayLength"])

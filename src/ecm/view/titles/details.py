@@ -34,12 +34,12 @@ from ecm.data.roles.models import TitleComposition, TitleCompoDiff, Title
 from ecm.core import utils
 from ecm.data.common.models import ColorThreshold
 from ecm.core.utils import get_access_color
-from ecm.view import directors_only
+from ecm.core.auth import user_is_director
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def details(request, id):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
@@ -64,8 +64,8 @@ def details(request, id):
 
 #------------------------------------------------------------------------------
 composition_columns = [ "role_id" ]
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def composition_data(request, id):
     iDisplayStart = int(request.GET["iDisplayStart"])
     iDisplayLength = int(request.GET["iDisplayLength"])
@@ -123,8 +123,8 @@ def getTitleComposition(id, first_id, last_id, sort_by="role_id", asc=True):
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def compo_diff_data(request, id):
     iDisplayStart = int(request.GET["iDisplayStart"])
     iDisplayLength = int(request.GET["iDisplayLength"])

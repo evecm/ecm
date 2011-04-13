@@ -16,13 +16,17 @@
 <ul>
 {% for owned in characters %}
 <li><a href="/members/{{ owned.characterID }}">{{ owned }}</a></li>
+{% empty %}
+None
 {% endfor %}
 </ul>
 
 <h2>EVE Account Credentials</h2>
 <ul>
 {% for key in api_keys %}
-<li>{{ key }}</li>
+<li>{{ key.userID }} - {{ key.key}}</li>
+{% empty %}
+None
 {% endfor %}
 </ul>
 

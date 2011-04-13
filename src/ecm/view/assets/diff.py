@@ -35,15 +35,16 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFou
 from ecm.core import db, utils
 from ecm.data.assets.models import DbAsset, DbAssetDiff
 from ecm.data.corp.models import Hangar
-from ecm.view import getScanDate, directors_only
+from ecm.view import getScanDate
+from ecm.core.auth import user_is_director
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def last_stations(request):
     # if called without date, redirect to the last date.
 
@@ -65,8 +66,8 @@ def last_stations(request):
 
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def stations(request, date_str):
     
     all_hangars = Hangar.objects.all()
@@ -115,8 +116,8 @@ def stations(request, date_str):
         return HttpResponseNotFound()
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def hangars(request, date_str, stationID):
     
     date = datetime.strptime(date_str, DATE_PATTERN)
@@ -129,8 +130,8 @@ def hangars(request, date_str, stationID):
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def hangar_contents(request, date_str, stationID, hangarID):
     date = datetime.strptime(date_str, DATE_PATTERN)
     hangar_contents = getHangarContents(date, int(stationID), int(hangarID))
@@ -140,8 +141,8 @@ def hangar_contents(request, date_str, stationID, hangarID):
         return HttpResponseNotFound()
 
 #------------------------------------------------------------------------------
-@directors_only()
 @cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@user_is_director()
 def search_items(request, date_str):
     
     date = datetime.strptime(date_str, DATE_PATTERN)
