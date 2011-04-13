@@ -41,7 +41,6 @@ from ecm.core.auth import user_is_director
 
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60 * 15) # 1 hour cache
 @user_is_director()
 def all(request):
     colorThresholds = []
@@ -55,7 +54,7 @@ def all(request):
     return render_to_response("members/member_list.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60 * 15) # 1 hour cache
+@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
 def all_data(request):
     try:
@@ -88,12 +87,6 @@ def all_data(request):
     
     return HttpResponse(json.dumps(json_data))
 
-
-
-
-
-
-        
 #------------------------------------------------------------------------------
 def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
 
@@ -124,29 +117,21 @@ def getMembers(first_id, last_id, search_str=None, sort_by="name", asc=True):
     for m in members:
         titles = ["Titles"]
         titles.extend([ str(t) for t in m.getTitles() ])
-        if m.extraRoles: 
-            roles = [ str(r) for r in m.getRoles(ignore_director=True) ]
-            if len(roles): roles.insert(0, "Roles")
-        else:
-            roles = []
         
         try:
-            owned = CharacterOwnership.objects.get(character=m)
-            user = '<a href="/user/%d">%s</a>' % (owned.user.id, owned.user.username)
+            user = m.owner.user_as_html()
         except CharacterOwnership.DoesNotExist:
             user = '<span class="error bold">no owner</span>'
         
         memb = [
-            '<a href="/members/%d">%s</a>' % (m.characterID, m.name),
+            m.as_html(),
             truncate_words(m.nickname, 5),
             user,
             m.accessLvl,
-            m.extraRoles,
             print_date(m.corpDate),
             print_date(m.lastLogin),
             truncate_words(m.location, 5),
-            "|".join(titles),
-            "|".join(roles)
+            "|".join(titles)
         ] 
 
         member_list.append(memb)

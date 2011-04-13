@@ -1,1 +1,1 @@
-{{ corp_name }} : New account activation
+[{{ corp_name }}] New account activation

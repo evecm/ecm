@@ -106,7 +106,7 @@ def get_access_color(accessLvl, colorThresholds):
     for t in colorThresholds:
         if accessLvl <= t.threshold:
             return t.color
-    return colorThresholds[0].color
+    return ""
 
 
 def merge_lists(list_a, list_b, ascending=True, attribute=None):

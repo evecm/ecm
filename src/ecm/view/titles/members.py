@@ -26,7 +26,7 @@ __author__ = "diabeteman"
 import json
 
 from django.views.decorators.cache import cache_page
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.utils.text import truncate_words
@@ -40,24 +40,24 @@ from ecm.data.roles.models import Title, Member
 from ecm.core.auth import user_is_director
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60 * 15) # 1 hour cache
+@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
 def members(request, id):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
         colorThresholds.append({ "threshold" : c.threshold, "color" : c.color })
 
-    title = Title.objects.get(titleID=int(id))
+    title = get_object_or_404(Title, titleID=int(id))
 
     data = { 
         'title' : title,
         'colorThresholds' : json.dumps(colorThresholds)
     }
-    return render_to_response("titles/title_members.html", data, context_instance=RequestContext(request))
+    return render_to_response("titles/title_members.html", data, RequestContext(request))
 
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60 * 15) # 1 hour cache
+@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
 def members_data(request, id):
     try:
@@ -79,7 +79,7 @@ def members_data(request, id):
 
     total_members,\
     filtered_members,\
-    members = getMembers(title=title,
+    members = get_members(title=title,
                          first_id=iDisplayStart, 
                          last_id=iDisplayStart + iDisplayLength - 1,
                          search_str=sSearch,
@@ -96,7 +96,7 @@ def members_data(request, id):
 
 
 #------------------------------------------------------------------------------
-def getMembers(title, first_id, last_id, search_str=None, sort_by="name", asc=True):
+def get_members(title, first_id, last_id, search_str=None, sort_by="name", asc=True):
 
     sort_col = "%s_nocase" % sort_by
     
@@ -124,23 +124,15 @@ def getMembers(title, first_id, last_id, search_str=None, sort_by="name", asc=Tr
     member_list = []
     for m in members:
         titles = ["Titles"]
-        titles.extend([ str(t) for t in m.getTitles() ])
-        if m.extraRoles: 
-            roles = [ str(r) for r in m.getRoles(ignore_director=True) ]
-            if len(roles): roles.insert(0, "Roles")
-        else:
-            roles = []
+        titles.extend(m.titles.values_list("titleName", flat=True))
         memb = [
-            '<a href="/members/%d">%s</a>' % (m.characterID, m.name),
+            m.get_html(),
             truncate_words(m.nickname, 5),
             m.accessLvl,
-            m.extraRoles,
             print_date(m.corpDate),
             print_date(m.lastLogin),
             truncate_words(m.location, 5),
-            m.ship,
-            "|".join(titles),
-            "|".join(roles)
+            "|".join(titles)
         ] 
 
         member_list.append(memb)

@@ -28,7 +28,7 @@ import json
 from django.views.decorators.cache import cache_page
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.view import getScanDate
 from ecm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
@@ -36,10 +36,7 @@ from ecm.core import utils
 from ecm.core.utils import print_time_min
 from ecm.core.auth import user_is_director
 
-
-
 #------------------------------------------------------------------------------
-@cache_page(60 * 60 * 15) # 1 hour cache
 @user_is_director()
 def access_changes(request):
     data = {
@@ -49,28 +46,16 @@ def access_changes(request):
 
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60 * 15) # 1 hour cache
+@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
 def access_changes_data(request):
-    iDisplayStart = int(request.GET["iDisplayStart"])
-    iDisplayLength = int(request.GET["iDisplayLength"])
-    sEcho = int(request.GET["sEcho"])
-
-    count, changes = getAccessChanges(first_id=iDisplayStart, 
-                                      last_id=iDisplayStart + iDisplayLength - 1)
-    json_data = {
-        "sEcho" : sEcho,
-        "iTotalRecords" : count,
-        "iTotalDisplayRecords" : count,
-        "aaData" : changes
-    }
-    
-    return HttpResponse(json.dumps(json_data))
-
-
-
-#------------------------------------------------------------------------------
-def getAccessChanges(first_id, last_id):
+    try:
+        first_id = int(request.GET["iDisplayStart"])
+        length = int(request.GET["iDisplayLength"])
+        last_id = first_id + length - 1
+        sEcho = int(request.GET["sEcho"])
+    except:
+        return HttpResponseBadRequest()
     
     roles = RoleMemberDiff.objects.all().order_by("-date")
     titles = TitleMemberDiff.objects.all().order_by("-date")
@@ -82,25 +67,18 @@ def getAccessChanges(first_id, last_id):
     
     change_list = []
     for c in changes:
-        try:
-            access = '<a href="/titles/%d" class="title">%s</a>' % (c.title_id, unicode(c.title)) 
-        except AttributeError:
-            role_type = c.role.roleType.typeName
-            role_id = c.role.roleID
-            access = '<a href="/roles/%s/%d" class="role">%s</a>' % (role_type, role_id, unicode(c.role))
-        
-        try:
-            member_url = '<a href="/members/%d">%s</a>' % (c.member.characterID, c.member.name)
-        except:
-            member_url = '<a href="/members/%d">%s</a>' % (c.member_id, "???")
-        
-        change = [
+        change_list.append([
             c.new,
-            member_url,
-            access,
+            c.member_as_html(),
+            c.as_html(),
             print_time_min(c.date)
-        ]
-
-        change_list.append(change)
+        ])
     
-    return count, change_list
+    json_data = {
+        "sEcho" : sEcho,
+        "iTotalRecords" : count,
+        "iTotalDisplayRecords" : count,
+        "aaData" : changes
+    }
+    
+    return HttpResponse(json.dumps(json_data))

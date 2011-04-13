@@ -43,34 +43,20 @@ def changes(request):
     data = {
         'scan_date' : getScanDate(TitleComposition.__name__) 
     }
-    return render_to_response("titles/changes.html", data, context_instance=RequestContext(request))
+    return render_to_response("titles/changes.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60 * 15) # 1 hour cache
+@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
 def changes_data(request):
     try:
-        iDisplayStart = int(request.GET["iDisplayStart"])
-        iDisplayLength = int(request.GET["iDisplayLength"])
+        first_id = int(request.GET["iDisplayStart"])
+        length = int(request.GET["iDisplayLength"])
+        last_id = first_id + length - 1
         sEcho = int(request.GET["sEcho"])
     except:
         return HttpResponseBadRequest()
 
-    count, changes = getTitleChanges(first_id=iDisplayStart, 
-                                     last_id=iDisplayStart + iDisplayLength - 1)
-    json_data = {
-        "sEcho" : sEcho,
-        "iTotalRecords" : count,
-        "iTotalDisplayRecords" : count,
-        "aaData" : changes
-    }
-    
-    return HttpResponse(json.dumps(json_data))
-
-
-#------------------------------------------------------------------------------
-def getTitleChanges(first_id, last_id):
-    
     titles = TitleCompoDiff.objects.all().order_by("-date")
     
     count = titles.count()
@@ -79,13 +65,18 @@ def getTitleChanges(first_id, last_id):
     
     change_list = []
     for c in changes:
-        change = [
+        change_list.append([
             c.new,
-            '<a href="/titles/%d" class="title">%s</a>' % (c.title_id, unicode(c.title)),
-            '<a href="/roles/%d/%d" class="role">%s</a>' % (c.role.roleType.id, c.role_id, unicode(c.role)),
+            c.title.as_html(),
+            c.role.as_html(),
             print_time_min(c.date)
-        ]
-
-        change_list.append(change)
+        ])
     
-    return count, change_list
+    json_data = {
+        "sEcho" : sEcho,
+        "iTotalRecords" : count,
+        "iTotalDisplayRecords" : count,
+        "aaData" : change_list
+    }
+    
+    return HttpResponse(json.dumps(json_data))

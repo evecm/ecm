@@ -38,7 +38,7 @@ from ecm.core.auth import user_is_director
 
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def details(request, id):
     colorThresholds = []
@@ -57,14 +57,14 @@ def details(request, id):
             "member_count" : title.members.count(),  
             "colorThresholds" : json.dumps(colorThresholds) }
 
-    return render_to_response("titles/title_details.html", data, context_instance=RequestContext(request))
+    return render_to_response("titles/title_details.html", data, RequestContext(request))
 
 
 
 
 #------------------------------------------------------------------------------
 composition_columns = [ "role_id" ]
-@cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def composition_data(request, id):
     iDisplayStart = int(request.GET["iDisplayStart"])
@@ -111,19 +111,17 @@ def getTitleComposition(id, first_id, last_id, sort_by="role_id", asc=True):
     
     compo_list = []
     for c in compos:
-        compo = [
-            '<a href="/roles/%s/%d" class="role">%s</a>' % (c.role.roleType.typeName, c.role.roleID, unicode(c.role)),
-            c.role.getAccessLvl()
-        ] 
-
-        compo_list.append(compo)
+        compo_list.append([
+            c.role.as_html(),
+            c.role.get_access_lvl()
+        ])
     
     return total_compos, compo_list
 
 
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def compo_diff_data(request, id):
     iDisplayStart = int(request.GET["iDisplayStart"])

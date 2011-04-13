@@ -28,7 +28,7 @@ import json
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.text import truncate_words
 
 from ecm.view import getScanDate
@@ -36,10 +36,7 @@ from ecm.data.roles.models import Member, MemberDiff
 from ecm.core.utils import print_time_min
 from ecm.core.auth import user_is_director
 
-
-
 #------------------------------------------------------------------------------
-@cache_page(60 * 60 * 15) # 1 hour cache
 @user_is_director()
 def history(request):
     data = {
@@ -47,17 +44,31 @@ def history(request):
     }
     return render_to_response("members/member_history.html", data, context_instance=RequestContext(request))
 
-
 #------------------------------------------------------------------------------
-@cache_page(60 * 60 * 15) # 1 hour cache
+@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
 def history_data(request):
-    iDisplayStart = int(request.GET["iDisplayStart"])
-    iDisplayLength = int(request.GET["iDisplayLength"])
-    sEcho = int(request.GET["sEcho"])
+    try:
+        first_id = int(request.GET["iDisplayStart"])
+        length = int(request.GET["iDisplayLength"])
+        last_id = first_id + length - 1
+        sEcho = int(request.GET["sEcho"])
+    except:
+        return HttpResponseBadRequest()
 
-    total_members, members = getLastMembers(first_id=iDisplayStart, 
-                                            last_id=iDisplayStart + iDisplayLength - 1)
+    queryset = MemberDiff.objects.all().order_by('-id')
+    total_members = queryset.count()
+
+    queryset = queryset[first_id:last_id]
+    members = []
+    for m in queryset:
+        members.append([
+            m.new,
+            m.as_html(),
+            truncate_words(m.nickname, 5),
+            print_time_min(m.date)
+        ])
+    
     json_data = {
         "sEcho" : sEcho,
         "iTotalRecords" : total_members,
@@ -67,32 +78,3 @@ def history_data(request):
     
     return HttpResponse(json.dumps(json_data))
 
-
-
-
-
-
-
-#------------------------------------------------------------------------------
-def getLastMembers(first_id, last_id):
-    queryset = MemberDiff.objects.all().order_by('-id')
-    total_members = queryset.count()
-
-    queryset = queryset[first_id:last_id]
-    members = []
-    for m in queryset:
-        try:
-            Member.objects.get(characterID=m.characterID)
-            # if this call doesn't fail then we can have a link to his/her details
-            name = '<a href="/members/%d">%s</a>' % (m.characterID, m.name)
-        except:
-            name = '<b>%s</b>' % m.name
-
-        members.append([
-            m.new,
-            name,
-            truncate_words(m.nickname, 5),
-            print_time_min(m.date)
-        ])
-    
-    return total_members, members

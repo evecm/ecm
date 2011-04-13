@@ -41,13 +41,13 @@ from ecm.core.utils import print_date
 from ecm.view.members import member_table_columns
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def role(request, role_typeName, role_id):
     try:
         type = RoleType.objects.get(typeName=role_typeName)
         role = Role.objects.get(roleType=type, roleID=int(role_id))
-        role.accessLvl = role.getAccessLvl()
+        role.accessLvl = role.get_access_lvl()
     except ObjectDoesNotExist:
         return HttpResponseNotFound()
     
@@ -57,14 +57,14 @@ def role(request, role_typeName, role_id):
         'role_types' : RoleType.objects.all(),
         'role' : role,
         'direct_member_count' : role.members.count(),
-        'total_member_count' : role.getMembersThroughTitles().count()
+        'total_member_count' : role.members_through_titles().count()
     }
     return render_to_response("roles/role_details.html", data, context_instance=RequestContext(request))
 
 
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60 * 15) # 3 hours cache
+@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def role_data(request, role_typeName, role_id):
     try:
@@ -109,7 +109,7 @@ def getMembers(role, first_id, last_id, search_str=None, sort_by="name", asc=Tru
 
     sort_col = "%s_nocase" % sort_by
     
-    members = role.getMembersThroughTitles(with_direct_roles=True)
+    members = role.members_through_titles(with_direct_roles=True)
 
     # SQLite hack for making a case insensitive sort
     members = members.extra(select={sort_col : "%s COLLATE NOCASE" % sort_by})
@@ -133,23 +133,15 @@ def getMembers(role, first_id, last_id, search_str=None, sort_by="name", asc=Tru
     member_list = []
     for m in members:
         titles = ["Titles"]
-        titles.extend([ str(t) for t in m.getTitles() ])
-        if m.extraRoles: 
-            roles = [ str(r) for r in m.getRoles(ignore_director=True) ]
-            if len(roles): roles.insert(0, "Roles")
-        else:
-            roles = []
+        titles.extend([ str(t) for t in m.titles.all() ])
         memb = [
-            '<a href="/members/%d">%s</a>' % (m.characterID, m.name),
+            m.as_html(),
             truncate_words(m.nickname, 5),
             m.accessLvl,
-            m.extraRoles,
             print_date(m.corpDate),
             print_date(m.lastLogin),
             truncate_words(m.location, 5),
-            m.ship,
             "|".join(titles),
-            "|".join(roles)
         ] 
 
         member_list.append(memb)

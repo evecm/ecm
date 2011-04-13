@@ -102,7 +102,7 @@ def update_user_accesses():
             titles = Title.objects.none()
             director = False
             for char in owned:
-                director = char.character.isDirector() or director
+                director = char.character.is_director() or director
                 titles |= char.character.getTitles()
             ids = titles.distinct().values_list("titleID", flat=True)
             user.groups.clear()

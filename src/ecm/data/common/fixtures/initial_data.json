@@ -3,20 +3,12 @@
     "pk": 1, 
     "model": "common.colorthreshold", 
     "fields": {
-      "color": "black", 
-      "threshold": -1
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "common.colorthreshold", 
-    "fields": {
       "color": "white", 
       "threshold": 0
     }
   }, 
   {
-    "pk": 3, 
+    "pk": 2, 
     "model": "common.colorthreshold", 
     "fields": {
       "color": "blue", 
@@ -24,7 +16,7 @@
     }
   }, 
   {
-    "pk": 4, 
+    "pk": 3, 
     "model": "common.colorthreshold", 
     "fields": {
       "color": "green", 
@@ -32,7 +24,7 @@
     }
   }, 
   {
-    "pk": 5, 
+    "pk": 4, 
     "model": "common.colorthreshold", 
     "fields": {
       "color": "yellow", 
@@ -40,7 +32,7 @@
     }
   }, 
   {
-    "pk": 6, 
+    "pk": 5, 
     "model": "common.colorthreshold", 
     "fields": {
       "color": "orange", 
@@ -48,7 +40,7 @@
     }
   }, 
   {
-    "pk": 7, 
+    "pk": 6, 
     "model": "common.colorthreshold", 
     "fields": {
       "color": "red", 
@@ -56,11 +48,19 @@
     }
   }, 
   {
-    "pk": 8, 
+    "pk": 7, 
     "model": "common.colorthreshold", 
     "fields": {
       "color": "purple", 
       "threshold": 3000000
     }
-  }
+  },
+  {
+    "pk": 8, 
+    "model": "common.colorthreshold", 
+    "fields": {
+      "color": "black", 
+      "threshold": 999999999999
+    }
+  } 
 ]

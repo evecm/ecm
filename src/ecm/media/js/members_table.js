@@ -18,7 +18,7 @@ $(document).ready(function() {
         "iDisplayLength": 25,
         "bStateSave": true,
         "iCookieDuration": 60*60*24,
-        "sAjaxSource": "/members/data",
+        "sAjaxSource": ajax_url,
         "sDom": 'lprtip',
         "aoColumns": [
             { "sTitle": "Name",         "sWidth": "25%", "sType": "html" },
@@ -29,7 +29,6 @@ $(document).ready(function() {
             { "sTitle": "Corp Date",    "sWidth": "10%", "sType": "string",       "bSearchable": false   },
             { "sTitle": "Last Login",   "sWidth": "10%", "sType": "string",       "bSearchable": false   },
             { "sTitle": "Location",     "sWidth": "20%", "sType": "string",       "bSearchable": false   },
-            { "bVisible": false },
             { "bVisible": false }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
@@ -51,20 +50,6 @@ $(document).ready(function() {
             if (titles != "") {
                 $('td:eq(3)', nRow).attr("title", titles)
                 $('td:eq(3)', nRow).cluetip({
-                    splitTitle: '|',
-                    dropShadow: false, 
-                    cluetipClass: 'jtip',
-                    positionBy: 'mouse',
-                    tracking: true
-                });
-            }
-            
-            /* set roles tooltip on each row */
-            $('td:eq(9)', nRow).hide()
-            roles = aData[9]
-            if (roles != "") {
-                $('td:eq(4)', nRow).attr("title", roles)
-                $('td:eq(4)', nRow).cluetip({
                     splitTitle: '|',
                     dropShadow: false, 
                     cluetipClass: 'jtip',

@@ -89,7 +89,7 @@ def update():
         
         # update titles access levels
         for t in Title.objects.all():
-            t.accessLvl = t.getAccessLvl()
+            t.accessLvl = t.get_access_lvl()
             t.save()
             
         logger.info("%d roles in titles parsed, %d changes since last scan", len(newList), len(diffs))

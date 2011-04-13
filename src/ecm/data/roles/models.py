@@ -23,10 +23,13 @@
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
-from ecm.data.corp.models import Hangar, Wallet
-from django.contrib.auth.models import User
-from django.db import models
 from datetime import datetime
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User, AnonymousUser
+from django.db import models
+
+from ecm.data.corp.models import Hangar, Wallet
 
 #------------------------------------------------------------------------------
 class Member(models.Model):
@@ -46,60 +49,42 @@ class Member(models.Model):
     ship = models.CharField(max_length=128, default="")
     accessLvl = models.PositiveIntegerField(default=0)
     corped = models.BooleanField(default=True)
-    # cached value of self.getRoles().count() for performance
-    extraRoles = models.PositiveIntegerField(default=0)
 
-    def getTitles(self):
-        """
-        Convenience method to get all Titles assigned to one Member.
-        ManyToManyField cannot be used here as the 'Title' class is not defined yet
-        """
-        ids = TitleMembership.objects.filter(member=self).values_list("title", 
-                                                                      flat=True)
-        return Title.objects.filter(titleID__in=ids)
-    
-    def getRoles(self, ignore_director=False):
-        """
-        Convenience method to get all Roles assigned to one Member.
-        ManyToManyField cannot be used here as the 'Role' class is not defined yet
-        """
-        if ignore_director:
-            ids = RoleMembership.objects.filter(member=self)\
-                        .exclude(role__roleID=1).values_list("role", flat=True)
-        else:
-            ids = RoleMembership.objects.filter(member=self)\
-                        .values_list("role", flat=True)
-        return Role.objects.filter(id__in=ids)
-    
-    def getImpliedRoles(self):
+    def get_implied_roles(self):
         """
         Retrieve all Roles assigned to one Member directly or through Titles
         """
-        roles = self.getRoles()
-        for t in self.getTitles():
-            roles |= t.getRoles()
+        roles = self.roles
+        for t in self.titles:
+            roles |= t.titles
         
         return roles.distinct()
     
-    def isDirector(self):
+    def is_director(self):
         """
         True if the Member has the role 'Director'
         """
-        return RoleMembership.objects.filter(member=self, role__roleID=1).count() > 0
+        return self.roles.filter(roleID=1).count() > 0
     
-    def getAccessLvl(self):
+    def get_access_lvl(self):
         """
         Calculates the security access level of a member. 
         It is the sum of single access levels of each Role assigned to him/her.
         """
         lvl = 0
-        if self.isDirector():
+        if self.is_director():
             lvl = Member.DIRECTOR_ACCESS_LVL
         else:
-            roles = self.getImpliedRoles()
+            roles = self.get_implied_roles()
             for r in roles: 
-                lvl += r.getAccessLvl()
+                lvl += r.get_access_lvl()
         return lvl
+    
+    def get_url(self):
+        return '/members/%d' % self.characterID
+    
+    def as_html(self):
+        return '<a href="%s" class="member">%s</a>' % (self.get_url(), self.name)
     
     def __hash__(self):
         return self.characterID
@@ -118,6 +103,12 @@ class RoleType(models.Model):
     """
     typeName = models.CharField(max_length=64, unique=True)
     dispName = models.CharField(max_length=64)
+    
+    def get_url(self):
+        return '/roles/%s' % self.typeName
+    
+    def as_html(self):
+        return '<a href="%s" class="role_type">%s</a>' % (self.get_url(), self.dispName)
     
     def __hash__(self):
         return self.id
@@ -142,7 +133,7 @@ class Role(models.Model):
     When a Role is related to hangar or wallet divisions, the accessLvl of the Role is
     that of the Hangar or Wallet division (not sure about my grammar here...)
     """
-    roleType = models.ForeignKey(RoleType, db_index=True)
+    roleType = models.ForeignKey(RoleType, db_index=True, related_name="roles")
     roleID = models.IntegerField()
     roleName = models.CharField(max_length=64)
     dispName = models.CharField(max_length=64)
@@ -151,9 +142,9 @@ class Role(models.Model):
     wallet = models.ForeignKey(Wallet, null=True, blank=True)
     accessLvl = models.PositiveSmallIntegerField(default=0)
     
-    members = models.ManyToManyField(Member, through='RoleMembership')
+    members = models.ManyToManyField(Member, through='RoleMembership', related_name="roles")
     
-    def getAccessLvl(self):
+    def get_access_lvl(self):
         """
         Returns the accessLvl of the Role. 
         If the Role is related to a Hangar or Wallet division,
@@ -166,14 +157,14 @@ class Role(models.Model):
         else:
             return self.accessLvl
         
-    def getTitles(self):
-        """
-        Returns all the corporation Titles that contain this Role.
-        """
-        ids = TitleComposition.objects.filter(role=self).values_list("title", flat=True)
-        return Title.objects.filter(titleID__in=ids)
+#    def getTitles(self):
+#        """
+#        Returns all the corporation Titles that contain this Role.
+#        """
+#        ids = TitleComposition.objects.filter(role=self).values_list("title", flat=True)
+#        return Title.objects.filter(titleID__in=ids)
     
-    def getMembersThroughTitles(self, with_direct_roles=False):
+    def members_through_titles(self, with_direct_roles=False):
         """
         Returns all Members that have this role assigned through Titles
         If with_direct_roles=True, also returns the Members who have this Role assigned directly 
@@ -186,7 +177,7 @@ class Role(models.Model):
             members |= title.members.all()
         return members.distinct()
             
-    def getDispName(self):
+    def get_disp_name(self):
         try:
             name = self.dispName
             if self.hangar_id :
@@ -196,8 +187,16 @@ class Role(models.Model):
             return name
         except:
             return self.roleName
-
-
+        
+    def get_url(self):
+        return '/roles/%s/%d' % (self.roleType.typeName, self.roleID)
+    
+    def as_html(self):
+        try:
+            return '<a href="%s" class="role">%s</a>' % (self.get_url(), self.get_disp_name())
+        except:
+            return '<b>%s</b>' % self.get_disp_name()
+    
     def __hash__(self):
         return self.id
     
@@ -214,9 +213,7 @@ class Role(models.Model):
     
     def __getattr__(self, attr_name):
         if attr_name == "name":
-            return self.getDispName()
-        elif attr_name == "titles":
-            return self.getTitles()
+            return self.get_disp_name()
         else:
             raise AttributeError("Role has no attribute %s" % attr_name)
     
@@ -233,14 +230,20 @@ class Title(models.Model):
     tiedToBase = models.BigIntegerField(default=0)
     accessLvl = models.PositiveIntegerField(default=0)
 
-    members = models.ManyToManyField(Member, through='TitleMembership')
-    roles = models.ManyToManyField(Role, through='TitleComposition')
+    members = models.ManyToManyField(Member, through='TitleMembership', related_name="titles")
+    roles = models.ManyToManyField(Role, through='TitleComposition', related_name="titles")
 
-    def getAccessLvl(self):
+    def get_access_lvl(self):
         lvl = 0
         for r in self.roles.all() : 
-            lvl += r.getAccessLvl()
+            lvl += r.get_access_lvl()
         return lvl
+    
+    def get_url(self):
+        return '/titles/%d' % self.titleID
+    
+    def as_html(self):
+        return '<a href="%s" class="title">%s</a>' % (self.get_url(), self.titleName)
     
     def __hash__(self):
         return self.titleID
@@ -261,7 +264,7 @@ class RoleMembership(models.Model):
 
     def __hash__(self):
         if not self.h:
-            try:    self.h = self.member.characterID * self.role.id
+            try:    self.h = self.member.characterID * 1000 + self.role.id
             except: self.h = -1
         return self.h
     
@@ -288,7 +291,7 @@ class TitleMembership(models.Model):
     def __hash__(self):
         if not self.h:
             try:
-                self.h = self.member.characterID * self.title.titleID
+                self.h = self.member.characterID * 100000 + self.title.titleID
             except:
                 self.h = -1
         return self.h
@@ -311,7 +314,7 @@ class TitleComposition(models.Model):
     
     def __hash__(self):
         if not self.h:
-            self.h = self.title.titleID + self.role.id 
+            self.h = self.title.titleID * 1000 + self.role.id 
         return self.h 
     
     def __unicode__(self):
@@ -324,10 +327,21 @@ class CharacterOwnership(models.Model):
     Associates EVE characters to ECM Users
     """
     user = models.ForeignKey(User)
-    character = models.ForeignKey(Member, unique=True)
+    character = models.OneToOneField(Member, related_name="owner")
     is_main_character = models.BooleanField(default=False)
 
-
+    def owner_url(self):
+        return '/users/%d' % self.user_id
+    
+    def character_url(self):
+        return '/members/%d' % self.character_id
+    
+    def owner_as_html(self):
+        return '<a href="%s" class="user">%s</a>' % (self.owner_url(), self.user.username)
+    
+    def character_as_html(self):
+        return '<a href="%s" class="member">%s</a>' % (self.character_url(), self.character.name)
+        
     def main_or_alt_admin_display(self):
         if self.is_main_character:
             return "Main"
@@ -386,10 +400,19 @@ class TitleMemberDiff(models.Model):
     # date of change
     date = models.DateTimeField(db_index=True, default=datetime.now())
 
+    def member_as_html(self):
+        try:
+            return self.member.as_html()
+        except:
+            # this could fail if the RoleMemberDiff has been recorded from
+            # /corp/MemberSecurity.xml.aspx but that the member has not been
+            # parsed from /corp/MemberTracking.xml.aspx yet
+            return '<a href="/members/%d" class="member">???</a>' % self.member_id
+
     def __unicode__(self):
         try: 
             membername = self.member.name
-        except: 
+        except:
             membername = str(self.member_id)
         if self.new: return '%s got %s' % (membername, self.title.titleName)
         else       : return '%s lost %s' % (membername, self.title.titleName)
@@ -405,6 +428,15 @@ class RoleMemberDiff(models.Model):
     new = models.BooleanField(db_index=True, default=True)
     # date of change
     date = models.DateTimeField(db_index=True, default=datetime.now())
+    
+    def member_as_html(self):
+        try:
+            return self.member.as_html()
+        except: 
+            # this could fail if the RoleMemberDiff has been recorded from
+            # /corp/MemberSecurity.xml.aspx but that the member has not been
+            # parsed from /corp/MemberTracking.xml.aspx yet
+            return '<a href="/members/%d" class="member">???</a>' % self.member_id
     
     def __unicode__(self):
         try: 
