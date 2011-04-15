@@ -34,7 +34,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from ecm.core import utils
 from ecm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
-from ecm.view import getScanDate
+from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.common.models import ColorThreshold
 from ecm.core.utils import print_time_min, get_access_color
 from ecm.core.db import resolveLocationName
@@ -52,8 +52,8 @@ def details(request, characterID):
         member.lastLogoff = print_time_min(member.lastLogoff)
         member.base = resolveLocationName(member.baseID)
         member.color = get_access_color(member.accessLvl, colorThresholds)
-        member.roles = member.roles.exclude(roleID=1) # exclude 'director'
-        member.titles = member.getTitles()
+        member.roles_no_director = member.roles.exclude(roleID=1) # exclude 'director'
+        member.all_titles = member.titles.all()
         member.is_director = member.is_director()
         
         if member.corped:
@@ -73,10 +73,7 @@ def details(request, characterID):
 @user_owns_character()
 def access_changes_member_data(request, characterID):
     try:
-        first_id = int(request.GET["iDisplayStart"])
-        length = int(request.GET["iDisplayLength"])
-        last_id = first_id + length - 1
-        sEcho = int(request.GET["sEcho"])
+        extract_datatable_params(request)
     except:
         return HttpResponseBadRequest()
     
@@ -86,7 +83,7 @@ def access_changes_member_data(request, characterID):
     count = roles.count() + titles.count()
     
     changes = utils.merge_lists(roles, titles, ascending=False, attribute="date")
-    changes = changes[first_id:last_id]
+    changes = changes[request.first_id:request.last_id]
     
     change_list = []
     for c in changes:
@@ -97,7 +94,7 @@ def access_changes_member_data(request, characterID):
         ])
     
     json_data = {
-        "sEcho" : sEcho,
+        "sEcho" : request.sEcho,
         "iTotalRecords" : count,
         "iTotalDisplayRecords" : count,
         "aaData" : change_list

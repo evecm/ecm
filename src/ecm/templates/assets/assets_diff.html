@@ -5,8 +5,8 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/static/js/lib/jquery.js"></script>
-<script type="text/javascript" src="/static/js/lib/jquery.jstree.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.jstree.js"></script>
 {% endblock %}
 
 
@@ -64,7 +64,7 @@ $(function () {
             "select_limit" : 1
         },
         "themes" : {
-            "url" : "/static/css/jstree.css",
+            "url" : "/m/css/jstree.css",
             "dots" : false
         },
         "search" : {
@@ -81,7 +81,7 @@ $(function () {
                 "station" : {
                     "class" : "station-row",
                     "icon" : { 
-                        "image" : "/static/img/station.png" 
+                        "image" : "/m/img/station.png" 
                     },
                     "valid_children" : [ "hangar" ],
                     "max_depth" : 4,
@@ -91,7 +91,7 @@ $(function () {
                 "hangar" : {
                     "class" : "hangar-row",
                     "icon" : { 
-                        "image" : "/static/img/hangar.png" 
+                        "image" : "/m/img/hangar.png" 
                     },
                     "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint","item" ],
                     "max_depth" : 3,
@@ -100,7 +100,7 @@ $(function () {
                 },
                 "added" : {
                     "icon" : { 
-                        "image" : "/static/img/plus-tree-icon.png" 
+                        "image" : "/m/img/plus-tree-icon.png" 
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -112,7 +112,7 @@ $(function () {
                 },
                 "removed" : {
                     "icon" : { 
-                        "image" : "/static/img/minus-tree-icon.png" 
+                        "image" : "/m/img/minus-tree-icon.png" 
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,

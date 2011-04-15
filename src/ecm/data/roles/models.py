@@ -25,8 +25,7 @@ __author__ = "diabeteman"
 
 from datetime import datetime
 
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
 from django.db import models
 
 from ecm.data.corp.models import Hangar, Wallet
@@ -45,8 +44,9 @@ class Member(models.Model):
     corpDate = models.DateTimeField(db_index=True, default=datetime.now())
     lastLogin = models.DateTimeField(db_index=True, default=datetime.now())
     lastLogoff = models.DateTimeField(db_index=True, default=datetime.now())
-    location = models.CharField(max_length=256, default="")
-    ship = models.CharField(max_length=128, default="")
+    location = models.CharField(max_length=256, default="???")
+    # TODO locationID = models.IntegerField(default=0)
+    ship = models.CharField(max_length=128, default="???")
     accessLvl = models.PositiveIntegerField(default=0)
     corped = models.BooleanField(default=True)
 
@@ -336,7 +336,7 @@ class CharacterOwnership(models.Model):
     def character_url(self):
         return '/members/%d' % self.character_id
     
-    def owner_as_html(self):
+    def user_as_html(self):
         return '<a href="%s" class="user">%s</a>' % (self.owner_url(), self.user.username)
     
     def character_as_html(self):

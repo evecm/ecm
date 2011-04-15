@@ -31,7 +31,7 @@ from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.data.roles.models import TitleComposition, TitleCompoDiff
-from ecm.view import getScanDate
+from ecm.view import getScanDate, extract_datatable_params
 from ecm.core.utils import print_time_min
 from ecm.core.auth import user_is_director
 
@@ -50,10 +50,7 @@ def changes(request):
 @user_is_director()
 def changes_data(request):
     try:
-        first_id = int(request.GET["iDisplayStart"])
-        length = int(request.GET["iDisplayLength"])
-        last_id = first_id + length - 1
-        sEcho = int(request.GET["sEcho"])
+        extract_datatable_params(request)
     except:
         return HttpResponseBadRequest()
 
@@ -61,7 +58,7 @@ def changes_data(request):
     
     count = titles.count()
     
-    changes = titles[first_id:last_id]
+    changes = titles[request.first_id:request.last_id]
     
     change_list = []
     for c in changes:
@@ -73,7 +70,7 @@ def changes_data(request):
         ])
     
     json_data = {
-        "sEcho" : sEcho,
+        "sEcho" : request.sEcho,
         "iTotalRecords" : count,
         "iTotalDisplayRecords" : count,
         "aaData" : change_list

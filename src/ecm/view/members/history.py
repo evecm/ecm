@@ -31,7 +31,7 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.text import truncate_words
 
-from ecm.view import getScanDate
+from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.roles.models import Member, MemberDiff
 from ecm.core.utils import print_time_min
 from ecm.core.auth import user_is_director
@@ -42,24 +42,21 @@ def history(request):
     data = {
         'scan_date' : getScanDate(Member.__name__) 
     }
-    return render_to_response("members/member_history.html", data, context_instance=RequestContext(request))
+    return render_to_response("members/member_history.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @cache_page(60 * 60) # 1 hour cache
 @user_is_director()
 def history_data(request):
     try:
-        first_id = int(request.GET["iDisplayStart"])
-        length = int(request.GET["iDisplayLength"])
-        last_id = first_id + length - 1
-        sEcho = int(request.GET["sEcho"])
+        extract_datatable_params(request)
     except:
         return HttpResponseBadRequest()
 
     queryset = MemberDiff.objects.all().order_by('-id')
     total_members = queryset.count()
 
-    queryset = queryset[first_id:last_id]
+    queryset = queryset[request.first_id:request.last_id]
     members = []
     for m in queryset:
         members.append([
@@ -70,7 +67,7 @@ def history_data(request):
         ])
     
     json_data = {
-        "sEcho" : sEcho,
+        "sEcho" : request.sEcho,
         "iTotalRecords" : total_members,
         "iTotalDisplayRecords" : total_members,
         "aaData" : members

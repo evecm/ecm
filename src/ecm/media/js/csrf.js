@@ -1,3 +1,7 @@
+/*******************************************
+ * Insert CSRF cookie in all ajax requests *
+ *******************************************/
+
 $('html').ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
         var cookieValue = null;

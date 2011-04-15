@@ -5,8 +5,8 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/static/js/lib/jquery.js"></script>
-<script type="text/javascript" src="/static/js/lib/jquery.jstree.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.jstree.js"></script>
 {% endblock %}
 
 
@@ -54,7 +54,7 @@ $(function () {
             "select_limit" : 1
         },
         "themes" : {
-            "url" : "/static/css/jstree.css",
+            "url" : "/m/css/jstree.css",
             "dots" : false
         },
         "search" : {
@@ -72,7 +72,7 @@ $(function () {
                 "station" : {
                     "class" : "station-row",
                     "icon" : { 
-                        "image" : "/static/img/station.png" 
+                        "image" : "/m/img/station.png" 
                     },
                     "valid_children" : [ "hangar" ],
                     "max_depth" : 4,
@@ -82,7 +82,7 @@ $(function () {
                 "hangar" : {
                     "class" : "hangar-row",
                     "icon" : { 
-                        "image" : "/static/img/hangar.png" 
+                        "image" : "/m/img/hangar.png" 
                     },
                     "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint","item" ],
                     "max_depth" : 3,
@@ -91,7 +91,7 @@ $(function () {
                 },
                 "ship" : {
                     "icon" : { 
-                        "image" : "/static/img/ship.png" 
+                        "image" : "/m/img/ship.png" 
                     },
                     "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint","item" ],
                     "max_depth" : 2,
@@ -100,7 +100,7 @@ $(function () {
                 },
                 "can" : {
                     "icon" : { 
-                        "image" : "/static/img/can.png" 
+                        "image" : "/m/img/can.png" 
                     },
                     "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint","item" ],
                     "max_depth" : 1,
@@ -109,7 +109,7 @@ $(function () {
                 },
                 "item" : {
                     "icon" : { 
-                        "image" : "/static/img/item.png" 
+                        "image" : "/m/img/item.png" 
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -121,7 +121,7 @@ $(function () {
                 },
                 "mineral" : {
                     "icon" : { 
-                        "image" : "/static/img/mineral.png" 
+                        "image" : "/m/img/mineral.png" 
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -133,7 +133,7 @@ $(function () {
                 },
                 "blueprint" : {
                     "icon" : { 
-                        "image" : "/static/img/blueprint.png" 
+                        "image" : "/m/img/blueprint.png" 
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -145,7 +145,7 @@ $(function () {
                 },
                 "ammo" : {
                     "icon" : { 
-                        "image" : "/static/img/ammo.png" 
+                        "image" : "/m/img/ammo.png" 
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -157,7 +157,7 @@ $(function () {
                 },
                 "skill" : {
                     "icon" : { 
-                        "image" : "/static/img/skill.png" 
+                        "image" : "/m/img/skill.png" 
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,

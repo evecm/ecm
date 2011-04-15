@@ -29,16 +29,13 @@ import json
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, Http404
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
-from django.utils.text import truncate_words
 
+from ecm.view import extract_datatable_params, get_members
 from ecm.data.roles.models import Role, RoleType, Member
 from ecm.data.common.models import ColorThreshold
 from ecm.core.auth import user_is_director
-from ecm.core.utils import print_date
-from ecm.view.members import member_table_columns
 
 #------------------------------------------------------------------------------
 @cache_page(3 * 60 * 60) # 3 hours cache
@@ -49,38 +46,26 @@ def role(request, role_typeName, role_id):
         role = Role.objects.get(roleType=type, roleID=int(role_id))
         role.accessLvl = role.get_access_lvl()
     except ObjectDoesNotExist:
-        return HttpResponseNotFound()
+        raise Http404()
     
-    thresholds = list(ColorThreshold.objects.all().order_by("threshold").values("threshold", "color"))
     data = {
-        'colorThresholds' : json.dumps(thresholds),
+        'colorThresholds' : ColorThreshold.as_json(),
+        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
         'role_types' : RoleType.objects.all(),
         'role' : role,
         'direct_member_count' : role.members.count(),
         'total_member_count' : role.members_through_titles().count()
     }
-    return render_to_response("roles/role_details.html", data, context_instance=RequestContext(request))
-
-
+    return render_to_response("roles/role_details.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def role_data(request, role_typeName, role_id):
     try:
-        iDisplayStart = int(request.GET["iDisplayStart"])
-        iDisplayLength = int(request.GET["iDisplayLength"])
-        sSearch = request.GET["sSearch"]
-        sEcho = int(request.GET["sEcho"])
+        extract_datatable_params(request)
         type = RoleType.objects.get(typeName=role_typeName)
         role = Role.objects.get(roleType=type, roleID=int(role_id))
-        
-        try:
-            column = int(request.GET["iSortCol_0"])
-            ascending = (request.GET["sSortDir_0"] == "asc")
-        except:
-            column = 0
-            ascending = True
     except ObjectDoesNotExist:
         return HttpResponseNotFound()
     except:
@@ -88,62 +73,17 @@ def role_data(request, role_typeName, role_id):
 
     total_members,\
     filtered_members,\
-    members = getMembers(role=role,
-                         first_id=iDisplayStart, 
-                         last_id=iDisplayStart + iDisplayLength - 1,
-                         search_str=sSearch,
-                         sort_by=member_table_columns[column], 
-                         asc=ascending)
+    members = get_members(query=role.members_through_titles(with_direct_roles=True),
+                          first_id=request.first_id, 
+                          last_id=request.last_id,
+                          search_str=request.search,
+                          sort_by=request.column, 
+                          asc=request.asc)
     json_data = {
-        "sEcho" : sEcho,
+        "sEcho" : request.sEcho,
         "iTotalRecords" : total_members,
         "iTotalDisplayRecords" : filtered_members,
         "aaData" : members
     }
     
     return HttpResponse(json.dumps(json_data))
-
-
-#------------------------------------------------------------------------------
-def getMembers(role, first_id, last_id, search_str=None, sort_by="name", asc=True):
-
-    sort_col = "%s_nocase" % sort_by
-    
-    members = role.members_through_titles(with_direct_roles=True)
-
-    # SQLite hack for making a case insensitive sort
-    members = members.extra(select={sort_col : "%s COLLATE NOCASE" % sort_by})
-    if not asc: sort_col = "-" + sort_col
-    members = members.extra(order_by=[sort_col])
-    
-    if search_str:
-        total_members = members.count()
-        search_args = Q(name__icontains=search_str) | Q(nickname__icontains=search_str)
-        
-        if "DIRECTOR".startswith(search_str.upper()):
-            search_args = search_args | Q(accessLvl=Member.DIRECTOR_ACCESS_LVL)
-        
-        members = members.filter(search_args)
-        filtered_members = members.count()
-    else:
-        total_members = filtered_members = members.count()
-    
-    members = members[first_id:last_id]
-    
-    member_list = []
-    for m in members:
-        titles = ["Titles"]
-        titles.extend([ str(t) for t in m.titles.all() ])
-        memb = [
-            m.as_html(),
-            truncate_words(m.nickname, 5),
-            m.accessLvl,
-            print_date(m.corpDate),
-            print_date(m.lastLogin),
-            truncate_words(m.location, 5),
-            "|".join(titles),
-        ] 
-
-        member_list.append(memb)
-    
-    return total_members, filtered_members, member_list

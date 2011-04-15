@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+import json
 
 __date__ = '2010-05-17'
 __author__ = 'diabeteman'
@@ -106,6 +107,11 @@ class ColorThreshold(models.Model):
     """
     color = models.CharField(max_length=64)
     threshold = models.IntegerField()
+    
+    @staticmethod
+    def as_json():
+        th = ColorThreshold.objects.values("threshold", "color").order_by("threshold")
+        return json.dumps(list(th))
     
     def __unicode__(self):
         return unicode("%s -> %d" % (self.color, self.threshold))

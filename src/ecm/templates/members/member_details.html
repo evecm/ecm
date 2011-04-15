@@ -5,15 +5,15 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/static/js/lib/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/static/js/access_color.js"></script>
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
+<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/m/js/access_color.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
 
 <script type="text/javascript">
 const member_id = "{{ member.characterID }}";
 </script>
 
-<script type="text/javascript" src="/static/js/member_access_changes_table.js"></script>
+<script type="text/javascript" src="/m/js/member_access_changes_table.js"></script>
 {% endblock %}
 
 
@@ -70,7 +70,7 @@ None
     <td>
       <h2>Titles</h2>
       <ul>
-      {% for title in member.titles %}
+      {% for title in member.all_titles %}
         <li><a href="/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
         {% empty %}
         <p>No titles</p>
@@ -80,7 +80,7 @@ None
     <td>
       <h2>Extra Roles</h2>
       <ul>
-      {% for role in member.roles %}
+      {% for role in member.roles_no_director %}
         <li>{{ role }}</li>
         {% empty %}
         <p>No extra roles</p>

@@ -29,12 +29,9 @@ from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
-from django.utils.text import truncate_words
-from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 
-from ecm.core.utils import print_date
-from ecm.view.members import member_table_columns
+from ecm.view import extract_datatable_params, get_members
 from ecm.data.common.models import ColorThreshold
 from ecm.data.roles.models import Title, Member
 from ecm.core.auth import user_is_director
@@ -43,15 +40,10 @@ from ecm.core.auth import user_is_director
 @cache_page(60 * 60) # 1 hour cache
 @user_is_director()
 def members(request, id):
-    colorThresholds = []
-    for c in ColorThreshold.objects.all().order_by("threshold"):
-        colorThresholds.append({ "threshold" : c.threshold, "color" : c.color })
-
-    title = get_object_or_404(Title, titleID=int(id))
-
     data = { 
-        'title' : title,
-        'colorThresholds' : json.dumps(colorThresholds)
+        'title' : get_object_or_404(Title, titleID=int(id)),
+        'colorThresholds' : ColorThreshold.as_json(),
+        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
     return render_to_response("titles/title_members.html", data, RequestContext(request))
 
@@ -61,16 +53,7 @@ def members(request, id):
 @user_is_director()
 def members_data(request, id):
     try:
-        iDisplayStart = int(request.GET["iDisplayStart"])
-        iDisplayLength = int(request.GET["iDisplayLength"])
-        sSearch = request.GET["sSearch"]
-        sEcho = int(request.GET["sEcho"])
-        try:
-            column = int(request.GET["iSortCol_0"])
-            ascending = (request.GET["sSortDir_0"] == "asc")
-        except:
-            column = 0
-            ascending = True
+        extract_datatable_params(request)
         title = Title.objects.get(titleID=int(id))
     except KeyError:
         return HttpResponseBadRequest()
@@ -79,14 +62,14 @@ def members_data(request, id):
 
     total_members,\
     filtered_members,\
-    members = get_members(title=title,
-                         first_id=iDisplayStart, 
-                         last_id=iDisplayStart + iDisplayLength - 1,
-                         search_str=sSearch,
-                         sort_by=member_table_columns[column], 
-                         asc=ascending)
+    members = get_members(query=title.members.all().filter(corped=True),
+                          first_id=request.first_id, 
+                          last_id=request.last_id,
+                          search_str=request.search,
+                          sort_by=request.column, 
+                          asc=request.asc)
     json_data = {
-        "sEcho" : sEcho,
+        "sEcho" : request.sEcho,
         "iTotalRecords" : total_members,
         "iTotalDisplayRecords" : filtered_members,
         "aaData" : members
@@ -94,47 +77,3 @@ def members_data(request, id):
     
     return HttpResponse(json.dumps(json_data))
 
-
-#------------------------------------------------------------------------------
-def get_members(title, first_id, last_id, search_str=None, sort_by="name", asc=True):
-
-    sort_col = "%s_nocase" % sort_by
-    
-    members = title.members.all().filter(corped=True)
-
-    # SQLite hack for making a case insensitive sort
-    members = members.extra(select={sort_col : "%s COLLATE NOCASE" % sort_by})
-    if not asc: sort_col = "-" + sort_col
-    members = members.extra(order_by=[sort_col])
-    
-    if search_str:
-        total_members = members.count()
-        search_args = Q(name__icontains=search_str) | Q(nickname__icontains=search_str)
-        
-        if "DIRECTOR".startswith(search_str.upper()):
-            search_args = search_args | Q(accessLvl=Member.DIRECTOR_ACCESS_LVL)
-        
-        members = members.filter(search_args)
-        filtered_members = members.count()
-    else:
-        total_members = filtered_members = members.count()
-    
-    members = members[first_id:last_id]
-    
-    member_list = []
-    for m in members:
-        titles = ["Titles"]
-        titles.extend(m.titles.values_list("titleName", flat=True))
-        memb = [
-            m.get_html(),
-            truncate_words(m.nickname, 5),
-            m.accessLvl,
-            print_date(m.corpDate),
-            print_date(m.lastLogin),
-            truncate_words(m.location, 5),
-            "|".join(titles)
-        ] 
-
-        member_list.append(memb)
-    
-    return total_members, filtered_members, member_list

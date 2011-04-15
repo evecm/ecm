@@ -30,7 +30,7 @@ from django.template.context import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseBadRequest
 
-from ecm.view import getScanDate
+from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
 from ecm.core import utils
 from ecm.core.utils import print_time_min
@@ -42,7 +42,7 @@ def access_changes(request):
     data = {
         'scan_date' : getScanDate(TitleMembership.__name__) 
     }
-    return render_to_response("members/access_changes.html", data, context_instance=RequestContext(request))
+    return render_to_response("members/access_changes.html", data, RequestContext(request))
 
 
 #------------------------------------------------------------------------------
@@ -50,10 +50,7 @@ def access_changes(request):
 @user_is_director()
 def access_changes_data(request):
     try:
-        first_id = int(request.GET["iDisplayStart"])
-        length = int(request.GET["iDisplayLength"])
-        last_id = first_id + length - 1
-        sEcho = int(request.GET["sEcho"])
+        extract_datatable_params(request)
     except:
         return HttpResponseBadRequest()
     
@@ -63,7 +60,7 @@ def access_changes_data(request):
     count = roles.count() + titles.count()
     
     changes = utils.merge_lists(roles, titles, ascending=False, attribute="date")
-    changes = changes[first_id:last_id]
+    changes = changes[request.first_id:request.last_id]
     
     change_list = []
     for c in changes:
@@ -75,7 +72,7 @@ def access_changes_data(request):
         ])
     
     json_data = {
-        "sEcho" : sEcho,
+        "sEcho" : request.sEcho,
         "iTotalRecords" : count,
         "iTotalDisplayRecords" : count,
         "aaData" : changes

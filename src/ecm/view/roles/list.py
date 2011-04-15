@@ -30,7 +30,7 @@ from django.shortcuts import render_to_response, redirect
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, Http404
 
 from ecm.data.roles.models import Role, RoleType
 from ecm.data.common.models import ColorThreshold
@@ -53,16 +53,15 @@ def role_type(request, role_typeName):
     try:
         role_type = RoleType.objects.get(typeName=role_typeName)
     except ObjectDoesNotExist:
-        return HttpResponseNotFound()
+        raise Http404()
     
-    thresholds = list(ColorThreshold.objects.all().order_by("threshold").values("threshold", "color"))
     data = { 
-        'colorThresholds' : json.dumps(thresholds),
+        'colorThresholds' : ColorThreshold.as_json(),
         'role_types' : RoleType.objects.all(),
         'current_role_type' : role_type.typeName,
         'current_role_type_name' : role_type.dispName,
     }
-    return render_to_response("roles/roles.html", data, context_instance=RequestContext(request))
+    return render_to_response("roles/roles.html", data, RequestContext(request))
 
 
 
@@ -72,7 +71,7 @@ def role_type(request, role_typeName):
 def role_type_data(request, role_typeName):
     try:
         role_type = RoleType.objects.get(typeName=role_typeName)
-        sEcho = int(request.GET["sEcho"])
+        sEcho = int(request.REQUEST["sEcho"])
     except ObjectDoesNotExist:
         return HttpResponseNotFound()
     except KeyError:
@@ -87,6 +86,7 @@ def role_type_data(request, role_typeName):
             members.sort()
             members = [m.name for m in members]
             members.insert(0, "Members")
+        
         titles = list(role.titles.values_list("titleName", flat=True))
         if titles: 
             titles.insert(0, "Titles")

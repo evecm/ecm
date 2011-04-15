@@ -26,10 +26,11 @@ __author__ = "diabeteman"
 import json
 
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 
+from ecm.view import extract_datatable_params
 from ecm.data.roles.models import TitleComposition, TitleCompoDiff, Title
 from ecm.core import utils
 from ecm.data.common.models import ColorThreshold
@@ -41,13 +42,10 @@ from ecm.core.auth import user_is_director
 @cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def details(request, id):
-    colorThresholds = []
-    for c in ColorThreshold.objects.all().order_by("threshold"):
-        colorThresholds.append({ "threshold" : c.threshold, "color" : c.color })
     
-    title = Title.objects.get(titleID=int(id))
+    title = get_object_or_404(Title, titleID=int(id))
     title.lastModified = TitleCompoDiff.objects.filter(title=title).order_by("-id")
-    if title.lastModified.count():
+    if title.lastModified:
         title.lastModified = utils.print_time_min(title.lastModified[0].date)
     else:
         title.lastModified = None
@@ -55,7 +53,7 @@ def details(request, id):
 
     data = { "title" : title,
             "member_count" : title.members.count(),  
-            "colorThresholds" : json.dumps(colorThresholds) }
+            "colorThresholds" : ColorThreshold.as_json() }
 
     return render_to_response("titles/title_details.html", data, RequestContext(request))
 
@@ -63,100 +61,73 @@ def details(request, id):
 
 
 #------------------------------------------------------------------------------
-composition_columns = [ "role_id" ]
 @cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def composition_data(request, id):
-    iDisplayStart = int(request.GET["iDisplayStart"])
-    iDisplayLength = int(request.GET["iDisplayLength"])
-    sEcho = int(request.GET["sEcho"])
-    column = int(request.GET["iSortCol_0"])
-    ascending = (request.GET["sSortDir_0"] == "asc")
+    try:
+        extract_datatable_params(request)
+    except KeyError:
+        return HttpResponseBadRequest()
 
-    total_compos, composition = getTitleComposition(id=int(id),
-                                                    first_id=iDisplayStart,
-                                                    last_id=iDisplayStart + iDisplayLength - 1,
-                                                    sort_by=composition_columns[column], 
-                                                    asc=ascending)
+    title = get_object_or_404(Title, titleID=int(id))
+    query = TitleComposition.objects.filter(title=title)
+    
+    if request.asc: 
+        query = query.order_by("role_id")
+    else:
+        query = query.order_by("-role_id")
+    
+    total_compos = query.count()
+    
+    query = query[request.first_id:request.last_id]
+    
+    compo_list = []
+    for compo in query:
+        compo_list.append([
+            compo.role.as_html(),
+            compo.role.roleType.as_html(),
+            compo.role.get_access_lvl()
+        ])
+    
     json_data = {
-        "sEcho" : sEcho,
+        "sEcho" : request.sEcho,
         "iTotalRecords" : total_compos,
         "iTotalDisplayRecords" : total_compos,
-        "aaData" : composition
+        "aaData" : compo_list
     }
     
     return HttpResponse(json.dumps(json_data))
-
-
-
-
-
-
-
-#------------------------------------------------------------------------------
-def getTitleComposition(id, first_id, last_id, sort_by="role_id", asc=True):
-
-    sort_col = "%s_nocase" % sort_by
-    
-    compos = TitleComposition.objects.filter(title=id)
-
-    # SQLite hack for making a case insensitive sort
-    compos = compos.extra(select={sort_col : "%s COLLATE NOCASE" % sort_by})
-    if not asc: sort_col = "-" + sort_col
-    compos = compos.extra(order_by=[sort_col])
-    
-    total_compos = compos.count()
-    
-    compos = compos[first_id:last_id]
-    
-    compo_list = []
-    for c in compos:
-        compo_list.append([
-            c.role.as_html(),
-            c.role.get_access_lvl()
-        ])
-    
-    return total_compos, compo_list
-
 
 
 #------------------------------------------------------------------------------
 @cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def compo_diff_data(request, id):
-    iDisplayStart = int(request.GET["iDisplayStart"])
-    iDisplayLength = int(request.GET["iDisplayLength"])
-    sEcho = int(request.GET["sEcho"])
+    try:
+        extract_datatable_params(request)
+    except KeyError:
+        return HttpResponseBadRequest()
 
-    total_diffs, diffs = getTitleCompoDiff(id=int(id),
-                                           first_id=iDisplayStart,
-                                           last_id=iDisplayStart + iDisplayLength - 1)
+    title = get_object_or_404(Title, titleID=int(id))
+    query = TitleCompoDiff.objects.filter(title=title).order_by("-date")
+    total_diffs = query.count()
+    
+    query = query[request.first_id:request.last_id]
+    
+    diff_list = []
+    for diff in query:
+        diff_list.append([
+            diff.new,
+            diff.role.as_html(),
+            diff.role.roleType.as_html(),
+            utils.print_time_min(diff.date)
+        ])
+    
     json_data = {
-        "sEcho" : sEcho,
+        "sEcho" : request.sEcho,
         "iTotalRecords" : total_diffs,
         "iTotalDisplayRecords" : total_diffs,
-        "aaData" : diffs
+        "aaData" : diff_list
     }
     
     return HttpResponse(json.dumps(json_data))
-
-
-#------------------------------------------------------------------------------
-def getTitleCompoDiff(id, first_id, last_id):
-
-    diffsDb = TitleCompoDiff.objects.filter(title=id).order_by("-date")
-    total_diffs = diffsDb.count()
-    
-    diffsDb = diffsDb[first_id:last_id]
-    
-    diff_list = []
-    for d in diffsDb:
-        diff = [
-            d.new,
-            '<a href="/roles/%s/%d" class="role">%s</a>' % (d.role.roleType.typeName, d.role.roleID, unicode(d.role)),
-            utils.print_time_min(d.date)
-        ] 
-
-        diff_list.append(diff)
-    
-    return total_diffs, diff_list

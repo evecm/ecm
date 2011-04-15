@@ -23,8 +23,10 @@
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
+from django.db.models import Q
+from django.utils.text import truncate_words
 
-
+from ecm.data.roles.models import Member, CharacterOwnership
 from ecm.core import utils
 from ecm.data.common.models import UpdateDate
 
@@ -36,3 +38,70 @@ def getScanDate(model_name):
     except:
         return "<no data>"
 
+#------------------------------------------------------------------------------
+def extract_datatable_params(request):
+    REQ = request.GET if request.method == 'GET' else request.POST
+    request.first_id = int(REQ["iDisplayStart"])
+    request.length = int(REQ["iDisplayLength"])
+    request.last_id = request.first_id + request.length - 1
+    request.search = REQ["sSearch"]
+    request.sEcho = int(REQ["sEcho"])
+    request.column = int(REQ["iSortCol_0"])
+    request.asc = (REQ["sSortDir_0"] == "asc")
+
+#------------------------------------------------------------------------------
+member_table_columns = [
+    "name", # default
+    "nickname",
+    "user", # not sortable
+    "accessLvl",
+    "corpDate",
+    "lastLogin",
+    "location"
+]
+def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
+
+    sort_col = "%s_nocase" % member_table_columns[sort_by]
+    # SQLite hack for making a case insensitive sort
+    query = query.extra(select={sort_col : "%s COLLATE NOCASE" % member_table_columns[sort_by]})
+    if not asc: sort_col = "-" + sort_col
+    query = query.extra(order_by=[sort_col])
+    
+    if search_str:
+        total_members = query.count()
+        search_args = Q(name__icontains=search_str) | Q(nickname__icontains=search_str)
+        
+        if "DIRECTOR".startswith(search_str.upper()):
+            search_args = search_args | Q(accessLvl=Member.DIRECTOR_ACCESS_LVL)
+        
+        query = query.filter(search_args)
+        filtered_members = query.count()
+    else:
+        total_members = filtered_members = query.count()
+    
+    query = query[first_id:last_id]
+    
+    member_list = []
+    for member in query:
+        titles = ["Titles"]
+        titles.extend(member.titles.values_list("titleName", flat=True))
+        
+        try:
+            user = member.owner.user_as_html()
+        except CharacterOwnership.DoesNotExist:
+            user = '<span class="error bold">no owner</span>'
+        
+        memb = [
+            member.as_html(),
+            truncate_words(member.nickname, 5),
+            user,
+            member.accessLvl,
+            utils.print_date(member.corpDate),
+            utils.print_date(member.lastLogin),
+            truncate_words(member.location, 5),
+            "|".join(titles)
+        ] 
+
+        member_list.append(memb)
+    
+    return total_members, filtered_members, member_list

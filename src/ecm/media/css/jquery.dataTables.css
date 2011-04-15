@@ -134,7 +134,6 @@ table.display {
 
 table.display thead th {
 	padding: 3px 18px 3px 10px;
-	border-bottom: 1px solid black;
 	font-weight: bold;
 	cursor: pointer;
 	* cursor: hand;
@@ -142,12 +141,7 @@ table.display thead th {
 
 table.display tfoot th {
 	padding: 3px 18px 3px 10px;
-	border-top: 1px solid black;
 	font-weight: bold;
-}
-
-table.display tr.heading2 td {
-	border-bottom: 1px solid #aaa;
 }
 
 table.display td {
@@ -233,9 +227,11 @@ tr.even.row-green {
 }
 
 .top, .bottom {
-	padding: 15px;
-	background-color: #F5F5F5;
-	border: 1px solid #CCCCCC;
+    font-size: 120%; 
+    background-color:rgb(155,155,155);  
+    vertical-align: baseline; 
+    color: #fff; 
+    /*border-left:solid 2px rgb(255,255,255);*/
 }
 
 .top .dataTables_info {

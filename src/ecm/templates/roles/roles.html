@@ -5,13 +5,13 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/static/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/static/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript" src="/static/js/lib/jquery.cluetip.js"></script>
-<script type="text/javascript" src="/static/js/access_color.js"></script>
-<script type="text/javascript" src="/static/js/roles_table.js"></script>
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/demo_table.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/static/css/jquery.cluetip.css" />
+<script type="text/javascript" src="/m/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/m/js/access_color.js"></script>
+<script type="text/javascript" src="/m/js/roles_table.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
 
 <script type="text/javascript">
 const colorThresholds = {{ colorThresholds|safe }};
@@ -32,7 +32,8 @@ var current_role_type = "{{ current_role_type }}";
 <!-- buttons -->
 <form id="role_categories" class="search_form">
 {% for rt in role_types %}
-    <input type="button" class="button" id="{{ rt.typeName }}_button" value="{{ rt.dispName }}" />
+    <input type="button" class="button{% if rt.typeName == current_role_type %} selected{% endif %}" 
+           id="{{ rt.typeName }}_button" value="{{ rt.dispName }}" />
 {% endfor %}
 </form>
 

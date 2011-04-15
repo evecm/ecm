@@ -1,52 +1,46 @@
-const director_access_lvl = 999999999999;
-
-
-// disable multi column sorting
-$('#members_table thead th').click(function(event) {
-    if (!$(event.target).hasClass('sorthandle')) {
-        event.shiftKey = false;
-    }
-});
-
-// dataTable setup
+/*************************
+ * "Members" table setup *
+ *************************/
+/**
+ * Needs three global constants to be defined:
+ *      - DIRECTOR_ACCESS_LVL
+ *      - COLOR_THRESHOLDS
+ *      - AJAX_URL
+ **/
 $(document).ready(function() {
-	table = $('#members_table').dataTable( {
-		"sPaginationType": "full_numbers",
-		"bProcessing": true,
-		"bServerSide": true,
+	  var table = $('#members_table').dataTable( {
+        "sPaginationType": "full_numbers",
+        "bProcessing": true,
+        "bServerSide": true,
         "bAutoWidth": false,
-        "iDisplayLength": 25,
-        "bStateSave": true,
-        "iCookieDuration": 60*60*24,
-        "sAjaxSource": ajax_url,
-        "sDom": 'lprtip',
+        "iDisplayLength": 25, /* default display 25 items */
+        "bStateSave": true, /* table state persistance */
+        "iCookieDuration": 60 * 60 * 24, /* persistance duration 24 hours */
+        "sAjaxSource": AJAX_URL,
+        "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
-            { "sTitle": "Name",         "sWidth": "25%", "sType": "html" },
-            { "sTitle": "Nickname",     "sWidth": "20%", "sType": "string",       "bSortable": false     },
-            { "sTitle": "Player",       "sWidth": "5%",  "sType": "html" },
-            { "sTitle": "Access Level", "sWidth": "10%", "sType": "access-level", "bSearchable": false   },
-            { "sTitle": "Extra Roles",  "sWidth": "5%",  "sType": "numeric",      "bSearchable": false   },
-            { "sTitle": "Corp Date",    "sWidth": "10%", "sType": "string",       "bSearchable": false   },
-            { "sTitle": "Last Login",   "sWidth": "10%", "sType": "string",       "bSearchable": false   },
-            { "sTitle": "Location",     "sWidth": "20%", "sType": "string",       "bSearchable": false   },
-            { "bVisible": false }
+            { /* Name */         "sWidth": "20%",   "sType": "html"    },
+            { /* Nickname */     "sWidth": "20%",   "sType": "string",  "bSortable": false },
+            { /* Player */       "sWidth": "15%",   "sType": "html",    "bSortable": false },
+            { /* Access Level */ "sWidth": "5%",    "sType": "numeric" },
+            { /* Corp Date */    "sWidth": "10%",   "sType": "string"  },
+            { /* Last Login */   "sWidth": "10%",   "sType": "string"  },
+            { /* Location */     "sWidth": "20%",   "sType": "string"  },
+            { /* titles -> HIDDEN */ "bVisible": false }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             /* apply color to all access level cells */
             accessLvl = aData[3];
-            if ( accessLvl == director_access_lvl ) {
-                $('td:eq(3)', nRow).html( '<b>DIRECTOR</b>' );
+            if (accessLvl == DIRECTOR_ACCESS_LVL) {
+                $('td:eq(3)', nRow).html('<b>DIRECTOR</b>');
             }
-            $('td:eq(3)', nRow).addClass("row-" + getAccessColor(accessLvl, colorThresholds));
+            $('td:eq(3)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
             
-            /* set "red" all extra roles cells that are not == 0 */
-            if (aData[4] > 0) {
-                $('td:eq(4)', nRow).addClass("row-red");
-            }
-            
+            /* hide titles column */
+            $('td:eq(7)', nRow).hide()
+
             /* set titles tooltip on each row */
-            $('td:eq(8)', nRow).hide()
-            titles = aData[8]
+            titles = aData[7]
             if (titles != "") {
                 $('td:eq(3)', nRow).attr("title", titles)
                 $('td:eq(3)', nRow).cluetip({
@@ -59,22 +53,45 @@ $(document).ready(function() {
             }
             
             return nRow;
-		}
-    } );
-
-    $("#search_form").submit(function() {
+        },
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        "fnStateSaveCallback": function (oSettings, sValue) {
+            var sFilter = $("#search_text").val();
+            sValue = sValue.replace( /"sFilter":".*?"/, '"sFilter":"' + sFilter + '"' );
+            return sValue;
+        },
+        /* restore the search field content */
+        "fnStateLoadCallback": function (oSettings, oData) {
+            $("#search_text").val(oData.sFilter);
+            return true;
+        }
+    });
+	
+	/* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
         table.fnFilter($("#search_text").val());
-        return false;
     });
 
+    /* trigger the search when clicking the "search" button */
     $("#search_button").click(function() {
         table.fnFilter($("#search_text").val());
     });
 
+    /* reset the search when clicking the "reset" button */
     $("#clear_search").click(function() {
         $("#search_text").val("");
         table.fnFilter("");
     });
 
+
+    /* disable multi column sorting */
+    $('#members_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+    
 } );
 
