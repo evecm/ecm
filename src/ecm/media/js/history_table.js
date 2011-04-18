@@ -26,9 +26,9 @@ $(document).ready(function() {
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             if (aData[0] == "true") {
-                $('td:eq(0)', nRow).html('<img src="/static/img/plus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="/m/img/plus.png"/>');
             } else {
-                $('td:eq(0)', nRow).html('<img src="/static/img/minus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="/m/img/minus.png"/>');
             }
             return nRow;
 		}

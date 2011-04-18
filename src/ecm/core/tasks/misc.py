@@ -19,8 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-from ecm.data.roles.models import CharacterOwnership, Title
-from django.conf import settings
+
 
 __date__ = "2011-03-14"
 __author__ = "diabeteman"
@@ -29,10 +28,8 @@ __author__ = "diabeteman"
 import logging
 
 from django.db import transaction
-from django.contrib.auth.models import User, Group
 
 from ecm.data.scheduler.models import GarbageCollector
-from ecm.data.common.models import RegistrationProfile
 
 logger = logging.getLogger(__name__)
 
@@ -67,56 +64,3 @@ def collect_garbage():
         logger.exception("cleanup failed")
         raise
     
-#------------------------------------------------------------------------------
-@transaction.commit_manually
-def cleanup_unregistered_users():
-    try:
-        logger.info("Deleting unregistered users...")
-        count = 0
-        for profile in RegistrationProfile.objects.all():
-            if profile.activation_key_expired():
-                user = profile.user
-                count += 1
-                if not user.is_active:
-                    logger.debug("activation key has exprired for '%s', deleting user..." % user.username)
-                    user.delete()
-                else:
-                    # user has activated his/her account. we delete the activation key
-                    profile.delete()
-        logger.debug("commiting modifications to database...")
-        transaction.commit()
-        logger.info("%d unregistered users deleted")
-    except:
-        # error catched, rollback changes
-        transaction.rollback()
-        logger.exception("cleanup failed")
-        raise
-
-#------------------------------------------------------------------------------
-@transaction.commit_on_success
-def update_user_accesses():
-    try:
-        logger.info("Updating user accesses from their in-game roles...")
-        for user in User.objects.all():
-            owned = CharacterOwnership.objects.filter(user=user)
-            titles = Title.objects.none()
-            director = False
-            for char in owned:
-                director = char.character.is_director() or director
-                titles |= char.character.getTitles()
-            ids = titles.distinct().values_list("titleID", flat=True)
-            user.groups.clear()
-            for id in ids:
-                user.groups.add(Group.objects.get(id=id))
-            if director:
-                user.groups.add(Group.objects.get(id=settings.DIRECTOR_GROUP_ID))
-        logger.debug("commiting modifications to database...")
-        transaction.commit()
-        logger.info("User accesses updated")
-    except:
-        # error catched, rollback changes
-        transaction.rollback()
-        logger.exception("update failed")
-        raise
-
-

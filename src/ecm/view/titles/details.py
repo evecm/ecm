@@ -35,7 +35,7 @@ from ecm.data.roles.models import TitleComposition, TitleCompoDiff, Title
 from ecm.core import utils
 from ecm.data.common.models import ColorThreshold
 from ecm.core.utils import get_access_color
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 
 #------------------------------------------------------------------------------
@@ -51,9 +51,11 @@ def details(request, id):
         title.lastModified = None
     title.color = get_access_color(title.accessLvl, ColorThreshold.objects.all().order_by("threshold"))
 
-    data = { "title" : title,
-            "member_count" : title.members.count(),  
-            "colorThresholds" : ColorThreshold.as_json() }
+    data = {
+        "title" : title,
+        "member_count" : title.members.count(),  
+        "colorThresholds" : ColorThreshold.as_json() 
+    }
 
     return render_to_response("titles/title_details.html", data, RequestContext(request))
 
@@ -73,9 +75,9 @@ def composition_data(request, id):
     query = TitleComposition.objects.filter(title=title)
     
     if request.asc: 
-        query = query.order_by("role_id")
+        query = query.order_by("role")
     else:
-        query = query.order_by("-role_id")
+        query = query.order_by("-role")
     
     total_compos = query.count()
     

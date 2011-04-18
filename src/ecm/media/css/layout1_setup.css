@@ -23,7 +23,6 @@
 .main-content {display:inline; /*Fix IE floating margin bug*/; float:left; width:940px; margin:0 0 0 30px; overflow:visible !important /*Firefox*/; overflow:hidden /*IE6*/; font-size:1.0em;}
 .footer {clear:both; width:1000px; height:3.7em; padding:1.1em 0 0; background:rgb(225,225,225); font-size:1.0em; overflow:visible !important /*Firefox*/; overflow:hidden /*IE6*/;}
 
-/* --- START COPY here --- */
 
 /* HEADER */
 .header {width:1000px; font-family:"trebuchet ms",arial,sans-serif;}
@@ -87,20 +86,6 @@
 .header-breadcrumbs .searchform input.button {width:3.0em; padding:1px !important /*Non-IE6*/; padding:0 /*IE6*/; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150); font-size:120%;}
 .header-breadcrumbs .searchform input.button:hover {cursor:pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80);}
 
-/* --- END COPY here --- */
-
-
-/******************/
-/*  MAIN SECTION  */
-/******************/
-
-/* MAIN CONTENT */
-.column1-unit {width:940px; margin-bottom:10px !important /*Non-IE6*/; margin-bottom:5px /*IE6*/; font-size:1.0em;}
-.column2-unit-left {float:left; width:400px;  margin-bottom:10px !important /*Non-IE6*/; margin-bottom:5px /*IE6*/;}
-.column2-unit-right {float:right; width:400px;  margin-bottom:10px !important /*Non-IE6*/; margin-bottom:5px /*IE6*/;}
-.column3-unit-left {float:left; width:253px; margin-bottom:10px !important /*Non-IE6*/; margin-bottom:5px /*IE6*/;}
-.column3-unit-middle {float:left; width:253px;  margin-bottom:10px !important /*Non-IE6*/; margin-bottom:5px /*IE6*/; margin-left:40px;}
-.column3-unit-right {float:right; width:253px;  margin-bottom:10px !important /*Non-IE6*/; margin-bottom:5px /*IE6*/;}
 
 /********************/
 /*  FOOTER SECTION  */

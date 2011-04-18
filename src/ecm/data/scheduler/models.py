@@ -43,17 +43,19 @@ class ScheduledTask(models.Model):
     )
     
     FUNCTION_CHOICES = (
-        ("ecm.core.parsers.corp.update",        "Update corp details"),
-        ("ecm.core.parsers.assets.update",      "Update assets"),
+        ("ecm.core.parsers.corp.update", "Update corp details"),
+        ("ecm.core.parsers.assets.update", "Update assets"),
         ("ecm.core.parsers.membertrack.update", "Update members"),
-        ("ecm.core.parsers.membersecu.update",  "Update security accesses"),
-        ("ecm.core.parsers.outposts.update",    "Update ouposts"),
-        ("ecm.core.parsers.titles.update",      "Update titles"),
-        ("ecm.core.parsers.wallets.update",     "Update wallets"),
-        ("ecm.core.parsers.reftypes.update",    "Update wallet transaction types"),
-        ("ecm.core.tasks.collect_garbage",      "Delete old records for the database"),
-        ("ecm.core.tasks.cleanup_unregistered_users", "Remove unregistered users"),
-        ("ecm.core.tasks.update_user_accesses", "Update user accesses from their in-game roles"),
+        ("ecm.core.parsers.membersecu.update", "Update security accesses"),
+        ("ecm.core.parsers.outposts.update", "Update ouposts"),
+        ("ecm.core.parsers.titles.update", "Update titles"),
+        ("ecm.core.parsers.wallets.update", "Update wallets"),
+        ("ecm.core.parsers.reftypes.update", "Update wallet transaction types"),
+        ("ecm.core.tasks.misc.collect_garbage", "Delete old records for the database"),
+        ("ecm.core.tasks.users.cleanup_unregistered_users", "Remove unregistered users"),
+        ("ecm.core.tasks.users.update_all_users_accesses", "Update user accesses from their in-game roles"),
+        ("ecm.core.tasks.users.update_all_character_associations", "Update associations between users and characters"), 
+
     )
     
     function = models.CharField(max_length=256,

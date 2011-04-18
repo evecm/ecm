@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Title Members - {{ title.titleName }}{% endblock %}
+{% block headtitle %}Player Details{% endblock %}
+
 
 {% block header_scripts %}
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
@@ -13,21 +14,23 @@
 <script type="text/javascript">
 const DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 const COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-const AJAX_URL = "/titles/{{ title.titleID }}/members/data";
+const AJAX_URL = '/players/{{ player.id }}/data';
 </script>
-
 <script type="text/javascript" src="/m/js/members_table.js"></script>
 {% endblock %}
 
+
+
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/titles">Titles</a></li>
-<li><a href="/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
-<li><a href="/titles/{{ title.titleID }}/members">Members</a></li>
+<li><a href="/players">Players</a></li>
+<li><a href="/players/{{ player.id }}">{{ player.username }}</a></li>
 {% endblock %}
 
+
+
 {% block main_content %}
-<h1 class="pagetitle">Members having the title <i>{{ title.titleName }}</i></h1>
+<h1>Owned Characters</h1>
 
 <form id="search_form" class="search_form"> 
     <input type="text" id="search_text" value="" /> 

@@ -33,7 +33,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from ecm.data.roles.models import TitleComposition, TitleCompoDiff
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.core.utils import print_time_min
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 
 

@@ -37,7 +37,7 @@ from ecm.core import db, utils
 from ecm.data.assets.models import DbAsset
 from ecm.data.corp.models import Hangar
 from ecm.view import getScanDate
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 CATEGORY_ICONS = { 2 : "can" , 
                    4 : "mineral" , 
@@ -111,8 +111,7 @@ def hangars(request, stationID):
     
     if divisions:
         str_divisions = str(divisions).replace("[", "(").replace("]", ")")
-        sql = SQL_HANGARS_FILTERED % (stationID, str_divisions)
-        raw_list = DbAsset.objects.raw(sql)
+        raw_list = DbAsset.objects.raw(SQL_HANGARS_FILTERED % (stationID, str_divisions))
     else:
         raw_list = DbAsset.objects.raw(SQL_HANGARS % stationID)
     
@@ -223,7 +222,7 @@ def can2_contents(request, stationID, hangarID, container1, container2):
 @user_is_director()
 def search_items(request):
     
-    try: divisions = tuple([ int(div) for div in request.GET["divisions"].split(",") ])
+    try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
     except: divisions = None
     
     search_string = request.GET.get("search_string", "no-item")

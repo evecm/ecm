@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+
+{% block headtitle %}Edit EVE Account Credentials{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/account">Account</a></li>
+<li><a href="{{ request_path }}">Add EVE Account Credentials</a></li>
+{% endblock %}
+
+{% block main_content %}
+
+<h1 class="pagetitle">Edit EVE Account Credentials</h1>
+
+<form class="signupform" action="{{ request_path }}" method="post" >{% csrf_token %}
+    {% if form.errors %}
+    <p class="error">{{ form.non_field_errors }}</p>
+    {% endif %} 
+    <fieldset>
+        <span class="label">{{ form.userID.label_tag }}{{ form.userID.errors }}</span>
+        {{ form.userID }}
+        <span class="label">{{ form.apiKey.label_tag }}{{ form.apiKey.errors }}</span>
+        {{ form.apiKey }}
+        <input type="submit" class="button" value="Submit Information"  />
+    </fieldset>
+</form>
+
+{% endblock %}

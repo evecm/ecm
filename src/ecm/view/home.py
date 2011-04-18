@@ -23,37 +23,33 @@
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
+import json
+
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
 from ecm.data.roles.models import MemberDiff, RoleMemberDiff, Member, TitleMemberDiff
-from ecm.core.auth import user_has_titles
+from ecm.data.common.models import ColorThreshold
+from ecm.view.decorators import user_has_titles
 from ecm.core import utils
-
 
 #------------------------------------------------------------------------------
 @user_has_titles()
 def home(request):
-    data = {           'memberCount' : Member.objects.filter(corped=True).count(),
-               'last_member_changes' : getLastMemberChanges(),
-               'last_access_changes' : getLastAccessChanges() }
+    data = {
+        'last_member_changes' : getLastMemberChanges(),
+        'last_access_changes' : getLastAccessChanges(),
+        'distribution' : access_lvl_distribution(),
+        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL 
+    }
     
     return render_to_response("common/home.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
 def getLastMemberChanges(count=20):
-    members = []
-    queryset = MemberDiff.objects.all().order_by('-id')[:count]
-    for m in queryset:
-        try:
-            Member.objects.get(characterID=m.characterID)
-            # if this call doesn't fail then the member exists in the database
-            # we can have a link to his/her details
-            m.url = "/members/%d" % m.characterID
-        except:
-            pass
+    members = MemberDiff.objects.all().order_by('-id')[:count]
+    for m in members:
         m.date_str = utils.print_time_min(m.date)
-        members.append(m)
     return members
 
 #------------------------------------------------------------------------------
@@ -64,15 +60,29 @@ def getLastAccessChanges(count=20):
     changes = utils.merge_lists(roles, titles, ascending=False, attribute="date")[:count]
     
     for c in changes:
-        try:
-            Member.objects.get(characterID=c.member_id)
-            # if this call doesn't fail then the member exists in the database
-            # we can have a link to his/her details
-            c.member_name = c.member.name
-        except:
-            c.member_name = "???"
-        c.member_url = "/members/%d" % c.member_id
         c.date_str = utils.print_time_min(c.date)
         
     return changes
 
+#------------------------------------------------------------------------------
+def access_lvl_distribution():
+    thresholds = ColorThreshold.objects.all().order_by("threshold")
+    for th in thresholds: th.members = 0
+    members = Member.objects.filter(corped=True).order_by("accessLvl")
+    levels = members.values_list("accessLvl", flat=True)
+    i = 0
+    for level in levels:
+        if level > thresholds[i].threshold:
+            i += 1
+        thresholds[i].members += 1
+    
+    distribution_json = []
+    
+    for th in thresholds:
+        distribution_json.append({
+            "threshold" : th.threshold,
+            "members" : th.members,
+            "color" : th.color
+        })
+    
+    return json.dumps(distribution_json)

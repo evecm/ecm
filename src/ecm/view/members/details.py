@@ -38,7 +38,7 @@ from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.common.models import ColorThreshold
 from ecm.core.utils import print_time_min, get_access_color
 from ecm.core.db import resolveLocationName
-from ecm.core.auth import user_owns_character
+from ecm.view.decorators import user_owns_character
 
 
 #------------------------------------------------------------------------------
@@ -86,11 +86,11 @@ def access_changes_member_data(request, characterID):
     changes = changes[request.first_id:request.last_id]
     
     change_list = []
-    for c in changes:
+    for change in changes:
         change_list.append([
-            c.new,
-            c.as_html(),
-            print_time_min(c.date)
+            change.new,
+            change.access_as_html(),
+            print_time_min(change.date)
         ])
     
     json_data = {

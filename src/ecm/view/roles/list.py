@@ -34,7 +34,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadReque
 
 from ecm.data.roles.models import Role, RoleType
 from ecm.data.common.models import ColorThreshold
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 from ecm.data.corp.models import Hangar, Wallet
 
 ROLE_TYPES = {}

@@ -36,7 +36,7 @@ from ecm.core import db, utils
 from ecm.data.assets.models import DbAsset, DbAssetDiff
 from ecm.data.corp.models import Hangar
 from ecm.view import getScanDate
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 

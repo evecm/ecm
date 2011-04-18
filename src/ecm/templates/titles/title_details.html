@@ -7,11 +7,11 @@
 {% block header_scripts %}
 <script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
-<script type="text/javascript" src="/m/js/access_color.js"></script>
+
 
 <script type="text/javascript">
-const colorThresholds = {{ colorThresholds|safe }};
-const title_id = "{{ title.titleID }}";
+const COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+const TITLE_ID = "{{ title.titleID }}";
 </script>
 
 <script type="text/javascript" src="/m/js/title_details_table.js"></script>
@@ -44,17 +44,19 @@ const title_id = "{{ title.titleID }}";
   <thead> 
     <tr>
       <th class="top" scope="col" >Role</th>
+      <th class="top" scope="col" >Category</th>
       <th class="top" scope="col" >Access Level</th>
     </tr>
   </thead>
   <tbody> 
     <tr>
-      <td colspan="2" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
     </tr>
   </tbody> 
   <tfoot> 
     <tr>
       <th>Role</th>
+      <th>Category</th>
       <th>Access Level</th>
     </tr>
   </tfoot>
@@ -68,18 +70,20 @@ const title_id = "{{ title.titleID }}";
     <tr>
       <th class="top" scope="col" >Change</th>
       <th class="top" scope="col" >Role</th>
+      <th class="top" scope="col" >Category</th>
       <th class="top" scope="col" >Modification Date</th>
     </tr>
   </thead>
   <tbody> 
     <tr>
-      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="4" class="dataTables_empty">Loading data from server...</td>
     </tr>
   </tbody> 
   <tfoot> 
     <tr>
       <th>Change</th>
       <th>Role</th>
+      <th>Category</th>
       <th>Modification Date</th>
     </tr>
   </tfoot>

@@ -32,7 +32,7 @@ sys.path.append(install_dir)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'ecm.settings'
 
 from ecm.core.parsers import assets, corp, membersecu, membertrack, outposts, reftypes, titles, wallets
-from ecm.core import tasks
+from ecm.core.tasks import users
 
 FUNCTIONS = {
     "assets" : assets.update,
@@ -43,8 +43,9 @@ FUNCTIONS = {
     "reftypes" : reftypes.update,
     "titles" : titles.update,
     "wallets" : wallets.update,
-    "user_access" : tasks.update_user_accesses,
-    "clean_unregistered_users" : tasks.cleanup_unregistered_users,
+    "user_access" : users.update_all_users_accesses,
+    "clean_unregistered_users" : users.cleanup_unregistered_users,
+    "update_user_accesses" : users.update_all_users_accesses
 }
 
 

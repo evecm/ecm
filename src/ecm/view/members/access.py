@@ -34,7 +34,7 @@ from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
 from ecm.core import utils
 from ecm.core.utils import print_time_min
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 #------------------------------------------------------------------------------
 @user_is_director()
@@ -67,7 +67,7 @@ def access_changes_data(request):
         change_list.append([
             c.new,
             c.member_as_html(),
-            c.as_html(),
+            c.access_as_html(),
             print_time_min(c.date)
         ])
     
@@ -75,7 +75,7 @@ def access_changes_data(request):
         "sEcho" : request.sEcho,
         "iTotalRecords" : count,
         "iTotalDisplayRecords" : count,
-        "aaData" : changes
+        "aaData" : change_list
     }
     
     return HttpResponse(json.dumps(json_data))

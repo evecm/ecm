@@ -40,12 +40,12 @@ class Member(models.Model):
     characterID = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=128, db_index=True)
     nickname = models.CharField(max_length=256, default="")
-    baseID = models.BigIntegerField(db_index=True, default=0)
-    corpDate = models.DateTimeField(db_index=True, default=datetime.now())
-    lastLogin = models.DateTimeField(db_index=True, default=datetime.now())
-    lastLogoff = models.DateTimeField(db_index=True, default=datetime.now())
+    baseID = models.BigIntegerField(default=0)
+    corpDate = models.DateTimeField(default=datetime.now())
+    lastLogin = models.DateTimeField(default=datetime.now())
+    lastLogoff = models.DateTimeField(default=datetime.now())
+    locationID = models.IntegerField(db_index=True, default=0)
     location = models.CharField(max_length=256, default="???")
-    # TODO locationID = models.IntegerField(default=0)
     ship = models.CharField(max_length=128, default="???")
     accessLvl = models.PositiveIntegerField(default=0)
     corped = models.BooleanField(default=True)
@@ -85,6 +85,12 @@ class Member(models.Model):
     
     def as_html(self):
         return '<a href="%s" class="member">%s</a>' % (self.get_url(), self.name)
+    
+    def owner_as_html(self):
+        try:
+            return self.ownership.owner_as_html()
+        except CharacterOwnership.DoesNotExist:
+            return '<span class="error bold">no owner</span>'
     
     def __hash__(self):
         return self.characterID
@@ -326,22 +332,16 @@ class CharacterOwnership(models.Model):
     """
     Associates EVE characters to ECM Users
     """
-    user = models.ForeignKey(User)
-    character = models.OneToOneField(Member, related_name="owner")
+    owner = models.ForeignKey(User)
+    character = models.OneToOneField(Member, related_name="ownership")
     is_main_character = models.BooleanField(default=False)
 
     def owner_url(self):
-        return '/users/%d' % self.user_id
+        return '/players/%d' % self.owner_id
     
-    def character_url(self):
-        return '/members/%d' % self.character_id
+    def owner_as_html(self):
+        return '<a href="%s" class="player">%s</a>' % (self.owner_url(), self.owner.username)
     
-    def user_as_html(self):
-        return '<a href="%s" class="user">%s</a>' % (self.owner_url(), self.user.username)
-    
-    def character_as_html(self):
-        return '<a href="%s" class="member">%s</a>' % (self.character_url(), self.character.name)
-        
     def main_or_alt_admin_display(self):
         if self.is_main_character:
             return "Main"
@@ -351,9 +351,9 @@ class CharacterOwnership(models.Model):
     
     def __unicode__(self):
         try:
-            return "%s owns %s" % (self.user.username, self.character.name)
+            return "%s owns %s" % (self.owner.username, self.character.name)
         except:
-            return "%d owns %d" % (self.user_id, self.character_id)
+            return "%d owns %d" % (self.owner_id, self.character_id)
 
 #------------------------------------------------------------------------------
 class TitleCompoDiff(models.Model):
@@ -376,13 +376,19 @@ class MemberDiff(models.Model):
     """
     Represents the arrival or departure of a member of the corporation
     """
-    characterID = models.BigIntegerField(db_index=True)
+    member = models.ForeignKey(Member, related_name="diffs")
     name = models.CharField(max_length=100, db_index=True)
     nickname = models.CharField(max_length=256, db_index=True)
     # true if member has been corped. False if he/she has leaved the corporation
     new = models.BooleanField(db_index=True, default=True)
     # date of change
     date = models.DateTimeField(db_index=True, default=datetime.now())
+    
+    def get_url(self):
+        return '/members/%d' % self.member_id
+    
+    def as_html(self):
+        return '<a href="%s" class="member">%s</a>' % (self.get_url(), self.name) 
     
     def __unicode__(self):
         if self.new: return '%s corped' % self.name
@@ -400,6 +406,9 @@ class TitleMemberDiff(models.Model):
     # date of change
     date = models.DateTimeField(db_index=True, default=datetime.now())
 
+    def access_as_html(self):
+        return self.title.as_html()
+    
     def member_as_html(self):
         try:
             return self.member.as_html()
@@ -428,6 +437,9 @@ class RoleMemberDiff(models.Model):
     new = models.BooleanField(db_index=True, default=True)
     # date of change
     date = models.DateTimeField(db_index=True, default=datetime.now())
+    
+    def access_as_html(self):
+        return self.role.as_html()
     
     def member_as_html(self):
         try:

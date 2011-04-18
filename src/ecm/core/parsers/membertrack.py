@@ -130,19 +130,21 @@ def update():
 
 #------------------------------------------------------------------------------
 def parseOneMember(member):
-    id       = member["characterID"]
-    name     = member["name"]
-    nick     = member["title"]
-    corpDate = member["startDateTime"]
-    base     = member["baseID"]
-    login    = member["logonDateTime"]
-    logoff   = member["logoffDateTime"]
-    location = resolveLocationName(member["locationID"])
-    ship     = member["shipType"]
+    id         = member.characterID
+    name       = member.name
+    nick       = member.title
+    corpDate   = member.startDateTime
+    base       = member.baseID
+    login      = member.logonDateTime
+    logoff     = member.logoffDateTime
+    location   = resolveLocationName(member.locationID)
+    locationID = member.locationID
+    ship       = member.shipType
     
     return Member(characterID=id,    name=name,         nickname=nick,
                   baseID=base,       corpDate=corpDate, lastLogin=login,
-                  lastLogoff=logoff, location=location, ship=ship)
+                  lastLogoff=logoff, location=location, locationID=locationID, 
+                  ship=ship)
     
 #------------------------------------------------------------------------------
 def getDiffs(oldMembers, newMembers, date):

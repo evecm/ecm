@@ -34,7 +34,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from ecm.view import extract_datatable_params, get_members
 from ecm.data.common.models import ColorThreshold
 from ecm.data.roles.models import Title, Member
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 #------------------------------------------------------------------------------
 @cache_page(60 * 60) # 1 hour cache
@@ -62,7 +62,7 @@ def members_data(request, id):
 
     total_members,\
     filtered_members,\
-    members = get_members(query=title.members.all().filter(corped=True),
+    members = get_members(query=title.members.filter(corped=True),
                           first_id=request.first_id, 
                           last_id=request.last_id,
                           search_str=request.search,

@@ -24,31 +24,24 @@ __date__ = "2010-05-16"
 __author__ = "diabeteman"
 
 
+import re, time
+import httplib as http
+from datetime import datetime
+
+from django.conf import settings
 from django.shortcuts import render_to_response, redirect
-from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
 from ecm.data.corp.models import Corp
-from ecm.core.auth import basic_auth_required
+from ecm.view.decorators import basic_auth_required
 from ecm.data.scheduler.models import ScheduledTask
 from ecm.data.scheduler.threads import TaskThread
 
-import re
-import httplib as http
-from datetime import datetime
-from ecm import settings
-import time
-
+#------------------------------------------------------------------------------
 SHOWINFO_PATTERN = re.compile(r"showinfo:1383//(\d+)", re.IGNORECASE + re.DOTALL)
-
-#------------------------------------------------------------------------------
-def logout_view(request):
-    logout(request)
-    return render_to_response("common/login.html")
-#------------------------------------------------------------------------------
 @login_required
 def corp(request):
     try:

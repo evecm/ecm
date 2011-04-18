@@ -29,7 +29,7 @@ $(document).ready(function() {
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             /* apply color to all access level cells */
             accessLvl = aData[2];
-            $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl, colorThresholds));
+            $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
             
             /* hide "ID" column and set the id attribute */
             $('td:eq(5)', nRow).hide();

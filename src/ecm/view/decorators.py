@@ -117,7 +117,7 @@ def user_owns_character():
         def _wrapped_view(request, characterID, *args, **kwargs):
             if request.user.is_authenticated():
                 try:
-                    user = CharacterOwnership.objects.get(character=characterID).user
+                    user = CharacterOwnership.objects.get(character=characterID).owner
                 except CharacterOwnership.DoesNotExist:
                     user = AnonymousUser()
                 
@@ -137,7 +137,7 @@ def user_has_titles():
     Decorator that checks if the user has at least one corped character 
     who has at least one Title assigned.
     """
-    return user_member_of([ 1 << i  for i in range(17)]) # generates all titleIDs
+    return user_member_of(settings.ALL_GROUP_IDS)
 
 #------------------------------------------------------------------------------
 def forbidden(request):

@@ -2,6 +2,17 @@
 
 {% block headtitle %}Home{% endblock %}
 
+{% block header_scripts %}
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript" src="/m/js/ecm_lib.js"></script>
+<script type="text/javascript" src="/m/js/ecm_pie_chart.js"></script>
+
+<script type="text/javascript">
+const DISTRIBUTION = {{ distribution|safe }};
+const DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+</script>
+{% endblock %}
+
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 {% endblock %}
@@ -9,6 +20,9 @@
 {% block main_content %}
 
 <h1 class="pagetitle">{{ corp_name }} <span class="time">- EVE Corporation Management</span></h1>
+
+<div id="distibution_chart"></div>
+<script type="text/javascript" src="/m/js/access_distribution_chart.js" ></script>
 
 <table class="transparent" >
   <tbody>
@@ -18,11 +32,7 @@
         <ul>
         {% for m in last_member_changes %}
           <li class="{% if m.new %}green{% else %}red{% endif %}">
-                               {% if m.url %}
-                               <a href="{{ m.url }}">{{ m.name }}</a>
-                               {% else %}
-                               <span class="bold">{{ m.name }}</span>
-                               {% endif %}
+                               {{ m.as_html|safe }}
             {% if m.nickname %}<span class="italic"> ({{ m.nickname|truncatewords:"5" }})</span>{% endif %}
                                <span class="time"> - {{ m.date_str }}</span></li>
         {% endfor %}
@@ -31,16 +41,12 @@
       <td>
         <h1><a href="/members/access_changes">Last Access Changes</a></h1>
         <ul>
-        {% for a in last_access_changes %}
-          <li class="{% if a.new %}green{% else %}red{% endif %}">
-                               <a href="{{ a.member_url }}">{{ a.member_name }}</a>
-                               <span> {% if a.new %}got{% else %}lost{% endif %} </span>
-                               {% if a.title_id %}
-                               <a href="/titles/{{ a.title_id }}" class="title">{{ a.title }}</a>
-                               {% else %}
-                               <a href="/roles/{{ a.role_id }}" class="role">{{ a.role }}</a>
-                               {% endif %}
-                               <span class="time"> - {{ a.date_str }}</span></li>
+        {% for change in last_access_changes %}
+          <li class="{% if change.new %}green{% else %}red{% endif %}">
+                               {{ change.member_as_html|safe }}
+                               <span> {% if change.new %}got{% else %}lost{% endif %} </span>
+                               {{ change.access_as_html|safe }}
+                               <span class="time"> - {{ change.date_str }}</span></li>
         {% endfor %}
         </ul>
       </td>

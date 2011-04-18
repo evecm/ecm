@@ -86,15 +86,10 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
         titles = ["Titles"]
         titles.extend(member.titles.values_list("titleName", flat=True))
         
-        try:
-            user = member.owner.user_as_html()
-        except CharacterOwnership.DoesNotExist:
-            user = '<span class="error bold">no owner</span>'
-        
         memb = [
             member.as_html(),
             truncate_words(member.nickname, 5),
-            user,
+            member.owner_as_html(),
             member.accessLvl,
             utils.print_date(member.corpDate),
             utils.print_date(member.lastLogin),

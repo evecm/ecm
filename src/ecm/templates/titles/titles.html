@@ -7,10 +7,10 @@
 {% block header_scripts %}
 <script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
-<script type="text/javascript" src="/m/js/access_color.js"></script>
+
 
 <script type="text/javascript">
-const colorThresholds = {{ colorThresholds|safe }};
+const COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 </script>
 <script type="text/javascript" src="/m/js/titles_table.js"></script>
 {% endblock %}

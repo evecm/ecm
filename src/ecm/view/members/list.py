@@ -33,7 +33,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from ecm.data.roles.models import Member
 from ecm.data.common.models import ColorThreshold
 from ecm.view import getScanDate, get_members, extract_datatable_params
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 
 #------------------------------------------------------------------------------

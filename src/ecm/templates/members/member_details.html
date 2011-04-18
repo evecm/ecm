@@ -6,11 +6,11 @@
 
 {% block header_scripts %}
 <script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/m/js/access_color.js"></script>
+
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
 
 <script type="text/javascript">
-const member_id = "{{ member.characterID }}";
+const MEMBER_ID = "{{ member.characterID }}";
 </script>
 
 <script type="text/javascript" src="/m/js/member_access_changes_table.js"></script>
@@ -39,6 +39,7 @@ const member_id = "{{ member.characterID }}";
             <span class="bold">Last Logoff:</span> {{ member.lastLogoff }}
             </p>
             <p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ member.date }}</p>
+            <p><span class="bold">Owned by:</span> {{ member.owner_as_html|safe }}</p>
         </td>
     </tr>
 </table>
@@ -71,7 +72,7 @@ None
       <h2>Titles</h2>
       <ul>
       {% for title in member.all_titles %}
-        <li><a href="/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
+        <li>{{ title.as_html|safe }}</li>
         {% empty %}
         <p>No titles</p>
       {% endfor %}
@@ -81,7 +82,7 @@ None
       <h2>Extra Roles</h2>
       <ul>
       {% for role in member.roles_no_director %}
-        <li>{{ role }}</li>
+        <li>{{ role.as_html|safe }}</li>
         {% empty %}
         <p>No extra roles</p>
       {% endfor %}

@@ -24,7 +24,7 @@ $(document).ready(function() {
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             /* apply color to all access level cells */
             accessLvl = aData[1];
-            $('td:eq(1)', nRow).addClass("row-" + getAccessColor(accessLvl, colorThresholds));
+            $('td:eq(1)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
             return nRow;
 		}
     } );

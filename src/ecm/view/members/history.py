@@ -34,7 +34,7 @@ from django.utils.text import truncate_words
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.roles.models import Member, MemberDiff
 from ecm.core.utils import print_time_min
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 #------------------------------------------------------------------------------
 @user_is_director()
@@ -58,12 +58,12 @@ def history_data(request):
 
     queryset = queryset[request.first_id:request.last_id]
     members = []
-    for m in queryset:
+    for diff in queryset:
         members.append([
-            m.new,
-            m.as_html(),
-            truncate_words(m.nickname, 5),
-            print_time_min(m.date)
+            diff.new,
+            diff.as_html(),
+            truncate_words(diff.nickname, 5),
+            print_time_min(diff.date)
         ])
     
     json_data = {

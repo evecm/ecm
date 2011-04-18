@@ -66,6 +66,12 @@ class UserAPIKey(models.Model):
             return "Invalid"
     is_valid_admin_display.short_description = "Valid"
     
+    def is_valid_html(self):
+        if self.is_valid:
+            return '<span class="bold ok">API key valid</span>'
+        else:
+            return '<span class="bold error">API key invalid</span>'
+    
     def __unicode__(self):
         try:
             return "%s owns %d" % (self.user.username, self.userID)

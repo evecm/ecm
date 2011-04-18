@@ -3,12 +3,12 @@
     "pk": 1, 
     "model": "scheduler.scheduledtask", 
     "fields": {
-      "function": "ecm.core.parsers.corp.update",
-      "args": "{}",
-      "one_shot": false,
+      "function": "ecm.core.parsers.corp.update", 
+      "args": "{}", 
       "is_active": true, 
       "is_running": false, 
       "priority": 200, 
+      "one_shot": false, 
       "frequency": 12, 
       "frequency_units": 3600, 
       "next_execution": "2011-03-31 14:14:45"
@@ -19,11 +19,11 @@
     "model": "scheduler.scheduledtask", 
     "fields": {
       "function": "ecm.core.parsers.outposts.update", 
-      "args": "{}",
-      "one_shot": false,
+      "args": "{}", 
       "is_active": true, 
       "is_running": false, 
       "priority": 100, 
+      "one_shot": false, 
       "frequency": 12, 
       "frequency_units": 3600, 
       "next_execution": "2011-03-31 14:14:50"
@@ -34,11 +34,11 @@
     "model": "scheduler.scheduledtask", 
     "fields": {
       "function": "ecm.core.parsers.reftypes.update", 
-      "args": "{}",
-      "one_shot": false,
+      "args": "{}", 
       "is_active": true, 
       "is_running": false, 
       "priority": 100, 
+      "one_shot": false, 
       "frequency": 7, 
       "frequency_units": 86400, 
       "next_execution": "2011-04-07 02:14:52"
@@ -49,11 +49,11 @@
     "model": "scheduler.scheduledtask", 
     "fields": {
       "function": "ecm.core.parsers.membertrack.update", 
-      "args": "{}",
-      "one_shot": false,
+      "args": "{}", 
       "is_active": true, 
       "is_running": false, 
       "priority": 50, 
+      "one_shot": false, 
       "frequency": 2, 
       "frequency_units": 3600, 
       "next_execution": "2011-03-31 04:14:57"
@@ -64,11 +64,11 @@
     "model": "scheduler.scheduledtask", 
     "fields": {
       "function": "ecm.core.parsers.membersecu.update", 
-      "args": "{}",
-      "one_shot": false,
+      "args": "{}", 
       "is_active": true, 
       "is_running": false, 
       "priority": 20, 
+      "one_shot": false, 
       "frequency": 2, 
       "frequency_units": 3600, 
       "next_execution": "2011-03-31 04:16:02"
@@ -79,14 +79,44 @@
     "model": "scheduler.scheduledtask", 
     "fields": {
       "function": "ecm.core.parsers.titles.update", 
-      "args": "{}",
-      "one_shot": false,
+      "args": "{}", 
       "is_active": true, 
       "is_running": false, 
       "priority": 10, 
+      "one_shot": false, 
       "frequency": 6, 
       "frequency_units": 3600, 
       "next_execution": "2011-03-31 08:16:12"
+    }
+  }, 
+  {
+    "pk": 11, 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "function": "ecm.core.tasks.users.update_all_character_associations", 
+      "args": "{}", 
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 5, 
+      "one_shot": false, 
+      "frequency": 1, 
+      "frequency_units": 86400, 
+      "next_execution": "2011-04-13 01:48:55"
+    }
+  }, 
+  {
+    "pk": 12, 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "function": "ecm.core.tasks.users.update_all_users_accesses", 
+      "args": "{}", 
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 1, 
+      "one_shot": false, 
+      "frequency": 1, 
+      "frequency_units": 86400, 
+      "next_execution": "2011-04-19 00:32:33"
     }
   }, 
   {
@@ -94,11 +124,11 @@
     "model": "scheduler.scheduledtask", 
     "fields": {
       "function": "ecm.core.parsers.assets.update", 
-      "args": "{}",
-      "one_shot": false,
+      "args": "{}", 
       "is_active": true, 
       "is_running": false, 
       "priority": 0, 
+      "one_shot": false, 
       "frequency": 6, 
       "frequency_units": 3600, 
       "next_execution": "2011-03-31 08:17:29"
@@ -109,14 +139,44 @@
     "model": "scheduler.scheduledtask", 
     "fields": {
       "function": "ecm.core.parsers.wallets.update", 
-      "args": "{}",
-      "one_shot": false,
+      "args": "{}", 
       "is_active": true, 
       "is_running": false, 
       "priority": 0, 
+      "one_shot": false, 
       "frequency": 6, 
       "frequency_units": 3600, 
       "next_execution": "2011-03-31 08:17:39"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "function": "ecm.core.tasks.misc.collect_garbage", 
+      "args": "{}", 
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 0, 
+      "one_shot": false, 
+      "frequency": 1, 
+      "frequency_units": 86400, 
+      "next_execution": "2011-04-11 01:20:11"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "scheduler.scheduledtask", 
+    "fields": {
+      "function": "ecm.core.tasks.users.cleanup_unregistered_users", 
+      "args": "{}", 
+      "is_active": true, 
+      "is_running": false, 
+      "priority": 0, 
+      "one_shot": false, 
+      "frequency": 1, 
+      "frequency_units": 86400, 
+      "next_execution": "2011-04-11 01:20:11"
     }
   }
 ]

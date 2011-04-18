@@ -34,7 +34,7 @@ from ecm.data.roles.models import TitleComposition, Title, TitleCompoDiff
 from ecm.data.common.models import ColorThreshold
 from ecm.core import utils
 from ecm.view import getScanDate
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 #------------------------------------------------------------------------------
 @cache_page(3 * 60 * 60) # 3 hours cache
@@ -75,33 +75,33 @@ def all_data(request):
 def getTitles(sort_by="titleID", asc=True):
     sort_col = "%s_nocase" % sort_by
     
-    titlesDb = Title.objects.all().order_by("titleID")
+    query = Title.objects.all().order_by("titleID")
 
     # SQLite hack for making a case insensitive sort
-    titlesDb = titlesDb.extra(select={sort_col : "%s COLLATE NOCASE" % sort_by})
+    query = query.extra(select={sort_col : "%s COLLATE NOCASE" % sort_by})
     if not asc: sort_col = "-" + sort_col
-    titlesDb = titlesDb.extra(order_by=[sort_col])
+    query = query.extra(order_by=[sort_col])
 
     # fetch the number of members having each title
-    titlesDb = titlesDb.extra(select={"title_members" : "SELECT COUNT(*) "
+    query = query.extra(select={"title_members" : "SELECT COUNT(*) "
                                       "FROM roles_titlemembership, roles_member "
                                       "WHERE roles_titlemembership.title_id = roles_title.titleID "
                                       "AND roles_titlemembership.member_id = roles_member.characterID "
                                       "AND roles_member.corped = 1"})
 
     titles = []
-    for t in titlesDb:
-        modification_date = TitleCompoDiff.objects.filter(title=t).order_by("-id")
+    for title in query:
+        modification_date = TitleCompoDiff.objects.filter(title=title).order_by("-id")
         if modification_date.count():
             modification_date = utils.print_time_min(modification_date[0].date)
         else:
             modification_date = "-"
 
         title = [
-            '<a href="/titles/%d">%s</a>' % (t.titleID, t.titleName),
-            t.accessLvl,
-            '<a href="/titles/%d/members">%d</a>' % (t.titleID, t.title_members),
-            TitleComposition.objects.filter(title=t).count(),
+            title.as_html(),
+            title.accessLvl,
+            '<a href="/titles/%d/members">%d</a>' % (title.titleID, title.title_members),
+            TitleComposition.objects.filter(title=title).count(),
             modification_date
         ]
         titles.append(title)

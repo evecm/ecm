@@ -44,7 +44,7 @@ def extract_function(function_str):
     except ImportError:
         raise ValidationError("No such module '%s' in sys.path" % module)
     except KeyError:
-        raise ValidationError("Function '%s' not found in module '%s'" % (module, function))
+        raise ValidationError("Function '%s' not found in module '%s'" % (function, module))
     
     
 #------------------------------------------------------------------------------

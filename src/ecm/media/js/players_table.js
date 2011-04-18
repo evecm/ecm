@@ -1,5 +1,5 @@
 /*************************
- * "Members" table setup *
+ * "Players" table setup *
  *************************/
 /**
  * Needs three global constants to be defined:
@@ -8,7 +8,7 @@
  *      - AJAX_URL
  **/
 $(document).ready(function() {
-	  var table = $('#members_table').dataTable( {
+      var table = $('#players_table').dataTable( {
         "sPaginationType": "full_numbers",
         "bProcessing": true,
         "bServerSide": true,
@@ -16,42 +16,20 @@ $(document).ready(function() {
         "iDisplayLength": 25, /* default display 25 items */
         "bStateSave": true, /* table state persistance */
         "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
-        "sAjaxSource": AJAX_URL,
+        "sAjaxSource": "/players/data",
         "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
-            { /* Name */         "sWidth": "20%",   "sType": "html"    },
-            { /* Nickname */     "sWidth": "20%",   "sType": "string",  "bSortable": false },
-            { /* Player */       "sWidth": "15%",   "sType": "html",    "bSortable": false },
-            { /* Access Level */ "sWidth": "5%",    "sType": "numeric" },
-            { /* Corp Date */    "sWidth": "10%",   "sType": "string"  },
-            { /* Last Login */   "sWidth": "10%",   "sType": "string"  },
-            { /* Location */     "sWidth": "20%",   "sType": "string"  },
-            { /* titles -> HIDDEN */ "bVisible": false }
+            { /* Username */    "sWidth": "30%",   "sType": "html"    },
+            { /* Char count */  "sWidth": "20%",   "sType": "string",   "bSortable": false  },
+            { /* Group count */ "sWidth": "20%",   "sType": "string",   "bSortable": false  },
+            { /* Joined date */ "sWidth": "30%",   "sType": "string"  }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            /* apply color to all access level cells */
-            accessLvl = aData[3];
-            if (accessLvl == DIRECTOR_ACCESS_LVL) {
-                $('td:eq(3)', nRow).html('<b>DIRECTOR</b>');
-            }
-            $('td:eq(3)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
-            
-            /* hide titles column */
-            $('td:eq(7)', nRow).hide()
-
-            /* set titles tooltip on each row */
-            titles = aData[7]
-            if (titles != "") {
-                $('td:eq(3)', nRow).attr("title", titles)
-                $('td:eq(3)', nRow).cluetip({
-                    splitTitle: '|',
-                    dropShadow: false, 
-                    cluetipClass: 'jtip',
-                    positionBy: 'mouse',
-                    tracking: true
-                });
-            }
-            
+            /* if the player has no roles display him/her in red */
+            var group_count = aData[2];
+            if (group_count == 0) {
+                $(nRow).addClass("row-red");
+            }          
             return nRow;
         },
         /* the search field being outside the table object, we need to save its status
@@ -67,8 +45,8 @@ $(document).ready(function() {
             return true;
         }
     });
-	
-	/* trigger the search when pressing return in the text field */
+    
+    /* trigger the search when pressing return in the text field */
     $("#search_form").submit(function(event) {
         event.preventDefault();
         table.fnFilter($("#search_text").val());
@@ -87,11 +65,10 @@ $(document).ready(function() {
 
 
     /* disable multi column sorting */
-    $('#members_table thead th').click(function(event) {
+    $('#players_table thead th').click(function(event) {
         if (!$(event.target).hasClass('sorthandle')) {
             event.shiftKey = false;
         }
     });
     
 } );
-

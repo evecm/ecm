@@ -15,6 +15,7 @@
   <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/layout1_text.css" />
   <script type="text/javascript" src="/m/js/lib/jquery.js"></script>
   <script type="text/javascript" src="/m/js/csrf.js"></script>
+  <script type="text/javascript" src="/m/js/ecm_lib.js"></script>
   <link rel="icon" type="image/png" href="/m/img/favicon.png" />
   <link rel="shortcut icon" type="image/png" href="/m/img/favicon.png" />
   <title>ECM - {% block headtitle %}{% endblock %}</title>
@@ -107,11 +108,13 @@
           <ul>
             <li><a href="/roles">Roles</a>
               <!--[if lte IE 6]><table><tr><td><![endif]-->
+                {% if role_types %}
                 <ul>
                 {% for rt in role_types %}
                   <li><a href="/roles/{{ rt.typeName }}">{{ rt.dispName }}</a></li>
                 {% endfor %}
                 </ul>
+                {% endif %}
               <!--[if lte IE 6]></td></tr></table></a><![endif]-->
             </li>
           </ul>
@@ -126,7 +129,12 @@
               <!--[if lte IE 6]></td></tr></table></a><![endif]-->
             </li>
           </ul>  
-         
+          
+          <!-- Navigation item -->
+          <ul>
+            <li><a href="/players">Players<!--[if IE 7]><!--></a><!--<![endif]-->
+            </li>
+          </ul>           
          
         </div>
 	  </div>

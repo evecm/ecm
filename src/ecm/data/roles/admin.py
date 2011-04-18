@@ -59,8 +59,8 @@ class TitleCompositionAdmin(admin.ModelAdmin):
     list_filter = ['title', 'role']
 
 class MemberDiffAdmin(admin.ModelAdmin):
-    list_display = ['name', 'characterID', 'nickname', 'date', 'new']
-    search_fields = ['name', 'characterID', 'nickname', 'date']
+    list_display = ['member', 'nickname', 'date', 'new']
+    search_fields = ['member', 'nickname', 'date']
     list_filter = ['date']
 
 class TitleCompoDiffAdmin(admin.ModelAdmin):
@@ -76,7 +76,7 @@ class RoleMemberDiffAdmin(admin.ModelAdmin):
     search_fields = ['member', 'role', 'new', 'date']
 
 class CharacterOwnershipAdmin(admin.ModelAdmin):
-    list_display = ['user', 'character', 'main_or_alt_admin_display']
+    list_display = ['owner', 'character', 'main_or_alt_admin_display']
 
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Role, RoleAdmin)

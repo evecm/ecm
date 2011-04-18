@@ -30,12 +30,13 @@ from django.template.loader import render_to_string
 from django.db import transaction
 from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
+
+from ecm.core.tasks.users import update_user_accesses
 from ecm.data.common.models import UserAPIKey, RegistrationProfile
 from ecm.data.roles.models import CharacterOwnership
-from ecm.data.common.forms import AccountCreationForm
+from ecm.view.auth.forms import AccountCreationForm
 
 #------------------------------------------------------------------------------
-
 @transaction.commit_on_success
 def create_account(request):
     if request.method == 'POST':
@@ -56,7 +57,7 @@ def create_account(request):
             for char in form.characters:
                 if char.is_corped:
                     owned = CharacterOwnership()
-                    owned.user = user
+                    owned.owner = user
                     owned.character_id = char.characterID
                     owned.save()
             
@@ -76,6 +77,7 @@ def create_account(request):
 def activate_account(request, activation_key):
     try:
         user = RegistrationProfile.objects.activate_user(activation_key)
+        update_user_accesses(user)
         return render_to_response('auth/account_activated.html', 
                                   { 'activated_user' : user }, 
                                   context_instance=RequestContext(request))
@@ -87,7 +89,7 @@ def activate_account(request, activation_key):
     
 
 
-
+#------------------------------------------------------------------------------
 def send_activation_email(request, user_profile):
     ctx_dict = {'site': settings.ECM_BASE_URL,
                 'user_name': user_profile.user.username,

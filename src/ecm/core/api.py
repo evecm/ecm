@@ -23,16 +23,14 @@
 __date__ = "2010-03-23"
 __author__ = "diabeteman"
 
-from ecm.lib import eveapi
-from ecm.data.common.models import APIKey
-from django.core.exceptions import ObjectDoesNotExist
-
-import cPickle
-import os
-import tempfile
-import time
-import zlib
+import cPickle, os, tempfile, time, zlib
 from datetime import datetime
+
+from django.core.exceptions import ObjectDoesNotExist
+from ecm.lib import eveapi
+
+from ecm.data.common.models import APIKey
+from ecm.data.corp.models import Corp
 
 #------------------------------------------------------------------------------
 def get_api():
@@ -73,6 +71,32 @@ def connect_user(user_api, proxy=None, cache=False):
     else     : handler = None
     conn = eveapi.EVEAPIConnection(scheme="http", cacheHandler=handler, proxy=proxy)
     return conn.auth(userID=user_api.userID, apiKey=user_api.key)
+
+
+
+#------------------------------------------------------------------------------
+class Character:
+    name = ""
+    characterID = 0
+    corporationID = 0
+    corporationName = "No Corporation"
+    is_corped = False
+
+def get_account_characters(user_api):
+    connection = connect_user(user_api)
+    response = connection.account.Characters()
+    corp = Corp.objects.get(id=1)
+    characters = []
+    for char in response.characters:
+        c = Character()
+        c.name = char.name
+        c.characterID = char.characterID
+        c.corporationID = char.corporationID
+        c.corporationName = char.corporationName
+        c.is_corped = char.corporationID == corp.corporationID
+        characters.append(c)
+    return characters
+
 
 #------------------------------------------------------------------------------
 class CacheHandler(object):

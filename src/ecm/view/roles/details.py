@@ -35,7 +35,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from ecm.view import extract_datatable_params, get_members
 from ecm.data.roles.models import Role, RoleType, Member
 from ecm.data.common.models import ColorThreshold
-from ecm.core.auth import user_is_director
+from ecm.view.decorators import user_is_director
 
 #------------------------------------------------------------------------------
 @cache_page(3 * 60 * 60) # 3 hours cache

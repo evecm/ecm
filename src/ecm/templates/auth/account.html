@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+
+{% block headtitle %}User Profile{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/account">Account</a></li>
+{% endblock %}
+
+{% block main_content %}
+
+<h1 class="pagetitle">User Profile</h1>
+
+<p>Hello {{ user.username }}</p>
+
+<p>Click <a href="/account/change_password">here</a> to change your password.</p>
+
+<h2>Owned Characters</h2>
+<table class="transparent" style="width:50%;">
+{% for owned in characters %}
+<tr>
+  <td>{{ owned.as_html|safe }}</td>
+  <td><input type="button" class="del_character" id="{{ owned.characterID }}" name="{{ owned.name }}" value="Delete"/></td>
+</tr>
+{% endfor %}
+</table>
+
+<script type="text/javascript">
+$(".del_character").click(function () {
+    var alert_text = "Are you sure you want to get rid of " + this.name + "?\n\n";
+    alert_text += "If this character is still in one of your registered EVE accounts, it will be associated with your profile again at next scan.";
+    if (confirm(alert_text)) {
+        window.location = "/account/deletecharacter/" + this.id;
+    }
+});
+</script>
+
+
+<h2>EVE Account Credentials</h2>
+<table class="transparent" style="width:50%;">
+{% for key in api_keys %}
+<tr>
+  <td class="bold">{{ key.userID }}</td>
+  <td>{{ key.is_valid_html|safe }}</td>
+  <td><input type="button" class="edit_api" id="{{ key.userID }}" value="Edit"/></td>
+  <td><input type="button" class="del_api" id="{{ key.userID }}" value="Delete"/></td>
+</tr>
+{% endfor %}
+</table>
+
+<input type="button" id="add_api" value="Add new EVE account"/>
+
+<script type="text/javascript">
+$(".del_api").click(function () {
+    var alert_text = "Are you sure you want to delete API information for the EVE account with userID: " + this.id + "?";
+    if (confirm(alert_text)) {
+        window.location = "/account/deleteapi/" + this.id;
+    }
+});
+$(".edit_api").click(function () {
+    window.location = "/account/editapi/" + this.id;
+});
+$("#add_api").click(function () {
+    window.location = "/account/addapi";
+});
+</script>
+
+
+{% endblock %}

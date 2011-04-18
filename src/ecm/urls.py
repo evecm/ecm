@@ -52,9 +52,17 @@ urlpatterns += patterns('django.contrib.auth.views',
 urlpatterns += patterns('ecm.view.auth',
     ###########################################################################
     # ECM AUTH + USER PROFILE VIEWS
-    (r'^account$',                                  'user_profile'),
+    (r'^account$',                                  'account.account'),
+    (r'^account/addapi$',                           'account.add_api'),
+    (r'^account/deleteapi/(\d+)$',                  'account.delete_api'),
+    (r'^account/deletecharacter/(\d+)$',            'account.delete_character'),
+    (r'^account/editapi/(\d+)$',                    'account.edit_api'),
     (r'^account/create$',                           'signup.create_account'),
     (r'^account/activate/(\w+)$',                   'signup.activate_account'),
+    (r'^players$',                                  'players.player_list'),
+    (r'^players/data$',                             'players.player_list_data'),
+    (r'^players/(\d+)$',                            'players.player_details'),
+    (r'^players/(\d+)/data$',                       'players.player_details_data'),
 )
 
 urlpatterns += patterns('ecm.view',
