@@ -91,7 +91,7 @@ def edit_api(request, userID):
         form.user = request.user
         if form.is_valid():
             api.key = form.cleaned_data["apiKey"]
-            api.is_valid = False
+            api.is_valid = True
             api.save()
             
             for char in form.characters:
