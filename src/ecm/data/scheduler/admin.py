@@ -32,6 +32,8 @@ class ScheduledTaskOptions(admin.ModelAdmin):
                     "frequency_admin_display", 
                     "is_active", 
                     "is_running", 
+                    "is_one_shot", 
+                    "is_last_exec_success", 
                     "next_execution_admin_display", 
                     "priority",
                     "launch_task_admin_display"]

@@ -51,9 +51,13 @@ class TaskThread(Thread):
                     task.save()
                 logger.info(unicode(task) + " triggered")
                 task.run()
-                logger.info(unicode(task) + " done")
+                logger.info(unicode(task) + " success")
+                task.is_last_exec_success = True
+            except:
+                task.is_last_exec_success = False
             finally:
-                if task.one_shot:
+                if task.is_one_shot and task.is_last_exec_success:
+                    logger.info(unicode(task) + " was one shot, deleting...")
                     task.delete()
                 else:
                     delta = task.frequency * task.frequency_units

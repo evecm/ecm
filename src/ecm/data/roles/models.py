@@ -54,9 +54,9 @@ class Member(models.Model):
         """
         Retrieve all Roles assigned to one Member directly or through Titles
         """
-        roles = self.roles
-        for t in self.titles:
-            roles |= t.titles
+        roles = self.roles.all()
+        for t in self.titles.all():
+            roles |= t.roles.all()
         
         return roles.distinct()
     
@@ -92,6 +92,9 @@ class Member(models.Model):
         except CharacterOwnership.DoesNotExist:
             return '<span class="error bold">no owner</span>'
     
+    def __eq__(self, other):
+        return self.characterID == other.characterID
+    
     def __hash__(self):
         return self.characterID
 
@@ -115,6 +118,9 @@ class RoleType(models.Model):
     
     def as_html(self):
         return '<a href="%s" class="role_type">%s</a>' % (self.get_url(), self.dispName)
+    
+    def __eq__(self, other):
+        return self.id == other.id
     
     def __hash__(self):
         return self.id
@@ -163,13 +169,6 @@ class Role(models.Model):
         else:
             return self.accessLvl
         
-#    def getTitles(self):
-#        """
-#        Returns all the corporation Titles that contain this Role.
-#        """
-#        ids = TitleComposition.objects.filter(role=self).values_list("title", flat=True)
-#        return Title.objects.filter(titleID__in=ids)
-    
     def members_through_titles(self, with_direct_roles=False):
         """
         Returns all Members that have this role assigned through Titles
@@ -202,6 +201,9 @@ class Role(models.Model):
             return '<a href="%s" class="role">%s</a>' % (self.get_url(), self.get_disp_name())
         except:
             return '<b>%s</b>' % self.get_disp_name()
+    
+    def __eq__(self, other):
+        return self.id == other.id
     
     def __hash__(self):
         return self.id
@@ -251,6 +253,9 @@ class Title(models.Model):
     def as_html(self):
         return '<a href="%s" class="title">%s</a>' % (self.get_url(), self.titleName)
     
+    def __eq__(self, other):
+        return self.titleID == other.titleID
+    
     def __hash__(self):
         return self.titleID
     
@@ -266,13 +271,11 @@ class RoleMembership(models.Model):
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
     
-    h = None
+    def __eq__(self, other):
+        return hash(self) == hash(other)
 
     def __hash__(self):
-        if not self.h:
-            try:    self.h = self.member.characterID * 1000 + self.role.id
-            except: self.h = -1
-        return self.h
+        return self.member_id * 1000 + self.role_id
     
     def __unicode__(self):
         try:
@@ -292,15 +295,11 @@ class TitleMembership(models.Model):
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
     
-    h = None
-        
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+    
     def __hash__(self):
-        if not self.h:
-            try:
-                self.h = self.member.characterID * 100000 + self.title.titleID
-            except:
-                self.h = -1
-        return self.h
+        return self.member_id * 100000 + self.title_id
     
     def __unicode__(self):
         try:
@@ -316,12 +315,11 @@ class TitleComposition(models.Model):
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
     
-    h = None
+    def __eq__(self, other):
+        return hash(self) == hash(other)
     
     def __hash__(self):
-        if not self.h:
-            self.h = self.title.titleID * 1000 + self.role.id 
-        return self.h 
+        return self.title_id * 1000 + self.role_id
     
     def __unicode__(self):
         return unicode(self.title) + u' has ' + unicode(self.role)
@@ -348,6 +346,12 @@ class CharacterOwnership(models.Model):
         else:
             return "Alt"
     main_or_alt_admin_display.short_description = "Type"
+    
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+    
+    def __hash__(self):
+        return self.character_id * 10000 + self.owner_id
     
     def __unicode__(self):
         try:
@@ -390,6 +394,12 @@ class MemberDiff(models.Model):
     def as_html(self):
         return '<a href="%s" class="member">%s</a>' % (self.get_url(), self.name) 
     
+    def __eq__(self, other):
+        return self.id == other.id
+    
+    def __hash__(self):
+        return self.id
+    
     def __unicode__(self):
         if self.new: return '%s corped' % self.name
         else       : return '%s leaved' % self.name
@@ -417,7 +427,13 @@ class TitleMemberDiff(models.Model):
             # /corp/MemberSecurity.xml.aspx but that the member has not been
             # parsed from /corp/MemberTracking.xml.aspx yet
             return '<a href="/members/%d" class="member">???</a>' % self.member_id
-
+    
+    def __eq__(self, other):
+        return self.id == other.id
+    
+    def __hash__(self):
+        return self.id
+    
     def __unicode__(self):
         try: 
             membername = self.member.name
@@ -449,6 +465,12 @@ class RoleMemberDiff(models.Model):
             # /corp/MemberSecurity.xml.aspx but that the member has not been
             # parsed from /corp/MemberTracking.xml.aspx yet
             return '<a href="/members/%d" class="member">???</a>' % self.member_id
+    
+    def __eq__(self, other):
+        return self.id == other.id
+    
+    def __hash__(self):
+        return self.id
     
     def __unicode__(self):
         try: 

@@ -41,7 +41,7 @@ class DbAsset(models.Model):
     hasContents = models.BooleanField(default=False) # true if item container
 
     h = None
-
+    
     def __repr__(self):
         return str(self)
 
@@ -53,43 +53,30 @@ class DbAsset(models.Model):
             return "<DbAsset instance at %x>" % id(self)
 
     def __hash__(self):
-        if not self.h : 
-            self.h = self.locationID - self.typeID + self.hangarID * self.quantity
+        if self.h is None:
+            string = str(self.locationID) + str(self.hangarID) + str(self.typeID) + str(self.quantity)
+            self.h = hash(string)
         return self.h
-
+        
     def __eq__(self, other):
-        if self.locationID == other.locationID:
-            if self.hangarID == other.hangarID:
-                if self.typeID == other.typeID:
-                    if self.quantity == other.quantity:
-                        return True
-                    else: return False
-                else: return False
-            else: return False
-        else: return False
+        return (self.locationID == other.locationID 
+                and self.hangarID == other.hangarID 
+                and self.typeID == other.typeID
+                and self.quantity == other.quantity)
     
     def __cmp__(self, other):
-        locdiff = cmp(self.locationID, other.locationID)
-        if not locdiff:
-            hangardiff = cmp(self.hangarID, other.hangarID)
-            if not hangardiff:
-                return cmp(self.typeID, other.typeID)
-            else:
-                return hangardiff
-        else:
-            return locdiff
+        return (cmp(self.locationID, other.locationID) 
+                or cmp(self.hangarID, other.hangarID) 
+                or cmp(self.typeID, other.typeID))
     
     def lookslike(self, other):
         """
         This is NOT a real equality, this method is used to find duplicates in diffs
         """
-        if self.locationID == other.locationID:
-            if self.hangarID == other.hangarID:
-                if self.typeID == other.typeID:
-                    return True
-                else: return False
-            else: return False
-        else: return False 
+        return (self.locationID == other.locationID 
+                and self.hangarID == other.hangarID 
+                and self.typeID == other.typeID)
+
 #------------------------------------------------------------------------------
 class DbAssetDiff(models.Model):
     locationID = models.BigIntegerField() # ID of the station

@@ -62,13 +62,14 @@ class ScheduledTask(models.Model):
                                 validators=[FunctionValidator()],
                                 choices=FUNCTION_CHOICES)
     args = models.CharField(max_length=256, default="{}", validators=[ArgsValidator()])
-    one_shot = models.BooleanField(default=False)
+    priority = models.IntegerField(default=0)
     next_execution = models.DateTimeField(default=datetime.now())
     frequency = models.IntegerField()
     frequency_units = models.IntegerField(default=3600, choices=FREQUENCY_UNIT_CHOICES)
     is_active = models.BooleanField(default=True)
     is_running = models.BooleanField(default=False)
-    priority = models.IntegerField(default=0)
+    is_one_shot = models.BooleanField(default=False)
+    is_last_exec_success = models.BooleanField(default=False)
     
     class Meta:
         verbose_name = _("scheduled task")

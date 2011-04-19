@@ -44,7 +44,10 @@ class APIKey(models.Model):
     key = models.CharField(max_length=64)
     
     def __eq__(self, other):
-        return (self.userID == other.userID) and (self.charID == other.charID)
+        return hash(self) == hash(other)
+    
+    def __hash__(self):
+        return self.userID * 100000000 + self.charID
 
     def __unicode__(self):
         return u'%s - userID: %d apiKey: %s' % (self.name, self.userID, self.key)
@@ -71,7 +74,13 @@ class UserAPIKey(models.Model):
             return '<span class="bold ok">API key valid</span>'
         else:
             return '<span class="bold error">API key invalid</span>'
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
     
+    def __hash__(self):
+        return self.userID * 10000 + self.user_id
+
     def __unicode__(self):
         try:
             return "%s owns %d" % (self.user.username, self.userID)
@@ -101,7 +110,13 @@ class Outpost(models.Model):
     solarSystemID = models.PositiveIntegerField()
     corporationID = models.PositiveIntegerField()
     corporationName = models.CharField(max_length=256, default="")
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
     
+    def __hash__(self):
+        return self.stationID
+
     def __unicode__(self):
         return self.stationName
 
@@ -186,6 +201,12 @@ class RegistrationProfile(models.Model):
     
     def __unicode__(self):
         return u"Registration information for %s" % self.user
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+    
+    def __hash__(self):
+        return self.user_id
     
     def activation_key_expired(self):
         expiration_date = datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)

@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-from ecm.core import api
-from ecm.lib import eveapi
+from django.template.context import RequestContext
+from django.http import HttpRequest
 
 __date__ = "2011 4 18"
 __author__ = "diabeteman"
@@ -29,10 +29,14 @@ import logging
 
 from django.db import transaction
 from django.contrib.auth.models import User, Group
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.core.mail.message import EmailMultiAlternatives
 
+from ecm.core import api
+from ecm.lib import eveapi
 from ecm.data.common.models import RegistrationProfile, UserAPIKey
 from ecm.data.roles.models import CharacterOwnership, Title, Member
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -51,13 +55,16 @@ def update_all_character_associations():
 
 #------------------------------------------------------------------------------
 def update_character_associations(user):
+    logger.debug("Updating character ownerships for '%s'..." % user.username)
     # we delete all the previous ownerships
     CharacterOwnership.objects.filter(owner=user).delete()
     # get all the user's registered api credentials
-    user_apis = UserAPIKey.objects.filter(owner=user)
+    user_apis = UserAPIKey.objects.filter(user=user)
+    invalid_apis = []
     for user_api in user_apis:
         try:
             ids = [ char.characterID for char in api.get_account_characters(user_api) ]
+            user_api.is_valid = True
             for member in Member.objects.filter(characterID__in=ids):
                 try:
                     ownership = member.ownership
@@ -66,27 +73,49 @@ def update_character_associations(user):
                     ownership.character = member
                 ownership.owner = user
                 ownership.save()
-        except eveapi.Error:
-            user_api.is_valid = False
-            user_api.save()
-    
+        except eveapi.Error as err:
+            if err.code in [202, 203, 204, 205, 210, 212]:
+                # authentication failure error codes. 
+                # This happens if the apiKey does not match the userID
+                # TODO put these in eveapi or in the database.
+                user_api.is_valid = False
+                invalid_apis.append(user_api)
+        user_api.save()
+    if invalid_apis:
+        # we notify the user by email
+        ctx_dict = {'site': settings.ECM_BASE_URL,
+                    'user_name': user.username,
+                    'invalid_apis': invalid_apis}
+        subject = render_to_string('auth/invalid_api_email_subject.txt', ctx_dict, 
+                                   RequestContext(HttpRequest()))
+        # Email subject *must not* contain newlines
+        subject = ''.join(subject.splitlines())
+        txt_content = render_to_string('auth/invalid_api_email.txt', ctx_dict,
+                                       RequestContext(HttpRequest()))
+        html_content = render_to_string('auth/invalid_api_email.html', ctx_dict,
+                                        RequestContext(HttpRequest()))
+        msg = EmailMultiAlternatives(subject, body=txt_content, to=[user.email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        logger.info("API credentials for '%s' are invalid. User notified by email." % user.username)
+
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def cleanup_unregistered_users():
     try:
-        logger.info("Deleting unregistered users...")
+        logger.info("Deleting activation keys...")
         count = 0
         for profile in RegistrationProfile.objects.all():
             if profile.activation_key_expired():
                 user = profile.user
                 count += 1
-                if not user.is_active:
-                    logger.debug("activation key has exprired for '%s', deleting user..." % user.username)
-                    user.delete()
-                else:
+                if user.is_active:
                     # user has activated his/her account. we delete the activation key
                     profile.delete()
-        logger.info("%d unregistered users deleted")
+                else:
+                    logger.info("activation key has exprired for '%s', deleting user..." % user.username)
+                    user.delete() # this will delete the profile along with the user
+        logger.info("%d activation keys deleted" % count)
     except:
         logger.exception("cleanup failed")
         raise

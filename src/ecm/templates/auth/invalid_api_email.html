@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<body>
+	<p>Hello {{ user_name }},</p>
+	
+	<p>The following API credentials are invalid:</p>
+	<ul>
+	{% for api in invalid_apis %}
+    	<li>{{ api.userID }}</li>
+    {% endfor %}
+	</ul>
+	<p>All the characters from these accounts are not associated with your profile anymore. 
+	Please log in to <a href="{{ site }}/account">{{ site }}</a> and enter correct API credentials.</p>
+	
+	<p><i>NB: If you don't own these accounts anymore, you can delete them from your profile.</i></p>
+
+	<p>Thank you in advance,</p>
+	
+	<p><i>{{ corp_name }}</i></p>
+</body>
+
+</html>
