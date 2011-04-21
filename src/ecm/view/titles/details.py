@@ -39,7 +39,6 @@ from ecm.view.decorators import user_is_director
 
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def details(request, id):
     
@@ -63,8 +62,8 @@ def details(request, id):
 
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def composition_data(request, id):
     try:
         extract_datatable_params(request)
@@ -102,8 +101,8 @@ def composition_data(request, id):
 
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def compo_diff_data(request, id):
     try:
         extract_datatable_params(request)

@@ -37,7 +37,6 @@ from ecm.view import getScanDate
 from ecm.view.decorators import user_is_director
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def all(request):
     colorThresholds = []
@@ -52,8 +51,8 @@ def all(request):
 
 #------------------------------------------------------------------------------
 all_columns = [ "titleName", "accessLvl" ]
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def all_data(request):
     sEcho = int(request.GET["sEcho"])
     column = int(request.GET["iSortCol_0"])

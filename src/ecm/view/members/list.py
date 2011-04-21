@@ -47,8 +47,8 @@ def all(request):
     return render_to_response("members/member_list.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
+@cache_page(60 * 60) # 1 hour cache
 def all_data(request):
     try:
         extract_datatable_params(request)

@@ -54,7 +54,7 @@ SQL_STATIONS_FILTERED = "SELECT itemID, locationID, count(*) AS items "\
                         "FROM assets_dbasset "\
                         "WHERE hangarID in %s "\
                         "GROUP BY locationID;"
-@cache_page(3 * 60 * 60) # 3 hours cache
+
 @user_is_director()
 def stations(request):
     
@@ -100,8 +100,8 @@ SQL_HANGARS_FILTERED = "SELECT itemID, hangarID, count(*) AS items "\
                        "FROM assets_dbasset "\
                        "WHERE locationID=%d AND hangarID in %s "\
                        "GROUP BY hangarID ORDER BY hangarID;"
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def hangars(request, stationID):
     stationID = int(stationID)
     try: 
@@ -131,8 +131,8 @@ def hangars(request, stationID):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def hangar_contents(request, stationID, hangarID):
     stationID = int(stationID)
     hangarID = int(hangarID)
@@ -160,8 +160,8 @@ def hangar_contents(request, stationID, hangarID):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def can1_contents(request, stationID, hangarID, container1):
     stationID = int(stationID)
     hangarID = int(hangarID)
@@ -193,8 +193,8 @@ def can1_contents(request, stationID, hangarID, container1):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def can2_contents(request, stationID, hangarID, container1, container2):
     stationID = int(stationID)
     hangarID = int(hangarID)
@@ -218,8 +218,8 @@ def can2_contents(request, stationID, hangarID, container1, container2):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def search_items(request):
     
     try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]

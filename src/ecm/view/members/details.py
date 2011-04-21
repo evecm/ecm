@@ -69,8 +69,8 @@ def details(request, characterID):
 
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60) # 1 hour cache
 @user_owns_character()
+@cache_page(60 * 60) # 1 hour cache
 def access_changes_member_data(request, characterID):
     try:
         extract_datatable_params(request)

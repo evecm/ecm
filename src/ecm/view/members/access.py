@@ -46,8 +46,8 @@ def access_changes(request):
 
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
+@cache_page(60 * 60) # 1 hour cache
 def access_changes_data(request):
     try:
         extract_datatable_params(request)

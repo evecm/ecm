@@ -41,13 +41,10 @@ ROLE_TYPES = {}
 for t in RoleType.objects.all(): ROLE_TYPES[t.typeName] = t.id
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
-@user_is_director()
 def root(request):
     return redirect("/roles/roles")
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def role_type(request, role_typeName):
     try:
@@ -66,8 +63,8 @@ def role_type(request, role_typeName):
 
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def role_type_data(request, role_typeName):
     try:
         role_type = RoleType.objects.get(typeName=role_typeName)
@@ -112,7 +109,6 @@ def role_type_data(request, role_typeName):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def update_access_level(request):
     try:
