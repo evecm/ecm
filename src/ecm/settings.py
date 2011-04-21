@@ -49,7 +49,7 @@ ADMINS = ()
 # for development, you can use python dummy smtp server, run this command:
 # >>> python -m smtpd -n -c DebuggingServer localhost:1025
 EMAIL_HOST = "localhost"
-EMAIL_PORT = 1025
+EMAIL_PORT = 25
 EMAIL_HOST_USER = "" 
 EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False

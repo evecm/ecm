@@ -45,8 +45,8 @@ def history(request):
     return render_to_response("members/member_history.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
+@cache_page(60 * 60) # 1 hour cache
 def history_data(request):
     try:
         extract_datatable_params(request)

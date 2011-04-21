@@ -43,8 +43,6 @@ DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
-@user_is_director()
 def last_stations(request):
     # if called without date, redirect to the last date.
 
@@ -66,7 +64,6 @@ def last_stations(request):
 
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def stations(request, date_str):
     
@@ -116,8 +113,8 @@ def stations(request, date_str):
         return HttpResponseNotFound()
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def hangars(request, date_str, stationID):
     
     date = datetime.strptime(date_str, DATE_PATTERN)
@@ -130,8 +127,8 @@ def hangars(request, date_str, stationID):
     return HttpResponse(json_data)
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def hangar_contents(request, date_str, stationID, hangarID):
     date = datetime.strptime(date_str, DATE_PATTERN)
     hangar_contents = getHangarContents(date, int(stationID), int(hangarID))
@@ -141,8 +138,8 @@ def hangar_contents(request, date_str, stationID, hangarID):
         return HttpResponseNotFound()
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def search_items(request, date_str):
     
     date = datetime.strptime(date_str, DATE_PATTERN)

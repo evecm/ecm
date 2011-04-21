@@ -38,7 +38,6 @@ from ecm.data.common.models import ColorThreshold
 from ecm.view.decorators import user_is_director
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
 def role(request, role_typeName, role_id):
     try:
@@ -59,8 +58,8 @@ def role(request, role_typeName, role_id):
     return render_to_response("roles/role_details.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@cache_page(3 * 60 * 60) # 3 hours cache
 @user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
 def role_data(request, role_typeName, role_id):
     try:
         extract_datatable_params(request)

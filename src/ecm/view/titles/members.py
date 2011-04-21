@@ -37,7 +37,6 @@ from ecm.data.roles.models import Title, Member
 from ecm.view.decorators import user_is_director
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
 def members(request, id):
     data = { 
@@ -49,8 +48,8 @@ def members(request, id):
 
 
 #------------------------------------------------------------------------------
-@cache_page(60 * 60) # 1 hour cache
 @user_is_director()
+@cache_page(60 * 60) # 1 hour cache
 def members_data(request, id):
     try:
         extract_datatable_params(request)
