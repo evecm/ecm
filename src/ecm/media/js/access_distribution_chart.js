@@ -1,10 +1,14 @@
 var queryString = '';
 var dataUrl = '';
 
+google.load("visualization", "1", {
+    packages : [ "imagechart" ]
+});
+
 function extractColors(dist) {
     var colors = new Array(dist.length);
     for (var i=0 ; i < dist.length ; i++) {
-        var color = getCssProperty(".row-" + dist[i]["color"], "background-color");
+        var color = getCssBgColor(".row-" + dist[i]["color"]);
         if (color.lastIndexOf("#", 0) === 0) {
             color = color.substr(1);
         }
@@ -76,7 +80,4 @@ function handleQueryResponse(response) {
     draw(response.getDataTable());
 }
 
-google.load("visualization", "1", {
-    packages : [ "imagechart" ]
-});
 google.setOnLoadCallback(onLoadCallback);

@@ -5,11 +5,10 @@
 {% block header_scripts %}
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript" src="/m/js/ecm_lib.js"></script>
-<script type="text/javascript" src="/m/js/ecm_pie_chart.js"></script>
 
 <script type="text/javascript">
-const DISTRIBUTION = {{ distribution|safe }};
-const DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+DISTRIBUTION = {{ distribution|safe }};
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 </script>
 {% endblock %}
 
@@ -21,8 +20,12 @@ const DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 
 <h1 class="pagetitle">{{ corp_name }} <span class="time">- EVE Corporation Management</span></h1>
 
-<div id="distibution_chart"></div>
+<script type="text/javascript">
+
+</script>
 <script type="text/javascript" src="/m/js/access_distribution_chart.js" ></script>
+
+<div id="distibution_chart"></div>
 
 <table class="transparent" >
   <tbody>

@@ -14,9 +14,9 @@
 
 
 <script type="text/javascript">
-const DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
-const COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-const AJAX_URL = "/roles/{{ role.roleType.typeName }}/{{ role.roleID }}/data";
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+AJAX_URL = "/roles/{{ role.roleType.typeName }}/{{ role.roleID }}/data";
 
 $(document).ready(function() {
     $("#access_level_box").editable( '/roles/update', {

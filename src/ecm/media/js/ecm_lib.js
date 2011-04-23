@@ -20,25 +20,23 @@ function getAccessColor(accessLvl, colorThresholds) {
 
 
 /**
- * Retrieve a css property from the current page
+ * Retrieve a css background-color property from the current page
  * 
  * @param cssSelector
  *          
- * @param property 
- *          the name of the property/attribute (background-color, size, etc.)
- * @returns the property value
+ * @returns the property value formatted in hex #4d581e
  */
-function getCssProperty(cssSelector, property) {
+function getCssBgColor(cssSelector) {
     for (var j=0 ; j < document.styleSheets.length ; j++) {
         var rules = document.styleSheets.item(j);
         rules = rules.cssRules || rules.rules;
         for (var i = 0; i < rules.length; i++) {
             if (rules.item(i).selectorText == cssSelector) {
-                return colorToHex(rules.item(i).style[property]);
+                return colorToHex(rules.item(i).style.backgroundColor);
             }
         }
     }
-    return "";
+    return "#000000";
 }
 
 

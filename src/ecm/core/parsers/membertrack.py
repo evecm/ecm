@@ -156,15 +156,15 @@ def getDiffs(oldMembers, newMembers, date):
     if not removed : logger.debug("(none)")
     for oldmember in removed:
         logger.debug("- %s (%s)", oldmember.name, oldmember.nickname)
-        diffs.append(MemberDiff(characterID = oldmember.characterID, 
+        diffs.append(MemberDiff(member_id   = oldmember.characterID, 
                                 name        = oldmember.name,
                                 nickname    = oldmember.nickname, 
                                 new=False, date=date))
     logger.debug("NEW MEMBERS:")
-    if not removed : logger.debug("(none)")
+    if not added : logger.debug("(none)")
     for newmember in added:
         logger.debug("+ %s (%s)", newmember.name, newmember.nickname)
-        diffs.append(MemberDiff(characterID = newmember.characterID, 
+        diffs.append(MemberDiff(member_id   = newmember.characterID, 
                                 name        = newmember.name,
                                 nickname    = newmember.nickname, 
                                 new=True, date=date))

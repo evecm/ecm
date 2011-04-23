@@ -45,7 +45,7 @@ ACCOUNT_ACTIVATION_DAYS = 2
 ###############################################################################
 # DJANGO SPECIFIC SETTINGS
 DEBUG = True # turn this to False when on production !!!
-ADMINS = ()
+ADMINS = () # to enable email error reporting, put a tuple in there, ('name', email@adddress.com')
 # for development, you can use python dummy smtp server, run this command:
 # >>> python -m smtpd -n -c DebuggingServer localhost:1025
 EMAIL_HOST = "localhost"
@@ -53,7 +53,8 @@ EMAIL_PORT = 25
 EMAIL_HOST_USER = "" 
 EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = "admin@eve-corp-management.org"
+# put a real email address here, if not, emails sent by the server will be discarded by the relay servers
+DEFAULT_FROM_EMAIL = "" 
 
 DATABASES = {
     'default': {
@@ -64,7 +65,7 @@ DATABASES = {
 
 USE_I18N = False # for optimizatrion
 LOCAL_DEVELOPMENT = True
-APPEND_SLASH=False
+APPEND_SLASH = False
 TEMPLATE_DEBUG = DEBUG
 MANAGERS = ADMINS
 TIME_ZONE = 'Europe/Paris'
@@ -149,7 +150,7 @@ LOGGING = {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'INFO',
-            'filename': resolvePath('logs/ecm.log'),
+            'filename': resolvePath('logs/scheduler.log'),
             'when': 'midnight', # roll over each day at midnight
             'backupCount': 15, # keep 15 backup files
         },
@@ -157,7 +158,19 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'ecm_formatter',
             'level': 'DEBUG',
-        }
+        },
+        'django_mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
+        },
+        'django_error': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'ecm_formatter',
+            'level': 'ERROR',
+            'when': 'midnight',
+            'backupCount': 15,
+            'filename': resolvePath('logs/error.log'),
+        },
     },
     'loggers': {
         'ecm': {
@@ -165,6 +178,11 @@ LOGGING = {
             'handlers':['ecm_file_handler', 'ecm_console_handler'], 
             'propagate': True,
             'level':'DEBUG',
+        },
+        'django.request': {
+            'handlers': ['django_mail_admins', 'django_error'],
+            'propagate': False,
+            'level': 'ERROR',
         },
     }
 }
