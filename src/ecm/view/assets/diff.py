@@ -30,51 +30,55 @@ from django.shortcuts import render_to_response, redirect
 from django.template.context import RequestContext
 from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.db import connection
 
-from ecm.core import db, utils
-from ecm.data.assets.models import DbAsset, DbAssetDiff
+from ecm.view.assets import extract_divisions, HTML_ITEM_SPAN
+from ecm.core.parsers import assetsconstants
+from ecm.core import evedb, utils
+from ecm.data.assets.models import Asset, AssetDiff
 from ecm.data.corp.models import Hangar
 from ecm.view import getScanDate
 from ecm.view.decorators import user_is_director
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
-
-
 #------------------------------------------------------------------------------
-def last_stations(request):
+def last_date(request):
     # if called without date, redirect to the last date.
-
     since_weeks = int(request.GET.get("since_weeks", "8"))
     to_weeks = int(request.GET.get("to_weeks", "0"))
     oldest_date = datetime.now() - timedelta(weeks=since_weeks)
     newest_date = datetime.now() - timedelta(weeks=to_weeks)
 
-    datesDb = DbAssetDiff.objects.values("date").distinct().order_by("-date")
-    datesDb = datesDb.filter(date__gte=oldest_date)
-    datesDb = datesDb.filter(date__lte=newest_date)
+    query = AssetDiff.objects.values_list("date", flat=True).distinct().order_by("-date")
+    query = query.filter(date__gte=oldest_date)
+    query = query.filter(date__lte=newest_date)
     
     try:
-        date_str = datetime.strftime(datesDb[0]["date"], DATE_PATTERN)
+        last_date = query[0]
+        date_str = datetime.strftime(last_date, DATE_PATTERN)
         return redirect("/assets/changes/%s?since_weeks=%d&to_weeks=%d" % (date_str, since_weeks, to_weeks))
-    except:
+    except IndexError:
         return render_to_response("assets/assets_no_data.html", context_instance=RequestContext(request))
-
-
 
 #------------------------------------------------------------------------------
 @user_is_director()
-def stations(request, date_str):
+def root(request, date_str):
     
-    all_hangars = Hangar.objects.all()
+    all_hangars = Hangar.objects.all().order_by("hangarID")
     try: 
         divisions_str = request.GET["divisions"]
         divisions = [ int(div) for div in divisions_str.split(",") ]
-        for h in all_hangars: h.checked = (h.hangarID in divisions)
+        for h in all_hangars: 
+            h.checked = h.hangarID in divisions
     except: 
         divisions, divisions_str = None, None
-        for h in all_hangars: h.checked = False
+        for h in all_hangars: 
+            h.checked = True
+    
+    show_in_space = json.loads(request.GET.get("space", "true"))
+    show_in_stations = json.loads(request.GET.get("stations", "true"))
     
     since_weeks = int(request.GET.get("since_weeks", "8"))
     to_weeks = int(request.GET.get("to_weeks", "0"))
@@ -82,169 +86,247 @@ def stations(request, date_str):
     oldest_date = datetime.now() - timedelta(weeks=since_weeks)
     newest_date = datetime.now() - timedelta(weeks=to_weeks)
     
-    datesDb = DbAssetDiff.objects.values_list("date", flat=True).distinct().order_by("-date")
-    datesDb = datesDb.filter(date__gte=oldest_date)
-    datesDb = datesDb.filter(date__lte=newest_date)
+    query = AssetDiff.objects.values_list("date", flat=True).distinct().order_by("-date")
+    query = query.filter(date__gte=oldest_date)
+    query = query.filter(date__lte=newest_date)
     
     dates = []
-    for date in datesDb:
+    for date in query:
         dates.append({ 
             "value" : datetime.strftime(date, DATE_PATTERN),
             "show" : utils.print_time_min(date)
         })
 
-    date = datetime.strptime(date_str, DATE_PATTERN)
-    stations = getStations(date, divisions)
-
-    data = {  'station_list' : stations,
-                 'divisions' : divisions, # divisions to show
+    data = { 'show_in_space' : show_in_space,
+          'show_in_stations' : show_in_stations,
              'divisions_str' : divisions_str,
                    'hangars' : all_hangars,
-                     'dates' : dates,
-                      'date' : utils.print_time_min(date),
-                  'date_str' : date_str,
-                 'scan_date' : getScanDate(DbAsset.__name__),
+                 'scan_date' : getScanDate(Asset.__name__),
                'since_weeks' : since_weeks,
-                  'to_weeks' : to_weeks }
+                  'to_weeks' : to_weeks,
+                  "date_str" : date_str,
+                     'dates' : dates }
 
-    if stations:
-        return render_to_response("assets/assets_diff.html", data, context_instance=RequestContext(request))
-    else:
-        return HttpResponseNotFound()
+    try:
+        date_asked = datetime.strptime(date_str, DATE_PATTERN)
+        if AssetDiff.objects.filter(date=date_asked):
+            return render_to_response("assets/assets_diff.html", data, RequestContext(request))
+        else:
+            return render_to_response("assets/assets_no_data.html", RequestContext(request))
+    except:
+        return redirect("/assets/changes")
+    
 
 #------------------------------------------------------------------------------
 @user_is_director()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def hangars(request, date_str, stationID):
-    
+def systems_data(request, date_str):
     date = datetime.strptime(date_str, DATE_PATTERN)
+    divisions = extract_divisions(request)
+    show_in_space = json.loads(request.GET.get("space", "true"))
+    show_in_stations = json.loads(request.GET.get("stations", "true"))
+    
+    where = []
+    if not show_in_space:
+        where.append('"stationID" < %d' % assetsconstants.NPC_LOCATION_IDS)
+    if not show_in_stations:
+        where.append('"stationID" > %d' % assetsconstants.NPC_LOCATION_IDS)
+    if divisions is not None:
+        where.append('"hangarID" IN %s')
+    
+    sql = 'SELECT "solarSystemID", COUNT(*) AS "items" FROM "assets_assetdiff" '
+    sql += 'WHERE date=%s'
+    if where: sql += ' AND ' + ' AND '.join(where)
+    sql += ' GROUP BY "solarSystemID";'
 
-    try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
-    except: divisions = None
+    cursor = connection.cursor()
+    if divisions is None:
+        cursor.execute(sql, [date])
+    else:
+        cursor.execute(sql, [date, divisions])
     
-    json_data = json.dumps(getStationHangars(date, int(stationID), divisions))
-    
-    return HttpResponse(json_data)
+    jstree_data = []
+    for solarSystemID, items in cursor:
+        name, security = evedb.resolveLocationName(solarSystemID)
+        if security > 0.5:
+            color = "hisec"
+        elif security > 0:
+            color = "lowsec"
+        else:
+            color = "nullsec"
+        jstree_data.append({
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)),
+            "attr" : { 
+                "id" : "_%d" % solarSystemID, 
+                "rel" : "system",
+                "sort_key" : name.lower(),
+                "class" : "system-%s-row" % color 
+            },
+            "state" : "closed"
+        })
+    cursor.close()
+    return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
 @user_is_director()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def hangar_contents(request, date_str, stationID, hangarID):
+def stations_data(request, date_str, solarSystemID):
     date = datetime.strptime(date_str, DATE_PATTERN)
-    hangar_contents = getHangarContents(date, int(stationID), int(hangarID))
-    if hangar_contents:
-        return HttpResponse(json.dumps(hangar_contents))
+    solarSystemID = int(solarSystemID)
+    divisions = extract_divisions(request)
+    show_in_space = json.loads(request.GET.get("space", "true"))
+    show_in_stations = json.loads(request.GET.get("stations", "true"))
+    
+    where = []
+    if not show_in_space:
+        where.append('"stationID" < %d' % assetsconstants.NPC_LOCATION_IDS)
+    if not show_in_stations:
+        where.append('"stationID" > %d' % assetsconstants.NPC_LOCATION_IDS)
+    if divisions is not None:
+        where.append('"hangarID" IN %s')
+    
+    sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items" FROM "assets_assetdiff" '
+    sql += 'WHERE "solarSystemID"=%s AND "date"=%s '
+    if where: sql += ' AND ' + ' AND '.join(where)
+    sql += ' GROUP BY "stationID";'
+     
+    cursor = connection.cursor()
+    if divisions is None:
+        cursor.execute(sql, [solarSystemID, date])
     else:
-        return HttpResponseNotFound()
-
-#------------------------------------------------------------------------------
-@user_is_director()
-@cache_page(3 * 60 * 60) # 3 hours cache
-def search_items(request, date_str):
-    
-    date = datetime.strptime(date_str, DATE_PATTERN)
-
-    try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
-    except: divisions = None
-    
-    search_string = request.GET.get("search_string", None)
-    
-    if not search_string:
-        return HttpResponseBadRequest()
-    
-    search_result = doSearch(date, search_string, divisions)
-    
-    return HttpResponse(json.dumps(search_result))
-
-#------------------------------------------------------------------------------
-
-SQL_STATIONS_DIFF = "SELECT id, locationID, count(*) AS items, date FROM assets_dbassetdiff WHERE date='%s' GROUP BY locationID;"
-SQL_STATIONS_DIFF_FILTERED = "SELECT id, locationID, count(*) AS items, date FROM assets_dbassetdiff WHERE date='%s' AND hangarID in %s GROUP BY locationID;"
-
-def getStations(date, divisions):
-
-    if divisions:
-        str_divisions = str(divisions).replace("[", "(").replace("]", ")")
-        raw_list = DbAssetDiff.objects.raw(SQL_STATIONS_DIFF_FILTERED % (utils.print_time(date), str_divisions))
-    else:
-        raw_list = DbAssetDiff.objects.raw(SQL_STATIONS_DIFF % utils.print_time(date))
+        cursor.execute(sql, [solarSystemID, date, divisions])
         
-    class S: 
-        locationID = 0
-        name = None
-        items = 0
+    jstree_data = []
+    for stationID, flag, items in cursor:
+        if stationID < assetsconstants.NPC_LOCATION_IDS:
+            # it's a real station
+            name = evedb.resolveLocationName(stationID)[0]
+            icon = "station"
+        else:
+            # it is an inspace anchorable array
+            name = evedb.resolveTypeName(flag)[0]
+            icon = "array"
+        
+        jstree_data.append({
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)),
+            "attr" : { 
+                "id" : "_%d_%d" % (solarSystemID, stationID), 
+                "sort_key" : stationID,
+                "rel" : icon,
+                "class" : "%s-row" % icon
+            },
+            "state" : "closed"
+        })
+    cursor.close()
+    return HttpResponse(json.dumps(jstree_data))
 
-    station_list = []
-    for s in raw_list:
-        station = S()
-        station.locationID = s.locationID
-        station.name = db.resolveLocationName(s.locationID)
-        station.items = s.items
-        station_list.append(station)
-
-    return station_list
 
 #------------------------------------------------------------------------------
-
-SQL_HANGARS = "SELECT id, hangarID, count(*) AS items FROM assets_dbassetdiff WHERE date='%s' AND locationID=%d GROUP BY hangarID ORDER BY hangarID;"
-SQL_HANGARS_FILTERED = "SELECT id, hangarID, count(*) AS items FROM assets_dbassetdiff WHERE date='%s' AND locationID=%d AND hangarID in %s GROUP BY hangarID ORDER BY hangarID;"
-
-def getStationHangars(date, stationID, divisions):
-    if divisions:
-        str_divisions = str(divisions).replace("[", "(").replace("]", ")")
-        sql = SQL_HANGARS_FILTERED % (utils.print_time(date), stationID, str_divisions)
-        raw_list = DbAssetDiff.objects.raw(sql)
+@user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
+def hangars_data(request, date_str, solarSystemID, stationID):
+    
+    date = datetime.strptime(date_str, DATE_PATTERN)
+    solarSystemID = int(solarSystemID)
+    stationID = int(stationID)
+    divisions = extract_divisions(request)
+    
+    where = []
+    if divisions is not None:
+        where.append('"hangarID" IN %s')
+    
+    sql = 'SELECT "hangarID", COUNT(*) AS "items" FROM "assets_assetdiff" '
+    sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s AND "date"=%s '
+    if where: sql += ' AND ' + ' AND '.join(where)
+    sql += ' GROUP BY "hangarID";'
+    
+    cursor = connection.cursor()
+    if divisions is None:
+        cursor.execute(sql, [solarSystemID, stationID, date])
     else:
-        raw_list = DbAssetDiff.objects.raw(SQL_HANGARS % (utils.print_time(date), stationID))
+        cursor.execute(sql, [solarSystemID, stationID, date, divisions])
     
     HANGAR = {}
     for h in Hangar.objects.all():
         HANGAR[h.hangarID] = h.name
     
-    hangar_list = []
-    for h in raw_list:
-        hangar = {}
-        hangar["data"] = '<b>%s</b><i> - (%d item%s changed)</i>' % (HANGAR[h.hangarID], h.items, pluralize(h.items))
-        id = "_%d_%d" % (stationID, h.hangarID) 
-        hangar["attr"] = { "id" : id , "rel" : "hangar" , "href" : "" }
-        hangar["state"] = "closed"
-        hangar_list.append(hangar)
+    jstree_data = []
+    for hangarID, items in cursor.fetchall():
+        jstree_data.append({
+            "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items)),
+            "attr" : { 
+                "id" : "_%d_%d_%d" % (solarSystemID, stationID, hangarID),
+                "sort_key" : hangarID,
+                "rel" : "hangar",
+                "class" : "hangar-row"
+            },
+            "state" : "closed"
+        })
     
-    return hangar_list
+    return HttpResponse(json.dumps(jstree_data))
+
 #------------------------------------------------------------------------------
-def getHangarContents(date, stationID, hangarID):
-    item_list = DbAssetDiff.objects.filter(date=date, locationID=stationID, hangarID=hangarID)
-    json_data = []
-    for i in item_list:
-        item = {}
-        name = db.resolveTypeName(i.typeID)[0]
-        if i.quantity < 0:
+@user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
+def hangar_contents_data(request, date_str, solarSystemID, stationID, hangarID):
+    date = datetime.strptime(date_str, DATE_PATTERN)
+    solarSystemID = int(solarSystemID)
+    stationID = int(stationID)
+    hangarID = int(hangarID)
+    
+    query = AssetDiff.objects.filter(solarSystemID=solarSystemID,
+                                     stationID=stationID, hangarID=hangarID,
+                                     date=date)
+    jstree_data = []
+    for item in query:
+        name = evedb.resolveTypeName(item.typeID)[0]
+        
+        if item.quantity < 0:
             icon = "removed"
         else:
             icon = "added"
-
-        item["data"] = "%s <i>(%s)</i>" % (name, utils.print_quantity(i.quantity))
-        item["attr"] = { "rel" : icon , "href" : "" , "class" : "%s-row" % icon }
-        json_data.append(item)
         
-    return json_data
+        jstree_data.append({
+            "data": "%s <i>(%s)</i>" % (name, utils.print_quantity(item.quantity)),
+            "attr" : { 
+                "sort_key" : name.lower(),
+                "rel" : icon,
+                "class" : "%s-row" % icon
+            }
+        })
 
-#------------------------------------------------------------------------------  
-def doSearch(date, search_string, divisions):
-    matchingIDs = db.getMatchingIdsFromString(search_string)
-    if divisions:
-        matching_items = DbAssetDiff.objects.filter(date=date, typeID__in=matchingIDs, hangarID__in=divisions)
-    else:
-        matching_items = DbAssetDiff.objects.filter(date=date, typeID__in=matchingIDs)
+    return HttpResponse(json.dumps(jstree_data))
+
+#------------------------------------------------------------------------------
+@user_is_director()
+@cache_page(3 * 60 * 60) # 3 hours cache
+def search_items(request, date_str):
+    date = datetime.strptime(date_str, DATE_PATTERN)
+    divisions = extract_divisions(request)
+    show_in_space = json.loads(request.GET.get("space", "true"))
+    show_in_stations = json.loads(request.GET.get("stations", "true"))
+    search_string = request.GET.get("search_string", "no-item")
+    
+    matchingIDs = evedb.getMatchingIdsFromString(search_string)
+    
+    query = AssetDiff.objects.filter(typeID__in=matchingIDs, date=date)
+    
+    if divisions is not None:
+        query = query.filter(hangarID__in=divisions)
+    if not show_in_space:
+        query = query.filter(stationID__lt=assetsconstants.NPC_LOCATION_IDS)
+    if not show_in_stations:
+        query = query.filter(stationID__gt=assetsconstants.NPC_LOCATION_IDS)
+
 
     json_data = []
 
-    for i in matching_items:
-        nodeid = "#_%d" % i.locationID
+    for item in query:
+        nodeid = "#_%d" % item.solarSystemID
         json_data.append(nodeid)
-        nodeid = nodeid + "_%d" % i.hangarID
+        nodeid = nodeid + "_%d" % item.stationID
         json_data.append(nodeid)
-
-    return json_data
-
-
+        nodeid = nodeid + "_%d" % item.hangarID
+        json_data.append(nodeid)
+    
+    return HttpResponse(json.dumps(json_data))

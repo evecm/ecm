@@ -23,20 +23,23 @@
 __date__ = "2010-03-18"
 __author__ = "diabeteman"
 
-from ecm.core import db
 from django.db import models
 from datetime import datetime
 
+from ecm.core import evedb
+from ecm.lib import bigintpatch
+
 #------------------------------------------------------------------------------
-class DbAsset(models.Model):
+class Asset(models.Model):
     itemID = models.BigIntegerField(primary_key=True) # supposed to be unique
-    locationID = models.BigIntegerField() # ID of the station
-    hangarID = models.PositiveSmallIntegerField() # hangar division
+    solarSystemID = models.BigIntegerField()
+    stationID = models.BigIntegerField()
+    hangarID = models.PositiveIntegerField() # hangar division
     container1 = models.BigIntegerField(null=True, blank=True) # first container or ship
     container2 = models.BigIntegerField(null=True, blank=True) # second container or ship
     typeID = models.PositiveIntegerField(default=0) # item type ID from the EVE database
-    quantity = models.PositiveIntegerField(default=0)
-    flag = models.PositiveSmallIntegerField(default=0) # used to determine the state or path of the asset
+    quantity = models.BigIntegerField(default=0)
+    flag = models.BigIntegerField() # used to determine the state or path of the asset
     singleton = models.BooleanField(default=False) # true if assembled 
     hasContents = models.BooleanField(default=False) # true if item container
 
@@ -47,25 +50,28 @@ class DbAsset(models.Model):
 
     def __str__(self):
         try:
-            item = db.resolveTypeName(self.typeID)[0]
+            item = evedb.resolveTypeName(self.typeID)[0]
             return "<%s x%d>" % (item, self.quantity)
         except:
-            return "<DbAsset instance at %x>" % id(self)
+            return "<Asset instance at %x>" % id(self)
 
     def __hash__(self):
         if self.h is None:
-            string = str(self.locationID) + str(self.hangarID) + str(self.typeID) + str(self.quantity)
+            string = (str(self.solarSystemID) + str(self.stationID) + str(self.hangarID) 
+                      + str(self.typeID) + str(self.quantity))
             self.h = hash(string)
         return self.h
         
     def __eq__(self, other):
-        return (self.locationID == other.locationID 
+        return (self.solarSystemID == other.solarSystemID
+                and self.stationID == other.stationID 
                 and self.hangarID == other.hangarID 
                 and self.typeID == other.typeID
                 and self.quantity == other.quantity)
     
     def __cmp__(self, other):
-        return (cmp(self.locationID, other.locationID) 
+        return (cmp(self.solarSystemID, other.solarSystemID)
+                or cmp(self.stationID, other.stationID) 
                 or cmp(self.hangarID, other.hangarID) 
                 or cmp(self.typeID, other.typeID))
     
@@ -73,18 +79,22 @@ class DbAsset(models.Model):
         """
         This is NOT a real equality, this method is used to find duplicates in diffs
         """
-        return (self.locationID == other.locationID 
+        return (self.solarSystemID == other.solarSystemID
+                and self.stationID == other.stationID 
                 and self.hangarID == other.hangarID 
                 and self.typeID == other.typeID)
-
+    
 #------------------------------------------------------------------------------
-class DbAssetDiff(models.Model):
-    locationID = models.BigIntegerField() # ID of the station
-    hangarID = models.PositiveSmallIntegerField() # hangar division
+class AssetDiff(models.Model):
+    id = bigintpatch.BigAutoField(primary_key=True)
+    solarSystemID = models.BigIntegerField()
+    stationID = models.BigIntegerField()
+    hangarID = models.PositiveIntegerField() # hangar division
     typeID = models.PositiveIntegerField(default=0) # item type ID from the EVE database
     quantity = models.IntegerField(default=0)
     date = models.DateTimeField(db_index=True, default=datetime.now())
     new = models.BooleanField()
+    flag = models.BigIntegerField() # used to determine the state or path of the asset
     
 
     

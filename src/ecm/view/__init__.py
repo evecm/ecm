@@ -35,7 +35,7 @@ def getScanDate(model_name):
     try:
         date = UpdateDate.objects.get(model_name=model_name) 
         return utils.print_time_min(date.update_date)
-    except:
+    except UpdateDate.DoesNotExist:
         return "<no data>"
 
 #------------------------------------------------------------------------------
@@ -61,9 +61,11 @@ member_table_columns = [
 ]
 def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
 
-    sort_col = "%s_nocase" % member_table_columns[sort_by]
-    # SQLite hack for making a case insensitive sort
-    query = query.extra(select={sort_col : "%s COLLATE NOCASE" % member_table_columns[sort_by]})
+    sort_col = member_table_columns[sort_by]
+    # SQL hack for making a case insensitive sort
+    if sort_by in [0, 1]:
+        sort_col = sort_col + "_nocase"
+        query = query.extra(select={sort_col : 'LOWER("%s")' % member_table_columns[sort_by]})
     if not asc: sort_col = "-" + sort_col
     query = query.extra(order_by=[sort_col])
     

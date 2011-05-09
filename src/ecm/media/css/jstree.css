@@ -14,8 +14,32 @@
     margin-top: 20px;
     clear: both;
 }
- 
-.station-row > a { 
+
+.system-hisec-row > a { 
+    width:95%;
+    background-color: #d2ffde;/* for non-css3 browsers */
+    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00d2ffde,EndColor=0x00ffffff,iOrientation=1);
+    background: -webkit-gradient(linear, left top, right top, from(#d2ffde), to(#fff)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #d2ffde,  #fff); /* for firefox 3.6+ */ 
+}
+
+.system-lowsec-row > a { 
+    width:95%;
+    background-color: #ddd;/* for non-css3 browsers */
+    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00fff38c,EndColor=0x00ffffff,iOrientation=1);
+    background: -webkit-gradient(linear, left top, right top, from(#fff38c), to(#fff)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #fff38c,  #fff); /* for firefox 3.6+ */ 
+}
+
+.system-nullsec-row > a { 
+    width:95%;
+    background-color: #ddd;/* for non-css3 browsers */
+    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00ffc4c4,EndColor=0x00ffffff,iOrientation=1);
+    background: -webkit-gradient(linear, left top, right top, from(#ffc4c4), to(#fff)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #ffc4c4,  #fff); /* for firefox 3.6+ */ 
+}
+
+.station-row .array-row > a { 
     width:95%;
     background-color: #ddd;/* for non-css3 browsers */
     filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00cccccc,EndColor=0x00ffffff,iOrientation=1);

@@ -1,4 +1,4 @@
-const director_access_lvl = 999999999999;
+director_access_lvl = 999999999999;
 
 
 // disable multi column sorting

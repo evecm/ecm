@@ -68,10 +68,9 @@ urlpatterns += patterns('ecm.view.auth',
 urlpatterns += patterns('ecm.view',
     ###########################################################################
     # COMMON VIEWS
-    (r'^$',                                         'home.home'),
-    (r'^corp$',                                     'common.corp'),
+    (r'^$',                                         'common.corp'),
+    (r'^dashboard$',                                'dashboard.dashboard'),
     (r'^cron$',                                     'common.trigger_scheduler'),
-    (r'^tasks$',                                    'common.task_list'),
     (r'^tasks/launch/([^/]+)$',                     'common.launch_task'),
 )
 
@@ -82,6 +81,9 @@ urlpatterns += patterns('ecm.view.members',
     (r'^members/data$',                             'list.all_data'),
     (r'^members/history$',                          'history.history'),
     (r'^members/history/data$',                     'history.history_data'),
+    (r'^members/unassociated$',                     'list.unassociated'),
+    (r'^members/unassociated/data$',                'list.unassociated_data'),
+    (r'^members/unassociated/clip$',                'list.unassociated_clip'),
     (r'^members/access_changes$',                   'access.access_changes'),
     (r'^members/access_changes/data$',              'access.access_changes_data'),
     (r'^members/(\d+)$',                            'details.details'),
@@ -116,11 +118,13 @@ urlpatterns += patterns('ecm.view.roles',
 urlpatterns += patterns('ecm.view.assets.normal',
     ###########################################################################
     # ASSETS VIEWS
-    (r'^assets$',                                   'stations'),
-    (r'^assets/(\d+)$',                             'hangars'),
-    (r'^assets/(\d+)/(\d+)$',                       'hangar_contents'),
-    (r'^assets/(\d+)/(\d+)/(\d+)$',                 'can1_contents'),
-    (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)$',           'can2_contents'),
+    (r'^assets$',                                   'root'),
+    (r'^assets/data$',                              'systems_data'),
+    (r'^assets/(\d+)/data$',                        'stations_data'),
+    (r'^assets/(\d+)/(\d+)/data$',                  'hangars_data'),
+    (r'^assets/(\d+)/(\d+)/(\d+)/data$',            'hangar_content_data'),
+    (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)/data$',      'can1_content_data'),
+    (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/data$', 'can2_content_data'),
     (r'^assets/search$',                            'search_items'),
 )
 
@@ -129,9 +133,11 @@ DATE = r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})"
 urlpatterns += patterns('ecm.view.assets.diff',
     ###########################################################################
     # ASSET DIFF VIEWS
-    (r'^assets/changes$',                           'last_stations'),
-    (r'^assets/changes/' + DATE + '$',              'stations'),
-    (r'^assets/changes/' + DATE + '/(\d+)$',        'hangars'),
-    (r'^assets/changes/' + DATE + '/(\d+)/(\d+)$',  'hangar_contents'),
+    (r'^assets/changes$',                           'last_date'),
+    (r'^assets/changes/' + DATE + '$',              'root'),
+    (r'^assets/changes/' + DATE + '/data$',         'systems_data'),
+    (r'^assets/changes/' + DATE + '/(\d+)/data$',   'stations_data'),
+    (r'^assets/changes/' + DATE + '/(\d+)/(\d+)/data$', 'hangars_data'),
+    (r'^assets/changes/' + DATE + '/(\d+)/(\d+)/(\d+)/data$', 'hangar_contents_data'),
     (r'^assets/changes/' + DATE + '/search$',       'search_items'),
 )

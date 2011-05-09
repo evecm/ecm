@@ -19,6 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+from ecm.core import evedb
+from ecm.core.parsers import assetsconstants
 
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
@@ -28,46 +30,59 @@ import json
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
-from ecm.data.roles.models import MemberDiff, RoleMemberDiff, Member, TitleMemberDiff
-from ecm.data.common.models import ColorThreshold
-from ecm.view.decorators import user_has_titles
-from ecm.core import utils
+from ecm.data.roles.models import Member, CharacterOwnership
+from ecm.data.common.models import ColorThreshold, UserAPIKey
+from ecm.view.decorators import user_is_director
 
 #------------------------------------------------------------------------------
-@user_has_titles()
-def home(request):
+@user_is_director()
+def dashboard(request):
     data = {
-        'last_member_changes' : getLastMemberChanges(),
-        'last_access_changes' : getLastAccessChanges(),
+        'unassociatedCharacters' : Member.objects.filter(corped=True, ownership=None).count(),
+        'playerCount' : CharacterOwnership.objects.values("owner").distinct().count(),
+        'memberCount' : Member.objects.filter(corped=True).count(),
+        'accountsByPlayer' : avg_accounts_by_player(),
+        'chraractersByPlayer' : avg_chraracters_by_player(),
+        'positions' : positions_of_members(),
         'distribution' : access_lvl_distribution(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL 
     }
     
-    return render_to_response("common/home.html", data, context_instance=RequestContext(request))
+    return render_to_response("common/dashboard.html", data, context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
-def getLastMemberChanges(count=20):
-    members = MemberDiff.objects.all().order_by('-id')[:count]
-    for m in members:
-        m.date_str = utils.print_time_min(m.date)
-    return members
+def avg_chraracters_by_player():
+    players = CharacterOwnership.objects.values("owner").distinct().count()
+    characters = float(CharacterOwnership.objects.all().count())
+    return characters / players
 
 #------------------------------------------------------------------------------
-def getLastAccessChanges(count=20):
-    roles = RoleMemberDiff.objects.all().order_by('-id')[:count]
-    titles = TitleMemberDiff.objects.all().order_by('-id')[:count]
-    
-    changes = utils.merge_lists(roles, titles, ascending=False, attribute="date")[:count]
-    
-    for c in changes:
-        c.date_str = utils.print_time_min(c.date)
-        
-    return changes
+def avg_accounts_by_player():
+    players = CharacterOwnership.objects.values("owner").distinct().count()
+    accounts = float(UserAPIKey.objects.all().count())
+    return accounts / players
+
+#------------------------------------------------------------------------------
+def positions_of_members():
+    positions = {"hisec" : 0, "lowsec" : 0, "nullsec" : 0}
+    for m in Member.objects.filter(corped=True):
+        solarSystemID = m.locationID
+        if solarSystemID > assetsconstants.STATIONS_IDS:
+            solarSystemID = evedb.getSolarSystemID(m.locationID)
+        security = evedb.resolveLocationName(solarSystemID)[1]
+        if security > 0.5:
+            positions["hisec"] += 1
+        elif security > 0:
+            positions["lowsec"] += 1
+        else:
+            positions["nullsec"] += 1
+    return json.dumps(positions)
 
 #------------------------------------------------------------------------------
 def access_lvl_distribution():
     thresholds = ColorThreshold.objects.all().order_by("threshold")
-    for th in thresholds: th.members = 0
+    for th in thresholds: 
+        th.members = 0
     members = Member.objects.filter(corped=True).order_by("accessLvl")
     levels = members.values_list("accessLvl", flat=True)
     i = 0

@@ -10,9 +10,7 @@
       "is_superuser": true, 
       "is_staff": true, 
       "last_login": "2011-03-26 01:04:41", 
-      "groups": [
-        1
-      ], 
+      "groups": [], 
       "user_permissions": [], 
       "password": "sha1$98818$f8cd111fbb55ec75bdca2cbc8f8b1e5e0ab30569", 
       "email": "admin@ecm.com", 

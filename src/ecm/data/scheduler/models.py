@@ -129,15 +129,15 @@ class GarbageCollector(models.Model):
         ("ecm.data.roles.models.TitleMemberDiff",   "Title membership history"),
         ("ecm.data.roles.models.MemberDiff",        "Member history"),
         ("ecm.data.roles.models.TitleCompoDiff",    "Titles modifications history"),
-        ("ecm.data.assets.models.DbAssetDiff",      "Assets history"),
+        ("ecm.data.assets.models.AssetDiff",      "Assets history"),
         ("ecm.data.accounting.models.JournalEntry", "Wallet journal"),
     )
     db_table = models.CharField(max_length=255, primary_key=True, 
                                 validators=[ModelValidator()],
                                 choices=DB_TABLE_CHOICES)
-    min_entries_threshold = models.PositiveIntegerField(default=10000)
-    max_age_threshold = models.PositiveIntegerField()
-    age_units = models.IntegerField(default=3600 * 24 * 7 * 30, choices=AGE_UNIT_CHOICES)
+    min_entries_threshold = models.BigIntegerField(default=10000)
+    max_age_threshold = models.BigIntegerField()
+    age_units = models.BigIntegerField(default=3600 * 24 * 7 * 30, choices=AGE_UNIT_CHOICES)
     
     def db_table_admin_display(self):
         return self.get_db_table_display()

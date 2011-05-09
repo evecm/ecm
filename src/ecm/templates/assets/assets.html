@@ -7,6 +7,12 @@
 {% block header_scripts %}
 <script type="text/javascript" src="/m/js/lib/jquery.js"></script>
 <script type="text/javascript" src="/m/js/lib/jquery.jstree.js"></script>
+<script type="text/javascript">
+SHOW_DIVISIONS = "{{ divisions_str }}";
+SHOW_IN_SPACE = {% if show_in_space %}true{% else %}false{% endif %};
+SHOW_IN_STATIONS = {% if show_in_stations %}true{% else %}false{% endif %};
+</script>
+
 {% endblock %}
 
 
@@ -20,216 +26,37 @@
 
 <form id="search_form" class="search_form">
     <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
+    <input type="submit" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset Search" />
     <input type="button" class="button" id="expand_all"   value="Expand All" />
-    <input type="button" class="button" id="close_all"   value="Close All" />
+    <input type="button" class="button" id="close_all"   value="Collapse All" />
 </form>
 
 <form id="filter_form" class="filter_form" >
     {% for h in hangars %}
-    <div>
+    <div title="Press ctrl + click to select only one" >
         <input type="checkbox" id="{{ h.hangarID }}" value="{{ h.hangarID }}" class="hangar-checkbox"
-        {% if h.checked %}checked="true"{% endif %} /><span class="checkbox-name">{{ h.name }}</span>
+        {% if h.checked %}checked="true"{% endif %} />
+        <span class="checkbox-name">{{ h.name }}</span>
     </div>
     {% endfor %}
-    <div><input type="button" class="button" id="filter_divisions" value="Filter Hangars" /></div>
-    <div><input type="button" class="button" id="reset_filter_divisions" value="Reset" /></div>
+    <br>
+    <div title="Press ctrl + click to select only one" >
+        <input type="checkbox" id="show_stations" value="show_stations" class="space-checkbox"
+        {% if show_in_stations %}checked="true"{% endif %} />
+        <span class="checkbox-name">In Station</span>
+    </div>
+    <div title="Press ctrl + click to select only one" >
+        <input type="checkbox" id="show_space" value="show_space" class="space-checkbox"
+        {% if show_in_space %}checked="true"{% endif %} />
+        <span class="checkbox-name">In Space</span>
+    </div>
+    <div><input type="button" class="button" id="apply_filter" value="Apply Filter" /></div>
+    <div><input type="button" class="button" id="reset_filter" value="Reset Filter" /></div>
 </form>
 
 <div id="assets_tree"></div>
 
-<script type="text/javascript">
-
-$(function () {
-
-
-    $("#assets_tree").jstree({ 
-        "plugins" : [ "themes" , "json_data" , "search" , "adv_search" , "ui",  "types" , "sort" ],
-        "core" : { 
-            "animation" : 150,
-            "html_titles" : true
-        },
-        "ui" : {
-            "select_limit" : 1
-        },
-        "themes" : {
-            "url" : "/m/css/jstree.css",
-            "dots" : false
-        },
-        "search" : {
-            "case_insensitive" : true,
-            "ajax" : {
-                "url" : "/assets/search{% if divisions %}?divisions={{ divisions_str }}{% endif %}"
-                
-            }
-        },
-        "types" : {
-            "max_depth" : -2,
-            "max_children" : -2,
-            "valid_children" : [ "station" ],
-            "types" : {
-                "station" : {
-                    "class" : "station-row",
-                    "icon" : { 
-                        "image" : "/m/img/station.png" 
-                    },
-                    "valid_children" : [ "hangar" ],
-                    "max_depth" : 4,
-                    "open_node"   : true,
-                    "close_node"  : true
-                },
-                "hangar" : {
-                    "class" : "hangar-row",
-                    "icon" : { 
-                        "image" : "/m/img/hangar.png" 
-                    },
-                    "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint","item" ],
-                    "max_depth" : 3,
-                    "open_node"   : true,
-                    "close_node"  : true
-                },
-                "ship" : {
-                    "icon" : { 
-                        "image" : "/m/img/ship.png" 
-                    },
-                    "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint","item" ],
-                    "max_depth" : 2,
-                    "open_node"   : true,
-                    "close_node"  : true
-                },
-                "can" : {
-                    "icon" : { 
-                        "image" : "/m/img/can.png" 
-                    },
-                    "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint","item" ],
-                    "max_depth" : 1,
-                    "open_node"   : true,
-                    "close_node"  : true
-                },
-                "item" : {
-                    "icon" : { 
-                        "image" : "/m/img/item.png" 
-                    },
-                    "valid_children" : "none",
-                    "max_depth" : 0,
-                    "select_node" : true,
-                    "open_node"   : true,
-                    "close_node"  : true,
-                    "create_node" : false,
-                    "delete_node" : false
-                },
-                "mineral" : {
-                    "icon" : { 
-                        "image" : "/m/img/mineral.png" 
-                    },
-                    "valid_children" : "none",
-                    "max_depth" : 0,
-                    "select_node" : true,
-                    "open_node"   : true,
-                    "close_node"  : true,
-                    "create_node" : false,
-                    "delete_node" : false
-                },
-                "blueprint" : {
-                    "icon" : { 
-                        "image" : "/m/img/blueprint.png" 
-                    },
-                    "valid_children" : "none",
-                    "max_depth" : 0,
-                    "select_node" : true,
-                    "open_node"   : true,
-                    "close_node"  : true,
-                    "create_node" : false,
-                    "delete_node" : false
-                },
-                "ammo" : {
-                    "icon" : { 
-                        "image" : "/m/img/ammo.png" 
-                    },
-                    "valid_children" : "none",
-                    "max_depth" : 0,
-                    "select_node" : true,
-                    "open_node"   : true,
-                    "close_node"  : true,
-                    "create_node" : false,
-                    "delete_node" : false
-                },
-                "skill" : {
-                    "icon" : { 
-                        "image" : "/m/img/skill.png" 
-                    },
-                    "valid_children" : "none",
-                    "max_depth" : 0,
-                    "select_node" : true,
-                    "open_node"   : true,
-                    "close_node"  : true,
-                    "create_node" : false,
-                    "delete_node" : false
-                }
-            }
-        },
-        "json_data" : {
-            "data" : [
-                {% for s in station_list %}
-                {
-                    "data" : '<b>{{ s.name }}</b><i> - ({{ s.items }} item{{ s.items|pluralize }})</i>',
-                    "attr" : { "id" : "_{{ s.locationID }}" , "rel" : "station" , "class" : "station-row" },
-                    "state" : "closed"
-                },
-                {% endfor %}
-            ],
-            "ajax" : {
-                "url" : function(node) { 
-                    var url = "/assets";
-                    url += node.attr ? node.attr("id").replace(/_/g, "/") : "";
-                    {% if divisions %}
-                    url += "?divisions={{ divisions_str }}"; 
-                    {% endif %}
-                    return url; 
-                }
-            }
-        }
-    });
-});
-
-$("#search_form").submit(function() {
-    $("#assets_tree").jstree("search", document.getElementById("search_text").value);
-    return false;
-});
-
-$("#clear_search").click(function() {
-    document.getElementById("search_text").value = "";
-    $("#assets_tree").jstree("clear_search");
-});
-
-$("#expand_all").click(function() {
-    $("#assets_tree").jstree("open_all");
-});
-
-$("#close_all").click(function() {
-    $("#assets_tree").jstree("close_all");
-});
-
-$("#filter_divisions").click(function() {
-    var checkboxes = $(".hangar-checkbox");
-    var divisions = ""
-    for (i=0 ; i < checkboxes.length ; i++) {
-        if (checkboxes[i].checked) {
-            divisions += "," + checkboxes[i].id
-        }
-    }
-    if (divisions.length != 0) {
-        divisions = divisions.substring(1)
-        window.location = "/assets?divisions=" + divisions;
-    } else {
-    	window.location = "/assets";
-    }
-});
-
-$("#reset_filter_divisions").click(function() {
-	window.location = "/assets";
-});
-</script>
+<script type="text/javascript" src="/m/js/assets_tree.js"></script>
 
 {% endblock %}

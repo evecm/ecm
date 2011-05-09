@@ -37,7 +37,7 @@ from ecm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMembe
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.common.models import ColorThreshold
 from ecm.core.utils import print_time_min, get_access_color
-from ecm.core.db import resolveLocationName
+from ecm.core import evedb
 from ecm.view.decorators import user_owns_character
 
 
@@ -50,7 +50,7 @@ def details(request, characterID):
         member.corpDate = print_time_min(member.corpDate)
         member.lastLogin = print_time_min(member.lastLogin)
         member.lastLogoff = print_time_min(member.lastLogoff)
-        member.base = resolveLocationName(member.baseID)
+        member.base = evedb.resolveLocationName(member.baseID)[0]
         member.color = get_access_color(member.accessLvl, colorThresholds)
         member.roles_no_director = member.roles.exclude(roleID=1) # exclude 'director'
         member.all_titles = member.titles.all()
@@ -59,7 +59,7 @@ def details(request, characterID):
         if member.corped:
             member.date = getScanDate(Member.__name__)
         else:
-            d = MemberDiff.objects.filter(characterID=member.characterID, new=False).order_by("-id")[0]
+            d = MemberDiff.objects.filter(member=member, new=False).order_by("-id")[0]
             member.date = utils.print_time_min(d.date)
     except ObjectDoesNotExist:
         member = Member(characterID=int(characterID), name="???")

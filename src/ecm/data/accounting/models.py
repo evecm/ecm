@@ -26,6 +26,7 @@ __author__ = "diabeteman"
 
 
 from django.db import models
+from ecm.lib import bigintpatch
 from ecm.data.corp.models import Wallet
 from django.utils.translation import ugettext_lazy as _
 
@@ -34,7 +35,7 @@ class EntryType(models.Model):
     """
     Wallet journal entry transaction type
     """
-    refTypeID = models.PositiveSmallIntegerField(primary_key=True)
+    refTypeID = models.PositiveIntegerField(primary_key=True)
     refTypeName = models.CharField(max_length=64)
     
     def __unicode__(self):
@@ -47,19 +48,20 @@ class JournalEntry(models.Model):
     Represents a wallet journal entry that can be fetched from the API
     ad the following url http://api.eve-online.com/corp/WalletJournal.xml.aspx
     """
-    refID         = models.BigIntegerField() # the couple (refID, wallet_id) should be unique 
-    wallet        = models.ForeignKey(Wallet, db_index=True)
-    date          = models.DateTimeField()
-    type          = models.ForeignKey(EntryType, db_index=True) # type of transaction
-    ownerName1    = models.CharField(max_length=128) # first party of the transaction
-    ownerID1      = models.BigIntegerField()
-    ownerName2    = models.CharField(max_length=128) # second party of the transaction
-    ownerID2      = models.BigIntegerField()
-    argName1      = models.CharField(max_length=128)                 
-    argID1        = models.BigIntegerField()
-    amount        = models.FloatField() # amount of the transaction
-    balance       = models.FloatField() # balance of the account after the transaction
-    reason        = models.CharField(max_length=512) # comment
+    id         = bigintpatch.BigAutoField(primary_key=True)
+    refID      = models.BigIntegerField() # the couple (refID, wallet_id) should be unique 
+    wallet     = models.ForeignKey(Wallet, db_index=True)
+    date       = models.DateTimeField()
+    type       = models.ForeignKey(EntryType, db_index=True) # type of transaction
+    ownerName1 = models.CharField(max_length=128) # first party of the transaction
+    ownerID1   = models.BigIntegerField()
+    ownerName2 = models.CharField(max_length=128) # second party of the transaction
+    ownerID2   = models.BigIntegerField()
+    argName1   = models.CharField(max_length=128)                 
+    argID1     = models.BigIntegerField()
+    amount     = models.FloatField() # amount of the transaction
+    balance    = models.FloatField() # balance of the account after the transaction
+    reason     = models.CharField(max_length=512) # comment
 
     class Meta:
         verbose_name = _("Journal Entry")

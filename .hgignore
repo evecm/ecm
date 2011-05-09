@@ -1,6 +1,6 @@
 syntax: glob
 *.pyc
 *.pyo
-src/ecm/db/ECM.db
-src/ecm/logs/ecm.log*
+src/ecm/db/ECM*.db
 src/ecm/db/*journal
+src/ecm/logs/*log*

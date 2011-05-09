@@ -37,7 +37,8 @@ ALL_GROUP_IDS = [ 1 << i  for i in range(17)] # generates all titleIDs
 DIRECTOR_GROUP_ID = 1 << 16 # 65536 (it is twice the max titleID)
 DIRECTOR_GROUP_NAME = "Directors"
 CRON_USERNAME = "cron"
-EVE_DB_FILE = resolvePath('db/EVE.db')
+ADMIN_USERNAME = "admin"
+#EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
 ECM_BASE_URL = "http://127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
@@ -45,26 +46,35 @@ ACCOUNT_ACTIVATION_DAYS = 2
 ###############################################################################
 # DJANGO SPECIFIC SETTINGS
 DEBUG = True # turn this to False when on production !!!
-ADMINS = ()
+ADMINS = () # to enable email error reporting, put a tuple in there, ('name', email@adddress.com')
 # for development, you can use python dummy smtp server, run this command:
-# >>> python -m smtpd -n -c DebuggingServer localhost:1025
+# >>> python -m smtpd -n -c DebuggingServer localhost:25
 EMAIL_HOST = "localhost"
 EMAIL_PORT = 25
 EMAIL_HOST_USER = "" 
 EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = "admin@eve-corp-management.org"
+# put a real email address here, if not, emails sent by the server will be discarded by the relay servers
+DEFAULT_FROM_EMAIL = "" 
 
 DATABASES = {
     'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': resolvePath('db/ECM.db')
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ecm',
+        'USER': 'ecm',
+        'PASSWORD': 'ecm',
+    },
+    'eve': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': resolvePath('db/ECM.db')
+        'NAME': resolvePath('db/EVE.db')
     }
 }
 
-USE_I18N = False # for optimizatrion
+USE_I18N = False # for optimization
 LOCAL_DEVELOPMENT = True
-APPEND_SLASH=False
+APPEND_SLASH = False
 TEMPLATE_DEBUG = DEBUG
 MANAGERS = ADMINS
 TIME_ZONE = 'Europe/Paris'
@@ -90,12 +100,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
-# file system cache backend path for unix
-#CACHE_BACKEND = 'file:///var/tmp/django_cache'
-# file system cache backend path for windows
-#CACHE_BACKEND = 'file://C:/Users/diabeteman/AppData/Local/Temp/django_cache'
-#NO CACHE FOR DEV USAGE
-CACHE_BACKEND = 'dummy://'
+
+CACHES = {
+    'default': {
+#        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#        'LOCATION': '/var/django/cache',
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
 
 TEMPLATE_DIRS = (
         resolvePath('templates/'),
@@ -149,7 +161,7 @@ LOGGING = {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'INFO',
-            'filename': resolvePath('logs/ecm.log'),
+            'filename': resolvePath('logs/scheduler.log'),
             'when': 'midnight', # roll over each day at midnight
             'backupCount': 15, # keep 15 backup files
         },
@@ -157,7 +169,19 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'ecm_formatter',
             'level': 'DEBUG',
-        }
+        },
+        'django_mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
+        },
+        'django_error': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'ecm_formatter',
+            'level': 'ERROR',
+            'when': 'midnight',
+            'backupCount': 15,
+            'filename': resolvePath('logs/error.log'),
+        },
     },
     'loggers': {
         'ecm': {
@@ -165,6 +189,11 @@ LOGGING = {
             'handlers':['ecm_file_handler', 'ecm_console_handler'], 
             'propagate': True,
             'level':'DEBUG',
+        },
+        'django.request': {
+            'handlers': ['django_mail_admins', 'django_error'],
+            'propagate': False,
+            'level': 'ERROR',
         },
     }
 }

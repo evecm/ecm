@@ -25,16 +25,16 @@ __author__ = "diabeteman"
 
 
 from django.contrib import admin
-from ecm.data.assets.models import DbAsset, DbAssetDiff
+from ecm.data.assets.models import Asset, AssetDiff
 
-class DbAssetAdmin(admin.ModelAdmin):
-    list_display = ['itemID', 'locationID', 'hangarID', 'container1', 'container2', 
+class AssetAdmin(admin.ModelAdmin):
+    list_display = ['itemID', 'solarSystemID', 'stationID', 'hangarID', 'container1', 'container2', 
                     'typeID', 'quantity', 'flag', 'singleton', 'hasContents']
 
-class DbAssetDiffAdmin(admin.ModelAdmin):
-    list_display = ['locationID', 'hangarID', 'typeID', 'quantity', 'date', 'new']
+class AssetDiffAdmin(admin.ModelAdmin):
+    list_display = ['solarSystemID', 'stationID', 'hangarID', 'typeID', 'quantity', 'date', 'new']
     
 
 
-admin.site.register(DbAsset, DbAssetAdmin)
-admin.site.register(DbAssetDiff, DbAssetDiffAdmin)
+admin.site.register(Asset, AssetAdmin)
+admin.site.register(AssetDiff, AssetDiffAdmin)

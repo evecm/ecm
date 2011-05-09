@@ -76,17 +76,20 @@ def getTitles(sort_by="titleID", asc=True):
     
     query = Title.objects.all().order_by("titleID")
 
-    # SQLite hack for making a case insensitive sort
-    query = query.extra(select={sort_col : "%s COLLATE NOCASE" % sort_by})
+    # SQL hack for making a case insensitive sort
+    query = query.extra(select={sort_col : 'LOWER("%s")' % sort_by})
     if not asc: sort_col = "-" + sort_col
     query = query.extra(order_by=[sort_col])
 
     # fetch the number of members having each title
-    query = query.extra(select={"title_members" : "SELECT COUNT(*) "
-                                      "FROM roles_titlemembership, roles_member "
-                                      "WHERE roles_titlemembership.title_id = roles_title.titleID "
-                                      "AND roles_titlemembership.member_id = roles_member.characterID "
-                                      "AND roles_member.corped = 1"})
+    query = query.extra(select={
+        "title_members" : 'SELECT COUNT(*) '
+                          'FROM "roles_titlemembership" '
+                          'WHERE "roles_titlemembership"."title_id"="roles_title"."titleID"',
+        "roles_in_title": 'SELECT COUNT(*) '
+                          'FROM "roles_titlecomposition" '
+                          'WHERE "roles_titlecomposition"."title_id"="roles_title"."titleID"'
+    })
 
     titles = []
     for title in query:
@@ -96,13 +99,12 @@ def getTitles(sort_by="titleID", asc=True):
         else:
             modification_date = "-"
 
-        title = [
+        titles.append([
             title.as_html(),
             title.accessLvl,
             '<a href="/titles/%d/members">%d</a>' % (title.titleID, title.title_members),
-            TitleComposition.objects.filter(title=title).count(),
+            title.roles_in_title,
             modification_date
-        ]
-        titles.append(title)
+        ])
 
     return titles
