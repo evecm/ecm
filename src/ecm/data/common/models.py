@@ -104,11 +104,11 @@ class Outpost(models.Model):
     """
     Conquerable station fetched from CCP servers
     """
-    stationID = models.PositiveIntegerField(primary_key=True)
+    stationID = models.BigIntegerField(primary_key=True)
     stationName = models.CharField(max_length=256, default="")
-    stationTypeID = models.PositiveIntegerField()
-    solarSystemID = models.PositiveIntegerField()
-    corporationID = models.PositiveIntegerField()
+    stationTypeID = models.BigIntegerField()
+    solarSystemID = models.BigIntegerField()
+    corporationID = models.BigIntegerField()
     corporationName = models.CharField(max_length=256, default="")
 
     def __eq__(self, other):
@@ -127,7 +127,7 @@ class ColorThreshold(models.Model):
     Thresholds for security access level coloration.
     """
     color = models.CharField(max_length=64)
-    threshold = models.IntegerField()
+    threshold = models.BigIntegerField()
     
     @staticmethod
     def as_json():

@@ -97,7 +97,7 @@ def update_character_associations(user):
         msg = EmailMultiAlternatives(subject, body=txt_content, to=[user.email])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-        logger.info("API credentials for '%s' are invalid. User notified by email." % user.username)
+        logger.warning("API credentials for '%s' are invalid. User notified by email." % user.username)
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success

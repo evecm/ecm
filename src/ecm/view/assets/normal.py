@@ -32,11 +32,14 @@ from django.template.context import RequestContext
 from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
+from django.db import connection
 
-from ecm.core import db, utils
-from ecm.data.assets.models import DbAsset
+from ecm.core.parsers import assetsconstants
+from ecm.core import evedb, utils
+from ecm.data.assets.models import Asset
 from ecm.data.corp.models import Hangar
 from ecm.view import getScanDate
+from ecm.view.assets import extract_divisions, HTML_ITEM_SPAN
 from ecm.view.decorators import user_is_director
 
 CATEGORY_ICONS = { 2 : "can" , 
@@ -47,138 +50,246 @@ CATEGORY_ICONS = { 2 : "can" ,
                   16 : "skill" }
 
 #------------------------------------------------------------------------------
-SQL_STATIONS = "SELECT itemID, locationID, count(*) AS items "\
-               "FROM assets_dbasset "\
-               "GROUP BY locationID;"
-SQL_STATIONS_FILTERED = "SELECT itemID, locationID, count(*) AS items "\
-                        "FROM assets_dbasset "\
-                        "WHERE hangarID in %s "\
-                        "GROUP BY locationID;"
-
 @user_is_director()
-def stations(request):
+def root(request):
+    scan_date = getScanDate(Asset.__name__)
+    if scan_date == "<no data>":
+        return render_to_response("assets/assets_no_data.html", RequestContext(request))
     
-    all_hangars = Hangar.objects.all()
+    all_hangars = Hangar.objects.all().order_by("hangarID")
     try: 
         divisions_str = request.GET["divisions"]
         divisions = [ int(div) for div in divisions_str.split(",") ]
-        for h in all_hangars: h.checked = (h.hangarID in divisions)
+        for h in all_hangars: 
+            h.checked = h.hangarID in divisions
     except: 
         divisions, divisions_str = None, None
-        for h in all_hangars: h.checked = False
+        for h in all_hangars: 
+            h.checked = True
     
-    if divisions:
-        str_divisions = str(divisions).replace("[", "(").replace("]", ")")
-        raw_list = DbAsset.objects.raw(SQL_STATIONS_FILTERED % str_divisions)
-    else:
-        raw_list = DbAsset.objects.raw(SQL_STATIONS)
-        
-    station_list = []
-    for s in raw_list:
-        station = {}
-        station['locationID'] = s.locationID
-        station['name'] = db.resolveLocationName(s.locationID)
-        station['items'] = s.items
-        station_list.append(station)
+    show_in_space = json.loads(request.GET.get("space", "true"))
+    show_in_stations = json.loads(request.GET.get("stations", "true"))
     
-    data = {  'station_list' : station_list,
-                 'divisions' : divisions, # divisions to show
+    data = { 'show_in_space' : show_in_space,
+          'show_in_stations' : show_in_stations,
              'divisions_str' : divisions_str,
                    'hangars' : all_hangars,
-                 'scan_date' : getScanDate(DbAsset.__name__) }
-    if stations:
-        return render_to_response("assets/assets.html", data, RequestContext(request))
-    else:
-        return render_to_response("assets/assets_no_data.html", RequestContext(request))
+                 'scan_date' : scan_date }
+    
+    return render_to_response("assets/assets.html", data, RequestContext(request))
+        
+    
+    
 
 #------------------------------------------------------------------------------
-SQL_HANGARS = "SELECT itemID, hangarID, count(*) AS items "\
-              "FROM assets_dbasset "\
-              "WHERE locationID=%d "\
-              "GROUP BY hangarID ORDER BY hangarID;"
-SQL_HANGARS_FILTERED = "SELECT itemID, hangarID, count(*) AS items "\
-                       "FROM assets_dbasset "\
-                       "WHERE locationID=%d AND hangarID in %s "\
-                       "GROUP BY hangarID ORDER BY hangarID;"
+
+@user_is_director()
+def systems_data(request):
+    
+    divisions = extract_divisions(request)
+    show_in_space = json.loads(request.GET.get("space", "true"))
+    show_in_stations = json.loads(request.GET.get("stations", "true"))
+    
+    where = []
+    if not show_in_space:
+        where.append('"stationID" < %d' % assetsconstants.NPC_LOCATION_IDS)
+    if not show_in_stations:
+        where.append('"stationID" > %d' % assetsconstants.NPC_LOCATION_IDS)
+    if divisions is not None:
+        where.append('"hangarID" IN %s')
+    
+    sql = 'SELECT "solarSystemID", COUNT(*) AS "items" FROM "assets_asset"'
+    if where: sql += ' WHERE ' + ' AND '.join(where)
+    sql += ' GROUP BY "solarSystemID";'
+
+    cursor = connection.cursor()
+    if divisions is None:
+        cursor.execute(sql)
+    else:
+        cursor.execute(sql, [divisions])
+    
+    jstree_data = []
+    for solarSystemID, items in cursor:
+        name, security = evedb.resolveLocationName(solarSystemID)
+        if security > 0.5:
+            color = "hisec"
+        elif security > 0:
+            color = "lowsec"
+        else:
+            color = "nullsec"
+        jstree_data.append({
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)),
+            "attr" : { 
+                "id" : "_%d" % solarSystemID, 
+                "rel" : "system",
+                "sort_key" : name.lower(),
+                "class" : "system-%s-row" % color 
+            },
+            "state" : "closed"
+        })
+    cursor.close()
+    return HttpResponse(json.dumps(jstree_data))
+
+#------------------------------------------------------------------------------
+@user_is_director()
+def stations_data(request, solarSystemID):
+    solarSystemID = int(solarSystemID)
+    divisions = extract_divisions(request)
+    show_in_space = json.loads(request.GET.get("space", "true"))
+    show_in_stations = json.loads(request.GET.get("stations", "true"))
+    
+    where = []
+    if not show_in_space:
+        where.append('"stationID" < %d' % assetsconstants.NPC_LOCATION_IDS)
+    if not show_in_stations:
+        where.append('"stationID" > %d' % assetsconstants.NPC_LOCATION_IDS)
+    if divisions is not None:
+        where.append('"hangarID" IN %s')
+    
+    sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items" FROM "assets_asset" '
+    sql += 'WHERE "solarSystemID"=%s '
+    if where: sql += ' AND ' + ' AND '.join(where)
+    sql += ' GROUP BY "stationID";'
+     
+    cursor = connection.cursor()
+    if divisions is None:
+        cursor.execute(sql, [solarSystemID])
+    else:
+        cursor.execute(sql, [solarSystemID, divisions])
+        
+    jstree_data = []
+    for stationID, flag, items in cursor:
+        if stationID < assetsconstants.NPC_LOCATION_IDS:
+            # it's a real station
+            name = evedb.resolveLocationName(stationID)[0]
+            icon = "station"
+        else:
+            # it is an inspace anchorable array
+            name = evedb.resolveTypeName(flag)[0]
+            icon = "array"
+        
+        jstree_data.append({
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)),
+            "attr" : { 
+                "id" : "_%d_%d" % (solarSystemID, stationID), 
+                "sort_key" : stationID,
+                "rel" : icon,
+                "class" : "%s-row" % icon
+            },
+            "state" : "closed"
+        })
+    cursor.close()
+    return HttpResponse(json.dumps(jstree_data))
+
+#------------------------------------------------------------------------------
 @user_is_director()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def hangars(request, stationID):
+def hangars_data(request, solarSystemID, stationID):
+    solarSystemID = int(solarSystemID)
     stationID = int(stationID)
-    try: 
-        divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
-    except: 
-        divisions = None
+    divisions = extract_divisions(request)
     
-    if divisions:
-        str_divisions = str(divisions).replace("[", "(").replace("]", ")")
-        raw_list = DbAsset.objects.raw(SQL_HANGARS_FILTERED % (stationID, str_divisions))
+    where = []
+    if divisions is not None:
+        where.append('"hangarID" IN %s')
+    
+    sql = 'SELECT "hangarID", COUNT(*) AS "items" FROM "assets_asset" '
+    sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s '
+    if where: sql += ' AND ' + ' AND '.join(where)
+    sql += ' GROUP BY "hangarID";'
+    
+    cursor = connection.cursor()
+    if divisions is None:
+        cursor.execute(sql, [solarSystemID, stationID])
     else:
-        raw_list = DbAsset.objects.raw(SQL_HANGARS % stationID)
+        cursor.execute(sql, [solarSystemID, stationID, divisions])
     
     HANGAR = {}
     for h in Hangar.objects.all():
         HANGAR[h.hangarID] = h.name
     
-    json_data = []
-    for h in raw_list:
-        hangar = {}
-        hangar["data"] = '<b>%s</b><i> - (%d item%s)</i>' % (HANGAR[h.hangarID], h.items, pluralize(h.items))
-        id = "_%d_%d" % (stationID, h.hangarID) 
-        hangar["attr"] = { "id" : id , "rel" : "hangar" , "href" : "" }
-        hangar["state"] = "closed"
-        json_data.append(hangar)
+    jstree_data = []
+    for hangarID, items in cursor.fetchall():
+        jstree_data.append({
+            "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items)),
+            "attr" : { 
+                "id" : "_%d_%d_%d" % (solarSystemID, stationID, hangarID),
+                "sort_key" : hangarID,
+                "rel" : "hangar",
+                "class" : "hangar-row"
+            },
+            "state" : "closed"
+        })
     
-    return HttpResponse(json.dumps(json_data))
+    return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
 @user_is_director()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def hangar_contents(request, stationID, hangarID):
+def hangar_content_data(request, solarSystemID, stationID, hangarID):
+    solarSystemID = int(solarSystemID)
     stationID = int(stationID)
     hangarID = int(hangarID)
-    item_list = DbAsset.objects.filter(locationID=stationID, hangarID=hangarID, 
-                                       container1=None, container2=None)
-    json_data = []
-    for i in item_list:
-        item = {}
-        name, category = db.resolveTypeName(i.typeID)
-        try:    icon = CATEGORY_ICONS[category]
-        except: icon = "item"
-        if i.hasContents:
-            item["data"] = name
-            id = "_%d_%d_%d" % (stationID, hangarID, i.itemID)
-            item["attr"] = { "id" : id , "rel" : icon , "href" : "" }
-            item["state"] = "closed"
-        elif i.singleton:
-            item["data"] = name
-            item["attr"] = { "rel" : icon , "href" : ""  }
+    
+    query = Asset.objects.filter(solarSystemID=solarSystemID,
+                                 stationID=stationID, hangarID=hangarID, 
+                                 container1=None, container2=None)
+    jstree_data = []
+    for item in query:
+        name, category = evedb.resolveTypeName(item.typeID)
+        
+        try:
+            icon = CATEGORY_ICONS[category]
+        except KeyError:
+            icon = "item"
+        
+        if item.hasContents:
+            data = name
+            id = "_%d_%d_%d_%d" % (solarSystemID, stationID, hangarID, item.itemID)
+            state = "closed"
+        elif item.singleton:
+            data = name
+            id = ""
+            state = ""
         else:
-            item["data"] = "%s <i>- (x %s)</i>" % (name, utils.print_integer(i.quantity))
-            item["attr"] = { "rel" : icon , "href" : "" }
-        json_data.append(item)
+            data = "%s <i>- (x %s)</i>" % (name, utils.print_integer(item.quantity))
+            id = ""
+            state = ""
+        
+        jstree_data.append({
+            "data": data,
+            "attr" : { 
+                "id" : id,
+                "sort_key" : name.lower(),
+                "rel" : icon
+            },
+            "state" : state
+        })
 
-    return HttpResponse(json.dumps(json_data))
+    return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
 @user_is_director()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def can1_contents(request, stationID, hangarID, container1):
+def can1_content_data(request, solarSystemID, stationID, hangarID, container1):
+    solarSystemID = int(solarSystemID)
     stationID = int(stationID)
     hangarID = int(hangarID)
     container1 = int(container1)
     
-    item_list = DbAsset.objects.filter(locationID=stationID, hangarID=hangarID, 
-                                       container1=container1, container2=None)
+    item_list = Asset.objects.filter(solarSystemID=solarSystemID, 
+                                     stationID=stationID, hangarID=hangarID, 
+                                     container1=container1, container2=None)
     json_data = []
     for i in item_list:
         item = {}
-        name, category = db.resolveTypeName(i.typeID)
+        name, category = evedb.resolveTypeName(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
         except: icon = "item"
         
         if i.hasContents:
             item["data"] = name
-            id = "_%d_%d_%d_%d" % (stationID, hangarID, container1, i.itemID)
+            id = "_%d_%d_%d_%d_%d" % (solarSystemID, stationID, hangarID, container1, i.itemID)
             item["attr"] = { "id" : id , "rel" : icon , "href" : "", "class" : "%s-row" % icon  }
             item["state"] = "closed"
         elif i.singleton:
@@ -195,17 +306,19 @@ def can1_contents(request, stationID, hangarID, container1):
 #------------------------------------------------------------------------------
 @user_is_director()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def can2_contents(request, stationID, hangarID, container1, container2):
+def can2_content_data(request, solarSystemID, stationID, hangarID, container1, container2):
+    solarSystemID = int(solarSystemID)
     stationID = int(stationID)
     hangarID = int(hangarID)
     container1 = int(container1)
     container2 = int(container2)
-    item_list = DbAsset.objects.filter(locationID=stationID, hangarID=hangarID, 
-                                       container1=container1, container2=container2)
+    item_list = Asset.objects.filter(solarSystemID=solarSystemID,
+                                     stationID=stationID, hangarID=hangarID, 
+                                     container1=container1, container2=container2)
     json_data = []
     for i in item_list:
         item = {}
-        name, category = db.resolveTypeName(i.typeID)
+        name, category = evedb.resolveTypeName(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
         except: icon = "item"
         if i.singleton: 
@@ -222,29 +335,37 @@ def can2_contents(request, stationID, hangarID, container1, container2):
 @cache_page(3 * 60 * 60) # 3 hours cache
 def search_items(request):
     
-    try: divisions = [ int(div) for div in request.GET["divisions"].split(",") ]
-    except: divisions = None
-    
+    divisions = extract_divisions(request)
+    show_in_space = json.loads(request.GET.get("space", "true"))
+    show_in_stations = json.loads(request.GET.get("stations", "true"))
     search_string = request.GET.get("search_string", "no-item")
     
-    matchingIDs = db.getMatchingIdsFromString(search_string)
-    if divisions:
-        matching_items = DbAsset.objects.filter(typeID__in=matchingIDs, hangarID__in=divisions)
-    else:
-        matching_items = DbAsset.objects.filter(typeID__in=matchingIDs)
+    matchingIDs = evedb.getMatchingIdsFromString(search_string)
+    
+    query = Asset.objects.filter(typeID__in=matchingIDs)
+    
+    if divisions is not None:
+        query = query.filter(hangarID__in=divisions)
+    if not show_in_space:
+        query = query.filter(stationID__lt=assetsconstants.NPC_LOCATION_IDS)
+    if not show_in_stations:
+        query = query.filter(stationID__gt=assetsconstants.NPC_LOCATION_IDS)
+
 
     json_data = []
 
-    for i in matching_items:
-        nodeid = "#_%d" % i.locationID
+    for item in query:
+        nodeid = "#_%d" % item.solarSystemID
         json_data.append(nodeid)
-        nodeid = nodeid + "_%d" % i.hangarID
+        nodeid = nodeid + "_%d" % item.stationID
         json_data.append(nodeid)
-        if i.container1:
-            nodeid = nodeid + "_%d" % i.container1
+        nodeid = nodeid + "_%d" % item.hangarID
+        json_data.append(nodeid)
+        if item.container1:
+            nodeid = nodeid + "_%d" % item.container1
             json_data.append(nodeid)
-            if i.container2:
-                nodeid = nodeid + "_%d" % i.container2
+            if item.container2:
+                nodeid = nodeid + "_%d" % item.container2
                 json_data.append(nodeid)
     
     return HttpResponse(json.dumps(json_data))

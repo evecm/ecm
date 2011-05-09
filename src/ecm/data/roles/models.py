@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+from ecm.lib import bigintpatch
 
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
@@ -47,7 +48,7 @@ class Member(models.Model):
     locationID = models.IntegerField(db_index=True, default=0)
     location = models.CharField(max_length=256, default="???")
     ship = models.CharField(max_length=128, default="???")
-    accessLvl = models.PositiveIntegerField(default=0)
+    accessLvl = models.BigIntegerField(default=0)
     corped = models.BooleanField(default=True)
 
     def get_implied_roles(self):
@@ -146,13 +147,13 @@ class Role(models.Model):
     that of the Hangar or Wallet division (not sure about my grammar here...)
     """
     roleType = models.ForeignKey(RoleType, db_index=True, related_name="roles")
-    roleID = models.IntegerField()
+    roleID = models.BigIntegerField()
     roleName = models.CharField(max_length=64)
     dispName = models.CharField(max_length=64)
     description = models.CharField(max_length=256)
     hangar = models.ForeignKey(Hangar, null=True, blank=True)
     wallet = models.ForeignKey(Wallet, null=True, blank=True)
-    accessLvl = models.PositiveSmallIntegerField(default=0)
+    accessLvl = models.BigIntegerField(default=0)
     
     members = models.ManyToManyField(Member, through='RoleMembership', related_name="roles")
     
@@ -236,7 +237,7 @@ class Title(models.Model):
     titleID = models.BigIntegerField(primary_key=True)
     titleName = models.CharField(max_length=256)
     tiedToBase = models.BigIntegerField(default=0)
-    accessLvl = models.PositiveIntegerField(default=0)
+    accessLvl = models.BigIntegerField(default=0)
 
     members = models.ManyToManyField(Member, through='TitleMembership', related_name="titles")
     roles = models.ManyToManyField(Role, through='TitleComposition', related_name="titles")
@@ -364,6 +365,7 @@ class TitleCompoDiff(models.Model):
     """
     Represents the unitary modification of a Title (added or removed Role)
     """
+    id = bigintpatch.BigAutoField(primary_key=True)
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
     # true if role is new in title, false if role was removed
@@ -380,6 +382,7 @@ class MemberDiff(models.Model):
     """
     Represents the arrival or departure of a member of the corporation
     """
+    id = bigintpatch.BigAutoField(primary_key=True)
     member = models.ForeignKey(Member, related_name="diffs")
     name = models.CharField(max_length=100, db_index=True)
     nickname = models.CharField(max_length=256, db_index=True)
@@ -409,6 +412,7 @@ class TitleMemberDiff(models.Model):
     """
     Represents the change in the assignment of a Title to a Member
     """
+    id = bigintpatch.BigAutoField(primary_key=True)
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
     # true if title is new for member, false if title was removed
@@ -447,6 +451,7 @@ class RoleMemberDiff(models.Model):
     """
     Represents the change in the assignment of a Role to a Member
     """
+    id = bigintpatch.BigAutoField(primary_key=True)
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
     # true if role is new for member, false if role was removed

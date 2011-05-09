@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Corporation Details{% endblock %}
+{% block headtitle %}Home{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -35,7 +35,7 @@
 <ul>
     <li><b>CEO:</b> <a href="/members/{{ corp.ceoID }}">{{ corp.ceoName }}</a></li>
     <li><b>Tax Rate:</b> {{ corp.taxRate }}%</li>
-    <li><b>Member Count:</b> {{ memberCount }} / {{ corp.memberLimit }}</li>
+    <li><b>Member Count:</b> {{ corp.memberCount }} (max. {{ corp.memberLimit }})</li>
     <li><b>Description:</b> {{ corp.description|safe }}</li>
 </ul>
 {% endblock %}

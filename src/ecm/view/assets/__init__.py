@@ -20,3 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+HTML_ITEM_SPAN = '<b>%s</b><i> - (%d item%s)</i>'
+
+def extract_divisions(request):
+    try: 
+        div_list = [ int(div) for div in request.GET["divisions"].split(",") ]
+        return tuple(div_list)
+    except: 
+        return None

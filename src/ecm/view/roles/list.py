@@ -75,7 +75,7 @@ def role_type_data(request, role_typeName):
         return HttpResponseBadRequest()
 
     roles = []
-    for role in Role.objects.filter(roleType=role_type):
+    for role in Role.objects.filter(roleType=role_type).order_by("roleID"):
         
         members = role.members.all()
         if members.count():

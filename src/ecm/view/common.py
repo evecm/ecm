@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+from ecm.data.roles.models import Member
 
 __date__ = "2010-05-16"
 __author__ = "diabeteman"
@@ -32,7 +33,6 @@ from django.conf import settings
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
 from ecm.data.corp.models import Corp
@@ -46,8 +46,9 @@ SHOWINFO_PATTERN = re.compile(r"showinfo:1383//(\d+)", re.IGNORECASE + re.DOTALL
 def corp(request):
     try:
         corp = Corp.objects.get(id=1)
-        corp.description = re.subn(SHOWINFO_PATTERN, r"/members/\1", corp.description)[0]
-    except ObjectDoesNotExist:
+        corp.description = SHOWINFO_PATTERN.subn(r"/members/\1", corp.description)[0]
+        corp.memberCount = Member.objects.filter(corped=True).count()
+    except Corp.DoesNotExist:
         corp = Corp(corporationName="No Corporation info")
 
     data = { 'corp' : corp }
@@ -82,7 +83,7 @@ def launch_task(request, function):
     try:
         try:
             task = ScheduledTask.objects.get(function=function)
-        except ObjectDoesNotExist:
+        except ScheduledTask.DoesNotExist:
             return HttpResponse(status=http.NOT_FOUND)
         
         if not task.is_running:

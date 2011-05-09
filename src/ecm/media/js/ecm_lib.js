@@ -10,7 +10,7 @@
  * @returns a color
  */
 function getAccessColor(accessLvl, colorThresholds) {
-	  for (var i=1 ; i < colorThresholds.length ; i++) {
+	  for (var i=0 ; i < colorThresholds.length ; i++) {
         if (accessLvl <= colorThresholds[i]["threshold"]) {
         	return colorThresholds[i]["color"];
         }

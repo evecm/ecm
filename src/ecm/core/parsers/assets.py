@@ -23,19 +23,15 @@
 __date__ = "2010-03-23"
 __author__ = "diabeteman"
 
+import logging
 
-
-from ecm.data.assets.models import DbAsset, DbAssetDiff
-from ecm.core import api
-from ecm.core.parsers import utils
-from ecm.core.parsers.assetsconstants import STATIONS_IDS, OFFICE_TYPEID,\
-                                      HANGAR_FLAG, BOOKMARK_TYPEID,\
-                                      NPC_LOCATION_OFFSET, CONQUERABLE_LOCATION_IDS,\
-                                      CONQUERABLE_LOCATION_OFFSET, NPC_LOCATION_IDS
-                                      
 from django.db import transaction
 
-import logging
+from ecm.data.assets.models import Asset, AssetDiff
+from ecm.core import api, evedb
+from ecm.core.parsers import utils
+import ecm.core.parsers.assetsconstants as cst
+
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
@@ -59,37 +55,51 @@ def update():
         
         logger.debug("fetching old assets from the database...")
         oldItems = {}
-        for a in DbAsset.objects.all():
+        for a in Asset.objects.all():
             oldItems[a] = a
         
         newItems = {}
         logger.debug("%d assets fetched", len(oldItems.keys()))
         
         logger.info("parsing api response...")
-        for row in apiAssets.assets :
-            if row.locationID >= STATIONS_IDS :
-                if row.typeID == BOOKMARK_TYPEID :
-                    continue # we don't give a flying @#!$ about the bookmarks...
-                elif row.typeID == OFFICE_TYPEID :
-                    isOffice(office=row, newItems=newItems)
-                elif row.flag in HANGAR_FLAG.keys() :
-                    isInHangar(item=row, newItems=newItems)
+        for row in apiAssets.assets:
+            if row.typeID == cst.BOOKMARK_TYPEID:
+                continue # we don't give a flying @#!$ about the bookmarks...
+            
+            if row.locationID >= cst.STATIONS_IDS:
+                # this row contains assets in a station
+                if row.typeID == cst.OFFICE_TYPEID:
+                    rowIsOffice(office=row, items_dic=newItems)
+                else:
+                    rowIsInHangar(item=row, items_dic=newItems)
+            else:
+                # this row contains assets in space
+                try:
+                    if cst.HAS_HANGAR_DIVISIONS[row.typeID]:
+                        rowIsPOSCorporateHangarArray(corpArray=row, items_dic=newItems)
+                    else:
+                        rowIsPOSArray(array=row, items_dic=newItems)
+                except KeyError:
+                    # unhandled typeID, this may be a reactor array or some other crap
+                    pass
+        
         logger.info("%d assets parsed", len(newItems.keys()))
 
         diffs = []
-        if len(oldItems) != 0 :
+        if len(oldItems) != 0:
             logger.debug("computing diffs since last asset scan...")
             diffs = getAssetDiffs(newItems=newItems, oldItems=oldItems, date=currentTime)
             if diffs:
-                for assetDiff in diffs : 
+                for assetDiff in diffs: 
                     assetDiff.save()
                 # we store the update time of the table
-                utils.markUpdated(model=DbAssetDiff, date=currentTime)
-            DbAsset.objects.all().delete()
-        for asset in newItems.values() : asset.save()
+                utils.markUpdated(model=AssetDiff, date=currentTime)
+            Asset.objects.all().delete()
+        for asset in newItems.values(): 
+            asset.save()
         
         # we store the update time of the table
-        utils.markUpdated(model=DbAsset, date=currentTime)
+        utils.markUpdated(model=Asset, date=currentTime)
             
         logger.info("%d changes since last scan", len(diffs))
         logger.debug("saving to database...")
@@ -119,26 +129,30 @@ def getAssetDiffs(oldItems, newItems, date):
             if not addasset.duplicate and addasset.lookslike(remasset):
                 # if there is a match (there cannot be more than one), the added asset 
                 # was already in the removed assets. We tag the added asset to duplicate 
-                # and take it in consideration when creating the "removed" DbAssetDiff
+                # and take it in consideration when creating the "removed" AssetDiff
                 addasset.duplicate = True
                 added_qty = addasset.quantity
                 break
         if (added_qty - remasset.quantity): 
             # if the added asset doesn't negates the removed one, we create a diff
-            diffs.append(DbAssetDiff(locationID = remasset.locationID,
-                                     hangarID = remasset.hangarID,
-                                     typeID = remasset.typeID,
-                                     quantity = added_qty - remasset.quantity,
-                                     date = date,
-                                     new = False))
+            diffs.append(AssetDiff(solarSystemID = remasset.solarSystemID,
+                                       stationID = remasset.stationID,
+                                        hangarID = remasset.hangarID,
+                                          typeID = remasset.typeID,
+                                            flag = remasset.flag,
+                                        quantity = added_qty - remasset.quantity,
+                                            date = date,
+                                             new = False))
     for addasset in added:
         if not addasset.duplicate:
-            diffs.append(DbAssetDiff(locationID = addasset.locationID,
-                                     hangarID = addasset.hangarID,
-                                     typeID = addasset.typeID,
-                                     quantity = addasset.quantity,
-                                     date = date,
-                                     new = True))
+            diffs.append(AssetDiff(solarSystemID = addasset.solarSystemID,
+                                       stationID = addasset.stationID,
+                                        hangarID = addasset.hangarID,
+                                          typeID = addasset.typeID,
+                                            flag = addasset.flag,
+                                        quantity = addasset.quantity,
+                                            date = date,
+                                             new = True))
     return diffs
 
 #------------------------------------------------------------------------------
@@ -160,68 +174,160 @@ def __removeDuplicates(assetlist):
         pass
 
 #------------------------------------------------------------------------------
-def isOffice(office, newItems):
+def rowIsOffice(office, items_dic):
+    """
+    'office' represents an office in a station
+    
+    The 'stationID' of all the contents of the array is encoded from the 'itemID' 
+    and the 'typeID' of the row.
+    """
     try :
-        for item in office.contents :
-            if item.typeID == BOOKMARK_TYPEID : 
+        stationID = locationIDtoStationID(office.locationID)
+        solarSystemID = evedb.getSolarSystemID(stationID)
+        for item in office.contents:
+            if item.typeID == cst.BOOKMARK_TYPEID : 
                 continue # we don't give a flying @#!$ about the bookmarks...
-            isInHangar(item=item, newItems=newItems, locationID=office.locationID)
-    except AttributeError :
+            rowIsInHangar(item=item, items_dic=items_dic, 
+                       solarSystemID=solarSystemID, stationID=stationID)
+    except:
+        # skip the office if it has no contents
         pass
 
 #------------------------------------------------------------------------------
-def isInHangar(item, newItems, locationID=None):
-    asset = assetFromRow(item)
-    if locationID : # we come from isOffice() and the item has no locationID attribute
-        asset.locationID = locationIDtoStationID(locationID)
-    else : # we come from the update() method and the item has a locationID attribute
-        asset.locationID = locationIDtoStationID(item.locationID)
-    asset.hangarID = HANGAR_FLAG[item.flag]
-    newItems[asset] = asset
-
-    try :
-        fillContents(container=asset, item=item, newItems=newItems)
-        asset.hasContents = True
-    except AttributeError :
-        pass
+def rowIsPOSCorporateHangarArray(corpArray, items_dic):
+    """
+    'corpArray' represents an anchorable structure with corporate hangar divisions
+    such as a 'Corporate Hangar Array' or a 'Mobile Laboratory'
     
+    The 'stationID' of all the contents of the array is encoded from the 'itemID' 
+    and the 'typeID' of the row.
+    """
+    try :
+        solarSystemID = corpArray.locationID
+        stationID = corpArray.itemID
+        flag = corpArray.typeID 
+        for item in corpArray.contents:
+            if item.typeID == cst.BOOKMARK_TYPEID : 
+                continue # we don't give a flying @#!$ about the bookmarks...
+            rowIsInHangar(item=item, 
+                          items_dic=items_dic, 
+                          solarSystemID=solarSystemID, 
+                          stationID=stationID,
+                          flag=flag)
+    except AttributeError :
+        # skip the corpArray if it has no contents
+        pass
+
+#------------------------------------------------------------------------------
+def rowIsPOSArray(array, items_dic):
+    """
+    'array' represents an anchorable structure with no corporate hangar divisions
+    such as a 'Ship Maintenance Array' or a 'Silo'
+    
+    The 'stationID' is encoded the same way than in rowIsPOSCorporateHangarArray()
+    but we force the 'hangarID' of all contained items to '0' (no corporate divisions)
+    """
+    try :
+        solarSystemID = array.locationID
+        stationID = array.itemID
+        flag = array.typeID 
+        for item in array.contents:
+            if item.typeID == cst.BOOKMARK_TYPEID : 
+                continue # we don't give a flying @#!$ about the bookmarks...
+            rowIsInHangar(item=item, 
+                          items_dic=items_dic, 
+                          solarSystemID=solarSystemID, 
+                          stationID=stationID, 
+                          hangarID=0,
+                          flag=flag)
+    except AttributeError:
+        # if the array has no attribute 'contents', we ignore it
+        pass
        
 #------------------------------------------------------------------------------
-def fillContents(container, item, newItems):
-    for _item in item.contents :
-        if _item.typeID == BOOKMARK_TYPEID : 
+def rowIsInHangar(item, items_dic, solarSystemID=None, stationID=None, hangarID=None, flag=None):
+    """
+    'item' represents an asset located in a hangar division.
+    """
+    asset = assetFromRow(item)
+    
+    if solarSystemID is None and stationID is None:
+        # we come from the update() method and the item has a locationID attribute
+        asset.stationID = locationIDtoStationID(item.locationID)
+        asset.solarSystemID = evedb.getSolarSystemID(asset.stationID)
+    else: 
+        asset.solarSystemID = solarSystemID
+        asset.stationID = stationID
+    
+    if hangarID is None:
+        try:
+            asset.hangarID = cst.HANGAR_FLAG[item.flag]
+        except KeyError:
+            # if unhandled flag (i.e. not a hangar division)
+            # allways fall back to the first division 
+            asset.hangarID = 1000
+    else:
+        asset.hangarID = hangarID
+    
+    if flag is not None:
+        asset.flag = flag
+    
+    items_dic[asset] = asset
+
+    try:
+        fillContents(container=asset, item=item, items_dic=items_dic, flag=flag)
+        asset.hasContents = True
+    except AttributeError:
+        # if the item has no attribute 'contents', we're done
+        pass
+
+#------------------------------------------------------------------------------
+def fillContents(container, item, items_dic, flag=None):
+    """
+    Try to fill the contents of an item (assembled ship, assembled container)
+    If the item has no contents, raise an attribute error. 
+    """
+    for _item in item.contents:
+        if _item.typeID == cst.BOOKMARK_TYPEID: 
             continue # we don't give a flying @#!$ about the bookmarks...
         _asset = assetFromRow(_item)
-        _asset.locationID = container.locationID
+        _asset.solarSystemID = container.solarSystemID
+        _asset.stationID = container.stationID
         _asset.hangarID = container.hangarID
         _asset.container1 = container.itemID
-        newItems[_asset] = _asset
+        if flag is not None:
+            _asset.flag = flag
+        items_dic[_asset] = _asset
         
         try :
-            for __item in _item.contents :
+            for __item in _item.contents:
                 
-                if __item.typeID == BOOKMARK_TYPEID : 
+                if __item.typeID == cst.BOOKMARK_TYPEID: 
                     continue # we don't give a flying @#!$ about the bookmarks...
                 __asset = assetFromRow(__item)
-                __asset.locationID = container.locationID
+                __asset.solarSystemID = container.solarSystemID
+                __asset.stationID = container.stationID
                 __asset.hangarID = container.hangarID
                 __asset.container1 = container.itemID
                 __asset.container2 = _asset.itemID
-                newItems[__asset] = __asset
+                if flag is not None:
+                    __asset.flag = flag
+                items_dic[__asset] = __asset
             
             _asset.hasContents = True
-        except AttributeError :
+        except AttributeError:
+            # if '__item' has no attribute 'contents', we're skip to the next one
             continue
                 
         
         
 #------------------------------------------------------------------------------
 def assetFromRow(row):
-    return DbAsset(itemID      = row.itemID,
-                   typeID      = row.typeID,
-                   quantity    = row.quantity,
-                   flag        = row.flag,
-                   singleton   = row.singleton)
+    return Asset(itemID    = row.itemID,
+                 typeID    = row.typeID,
+                 quantity  = row.quantity,
+                 flag      = row.flag,
+                 singleton = row.singleton)
      
 #------------------------------------------------------------------------------
 def locationIDtoStationID(locationID):
@@ -233,10 +339,10 @@ def locationIDtoStationID(locationID):
     
     source : http://www.eveonline.com/ingameboard.asp?a=topic&threadID=667487
     """
-    if locationID <  NPC_LOCATION_IDS :
+    if locationID < cst.NPC_LOCATION_IDS:
         return locationID
-    elif locationID >= CONQUERABLE_LOCATION_IDS :
-        return locationID - CONQUERABLE_LOCATION_OFFSET
-    elif locationID >= NPC_LOCATION_IDS :
-        return locationID - NPC_LOCATION_OFFSET
+    elif locationID >= cst.CONQUERABLE_LOCATION_IDS:
+        return locationID - cst.CONQUERABLE_LOCATION_OFFSET
+    else:
+        return locationID - cst.NPC_LOCATION_OFFSET
     

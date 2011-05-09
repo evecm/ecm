@@ -37,7 +37,8 @@ ALL_GROUP_IDS = [ 1 << i  for i in range(17)] # generates all titleIDs
 DIRECTOR_GROUP_ID = 1 << 16 # 65536 (it is twice the max titleID)
 DIRECTOR_GROUP_NAME = "Directors"
 CRON_USERNAME = "cron"
-EVE_DB_FILE = resolvePath('db/EVE.db')
+ADMIN_USERNAME = "admin"
+#EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
 ECM_BASE_URL = "http://127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
@@ -47,7 +48,7 @@ ACCOUNT_ACTIVATION_DAYS = 2
 DEBUG = True # turn this to False when on production !!!
 ADMINS = () # to enable email error reporting, put a tuple in there, ('name', email@adddress.com')
 # for development, you can use python dummy smtp server, run this command:
-# >>> python -m smtpd -n -c DebuggingServer localhost:1025
+# >>> python -m smtpd -n -c DebuggingServer localhost:25
 EMAIL_HOST = "localhost"
 EMAIL_PORT = 25
 EMAIL_HOST_USER = "" 
@@ -58,12 +59,20 @@ DEFAULT_FROM_EMAIL = ""
 
 DATABASES = {
     'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': resolvePath('db/ECM.db')
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ecm',
+        'USER': 'ecm',
+        'PASSWORD': 'ecm',
+    },
+    'eve': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': resolvePath('db/ECM.db')
+        'NAME': resolvePath('db/EVE.db')
     }
 }
 
-USE_I18N = False # for optimizatrion
+USE_I18N = False # for optimization
 LOCAL_DEVELOPMENT = True
 APPEND_SLASH = False
 TEMPLATE_DEBUG = DEBUG
@@ -91,12 +100,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
-# file system cache backend path for unix
-#CACHE_BACKEND = 'file:///var/tmp/django_cache'
-# file system cache backend path for windows
-#CACHE_BACKEND = 'file://C:/Users/diabeteman/AppData/Local/Temp/django_cache'
-#NO CACHE FOR DEV USAGE
-CACHE_BACKEND = 'dummy://'
+
+CACHES = {
+    'default': {
+#        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#        'LOCATION': '/var/django/cache',
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
 
 TEMPLATE_DIRS = (
         resolvePath('templates/'),

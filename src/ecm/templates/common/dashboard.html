@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Dashboard{% endblock %}
+
+{% block header_scripts %}
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript" src="/m/js/ecm_lib.js"></script>
+
+<script type="text/javascript">
+DISTRIBUTION = {{ distribution|safe }};
+POSITIONS = {{ positions|safe }};
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+</script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+{% endblock %}
+
+{% block main_content %}
+
+<h1 class="pagetitle">{{ corp_name }} <span class="time">- EVE Corporation Management</span></h1>
+
+<table class="transparent">
+  <tr>
+    <td><div id="distibution_chart"></div></td>
+    <td><div id="positions_chart"></div></td>
+  </tr>
+</table>
+
+<script type="text/javascript" src="/m/js/access_distribution_chart.js" ></script>
+<script type="text/javascript" src="/m/js/character_positions_chart.js" ></script>
+
+<p><b>Registered Players:</b> {{playerCount}}</p>
+<p><b>Average number of accounts by player:</b> {{accountsByPlayer|floatformat:2}} account / player</p>
+<p><b>Average number of characters by player:</b> {{chraractersByPlayer|floatformat:2}} character / player</p>
+<p><b>Unassociated Characters:</b> {{unassociatedCharacters}} / {{memberCount}}</p>
+
+{% endblock %}

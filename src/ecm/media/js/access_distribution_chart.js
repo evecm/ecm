@@ -1,11 +1,11 @@
-var queryString = '';
-var dataUrl = '';
+var distribQueryString = '';
+var distribDataUrl = '';
 
 google.load("visualization", "1", {
     packages : [ "imagechart" ]
 });
 
-function extractColors(dist) {
+function extractDistribColors(dist) {
     var colors = new Array(dist.length);
     for (var i=0 ; i < dist.length ; i++) {
         var color = getCssBgColor(".row-" + dist[i]["color"]);
@@ -17,7 +17,7 @@ function extractColors(dist) {
     return colors.join("|");
 }
 
-function extractLegend(dist) {
+function extractDistribLegend(dist) {
     var legends = new Array(dist.length);
     for (var i=0 ; i < dist.length ; i++) {
         if (dist[i]["threshold"] == 0) {
@@ -32,7 +32,7 @@ function extractLegend(dist) {
 }
 
 
-function extractLabels(dist) {
+function extractDistribLabels(dist) {
     var labels = new Array(dist.length);
     for (var i=0 ; i < dist.length ; i++) {
         labels[i] = dist[i]["members"];
@@ -40,11 +40,11 @@ function extractLabels(dist) {
     return labels.join("|");
 }
 
-function onLoadCallback() {
-    if (dataUrl.length > 0) {
-        var query = new google.visualization.Query(dataUrl);
-        query.setQuery(queryString);
-        query.send(handleQueryResponse);
+function onLoadCallbackDistrib() {
+    if (distribDataUrl.length > 0) {
+        var query = new google.visualization.Query(distribDataUrl);
+        query.setQuery(distribQueryString);
+        query.send(handleQueryResponseDistrib);
     } else {
         var dataTable = new google.visualization.DataTable();
         dataTable.addRows(DISTRIBUTION.length);
@@ -52,27 +52,27 @@ function onLoadCallback() {
         for (var i=0 ; i < DISTRIBUTION.length ; i++) {
             dataTable.setValue(i, 0, DISTRIBUTION[i]["members"]);
         }
-        draw(dataTable);
+        drawDistrib(dataTable);
     }
 }
 
-function draw(dataTable) {
+function drawDistrib(dataTable) {
     var vis = new google.visualization.ImageChart(document.getElementById('distibution_chart'));
     var options = {
         chxs : '0,676767,10.5',
         chxt : 'x',
         chs : '450x285',
         cht : 'p',
-        chco : extractColors(DISTRIBUTION),
+        chco : extractDistribColors(DISTRIBUTION),
         chd : 's:DfzHGYSH',
-        chdl : extractLegend(DISTRIBUTION),
-        chl : extractLabels(DISTRIBUTION),
+        chdl : extractDistribLegend(DISTRIBUTION),
+        chl : extractDistribLabels(DISTRIBUTION),
         chtt : 'Security access level distribution'
     };
     vis.draw(dataTable, options);
 }
 
-function handleQueryResponse(response) {
+function handleQueryResponseDistrib(response) {
     if (response.isError()) {
         alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
         return;
@@ -80,4 +80,4 @@ function handleQueryResponse(response) {
     draw(response.getDataTable());
 }
 
-google.setOnLoadCallback(onLoadCallback);
+google.setOnLoadCallback(onLoadCallbackDistrib);

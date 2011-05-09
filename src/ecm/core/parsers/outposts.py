@@ -29,7 +29,7 @@ __author__ = "diabeteman"
 
 from ecm.core import api
 from ecm.core.parsers.utils import checkApiVersion, markUpdated
-from ecm.core import db
+from ecm.core import evedb
 from ecm.data.common.models import Outpost
 
 from django.db import transaction
@@ -72,7 +72,7 @@ def update():
         logger.info("%d outposts parsed", len(apiOutposts.outposts))
         logger.debug("saving data to the database...")
         transaction.commit()
-        db.invalidateCache()
+        evedb.invalidateCache()
         logger.debug("update sucessfull")
         logger.info("outposts updated")
     except:

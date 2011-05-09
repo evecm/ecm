@@ -25,6 +25,7 @@ __author__ = "diabeteman"
 
 import json
 
+from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404
@@ -54,20 +55,24 @@ def player_list_data(request):
         return HttpResponseBadRequest()
     
     query = User.objects.filter(is_active=True)
+    query = query.exclude(username__in=[settings.CRON_USERNAME, settings.ADMIN_USERNAME])
     query = query.extra(select={
         'group_count': 'SELECT COUNT(*) '
-                       'FROM auth_user_groups '
-                       'WHERE auth_user_groups.user_id = auth_user.id',
+                       'FROM "auth_user_groups" '
+                       'WHERE "auth_user_groups"."user_id"="auth_user"."id"',
         'char_count':  'SELECT COUNT(*) '
-                       'FROM roles_characterownership '
-                       'WHERE roles_characterownership.owner_id = auth_user.id',
+                       'FROM "roles_characterownership" '
+                       'WHERE "roles_characterownership"."owner_id"="auth_user"."id"',
     })
     
     sort_by = USER_COLUMNS[request.column]
-    sort_col = "%s_nocase" % sort_by
-    
-    # SQLite hack for making a case insensitive sort
-    query = query.extra(select={sort_col : "%s COLLATE NOCASE" % sort_by})
+    # SQL hack for making a case insensitive sort
+    if sort_by == "username":
+        sort_col = "%s_nocase" % sort_by
+        query = query.extra(select={sort_col : 'LOWER("%s")' % sort_by})
+    else:
+        sort_col = sort_by
+        
     if not request.asc: sort_col = "-" + sort_col
     query = query.extra(order_by=[sort_col])
     
