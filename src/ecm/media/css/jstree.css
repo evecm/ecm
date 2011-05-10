@@ -39,13 +39,22 @@
     background: -moz-linear-gradient(left,  #ffc4c4,  #fff); /* for firefox 3.6+ */ 
 }
 
-.station-row .array-row > a { 
+.station-row > a { 
     width:95%;
     background-color: #ddd;/* for non-css3 browsers */
     filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00cccccc,EndColor=0x00ffffff,iOrientation=1);
     background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#fff)); /* for webkit browsers */
     background: -moz-linear-gradient(left,  #ccc,  #fff); /* for firefox 3.6+ */ 
 }
+
+.array-row > a { 
+    width:95%;
+    background-color: #ddd;/* for non-css3 browsers */
+    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00cccccc,EndColor=0x00ffffff,iOrientation=1);
+    background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#fff)); /* for webkit browsers */
+    background: -moz-linear-gradient(left,  #ccc,  #fff); /* for firefox 3.6+ */ 
+} 
+
 .hangar-row > a { 
     background-color: #eee;/* for non-css3 browsers */
     filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00dddddd,EndColor=0x00ffffff,iOrientation=1);
