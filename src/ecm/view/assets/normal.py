@@ -34,13 +34,14 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 from django.db import connection
 
+from ecm.view.decorators import check_user_access
 from ecm.core.parsers import assetsconstants
 from ecm.core import evedb, utils
 from ecm.data.assets.models import Asset
 from ecm.data.corp.models import Hangar
 from ecm.view import getScanDate
 from ecm.view.assets import extract_divisions, HTML_ITEM_SPAN
-from ecm.view.decorators import user_is_director
+
 
 CATEGORY_ICONS = { 2 : "can" , 
                    4 : "mineral" , 
@@ -50,7 +51,7 @@ CATEGORY_ICONS = { 2 : "can" ,
                   16 : "skill" }
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def root(request):
     scan_date = getScanDate(Asset.__name__)
     if scan_date == "<no data>":
@@ -83,7 +84,7 @@ def root(request):
 
 #------------------------------------------------------------------------------
 
-@user_is_director()
+@check_user_access()
 def systems_data(request):
     
     divisions = extract_divisions(request)
@@ -131,7 +132,7 @@ def systems_data(request):
     return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def stations_data(request, solarSystemID):
     solarSystemID = int(solarSystemID)
     divisions = extract_divisions(request)
@@ -182,7 +183,7 @@ def stations_data(request, solarSystemID):
     return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def hangars_data(request, solarSystemID, stationID):
     solarSystemID = int(solarSystemID)
@@ -224,7 +225,7 @@ def hangars_data(request, solarSystemID, stationID):
     return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def hangar_content_data(request, solarSystemID, stationID, hangarID):
     solarSystemID = int(solarSystemID)
@@ -269,7 +270,7 @@ def hangar_content_data(request, solarSystemID, stationID, hangarID):
     return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def can1_content_data(request, solarSystemID, stationID, hangarID, container1):
     solarSystemID = int(solarSystemID)
@@ -304,7 +305,7 @@ def can1_content_data(request, solarSystemID, stationID, hangarID, container1):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def can2_content_data(request, solarSystemID, stationID, hangarID, container1, container2):
     solarSystemID = int(solarSystemID)
@@ -331,7 +332,7 @@ def can2_content_data(request, solarSystemID, stationID, hangarID, container1, c
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def search_items(request):
     

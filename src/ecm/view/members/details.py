@@ -35,14 +35,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from ecm.core import utils
 from ecm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
 from ecm.view import getScanDate, extract_datatable_params
+from ecm.view.decorators import check_user_access
 from ecm.data.common.models import ColorThreshold
 from ecm.core.utils import print_time_min, get_access_color
 from ecm.core import evedb
-from ecm.view.decorators import user_owns_character
 
 
 #------------------------------------------------------------------------------
-@user_owns_character()
+@check_user_access()
 def details(request, characterID):
     try:
         colorThresholds = ColorThreshold.objects.all().order_by("threshold")
@@ -69,7 +69,7 @@ def details(request, characterID):
 
 
 #------------------------------------------------------------------------------
-@user_owns_character()
+@check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def access_changes_member_data(request, characterID):
     try:
@@ -82,7 +82,8 @@ def access_changes_member_data(request, characterID):
     
     count = roles.count() + titles.count()
     
-    changes = utils.merge_lists(roles, titles, ascending=False, attribute="date")
+    changes = list(roles) + list(titles)
+    changes.sort(key=lambda e: e.date, reverse=True)
     changes = changes[request.first_id:request.last_id]
     
     change_list = []

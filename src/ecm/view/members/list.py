@@ -31,13 +31,14 @@ from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.data.roles.models import Member
+from ecm.view.decorators import check_user_access
 from ecm.data.common.models import ColorThreshold
 from ecm.view import getScanDate, get_members, extract_datatable_params
-from ecm.view.decorators import user_is_director
+
 
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def all(request):
     data = { 
         'scan_date' : getScanDate(Member.__name__), 
@@ -47,7 +48,7 @@ def all(request):
     return render_to_response("members/member_list.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def all_data(request):
     try:
@@ -73,7 +74,7 @@ def all_data(request):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def unassociated(request):
     data = { 
         'scan_date' : getScanDate(Member.__name__), 
@@ -83,7 +84,7 @@ def unassociated(request):
     return render_to_response("members/unassociated.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def unassociated_data(request):
     try:
@@ -109,7 +110,7 @@ def unassociated_data(request):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def unassociated_clip(request):
     query = Member.objects.filter(corped=True, ownership=None).order_by("name")

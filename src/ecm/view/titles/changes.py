@@ -31,14 +31,15 @@ from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.data.roles.models import TitleComposition, TitleCompoDiff
+from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.core.utils import print_time_min
-from ecm.view.decorators import user_is_director
+
 
 
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def changes(request):
     data = {
         'scan_date' : getScanDate(TitleComposition.__name__) 
@@ -47,7 +48,7 @@ def changes(request):
 
 #------------------------------------------------------------------------------
 @cache_page(60 * 60) # 1 hour cache
-@user_is_director()
+@check_user_access()
 def changes_data(request):
     try:
         extract_datatable_params(request)

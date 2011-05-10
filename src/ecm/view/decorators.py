@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+import re
 
 __date__ = "2011-03-08"
 __author__ = "diabeteman"
@@ -26,25 +27,20 @@ __author__ = "diabeteman"
 
 import binascii
 import httplib as http
-try:
-    from functools import wraps
-except ImportError:
-    from django.utils.functional import wraps  # Python 2.4 fallback.
 
 from django.template.context import RequestContext
 from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import AnonymousUser, Group
-from django.utils.decorators import available_attrs
 from django.http import HttpResponse
 from django.conf import settings
 
+from ecm.data.common.models import Url
 from ecm.data.roles.models import CharacterOwnership
 
 #------------------------------------------------------------------------------
 def basic_auth_required(username=None):
     def decorator(view_function):
-        @wraps(view_function, assigned=available_attrs(view_function))
         def _wrapped_view(request, *args, **kwargs):
             if request.user in (False, None, AnonymousUser()):
                 auth_string = request.META.get('HTTP_AUTHORIZATION', None)
@@ -80,19 +76,35 @@ def basic_auth_required(username=None):
 
 
 #------------------------------------------------------------------------------
-def user_member_of(group_ids):
+def check_user_access():
     """
-    Decorator for views that checks that the user is in at least in one of the
-    groups given as parameters, redirecting to the log-in page if necessary.
+    Decorator for views that matches the asked URL against those configured in the database
     
-    If the user is authenticated and is not member of any group, the decorator 
-    redirects the user to an "unauthorized" page.
+    if the user is not logged in, redirect him/her to the login page
+    if the user is allowed to consult the URL, then return to the view function
+    if the page is the details of a member, check if the user owns the character. 
+       If so, allow the user to consult the page anyway
+    if the user is not allowed, issue a "forbidden" page
     """
     def decorator(view_function):
-        @wraps(view_function, assigned=available_attrs(view_function))
         def _wrapped_view(request, *args, **kwargs):
             if request.user.is_authenticated():
-                if request.user.is_superuser or request.user.groups.filter(id__in=group_ids):
+                access_ok = False
+                for url in Url.objects.all():
+                    url_re = re.compile(url.pattern)
+                    if url_re.match(request.get_full_path()):
+                        access_ok = set(url.groups.all()).intersection(set(request.user.groups.all()))
+                        break
+                if not access_ok:
+                    try:
+                        url_re = re.compile("^/members/\d+.*$")
+                        if url_re.match(request.get_full_path()):
+                            characterID = int(args[0])
+                            user = CharacterOwnership.objects.get(character=characterID).owner
+                            access_ok = (user == request.user)
+                    except:
+                        pass
+                if request.user.is_superuser or access_ok:
                     return view_function(request, *args, **kwargs)
                 else:
                     return forbidden(request)
@@ -101,43 +113,6 @@ def user_member_of(group_ids):
                 return redirect_to_login(request.get_full_path())
         return _wrapped_view
     return decorator
-
-#------------------------------------------------------------------------------
-def user_is_director():
-    """
-    Decorator that checks if the user has at least one corped character 
-    who has the in-game 'director' role
-    """
-    return user_member_of([settings.DIRECTOR_GROUP_ID])
-
-#------------------------------------------------------------------------------
-def user_owns_character():
-    def decorator(view_function):
-        @wraps(view_function, assigned=available_attrs(view_function))
-        def _wrapped_view(request, characterID, *args, **kwargs):
-            if request.user.is_authenticated():
-                try:
-                    user = CharacterOwnership.objects.get(character=characterID).owner
-                except CharacterOwnership.DoesNotExist:
-                    user = AnonymousUser()
-                
-                if user == request.user or request.user.is_superuser or request.user.groups.filter(id=settings.DIRECTOR_GROUP_ID):
-                    return view_function(request, characterID, *args, **kwargs)
-                else:
-                    return forbidden(request)
-            else:
-                from django.contrib.auth.views import redirect_to_login
-                return redirect_to_login(request.get_full_path())
-        return _wrapped_view
-    return decorator
-
-#------------------------------------------------------------------------------
-def user_has_titles():
-    """
-    Decorator that checks if the user has at least one corped character 
-    who has at least one Title assigned.
-    """
-    return user_member_of(settings.ALL_GROUP_IDS)
 
 #------------------------------------------------------------------------------
 def forbidden(request):

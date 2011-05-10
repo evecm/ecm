@@ -33,11 +33,12 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
 from ecm.core import utils
+from ecm.view.decorators import check_user_access
 from ecm.core.utils import print_time_min
-from ecm.view.decorators import user_is_director
+
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def access_changes(request):
     data = {
         'scan_date' : getScanDate(TitleMembership.__name__) 
@@ -46,7 +47,7 @@ def access_changes(request):
 
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def access_changes_data(request):
     try:
@@ -59,7 +60,8 @@ def access_changes_data(request):
     
     count = roles.count() + titles.count()
     
-    changes = utils.merge_lists(roles, titles, ascending=False, attribute="date")
+    changes = list(roles) + list(titles)
+    changes.sort(key=lambda e: e.date, reverse=True)
     changes = changes[request.first_id:request.last_id]
     
     change_list = []

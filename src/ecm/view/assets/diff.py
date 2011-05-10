@@ -30,16 +30,17 @@ from django.shortcuts import render_to_response, redirect
 from django.template.context import RequestContext
 from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse
 from django.db import connection
 
+from ecm.view.decorators import check_user_access
 from ecm.view.assets import extract_divisions, HTML_ITEM_SPAN
 from ecm.core.parsers import assetsconstants
 from ecm.core import evedb, utils
 from ecm.data.assets.models import Asset, AssetDiff
 from ecm.data.corp.models import Hangar
 from ecm.view import getScanDate
-from ecm.view.decorators import user_is_director
+
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
@@ -63,7 +64,7 @@ def last_date(request):
         return render_to_response("assets/assets_no_data.html", context_instance=RequestContext(request))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def root(request, date_str):
     
     all_hangars = Hangar.objects.all().order_by("hangarID")
@@ -118,7 +119,7 @@ def root(request, date_str):
     
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def systems_data(request, date_str):
     date = datetime.strptime(date_str, DATE_PATTERN)
@@ -168,7 +169,7 @@ def systems_data(request, date_str):
     return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def stations_data(request, date_str, solarSystemID):
     date = datetime.strptime(date_str, DATE_PATTERN)
@@ -222,7 +223,7 @@ def stations_data(request, date_str, solarSystemID):
 
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def hangars_data(request, date_str, solarSystemID, stationID):
     
@@ -266,7 +267,7 @@ def hangars_data(request, date_str, solarSystemID, stationID):
     return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def hangar_contents_data(request, date_str, solarSystemID, stationID, hangarID):
     date = datetime.strptime(date_str, DATE_PATTERN)
@@ -298,7 +299,7 @@ def hangar_contents_data(request, date_str, solarSystemID, stationID, hangarID):
     return HttpResponse(json.dumps(jstree_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def search_items(request, date_str):
     date = datetime.strptime(date_str, DATE_PATTERN)

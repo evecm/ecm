@@ -31,13 +31,14 @@ from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
+from ecm.view.decorators import check_user_access
 from ecm.view import extract_datatable_params, get_members
 from ecm.data.common.models import ColorThreshold
 from ecm.data.roles.models import Title, Member
-from ecm.view.decorators import user_is_director
+
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def members(request, id):
     data = { 
         'title' : get_object_or_404(Title, titleID=int(id)),
@@ -48,7 +49,7 @@ def members(request, id):
 
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def members_data(request, id):
     try:

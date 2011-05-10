@@ -34,7 +34,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadReque
 
 from ecm.data.roles.models import Role, RoleType
 from ecm.data.common.models import ColorThreshold
-from ecm.view.decorators import user_is_director
+from ecm.view.decorators import check_user_access
 from ecm.data.corp.models import Hangar, Wallet
 
 ROLE_TYPES = {}
@@ -45,7 +45,7 @@ def root(request):
     return redirect("/roles/roles")
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def role_type(request, role_typeName):
     try:
         role_type = RoleType.objects.get(typeName=role_typeName)
@@ -63,7 +63,7 @@ def role_type(request, role_typeName):
 
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def role_type_data(request, role_typeName):
     try:
@@ -109,7 +109,7 @@ def role_type_data(request, role_typeName):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def update_access_level(request):
     try:
         role_id = int(request.POST["id"])

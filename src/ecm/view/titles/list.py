@@ -30,14 +30,15 @@ from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 
+from ecm.view.decorators import check_user_access
 from ecm.data.roles.models import TitleComposition, Title, TitleCompoDiff
 from ecm.data.common.models import ColorThreshold
 from ecm.core import utils
 from ecm.view import getScanDate
-from ecm.view.decorators import user_is_director
+
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def all(request):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
@@ -51,7 +52,7 @@ def all(request):
 
 #------------------------------------------------------------------------------
 all_columns = [ "titleName", "accessLvl" ]
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def all_data(request):
     sEcho = int(request.GET["sEcho"])

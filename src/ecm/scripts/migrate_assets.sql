@@ -16,8 +16,8 @@ CREATE TABLE "assets_asset_old" (
     "hasContents" bool NOT NULL
 );
 INSERT INTO assets_asset_old(itemID, locationID, hangarID, container1, container2, typeID, quantity, flag, singleton, hasContents)
-
 SELECT itemID, locationID, hangarID, container1, container2, typeID, quantity, flag, singleton, hasContents FROM assets_dbasset;
+
 CREATE TABLE "assets_assetdiff_old" (
     "id" integer NOT NULL PRIMARY KEY,
     "locationID" bigint NOT NULL,
@@ -27,9 +27,6 @@ CREATE TABLE "assets_assetdiff_old" (
     "date" datetime NOT NULL,
     "new" bool NOT NULL
 );
-
-CREATE INDEX "assets_assetdiff_44679343db" ON "assets_assetdiff_old" ("date");
-
 INSERT INTO assets_assetdiff_old(id, locationID, hangarID, typeID, quantity, date, new)
 SELECT id, locationID, hangarID, typeID, quantity, date, new FROM assets_dbassetdiff;
 
@@ -43,8 +40,8 @@ DROP TABLE assets_dbasset;
 INSERT INTO assets_asset(itemID, solarSystemID, stationID, hangarID, container1, container2, typeID, quantity, flag, singleton, hasContents)
 SELECT itemID, 0, locationID, hangarID, container1, container2, typeID, quantity, flag, singleton, hasContents FROM assets_asset_old;
 
-insert into assets_assetdiff(id, solarSystemID, stationID, hangarID, typeID, quantity, date, new)
-select id, 0, locationID, hangarID, typeID, quantity, date, new from assets_assetdiff_old;
+insert into assets_assetdiff(id, solarSystemID, stationID, hangarID, typeID, quantity, date, new, flag)
+select id, 0, locationID, hangarID, typeID, quantity, date, new, 0 from assets_assetdiff_old;
 
 DROP TABLE assets_assetdiff_old;
 DROP TABLE assets_asset_old;

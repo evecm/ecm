@@ -59,12 +59,12 @@ DEFAULT_FROM_EMAIL = ""
 
 DATABASES = {
     'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': resolvePath('db/ECM.db')
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ecm',
-        'USER': 'ecm',
-        'PASSWORD': 'ecm',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': resolvePath('db/ECM.db')
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'ecm',
+#        'USER': 'ecm',
+#        'PASSWORD': 'ecm',
     },
     'eve': {
         'ENGINE': 'django.db.backends.sqlite3',

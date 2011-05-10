@@ -31,13 +31,14 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.text import truncate_words
 
+from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.roles.models import Member, MemberDiff
 from ecm.core.utils import print_time_min
-from ecm.view.decorators import user_is_director
+
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def history(request):
     data = {
         'scan_date' : getScanDate(Member.__name__) 
@@ -45,7 +46,7 @@ def history(request):
     return render_to_response("members/member_history.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def history_data(request):
     try:

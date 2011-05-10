@@ -32,13 +32,14 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, Http404
 from django.core.exceptions import ObjectDoesNotExist
 
+from ecm.view.decorators import check_user_access
 from ecm.view import extract_datatable_params, get_members
 from ecm.data.roles.models import Role, RoleType, Member
 from ecm.data.common.models import ColorThreshold
-from ecm.view.decorators import user_is_director
+
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def role(request, role_typeName, role_id):
     try:
         type = RoleType.objects.get(typeName=role_typeName)
@@ -58,7 +59,7 @@ def role(request, role_typeName, role_id):
     return render_to_response("roles/role_details.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def role_data(request, role_typeName, role_id):
     try:

@@ -74,6 +74,7 @@ def update_character_associations(user):
                 ownership.owner = user
                 ownership.save()
         except eveapi.Error as err:
+            logger.warning(str(err))
             if err.code in [202, 203, 204, 205, 210, 212]:
                 # authentication failure error codes. 
                 # This happens if the apiKey does not match the userID

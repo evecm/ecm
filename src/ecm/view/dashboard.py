@@ -19,8 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-from ecm.core import evedb
-from ecm.core.parsers import assetsconstants
 
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
@@ -30,12 +28,15 @@ import json
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
+from ecm.core import evedb
+from ecm.core.parsers import assetsconstants
+from ecm.view.decorators import check_user_access
 from ecm.data.roles.models import Member, CharacterOwnership
 from ecm.data.common.models import ColorThreshold, UserAPIKey
-from ecm.view.decorators import user_is_director
+
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def dashboard(request):
     data = {
         'unassociatedCharacters' : Member.objects.filter(corped=True, ownership=None).count(),

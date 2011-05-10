@@ -164,5 +164,5 @@ def resolveLocationName(locationID):
             return getCachedLocation(locationID)
         except KeyError:
             # locationID was not valid
-            return ""
+            return ("", 0.0)
 

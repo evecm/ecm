@@ -32,13 +32,13 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 
 from ecm.core import utils
-from ecm.view.decorators import user_is_director
+from ecm.view.decorators import check_user_access
 from ecm.data.roles.models import Member, CharacterOwnership
 from ecm.data.common.models import ColorThreshold
 from ecm.view import extract_datatable_params, get_members
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def player_list(request):
     data = { 
         'colorThresholds' : ColorThreshold.as_json(),
@@ -47,7 +47,7 @@ def player_list(request):
 
 #------------------------------------------------------------------------------
 USER_COLUMNS = ["username", "char_count", "group_count", "date_joined"]
-@user_is_director()
+@check_user_access()
 def player_list_data(request):
     try:
         extract_datatable_params(request)
@@ -103,7 +103,7 @@ def player_list_data(request):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def player_details(request, player_id):
     player = get_object_or_404(User, id=int(player_id))
     
@@ -116,7 +116,7 @@ def player_details(request, player_id):
     return render_to_response('auth/player_details.html', data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def player_details_data(request, player_id):
     try:
         extract_datatable_params(request)

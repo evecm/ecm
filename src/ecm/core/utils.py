@@ -108,39 +108,3 @@ def get_access_color(accessLvl, colorThresholds):
             return t.color
     return ""
 
-
-def merge_lists(list_a, list_b, ascending=True, attribute=None):
-    merged_list = []
-    a = list(list_a)
-    b = list(list_b)
-                 
-    if attribute:
-        if ascending:
-            while a and b:
-                if getattr(a[0], attribute) < getattr(b[0], attribute):
-                    merged_list.append(a.pop(0))
-                else:
-                    merged_list.append(b.pop(0))
-        else:
-            while a and b:
-                if getattr(a[0], attribute) > getattr(b[0], attribute):
-                    merged_list.append(a.pop(0))
-                else:
-                    merged_list.append(b.pop(0))
-    else:
-        if ascending:
-            while a and b:
-                if a[0] < b[0]:
-                    merged_list.append(a.pop(0))
-                else:
-                    merged_list.append(b.pop(0))
-        else:
-            while a and b:
-                if a[0] > b[0]:
-                    merged_list.append(a.pop(0))
-                else:
-                    merged_list.append(b.pop(0))
-    
-    merged_list += a or b
-    
-    return merged_list

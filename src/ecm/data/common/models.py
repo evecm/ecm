@@ -28,7 +28,7 @@ import re
 import random
 import datetime
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models, transaction
 from django.conf import settings
 from django.utils.hashcompat import sha_constructor
@@ -138,9 +138,22 @@ class ColorThreshold(models.Model):
         return unicode("%s -> %d" % (self.color, self.threshold))
 
 
-
-
-
+#------------------------------------------------------------------------------
+class Url(models.Model):
+    """
+    """
+    pattern = models.CharField(max_length=256)
+    groups = models.ManyToManyField(Group)
+    
+    def __unicode__(self):
+        return "<URL: %s>" % self.pattern
+    
+    def __eq__(self, other):
+        return self.pattern == other.pattern
+    
+    def __hash__(self):
+        return hash(self.pattern)
+    
 #------------------------------------------------------------------------------
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')

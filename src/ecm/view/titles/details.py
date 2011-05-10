@@ -30,16 +30,17 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 
+from ecm.view.decorators import check_user_access
 from ecm.view import extract_datatable_params
 from ecm.data.roles.models import TitleComposition, TitleCompoDiff, Title
 from ecm.core import utils
 from ecm.data.common.models import ColorThreshold
 from ecm.core.utils import get_access_color
-from ecm.view.decorators import user_is_director
+
 
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 def details(request, id):
     
     title = get_object_or_404(Title, titleID=int(id))
@@ -62,7 +63,7 @@ def details(request, id):
 
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def composition_data(request, id):
     try:
@@ -101,7 +102,7 @@ def composition_data(request, id):
 
 
 #------------------------------------------------------------------------------
-@user_is_director()
+@check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def compo_diff_data(request, id):
     try:
