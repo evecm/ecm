@@ -40,7 +40,7 @@ CRON_USERNAME = "cron"
 ADMIN_USERNAME = "admin"
 #EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
-ECM_BASE_URL = "http://127.0.0.1:8000"
+ECM_BASE_URL = "127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
 
 ###############################################################################
