@@ -3,7 +3,7 @@ Greetings {{ user_name }},
 You created a new account on {{ corp_name }}'s EVE Corporation Management. 
 Please click on the following link in order to activate your account.
 	
-{{ site }}/account/activate/{{ activation_key }}
+http://{{ site }}/account/activate/{{ activation_key }}
 N.B.: You have {{ expiration_days }} day{{ expiration_days|pluralize }} to activate your account.
 	
 Thank you and see you in space :-)

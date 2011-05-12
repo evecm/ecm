@@ -6,12 +6,11 @@
 	
 	<p>The following API credentials are invalid:</p>
 	<ul>
-	{% for api in invalid_apis %}
-    	<li>{{ api.userID }}</li>
-    {% endfor %}
-	</ul>
+	{% for api in invalid_apis %}<li>{{ api.userID }}: {{ api.error }}</li>
+	{% endfor %}</ul>
+	
 	<p>All the characters from these accounts are not associated with your profile anymore. 
-	Please log in to <a href="{{ site }}/account">{{ site }}</a> and enter correct API credentials.</p>
+	Please log in to <a href="http://{{ site }}">http://{{ site }}</a> and enter correct API credentials.</p>
 	
 	<p><i>NB: If you don't own these accounts anymore, you can delete them from your profile.</i></p>
 
