@@ -60,7 +60,7 @@ DEFAULT_FROM_EMAIL = ""
 DATABASES = {
     'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': resolvePath('db/ECM.db')
+#        'NAME': resolvePath('../db/ECM.db')
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'ecm',
         'USER': 'ecm',
@@ -68,7 +68,7 @@ DATABASES = {
     },
     'eve': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': resolvePath('db/EVE.db')
+        'NAME': resolvePath('../db/EVE.db')
     }
 }
 
@@ -80,7 +80,7 @@ MANAGERS = ADMINS
 TIME_ZONE = 'Europe/Paris'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
-MEDIA_ROOT = resolvePath('media/')
+MEDIA_ROOT = resolvePath('../media/')
 MEDIA_URL = "/m/"
 SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
 ROOT_URLCONF = 'ecm.urls'
@@ -110,7 +110,7 @@ CACHES = {
 }
 
 TEMPLATE_DIRS = (
-        resolvePath('templates/'),
+        resolvePath('../templates/'),
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -147,8 +147,8 @@ INSTALLED_APPS = (
 
 ###############################################################################
 # LOGGING SETTINGS
-if not os.path.exists(resolvePath('logs')):
-    os.makedirs(resolvePath('logs'))
+if not os.path.exists(resolvePath('../logs')):
+    os.makedirs(resolvePath('../logs'))
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -162,7 +162,7 @@ LOGGING = {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'INFO',
-            'filename': resolvePath('logs/scheduler.log'),
+            'filename': resolvePath('../logs/scheduler.log'),
             'when': 'midnight', # roll over each day at midnight
             'backupCount': 15, # keep 15 backup files
         },
@@ -181,7 +181,7 @@ LOGGING = {
             'level': 'ERROR',
             'when': 'midnight',
             'backupCount': 15,
-            'filename': resolvePath('logs/error.log'),
+            'filename': resolvePath('../logs/error.log'),
         },
     },
     'loggers': {
