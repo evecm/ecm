@@ -55,11 +55,13 @@ def add_api(request):
             user_api.save()
             
             for char in form.characters:
-                if char.is_corped:
+                try:
                     owned = CharacterOwnership()
                     owned.owner = request.user
-                    owned.character_id = char.characterID
+                    owned.character = Member.objects.get(characterID=char.characterID)
                     owned.save()
+                except Member.DoesNotExist:
+                    continue
             
             update_user_accesses(request.user)
             

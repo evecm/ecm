@@ -38,7 +38,7 @@ from captcha.fields import CaptchaField
 from ecm.core import api
 from ecm.data.common.models import UserAPIKey
 from ecm.lib import eveapi
-from ecm.data.roles.models import CharacterOwnership
+from ecm.data.roles.models import CharacterOwnership, Member
 from ecm.view.auth.fields import PasswordField
 
 #------------------------------------------------------------------------------
@@ -104,14 +104,17 @@ class AccountCreationForm(forms.Form):
             # characters which are members of the corporation
             try:
                 self.characters = api.get_account_characters(UserAPIKey(userID=userID, key=apiKey))
-                if len([ c for c in self.characters if c.is_corped ]) == 0:
+                valid_account = False
+                for c in self.characters: 
+                    valid_account |= Member.objects.exists(characterID=c.characterID)
+                if valid_account:
+                    ids = [ c.characterID for c in self.characters ]
+                    if CharacterOwnership.objects.filter(character__in=ids).exclude(owner=self.user):
+                        self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
+                        del cleaned_data["userID"]
+                else:
                     self._errors["userID"] = self.error_class([_("This EVE account has no character member of the corporation")])
                     del cleaned_data["userID"]
-                else:
-                    ids = [ c.characterID for c in self.characters ]
-                    if CharacterOwnership.objects.filter(character__in=ids):
-                        self._errors["userID"] = self.error_class([_("A character from this account is already registered")])
-                        del cleaned_data["userID"]
             except eveapi.Error as e:
                 self._errors["userID"] = self.error_class([str(e)])
                 self._errors["apiKey"] = self.error_class([str(e)])
@@ -235,14 +238,17 @@ class AddApiKeyForm(forms.Form):
             # characters which are members of the corporation
             try:
                 self.characters = api.get_account_characters(UserAPIKey(userID=userID, key=apiKey))
-                if len([ c for c in self.characters if c.is_corped ]) == 0:
-                    self._errors["userID"] = self.error_class([_("This EVE account has no character member of the corporation")])
-                    del cleaned_data["userID"]
-                else:
+                valid_account = False
+                for c in self.characters: 
+                    valid_account |= Member.objects.exists(characterID=c.characterID)
+                if valid_account:
                     ids = [ c.characterID for c in self.characters ]
-                    if CharacterOwnership.objects.filter(character__in=ids):
+                    if CharacterOwnership.objects.filter(character__in=ids).exclude(owner=self.user):
                         self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["userID"]
+                else:
+                    self._errors["userID"] = self.error_class([_("This EVE account has no character member of the corporation")])
+                    del cleaned_data["userID"]
             except eveapi.Error as e:
                 self._errors["userID"] = self.error_class([str(e)])
                 self._errors["apiKey"] = self.error_class([str(e)])
@@ -268,14 +274,17 @@ class EditApiKeyForm(forms.Form):
             # characters which are members of the corporation
             try:
                 self.characters = api.get_account_characters(UserAPIKey(userID=userID, key=apiKey))
-                if len([ c for c in self.characters if c.is_corped ]) == 0:
-                    self._errors["userID"] = self.error_class([_("This EVE account has no character member of the corporation")])
-                    del cleaned_data["userID"]
-                else:
+                valid_account = False
+                for c in self.characters: 
+                    valid_account |= Member.objects.exists(characterID=c.characterID)
+                if valid_account:
                     ids = [ c.characterID for c in self.characters ]
                     if CharacterOwnership.objects.filter(character__in=ids).exclude(owner=self.user):
                         self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["userID"]
+                else:
+                    self._errors["userID"] = self.error_class([_("This EVE account has no character member of the corporation")])
+                    del cleaned_data["userID"]
             except eveapi.Error as e:
                 self._errors["apiKey"] = self.error_class([str(e)])
                 del cleaned_data["apiKey"]

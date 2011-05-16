@@ -33,7 +33,7 @@ from django.core.mail.message import EmailMultiAlternatives
 
 from ecm.core.tasks.users import update_user_accesses
 from ecm.data.common.models import UserAPIKey, RegistrationProfile
-from ecm.data.roles.models import CharacterOwnership
+from ecm.data.roles.models import CharacterOwnership, Member
 from ecm.view.auth.forms import AccountCreationForm
 
 #------------------------------------------------------------------------------
@@ -55,11 +55,13 @@ def create_account(request):
             user_api.save()
             
             for char in form.characters:
-                if char.is_corped:
+                try:
                     owned = CharacterOwnership()
                     owned.owner = user
-                    owned.character_id = char.characterID
+                    owned.character = Member.objects.get(characterID=char.characterID)
                     owned.save()
+                except Member.DoesNotExist:
+                    continue
             
             send_activation_email(request, profile)
             

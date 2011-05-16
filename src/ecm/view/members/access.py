@@ -32,7 +32,6 @@ from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
-from ecm.core import utils
 from ecm.view.decorators import check_user_access
 from ecm.core.utils import print_time_min
 

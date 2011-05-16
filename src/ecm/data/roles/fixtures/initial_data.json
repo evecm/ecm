@@ -2610,5 +2610,149 @@
       "roleName": "roleDiplomat", 
       "hangar": null
     }
-  }
+  },
+    {
+      "pk": 1, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 1"
+      }
+    }, 
+    {
+      "pk": 2, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 2"
+      }
+    }, 
+    {
+      "pk": 4, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 3"
+      }
+    }, 
+    {
+      "pk": 8, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 4"
+      }
+    }, 
+    {
+      "pk": 16, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 5"
+      }
+    }, 
+    {
+      "pk": 32, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 6"
+      }
+    }, 
+    {
+      "pk": 64, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 7"
+      }
+    }, 
+    {
+      "pk": 128, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 8"
+      }
+    }, 
+    {
+      "pk": 256, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 9"
+      }
+    }, 
+    {
+      "pk": 512, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 10"
+      }
+    }, 
+    {
+      "pk": 1024, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 11"
+      }
+    }, 
+    {
+      "pk": 2048, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 12"
+      }
+    }, 
+    {
+      "pk": 4096, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 13"
+      }
+    }, 
+    {
+      "pk": 8192, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 14"
+      }
+    }, 
+    {
+      "pk": 16384, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 15"
+      }
+    }, 
+    {
+      "pk": 32768, 
+      "model": "roles.title", 
+      "fields": {
+        "tiedToBase": 0, 
+        "accessLvl": 0, 
+        "titleName": "Title 16"
+      }
+    }
 ]

@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 from ecm.view.auth.forms import PasswordChangeForm, PasswordResetForm, PasswordSetForm
+from ecm.data.roles.models import RoleType
 
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
@@ -159,3 +160,25 @@ urlpatterns += patterns('ecm.view.assets.diff',
     (r'^assets/changes/' + DATE + r'/(\d+)/(\d+)/(\d+)/data$', 'hangar_contents_data'),
     (r'^assets/changes/' + DATE + r'/search$',       'search_items'),
 )
+
+role_types = []
+for rt in RoleType.objects.all().order_by('id'):
+    role_types.append({'item_title': rt.dispName, 'item_url': '/roles/%s' % rt.typeName})
+
+ecm_menus = [
+    {'menu_title': 'Home',      'menu_url': '/',            'menu_items': []},
+    {'menu_title': 'Dashboard', 'menu_url': '/dashboard',   'menu_items': []},
+    {'menu_title': 'Members',   'menu_url': '/members',     'menu_items': [
+        {'item_title': 'History', 'item_url': '/members/history'},
+        {'item_title': 'Access Changes', 'item_url': '/members/unassociated'},
+        {'item_title': 'Unassociated Members', 'item_url': '/members/access_changes'},
+    ]},
+    {'menu_title': 'Titles',    'menu_url': '/titles',      'menu_items': [
+        {'item_title': 'Changes', 'item_url': '/titles/changes'},
+    ]},
+    {'menu_title': 'Roles',     'menu_url': '/roles',       'menu_items': role_types},
+    {'menu_title': 'Assets',    'menu_url': '/assets',      'menu_items': [
+        {'item_title': 'Changes', 'item_url': '/assets/changes'},
+    ]},
+    {'menu_title': 'Players',   'menu_url': '/players',     'menu_items': []},
+]

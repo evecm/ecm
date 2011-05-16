@@ -67,76 +67,9 @@
       <!-- A.2 HEADER BOTTOM -->
 	{% if user.is_authenticated %}
       <div class="header-bottom">
-      
         <!-- Navigation Level 2 (Drop-down menus) -->
         <div class="nav2">
-          <!-- Navigation item -->
-          <ul>
-            <li><a href="/">Home</a>
-              <!--[if lte IE 6]><table><tr><td><![endif]-->
-                <ul>
-                  <li><a href="/dashboard">Dashboard</a></li>
-                </ul>
-              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
-            </li>
-          </ul>
-          
-          <!-- Navigation item -->
-          <ul>
-            <li><a href="/members">Members<!--[if IE 7]><!--></a><!--<![endif]-->
-              <!--[if lte IE 6]><table><tr><td><![endif]-->
-                <ul>
-                  <li><a href="/members/history">History</a></li>
-                  <li><a href="/members/unassociated">Unassociated Members</a></li>
-                  <li><a href="/members/access_changes">Access Changes</a></li>
-                </ul>
-              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
-            </li>
-          </ul>          
-
-          <!-- Navigation item -->
-          <ul>
-            <li><a href="/titles">Titles</a>
-              <!--[if lte IE 6]><table><tr><td><![endif]-->
-                <ul>
-                  <li><a href="/titles/changes">Changes</a></li>
-                </ul>
-              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
-            </li>
-          </ul>
-          
-          <!-- Navigation item -->
-          <ul>
-            <li><a href="/roles">Roles</a>
-              <!--[if lte IE 6]><table><tr><td><![endif]-->
-                {% if role_types %}
-                <ul>
-                {% for rt in role_types %}
-                  <li><a href="/roles/{{ rt.typeName }}">{{ rt.dispName }}</a></li>
-                {% endfor %}
-                </ul>
-                {% endif %}
-              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
-            </li>
-          </ul>
-
-          <!-- Navigation item -->
-          <ul>
-            <li><a href="/assets">Assets<!--[if IE 7]><!--></a><!--<![endif]-->
-              <!--[if lte IE 6]><table><tr><td><![endif]-->
-                <ul>
-                  <li><a href="/assets/changes">Changes</a></li>
-                </ul>
-              <!--[if lte IE 6]></td></tr></table></a><![endif]-->
-            </li>
-          </ul>  
-          
-          <!-- Navigation item -->
-          <ul>
-            <li><a href="/players">Players<!--[if IE 7]><!--></a><!--<![endif]-->
-            </li>
-          </ul>           
-         
+{{ user_menu|safe }}         
         </div>
 	  </div>
        {% endif %} {# user.is_authenticated #}

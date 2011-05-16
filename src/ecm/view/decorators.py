@@ -35,7 +35,7 @@ from django.contrib.auth.models import AnonymousUser, Group
 from django.http import HttpResponse
 from django.conf import settings
 
-from ecm.data.common.models import Url
+from ecm.data.common.models import user_has_access
 from ecm.data.roles.models import CharacterOwnership
 
 #------------------------------------------------------------------------------
@@ -89,12 +89,7 @@ def check_user_access():
     def decorator(view_function):
         def _wrapped_view(request, *args, **kwargs):
             if request.user.is_authenticated():
-                access_ok = False
-                for url in Url.objects.all():
-                    url_re = re.compile(url.pattern)
-                    if url_re.match(request.get_full_path()):
-                        access_ok = set(url.groups.all()).intersection(set(request.user.groups.all()))
-                        break
+                access_ok = user_has_access(request.user, request.get_full_path())
                 if not access_ok:
                     try:
                         url_re = re.compile("^/members/\d+.*$")

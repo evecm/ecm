@@ -34,5 +34,141 @@
       "email": "", 
       "date_joined": "2011-03-26 01:06:08"
     }
-  }
+  },
+    {
+      "pk": 1, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 1", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 2, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 2", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 4, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 3", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 8, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 4", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 16, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 5", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 32, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 6", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 64, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 7", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 128, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 8", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 256, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 9", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 512, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 10", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 1024, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 11", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 2048, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 12", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 4096, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 13", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 8192, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 14", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 16384, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 15", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 32768, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Title 16", 
+        "permissions": []
+      }
+    }, 
+    {
+      "pk": 65536, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Directors", 
+        "permissions": []
+      }
+    }
 ]

@@ -12,7 +12,7 @@
     "model": "common.colorthreshold", 
     "fields": {
       "color": "blue", 
-      "threshold": 5000
+      "threshold": 4000
     }
   }, 
   {
@@ -36,7 +36,7 @@
     "model": "common.colorthreshold", 
     "fields": {
       "color": "orange", 
-      "threshold": 40000
+      "threshold": 200000
     }
   }, 
   {
@@ -54,7 +54,7 @@
       "color": "purple", 
       "threshold": 3000000
     }
-  },
+  }, 
   {
     "pk": 8, 
     "model": "common.colorthreshold", 
@@ -62,5 +62,75 @@
       "color": "black", 
       "threshold": 999999999999
     }
-  } 
+  }, 
+  {
+    "pk": 1, 
+    "model": "common.url", 
+    "fields": {
+      "pattern": "^/members.*$", 
+      "groups": [
+        65536
+      ]
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "common.url", 
+    "fields": {
+      "pattern": "^/titles.*$", 
+      "groups": [
+        65536
+      ]
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "common.url", 
+    "fields": {
+      "pattern": "^/roles.*$", 
+      "groups": [
+        65536
+      ]
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "common.url", 
+    "fields": {
+      "pattern": "^/assets.*$", 
+      "groups": [
+        65536
+      ]
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "common.url", 
+    "fields": {
+      "pattern": "^/$", 
+      "groups": [
+        65536
+      ]
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "common.url", 
+    "fields": {
+      "pattern": "^/dashboard.*$", 
+      "groups": [
+        65536
+      ]
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "common.url", 
+    "fields": {
+      "pattern": "^/players.*$", 
+      "groups": [
+        65536
+      ]
+    }
+  }
 ]

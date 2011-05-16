@@ -154,6 +154,18 @@ class Url(models.Model):
     def __hash__(self):
         return hash(self.pattern)
     
+def user_has_access(user, target_url):
+    access = False
+    for url in Url.objects.all():
+        url_re = re.compile(url.pattern)
+        if url_re.match(target_url):
+            access = set(url.groups.all()).intersection(set(user.groups.all())) and True or False
+            break
+    return access
+
+        
+        
+    
 #------------------------------------------------------------------------------
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
