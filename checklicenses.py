@@ -59,6 +59,8 @@ def check_file(file, license, modify):
             
 
 def check_dir((license, modify), dir, files):
+    if os.path.basename(dir) == "lib":
+        return
     for file in files:
         file = os.path.join(dir, file)
         if os.path.isfile(file):
@@ -67,7 +69,7 @@ def check_dir((license, modify), dir, files):
 
 def main():
     dir_path = os.path.abspath(os.path.dirname(__file__))
-    fd = open(os.path.join(dir_path, "src/ecm/LICENSE"), "r")
+    fd = open(os.path.join(dir_path, "LICENSE"), "r")
     license = fd.read()
     fd.close()
     

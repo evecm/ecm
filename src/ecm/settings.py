@@ -33,12 +33,11 @@ def resolvePath(relativePath):
 
 ###############################################################################
 # ECM SETTINGS
-ALL_GROUP_IDS = [ 1 << i  for i in range(17)] # generates all titleIDs
+ALL_GROUP_IDS = [ 1 << i  for i in range(17) ] # generates all titleIDs
 DIRECTOR_GROUP_ID = 1 << 16 # 65536 (it is twice the max titleID)
 DIRECTOR_GROUP_NAME = "Directors"
 CRON_USERNAME = "cron"
 ADMIN_USERNAME = "admin"
-#EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
 ECM_BASE_URL = "127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
@@ -57,18 +56,33 @@ EMAIL_USE_TLS = False
 # put a real email address here, if not, emails sent by the server will be discarded by the relay servers
 DEFAULT_FROM_EMAIL = "" 
 
-DATABASES = {
+DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': resolvePath('db/ECM.db')
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ecm',
-        'USER': 'ecm',
-        'PASSWORD': 'ecm',
+# SQLite
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': resolvePath('../db/ECM.db')
+
+# PostgreSQL with psycopg driver
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'ecm',
+#        'USER': 'ecm',
+#        'PASSWORD': 'ecm',
+
+# PostgreSQL with psycopg2 driver
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'ecm',
+#        'USER': 'ecm',
+#        'PASSWORD': 'ecm',
+        
+# MySQL
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'ecm',
+#        'USER': 'ecm',
+#        'PASSWORD': 'ecm',
     },
     'eve': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': resolvePath('db/EVE.db')
+        'NAME': resolvePath('../db/EVE.db')
     }
 }
 
@@ -80,7 +94,7 @@ MANAGERS = ADMINS
 TIME_ZONE = 'Europe/Paris'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
-MEDIA_ROOT = resolvePath('media/')
+MEDIA_ROOT = resolvePath('../media/')
 MEDIA_URL = "/m/"
 SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
 ROOT_URLCONF = 'ecm.urls'
@@ -110,7 +124,7 @@ CACHES = {
 }
 
 TEMPLATE_DIRS = (
-        resolvePath('templates/'),
+        resolvePath('../templates/'),
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -147,8 +161,8 @@ INSTALLED_APPS = (
 
 ###############################################################################
 # LOGGING SETTINGS
-if not os.path.exists(resolvePath('logs')):
-    os.makedirs(resolvePath('logs'))
+if not os.path.exists(resolvePath('../logs')):
+    os.makedirs(resolvePath('../logs'))
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -162,7 +176,7 @@ LOGGING = {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'INFO',
-            'filename': resolvePath('logs/scheduler.log'),
+            'filename': resolvePath('../logs/scheduler.log'),
             'when': 'midnight', # roll over each day at midnight
             'backupCount': 15, # keep 15 backup files
         },
@@ -181,12 +195,11 @@ LOGGING = {
             'level': 'ERROR',
             'when': 'midnight',
             'backupCount': 15,
-            'filename': resolvePath('logs/error.log'),
+            'filename': resolvePath('../logs/error.log'),
         },
     },
     'loggers': {
-        'ecm': {
-                                            # remove console handler on production
+        'ecm': {                            # remove console handler on production
             'handlers':['ecm_file_handler', 'ecm_console_handler'], 
             'propagate': True,
             'level':'DEBUG',

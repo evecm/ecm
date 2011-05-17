@@ -55,13 +55,14 @@ def create_account(request):
             user_api.save()
             
             for char in form.characters:
-                try:
-                    owned = CharacterOwnership()
-                    owned.owner = user
-                    owned.character = Member.objects.get(characterID=char.characterID)
-                    owned.save()
-                except Member.DoesNotExist:
-                    continue
+                if char.is_corped:
+                    try:
+                        owned = CharacterOwnership()
+                        owned.owner = user
+                        owned.character = Member.objects.get(characterID=char.characterID)
+                        owned.save()
+                    except Member.DoesNotExist:
+                        continue
             
             send_activation_email(request, profile)
             
@@ -102,10 +103,8 @@ def send_activation_email(request, user_profile):
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
     
-    txt_content = render_to_string('auth/activation_email.txt',
-                                   ctx_dict, context_instance=RequestContext(request))
-    html_content = render_to_string('auth/activation_email.html',
-                                    ctx_dict, context_instance=RequestContext(request))
+    txt_content = render_to_string('auth/activation_email.txt', ctx_dict, RequestContext(request))
+    html_content = render_to_string('auth/activation_email.html', ctx_dict, RequestContext(request))
     msg = EmailMultiAlternatives(subject, 
                                  body=txt_content,
                                  to=[user_profile.user.email])

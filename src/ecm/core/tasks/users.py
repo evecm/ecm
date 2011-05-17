@@ -63,7 +63,7 @@ def update_character_associations(user):
     invalid_apis = []
     for user_api in user_apis:
         try:
-            ids = [ char.characterID for char in api.get_account_characters(user_api) ]
+            ids = [ char.characterID for char in api.get_account_characters(user_api) if char.is_corped ]
             user_api.is_valid = True
             for member in Member.objects.filter(characterID__in=ids):
                 try:
