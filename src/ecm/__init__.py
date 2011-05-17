@@ -20,4 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+__author__ = "diabeteman"
 
+__date__ = "2011-05-17"
+
+timestamp = "%(timestamp)s"
+version = "1.0.0"
+
+def get_full_version():
+    return version + '.' + timestamp

@@ -33,12 +33,11 @@ def resolvePath(relativePath):
 
 ###############################################################################
 # ECM SETTINGS
-ALL_GROUP_IDS = [ 1 << i  for i in range(17)] # generates all titleIDs
+ALL_GROUP_IDS = [ 1 << i  for i in range(17) ] # generates all titleIDs
 DIRECTOR_GROUP_ID = 1 << 16 # 65536 (it is twice the max titleID)
 DIRECTOR_GROUP_NAME = "Directors"
 CRON_USERNAME = "cron"
 ADMIN_USERNAME = "admin"
-#EVE_DB_FILE = resolvePath('db/EVE.db')
 EVE_API_VERSION = "2"
 ECM_BASE_URL = "127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
@@ -57,14 +56,29 @@ EMAIL_USE_TLS = False
 # put a real email address here, if not, emails sent by the server will be discarded by the relay servers
 DEFAULT_FROM_EMAIL = "" 
 
-DATABASES = {
+DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': resolvePath('../db/ECM.db')
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ecm',
-        'USER': 'ecm',
-        'PASSWORD': 'ecm',
+# SQLite
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': resolvePath('../db/ECM.db')
+
+# PostgreSQL with psycopg driver
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'ecm',
+#        'USER': 'ecm',
+#        'PASSWORD': 'ecm',
+
+# PostgreSQL with psycopg2 driver
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'ecm',
+#        'USER': 'ecm',
+#        'PASSWORD': 'ecm',
+        
+# MySQL
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'ecm',
+#        'USER': 'ecm',
+#        'PASSWORD': 'ecm',
     },
     'eve': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -185,8 +199,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'ecm': {
-                                            # remove console handler on production
+        'ecm': {                            # remove console handler on production
             'handlers':['ecm_file_handler', 'ecm_console_handler'], 
             'propagate': True,
             'level':'DEBUG',

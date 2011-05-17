@@ -105,8 +105,9 @@ class AccountCreationForm(forms.Form):
             try:
                 self.characters = api.get_account_characters(UserAPIKey(userID=userID, key=apiKey))
                 valid_account = False
-                for c in self.characters: 
-                    valid_account |= Member.objects.exists(characterID=c.characterID)
+                for c in self.characters:
+                    exists = Member.objects.filter(characterID=c.characterID).exists()
+                    valid_account |= exists and c.is_corped
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
                     if CharacterOwnership.objects.filter(character__in=ids).exclude(owner=self.user):
@@ -240,7 +241,8 @@ class AddApiKeyForm(forms.Form):
                 self.characters = api.get_account_characters(UserAPIKey(userID=userID, key=apiKey))
                 valid_account = False
                 for c in self.characters: 
-                    valid_account |= Member.objects.exists(characterID=c.characterID)
+                    exists = Member.objects.filter(characterID=c.characterID).exists()
+                    valid_account |= exists and c.is_corped
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
                     if CharacterOwnership.objects.filter(character__in=ids).exclude(owner=self.user):
@@ -276,7 +278,8 @@ class EditApiKeyForm(forms.Form):
                 self.characters = api.get_account_characters(UserAPIKey(userID=userID, key=apiKey))
                 valid_account = False
                 for c in self.characters: 
-                    valid_account |= Member.objects.exists(characterID=c.characterID)
+                    exists = Member.objects.filter(characterID=c.characterID).exists()
+                    valid_account |= exists and c.is_corped
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
                     if CharacterOwnership.objects.filter(character__in=ids).exclude(owner=self.user):

@@ -55,13 +55,14 @@ def add_api(request):
             user_api.save()
             
             for char in form.characters:
-                try:
-                    owned = CharacterOwnership()
-                    owned.owner = request.user
-                    owned.character = Member.objects.get(characterID=char.characterID)
-                    owned.save()
-                except Member.DoesNotExist:
-                    continue
+                if char.is_corped:
+                    try:
+                        owned = CharacterOwnership()
+                        owned.owner = request.user
+                        owned.character = Member.objects.get(characterID=char.characterID)
+                        owned.save()
+                    except Member.DoesNotExist:
+                        continue
             
             update_user_accesses(request.user)
             
@@ -97,17 +98,18 @@ def edit_api(request, userID):
             api.save()
             
             for char in form.characters:
-                try:
-                    member = Member.objects.get(characterID=char.characterID)
+                if char.is_corped:
                     try:
-                        ownership = member.ownership
-                    except CharacterOwnership.DoesNotExist:
-                        ownership = CharacterOwnership()
-                        ownership.character = member
-                    ownership.owner = request.user
-                    ownership.save()
-                except Member.DoesNotExist:
-                    pass
+                        member = Member.objects.get(characterID=char.characterID)
+                        try:
+                            ownership = member.ownership
+                        except CharacterOwnership.DoesNotExist:
+                            ownership = CharacterOwnership()
+                            ownership.character = member
+                        ownership.owner = request.user
+                        ownership.save()
+                    except Member.DoesNotExist:
+                        pass
             
             update_user_accesses(request.user)
             
