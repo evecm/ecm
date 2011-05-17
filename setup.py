@@ -1,8 +1,10 @@
 import shutil
-from distutils import dir_util
+from distutils import dir_util, archive_util
 import sys
 import django
 import os
+import fnmatch
+import tarfile
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
 data_dict = {
@@ -13,6 +15,7 @@ data_dict = {
     'django_dir': os.path.abspath(os.path.dirname(django.__file__)).replace("\\", "/"),
     'src_dir': os.path.join(root_dir, "src").replace("\\", "/"),
     'dist_dir': os.path.join(root_dir, "dist").replace("\\", "/"),
+    'package_dir': os.path.join(root_dir, "package").replace("\\", "/"),
 }
 sys.path.append(data_dict['src_dir'])
 import ecm
@@ -55,31 +58,41 @@ def install():
     print "Note: if needed, you can edit '%s' to configure custom database and email access." % settings
 
 def package():
-    if os.path.exists(data_dict['dist_dir']):
-        dir_util.remove_tree(data_dict['dist_dir'])
-    dist_src =  os.path.join(data_dict['dist_dir'], "src")
-    ignore_func = get_ignore_func(os.path.join(root_dir, '.hgignore'))
-    shutil.copytree(src=data_dict['src_dir'], dst=dist_src, ignore=ignore_func)
+    if os.path.exists(data_dict['package_dir']):
+        print "Removing old package dir..."
+        dir_util.remove_tree(data_dict['package_dir'])
     
-    init_file = os.path.join(os.path.join(data_dict['dist_dir'], "src/ecm/__init__.py"))
+    package_src_dir =  os.path.join(data_dict['package_dir'], "src")
+    print "Copying files to package dir..."
+    shutil.copytree(src=data_dict['src_dir'], dst=package_src_dir, ignore=ignore_func)
+    shutil.copy(__file__, data_dict['package_dir'])
+    print "Inserting timestamp in __init__.py file..."
+    init_file = os.path.join(os.path.join(package_src_dir, "ecm/__init__.py"))
     timestamp = set_timestamp(init_file)
     version = ecm.version
+    print "Version %s.%s" % (version, timestamp)
     
-    print version, timestamp
+    print "Creating archive..."
+    if os.path.exists(data_dict['dist_dir']):
+        dir_util.remove_tree(data_dict['dist_dir'])
+    os.makedirs(data_dict['dist_dir'])
+    archive_name = os.path.normpath("ECM-%s.tar.gz" % version)
+
+    curdir = os.getcwd()
+    os.chdir(data_dict['dist_dir'])
+    tar = tarfile.open(archive_name, "w:gz")
+    tar.add(data_dict['package_dir'], arcname="ECM-%s" % version)
+    tar.close()
+    os.chdir(curdir)
+
+    print "Archive generated:", archive_name
     
-    
-def get_ignore_func(ignore_file):
-    f = open(ignore_file, 'r')
-    lines = f.readlines()
-    f.close()
-    del lines[0] # get rid of the first line, it contains the ignore pattern type
-    patterns = []
-    for line in lines:
-        line = line.strip('\n')
-        if line.startswith('src/'):
-            line = line[4:]
-        patterns.append(line)
-    return shutil.ignore_patterns(*patterns)
+def ignore_func(path, names):
+    ignored_names = []
+    files = [ os.path.join(path, name) for name in names ]
+    for pattern in ['*.pyc', '*.pyo', '*/db/ECM*.db', '*/db/*journal', '*/logs', '*/scripts/*.sql']:
+        ignored_names.extend(fnmatch.filter(files, pattern))
+    return set([ os.path.basename(name) for name in ignored_names ])
 
 def set_timestamp(file):
     from datetime import datetime

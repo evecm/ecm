@@ -5,4 +5,4 @@ src/db/ECM*.db
 src/db/*journal
 src/logs/*log*
 dist
-
+package
