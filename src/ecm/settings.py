@@ -58,27 +58,8 @@ DEFAULT_FROM_EMAIL = ""
 
 DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     'default': {
-# SQLite
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': resolvePath('../db/ECM.db')
-
-# PostgreSQL with psycopg driver
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'ecm',
-#        'USER': 'ecm',
-#        'PASSWORD': 'ecm',
-
-# PostgreSQL with psycopg2 driver
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'ecm',
-#        'USER': 'ecm',
-#        'PASSWORD': 'ecm',
-        
-# MySQL
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'ecm',
-#        'USER': 'ecm',
-#        'PASSWORD': 'ecm',
     },
     'eve': {
         'ENGINE': 'django.db.backends.sqlite3',

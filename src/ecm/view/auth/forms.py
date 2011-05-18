@@ -110,7 +110,7 @@ class AccountCreationForm(forms.Form):
                     valid_account |= exists and c.is_corped
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
-                    if CharacterOwnership.objects.filter(character__in=ids).exclude(owner=self.user):
+                    if CharacterOwnership.objects.filter(character__in=ids):
                         self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["userID"]
                 else:
@@ -245,7 +245,7 @@ class AddApiKeyForm(forms.Form):
                     valid_account |= exists and c.is_corped
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
-                    if CharacterOwnership.objects.filter(character__in=ids).exclude(owner=self.user):
+                    if CharacterOwnership.objects.filter(character__in=ids):
                         self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["userID"]
                 else:
