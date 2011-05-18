@@ -21,7 +21,7 @@ $(document).ready(function() {
         "iDisplayLength" : 10,
         "bStateSave" : true,
         "iCookieDuration" : 60 * 60 * 24,
-        "sAjaxSource" : "/titles/" + TITLE_ID + "/composition_data",
+        "sAjaxSource" : "/titles/" + TITLE_ID + "/composition/data",
         "sDom" : 'lprtip',
         "aoColumns": [
             {"sTitle": "Role",         "sWidth": "50%", "sType": "html" ,   "bSortable" : false},
@@ -48,7 +48,7 @@ $(document).ready(function() {
         "iDisplayLength" : 10,
         "bStateSave" : true,
         "iCookieDuration" : 60 * 60 * 24,
-        "sAjaxSource" : "/titles/" + TITLE_ID + "/compo_diff_data",
+        "sAjaxSource" : "/titles/" + TITLE_ID + "/compodiff/data",
         "sDom" : 'lprtip',
         "aoColumns": [
             {"sTitle": "Change",            "sWidth": "10%", "sType": "html",    "bSortable" : false},

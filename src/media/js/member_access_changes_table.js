@@ -11,7 +11,7 @@ $(document).ready(function() {
         "iDisplayLength" : 10,
         "bStateSave" : true,
         "iCookieDuration" : 60 * 60 * 24,
-        "sAjaxSource" : "/members/" + MEMBER_ID + "/access_changes_data",
+        "sAjaxSource" : "/members/" + MEMBER_ID + "/accesschanges/data",
         "sDom": 'lprtip',
         "aoColumns": [
             { "sTitle": "Change",     "sWidth": "15%", "sType": "html" ,  "bSortable": false },
