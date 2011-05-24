@@ -40,6 +40,9 @@
 .ok{color: rgb(0,170,0);}
 .error{color: #f00;}
 .center {text-align:center;}
+.right {text-align:right !important;}
+.credit {color: green;}
+.debit {color: red;}
 
 .main-content a.title {
 	padding-left: 14px;
