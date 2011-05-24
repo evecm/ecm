@@ -1,26 +1,19 @@
-# The MIT License - EVE Corporation Management
+# Copyright (c) 2010-2011 Robin Jarry
 # 
-# Copyright (c) 2010 Robin Jarry
+# This file is part of EVE Corporation Management.
 # 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
+# EVE Corporation Management is free software: you can redistribute it and/or 
+# modify it under the terms of the GNU General Public License as published by 
+# the Free Software Foundation, either version 3 of the License, or (at your 
+# option) any later version.
 # 
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
+# EVE Corporation Management is distributed in the hope that it will be useful, 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+# more details.
 # 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-from ecm.view.auth.forms import PasswordChangeForm, PasswordResetForm, PasswordSetForm
-from ecm.data.roles.models import RoleType
+# You should have received a copy of the GNU General Public License along with 
+# EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
@@ -28,6 +21,9 @@ __author__ = "diabeteman"
 from django.conf.urls.defaults import patterns, include
 from django.conf import settings
 from django.contrib import admin
+
+from ecm.view.auth.forms import PasswordChangeForm, PasswordResetForm, PasswordSetForm
+from ecm.data.roles.models import RoleType
 
 admin.autodiscover()
 
@@ -103,10 +99,10 @@ urlpatterns += patterns('ecm.view.members',
     (r'^members/unassociated$',             'list.unassociated'),
     (r'^members/unassociated/data$',        'list.unassociated_data'),
     (r'^members/unassociated/clip$',        'list.unassociated_clip'),
-    (r'^members/access_changes$',           'access.access_changes'),
-    (r'^members/access_changes/data$',      'access.access_changes_data'),
+    (r'^members/accesschanges$',            'access.access_changes'),
+    (r'^members/accesschanges/data$',       'access.access_changes_data'),
     (r'^members/(\d+)$',                    'details.details'),
-    (r'^members/(\d+)/access_changes_data', 'details.access_changes_member_data'),
+    (r'^members/(\d+)/accesschanges/data',  'details.access_changes_member_data'),
 )
 
 urlpatterns += patterns('ecm.view.titles',
@@ -117,8 +113,8 @@ urlpatterns += patterns('ecm.view.titles',
     (r'^titles/changes$',                'changes.changes'),
     (r'^titles/changes/data$',           'changes.changes_data'),
     (r'^titles/(\d+)$',                  'details.details'),
-    (r'^titles/(\d+)/composition_data$', 'details.composition_data'),
-    (r'^titles/(\d+)/compo_diff_data$',  'details.compo_diff_data'),
+    (r'^titles/(\d+)/composition/data$', 'details.composition_data'),
+    (r'^titles/(\d+)/compodiff/data$',   'details.compo_diff_data'),
     (r'^titles/(\d+)/members$',          'members.members'),
     (r'^titles/(\d+)/members/data$',     'members.members_data'),
 )
@@ -161,6 +157,16 @@ urlpatterns += patterns('ecm.view.assets.diff',
     (r'^assets/changes/' + DATE + r'/search$',       'search_items'),
 )
 
+urlpatterns += patterns('ecm.view.accounting',
+    ###########################################################################
+    # ACCOUNTING VIEWS
+    (r'^accounting/journal$',       'journal.list'),
+    (r'^accounting/journal/data$',  'journal.list_data'),
+)
+
+
+
+
 role_types = []
 for rt in RoleType.objects.all().order_by('id'):
     role_types.append({'item_title': rt.dispName, 'item_url': '/roles/%s' % rt.typeName})
@@ -170,13 +176,16 @@ ecm_menus = [
     {'menu_title': 'Dashboard', 'menu_url': '/dashboard',   'menu_items': []},
     {'menu_title': 'Members',   'menu_url': '/members',     'menu_items': [
         {'item_title': 'History', 'item_url': '/members/history'},
-        {'item_title': 'Access Changes', 'item_url': '/members/unassociated'},
-        {'item_title': 'Unassociated Members', 'item_url': '/members/access_changes'},
+        {'item_title': 'Access Changes', 'item_url': '/members/accesschanges'},
+        {'item_title': 'Unassociated Members', 'item_url': '/members/unassociated'},
     ]},
     {'menu_title': 'Titles',    'menu_url': '/titles',      'menu_items': [
         {'item_title': 'Changes', 'item_url': '/titles/changes'},
     ]},
     {'menu_title': 'Roles',     'menu_url': '/roles',       'menu_items': role_types},
+    {'menu_title': 'Accounting',    'menu_url': '/accounting',      'menu_items': [
+        {'item_title': 'Wallets Journal', 'item_url': '/accounting/journal'},
+    ]},
     {'menu_title': 'Assets',    'menu_url': '/assets',      'menu_items': [
         {'item_title': 'Changes', 'item_url': '/assets/changes'},
     ]},
