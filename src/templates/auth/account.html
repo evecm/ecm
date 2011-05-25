@@ -21,7 +21,7 @@
 <table class="transparent" style="width:50%;">
 {% for owned in characters %}
 <tr>
-  <td>{{ owned.as_html|safe }}</td>
+  <td>{{ owned.permalink|safe }}</td>
   <td><input type="button" class="del_character" id="{{ owned.characterID }}" name="{{ owned.name }}" value="Delete"/></td>
 </tr>
 {% endfor %}

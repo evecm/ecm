@@ -39,7 +39,7 @@ MEMBER_ID = "{{ member.characterID }}";
             <span class="bold">Last Logoff:</span> {{ member.lastLogoff }}
             </p>
             <p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ member.date }}</p>
-            <p><span class="bold">Owned by:</span> {{ member.owner_as_html|safe }}</p>
+            <p><span class="bold">Owned by:</span> {{ member.owner_permalink|safe }}</p>
         </td>
     </tr>
 </table>
@@ -72,7 +72,7 @@ None
       <h2>Titles</h2>
       <ul>
       {% for title in member.all_titles %}
-        <li>{{ title.as_html|safe }}</li>
+        <li>{{ title.permalink|safe }}</li>
         {% empty %}
         <p>No titles</p>
       {% endfor %}
@@ -82,7 +82,7 @@ None
       <h2>Extra Roles</h2>
       <ul>
       {% for role in member.roles_no_director %}
-        <li>{{ role.as_html|safe }}</li>
+        <li>{{ role.permalink|safe }}</li>
         {% empty %}
         <p>No extra roles</p>
       {% endfor %}
