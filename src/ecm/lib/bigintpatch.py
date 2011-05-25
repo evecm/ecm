@@ -1,84 +1,96 @@
-"""module mydjangolib.bigint_patch
-
-A fix for the rather well-known ticket #399 in the django project.
-
-Create and link to auto-incrementing primary keys of type bigint without
-having to reload the model instance after saving it to get the ID set in
-the instance.
-"""
-
-from django.core import exceptions
+from django.db.backends import util, BaseDatabaseOperations
+from django.db.backends.sqlite3.base import DatabaseOperations
 from django.db.models import fields
-from django.db import DatabaseError
 from django.utils.translation import ugettext as _
+from django.db.models.fields.related import ForeignKey
+from django.db.backends.postgresql.creation import DatabaseCreation as PostgresDBCreation
+from django.db.backends.sqlite3.creation import DatabaseCreation as SQLiteDBCreation
+from django.db.backends.oracle.creation import DatabaseCreation as OracleDBCreation
+from django.db.backends.mysql.creation import DatabaseCreation as MySQLDBCreation
+
+
 
 __version__ = "1.0"
 __author__ = "Florian Leitner"
 
-class BigIntegerField(fields.IntegerField):
-    
-    def db_type(self, connection):
-        engine = connection.settings_dict.get('ENGINE')
-        if 'mysql' in engine:
-            return "bigint"
-        elif 'oracle' in engine:
-            return "NUMBER(19)"
-        elif 'postgres' in engine:
-            return "bigint"
-        elif 'sqlite' in engine:
-            return "bigint"
-        else:
-            raise DatabaseError("DB engine '%s' is not handled" % str(engine))
-    
-    def get_internal_type(self):
-        return "BigIntegerField"
-    
-    def to_python(self, value):
-        if value is None:
-            return value
-        try:
-            return long(value)
-        except (TypeError, ValueError):
-            raise exceptions.ValidationError(
-                _("This value must be a long integer."))
-
 class BigAutoField(fields.AutoField):
-        
-    def db_type(self, connection):
-        engine = connection.settings_dict.get('ENGINE')
-        if 'mysql' in engine:
-            return "bigint AUTO_INCREMENT"
-        elif 'oracle' in engine:
-            return "NUMBER(19)"
-        elif 'postgres' in engine:
-            return "bigserial"
-        elif 'sqlite' in engine:
-            return "bigint"
-        else:
-            raise DatabaseError("DB engine '%s' is not handled" % str(engine))
+    
+    description = _("Big (8 byte) integer") 
     
     def get_internal_type(self):
         return "BigAutoField"
-    
-    def to_python(self, value):
-        if value is None:
-            return value
-        try:
-            return long(value)
-        except (TypeError, ValueError):
-            raise exceptions.ValidationError(
-                _("This value must be a long integer."))
 
-class BigForeignKey(fields.related.ForeignKey):
-    
-    def db_type(self, connection):
-        rel_field = self.rel.get_related_field()
-        # next lines are the "bad tooth" in the original code:
-        if (isinstance(rel_field, BigAutoField) or
-                (not connection.features.related_fields_match_type and
-                isinstance(rel_field, BigIntegerField))):
-            # because it continues here in the django code:
-            # return IntegerField().db_type()
-            # thereby fixing any AutoField as IntegerField
-            return BigIntegerField().db_type(connection)
-        return rel_field.db_type()
+
+
+PostgresDBCreation.data_types['BigAutoField'] = 'bigserial'
+SQLiteDBCreation.data_types['BigAutoField'] = 'bigint'
+OracleDBCreation.data_types['BigAutoField'] = 'NUMBER(19)'
+MySQLDBCreation.data_types['BigAutoField'] = 'bigint AUTO_INCREMENT'
+
+
+def db_type_foreignkey(self, connection):
+    # The database column type of a ForeignKey is the column type
+    # of the field to which it points. An exception is if the ForeignKey
+    # points to an AutoField/BigAutoField/PositiveIntegerField/ 
+    # PositiveSmallIntegerField, 
+    # in which case the column type is simply that of an IntegerField 
+    # (or BigIntegerField in the case of BigAutoField). 
+    # If the database needs similar types for key fields however, the only
+    # thing we can do is making AutoField an IntegerField.
+    rel_field = self.rel.get_related_field()
+    if isinstance(rel_field, BigAutoField): 
+        return fields.BigIntegerField().db_type(connection=connection) 
+    if (isinstance(rel_field, fields.AutoField) or
+            (not connection.features.related_fields_match_type and
+            isinstance(rel_field, (fields.PositiveIntegerField,
+                                   fields.PositiveSmallIntegerField)))):
+        return fields.IntegerField().db_type(connection=connection)
+    return rel_field.db_type(connection=connection)
+
+ForeignKey.db_type = db_type_foreignkey
+
+
+def convert_values_sqlite(self, value, field):
+    """SQLite returns floats when it should be returning decimals,
+    and gets dates and datetimes wrong.
+    For consistency with other backends, coerce when required.
+    """
+    internal_type = field.get_internal_type()
+    if internal_type == 'DecimalField':
+        return util.typecast_decimal(field.format_number(value))
+    elif internal_type and internal_type.endswith('IntegerField') or internal_type.endswith('AutoField'): 
+        return int(value)
+    elif internal_type == 'DateField':
+        return util.typecast_date(value)
+    elif internal_type == 'DateTimeField':
+        return util.typecast_timestamp(value)
+    elif internal_type == 'TimeField':
+        return util.typecast_time(value)
+
+    # No field, or the field isn't known to be a decimal or integer
+    return value
+
+DatabaseOperations.convert_values = convert_values_sqlite
+
+
+
+def convert_values_base(self, value, field):
+    """Coerce the value returned by the database backend into a consistent type that
+    is compatible with the field type.
+    """
+    internal_type = field.get_internal_type()
+    if internal_type == 'DecimalField':
+        return value
+    elif internal_type and internal_type.endswith('IntegerField') or internal_type.endswith('AutoField'): 
+        return int(value)
+    elif internal_type in ('DateField', 'DateTimeField', 'TimeField'):
+        return value
+    # No field, or the field isn't known to be a decimal or integer
+    # Default to a float
+    return float(value)
+
+BaseDatabaseOperations.convert_values = convert_values_base
+
+
+
+

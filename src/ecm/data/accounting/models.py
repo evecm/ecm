@@ -32,6 +32,10 @@ class EntryType(models.Model):
     refTypeID = models.PositiveIntegerField(primary_key=True)
     refTypeName = models.CharField(max_length=64)
     
+    PLAYER_DONATION = 10
+    CORP_WITHDRAWAL = 37
+    BOUNTY_PRIZES = 85
+    
     def __unicode__(self):
         return unicode(self.refTypeName)
 

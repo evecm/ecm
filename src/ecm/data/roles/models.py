@@ -80,12 +80,12 @@ class Member(models.Model):
     def get_url(self):
         return '/members/%d' % self.characterID
     
-    def as_html(self):
+    def permalink(self):
         return '<a href="%s" class="member">%s</a>' % (self.get_url(), self.name)
     
-    def owner_as_html(self):
+    def owner_permalink(self):
         try:
-            return self.ownership.owner_as_html()
+            return self.ownership.owner_permalink()
         except CharacterOwnership.DoesNotExist:
             return '<span class="error bold">no owner</span>'
     
@@ -113,7 +113,7 @@ class RoleType(models.Model):
     def get_url(self):
         return '/roles/%s' % self.typeName
     
-    def as_html(self):
+    def permalink(self):
         return '<a href="%s" class="role_type">%s</a>' % (self.get_url(), self.dispName)
     
     def __eq__(self, other):
@@ -193,7 +193,7 @@ class Role(models.Model):
     def get_url(self):
         return '/roles/%s/%d' % (self.roleType.typeName, self.roleID)
     
-    def as_html(self):
+    def permalink(self):
         try:
             return '<a href="%s" class="role">%s</a>' % (self.get_url(), self.get_disp_name())
         except:
@@ -247,7 +247,7 @@ class Title(models.Model):
     def get_url(self):
         return '/titles/%d' % self.titleID
     
-    def as_html(self):
+    def permalink(self):
         return '<a href="%s" class="title">%s</a>' % (self.get_url(), self.titleName)
     
     def __eq__(self, other):
@@ -334,7 +334,7 @@ class CharacterOwnership(models.Model):
     def owner_url(self):
         return '/players/%d' % self.owner_id
     
-    def owner_as_html(self):
+    def owner_permalink(self):
         return '<a href="%s" class="player">%s</a>' % (self.owner_url(), self.owner.username)
     
     def main_or_alt_admin_display(self):
@@ -390,7 +390,7 @@ class MemberDiff(models.Model):
     def get_url(self):
         return '/members/%d' % self.member_id
     
-    def as_html(self):
+    def permalink(self):
         return '<a href="%s" class="member">%s</a>' % (self.get_url(), self.name) 
     
     def __eq__(self, other):
@@ -416,12 +416,12 @@ class TitleMemberDiff(models.Model):
     # date of change
     date = models.DateTimeField(db_index=True, default=datetime.now())
 
-    def access_as_html(self):
-        return self.title.as_html()
+    def access_permalink(self):
+        return self.title.permalink()
     
-    def member_as_html(self):
+    def member_permalink(self):
         try:
-            return self.member.as_html()
+            return self.member.permalink()
         except:
             # this could fail if the RoleMemberDiff has been recorded from
             # /corp/MemberSecurity.xml.aspx but that the member has not been
@@ -455,12 +455,12 @@ class RoleMemberDiff(models.Model):
     # date of change
     date = models.DateTimeField(db_index=True, default=datetime.now())
     
-    def access_as_html(self):
-        return self.role.as_html()
+    def access_permalink(self):
+        return self.role.permalink()
     
-    def member_as_html(self):
+    def member_permalink(self):
         try:
-            return self.member.as_html()
+            return self.member.permalink()
         except: 
             # this could fail if the RoleMemberDiff has been recorded from
             # /corp/MemberSecurity.xml.aspx but that the member has not been

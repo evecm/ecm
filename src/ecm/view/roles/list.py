@@ -84,7 +84,7 @@ def role_type_data(request, role_typeName):
             titles.insert(0, "Titles")
         
         roles.append([
-            role.as_html(),
+            role.permalink(),
             role.description,
             role.get_access_lvl(),
             role.members.count(),

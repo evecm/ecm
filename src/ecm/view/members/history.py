@@ -57,7 +57,7 @@ def history_data(request):
     for diff in queryset:
         members.append([
             diff.new,
-            diff.as_html(),
+            diff.permalink(),
             truncate_words(diff.nickname, 5),
             print_time_min(diff.date)
         ])

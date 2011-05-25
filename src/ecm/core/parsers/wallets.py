@@ -19,16 +19,18 @@ __date__ = "2011-03-27"
 __author__ = "diabeteman"
 
 
+from datetime import datetime
+import logging
 
 
 from django.db import transaction
+from django.db.models.aggregates import Max
+
 from ecm.core import api
 from ecm.core.parsers import utils
-
-import logging
+from ecm.core.parsers.utils import markUpdated
 from ecm.data.corp.models import Wallet
 from ecm.data.accounting.models import JournalEntry
-from django.db.models.aggregates import Max
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +43,8 @@ def update():
     try:
         for wallet in Wallet.objects.all():
             update_wallet(wallet)
+            
+        markUpdated(model=JournalEntry, date=datetime.now())
         logger.debug("saving data to the database...")
         transaction.commit()
         logger.debug("update sucessfull")
@@ -108,7 +112,7 @@ def fetch_entries(wallet, lastKnownID):
     # the ones we already have in the database
     entries.sort(key=lambda e: e.refID)
     
-    while len(entries) != 0 and entries[0].refID < lastKnownID:
+    while len(entries) != 0 and entries[0].refID <= lastKnownID:
         # we already have this entry, no need to keep it
         del entries[0]
     

@@ -62,8 +62,8 @@ def access_changes_data(request):
     for c in changes:
         change_list.append([
             c.new,
-            c.member_as_html(),
-            c.access_as_html(),
+            c.member_permalink(),
+            c.access_permalink(),
             print_time_min(c.date)
         ])
     

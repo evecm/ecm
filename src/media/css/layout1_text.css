@@ -283,7 +283,7 @@ form.filter input { border:1px solid #AAAAAA; background-color:#EEEEEE; width:30
 .search_form input.button {margin:10px 0 5px 0; padding:1px 5px; background:rgb(230,230,230); border:solid 1px rgb(150,150,150); text-align:center; font-family:verdana,arial,sans-serif; color:rgb(150,150,150);}
 .search_form input.button:hover {cursor:pointer; border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80); }
 .search_form input.button.selected { border:solid 1px rgb(80,80,80); background:rgb(220,220,220); color:rgb(80,80,80); }
-
+.search_form label {margin-left: 1em; size: 110%; }
 .filter_form {clear:both; width:auto; margin: 10px 0 10px 0; float:left;}
 .filter_form div {display:inline; }
 .filter_form div span {display:inline; padding:3px;}

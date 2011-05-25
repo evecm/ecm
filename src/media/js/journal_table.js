@@ -19,7 +19,8 @@ $(document).ready(function() {
             { /* From */       "sWidth": "15%",    "sType": "html",  "bSortable": false },
             { /* To */         "sWidth": "15%",   "sType": "html",  "bSortable": false  },
             { /* Amount */     "sWidth": "15%",   "sType": "string" , "sClass" : "right" },
-            { /* Balance */    "sWidth": "15%",   "sType": "string",  "bSortable": false,  "sClass" : "right" }
+            { /* Balance */    "sWidth": "15%",   "sType": "string",  "bSortable": false,  "sClass" : "right" },
+            { /* reason -> HIDDEN */ "bVisible": false }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             if (aData[5].charAt(0) == '+') {
@@ -27,8 +28,41 @@ $(document).ready(function() {
             } else {
                 $('td:eq(5)', nRow).addClass('debit');
             }
+            /* hide reason column */
+            $('td:eq(7)', nRow).hide()
+            
+            /* set titles tooltip on each row */
+            reason = aData[7]
+            if (reason != "") {
+                $('td:eq(5)', nRow).attr("title", reason)
+                $('td:eq(5)', nRow).cluetip({
+                    splitTitle: '|',
+                    dropShadow: false, 
+                    cluetipClass: 'jtip',
+                    positionBy: 'mouse',
+                    tracking: true
+                });
+            }
+            
             return nRow;
         },
+        
+        /* this function will be called when the table has to query data to be displayed */
+        "fnServerData": function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( { 
+                "name": "walletID", 
+                "value": $("#wallet_selector option:selected").val()
+            },{ 
+                "name": "entryTypeID", 
+                "value": $("#type_selector option:selected").val()
+            } );
+            
+            $.getJSON( sSource, aoData, function (json) { 
+                fnCallback(json)
+            } );
+        },
+        
         /* the search field being outside the table object, we need to save its status
          * explicitly here in order to restore it with the rest */
         "fnStateSaveCallback": function (oSettings, sValue) {
@@ -60,7 +94,14 @@ $(document).ready(function() {
         table.fnFilter("");
     });
 
-
+    $("#wallet_selector").change(function () {
+        table.fnDraw();
+    });
+    
+    $("#type_selector").change(function () {
+        table.fnDraw();
+    });
+    
     /* disable multi column sorting */
     $('#journal_table thead th').click(function(event) {
         if (!$(event.target).hasClass('sorthandle')) {

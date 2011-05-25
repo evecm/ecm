@@ -85,7 +85,7 @@ def access_changes_member_data(request, characterID):
     for change in changes:
         change_list.append([
             change.new,
-            change.access_as_html(),
+            change.access_permalink(),
             print_time_min(change.date)
         ])
     

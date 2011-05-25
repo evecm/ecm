@@ -22,6 +22,8 @@ __author__ = "diabeteman"
 
 import os.path
 
+
+
 ROOT = os.path.abspath(os.path.dirname(__file__))
 def resolvePath(relativePath):
     return str(os.path.join(ROOT, relativePath)).replace("\\", "/")
@@ -53,8 +55,13 @@ DEFAULT_FROM_EMAIL = ""
 
 DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': resolvePath('../db/ECM.db')
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': resolvePath('../db/ECM.db')
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ecm',
+        'USER': 'ecm',
+        'PASSWORD': 'ecm'
+        
     },
     'eve': {
         'ENGINE': 'django.db.backends.sqlite3',

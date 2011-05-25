@@ -14,8 +14,6 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.core.utils import print_time_min, print_quantity, print_float
-from ecm.data.roles.models import Member
 
 __date__ = "2011 5 23"
 __author__ = "diabeteman"
@@ -28,15 +26,40 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.db.models import Q
 
+from ecm.core.utils import print_time_min, print_float
+from ecm.core import evedb
+from ecm.data.corp.models import Wallet
+from ecm.data.roles.models import Member
 from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
-from ecm.data.accounting.models import JournalEntry
+from ecm.data.accounting.models import JournalEntry, EntryType
 
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def list(request):
+    walletID = int(request.GET.get('walletID', 0))
+    entryTypeID = int(request.GET.get('entryTypeID', 0))
+    
+    wallets = [{ 'walletID' : 0, 'name' : 'All', 'selected' : walletID == 0 }]
+    for w in Wallet.objects.all().order_by('walletID'):
+        wallets.append({
+            'walletID' : w.walletID,
+            'name' : w.name,
+            'selected' : w.walletID == walletID
+        })
+    
+    entryTypes = [{ 'refTypeID' : 0, 'refTypeName' : 'All', 'selected' : entryTypeID == 0 }]
+    for et in EntryType.objects.exclude(refTypeID=0).order_by('refTypeID'):
+        entryTypes.append({
+            'refTypeID' : et.refTypeID,
+            'refTypeName' : et.refTypeName,
+            'selected' : et.refTypeID == entryTypeID
+        })
+    
     data = {
+        'wallets' : wallets,
+        'entryTypes' : entryTypes,
         'scan_date' : getScanDate(JournalEntry.__name__) 
     }
     return render_to_response("accounting/wallet_journal.html", data, RequestContext(request))
@@ -48,9 +71,10 @@ def list(request):
 journal_cols = ['wallet', 'date', 'type', 'ownerName1', 'ownerName2', 'amount', 'balance']
 @check_user_access()
 def list_data(request):
-    params = extract_datatable_params(request)
-    params.walletID = int(request.GET.get('walletID', 0))
-    params.entryTypeID = int(request.GET.get('entryTypeID', 0))
+    try:
+        params = extract_datatable_params(request)
+    except:
+        return HttpResponseBadRequest()
 
     query = JournalEntry.objects.all().order_by('-date')
 
@@ -76,14 +100,27 @@ def list_data(request):
     query = query[params.first_id:params.last_id]
     entries = []
     for entry in query:
-        try:
-            owner1 = Member.objects.get(characterID=entry.ownerID1).as_html()
-        except Member.DoesNotExist:
-            owner1 = entry.ownerName1
-        try:
-            owner2 = Member.objects.get(characterID=entry.ownerID2).as_html()
-        except Member.DoesNotExist:
-            owner2 = entry.ownerName2
+        
+        try: owner1 = Member.objects.get(characterID=entry.ownerID1).permalink()
+        except Member.DoesNotExist: owner1 = entry.ownerName1
+        try: owner2 = Member.objects.get(characterID=entry.ownerID2).permalink()
+        except Member.DoesNotExist: owner2 = entry.ownerName2
+        
+        if entry.type_id == EntryType.BOUNTY_PRIZES:
+            rats = [ str.split(':') for str in entry.reason.split(',') if ':' in str ]
+            rat_list = []
+            for rat_id, rat_count in rats:
+                rat_list.append('%s x%s' % (evedb.resolveTypeName(int(rat_id))[0], rat_count))
+            reason = '|'.join(rat_list)
+            if reason:
+                reason = 'Killed Rats|' + reason
+        elif entry.type_id in (EntryType.PLAYER_DONATION, EntryType.CORP_WITHDRAWAL):
+            reason = entry.reason[len('DESC: '):]
+            if reason:
+                reason = 'Description|' + reason
+        else:
+            reason = entry.reason
+        
         entries.append([
             print_time_min(entry.date),
             entry.wallet.permalink(),
@@ -92,6 +129,7 @@ def list_data(request):
             owner2,
             print_float(entry.amount),
             print_float(entry.balance),
+            reason,
         ])
     
     json_data = {

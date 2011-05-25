@@ -60,8 +60,8 @@ def changes_data(request):
     for c in changes:
         change_list.append([
             c.new,
-            c.title.as_html(),
-            c.role.as_html(),
+            c.title.permalink(),
+            c.role.permalink(),
             print_time_min(c.date)
         ])
     

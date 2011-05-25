@@ -96,7 +96,7 @@ def getTitles(sort_by="titleID", asc=True):
             modification_date = "-"
 
         titles.append([
-            title.as_html(),
+            title.permalink(),
             title.accessLvl,
             '<a href="/titles/%d/members">%d</a>' % (title.titleID, title.title_members),
             title.roles_in_title,

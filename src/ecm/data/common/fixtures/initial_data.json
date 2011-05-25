@@ -132,5 +132,15 @@
         65536
       ]
     }
+  }, 
+  {
+    "pk": 8, 
+    "model": "common.url", 
+    "fields": {
+      "pattern": "^/accounting.*$", 
+      "groups": [
+        65536
+      ]
+    }
   }
 ]

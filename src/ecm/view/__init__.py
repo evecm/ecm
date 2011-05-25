@@ -45,6 +45,8 @@ def extract_datatable_params(request):
     params.sEcho = int(REQ["sEcho"])
     params.column = int(REQ["iSortCol_0"])
     params.asc = REQ["sSortDir_0"] == "asc"
+    params.walletID = int(REQ.get('walletID', 0))
+    params.entryTypeID = int(REQ.get('entryTypeID', 0))
     return params
 
 #------------------------------------------------------------------------------
@@ -87,9 +89,9 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
         titles.extend(member.titles.values_list("titleName", flat=True))
         
         memb = [
-            member.as_html(),
+            member.permalink(),
             truncate_words(member.nickname, 5),
-            member.owner_as_html(),
+            member.owner_permalink(),
             member.accessLvl,
             utils.print_date(member.corpDate),
             utils.print_date(member.lastLogin),

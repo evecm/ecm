@@ -81,8 +81,8 @@ def composition_data(request, id):
     compo_list = []
     for compo in query:
         compo_list.append([
-            compo.role.as_html(),
-            compo.role.roleType.as_html(),
+            compo.role.permalink(),
+            compo.role.roleType.permalink(),
             compo.role.get_access_lvl()
         ])
     
@@ -115,8 +115,8 @@ def compo_diff_data(request, id):
     for diff in query:
         diff_list.append([
             diff.new,
-            diff.role.as_html(),
-            diff.role.roleType.as_html(),
+            diff.role.permalink(),
+            diff.role.roleType.permalink(),
             utils.print_time_min(diff.date)
         ])
     

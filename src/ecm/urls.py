@@ -160,6 +160,8 @@ urlpatterns += patterns('ecm.view.assets.diff',
 urlpatterns += patterns('ecm.view.accounting',
     ###########################################################################
     # ACCOUNTING VIEWS
+    (r'^accounting$',               'wallets.list'),
+    (r'^accounting/wallets/data$',  'wallets.list_data'),
     (r'^accounting/journal$',       'journal.list'),
     (r'^accounting/journal/data$',  'journal.list_data'),
 )
