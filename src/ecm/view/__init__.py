@@ -47,6 +47,7 @@ def extract_datatable_params(request):
     params.asc = REQ["sSortDir_0"] == "asc"
     params.walletID = int(REQ.get('walletID', 0))
     params.entryTypeID = int(REQ.get('entryTypeID', 0))
+    params.since = REQ.get('since', None)
     return params
 
 #------------------------------------------------------------------------------

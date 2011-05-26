@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Contributions to Corp tax{% endblock %}
+
+
+
+{% block header_scripts %}
+<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
+
+<script type="text/javascript" src="/m/js/contrib_table.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+{% endblock %}
+
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/accounting">Accounting</a></li>
+<li><a href="/accounting/contributions">Contributions</a></li>
+{% endblock %}
+
+
+{% block main_content %}
+<h1 class="pagetitle">Contributions to Corp tax <span class="time">- last update {{ scan_date }}</span></h1>
+
+<label>Period:</label>
+<select id="since_selector">
+    <option value="all" selected="selected">All Time</option>
+    <option value="week">Last Week</option>
+    <option value="month">Last Month</option>
+    <option value="year">Last Year</option>
+</select>
+
+<div style="width: 50%;">
+<table class="table display" id="contrib_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" >Member</th>
+      <th class="top" scope="col" >Contributions</th>
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="2" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Member</th>
+      <th>Contributions</th>
+    </tr>
+  </tfoot>
+
+</table>
+</div>
+{% endblock %}

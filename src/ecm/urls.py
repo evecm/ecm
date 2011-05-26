@@ -164,6 +164,8 @@ urlpatterns += patterns('ecm.view.accounting',
     (r'^accounting/wallets/data$',  'wallets.list_data'),
     (r'^accounting/journal$',       'journal.list'),
     (r'^accounting/journal/data$',  'journal.list_data'),
+    (r'^accounting/contributions$', 'contrib.tax_contrib'),
+    (r'^accounting/contributions/data$', 'contrib.tax_contrib_data'),
 )
 
 
@@ -187,6 +189,7 @@ ecm_menus = [
     {'menu_title': 'Roles',     'menu_url': '/roles',       'menu_items': role_types},
     {'menu_title': 'Accounting',    'menu_url': '/accounting',      'menu_items': [
         {'item_title': 'Wallets Journal', 'item_url': '/accounting/journal'},
+        {'item_title': 'Tax Contributions', 'item_url': '/accounting/contributions'},
     ]},
     {'menu_title': 'Assets',    'menu_url': '/assets',      'menu_items': [
         {'item_title': 'Changes', 'item_url': '/assets/changes'},
