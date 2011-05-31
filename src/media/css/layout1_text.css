@@ -63,6 +63,11 @@
     background: url(../img/user.png) no-repeat left;
 }
 
+.main-content a.wallet {
+    padding-left: 18px;
+    background: url(../img/wallet.png) no-repeat left;
+}
+
 /**********/
 /* TABLES */
 /**********/

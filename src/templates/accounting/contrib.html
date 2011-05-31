@@ -8,9 +8,19 @@
 <script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery-ui-1.8.13.custom.css" />
 
 <script type="text/javascript" src="/m/js/contrib_table.js"></script>
 <script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.ui.js"></script>
+<script type="text/javascript">
+FROM_DATE = "{{ from_date }}";
+TO_DATE = "{{ to_date }}";
+DAY = 1000 * 60 * 60 * 24;
+WEEK = DAY * 7;
+MONTH = DAY * 30;
+YEAR = DAY * 365;
+</script>
 {% endblock %}
 
 
@@ -25,34 +35,114 @@
 {% block main_content %}
 <h1 class="pagetitle">Contributions to Corp tax <span class="time">- last update {{ scan_date }}</span></h1>
 
-<label>Period:</label>
-<select id="since_selector">
-    <option value="all" selected="selected">All Time</option>
-    <option value="week">Last Week</option>
-    <option value="month">Last Month</option>
-    <option value="year">Last Year</option>
-</select>
 
-<div style="width: 50%;">
-<table class="table display" id="contrib_table">
-  <thead> 
-    <tr>
-      <th class="top" scope="col" >Member</th>
-      <th class="top" scope="col" >Contributions</th>
-    </tr>
-  </thead>
-  <tbody> 
-    <tr>
-      <td colspan="2" class="dataTables_empty">Loading data from server...</td>
-    </tr>
-  </tbody> 
-  <tfoot> 
-    <tr>
-      <th>Member</th>
-      <th>Contributions</th>
-    </tr>
-  </tfoot>
+<form id="search_form" class="search_form"> 
+	<label>Period</label>
+	<select id="period_selector">
+	    <option value="all" selected="selected">All Time</option>
+	    <option value="week">Last Week</option>
+	    <option value="month">Last Month</option>
+	    <option value="year">Last Year</option>
+	</select>
+	
+	<label for="from_date">From</label> 
+	<input type="text" id="from_date" name="from_date" value="{{ from_date }}"/>
+	<label for="to_date">to</label> 
+	<input type="text" id="to_date" name="to_date" value="{{ to_date }}"/> 
+	
+	<input type="button" class="button" id="refresh_table" value="Refresh" /> 
+</form>
 
+<script type="text/javascript">
+$(function() {
+    var dates = $( "#from_date, #to_date" ).datepicker({
+        dateFormat: 'yy-mm-dd',
+        defaultDate: "+0w",
+        changeMonth: true,
+        numberOfMonths: 3,
+        onSelect: function( selectedDate ) {
+            var option = this.id == "from_date" ? "minDate" : "maxDate",
+                instance = $( this ).data( "datepicker" ),
+                date = $.datepicker.parseDate(
+                    instance.settings.dateFormat ||
+                    $.datepicker._defaults.dateFormat,
+                    selectedDate, instance.settings );
+            dates.not( this ).datepicker( "option", option, date );
+        }
+    });
+});
+
+$("#period_selector").change(function() {
+    var period = $("#period_selector option:selected").val();
+    if (period == "all") {
+        $("#from_date").val(FROM_DATE);
+        $("#to_date").val(TO_DATE);
+    } else if (period == "week") {
+        var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
+        date.setTime(date.getTime() - WEEK);
+        $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
+        $("#to_date").val(TO_DATE);
+    } else if (period == "month") {
+        var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
+        date.setTime(date.getTime() - MONTH);
+        $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
+        $("#to_date").val(TO_DATE);
+    } else if (period == "year") {
+        var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
+        date.setTime(date.getTime() - YEAR);
+        $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
+        $("#to_date").val(TO_DATE);
+    }
+});
+
+</script>
+
+
+<table style="width: 100%;">
+    <tr>
+        <td style="padding: 10px;">
+			<table class="table display" id="member_contrib_table">
+			  <thead> 
+			    <tr>
+			      <th class="top" scope="col" >Member</th>
+			      <th class="top" scope="col" >Contributions</th>
+			    </tr>
+			  </thead>
+			  <tbody> 
+			    <tr>
+			      <td colspan="2" class="dataTables_empty">Loading data from server...</td>
+			    </tr>
+			  </tbody> 
+			  <tfoot> 
+			    <tr>
+			      <th>Member</th>
+			      <th>Contributions</th>
+			    </tr>
+			  </tfoot>
+			</table>
+        </td>
+        <td style="padding: 10px;">
+			<table class="table display" id="system_contrib_table">
+			  <thead> 
+			    <tr>
+			      <th class="top" scope="col" >Solar System</th>
+			      <th class="top" scope="col" >Contributions</th>
+			    </tr>
+			  </thead>
+			  <tbody> 
+			    <tr>
+			      <td colspan="2" class="dataTables_empty">Loading data from server...</td>
+			    </tr>
+			  </tbody> 
+			  <tfoot> 
+			    <tr>
+			      <th>Solar System</th>
+			      <th>Contributions</th>
+			    </tr>
+			  </tfoot>
+			</table>
+        </td>
+    </tr>
 </table>
-</div>
+
 {% endblock %}

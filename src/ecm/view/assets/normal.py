@@ -205,7 +205,7 @@ def hangars_data(request, solarSystemID, stationID):
         HANGAR[h.hangarID] = h.name
     
     jstree_data = []
-    for hangarID, items in cursor.fetchall():
+    for hangarID, items in cursor:
         jstree_data.append({
             "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items)),
             "attr" : { 

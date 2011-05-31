@@ -164,8 +164,9 @@ urlpatterns += patterns('ecm.view.accounting',
     (r'^accounting/wallets/data$',  'wallets.list_data'),
     (r'^accounting/journal$',       'journal.list'),
     (r'^accounting/journal/data$',  'journal.list_data'),
-    (r'^accounting/contributions$', 'contrib.tax_contrib'),
-    (r'^accounting/contributions/data$', 'contrib.tax_contrib_data'),
+    (r'^accounting/contributions$', 'contrib.member_contrib'),
+    (r'^accounting/contributions/members/data$', 'contrib.member_contrib_data'),
+    (r'^accounting/contributions/systems/data$', 'contrib.system_contrib_data'),
 )
 
 

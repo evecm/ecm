@@ -78,7 +78,7 @@ def update():
                     # unhandled typeID, this may be a reactor array or some other crap
                     pass
         
-        logger.info("%d assets parsed", len(newItems.keys()))
+        logger.info("%d assets parsed", len(newItems))
 
         diffs = []
         if len(oldItems) != 0:
@@ -184,7 +184,7 @@ def rowIsOffice(office, items_dic):
                 continue # we don't give a flying @#!$ about the bookmarks...
             rowIsInHangar(item=item, items_dic=items_dic, 
                        solarSystemID=solarSystemID, stationID=stationID)
-    except:
+    except AttributeError:
         # skip the office if it has no contents
         pass
 
@@ -197,7 +197,7 @@ def rowIsPOSCorporateHangarArray(corpArray, items_dic):
     The 'stationID' of all the contents of the array is encoded from the 'itemID' 
     and the 'typeID' of the row.
     """
-    try :
+    try:
         solarSystemID = corpArray.locationID
         stationID = corpArray.itemID
         flag = corpArray.typeID 
@@ -209,7 +209,7 @@ def rowIsPOSCorporateHangarArray(corpArray, items_dic):
                           solarSystemID=solarSystemID, 
                           stationID=stationID,
                           flag=flag)
-    except AttributeError :
+    except AttributeError:
         # skip the corpArray if it has no contents
         pass
 
@@ -266,9 +266,9 @@ def rowIsInHangar(item, items_dic, solarSystemID=None, stationID=None, hangarID=
     
     if flag is not None:
         asset.flag = flag
-    
-    items_dic[asset] = asset
 
+    items_dic[asset] = asset
+    
     try:
         fillContents(container=asset, item=item, items_dic=items_dic, flag=flag)
         asset.hasContents = True
@@ -296,7 +296,6 @@ def fillContents(container, item, items_dic, flag=None):
         
         try :
             for __item in _item.contents:
-                
                 if __item.typeID == cst.BOOKMARK_TYPEID: 
                     continue # we don't give a flying @#!$ about the bookmarks...
                 __asset = assetFromRow(__item)

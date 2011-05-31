@@ -38,8 +38,6 @@ class Asset(models.Model):
     singleton = models.BooleanField(default=False) # true if assembled 
     hasContents = models.BooleanField(default=False) # true if item container
 
-    h = None
-    
     def __repr__(self):
         return str(self)
 
@@ -51,12 +49,8 @@ class Asset(models.Model):
             return "<Asset instance at %x>" % id(self)
 
     def __hash__(self):
-        if self.h is None:
-            string = (str(self.solarSystemID) + str(self.stationID) + str(self.hangarID) 
-                      + str(self.typeID) + str(self.quantity))
-            self.h = hash(string)
-        return self.h
-        
+        return self.itemID
+    
     def __eq__(self, other):
         return (self.solarSystemID == other.solarSystemID
                 and self.stationID == other.stationID 

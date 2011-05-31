@@ -28,7 +28,7 @@ from django.db.models import Q
 
 from ecm.core.utils import print_time_min, print_float
 from ecm.core import evedb
-from ecm.data.corp.models import Wallet
+from ecm.data.corp.models import Wallet, Corp
 from ecm.data.roles.models import Member
 from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
@@ -113,11 +113,21 @@ def list_data(request):
                 rat_list.append('%s x%s' % (evedb.resolveTypeName(int(rat_id))[0], rat_count))
             reason = '|'.join(rat_list)
             if reason:
-                reason = 'Killed Rats|' + reason
-        elif entry.type_id in (EntryType.PLAYER_DONATION, EntryType.CORP_WITHDRAWAL):
+                reason = ('Killed Rats in %s|' % entry.argName1) + reason
+        elif entry.type_id == EntryType.PLAYER_DONATION:
             reason = entry.reason[len('DESC: '):]
             if reason:
                 reason = 'Description|' + reason
+        elif entry.type_id == EntryType.CORP_WITHDRAWAL:
+            reason = entry.reason[len('DESC: '):]
+            reason = ('Cash transfer by %s|' % entry.argName1) + reason
+            try:
+                corporationID = Corp.objects.get(id=1).corporationID
+                if int(entry.ownerID1) == corporationID and int(entry.ownerID2) == corporationID:
+                    related_entry = JournalEntry.objects.filter(refID=entry.refID).exclude(id=entry.id)[0]
+                    owner2 = related_entry.wallet.permalink()
+            except:
+                pass
         else:
             reason = entry.reason
         

@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.core.utils import print_float
 
 __date__ = "2010-02-08"
 __author__ = "diabeteman"
@@ -36,6 +37,8 @@ class Wallet(models.Model):
     name = models.CharField(max_length=128)
     accessLvl = models.PositiveIntegerField(default=1000)
     
+    LINK = '<a href="%s" class="wallet" title="%s">%s</a>'
+    
     def __unicode__(self):
         return self.name
     
@@ -43,7 +46,17 @@ class Wallet(models.Model):
         return "/accounting/wallet/%d" % self.walletID
     
     def permalink(self):
-        return '<a href="%s" class="wallet" >%s</a>' % (self.get_url(), self.name)
+        return Wallet.LINK % (self.get_url(), "Click for details on this wallet", self.name)
+    
+    def get_journal_url(self):
+        return "/accounting/journal?walletID=%d" % self.walletID
+    
+    def permalink_to_journal(self, balance=None):
+        if balance is None:
+            name = self.name
+        else:
+            name = print_float(balance)
+        return Wallet.LINK % (self.get_journal_url(), "Click to access this wallet's journal", name)
 
 #------------------------------------------------------------------------------
 class Corp(models.Model):

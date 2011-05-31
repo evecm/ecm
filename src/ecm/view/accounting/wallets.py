@@ -66,8 +66,8 @@ def list_data(request):
     entries.sort(key=sort_key, reverse=not params.asc)
     
     for wallet in entries:
+        wallet[1] = wallet[0].permalink_to_journal(wallet[1])
         wallet[0] = wallet[0].permalink()
-        wallet[1] = print_float(wallet[1])
     
     json_data = {
         "sEcho" : params.sEcho,

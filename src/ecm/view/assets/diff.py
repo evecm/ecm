@@ -35,10 +35,10 @@ from ecm.core.parsers import assetsconstants
 from ecm.core import evedb, utils
 from ecm.data.assets.models import Asset, AssetDiff
 from ecm.data.corp.models import Hangar
-from ecm.view import getScanDate
+from ecm.view import getScanDate, DATE_PATTERN
 
 
-DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
+
 
 #------------------------------------------------------------------------------
 def last_date(request):

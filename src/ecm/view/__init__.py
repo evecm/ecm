@@ -25,6 +25,8 @@ from ecm.data.roles.models import Member, CharacterOwnership
 from ecm.core import utils
 from ecm.data.common.models import UpdateDate
 
+DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
+
 #------------------------------------------------------------------------------
 def getScanDate(model_name):
     try:
@@ -47,7 +49,8 @@ def extract_datatable_params(request):
     params.asc = REQ["sSortDir_0"] == "asc"
     params.walletID = int(REQ.get('walletID', 0))
     params.entryTypeID = int(REQ.get('entryTypeID', 0))
-    params.since = REQ.get('since', None)
+    params.from_date = REQ.get('from_date', None)
+    params.to_date = REQ.get('to_date', None)
     return params
 
 #------------------------------------------------------------------------------
