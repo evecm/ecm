@@ -72,7 +72,11 @@ def resolveTypeName(typeID):
         for typeName, categoryID in cursor:
             setCachedType(typeID, (typeName, categoryID))
         cursor.close() 
-        return getCachedType(typeID)
+        try:
+            return getCachedType(typeID)
+        except KeyError:
+            return ("???", 0)
+
 #------------------------------------------------------------------------------
 QUERY_TYPENAMES = 'SELECT t.typeName, g.categoryID '\
                   'FROM invTypes t, invGroups g '\
@@ -159,5 +163,5 @@ def resolveLocationName(locationID):
             return getCachedLocation(locationID)
         except KeyError:
             # locationID was not valid
-            return ("", 0.0)
+            return ("???", 0.0)
 
