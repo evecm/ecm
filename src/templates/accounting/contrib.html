@@ -57,9 +57,9 @@ YEAR = DAY * 365;
 $(function() {
     var dates = $( "#from_date, #to_date" ).datepicker({
         dateFormat: 'yy-mm-dd',
-        defaultDate: "+0w",
+        defaultDate: "{{ to_date }}",
         changeMonth: true,
-        numberOfMonths: 3,
+        numberOfMonths: 1,
         onSelect: function( selectedDate ) {
             var option = this.id == "from_date" ? "minDate" : "maxDate",
                 instance = $( this ).data( "datepicker" ),

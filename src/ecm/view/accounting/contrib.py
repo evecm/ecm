@@ -17,7 +17,6 @@
 from ecm.core.utils import print_float
 import json
 from django.db.models.aggregates import Min, Max
-from ecm.core import utils
 from django.db import connection
 
 __date__ = "2011 5 25"
@@ -89,6 +88,11 @@ def system_contrib_data(request):
         params = extract_datatable_params(request)
         params.from_date = datetime.strptime(params.from_date, DATE_PATTERN)
         params.to_date = datetime.strptime(params.to_date, DATE_PATTERN)
+        # In the database query below, we use a BETWEEN operator.
+        # The upper bound 'to_date' will be excluded from the interval 
+        # because it is a datetime with time set to 00:00 (beginning of the day).
+        # We add one day in order to include the last day in the interval.  
+        params.to_date += timedelta(days=1)
     except:
         return HttpResponseBadRequest()
 

@@ -25,6 +25,7 @@ from django.db import connections
 
 import ecm.core.parsers.assetsconstants as cst
 from ecm.data.common.models import Outpost
+from ecm.data.industry.classes import MarketGroup, Blueprint
 
 EVE_DB = connections['eve']
 
@@ -72,7 +73,11 @@ def resolveTypeName(typeID):
         for typeName, categoryID in cursor:
             setCachedType(typeID, (typeName, categoryID))
         cursor.close() 
-        return getCachedType(typeID)
+        try:
+            return getCachedType(typeID)
+        except KeyError:
+            return ("???", 0)
+
 #------------------------------------------------------------------------------
 QUERY_TYPENAMES = 'SELECT t.typeName, g.categoryID '\
                   'FROM invTypes t, invGroups g '\
@@ -159,5 +164,48 @@ def resolveLocationName(locationID):
             return getCachedLocation(locationID)
         except KeyError:
             # locationID was not valid
-            return ("", 0.0)
+            return ("???", 0.0)
+        
+        
+#------------------------------------------------------------------------------
+SQL_MKTGRP = '''SELECT marketGroupID, marketGroupName, hasTypes 
+FROM invMarketGroups 
+WHERE marketGroupID = %s;'''
+SQL_MKTGRP_BY_PARENT = '''SELECT marketGroupID, marketGroupName, hasTypes
+FROM invMarketGroups 
+WHERE parentGroupID = %s;'''
+SQL_ITEMS_BY_MKTGRP = '''SELECT t1.typeID, t1.typeName, b1.productTypeID, t2.typeName AS productTypeName, b1.wasteFactor, b1.productionTime, b1.techLevel, t1.portionSize 
+FROM invTypes AS t1, invBlueprintTypes AS b1, invTypes AS t2
+WHERE t1.marketGroupID = %s
+AND t1.typeID = b1.blueprintTypeID
+AND t2.typeID = b1.productTypeID
+AND t1.published = 1;'''
 
+def getMarketGroup(marketGroupID):
+    cursor = EVE_DB.cursor()
+    cursor.execute(SQL_MKTGRP, [marketGroupID])
+    mktGroup = None
+    for marketGroupID, marketGroupName, hasTypes in cursor:
+        mktGroup = MarketGroup(marketGroupID, marketGroupName, bool(hasTypes))
+    cursor.close()
+    return mktGroup
+
+#------------------------------------------------------------------------------
+def getMarketGroupChildren(mktGroup):
+    if len(mktGroup.children):
+        return
+    cursor = EVE_DB.cursor()
+    if mktGroup.hasTypes:
+        cursor.execute(SQL_ITEMS_BY_MKTGRP, [mktGroup.marketGroupID])
+        for (typeID, typeName, productTypeID, productTypeName, 
+             wasteFactor, productionTime, techLevel, batchSize) in cursor:
+            mktGroup.children.append(Blueprint(typeID, typeName, techLevel, 
+                                     productTypeID, productTypeName, 
+                                     productionTime, wasteFactor, batchSize))
+    else:
+        cursor.execute(SQL_MKTGRP_BY_PARENT, [mktGroup.marketGroupID])
+        for (marketGroupID, marketGroupName, hasTypes) in cursor:
+            mktGroup.children.append(MarketGroup(marketGroupID, marketGroupName, 
+                                                 bool(hasTypes)))
+    cursor.close()
+    return mktGroup.children
