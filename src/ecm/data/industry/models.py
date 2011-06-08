@@ -39,7 +39,7 @@ class Order(models.Model):
         SUBMITTED : _('Submitted'),
         CANCELED : _('Canceled'),
         REJECTED_BY_MANUFACTURER : _('Rejected by Manufacturer'),
-        ON_HOLD : _('On Hold'),
+        ON_HOLD : _('Accepted/On Hold'),
         IN_PREPARATION : _('In Preparation'),
         READY : _('Ready'),
         DELIVERED : _('Delivered'),
@@ -65,62 +65,60 @@ class Order(models.Model):
     client = models.CharField(max_length=256, null=True, blank=True)
     deliveryLocation = models.CharField(max_length=256, null=True, blank=True)
     deliveryDate = models.DateField(null=True, blank=True)
-    nature = models.ForeignKey('OrderNature')
+    nature = models.ForeignKey('ProductionNature')
     site = models.ForeignKey('ProductionSite')
     state = models.PositiveIntegerField(default=SUBMITTED)
     discount = models.FloatField(default=0.0)
     quote = models.FloatField(null=True, blank=True)
     
-    def changeState(self, state):
-        if state not in Order.TRANSITIONS[state]:
-            legalStates = str([ Order.STATES[s] for s in Order.TRANSITIONS[state] ])
-            raise IllegalStateError(Order.STATES[state]+' is illegal. Only '+legalStates+' are allowed.')
-        self.state = state
-    
     #############################
     # TRANSISTIONS
     
-    def cancel(self, reason):
-        self.changeState(Order.CANCELED)
-        self.comments.create(order=self, user=self.originator, text=str(reason))
+    def changeState(self, newState, user, comment):
+        assert isinstance(user, User)
+        if newState not in Order.TRANSITIONS[newState]:
+            legalStates = str([ Order.STATES[s] for s in Order.TRANSITIONS[newState] ])
+            raise IllegalStateError(Order.STATES[newState]+' is illegal. Only '+legalStates+' are allowed.')
+        self.state = newState
+        self.comments.create(order=self, state=self.state, user=user, text=str(comment))
+    
+    def cancel(self, user, reason):
+        self.changeState(Order.CANCELED, user, reason)
         self.save()
         
-    def rejectByManufacturer(self, manufacturer, reason):
-        assert isinstance(manufacturer, User)
-        self.changeState(Order.REJECTED_BY_MANUFACTURER)
-        self.manufacturer = manufacturer
-        self.comments.create(order=self, user=self.manufacturer, text=str(reason))
+    def rejectByManufacturer(self, user, reason):
+        self.changeState(Order.REJECTED_BY_MANUFACTURER, user, reason)
+        self.manufacturer = user
         self.save()
     
-    def startPreparation(self, manufacturer):
-        assert isinstance(manufacturer, User)
-        self.changeState(Order.IN_PREPARATION)
-        self.manufacturer = manufacturer
+    def startPreparation(self, user, reason=""):
+        self.changeState(Order.IN_PREPARATION, user, reason)
+        self.manufacturer = user
         self.save()
     
-    def endPreparation(self):
-        self.changeState(Order.READY)
+    def endPreparation(self, user, reason=""):
+        self.changeState(Order.READY, user, reason)
         self.save()
     
-    def deliver(self, deliveryMan):
-        assert isinstance(deliveryMan, User)
-        self.changeState(Order.DELIVERED)
-        self.deliveryMan = deliveryMan
+    def deliver(self, user, reason=""):
+        self.changeState(Order.DELIVERED, user, reason)
+        self.deliveryMan = user
         self.save()
         
-    def pay(self):
-        self.changeState(Order.PAID)
+    def pay(self, user, reason=""):
+        self.changeState(Order.PAID, user, reason)
         self.save()
         
-    def rejectByClient(self, reason):
-        self.changeState(Order.REJECTED_BY_CLIENT)
-        self.comments.create(order=self, user=self.deliveryMan, text=str(reason))
+    def rejectByClient(self, user, reason):
+        self.changeState(Order.REJECTED_BY_CLIENT, user, reason)
         self.save()
 
 #------------------------------------------------------------------------------
-class Comment(models.Model):
+class OrderComment(models.Model):
     
     order = models.ForeignKey(Order, related_name='comments')
+    state = models.PositiveSmallIntegerField()
+    date = models.DateTimeField()
     user = models.ForeignKey(User, related_name='comments')
     text = models.TextField()
     
@@ -144,7 +142,7 @@ class OrderState(models.Model):
     name = models.CharField(max_length=256)
     
 #------------------------------------------------------------------------------
-class OrderNature(models.Model):
+class ProductionNature(models.Model):
     
     name = models.CharField(max_length=256)
 
@@ -153,7 +151,7 @@ class ProductionSite(models.Model):
     
     locationID = models.PositiveIntegerField(primary_key=True)
     customName = models.CharField(max_length=256)
-    natures = models.ManyToManyField(OrderNature, related_name='sites')
+    natures = models.ManyToManyField(ProductionNature, related_name='sites')
     discount = models.FloatField(default=0.0)
     
 
@@ -179,6 +177,9 @@ class OwnedBlueprint(models.Model):
     
     
 #------------------------------------------------------------------------------
+class ProductionStep:
+    pass
+
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------ 
