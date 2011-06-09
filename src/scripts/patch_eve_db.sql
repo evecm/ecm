@@ -12,16 +12,14 @@ CREATE TABLE ramBlueprintReqs (
     CONSTRAINT materials_PK PRIMARY KEY (blueprintTypeID, activityID, requiredTypeID)
 );
 
+CREATE INDEX "ramBlueprintReqs_IX_blueprintTypeID" ON "ramBlueprintReqs" ("blueprintTypeID");
+CREATE INDEX "ramBlueprintReqs_IX_activityID" ON "ramBlueprintReqs" ("activityID");
+
 -- The following queries take invTypeMaterials and ramTypeRequirements and combine them 
 -- into a single table showing all the materials a blueprint requires, and how much of each 
 -- material is affected by waste when building.
 -------------------------------------------------------
-INSERT INTO ramBlueprintReqs(blueprintTypeID,
-                             activityID,
-                             requiredTypeID,
-                             quantity,
-                             damagePerJob,
-                             baseMaterial)
+INSERT INTO ramBlueprintReqs
     SELECT  rtr.typeID,
             rtr.activityID,
             rtr.requiredTypeID,
@@ -37,12 +35,7 @@ INSERT INTO ramBlueprintReqs(blueprintTypeID,
           AND itm.materialTypeID = rtr.requiredTypeID
     WHERE rtr.quantity > 0;
 ----------------------------------------------------------
-INSERT INTO ramBlueprintReqs(blueprintTypeID, 
-                             activityID, 
-                             requiredTypeID, 
-                             quantity, 
-                             damagePerJob, 
-                             baseMaterial) 
+INSERT INTO ramBlueprintReqs
     SELECT  b.blueprintTypeID, 
             1, 
             itm.materialTypeID, 
@@ -71,18 +64,18 @@ INSERT INTO ramBlueprintReqs(blueprintTypeID,
     WHERE m.blueprintTypeID IS NULL 
     AND (itm.quantity - IFNULL(sub.quantity * sub.recycledQuantity, 0)) > 0;
 ----------------------------------------------------------
-INSERT INTO ramBlueprintReqs(blueprintTypeID, 
-                             activityID, 
-                             requiredTypeID, 
-                             quantity, 
-                             damagePerJob) 
-    SELECT  rtr.typeID, 
-            rtr.activityID,
-            rtr.requiredTypeID, 
-            rtr.quantity, 
-            rtr.damagePerJob 
-    FROM ramTypeRequirements AS rtr 
-    WHERE rtr.activityID NOT IN (1);
+INSERT INTO ramBlueprintReqs("blueprintTypeID", 
+                             "activityID", 
+                             "requiredTypeID", 
+                             "quantity", 
+                             "damagePerJob") 
+    SELECT  rtr."typeID", 
+            rtr."activityID",
+            rtr."requiredTypeID", 
+            rtr."quantity", 
+            rtr."damagePerJob" 
+    FROM "ramTypeRequirements" AS rtr 
+    WHERE rtr."activityID" NOT IN (1);
 
 --------------------
 -- PATCH invTypes --

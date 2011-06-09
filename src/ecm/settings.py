@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'ecm.data.common',
     'ecm.data.scheduler',
     'ecm.data.accounting',
+    'ecm.data.industry',
 )
 
 ###############################################################################

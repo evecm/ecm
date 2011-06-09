@@ -26,47 +26,45 @@ from django.utils.translation import ugettext_lazy as _
 class Order(models.Model):
     
     SUBMITTED = 0
-    CANCELED = 1
-    REJECTED_BY_MANUFACTURER = 2
-    ON_HOLD = 3
-    IN_PREPARATION = 4
-    READY = 5
-    DELIVERED = 6
-    REJECTED_BY_CLIENT = 7
-    PAID = 8
+    ACCEPTED = 1
+    PLANNED = 2
+    IN_PREPARATION = 3
+    READY = 4
+    DELIVERED = 5
+    PAID = 6
+    CANCELED_BY_CLIENT = 7
+    REJECTED_BY_MANUFACTURER = 8
     
     STATES = {
         SUBMITTED : _('Submitted'),
-        CANCELED : _('Canceled'),
-        REJECTED_BY_MANUFACTURER : _('Rejected by Manufacturer'),
-        ON_HOLD : _('Accepted/On Hold'),
+        ACCEPTED : _('Accepted'),
+        PLANNED : _('Planned'),
         IN_PREPARATION : _('In Preparation'),
         READY : _('Ready'),
         DELIVERED : _('Delivered'),
-        REJECTED_BY_CLIENT : _('Rejected by Client'),
         PAID : _('Paid'),
+        CANCELED_BY_CLIENT : _('Canceled by Client'),
+        REJECTED_BY_MANUFACTURER : _('Rejected by Manufacturer'),
     }
     
-    TRANSITIONS = {
-        SUBMITTED : (CANCELED, REJECTED_BY_MANUFACTURER, ON_HOLD, IN_PREPARATION),
-        CANCELED : (),
-        REJECTED_BY_MANUFACTURER : (),
-        ON_HOLD : (CANCELED, IN_PREPARATION),
-        IN_PREPARATION : (READY),
-        READY : (DELIVERED),
-        DELIVERED : (REJECTED_BY_CLIENT, PAID),
-        REJECTED_BY_CLIENT : (),
+    VALID_TRANSITIONS = {
+        SUBMITTED : (ACCEPTED, PLANNED, CANCELED_BY_CLIENT, REJECTED_BY_MANUFACTURER),
+        ACCEPTED : (IN_PREPARATION, CANCELED_BY_CLIENT),
+        PLANNED : (IN_PREPARATION, CANCELED_BY_CLIENT),
+        IN_PREPARATION : (READY, CANCELED_BY_CLIENT),
+        READY : (DELIVERED, CANCELED_BY_CLIENT),
+        DELIVERED : (PAID, CANCELED_BY_CLIENT),
         PAID : (),
+        CANCELED_BY_CLIENT : (),
+        REJECTED_BY_MANUFACTURER : (),
     }
     
-    originator = models.ForeignKey(User)
-    manufacturer = models.ForeignKey(User, null=True, blank=True)
-    deliveryMan = models.ForeignKey(User, null=True, blank=True)
+    originator = models.ForeignKey(User, related_name='orders_created')
+    manufacturer = models.ForeignKey(User, null=True, blank=True, related_name='orders_manufactured')
+    deliveryMan = models.ForeignKey(User, null=True, blank=True, related_name='orders_delivered')
     client = models.CharField(max_length=256, null=True, blank=True)
     deliveryLocation = models.CharField(max_length=256, null=True, blank=True)
     deliveryDate = models.DateField(null=True, blank=True)
-    nature = models.ForeignKey('ProductionNature')
-    site = models.ForeignKey('ProductionSite')
     state = models.PositiveIntegerField(default=SUBMITTED)
     discount = models.FloatField(default=0.0)
     quote = models.FloatField(null=True, blank=True)
@@ -76,14 +74,14 @@ class Order(models.Model):
     
     def changeState(self, newState, user, comment):
         assert isinstance(user, User)
-        if newState not in Order.TRANSITIONS[newState]:
-            legalStates = str([ Order.STATES[s] for s in Order.TRANSITIONS[newState] ])
+        if newState not in Order.VALID_TRANSITIONS[newState]:
+            legalStates = str([ Order.STATES[s] for s in Order.VALID_TRANSITIONS[newState] ])
             raise IllegalStateError(Order.STATES[newState]+' is illegal. Only '+legalStates+' are allowed.')
         self.state = newState
         self.comments.create(order=self, state=self.state, user=user, text=str(comment))
     
     def cancel(self, user, reason):
-        self.changeState(Order.CANCELED, user, reason)
+        self.changeState(Order.CANCELED_BY_CLIENT, user, reason)
         self.save()
         
     def rejectByManufacturer(self, user, reason):
@@ -113,6 +111,9 @@ class Order(models.Model):
         self.changeState(Order.REJECTED_BY_CLIENT, user, reason)
         self.save()
 
+    def __unicode__(self):
+        return 'Order #%d from %s' % (self.id, self.originator)
+
 #------------------------------------------------------------------------------
 class OrderComment(models.Model):
     
@@ -129,29 +130,22 @@ class OrderRow(models.Model):
     quantity = models.PositiveIntegerField()
     order = models.ForeignKey(Order, related_name='rows')
 
-#------------------------------------------------------------------------------
-class NeededMaterial(models.Model):
-    
-    order = models.ForeignKey(Order, related_name='materials')
-    typeID = models.PositiveIntegerField()
-    quantity = models.PositiveIntegerField()
 
-#------------------------------------------------------------------------------
-class OrderState(models.Model):
-    
-    name = models.CharField(max_length=256)
+
     
 #------------------------------------------------------------------------------
-class ProductionNature(models.Model):
+class JobType(models.Model):
     
     name = models.CharField(max_length=256)
+    needsPlanning = models.BooleanField(default=False)
+    needsSpecialFactory = models.BooleanField(default=False)
 
 #------------------------------------------------------------------------------
 class ProductionSite(models.Model):
     
     locationID = models.PositiveIntegerField(primary_key=True)
     customName = models.CharField(max_length=256)
-    natures = models.ManyToManyField(ProductionNature, related_name='sites')
+    natures = models.ManyToManyField(JobType, related_name='sites')
     discount = models.FloatField(default=0.0)
     
 
@@ -166,20 +160,48 @@ class OwnedBlueprint(models.Model):
     
     
     
-    def getItem(self):
-        pass
-    
-    def getBlueprint(self):
-        pass
-    
-    def getBillOfMaterials(self, customMe=None, customPe=None):
-        pass
-    
-    
 #------------------------------------------------------------------------------
-class ProductionStep:
-    pass
+class Job(models.Model):
 
+    IDLE = 0
+    PLANNED = 1
+    AGGREGATED = 2
+    STARTED = 3
+    READY = 4
+
+    STATES = {
+        IDLE : _('Idle'),
+        PLANNED : _('Planned'),
+        AGGREGATED : _('Aggregated'),
+        STARTED : _('In Production'),
+        READY : _('Ready'),
+    }
+            
+
+    order = models.ForeignKey(Order, related_name='jobs')
+    blueprint = models.ForeignKey(OwnedBlueprint, related_name='jobs')
+    factory = models.ForeignKey(FactorySlot, related_name='jobs')
+    type = models.ForeignKey(JobType, related_name='jobs')
+    aggregators = models.ManyToManyField('self', related_name='aggregatedJobs')
+    parentJob = models.ForeighKey('self', related_name='childrenJobs')
+    aggregateShare = models.FloatField(default=1.0)
+    state = models.PositiveSmallIntegerField(IDLE) # when a job is aggregated by another one, it goes to standby mode...
+    dueDate = models.DateTimeField()
+    duration = models.BigIntegerField()
+
+
+    
+    def __init__(self, *args, **kwargs):
+        models.Model.__init__(self, *args, **kwargs)
+        
+        
+
+#------------------------------------------------------------------------------
+class JobIngredient(models.Model):
+    
+    job = models.ForeignKey(Job, related_name='ingredients')
+    typeID = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------ 
