@@ -15,14 +15,14 @@
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from django.contrib import admin
-from ecm.data.industry.models import Order, OrderComment, OrderRow, JobType, ProductionSite, \
-    OwnedBlueprint, JobIngredient, Job
+from ecm.data.industry.models import Order, OrderComment, OrderRow, Job,\
+                                    FactorySlot, ProductionSite, OwnedBlueprint
 
 __date__ = "2011 6 9"
 __author__ = "diabeteman"
 
 
-
+#------------------------------------------------------------------------------
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
         "originator",
@@ -35,67 +35,56 @@ class OrderAdmin(admin.ModelAdmin):
         "discount",
         "quote",
     ]
+    
 #------------------------------------------------------------------------------
 class OrderCommentAdmin(admin.ModelAdmin):
-    list_display = [
-        "order",
-        "state",
-        "date",
-        "user",
-        "text",
-    ]
+    list_display = ["order", "state", "date", "user", "text",]
+    
 #------------------------------------------------------------------------------
 class OrderRowAdmin(admin.ModelAdmin):
-    list_display = [
-        "typeID",
-        "quantity",
-        "order",
-    ]
+    list_display = ["typeID", "quantity", "order",]
+    
 #------------------------------------------------------------------------------
-class JobTypeAdmin(admin.ModelAdmin):
+class JobAdmin(admin.ModelAdmin):
     list_display = [
-        "name",
-        "needsPlanning",
-        "needsSpecialFactory",
+        "order",
+        "parentJob",
+        "state",
+        "factory",
+        "owner",
+        "itemID",
+        "quantity",
+        "blueprint",
+        "activity",
+        "duration",
+        "dueDate",
+        "plannedDate",
+        "startDate",
+        "endDate",
     ]
+
 #------------------------------------------------------------------------------
 class ProductionSiteAdmin(admin.ModelAdmin):
-    list_display = [
-        "locationID",
-        "customName",
-        "discount",
-    ]
+    list_display = ["locationID", "customName", "discount",]
+    
+#------------------------------------------------------------------------------
+class FactorySlotAdmin(admin.ModelAdmin):
+    list_display = ["site", "activity",]
+
 #------------------------------------------------------------------------------
 class OwnedBlueprintAdmin(admin.ModelAdmin):
     list_display = [
-        "typeID",
+        "blueprintID",
         "count",
         "original",
         "me",
         "pe",
     ]
-#------------------------------------------------------------------------------
-class JobAdmin(admin.ModelAdmin):
-    list_display = [
-        "order",
-        "blueprint",
-        "type",
-        "parentJob",
-        "dueDate",
-        "duration",
-    ]
-#------------------------------------------------------------------------------
-class JobIngredientAdmin(admin.ModelAdmin):
-    list_display = [
-        "job",
-        "typeID",
-        "quantity",
-    ]
+    
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderComment, OrderCommentAdmin)
 admin.site.register(OrderRow, OrderRowAdmin)
-admin.site.register(JobType, JobTypeAdmin)
+admin.site.register(Job, JobAdmin)
+admin.site.register(FactorySlot, FactorySlotAdmin)
 admin.site.register(ProductionSite, ProductionSiteAdmin)
 admin.site.register(OwnedBlueprint, OwnedBlueprintAdmin)
-admin.site.register(Job, JobAdmin)
-admin.site.register(JobIngredient, JobIngredientAdmin)

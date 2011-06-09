@@ -209,3 +209,16 @@ def getMarketGroupChildren(mktGroup):
                                                  bool(hasTypes)))
     cursor.close()
     return mktGroup.children
+
+
+def getItem(typeID):
+    pass
+
+def getBlueprint(typeID):
+    pass
+
+
+
+
+
+

@@ -110,7 +110,7 @@ class BpActivity(object):
         self.activityID = activityID
         self.materials = []
     
-    def __getattr__(self, attrName):
+    def __getattribute__(self, attrName):
         if attrName == 'name':
             return BpActivity.NAMES[self.activityID]
         else:

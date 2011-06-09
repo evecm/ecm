@@ -22,10 +22,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+from ecm.core import evedb
+
 #------------------------------------------------------------------------------
 class Order(models.Model):
     
-    SUBMITTED = 0
+    PENDING = 0
     ACCEPTED = 1
     PLANNED = 2
     IN_PREPARATION = 3
@@ -35,20 +37,20 @@ class Order(models.Model):
     CANCELED_BY_CLIENT = 7
     REJECTED_BY_MANUFACTURER = 8
     
-    STATES = {
-        SUBMITTED : _('Submitted'),
-        ACCEPTED : _('Accepted'),
-        PLANNED : _('Planned'),
-        IN_PREPARATION : _('In Preparation'),
-        READY : _('Ready'),
-        DELIVERED : _('Delivered'),
-        PAID : _('Paid'),
-        CANCELED_BY_CLIENT : _('Canceled by Client'),
-        REJECTED_BY_MANUFACTURER : _('Rejected by Manufacturer'),
-    }
+    STATES_CHOICES = (
+        (PENDING,                   _('Pending')),
+        (ACCEPTED,                  _('Accepted')),
+        (PLANNED,                   _('Planned')),
+        (IN_PREPARATION,            _('In Preparation')),
+        (READY,                     _('Ready')),
+        (DELIVERED,                 _('Delivered')),
+        (PAID,                      _('Paid')),
+        (CANCELED_BY_CLIENT,        _('Canceled by Client')),
+        (REJECTED_BY_MANUFACTURER,  _('Rejected by Manufacturer')),
+    )
     
     VALID_TRANSITIONS = {
-        SUBMITTED : (ACCEPTED, PLANNED, CANCELED_BY_CLIENT, REJECTED_BY_MANUFACTURER),
+        PENDING : (ACCEPTED, PLANNED, CANCELED_BY_CLIENT, REJECTED_BY_MANUFACTURER),
         ACCEPTED : (IN_PREPARATION, CANCELED_BY_CLIENT),
         PLANNED : (IN_PREPARATION, CANCELED_BY_CLIENT),
         IN_PREPARATION : (READY, CANCELED_BY_CLIENT),
@@ -65,7 +67,7 @@ class Order(models.Model):
     client = models.CharField(max_length=256, null=True, blank=True)
     deliveryLocation = models.CharField(max_length=256, null=True, blank=True)
     deliveryDate = models.DateField(null=True, blank=True)
-    state = models.PositiveIntegerField(default=SUBMITTED)
+    state = models.PositiveIntegerField(default=PENDING, choices=STATES_CHOICES)
     discount = models.FloatField(default=0.0)
     quote = models.FloatField(null=True, blank=True)
     
@@ -111,6 +113,21 @@ class Order(models.Model):
         self.changeState(Order.REJECTED_BY_CLIENT, user, reason)
         self.save()
 
+    def updateJobs(self):
+        for row in self.rows.all():
+            if row.job is None:
+                # no job associated to row yet
+                try:
+                    bp = OwnedBlueprint.objects.filter(productTypeID=row.itemID).order_by('me')[0]
+                except IndexError:
+                    bp = None
+                row.job = Job.objects.create(order=self, row=row, itemID=row.itemID, 
+                                             quantity=row.quantity, blueprint=bp,
+                                             activity=Job.MANUFACTURING)
+                row.job.createRequirements()
+
+
+
     def __unicode__(self):
         return 'Order #%d from %s' % (self.id, self.originator)
 
@@ -118,90 +135,130 @@ class Order(models.Model):
 class OrderComment(models.Model):
     
     order = models.ForeignKey(Order, related_name='comments')
-    state = models.PositiveSmallIntegerField()
-    date = models.DateTimeField()
+    state = models.PositiveSmallIntegerField(choices=Order.STATES_CHOICES)
+    date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, related_name='comments')
     text = models.TextField()
     
 #------------------------------------------------------------------------------
 class OrderRow(models.Model):
     
-    typeID = models.PositiveIntegerField()
+    itemID = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
     order = models.ForeignKey(Order, related_name='rows')
-
-
-
     
+    def __getattribute__(self, attrname):
+        if attrname == 'item':
+            return evedb.getItem(self.itemID)
+        else:
+            return models.Model.__getattribute__(self, attrname)
+
+    def __repr__(self):
+        return '<OrderRow #%d: %d x%d>' % (self.id, self.itemID, self.quantity)
+
+    def __unicode__(self):
+        return '%s x%d' % (self.item.typeName, self.quantity)
+
 #------------------------------------------------------------------------------
-class JobType(models.Model):
+class Job(models.Model):
+
+    PENDING = 0
+    PLANNED = 1
+    AGGREGATED = 2
+    IN_PRODUCTION = 3
+    READY = 4
+
+    STATES_CHOICES = (
+        (PENDING,       _('Pending')),
+        (PLANNED,       _('Planned')),
+        (AGGREGATED,    _('Aggregated')),
+        (IN_PRODUCTION, _('In Production')),
+        (READY,         _('Ready')),
+    )
+
+    SUPPLY = 0
+    MANUFACTURING = 1
+    INVENTION = 8
     
-    name = models.CharField(max_length=256)
-    needsPlanning = models.BooleanField(default=False)
-    needsSpecialFactory = models.BooleanField(default=False)
+    ACTIVITY_CHOICES = (
+        (MANUFACTURING, _('Manufacturing')),
+        (SUPPLY,        _('Supply')),
+        (INVENTION,     _('Invention')),
+    )
+
+    # self.order is None if this is an aggregation job
+    order = models.ForeignKey(Order, related_name='jobs', null=True, blank=True)
+    # self.row is not None only if this is a root job
+    row = models.OneToOneField(OrderRow, related_name='job', null=True, blank=True)
+    # self.parentJob is None if this job is directly issued from an OrderRow
+    parentJob = models.ForeignKey('self', related_name='childrenJobs', null=True, blank=True)
+    # 
+    aggregators = models.ManyToManyField('self', related_name='aggregatedJobs')
+    # when a job is aggregated by another one, it goes to the AGGREGATED state...
+    state = models.PositiveSmallIntegerField(default=PENDING, choices=STATES_CHOICES) 
+    
+    factory = models.ForeignKey('FactorySlot', related_name='jobs', null=True, blank=True)
+
+    owner = models.ForeignKey(User, related_name='jobs', null=True, blank=True)
+    
+    itemID = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
+    blueprint = models.ForeignKey('OwnedBlueprint', related_name='jobs', null=True, blank=True)
+    activity = models.SmallIntegerField(default=MANUFACTURING, choices=ACTIVITY_CHOICES)
+    
+    duration = models.BigIntegerField()
+    
+    dueDate = models.DateTimeField(null=True, blank=True)
+    plannedDate = models.DateTimeField(null=True, blank=True)
+    startDate = models.DateTimeField(null=True, blank=True) 
+    endDate = models.DateTimeField(null=True, blank=True)
+
+
+    def createRequirements(self):
+        if self.blueprint is not None:
+            activity = self.blueprint.activities[self.activity]
+            for req in activity.requirements:
+                pass
+        # else: stop recursion
+            
+
+    def __getattribute__(self, attrname):
+        
+        if attrname == 'item':
+            return evedb.getItem(self.itemID)
+        else:
+            return models.Model.__getattribute__(self, attrname)
 
 #------------------------------------------------------------------------------
 class ProductionSite(models.Model):
     
     locationID = models.PositiveIntegerField(primary_key=True)
     customName = models.CharField(max_length=256)
-    natures = models.ManyToManyField(JobType, related_name='sites')
     discount = models.FloatField(default=0.0)
+
+#------------------------------------------------------------------------------
+class FactorySlot(models.Model):
     
+    site = models.ForeignKey(ProductionSite, related_name='slots')
+    activity = models.SmallIntegerField(default=Job.MANUFACTURING, choices=Job.ACTIVITY_CHOICES)
 
 #------------------------------------------------------------------------------
 class OwnedBlueprint(models.Model):
     
-    typeID = models.PositiveIntegerField(primary_key=True)
-    count = models.PositiveIntegerField()
+    blueprintID = models.PositiveIntegerField()
+    productTypeID = models.PositiveIntegerField()
+    itemName = models.CharField(max_length=128)
+    count = models.PositiveIntegerField(default=1)
     original = models.BooleanField(default=True)
-    me = models.PositiveIntegerField()
-    pe = models.PositiveIntegerField()
+    me = models.PositiveIntegerField(default=0)
+    pe = models.PositiveIntegerField(default=0)
     
+    def __getattribute__(self, attrname):
+        try:
+            return getattr(evedb.getBlueprint(self.blueprintID), attrname)
+        except:
+            return models.Model.__getattribute__(self, attrname)
     
-    
-#------------------------------------------------------------------------------
-class Job(models.Model):
-
-    IDLE = 0
-    PLANNED = 1
-    AGGREGATED = 2
-    STARTED = 3
-    READY = 4
-
-    STATES = {
-        IDLE : _('Idle'),
-        PLANNED : _('Planned'),
-        AGGREGATED : _('Aggregated'),
-        STARTED : _('In Production'),
-        READY : _('Ready'),
-    }
-            
-
-    order = models.ForeignKey(Order, related_name='jobs')
-    blueprint = models.ForeignKey(OwnedBlueprint, related_name='jobs')
-    factory = models.ForeignKey(FactorySlot, related_name='jobs')
-    type = models.ForeignKey(JobType, related_name='jobs')
-    aggregators = models.ManyToManyField('self', related_name='aggregatedJobs')
-    parentJob = models.ForeighKey('self', related_name='childrenJobs')
-    aggregateShare = models.FloatField(default=1.0)
-    state = models.PositiveSmallIntegerField(IDLE) # when a job is aggregated by another one, it goes to standby mode...
-    dueDate = models.DateTimeField()
-    duration = models.BigIntegerField()
-
-
-    
-    def __init__(self, *args, **kwargs):
-        models.Model.__init__(self, *args, **kwargs)
-        
-        
-
-#------------------------------------------------------------------------------
-class JobIngredient(models.Model):
-    
-    job = models.ForeignKey(Job, related_name='ingredients')
-    typeID = models.PositiveIntegerField()
-    quantity = models.PositiveIntegerField()
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------ 
