@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 
 from django.db import transaction
-from ecm.core import api
+from ecm.core.eve import api
 from ecm.core.parsers.utils import checkApiVersion
 from ecm.data.accounting.models import EntryType
 import logging

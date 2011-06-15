@@ -23,9 +23,9 @@ import logging
 from django.db import transaction
 
 from ecm.data.assets.models import Asset, AssetDiff
-from ecm.core import api, evedb
+from ecm.core.eve import api, db
 from ecm.core.parsers import utils
-import ecm.core.parsers.assetsconstants as cst
+import ecm.core.eve.constants as cst
 
 logger = logging.getLogger(__name__)
 
@@ -178,7 +178,7 @@ def rowIsOffice(office, items_dic):
     """
     try :
         stationID = locationIDtoStationID(office.locationID)
-        solarSystemID = evedb.getSolarSystemID(stationID)
+        solarSystemID = db.getSolarSystemID(stationID)
         for item in office.contents:
             if item.typeID == cst.BOOKMARK_TYPEID : 
                 continue # we don't give a flying @#!$ about the bookmarks...
@@ -249,7 +249,7 @@ def rowIsInHangar(item, items_dic, solarSystemID=None, stationID=None, hangarID=
     if solarSystemID is None and stationID is None:
         # we come from the update() method and the item has a locationID attribute
         asset.stationID = locationIDtoStationID(item.locationID)
-        asset.solarSystemID = evedb.getSolarSystemID(asset.stationID)
+        asset.solarSystemID = db.getSolarSystemID(asset.stationID)
     else: 
         asset.solarSystemID = solarSystemID
         asset.stationID = stationID

@@ -33,7 +33,7 @@ from ecm.view import getScanDate, extract_datatable_params
 from ecm.view.decorators import check_user_access
 from ecm.data.common.models import ColorThreshold
 from ecm.core.utils import print_time_min, get_access_color
-from ecm.core import evedb
+from ecm.core.eve import db
 
 
 #------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ def details(request, characterID):
         member.corpDate = print_time_min(member.corpDate)
         member.lastLogin = print_time_min(member.lastLogin)
         member.lastLogoff = print_time_min(member.lastLogoff)
-        member.base = evedb.resolveLocationName(member.baseID)[0]
+        member.base = db.resolveLocationName(member.baseID)[0]
         member.color = get_access_color(member.accessLvl, colorThresholds)
         member.roles_no_director = member.roles.exclude(roleID=1) # exclude 'director'
         member.all_titles = member.titles.all()

@@ -22,7 +22,7 @@ __author__ = "diabeteman"
 
 
 from ecm.data.corp.models import Corp, Hangar, Wallet
-from ecm.core import api
+from ecm.core.eve import api
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction

@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 from django.db import models
 from datetime import datetime
 
-from ecm.core import evedb
+from ecm.core.eve import db
 from ecm.lib import bigintpatch
 
 #------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ class Asset(models.Model):
 
     def __str__(self):
         try:
-            item = evedb.resolveTypeName(self.typeID)[0]
+            item = db.resolveTypeName(self.typeID)[0]
             return "<%s x%d>" % (item, self.quantity)
         except:
             return "<Asset instance at %x>" % id(self)

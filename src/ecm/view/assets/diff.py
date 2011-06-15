@@ -31,8 +31,8 @@ from django.db import connection
 
 from ecm.view.decorators import check_user_access
 from ecm.view.assets import extract_divisions, HTML_ITEM_SPAN
-from ecm.core.parsers import assetsconstants
-from ecm.core import evedb, utils
+from ecm.core.eve import constants, db
+from ecm.core import utils
 from ecm.data.assets.models import Asset, AssetDiff
 from ecm.data.corp.models import Hangar
 from ecm.view import getScanDate, DATE_PATTERN
@@ -125,9 +125,9 @@ def systems_data(request, date_str):
     
     where = []
     if not show_in_space:
-        where.append('"stationID" < %d' % assetsconstants.NPC_LOCATION_IDS)
+        where.append('"stationID" < %d' % constants.NPC_LOCATION_IDS)
     if not show_in_stations:
-        where.append('"stationID" > %d' % assetsconstants.NPC_LOCATION_IDS)
+        where.append('"stationID" > %d' % constants.NPC_LOCATION_IDS)
     if divisions is not None:
         where.append('"hangarID" IN %s')
     
@@ -144,7 +144,7 @@ def systems_data(request, date_str):
     
     jstree_data = []
     for solarSystemID, items in cursor:
-        name, security = evedb.resolveLocationName(solarSystemID)
+        name, security = db.resolveLocationName(solarSystemID)
         if security > 0.5:
             color = "hisec"
         elif security > 0:
@@ -176,9 +176,9 @@ def stations_data(request, date_str, solarSystemID):
     
     where = []
     if not show_in_space:
-        where.append('"stationID" < %d' % assetsconstants.NPC_LOCATION_IDS)
+        where.append('"stationID" < %d' % constants.NPC_LOCATION_IDS)
     if not show_in_stations:
-        where.append('"stationID" > %d' % assetsconstants.NPC_LOCATION_IDS)
+        where.append('"stationID" > %d' % constants.NPC_LOCATION_IDS)
     if divisions is not None:
         where.append('"hangarID" IN %s')
     
@@ -195,13 +195,13 @@ def stations_data(request, date_str, solarSystemID):
         
     jstree_data = []
     for stationID, flag, items in cursor:
-        if stationID < assetsconstants.NPC_LOCATION_IDS:
+        if stationID < constants.NPC_LOCATION_IDS:
             # it's a real station
-            name = evedb.resolveLocationName(stationID)[0]
+            name = db.resolveLocationName(stationID)[0]
             icon = "station"
         else:
             # it is an inspace anchorable array
-            name = evedb.resolveTypeName(flag)[0]
+            name = db.resolveTypeName(flag)[0]
             icon = "array"
         
         jstree_data.append({
@@ -276,7 +276,7 @@ def hangar_contents_data(request, date_str, solarSystemID, stationID, hangarID):
                                      date=date)
     jstree_data = []
     for item in query:
-        name = evedb.resolveTypeName(item.typeID)[0]
+        name = db.resolveTypeName(item.typeID)[0]
         
         if item.quantity < 0:
             icon = "removed"
@@ -304,16 +304,16 @@ def search_items(request, date_str):
     show_in_stations = json.loads(request.GET.get("stations", "true"))
     search_string = request.GET.get("search_string", "no-item")
     
-    matchingIDs = evedb.getMatchingIdsFromString(search_string)
+    matchingIDs = db.getMatchingIdsFromString(search_string)
     
     query = AssetDiff.objects.filter(typeID__in=matchingIDs, date=date)
     
     if divisions is not None:
         query = query.filter(hangarID__in=divisions)
     if not show_in_space:
-        query = query.filter(stationID__lt=assetsconstants.NPC_LOCATION_IDS)
+        query = query.filter(stationID__lt=constants.NPC_LOCATION_IDS)
     if not show_in_stations:
-        query = query.filter(stationID__gt=assetsconstants.NPC_LOCATION_IDS)
+        query = query.filter(stationID__gt=constants.NPC_LOCATION_IDS)
 
 
     json_data = []

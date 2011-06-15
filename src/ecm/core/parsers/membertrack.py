@@ -22,9 +22,9 @@ __author__ = "diabeteman"
 
 from django.db import transaction
 from ecm.data.roles.models import Member, MemberDiff
-from ecm.core import api
+from ecm.core.eve import api
 from ecm.core.parsers import utils
-from ecm.core import evedb
+from ecm.core.eve import db
 
 import logging
 logger = logging.getLogger(__name__)
@@ -132,7 +132,7 @@ def parseOneMember(member):
     base       = member.baseID
     login      = member.logonDateTime
     logoff     = member.logoffDateTime
-    location   = evedb.resolveLocationName(member.locationID)[0]
+    location   = db.resolveLocationName(member.locationID)[0]
     locationID = member.locationID
     ship       = member.shipType
     

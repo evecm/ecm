@@ -22,9 +22,8 @@ __author__ = "diabeteman"
 
 
 
-from ecm.core import api
 from ecm.core.parsers.utils import checkApiVersion, markUpdated
-from ecm.core import evedb
+from ecm.core.eve import api, db
 from ecm.data.common.models import Outpost
 
 from django.db import transaction
@@ -33,7 +32,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_manually
 def update():
     """
     Retrieve all corp assets and calculate the changes.
@@ -53,21 +51,12 @@ def update():
         logger.debug("cached util : %s", str(cachedUntil))
         
         logger.debug("parsing api response...")
-        Outpost.objects.all().delete()
         for outpost in apiOutposts.outposts :
-            Outpost(stationID=outpost.stationID,
-                    stationName=outpost.stationName,
-                    stationTypeID=outpost.stationTypeID,
-                    solarSystemID=outpost.solarSystemID,
-                    corporationID=outpost.corporationID,
-                    corporationName=outpost.corporationName).save()
-        # we store the update time of the table
-        markUpdated(model=Outpost, date=currentTime)
-                    
+            db.updateLocationName(outpost.stationID, 
+                                  outpost.solarSystemID, 
+                                  outpost.stationTypeID, 
+                                  outpost.locationName)
         logger.info("%d outposts parsed", len(apiOutposts.outposts))
-        logger.debug("saving data to the database...")
-        transaction.commit()
-        evedb.invalidateCache()
         logger.debug("update sucessfull")
         logger.info("outposts updated")
     except:

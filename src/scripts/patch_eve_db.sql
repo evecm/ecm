@@ -159,7 +159,7 @@ DROP TABLE "invTypes_temp";
 
   
 ----------------------------------------------------------
--- CREATE A SPECIAL MOON & PLANETS TABLE for quick name resolution
+-- CREATE A SPECIAL SYSTEMS, MOONS & PLANETS TABLE for quick name resolution
 
 CREATE TABLE "mapCelestialObjects" (
   "itemID" int(11) NOT NULL,
@@ -184,7 +184,15 @@ SELECT  "itemID",
         "itemName", 
         "security"
 FROM "mapDenormalize"
-WHERE "groupID" IN (5, 7, 8);
+WHERE "groupID" IN (5, 7, 8, 15);
+
+UPDATE "mapCelestialObjects" 
+SET "security" = 
+    (SELECT "mapSolarSystems"."security" 
+        FROM "mapSolarSystems"
+        WHERE "mapCelestialObjects"."itemID" = "mapSolarSystems"."solarSystemID") 
+WHERE "security" IS NULL;
+
 
 ----------------------------------------------------------
 -- DROP UNWANTED TABLES

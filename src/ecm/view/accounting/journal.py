@@ -27,7 +27,7 @@ from django.template.context import RequestContext
 from django.db.models import Q
 
 from ecm.core.utils import print_time_min, print_float
-from ecm.core import evedb
+from ecm.core.eve import db
 from ecm.data.corp.models import Wallet, Corp
 from ecm.data.roles.models import Member
 from ecm.view.decorators import check_user_access
@@ -110,7 +110,7 @@ def list_data(request):
             rats = [ str.split(':') for str in entry.reason.split(',') if ':' in str ]
             rat_list = []
             for rat_id, rat_count in rats:
-                rat_list.append('%s x%s' % (evedb.resolveTypeName(int(rat_id))[0], rat_count))
+                rat_list.append('%s x%s' % (db.resolveTypeName(int(rat_id))[0], rat_count))
             reason = '|'.join(rat_list)
             if reason:
                 reason = ('Killed Rats in %s|' % entry.argName1) + reason

@@ -28,7 +28,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail.message import EmailMultiAlternatives
 
-from ecm.core import api
+from ecm.core.eve import api
 from ecm.lib import eveapi
 from ecm.data.common.models import RegistrationProfile, UserAPIKey
 from ecm.data.roles.models import CharacterOwnership, Title, Member

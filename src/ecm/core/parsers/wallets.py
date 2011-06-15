@@ -26,7 +26,7 @@ import logging
 from django.db import transaction
 from django.db.models.aggregates import Max
 
-from ecm.core import api
+from ecm.core.eve import api
 from ecm.core.parsers import utils
 from ecm.core.parsers.utils import markUpdated
 from ecm.data.corp.models import Wallet

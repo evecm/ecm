@@ -22,7 +22,7 @@ __author__ = "diabeteman"
 
 from ecm.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff, Member
-from ecm.core import api
+from ecm.core.eve import api
 from ecm.core.parsers import utils
 
 from django.db import transaction

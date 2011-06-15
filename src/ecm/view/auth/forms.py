@@ -30,7 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import CaptchaField
 
-from ecm.core import api
+from ecm.core.eve import api
 from ecm.data.common.models import UserAPIKey
 from ecm.lib import eveapi
 from ecm.data.roles.models import CharacterOwnership, Member

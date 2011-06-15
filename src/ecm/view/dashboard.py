@@ -23,8 +23,8 @@ import json
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
-from ecm.core import evedb
-from ecm.core.parsers import assetsconstants
+from ecm.core.eve import db
+from ecm.core.eve import constants
 from ecm.view.decorators import check_user_access
 from ecm.data.roles.models import Member, CharacterOwnership
 from ecm.data.common.models import ColorThreshold, UserAPIKey
@@ -63,9 +63,9 @@ def positions_of_members():
     positions = {"hisec" : 0, "lowsec" : 0, "nullsec" : 0}
     for m in Member.objects.filter(corped=True):
         solarSystemID = m.locationID
-        if solarSystemID > assetsconstants.STATIONS_IDS:
-            solarSystemID = evedb.getSolarSystemID(m.locationID)
-        security = evedb.resolveLocationName(solarSystemID)[1]
+        if solarSystemID > constants.STATIONS_IDS:
+            solarSystemID = db.getSolarSystemID(m.locationID)
+        security = db.resolveLocationName(solarSystemID)[1]
         if security > 0.5:
             positions["hisec"] += 1
         elif security > 0:

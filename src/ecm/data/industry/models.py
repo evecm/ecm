@@ -18,11 +18,26 @@
 __date__ = "2011 6 7"
 __author__ = "diabeteman"
 
+from datetime import timedelta
+
+from django.conf import settings
 from django.db import models
+from ecm.core.eve.classes import Item, Blueprint
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-from ecm.core import evedb
+
+#------------------------------------------------------------------------------
+class DeliveryDate(models.Model):
+    date = models.DateField()
+    
+    def next(self):
+        next_date = self.date + timedelta(days=settings.DELIVERY_INTERVAL_DAYS)
+        return self.objects.get_or_create(date=next_date)
+    
+    def prev(self):
+        prev_date = self.date - timedelta(days=settings.DELIVERY_INTERVAL_DAYS)
+        return self.objects.get_or_create(date=prev_date)
 
 #------------------------------------------------------------------------------
 class Order(models.Model):
@@ -66,7 +81,7 @@ class Order(models.Model):
     deliveryMan = models.ForeignKey(User, null=True, blank=True, related_name='orders_delivered')
     client = models.CharField(max_length=256, null=True, blank=True)
     deliveryLocation = models.CharField(max_length=256, null=True, blank=True)
-    deliveryDate = models.DateField(null=True, blank=True)
+    deliveryDate = models.ForeignKey(DeliveryDate, related_name='orders', null=True, blank=True)
     state = models.PositiveIntegerField(default=PENDING, choices=STATES_CHOICES)
     discount = models.FloatField(default=0.0)
     quote = models.FloatField(null=True, blank=True)
@@ -149,7 +164,11 @@ class OrderRow(models.Model):
     
     def __getattribute__(self, attrname):
         if attrname == 'item':
-            return evedb.getItem(self.itemID)
+            try:
+                return self.__item
+            except AttributeError:
+                self.__item = Item.get(self.itemID) 
+                return self.__item 
         else:
             return models.Model.__getattribute__(self, attrname)
 
@@ -208,8 +227,8 @@ class Job(models.Model):
     
     duration = models.BigIntegerField()
     
-    dueDate = models.DateTimeField(null=True, blank=True)
-    plannedDate = models.DateTimeField(null=True, blank=True)
+    maxDueDate = models.DateTimeField(null=True, blank=True)
+    deliveryDate = models.ForeignKey(DeliveryDate, related_name='jobs', null=True, blank=True)
     startDate = models.DateTimeField(null=True, blank=True) 
     endDate = models.DateTimeField(null=True, blank=True)
 
@@ -223,9 +242,12 @@ class Job(models.Model):
             
 
     def __getattribute__(self, attrname):
-        
         if attrname == 'item':
-            return evedb.getItem(self.itemID)
+            try:
+                return self.__item
+            except AttributeError:
+                self.__item = Item.get(self.itemID) 
+                return self.__item 
         else:
             return models.Model.__getattribute__(self, attrname)
 
@@ -246,17 +268,21 @@ class FactorySlot(models.Model):
 class OwnedBlueprint(models.Model):
     
     blueprintID = models.PositiveIntegerField()
-    productTypeID = models.PositiveIntegerField()
-    itemName = models.CharField(max_length=128)
     count = models.PositiveIntegerField(default=1)
     original = models.BooleanField(default=True)
     me = models.PositiveIntegerField(default=0)
     pe = models.PositiveIntegerField(default=0)
     
-    def __getattribute__(self, attrname):
+    def __getattr__(self, attrname):
+        if attrname == '__blueprint':
+            raise AttributeError()
         try:
-            return getattr(evedb.getBlueprint(self.blueprintID), attrname)
-        except:
+            try:
+                getattr(self, '__blueprint')
+            except AttributeError:
+                self.__blueprint = Blueprint.get(self.blueprintID)
+            return getattr(self.__blueprint, attrname)
+        except AttributeError:
             return models.Model.__getattribute__(self, attrname)
     
 #------------------------------------------------------------------------------
