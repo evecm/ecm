@@ -6,3 +6,4 @@ src/db/*journal
 src/logs/*log*
 dist
 package
+*.old
