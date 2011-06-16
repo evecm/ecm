@@ -7,3 +7,4 @@ src/logs/*log*
 dist
 package
 *.old
+src/db/EVE*.db

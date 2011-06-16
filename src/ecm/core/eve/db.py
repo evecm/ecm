@@ -117,22 +117,32 @@ SQL_MKTGRP = '''SELECT marketGroupID, marketGroupName, hasTypes
 FROM invMarketGroups 
 WHERE marketGroupID = %s;'''
 def getMarketGroup(marketGroupID):
-    cursor = EVE_DB.cursor()
-    cursor.execute(SQL_MKTGRP, [marketGroupID])
-    mktGroup = cursor.fetchone()
-    cursor.close()
-    return mktGroup
+    try:
+        return cache.getCachedMarketGroup(marketGroupID)
+    except KeyError:
+        cursor = EVE_DB.cursor()
+        cursor.execute(SQL_MKTGRP, [marketGroupID])
+        row = cursor.fetchone()
+        cursor.close()
+        cache.setCachedMarketGroup(marketGroupID, row)
+        return row
 
 #------------------------------------------------------------------------------
 SQL_MKTGRP_BY_PARENT = '''SELECT marketGroupID, marketGroupName, hasTypes
 FROM invMarketGroups 
 WHERE parentGroupID = %s;'''
 def getMarketGroupChildren(marketGroupID):
-    cursor = EVE_DB.cursor()
-    cursor.execute(SQL_MKTGRP_BY_PARENT, [marketGroupID])
-    rows = cursor.fetchall()
-    cursor.close()
-    return rows
+    try:
+        return cache.getCachedMarketGroupChildren(marketGroupID)
+    except KeyError:
+        cursor = EVE_DB.cursor()
+        cursor.execute(SQL_MKTGRP_BY_PARENT, [marketGroupID])
+        rows = cursor.fetchall()
+        cursor.close()
+        for row in rows:
+            cache.setCachedMarketGroup(marketGroupID, row)
+        cache.setCachedMarketGroupChildren(marketGroupID, rows)
+        return rows
 
 #------------------------------------------------------------------------------
 SQL_ITEMS_BY_MKTGRP = 'SELECT * FROM invTypes WHERE marketGroupID = %s;'

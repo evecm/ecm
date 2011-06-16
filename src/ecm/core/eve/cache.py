@@ -68,7 +68,24 @@ def getCachedMarketGroup(mktGroupID):
 def setCachedMarketGroup(mktGroupID, mktGroup):
     with LOCK_MKTGROUPS: 
         CACHE_MKTGROUPS[mktGroupID] = mktGroup
-
+#------------------------------------------------------------------------------
+CACHE_MKTGROUP_CHILDREN = {}
+LOCK_MKTGROUP_CHILDREN = threading.RLock()
+def getCachedMarketGroupChildren(parentMktGroupID):
+    with LOCK_MKTGROUP_CHILDREN: 
+        return CACHE_MKTGROUP_CHILDREN[parentMktGroupID]
+def setCachedMarketGroupChildren(parentMktGroupID, children):
+    with LOCK_MKTGROUP_CHILDREN: 
+        CACHE_MKTGROUP_CHILDREN[parentMktGroupID] = children
+#------------------------------------------------------------------------------
+CACHE_MKTGROUP_ITEMS = {}
+LOCK_MKTGROUP_ITEMS = threading.RLock()
+def getCachedMarketGroupItems(mktGroupID):
+    with LOCK_MKTGROUP_ITEMS: 
+        return CACHE_MKTGROUP_ITEMS[mktGroupID]
+def setCachedMarketGroupItems(mktGroupID, items):
+    with LOCK_MKTGROUP_ITEMS: 
+        CACHE_MKTGROUP_ITEMS[mktGroupID] = items
 #------------------------------------------------------------------------------
 LOCK_SOLARSYSTEMS = threading.RLock()
 CACHE_SOLARSYSTEMS = {}

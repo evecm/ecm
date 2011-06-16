@@ -4,15 +4,15 @@ BEGIN;
 ------------------------------------------
 -- CUSTOM blueprints requirements table --
 ------------------------------------------
-CREATE TABLE ramBlueprintReqs (
-    blueprintTypeID SMALLINT,       -- id of blueprint using this material
-    activityID TINYINT UNSIGNED,    -- building, copying, etc
-    requiredTypeID SMALLINT,        -- id of resource used for this activity
-    quantity INT,                   -- how many of this resource is used
-    damagePerJob DOUBLE,            -- how much of the resource is expended
-    baseMaterial INT,               -- how much is the base material.  
+CREATE TABLE "ramBlueprintReqs" (
+    "blueprintTypeID" SMALLINT,       -- id of blueprint using this material
+    "activityID" TINYINT UNSIGNED,    -- building, copying, etc
+    "requiredTypeID" SMALLINT,        -- id of resource used for this activity
+    "quantity" INT,                   -- how many of this resource is used
+    "damagePerJob" DOUBLE,            -- how much of the resource is expended
+    "baseMaterial" INT,               -- how much is the base material.  
                                     -- 0 means unaffected by waste, >=quantity means entirely affected
-    CONSTRAINT materials_PK PRIMARY KEY (blueprintTypeID, activityID, requiredTypeID)
+    CONSTRAINT "materials_PK" PRIMARY KEY ("blueprintTypeID", "activityID", "requiredTypeID")
 );
 
 CREATE INDEX "ramBlueprintReqs_IX_blueprintTypeID" ON "ramBlueprintReqs" ("blueprintTypeID");
@@ -22,50 +22,50 @@ CREATE INDEX "ramBlueprintReqs_IX_activityID" ON "ramBlueprintReqs" ("activityID
 -- into a single table showing all the materials a blueprint requires, and how much of each 
 -- material is affected by waste when building.
 -------------------------------------------------------
-INSERT INTO ramBlueprintReqs
-    SELECT  rtr.typeID,
-            rtr.activityID,
-            rtr.requiredTypeID,
-            (rtr.quantity + IFNULL(itm.quantity, 0)),
-            rtr.damagePerJob,
-            itm.quantity
-    FROM invBlueprintTypes AS b
-       INNER JOIN ramTypeRequirements AS rtr
-           ON rtr.typeID = b.blueprintTypeID
-          AND rtr.activityID = 1 -- manufacturing
-       LEFT OUTER JOIN invTypeMaterials AS itm
-           ON itm.typeID = b.productTypeID
-          AND itm.materialTypeID = rtr.requiredTypeID
-    WHERE rtr.quantity > 0;
+INSERT INTO "ramBlueprintReqs"
+    SELECT  rtr."typeID",
+            rtr."activityID",
+            rtr."requiredTypeID",
+            (rtr."quantity" + IFNULL(itm."quantity", 0)),
+            rtr."damagePerJob",
+            itm."quantity"
+    FROM "invBlueprintTypes" AS b
+       INNER JOIN "ramTypeRequirements" AS rtr
+           ON rtr."typeID" = b."blueprintTypeID"
+          AND rtr."activityID" = 1 -- manufacturing
+       LEFT OUTER JOIN "invTypeMaterials" AS itm
+           ON itm."typeID" = b."productTypeID"
+          AND itm."materialTypeID" = rtr."requiredTypeID"
+    WHERE rtr."quantity" > 0;
 ----------------------------------------------------------
-INSERT INTO ramBlueprintReqs
-    SELECT  b.blueprintTypeID, 
+INSERT INTO "ramBlueprintReqs"
+    SELECT  b."blueprintTypeID", 
             1,  -- manufacturing activityID
-            itm.materialTypeID,   -- requiredTypeID
-            (itm.quantity - IFNULL(sub.quantity * sub.recycledQuantity, 0)),  -- quantity
+            itm."materialTypeID",   -- requiredTypeID
+            (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)),  -- quantity
             1,   -- damagePerJob
-            (itm.quantity - IFNULL(sub.quantity * sub.recycledQuantity, 0))  -- baseMaterial
-    FROM invBlueprintTypes AS b 
-       INNER JOIN invTypeMaterials AS itm 
-           ON itm.typeID = b.productTypeID 
-       LEFT OUTER JOIN ramBlueprintReqs m 
-           ON b.blueprintTypeID = m.blueprintTypeID 
-           AND m.requiredTypeID = itm.materialTypeID 
+            (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0))  -- baseMaterial
+    FROM "invBlueprintTypes" AS b 
+       INNER JOIN "invTypeMaterials" AS itm 
+           ON itm."typeID" = b."productTypeID" 
+       LEFT OUTER JOIN "ramBlueprintReqs" m 
+           ON b."blueprintTypeID" = m."blueprintTypeID" 
+           AND m."requiredTypeID" = itm."materialTypeID" 
        LEFT OUTER JOIN ( 
-           SELECT srtr.typeID AS blueprintTypeID, -- tech 2 items recycle into their materials
-                  sitm.materialTypeID AS recycledTypeID,   -- plus the t1 item's materials
-                  srtr.quantity AS recycledQuantity, 
-                  sitm.quantity 
-           FROM ramTypeRequirements AS srtr 
-               INNER JOIN invTypeMaterials AS sitm 
-                   ON srtr.requiredTypeID = sitm.typeID 
-           WHERE srtr.recycle = 1   -- the recycle flag determines whether or not this requirement's materials are added
-             AND srtr.activityID = 1 
+           SELECT srtr."typeID" AS "blueprintTypeID", -- tech 2 items recycle into their materials
+                  sitm."materialTypeID" AS "recycledTypeID",   -- plus the t1 item's materials
+                  srtr."quantity" AS "recycledQuantity", 
+                  sitm."quantity" AS "quantity"
+           FROM "ramTypeRequirements" AS srtr 
+               INNER JOIN "invTypeMaterials" AS sitm 
+                   ON srtr."requiredTypeID" = sitm."typeID" 
+           WHERE srtr."recycle" = 1   -- the recycle flag determines whether or not this requirement's materials are added
+             AND srtr."activityID" = 1 
        ) AS sub 
-           ON sub.blueprintTypeID = b.blueprintTypeID 
-           AND sub.recycledTypeID = itm.materialTypeID 
-    WHERE m.blueprintTypeID IS NULL -- partially waste-affected materials already added
-    AND (itm.quantity - IFNULL(sub.quantity * sub.recycledQuantity, 0)) > 0; -- ignore negative quantities
+           ON sub."blueprintTypeID" = b."blueprintTypeID" 
+           AND sub."recycledTypeID" = itm."materialTypeID" 
+    WHERE m."blueprintTypeID" IS NULL -- partially waste-affected materials already added
+    AND (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)) > 0; -- ignore negative quantities
 ----------------------------------------------------------
 INSERT INTO ramBlueprintReqs("blueprintTypeID", 
                              "activityID", 
@@ -80,7 +80,7 @@ INSERT INTO ramBlueprintReqs("blueprintTypeID",
     FROM "ramTypeRequirements" AS rtr 
     WHERE rtr."activityID" NOT IN (1);
 ----------------------------------------------------------
-UPDATE ramBlueprintReqs SET baseMaterial = 0 WHERE baseMaterial IS NULL;
+UPDATE "ramBlueprintReqs" SET "baseMaterial" = 0 WHERE "baseMaterial" IS NULL;
 
 --------------------
 -- PATCH invTypes --

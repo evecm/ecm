@@ -38,7 +38,26 @@ class MarketGroup(object):
         self.marketGroupID = marketGroupID
         self.marketGroupName = marketGroupName
         self.hasTypes = hasTypes
-        self.children = []
+    
+    def __getattr__(self, attrName):
+        if attrName == 'children':
+            try:
+                return self.__children
+            except AttributeError:
+                self.__children = [] 
+                if self.hasTypes:
+                    for row in db.getMarketGroupChildren(self.marketGroupID):
+                        self.__children.append(MarketGroup(*row))
+                else:
+                    for row in db.getMarketGroupItems(self.marketGroupID):
+                        self.__children.append(Item(*row))
+                return self.__children
+        else:
+            return object.__getattribute__(self, attrName)
+    
+    @staticmethod
+    def get(marketGroupID):
+        return MarketGroup(*db.getMarketGroup(marketGroupID))
     
     def __repr__(self):
         return '<MarketGroup: %s>' % (self.marketGroupName + ('*' if self.hasTypes else ''))  
@@ -74,17 +93,16 @@ class Item(object):
         self.marketGroupID = marketGroupID
         self.icon = icon
     
-    def getBillOfMaterials(self, recurse=True):
-        materials = self.blueprint[BpActivity.MANUFACTURING].materials
-        if recurse:
-            try:
-                for m in materials:
-                    materials += m.getBillOfMaterials(recurse)
-            except UserWarning:
-                # stop because the material has no blueprint
-                pass
-            
-        return materials
+    def getBillOfMaterials(self, quantity=1.0, meLevel=0):
+        bill = []
+        try:
+            materials = self.blueprint[BpActivity.MANUFACTURING].materials
+            for m in materials:
+                qty = quantity * apply_material_level(m.quantity, meLevel, self.blueprint.wasteFactor)
+                bill.append(ActivityMaterial(m.requiredTypeID, qty, m.damagePerJob, m.baseMaterial))
+        except NoBlueprintException:
+            bill = []
+        return bill
         
     def __getattr__(self, attrName):
         if attrName == 'blueprint':
@@ -92,7 +110,7 @@ class Item(object):
                 return self.__blueprint
             except AttributeError:
                 if self.blueprintTypeID is None:
-                    raise UserWarning('Item with typeID %d has no blueprint' % self.typeID)
+                    raise NoBlueprintException(self.typeID)
                 else:
                     self.__blueprint = Blueprint(*db.getBlueprint(self.blueprintTypeID))
                     return self.__blueprint
@@ -137,12 +155,7 @@ class Blueprint(object):
         self.wasteFactor = wasteFactor
         self.maxProductionLimit = maxProductionLimit
     
-    def calc_one_material(self, base):
-        if self.meLevel < 0:
-            value = base * (1.0 - ((self.meLevel - 1) * (self.wasteFactor * 0.01)));
-        else:
-            value = base * (1.0 + ((self.wasteFactor * 0.01) / (1.0 + self.meLevel)));
-        return int(round(value))
+
     
     def __getattr__(self, attrName):
         if attrName == 'activities':
@@ -240,7 +253,33 @@ class ActivityMaterial(Item):
                 return Item.__getattr__(self, attrName)
         except AttributeError:
             return object.__getattribute__(self, attrName)
-    
+
+    def getBillOfMaterials(self, quantity=1.0, meLevel=0):
+        bill = Item.getBillOfMaterials(self, quantity, meLevel)
+        for m in bill: 
+            m.quantity *= self.quantity
+        return bill
+
     def __repr__(self):
         return '<ActivityMaterial: id=%d, qty=%d>' % (self.requiredTypeID, self.quantity)
-    
+
+
+#------------------------------------------------------------------------------
+class NoBlueprintException(UserWarning):
+    def __init__(self, typeID):
+        self.typeID = typeID
+    def __repr__(self):
+        return 'NoBlueprintException: Item with typeID %d has no blueprint' % self.typeID
+    def __str__(self):
+        return 'Item with typeID %d has no blueprint' % self.typeID
+
+#------------------------------------------------------------------------------
+def apply_material_level(base, meLevel, wasteFactor, round=False):
+    if meLevel < 0:
+        value = base * (1.0 - ((meLevel - 1) * (wasteFactor * 0.01)));
+    else:
+        value = base * (1.0 + ((wasteFactor * 0.01) / (1.0 + meLevel)));
+    if round:
+        return int(round(value))
+    else:
+        return value
