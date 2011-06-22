@@ -1,12 +1,13 @@
 from django.db.backends import util, BaseDatabaseOperations
 from django.db.backends.sqlite3.base import DatabaseOperations
 from django.db.models import fields
-from django.utils.translation import ugettext as _
 from django.db.models.fields.related import ForeignKey
 from django.db.backends.postgresql.creation import DatabaseCreation as PostgresDBCreation
 from django.db.backends.sqlite3.creation import DatabaseCreation as SQLiteDBCreation
 from django.db.backends.oracle.creation import DatabaseCreation as OracleDBCreation
 from django.db.backends.mysql.creation import DatabaseCreation as MySQLDBCreation
+from django.utils.datastructures import DictWrapper
+from django.db.backends.creation import BaseDatabaseCreation
 
 
 
@@ -15,17 +16,30 @@ __author__ = "Florian Leitner"
 
 class BigAutoField(fields.AutoField):
     
-    description = _("Big (8 byte) integer") 
+    description = "Big (8 byte) integer" 
     
     def get_internal_type(self):
         return "BigAutoField"
-
-
+    
 
 PostgresDBCreation.data_types['BigAutoField'] = 'bigserial'
-SQLiteDBCreation.data_types['BigAutoField'] = 'bigint'
 OracleDBCreation.data_types['BigAutoField'] = 'NUMBER(19)'
 MySQLDBCreation.data_types['BigAutoField'] = 'bigint AUTO_INCREMENT'
+SQLiteDBCreation.data_types['BigAutoField'] = 'integer'
+SQLiteDBCreation.data_types_suffix = {
+    'AutoField': 'AUTOINCREMENT', 
+    'BigAutoField': 'AUTOINCREMENT', 
+}
+
+
+
+def db_type_suffix(self, connection): 
+    data = DictWrapper(self.__dict__, connection.ops.quote_name, "qn_") 
+    try: 
+        return connection.creation.data_types_suffix[self.get_internal_type()] % data 
+    except (KeyError, AttributeError): 
+        return False 
+fields.Field.db_type_suffix = db_type_suffix
 
 
 def db_type_foreignkey(self, connection):
@@ -92,5 +106,68 @@ def convert_values_base(self, value, field):
 BaseDatabaseOperations.convert_values = convert_values_base
 
 
+def sql_create_model(self, model, style, known_models=set()):
+    """
+    Returns the SQL required to create a single model, as a tuple of:
+        (list_of_sql, pending_references_dict)
+    """
+    opts = model._meta
+    if not opts.managed or opts.proxy:
+        return [], {}
+    final_output = []
+    table_output = []
+    pending_references = {}
+    qn = self.connection.ops.quote_name
+    for f in opts.local_fields:
+        col_type = f.db_type(connection=self.connection)
+        col_type_suffix = f.db_type_suffix(connection=self.connection) 
+        tablespace = f.db_tablespace or opts.db_tablespace
+        if col_type is None:
+            # Skip ManyToManyFields, because they're not represented as
+            # database columns in this table.
+            continue
+        # Make the definition (e.g. 'foo VARCHAR(30)') for this field.
+        field_output = [style.SQL_FIELD(qn(f.column)),
+            style.SQL_COLTYPE(col_type)]
+        if not f.null:
+            field_output.append(style.SQL_KEYWORD('NOT NULL'))
+        if f.primary_key:
+            field_output.append(style.SQL_KEYWORD('PRIMARY KEY'))
+        elif f.unique:
+            field_output.append(style.SQL_KEYWORD('UNIQUE'))
+        if tablespace and f.unique:
+            # We must specify the index tablespace inline, because we
+            # won't be generating a CREATE INDEX statement for this field.
+            field_output.append(self.connection.ops.tablespace_sql(tablespace, inline=True))
+        if f.rel:
+            ref_output, pending = self.sql_for_inline_foreign_key_references(f, known_models, style)
+            if pending:
+                pending_references.setdefault(f.rel.to, []).append((model, f))
+            else:
+                field_output.extend(ref_output)
+        if col_type_suffix:
+            field_output.append(style.SQL_KEYWORD(col_type_suffix))
+        table_output.append(' '.join(field_output))
+    for field_constraints in opts.unique_together:
+        table_output.append(style.SQL_KEYWORD('UNIQUE') + ' (%s)' % \
+            ", ".join([style.SQL_FIELD(qn(opts.get_field(f).column)) for f in field_constraints]))
 
+    full_statement = [style.SQL_KEYWORD('CREATE TABLE') + ' ' + style.SQL_TABLE(qn(opts.db_table)) + ' (']
+    for i, line in enumerate(table_output): # Combine and add commas.
+        full_statement.append('    %s%s' % (line, i < len(table_output)-1 and ',' or ''))
+    full_statement.append(')')
+    if opts.db_tablespace:
+        full_statement.append(self.connection.ops.tablespace_sql(opts.db_tablespace))
+    full_statement.append(';')
+    final_output.append('\n'.join(full_statement))
 
+    if opts.has_auto_field:
+        # Add any extra SQL needed to support auto-incrementing primary keys.
+        auto_column = opts.auto_field.db_column or opts.auto_field.name
+        autoinc_sql = self.connection.ops.autoinc_sql(opts.db_table, auto_column)
+        if autoinc_sql:
+            for stmt in autoinc_sql:
+                final_output.append(stmt)
+
+    return final_output, pending_references
+BaseDatabaseCreation.sql_create_model = sql_create_model

@@ -1,10 +1,13 @@
 import shutil
-from distutils import dir_util, archive_util
+from distutils import dir_util, archive_util, file_util
 import sys
 import django
 import os
 import fnmatch
 import tarfile
+import re
+import tempfile
+from win32con import FILE_UNICODE_ON_DISK
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
 data_dict = {
@@ -31,9 +34,8 @@ db_engines = {
     'postgresql_psycopg2': "'django.db.backends.postgresql_psycopg2'"
 }
 
-db_settings_old = '''        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': resolvePath('../db/ECM.db')
-'''
+db_settings_old = re.compile(r"\s*'ENGINE': 'django.db.backends.sqlite3',.*"
+                             r"\s*'NAME': resolvePath('../db/ECM.db')", re.DOTALL)
 
 db_settings_new = '''        'ENGINE': %(db_engine)s,
         'NAME': '%(db_name)s',
@@ -52,10 +54,12 @@ def install():
         data_dict['install_dir'] = raw_input("ECM install directory? (example: '/var/ECM') ").replace("\\", "/")
     while data_dict['vhost_name'] == "":
         data_dict['vhost_name'] = raw_input("Apache virtual host name? (example: 'ecm.mydomain.com') ")
-    while data_dict['ip_address'] == "":
-        data_dict['ip_address'] = raw_input("Apache virtual host listen ip address? (example: '*') ")
-    while data_dict['port'] == "":
-        data_dict['port'] = raw_input("Apache virtual host listen port? (example: '80') ")
+    data_dict['ip_address'] = raw_input("Apache virtual host listen ip address? (default: '*') ")
+    if data_dict['ip_address'] == "":
+        data_dict['ip_address'] == "*"
+    data_dict['port'] = raw_input("Apache virtual host listen port? (default: '80') ")
+    if data_dict['port'] == "":
+        data_dict['port'] == "80"
     while data_dict['admin_email'] == "":
         data_dict['admin_email'] = raw_input("Email of the server administrator? (for error notifications) ")
     while data_dict['server_email'] == "":
@@ -64,19 +68,72 @@ def install():
         data_dict['db_engine'] = raw_input("DB engine? (sqlite, mysql, postgresql, postgresql_psycopg2) ")
 
     if data_dict['db_engine'] != 'sqlite':
-        while data_dict['db_name'] == "":
-            data_dict['db_name'] = raw_input("Database name? ")
-        while data_dict['db_user'] == "":
-            data_dict['db_user'] = raw_input("Database user name? ")
-        while data_dict['db_pass'] == "":
-            data_dict['db_pass'] = raw_input("Database user password? ")
+        data_dict['db_name'] = raw_input("Database name (default: ecm)? ")
+        if data_dict['db_name'] == "":
+            data_dict['db_name'] = "ecm"
+        data_dict['db_user'] = raw_input("Database user name (default: ecm)? ")
+        if data_dict['db_user'] == "":
+            data_dict['db_user'] = "ecm"
+        data_dict['db_pass'] = raw_input("Database user password (default: ecm)? ")
+        if data_dict['db_pass'] == "":
+            data_dict['db_pass'] = "ecm"
     
-    print "Django install dir:", data_dict['django_dir']
-    
-    print "Copying files..."
-    dir_util.copy_tree(data_dict['src_dir'], data_dict['install_dir'])
+    raw_input("If the installation directory already exists, it will be deleted. "
+              "Press 'enter' to proceed with the installation.")
+    install_files()
+    download_eve_db()
+    configure()
 
-    print "Configuring ECM..."
+def upgrade():
+    print "Upgrading ECM server to version %s..." % ecm.get_full_version()
+    print "All existing settings will be preserved"
+    while data_dict['install_dir'] == "":
+        data_dict['install_dir'] = raw_input("ECM install directory? ").replace("\\", "/")
+    
+    tempdir = tempfile.mkdtemp()
+    print "Backuping settings to %s..." % tempdir,
+    settings_file = os.path.join(data_dict['install_dir'], "ecm/settings.py")
+    vhost_file = os.path.join(data_dict['install_dir'], "ecm.apache.vhost.conf")
+    db_folder = os.path.join(data_dict['install_dir'], "db")
+    logs_folder = os.path.join(data_dict['install_dir'], "logs")
+    if os.path.exists(db_folder): dir_util.copy_tree(db_folder, os.path.join(tempdir, 'db'))
+    if os.path.exists(logs_folder): dir_util.copy_tree(logs_folder, os.path.join(tempdir, 'logs'))
+    if os.path.exists(settings_file): file_util.copy_file(settings_file, tempdir)
+    if os.path.exists(vhost_file): file_util.copy_file(vhost_file, tempdir)
+    print "done"
+    install_files()
+    print "Restoring settings...",
+    dir_util.copy_tree(tempdir, data_dict['install_dir'])
+    print "done"
+    print "Deleting temp dir %s..." % tempdir,
+    dir_util.remove_tree(tempdir)
+    print "done"
+    
+    answer = None
+    while not answer:
+        answer = raw_input("Upgrade EVE database? ")
+    
+    if answer in ['y', 'yes', 'Y']:
+        download_eve_db()
+
+def install_files():
+    if os.path.exists(data_dict['install_dir']):
+        print "Deleting existing files...",
+        dir_util.remove_tree(data_dict['install_dir'])
+        print "done"
+    print "Installing files...",
+    dir_util.copy_tree(data_dict['src_dir'], data_dict['install_dir'])
+    print "done"
+    
+def download_eve_db():
+    sys.path.append(os.path.join(data_dict['install_dir'], "scripts"))
+    import patch_eve_db
+    # "Downloading EVE database..."
+    options, _ = patch_eve_db.parser.parse_args([])
+    patch_eve_db.main(options)
+
+def configure():
+    print "Configuring ECM...",
     vhost_file = os.path.join(data_dict['install_dir'], "ecm.apache.vhost.conf").replace("\\", "/")
     f = open(vhost_file, "r")
     buff = f.read()
@@ -93,7 +150,7 @@ def install():
     
     if data_dict['db_engine'] in ('mysql', 'postgresql', 'postgresql_psycopg2'):
         data_dict['db_engine'] = db_engines[data_dict['db_engine']]
-        buff = buff.replace(db_settings_old, db_settings_new % data_dict)
+        buff = db_settings_old.sub(db_settings_new % data_dict, buff)
     
     buff = buff.replace("DEBUG = True", "DEBUG = False")
     buff = buff.replace("ADMINS = ()", "ADMINS = ('admin', '%(admin_email)s')" % data_dict)
@@ -103,13 +160,15 @@ def install():
     f = open(settings_file, "w")
     f.write(buff)
     f.close()
-        
+    print "done"
     print
     print "Apache virtual host file '%s' generated. Please include it to your apache configuration." % vhost_file
     print
     print "You can now run 'python manage.py syncdb' to initialize ECM database. Make sure you run the command from '%s'" % data_dict['install_dir']
     print
     print "Note: if needed, you can edit '%s' to configure custom database and email access." % settings_file.replace("\\", "/")
+    
+
 
 def package():
     if os.path.exists(data_dict['package_dir']):
@@ -144,7 +203,7 @@ def package():
 def ignore_func(path, names):
     ignored_names = []
     files = [ os.path.join(path, name) for name in names ]
-    for pattern in ['*.pyc', '*.pyo', '*/db/ECM*.db', '*/db/*journal', '*/logs', '*/scripts/*.sql']:
+    for pattern in ['*.pyc', '*.pyo', '*/db/*.db', '*/db/*journal', '*/logs']:
         ignored_names.extend(fnmatch.filter(files, pattern))
     return set([ os.path.basename(name) for name in ignored_names ])
 
@@ -166,6 +225,8 @@ if __name__ == '__main__':
         install()
     elif len(sys.argv) > 1 and sys.argv[1] == 'package':
         package()
+    elif len(sys.argv) > 1 and sys.argv[1] == 'upgrade':
+        upgrade()
     else:
-        print >>sys.stderr, 'Please type "python setup.py install" to install'
+        print >>sys.stderr, 'usage: "python setup.py {install|upgrade}"'
         exit(1)

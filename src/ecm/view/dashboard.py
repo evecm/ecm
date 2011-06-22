@@ -50,13 +50,19 @@ def dashboard(request):
 def avg_chraracters_by_player():
     players = CharacterOwnership.objects.values("owner").distinct().count()
     characters = float(CharacterOwnership.objects.all().count())
-    return characters / players
+    if players:
+        return characters / players
+    else:
+        return 0.0
 
 #------------------------------------------------------------------------------
 def avg_accounts_by_player():
     players = CharacterOwnership.objects.values("owner").distinct().count()
     accounts = float(UserAPIKey.objects.all().count())
-    return accounts / players
+    if players:
+        return accounts / players
+    else:
+        return 0.0
 
 #------------------------------------------------------------------------------
 def positions_of_members():

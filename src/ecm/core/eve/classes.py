@@ -125,7 +125,7 @@ class Item(object):
         return '<Item: %s>' % self.typeName
 
 #------------------------------------------------------------------------------
-class Blueprint(object):
+class Blueprint(Item):
     
     def __init__(self, 
                  blueprintTypeID, 
@@ -166,8 +166,21 @@ class Blueprint(object):
                 for activityID, in db.getBpActivities(self.blueprintTypeID):
                     self.__activities[activityID] = BpActivity(self.blueprintTypeID, activityID)
                 return self.__activities
+        elif attrName == 'item':
+            try:
+                return self.__item
+            except AttributeError:
+                self.__item = Item.get(self.productTypeID)
+                return self.__item
         else:
-            return object.__getattribute__(self, attrName)
+            try:
+                try:
+                    return Item.__getattr__(self, attrName)
+                except AttributeError:
+                    Item.__init__(self, *db.getItem(typeID=self.blueprintTypeID))
+                    return Item.__getattr__(self, attrName)
+            except AttributeError:
+                return object.__getattribute__(self, attrName)
     
     def __getitem__(self, activityID):
         try:
@@ -182,7 +195,7 @@ class Blueprint(object):
         return Blueprint(*db.getBlueprint(blueprintTypeID))
     
     def __unicode__(self):
-        return 'Blueprint (blueprintTypeID=%d)' % self.blueprintTypeID
+        return self.typeName
     
     def __repr__(self):
         return '<Blueprint: %d>' % self.blueprintTypeID

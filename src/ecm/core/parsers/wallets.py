@@ -91,7 +91,10 @@ def fetch_entries(wallet, lastKnownID):
     utils.checkApiVersion(walletsApi._meta.version)   
     
     entries = list(walletsApi.entries)
-    minID = min([e.refID for e in walletsApi.entries])
+    if len(entries) > 0:
+        minID = min([e.refID for e in walletsApi.entries])
+    else:
+        minID = 0
     
     # after the first fetch, we perform "journal walking" 
     # only if we got 256 entries in the response (meaning more to come)

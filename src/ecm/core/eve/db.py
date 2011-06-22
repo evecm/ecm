@@ -25,7 +25,7 @@ from ecm.core.eve import cache
 EVE_DB = connections['eve']
 
 #------------------------------------------------------------------------------
-QUERY_ONE_TYPENAME = 'SELECT "typeName", "categoryID" FROM "invTypes" WHERE t.typeID=%s;'
+QUERY_ONE_TYPENAME = 'SELECT "typeName", "categoryID" FROM "invTypes" WHERE "typeID" = %s;'
 def resolveTypeName(typeID):
     try:
         return cache.getCachedTypeName(typeID)
@@ -94,7 +94,7 @@ def resolveLocationName(locationID):
         except KeyError:
             # locationID was not valid
             return ("???", 0.0)
-SQL_UPDATE_OUTPOST_NAME = 'UPDATE mapCelestialObjects SET locationName=%s WHERE locationID=%s;'
+SQL_UPDATE_OUTPOST_NAME = 'UPDATE mapCelestialObjects SET itemName=%s WHERE itemID=%s;'
 SQL_NEW_OUTPOST = '''INSERT INTO mapCelestialObjects
 (itemID, typeID, groupID, solarSystemID, regionID, itemName, security) 
 VALUES (%s, 0, 0, %s, 0, %s, %s);'''
@@ -107,10 +107,13 @@ def updateLocationName(stationID, solarSystemID, locationName):
         if security is None:
             security = 0.0
         cursor.execute(SQL_NEW_OUTPOST, [stationID, solarSystemID, locationName, security])
+        created = True
     else:
         cursor.execute(SQL_UPDATE_OUTPOST_NAME, [locationName, stationID])
+        created = False
     cache.setCachedLocation(stationID, locationName, security)
     cursor.close()
+    return created
     
 #------------------------------------------------------------------------------
 SQL_MKTGRP = '''SELECT marketGroupID, marketGroupName, hasTypes 

@@ -14,24 +14,19 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.db import transaction
 
 __date__ = "2010-04-08"
 __author__ = "diabeteman"
 
-
-
-
-
-from ecm.core.parsers.utils import checkApiVersion, markUpdated
+from ecm.core.parsers.utils import checkApiVersion
 from ecm.core.eve import api, db
-from ecm.data.common.models import Outpost
-
-from django.db import transaction
 
 import logging
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
+@transaction.commit_on_success(using='eve')
 def update():
     """
     Retrieve all corp assets and calculate the changes.
@@ -51,16 +46,19 @@ def update():
         logger.debug("cached util : %s", str(cachedUntil))
         
         logger.debug("parsing api response...")
+        created = 0
+        updated = 0
         for outpost in apiOutposts.outposts :
-            db.updateLocationName(outpost.stationID, 
-                                  outpost.solarSystemID, 
-                                  outpost.stationTypeID, 
-                                  outpost.locationName)
-        logger.info("%d outposts parsed", len(apiOutposts.outposts))
+            if db.updateLocationName(stationID=outpost.stationID, 
+                                     solarSystemID=outpost.solarSystemID, 
+                                     locationName=outpost.stationName):
+                created += 1
+            else:
+                updated += 1
+        logger.info("%d new outposts, %d updated", created, updated)
         logger.debug("update sucessfull")
         logger.info("outposts updated")
     except:
         # error catched, rollback changes
-        transaction.rollback()
         logger.exception("update failed")
         raise

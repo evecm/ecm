@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.core.eve import db
 
 __date__ = "2011 6 7"
 __author__ = "diabeteman"
@@ -254,7 +255,7 @@ class Job(models.Model):
 #------------------------------------------------------------------------------
 class ProductionSite(models.Model):
     
-    locationID = models.PositiveIntegerField(primary_key=True)
+    locationID = models.BigIntegerField(primary_key=True)
     customName = models.CharField(max_length=256)
     discount = models.FloatField(default=0.0)
 
@@ -273,17 +274,15 @@ class OwnedBlueprint(models.Model):
     me = models.PositiveIntegerField(default=0)
     pe = models.PositiveIntegerField(default=0)
     
-    def __getattr__(self, attrname):
-        if attrname == '__blueprint':
-            raise AttributeError()
-        try:
+    def __getattr__(self, attrName):
+        if attrName in ('blueprint', 'b'):
             try:
-                getattr(self, '__blueprint')
+                return self.__blueprint
             except AttributeError:
-                self.__blueprint = Blueprint.get(self.blueprintID)
-            return getattr(self.__blueprint, attrname)
-        except AttributeError:
-            return models.Model.__getattribute__(self, attrname)
+                self.__blueprint = Blueprint(*db.getBlueprint(self.blueprintID))
+                return self.__blueprint
+        else:
+            return models.Model.__getattribute__(self, attrName)
     
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------

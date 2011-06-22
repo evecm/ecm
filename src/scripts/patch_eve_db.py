@@ -23,21 +23,30 @@ __author__ = "diabeteman"
 import bz2, tempfile, shutil, urllib2, os, sqlite3
 from optparse import OptionParser
 
+script_dir = os.path.abspath(os.path.dirname(__file__))
+parser = OptionParser()
+parser.add_option("-u", "--url", dest="url", default="http://eve.no-ip.de/inc15/inc15-sqlite3-v1.db.bz2",
+                  help="URL from which to download the bz2 compressed database.")
+parser.add_option("-f", "--bz-file", dest="bz_file",
+                  help="Location of a bz2 archive containing the database "
+                       "(if this option is set, download will be skipped)")
+parser.add_option("-s", "--sql-script", dest="sql_script", default=os.path.join(script_dir, 'patch_eve_db.sql'),
+                  help="Location of the SQL script to apply to the database.")
+parser.add_option("-d", "--db-file", dest="db_file", default=os.path.normpath(script_dir + '/../db/EVE.db'),
+                  help="Path where to decompress the EVE database file.")
+
+
 def main(options):
     try:
-        print 'Reading from SQL script %s...' % options.sql_script,
         f = open(options.sql_script, 'r')
         sql_patch = f.read()
         f.close()
-        print 'done'
 
         if options.bz_file is None:
-            print 'Creating temp directory...',
             tempdir = tempfile.mkdtemp()
-            print 'created', tempdir
         
             options.bz_file = os.path.join(tempdir, 'EVE.db.bz2')
-            print 'Downloading original database from %s to %s...' % (options.url, options.bz_file),
+            print 'Downloading EVE original database from %s to %s...' % (options.url, options.bz_file),
             req = urllib2.urlopen(options.url)
             with open(options.bz_file, 'wb') as fp:
                 shutil.copyfileobj(req, fp)
@@ -65,24 +74,7 @@ def main(options):
             shutil.rmtree(tempdir)
             print 'done'
 
-def parse_options():
-    script_dir = os.path.abspath(os.path.dirname(__file__))
-    parser = OptionParser()
-    parser.add_option("-u", "--url", dest="url", default="http://eve.no-ip.de/inc15/inc15-sqlite3-v1.db.bz2",
-                      help="URL from which to download the bz2 compressed database.")
-    parser.add_option("-f", "--bz-file", dest="bz_file",
-                      help="Location of a bz2 archive containing the database "
-                           "(if this option is set, download will be skipped)")
-    parser.add_option("-s", "--sql-script", dest="sql_script", default=os.path.join(script_dir, 'patch_eve_db.sql'),
-                      help="Location of the SQL script to apply to the database.")
-    parser.add_option("-d", "--db-file", dest="db_file", default=os.path.normpath(script_dir + '/../db/EVE.db'),
-                      help="Path where to decompress the EVE database file.")
-
-    options, args = parser.parse_args()
-    return options
-
-
 if __name__ == '__main__':
-    options = parse_options()
+    options, _ = parser.parse_args()
     main(options)
 

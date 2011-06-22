@@ -42,7 +42,7 @@ class OrderCommentAdmin(admin.ModelAdmin):
     
 #------------------------------------------------------------------------------
 class OrderRowAdmin(admin.ModelAdmin):
-    list_display = ["typeID", "quantity", "order",]
+    list_display = ["itemID", "quantity", "order",]
     
 #------------------------------------------------------------------------------
 class JobAdmin(admin.ModelAdmin):
@@ -57,8 +57,7 @@ class JobAdmin(admin.ModelAdmin):
         "blueprint",
         "activity",
         "duration",
-        "dueDate",
-        "plannedDate",
+        "deliveryDate",
         "startDate",
         "endDate",
     ]

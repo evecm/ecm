@@ -1,3 +1,20 @@
+-- Copyright (c) 2010-2011 Robin Jarry
+-- 
+-- This file is part of EVE Corporation Management.
+-- 
+-- EVE Corporation Management is free software: you can redistribute it and/or 
+-- modify it under the terms of the GNU General Public License as published by 
+-- the Free Software Foundation, either version 3 of the License, or (at your 
+-- option) any later version.
+-- 
+-- EVE Corporation Management is distributed in the hope that it will be useful, 
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+-- or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+-- more details.
+-- 
+-- You should have received a copy of the GNU General Public License along with 
+-- EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+
 
 BEGIN;
 
@@ -152,8 +169,8 @@ FROM "invTypes_temp" t LEFT OUTER JOIN "eveIcons" g ON t."graphicID" = g."iconID
      "invGroups" gg
 WHERE t."typeID" = t2."typeID"
   AND t."groupID" = gg."groupID"
-  AND t."published" = 1;
-  
+  AND t."typeID" NOT IN (23693); -- this dummy item has 4 different blueprints, 
+                                 -- if we do not ignore it, the SQL command fails... 
 -- delete the temp table
 DROP TABLE "invTypes_temp";
 
@@ -184,13 +201,13 @@ SELECT  "itemID",
         "itemName", 
         "security"
 FROM "mapDenormalize"
-WHERE "groupID" IN (5, 7, 8, 15);
+WHERE "groupID" IN (5 /*Solar System*/, 7 /*Planet*/, 8 /*Moon*/, 15 /*Station*/);
 
 UPDATE "mapCelestialObjects" 
 SET "security" = 
     (SELECT "mapSolarSystems"."security" 
-        FROM "mapSolarSystems"
-        WHERE "mapCelestialObjects"."itemID" = "mapSolarSystems"."solarSystemID") 
+       FROM "mapSolarSystems"
+      WHERE "mapCelestialObjects"."itemID" = "mapSolarSystems"."solarSystemID") 
 WHERE "security" IS NULL;
 
 

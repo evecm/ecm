@@ -18,11 +18,7 @@
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
-
-
 import os.path
-
-
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 def resolvePath(relativePath):
@@ -57,11 +53,6 @@ DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': resolvePath('../db/ECM.db')
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'ecm',
-#        'USER': 'ecm',
-#        'PASSWORD': 'ecm'
-        
     },
     'eve': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -116,7 +107,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 FIXTURE_DIRS = (
-    resolvePath("fixtures/auth/"),
+    resolvePath("fixtures/01-auth/"),
+    resolvePath("fixtures/02-common/"),
+    resolvePath("fixtures/03-corp/"),
+    resolvePath("fixtures/04-roles/"),
+    resolvePath("fixtures/05-scheduler/"),
 )
 
 CAPTCHA_LENGTH = 5

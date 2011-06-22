@@ -14,20 +14,21 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.core.utils import print_float
-import json
-from django.db.models.aggregates import Min, Max
-from django.db import connection
 
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
 
+import json
 from datetime import datetime, timedelta
 
+from django.db.models.aggregates import Min, Max
+from django.db import connection
+from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
+from ecm.core.utils import print_float
 from ecm.view.decorators import check_user_access
 from ecm.data.roles.models import Member
 from ecm.data.accounting.models import JournalEntry
@@ -48,7 +49,7 @@ def member_contrib(request):
     return render_to_response("accounting/contrib.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-columns = ['LOWER("name")', 'tax_contrib']
+columns = ['LOWER("name")', '"tax_contrib"']
 @check_user_access()
 def member_contrib_data(request):
     try:
@@ -120,32 +121,39 @@ def system_contrib_data(request):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-MEMBER_CONTRIB_SQL = '''SELECT m."characterID" AS "characterID", m."name" AS "name", SUM(j."amount") AS "tax_contrib" 
-FROM "roles_member" AS m, "accounting_journalentry" AS j 
-WHERE j."type_id" IN %s 
-AND j."ownerID2" = m."characterID" 
-AND j."date" BETWEEN %s AND %s 
-GROUP BY m."characterID", m."name"
-ORDER BY '''
+MEMBER_CONTRIB_SQL = '''SELECT m."characterID" AS "characterID", m."name" AS "name", SUM(j."amount") AS "tax_contrib"  
+ FROM "roles_member" AS m, "accounting_journalentry" AS j  
+ WHERE j."type_id" IN %s 
+  AND j."ownerID2" = m."characterID"  
+  AND j."date" > %s 
+  AND j."date" < %s 
+ GROUP BY m."characterID", m."name" 
+ ORDER BY '''
 def member_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(), 
                       types=(16,17,33,34,85), order_by="tax_contrib", ascending=False):
     
     sql = MEMBER_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;") 
-    
+    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
+        # MySQL doesn't like double quotes...
+        sql = sql.replace('"', '')
     return Member.objects.raw(sql, [types, since, until])
 
 
 #------------------------------------------------------------------------------
 SYSTEM_CONTRIB_SQL = '''SELECT j."argName1" AS "argName1", SUM(j."amount") AS "tax_contrib" 
-FROM "accounting_journalentry" AS j 
-WHERE j."type_id" IN %s 
-AND j."date" BETWEEN %s AND %s 
-GROUP BY j."argName1" 
-ORDER BY '''
+ FROM "accounting_journalentry" AS j 
+ WHERE j."type_id" = %s 
+   AND j."date" > %s 
+   AND j."date" < %s 
+ GROUP BY j."argName1" 
+ ORDER BY '''
 def system_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(), 
-                      types=(85,), order_by="tax_contrib", ascending=False):
+                      types=85, order_by="tax_contrib", ascending=False):
     
     sql = SYSTEM_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;") 
+    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
+        # MySQL doesn't like double quotes...
+        sql = sql.replace('"', '')
     
     cursor = connection.cursor()
     cursor.execute(sql, [types, since, until])

@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.conf import settings
 
 __date__ = "2011-05-21"
 __author__ = "diabeteman"
@@ -97,6 +98,9 @@ def systems_data(request):
     sql = 'SELECT "solarSystemID", COUNT(*) AS "items" FROM "assets_asset"'
     if where: sql += ' WHERE ' + ' AND '.join(where)
     sql += ' GROUP BY "solarSystemID";'
+    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
+        # MySQL doesn't like double quotes...
+        sql = sql.replace('"', '')
 
     cursor = connection.cursor()
     if divisions is None:
@@ -146,7 +150,10 @@ def stations_data(request, solarSystemID):
     sql += 'WHERE "solarSystemID"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "stationID";'
-     
+    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
+        # MySQL doesn't like double quotes...
+        sql = sql.replace('"', '')
+        
     cursor = connection.cursor()
     if divisions is None:
         cursor.execute(sql, [solarSystemID])
@@ -193,6 +200,9 @@ def hangars_data(request, solarSystemID, stationID):
     sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "hangarID";'
+    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
+        # MySQL doesn't like double quotes...
+        sql = sql.replace('"', '')
     
     cursor = connection.cursor()
     if divisions is None:
