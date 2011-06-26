@@ -171,12 +171,15 @@ urlpatterns += patterns('ecm.view.accounting',
 
 urlpatterns += patterns('ecm.view.api',
     ###########################################################################
-    # ACCOUNTING VIEWS
+    # JSON API VIEWS
     (r'^api/players$', 'players.players'),
     (r'^api/bindings/(\w+)$', 'players.binding'),
 )
 
 
+###############################################################################
+#                                 ECM MENU                                    #
+###############################################################################
 role_types = []
 for rt in RoleType.objects.all().order_by('id'):
     role_types.append({'item_title': rt.dispName, 'item_url': '/roles/%s' % rt.typeName})

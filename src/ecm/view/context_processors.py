@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+import ecm
 
 __date__ = '2011-02-19'
 __author__ = 'diabeteman'
@@ -52,3 +53,6 @@ def menu(request):
             user_menu += menu_html % menu
     return {'user_menu': user_menu}
     
+def version(request):
+    return {'ecm_version': ecm.version}
+

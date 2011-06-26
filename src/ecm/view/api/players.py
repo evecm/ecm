@@ -27,7 +27,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from ecm.view.decorators import basic_auth_required
-from ecm.data.common.models import ExternalApplication
+from ecm.data.common.models import ExternalApplication, GroupBinding
 
 #------------------------------------------------------------------------------
 @basic_auth_required(username=settings.CRON_USERNAME)
@@ -48,7 +48,6 @@ def players(request):
         members.append({
             'id': player.id,
             'username': player.username, 
-            'groups': list(player.groups.values_list('id', flat=True)),
             'characters': characters,
             'bindings': bindings
         })
@@ -57,18 +56,30 @@ def players(request):
 #------------------------------------------------------------------------------
 @basic_auth_required(username=settings.CRON_USERNAME)
 def binding(request, name):
-    query = get_object_or_404(ExternalApplication, name=name).bindings
+    app = get_object_or_404(ExternalApplication, name=name)
+    query = app.user_bindings
     query = query.annotate(char_count=Count("user__characters"))
     query = query.filter(user__is_active=True)
     query = query.filter(char_count__gt=0)
+    
+    group_bindings = {}
+    for gb in GroupBinding.objects.filter(external_app=app):
+        group_bindings[gb.group] = gb
+    
     members = []
     for binding in query:
         characters = list(binding.user.characters.values_list('character__name', flat=True))
         characters.sort(key=lambda name: name.lower())
+        
+        groups = set()
+        for g in binding.user.groups.all():
+            try: groups.add(group_bindings[g].external_id)
+            except KeyError: pass
+        
         members.append({
             'external_id': binding.external_id,
             'external_name': binding.external_name, 
-            'groups': list(binding.user.groups.values_list('id', flat=True)),
+            'groups': list(groups),
             'characters': characters,
         })
     return HttpResponse(json.dumps(members))

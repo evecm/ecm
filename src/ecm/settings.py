@@ -104,6 +104,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "ecm.view.context_processors.corporation_name",
     "ecm.view.context_processors.menu",
+    "ecm.view.context_processors.version",
 )
 
 FIXTURE_DIRS = (

@@ -93,9 +93,16 @@ class ExternalApplication(models.Model):
 
     def __unicode__(self):
         return self.name + ' -> ' + self.url
+    
+    def __hash__(self):
+        return hash(self.name)
+    
+    def __eq__(self, other):
+        return isinstance(other, ExternalApplication) and self.name == other.name
+    
 
 #------------------------------------------------------------------------------
-class ExternalBinding(models.Model):
+class UserBinding(models.Model):
     """
     Allows to bind ECM users to external applications.
     
@@ -103,19 +110,41 @@ class ExternalBinding(models.Model):
     application's user accesses with ECM user accesses.
     """
     user = models.ForeignKey(User, related_name='bindings')
-    external_app = models.ForeignKey(ExternalApplication, related_name='bindings')
-    external_id = models.IntegerField(unique=True)
+    external_app = models.ForeignKey(ExternalApplication, related_name='user_bindings')
+    external_id = models.IntegerField()
     external_name = models.CharField(max_length=256)
     
     def __hash__(self):
-        return self.user.id
+        return self.id
     
     def __eq__(self, other):
-        return self == other
+        return isinstance(other, UserBinding) and self.id == other.id
     
     def __unicode__(self):
         return self.external_name
+
+#------------------------------------------------------------------------------
+class GroupBinding(models.Model):
+    """
+    Allows to bind ECM groups to external applications.
     
+    The goal is to enable automatic synchronization of the external 
+    application's user accesses with ECM user accesses.
+    """
+    group = models.ForeignKey(Group, related_name='bindings')
+    external_app = models.ForeignKey(ExternalApplication, related_name='group_bindings')
+    external_id = models.IntegerField()
+    external_name = models.CharField(max_length=256)
+    
+    def __hash__(self):
+        return self.id
+    
+    def __eq__(self, other):
+        return isinstance(other, GroupBinding) and self.id == other.id
+    
+    def __unicode__(self):
+        return self.external_name
+
 #------------------------------------------------------------------------------
 class UpdateDate(models.Model):
     """
@@ -128,28 +157,6 @@ class UpdateDate(models.Model):
     def __unicode__(self):
         return "%s updated %s" % (unicode(self.model_name), unicode(self.date))
     
-#------------------------------------------------------------------------------
-class Outpost(models.Model):
-    """
-    Conquerable station fetched from CCP servers
-    """
-    stationID = models.BigIntegerField(primary_key=True)
-    stationName = models.CharField(max_length=256, default="")
-    stationTypeID = models.BigIntegerField()
-    solarSystemID = models.BigIntegerField()
-    corporationID = models.BigIntegerField()
-    corporationName = models.CharField(max_length=256, default="")
-
-    def __eq__(self, other):
-        return hash(self) == hash(other)
-    
-    def __hash__(self):
-        return self.stationID
-
-    def __unicode__(self):
-        return self.stationName
-
-
 #------------------------------------------------------------------------------
 class ColorThreshold(models.Model):
     """
@@ -172,7 +179,7 @@ class Url(models.Model):
     """
     """
     pattern = models.CharField(max_length=256)
-    groups = models.ManyToManyField(Group)
+    groups = models.ManyToManyField(Group, related_name='allowed_urls')
     
     def __unicode__(self):
         return "<URL: %s>" % self.pattern
@@ -184,13 +191,14 @@ class Url(models.Model):
         return hash(self.pattern)
     
 def user_has_access(user, target_url):
-    access = False
     for url in Url.objects.all():
         url_re = re.compile(url.pattern)
         if url_re.match(target_url):
-            access = set(url.groups.all()).intersection(set(user.groups.all())) and True or False
-            break
-    return access
+            if set(url.groups.all()).intersection(set(user.groups.all())):
+                return True
+            else:
+                return False
+    return False
 
         
         
