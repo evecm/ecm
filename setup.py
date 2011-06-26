@@ -7,7 +7,6 @@ import fnmatch
 import tarfile
 import re
 import tempfile
-from win32con import FILE_UNICODE_ON_DISK
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
 data_dict = {
