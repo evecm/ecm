@@ -83,6 +83,40 @@ class UserAPIKey(models.Model):
             return "%d owns %d" % (self.user_id, self.userID)
 
 #------------------------------------------------------------------------------
+class ExternalApplication(models.Model):
+    """
+    Represents external applications to be used along with ECM such as
+    bulletin boards or killboards.
+    """
+    name = models.CharField(max_length=256, unique=True)
+    url = models.URLField()
+
+    def __unicode__(self):
+        return self.name + ' -> ' + self.url
+
+#------------------------------------------------------------------------------
+class ExternalBinding(models.Model):
+    """
+    Allows to bind ECM users to external applications.
+    
+    The goal is to enable automatic synchronization of the external 
+    application's user accesses with ECM user accesses.
+    """
+    user = models.ForeignKey(User, related_name='bindings')
+    external_app = models.ForeignKey(ExternalApplication, related_name='bindings')
+    external_id = models.IntegerField(unique=True)
+    external_name = models.CharField(max_length=256)
+    
+    def __hash__(self):
+        return self.user.id
+    
+    def __eq__(self, other):
+        return self == other
+    
+    def __unicode__(self):
+        return self.external_name
+    
+#------------------------------------------------------------------------------
 class UpdateDate(models.Model):
     """
     Represents the update time of a model's table in the database.

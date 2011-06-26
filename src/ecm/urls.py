@@ -169,7 +169,12 @@ urlpatterns += patterns('ecm.view.accounting',
     (r'^accounting/contributions/systems/data$', 'contrib.system_contrib_data'),
 )
 
-
+urlpatterns += patterns('ecm.view.api',
+    ###########################################################################
+    # ACCOUNTING VIEWS
+    (r'^api/players$', 'players.players'),
+    (r'^api/bindings/(\w+)$', 'players.binding'),
+)
 
 
 role_types = []

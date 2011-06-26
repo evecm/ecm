@@ -23,13 +23,20 @@ Created on 17 mai 2010
 
 
 from django.contrib import admin
-from ecm.data.common.models import UpdateDate, Outpost, ColorThreshold, APIKey, UserAPIKey, Url
+from ecm.data.common.models import UpdateDate, Outpost, ColorThreshold, APIKey, UserAPIKey, Url,\
+    ExternalBinding, ExternalApplication
 
 class APIKeyAdmin(admin.ModelAdmin):
     list_display = ['name', 'userID', 'charID', 'key']
 
 class UserAPIKeyAdmin(admin.ModelAdmin):
     list_display = ['user', 'userID', 'key', 'is_valid']
+
+class ExternalAppAdmin(admin.ModelAdmin):
+    list_display = ['name', 'url']
+
+class ExternalBindingAdmin(admin.ModelAdmin):
+    list_display = ['external_app', 'user', 'external_id', 'external_name']
 
 class UpdateDateAdmin(admin.ModelAdmin):
     list_display = ['model_name', 'update_date', 'prev_update']
@@ -48,6 +55,8 @@ class UrlAdmin(admin.ModelAdmin):
 
 admin.site.register(APIKey, APIKeyAdmin)
 admin.site.register(UserAPIKey, UserAPIKeyAdmin)
+admin.site.register(ExternalApplication, ExternalAppAdmin)
+admin.site.register(ExternalBinding, ExternalBindingAdmin)
 admin.site.register(UpdateDate, UpdateDateAdmin)
 admin.site.register(Outpost, OutpostAdmin)
 admin.site.register(ColorThreshold, ColorTresholdAdmin)

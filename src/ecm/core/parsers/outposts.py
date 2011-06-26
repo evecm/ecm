@@ -14,10 +14,11 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db import transaction
 
 __date__ = "2010-04-08"
 __author__ = "diabeteman"
+
+from django.db import transaction
 
 from ecm.core.parsers.utils import checkApiVersion
 from ecm.core.eve import api, db
@@ -29,11 +30,11 @@ logger = logging.getLogger(__name__)
 @transaction.commit_on_success(using='eve')
 def update():
     """
-    Retrieve all corp assets and calculate the changes.
+    Retrieve all corp owned stations and update their name in the EVE database.
+    Creating new entries if needed.
     
     If there's an error, nothing is written in the database
     """
-    
     try:
         logger.info("fetching /eve/ConquerableStationList.xml.aspx...")
         api_conn = api.connect()

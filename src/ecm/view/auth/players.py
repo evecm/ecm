@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.db.models.aggregates import Count
 
 __date__ = "2011 4 17"
 __author__ = "diabeteman"
@@ -50,15 +51,9 @@ def player_list_data(request):
         return HttpResponseBadRequest()
     
     query = User.objects.filter(is_active=True)
+    query = query.annotate(char_count=Count("characters"))
+    query = query.filter(char_count__gt=0)
     query = query.exclude(username__in=[settings.CRON_USERNAME, settings.ADMIN_USERNAME])
-    query = query.extra(select={
-        'group_count': 'SELECT COUNT(*) '
-                       'FROM "auth_user_groups" '
-                       'WHERE "auth_user_groups"."user_id"="auth_user"."id"',
-        'char_count':  'SELECT COUNT(*) '
-                       'FROM "roles_characterownership" '
-                       'WHERE "roles_characterownership"."owner_id"="auth_user"."id"',
-    })
     
     sort_by = USER_COLUMNS[params.column]
     # SQL hack for making a case insensitive sort
@@ -84,7 +79,7 @@ def player_list_data(request):
         player_list.append([
             '<a href="/players/%d" class="player">%s</a>' % (player.id, player.username),
             player.char_count,
-            player.group_count,
+            player.groups.count(),
             utils.print_time_min(player.date_joined)
         ])
     

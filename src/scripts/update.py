@@ -28,7 +28,7 @@ sys.path.append(install_dir)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'ecm.settings'
 
-from ecm.core.parsers import assets, corp, membersecu, membertrack, outposts, reftypes, titles, wallets
+from ecm.core.parsers import *
 from ecm.core.tasks import users
 
 FUNCTIONS = {
