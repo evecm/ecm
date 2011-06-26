@@ -327,7 +327,7 @@ class CharacterOwnership(models.Model):
     """
     Associates EVE characters to ECM Users
     """
-    owner = models.ForeignKey(User)
+    owner = models.ForeignKey(User, related_name="characters")
     character = models.OneToOneField(Member, related_name="ownership")
     is_main_character = models.BooleanField(default=False)
 

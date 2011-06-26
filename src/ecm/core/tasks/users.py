@@ -51,11 +51,10 @@ def update_all_character_associations():
 #------------------------------------------------------------------------------
 def update_character_associations(user):
     logger.debug("Updating character ownerships for '%s'..." % user.username)
-    # we delete all the previous ownerships
-    CharacterOwnership.objects.filter(owner=user).delete()
     # get all the user's registered api credentials
     user_apis = UserAPIKey.objects.filter(user=user)
     invalid_apis = []
+    new_ownerships = []
     for user_api in user_apis:
         try:
             ids = [ char.characterID for char in api.get_account_characters(user_api) if char.is_corped ]
@@ -67,7 +66,7 @@ def update_character_associations(user):
                     ownership = CharacterOwnership()
                     ownership.character = member
                 ownership.owner = user
-                ownership.save()
+                new_ownerships.append(ownership)
         except eveapi.Error as err:
             logger.warning("%s (user: '%s' userID: %d)" % (str(err), user.username, user_api.userID))
             if err.code in [202, 203, 204, 205, 210, 211, 212]:
@@ -97,7 +96,10 @@ def update_character_associations(user):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
         logger.warning("API credentials for '%s' are invalid. User notified by email." % user.username)
-
+    # we delete all the previous ownerships
+    CharacterOwnership.objects.filter(owner=user).delete()
+    # and save the new ones
+    for o in new_ownerships: o.save()
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def cleanup_unregistered_users():

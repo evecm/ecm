@@ -21,11 +21,10 @@ __author__ = "diabeteman"
 
 import json
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, Http404
-from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.view.decorators import check_user_access
 from ecm.view import extract_datatable_params, get_members
@@ -36,13 +35,9 @@ from ecm.data.common.models import ColorThreshold
 #------------------------------------------------------------------------------
 @check_user_access()
 def role(request, role_typeName, role_id):
-    try:
-        type = RoleType.objects.get(typeName=role_typeName)
-        role = Role.objects.get(roleType=type, roleID=int(role_id))
-        role.accessLvl = role.get_access_lvl()
-    except ObjectDoesNotExist:
-        raise Http404()
-    
+    type = get_object_or_404(RoleType, typeName=role_typeName)
+    role = get_object_or_404(Role, roleType=type, roleID=int(role_id))
+    role.accessLvl = role.get_access_lvl()
     data = {
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
@@ -59,12 +54,11 @@ def role(request, role_typeName, role_id):
 def role_data(request, role_typeName, role_id):
     try:
         params = extract_datatable_params(request)
-        type = RoleType.objects.get(typeName=role_typeName)
-        role = Role.objects.get(roleType=type, roleID=int(role_id))
-    except ObjectDoesNotExist:
-        return HttpResponseNotFound()
     except:
         return HttpResponseBadRequest()
+    
+    type = get_object_or_404(RoleType, typeName=role_typeName)
+    role = get_object_or_404(Role, roleType=type, roleID=int(role_id))
 
     total_members,\
     filtered_members,\
