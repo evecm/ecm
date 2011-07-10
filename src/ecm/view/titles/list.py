@@ -40,7 +40,7 @@ def all(request):
         colorThresholds.append({ "threshold" : c.threshold, "color" : c.color })
 
     data = { 
-        'scan_date' : getScanDate(TitleComposition.__name__), 
+        'scan_date' : getScanDate(TitleComposition), 
         'colorThresholds' : json.dumps(colorThresholds)
     }
     return render_to_response("titles/titles.html", data, context_instance=RequestContext(request))

@@ -86,7 +86,9 @@ urlpatterns += patterns('ecm.view',
     (r'^$',                     'common.corp'),
     (r'^dashboard$',            'dashboard.dashboard'),
     (r'^cron$',                 'common.trigger_scheduler'),
-    (r'^tasks/launch/([^/]+)$', 'common.launch_task'),
+    (r'^tasks$',                'common.task_list'),
+    (r'^tasks/data$',           'common.task_list_data'),
+    (r'^tasks/(\d+)/launch$',   'common.launch_task'),
 )
 
 urlpatterns += patterns('ecm.view.members',
@@ -172,8 +174,9 @@ urlpatterns += patterns('ecm.view.accounting',
 urlpatterns += patterns('ecm.view.api',
     ###########################################################################
     # JSON API VIEWS
-    (r'^api/players$', 'players.players'),
-    (r'^api/bindings/(\w+)$', 'players.binding'),
+    (r'^api/players$',               'players'),
+    (r'^api/bindings/(\w+)/users$',  'user_bindings'),
+    (r'^api/bindings/(\w+)/groups$', 'group_bindings'),
 )
 
 
@@ -204,4 +207,5 @@ ecm_menus = [
         {'item_title': 'Changes', 'item_url': '/assets/changes'},
     ]},
     {'menu_title': 'Players',   'menu_url': '/players',     'menu_items': []},
+    {'menu_title': 'Scheduled Tasks',   'menu_url': '/tasks',     'menu_items': []},
 ]

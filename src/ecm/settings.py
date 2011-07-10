@@ -34,6 +34,7 @@ ADMIN_USERNAME = "admin"
 EVE_API_VERSION = "2"
 ECM_BASE_URL = "127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
+BASIC_AUTH_ONLY_ON_LOCALHOST = False
 
 ###############################################################################
 # DJANGO SPECIFIC SETTINGS

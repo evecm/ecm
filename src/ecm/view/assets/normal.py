@@ -49,7 +49,7 @@ CATEGORY_ICONS = { 2 : "can" ,
 #------------------------------------------------------------------------------
 @check_user_access()
 def root(request):
-    scan_date = getScanDate(Asset.__name__)
+    scan_date = getScanDate(Asset)
     if scan_date == "<no data>":
         return render_to_response("assets/assets_no_data.html", RequestContext(request))
     

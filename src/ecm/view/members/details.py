@@ -52,7 +52,7 @@ def details(request, characterID):
         member.is_director = member.is_director()
         
         if member.corped:
-            member.date = getScanDate(Member.__name__)
+            member.date = getScanDate(Member)
         else:
             d = MemberDiff.objects.filter(member=member, new=False).order_by("-id")[0]
             member.date = utils.print_time_min(d.date)

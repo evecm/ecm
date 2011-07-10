@@ -19,6 +19,7 @@ __date__ = "2010-05-16"
 __author__ = "diabeteman"
 
 
+import json
 import re, time
 import httplib as http
 from datetime import datetime
@@ -27,11 +28,12 @@ from django.conf import settings
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
 from ecm.data.roles.models import Member
+from ecm.view import extract_datatable_params
 from ecm.data.corp.models import Corp
-from ecm.view.decorators import basic_auth_required
+from ecm.view.decorators import basic_auth_required, check_user_access
 from ecm.data.scheduler.models import ScheduledTask
 from ecm.data.scheduler.threads import TaskThread
 
@@ -48,7 +50,7 @@ def corp(request):
 
     data = { 'corp' : corp }
 
-    return render_to_response("common/corp.html", data, context_instance=RequestContext(request))
+    return render_to_response("common/corp.html", data, RequestContext(request))
 
 
 #------------------------------------------------------------------------------
@@ -58,31 +60,71 @@ def trigger_scheduler(request):
     tasks_to_execute = ScheduledTask.objects.filter(is_active=True, 
                                                     is_running=False,
                                                     next_execution__lt=now).order_by("-priority")
-    if tasks_to_execute.count():
+    if tasks_to_execute and not ScheduledTask.objects.filter(is_running=True):
         TaskThread(tasks=tasks_to_execute).start()
         return HttpResponse(status=http.ACCEPTED)
     else:
         return HttpResponse(status=http.NOT_MODIFIED)
 
 #------------------------------------------------------------------------------
-@basic_auth_required(username=settings.CRON_USERNAME)
-def launch_task(request, function):
+@check_user_access()
+def task_list(request):
+    return render_to_response('common/tasks.html', RequestContext(request))
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def task_list_data(request):
     try:
-        task = ScheduledTask.objects.get(function=function)
-    except ScheduledTask.DoesNotExist:
-        return HttpResponse(status=http.NOT_FOUND)
+        params = extract_datatable_params(request)
+    except:
+        return HttpResponseBadRequest()
     
-    if not task.is_running:
+    functions = [ t[0] for t in ScheduledTask.FUNCTION_CHOICES ]
+    tasks = []
+    for t in ScheduledTask.objects.filter(function__in=functions):
+        tasks.append([
+            t.get_function_display(),
+            t.next_execution_admin_display(),
+            t.frequency_admin_display(),
+            t.is_running,
+            t.as_html(next='/tasks')
+        ])
+    
+    json_data = {
+        "sEcho" : params.sEcho,
+        "iTotalRecords" : len(tasks),
+        "iTotalDisplayRecords" : len(tasks),
+        "aaData" : tasks
+    }
+    
+    return HttpResponse(json.dumps(json_data))
+
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def launch_task(request, task_id):
+    try:
+        task = ScheduledTask.objects.get(id=int(task_id))
+    except ScheduledTask.DoesNotExist:
+        return HttpResponseNotFound('No task with ID ' + task_id)
+    except ValueError as e:
+        raise HttpResponseBadRequest(str(e))
+    
+    if not ScheduledTask.objects.filter(is_running=True):
         TaskThread(tasks=[task]).start()
         code = http.ACCEPTED
     else:
         code = http.NOT_MODIFIED
     
     next = request.GET.get("next", None)
-    if next:
+    if next is not None:
         # we let the task the time to start before redirecting
         # so the "next" web page can display that it is actually running
         time.sleep(0.2)
         return redirect(next)
     else:
         return HttpResponse(status=code)
+
+
+
+

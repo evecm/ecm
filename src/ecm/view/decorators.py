@@ -37,6 +37,10 @@ from ecm.data.roles.models import CharacterOwnership
 def basic_auth_required(username=None):
     def decorator(view_function):
         def _wrapped_view(request, *args, **kwargs):
+            if (settings.BASIC_AUTH_ONLY_ON_LOCALHOST 
+                and request.get_host() not in ('localhost', '127.0.0.1')):
+                return HttpResponse(status=http.UNAUTHORIZED)
+                
             if request.user in (False, None, AnonymousUser()):
                 auth_string = request.META.get('HTTP_AUTHORIZATION', None)
             

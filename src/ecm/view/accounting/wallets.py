@@ -33,7 +33,7 @@ from ecm.data.accounting.models import JournalEntry
 @check_user_access()
 def list(request):
     data = {
-        'scan_date' : getScanDate(JournalEntry.__name__) 
+        'scan_date' : getScanDate(JournalEntry) 
     }
     return render_to_response("accounting/wallets.html", data, RequestContext(request))
 

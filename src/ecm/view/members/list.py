@@ -36,7 +36,7 @@ from ecm.view import getScanDate, get_members, extract_datatable_params
 @check_user_access()
 def all(request):
     data = { 
-        'scan_date' : getScanDate(Member.__name__), 
+        'scan_date' : getScanDate(Member), 
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
@@ -72,7 +72,7 @@ def all_data(request):
 @check_user_access()
 def unassociated(request):
     data = { 
-        'scan_date' : getScanDate(Member.__name__), 
+        'scan_date' : getScanDate(Member), 
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }

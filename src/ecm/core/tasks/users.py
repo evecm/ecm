@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.data.scheduler.models import ScheduledTask
 
 __date__ = "2011 4 18"
 __author__ = "diabeteman"
@@ -67,15 +68,20 @@ def update_character_associations(user):
                     ownership.character = member
                 ownership.owner = user
                 new_ownerships.append(ownership)
-        except eveapi.Error as err:
-            logger.warning("%s (user: '%s' userID: %d)" % (str(err), user.username, user_api.userID))
-            if err.code in [202, 203, 204, 205, 210, 211, 212]:
+        except eveapi.Error as e:
+            if e.code in [202, 203, 204, 205, 210, 211, 212]:
                 # authentication failure error codes. 
-                # This happens if the apiKey does not match the userID
-                # TODO put these in eveapi or in the database.
+                # This happens if the apiKey does not match the userID 
+                # or if the account is disabled
+                logger.warning("%s (user: '%s' userID: %d)" % (str(e), user.username, user_api.userID))
                 user_api.is_valid = False
-                user_api.error = str(err)
+                user_api.error = str(e)
                 invalid_apis.append(user_api)
+            else:
+                # for all other errors, we abort the operation so that
+                # character associations are not deleted by mistake and 
+                # therefore, that users find themselves with no access :)
+                raise
         user_api.save()
     if invalid_apis:
         # we notify the user by email
@@ -125,6 +131,10 @@ def cleanup_unregistered_users():
 @transaction.commit_on_success
 def update_all_users_accesses():
     try:
+        t = ScheduledTask.objects.get(function__contains='update_all_users_accesses')
+        if not t.is_last_exec_success:
+            raise RuntimeWarning("Last character associations update failed. "
+                                 "Skipping user access update.")
         logger.info("Updating user accesses from their in-game roles...")
         for user in User.objects.filter(is_active=True):
             update_user_accesses(user)

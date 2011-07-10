@@ -60,7 +60,7 @@ def list(request):
     data = {
         'wallets' : wallets,
         'entryTypes' : entryTypes,
-        'scan_date' : getScanDate(JournalEntry.__name__) 
+        'scan_date' : getScanDate(JournalEntry) 
     }
     return render_to_response("accounting/wallet_journal.html", data, RequestContext(request))
 
@@ -88,9 +88,9 @@ def list_data(request):
             search_args |= Q(argName1__icontains=params.search)
             search_args |= Q(reason__icontains=params.search)
         if params.walletID:
-            search_args |= Q(wallet=params.walletID)
+            search_args &= Q(wallet=params.walletID)
         if params.entryTypeID:
-            search_args |= Q(type=params.entryTypeID)
+            search_args &= Q(type=params.entryTypeID)
         
         query = query.filter(search_args)
         filtered_entries = query.count()
@@ -113,14 +113,14 @@ def list_data(request):
                 rat_list.append('%s x%s' % (db.resolveTypeName(int(rat_id))[0], rat_count))
             reason = '|'.join(rat_list)
             if reason:
-                reason = ('Killed Rats in %s|' % entry.argName1) + reason
+                reason = (u'Killed Rats in %s|' % entry.argName1) + reason
         elif entry.type_id == EntryType.PLAYER_DONATION:
             reason = entry.reason[len('DESC: '):]
             if reason:
-                reason = 'Description|' + reason
+                reason = u'Description|' + reason
         elif entry.type_id == EntryType.CORP_WITHDRAWAL:
-            reason = entry.reason[len('DESC: '):]
-            reason = ('Cash transfer by %s|' % entry.argName1) + reason
+            reason = entry.reason[len('DESC: '):].strip('\n\t\'" ')
+            reason = (u'Cash transfer by %s|' % entry.argName1) + reason
             try:
                 corporationID = Corp.objects.get(id=1).corporationID
                 if int(entry.ownerID1) == corporationID and int(entry.ownerID2) == corporationID:

@@ -142,5 +142,15 @@
         65536
       ]
     }
+  }, 
+  {
+    "pk": 9, 
+    "model": "common.url", 
+    "fields": {
+      "pattern": "^/tasks.*$", 
+      "groups": [
+        65536
+      ]
+    }
   }
 ]

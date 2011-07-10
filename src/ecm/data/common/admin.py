@@ -36,10 +36,12 @@ class ExternalAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'url']
 
 class UserBindingBindingAdmin(admin.ModelAdmin):
-    list_display = ['external_app', 'user', 'external_id', 'external_name']
+    list_display = ['user', 'external_app', 'external_id', 'external_name']
+    list_filter = ['external_app']
 
 class GroupBindingBindingAdmin(admin.ModelAdmin):
-    list_display = ['external_app', 'group', 'external_id', 'external_name']
+    list_display = ['group', 'external_app', 'external_id', 'external_name']
+    list_filter = ['external_app']
 
 class UpdateDateAdmin(admin.ModelAdmin):
     list_display = ['model_name', 'update_date', 'prev_update']

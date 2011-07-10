@@ -36,7 +36,7 @@ from ecm.core.utils import print_time_min
 @check_user_access()
 def history(request):
     data = {
-        'scan_date' : getScanDate(Member.__name__) 
+        'scan_date' : getScanDate(Member) 
     }
     return render_to_response("members/member_history.html", data, RequestContext(request))
 

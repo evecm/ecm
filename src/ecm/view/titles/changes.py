@@ -37,7 +37,7 @@ from ecm.core.utils import print_time_min
 @check_user_access()
 def changes(request):
     data = {
-        'scan_date' : getScanDate(TitleComposition.__name__) 
+        'scan_date' : getScanDate(TitleComposition) 
     }
     return render_to_response("titles/changes.html", data, RequestContext(request))
 

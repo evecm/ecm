@@ -28,9 +28,9 @@ from ecm.data.common.models import UpdateDate
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
 #------------------------------------------------------------------------------
-def getScanDate(model_name):
+def getScanDate(model):
     try:
-        date = UpdateDate.objects.get(model_name=model_name) 
+        date = UpdateDate.objects.get(model_name=model.__name__) 
         return utils.print_time_min(date.update_date)
     except UpdateDate.DoesNotExist:
         return "<no data>"

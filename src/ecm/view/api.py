@@ -38,13 +38,12 @@ def players(request):
     query = query.exclude(username__in=[settings.CRON_USERNAME, settings.ADMIN_USERNAME])
     members = []
     for player in query:
-        characters = list(player.characters.values_list('character__name', flat=True))
-        characters.sort(key=lambda name: name.lower())
-        bindings = [{
-            'application': b.external_app.name,
-            'external_name': b.external_name,
-            'external_id': b.external_id
-        } for b in player.bindings.all()]
+        characters = list(player.characters.values('character__name', 
+                                                   'character__characterID'))
+        characters.sort(key=lambda x: x['character__name'].lower())
+        bindings = list(player.bindings.values('external_app__name', 
+                                               'external_name', 
+                                               'external_id'))
         members.append({
             'id': player.id,
             'username': player.username, 
@@ -55,8 +54,8 @@ def players(request):
 
 #------------------------------------------------------------------------------
 @basic_auth_required(username=settings.CRON_USERNAME)
-def binding(request, name):
-    app = get_object_or_404(ExternalApplication, name=name)
+def user_bindings(request, app_name):
+    app = get_object_or_404(ExternalApplication, name=app_name)
     query = app.user_bindings
     query = query.annotate(char_count=Count("user__characters"))
     query = query.filter(user__is_active=True)
@@ -68,8 +67,9 @@ def binding(request, name):
     
     members = []
     for binding in query:
-        characters = list(binding.user.characters.values_list('character__name', flat=True))
-        characters.sort(key=lambda name: name.lower())
+        characters = list(binding.user.characters.values('character__name', 
+                                                         'character__characterID'))
+        characters.sort(key=lambda x: x['character__name'].lower())
         
         groups = set()
         for g in binding.user.groups.all():
@@ -84,3 +84,10 @@ def binding(request, name):
         })
     return HttpResponse(json.dumps(members))
 
+#------------------------------------------------------------------------------
+@basic_auth_required(username=settings.CRON_USERNAME)
+def group_bindings(request, app_name):
+    app = get_object_or_404(ExternalApplication, name=app_name)
+    groups = GroupBinding.objects.filter(external_app=app)
+    groups = groups.values('external_name', 'external_id').distinct()
+    return HttpResponse(json.dumps(list(groups)))

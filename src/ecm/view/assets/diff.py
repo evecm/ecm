@@ -98,7 +98,7 @@ def root(request, date_str):
           'show_in_stations' : show_in_stations,
              'divisions_str' : divisions_str,
                    'hangars' : all_hangars,
-                 'scan_date' : getScanDate(Asset.__name__),
+                 'scan_date' : getScanDate(Asset),
                'since_weeks' : since_weeks,
                   'to_weeks' : to_weeks,
                   "date_str" : date_str,

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Scheduled Tasks{% endblock %}
+
+
+
+{% block header_scripts %}
+<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
+
+<script type="text/javascript" src="/m/js/tasks_table.js"></script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/tasks">Scheduled Tasks</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Scheduled Tasks</h1>
+
+
+
+<table class="table display" id="tasks_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" >Task description</th>
+      <th class="top" scope="col" >Next execution</th>
+      <th class="top" scope="col" >Frequency</th>
+      <th class="top" scope="col" >Is running</th>
+      <th class="top" scope="col" >Force Execution</th>
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="5" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Task description</th>
+      <th>Next execution</th>
+      <th>Frequency</th>
+      <th>Is running</th>
+      <th>Force Execution</th>
+    </tr>
+  </tfoot>
+</table>
+
+
+{% endblock %}

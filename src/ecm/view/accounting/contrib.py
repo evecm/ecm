@@ -42,7 +42,7 @@ def member_contrib(request):
     from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
     to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
     data = {
-        'scan_date' : getScanDate(JournalEntry.__name__),
+        'scan_date' : getScanDate(JournalEntry),
         'from_date' : datetime.strftime(from_date, DATE_PATTERN),
         'to_date' : datetime.strftime(to_date, DATE_PATTERN)
     }

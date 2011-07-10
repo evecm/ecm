@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.core.encoding import fix_encoding
 
 __date__ = "2011-03-27"
 __author__ = "diabeteman"
@@ -60,7 +61,14 @@ def update_wallet(wallet):
     entries = fetch_entries(wallet, lastKnownID)
     
     logger.debug("parsing results...")
-    for e in entries: 
+    for e in entries:
+        if e.reason.startswith('DESC:'):
+            # the "reason" field encoding is bugged
+            # we must fix all special characters
+            # see 'fix_encoding()'
+            reason = e.reason[len('DESC: '):]
+            reason = fix_encoding(reason).strip('\'" \t\n')
+            reason = u'DESC: ' + reason
         entry = JournalEntry()
         entry.refID      = e.refID
         entry.wallet     = wallet
@@ -74,7 +82,7 @@ def update_wallet(wallet):
         entry.argID1     = e.argID1
         entry.amount     = e.amount
         entry.balance    = e.balance
-        entry.reason     = e.reason
+        entry.reason     = reason
         entry.save()
     logger.info("%d entries added in journal" % len(entries))
 

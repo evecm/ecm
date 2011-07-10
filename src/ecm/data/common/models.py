@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.core.exceptions import ValidationError
 
 __date__ = '2010-05-17'
 __author__ = 'diabeteman'
@@ -27,6 +28,8 @@ from django.contrib.auth.models import User, Group
 from django.db import models, transaction
 from django.conf import settings
 from django.utils.hashcompat import sha_constructor
+from django.core.validators import RegexValidator
+from django.db.models.query_utils import Q
 
 #------------------------------------------------------------------------------
 class APIKey(models.Model):
@@ -88,14 +91,16 @@ class ExternalApplication(models.Model):
     Represents external applications to be used along with ECM such as
     bulletin boards or killboards.
     """
-    name = models.CharField(max_length=256, unique=True)
+    name = models.CharField(max_length=256, 
+                            unique=True, 
+                            validators=[RegexValidator(r'^\w+$', message='Only letters and digits')])
     url = models.URLField()
 
     def __unicode__(self):
-        return self.name + ' -> ' + self.url
+        return self.name
     
     def __hash__(self):
-        return hash(self.name)
+        return self.id
     
     def __eq__(self, other):
         return isinstance(other, ExternalApplication) and self.name == other.name
@@ -113,6 +118,19 @@ class UserBinding(models.Model):
     external_app = models.ForeignKey(ExternalApplication, related_name='user_bindings')
     external_id = models.IntegerField()
     external_name = models.CharField(max_length=256)
+    
+    # override from models.Model
+    def clean(self):
+        query = UserBinding.objects.filter(external_app=self.external_app)
+        if query.filter(user=self.user).exists():
+            raise ValidationError('This user already has a binding for the '
+                                  'external application "%s"' % self.external_app.name)
+        elif query.filter(external_id=self.external_id).exists():
+            raise ValidationError('This external_id is already binded for the '
+                                  'external application "%s"' % self.external_app.name)
+        elif query.filter(external_name=self.external_name).exists():
+            raise ValidationError('This external_name is already binded for the '
+                                  'external application "%s"' % self.external_app.name)
     
     def __hash__(self):
         return self.id

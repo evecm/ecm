@@ -35,7 +35,7 @@ from ecm.core.utils import print_time_min
 @check_user_access()
 def access_changes(request):
     data = {
-        'scan_date' : getScanDate(TitleMembership.__name__) 
+        'scan_date' : getScanDate(TitleMembership) 
     }
     return render_to_response("members/access_changes.html", data, RequestContext(request))
 
