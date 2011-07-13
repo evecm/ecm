@@ -53,6 +53,7 @@ def update():
         # error catched, rollback changes
         transaction.rollback()
         logger.exception("update failed")
+        raise
 
 
 def update_wallet(wallet):
