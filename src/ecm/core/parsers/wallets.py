@@ -66,9 +66,9 @@ def update_wallet(wallet):
             # the "reason" field encoding is bugged
             # we must fix all special characters
             # see 'fix_encoding()'
-            reason = e.reason[len('DESC: '):]
-            reason = fix_encoding(reason).strip('\'" \t\n')
-            reason = u'DESC: ' + reason
+            e.reason = e.reason[len('DESC: '):]
+            e.reason = fix_encoding(e.reason).strip('\'" \t\n')
+            e.reason = u'DESC: ' + e.reason
         entry = JournalEntry()
         entry.refID      = e.refID
         entry.wallet     = wallet
@@ -82,7 +82,7 @@ def update_wallet(wallet):
         entry.argID1     = e.argID1
         entry.amount     = e.amount
         entry.balance    = e.balance
-        entry.reason     = reason
+        entry.reason     = e.reason
         entry.save()
     logger.info("%d entries added in journal" % len(entries))
 
