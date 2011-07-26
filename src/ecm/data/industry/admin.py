@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from django.contrib import admin
-from ecm.data.industry.models import Order, OrderComment, OrderRow, Job,\
+from ecm.data.industry.models import Order, OrderLog, OrderRow, Job,\
                                     FactorySlot, ProductionSite, OwnedBlueprint
 
 __date__ = "2011 6 9"
@@ -30,14 +30,14 @@ class OrderAdmin(admin.ModelAdmin):
         "deliveryMan",
         "client",
         "deliveryLocation",
-        "deliveryDate",
+        "mileStone",
         "state",
         "discount",
         "quote",
     ]
     
 #------------------------------------------------------------------------------
-class OrderCommentAdmin(admin.ModelAdmin):
+class OrderLogAdmin(admin.ModelAdmin):
     list_display = ["order", "state", "date", "user", "text",]
     
 #------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ class JobAdmin(admin.ModelAdmin):
         "blueprint",
         "activity",
         "duration",
-        "deliveryDate",
+        "mileStone",
         "startDate",
         "endDate",
     ]
@@ -81,7 +81,7 @@ class OwnedBlueprintAdmin(admin.ModelAdmin):
     ]
     
 admin.site.register(Order, OrderAdmin)
-admin.site.register(OrderComment, OrderCommentAdmin)
+admin.site.register(OrderLog, OrderLogAdmin)
 admin.site.register(OrderRow, OrderRowAdmin)
 admin.site.register(Job, JobAdmin)
 admin.site.register(FactorySlot, FactorySlotAdmin)
