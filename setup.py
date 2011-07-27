@@ -33,14 +33,13 @@ db_engines = {
     'postgresql_psycopg2': "'django.db.backends.postgresql_psycopg2'"
 }
 
-db_settings_old = re.compile(r"\s*'ENGINE': 'django.db.backends.sqlite3',.*"
-                             r"\s*'NAME': resolvePath('../db/ECM.db')", re.DOTALL)
+db_settings_old = """'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': resolvePath('../db/ECM.db')"""
 
-db_settings_new = '''        'ENGINE': %(db_engine)s,
+db_settings_new = """'ENGINE': %(db_engine)s,
         'NAME': '%(db_name)s',
         'USER': '%(db_user)s',
-        'PASSWORD': '%(db_pass)s'
-'''
+        'PASSWORD': '%(db_pass)s'"""
 
 sys.path.append(data_dict['src_dir'])
 import ecm
@@ -149,7 +148,7 @@ def configure():
     
     if data_dict['db_engine'] in ('mysql', 'postgresql', 'postgresql_psycopg2'):
         data_dict['db_engine'] = db_engines[data_dict['db_engine']]
-        buff = db_settings_old.sub(db_settings_new % data_dict, buff)
+        buff = buff.replace(db_settings_old, db_settings_new % data_dict)
     
     buff = buff.replace("DEBUG = True", "DEBUG = False")
     buff = buff.replace("ADMINS = ()", "ADMINS = ('admin', '%(admin_email)s')" % data_dict)
