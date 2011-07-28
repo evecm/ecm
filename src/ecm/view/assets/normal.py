@@ -89,9 +89,9 @@ def systems_data(request):
     
     where = []
     if not show_in_space:
-        where.append('"stationID" < %d' % constants.NPC_LOCATION_IDS)
+        where.append('"stationID" < %d' % constants.MAX_STATION_ID)
     if not show_in_stations:
-        where.append('"stationID" > %d' % constants.NPC_LOCATION_IDS)
+        where.append('"stationID" > %d' % constants.MAX_STATION_ID)
     if divisions is not None:
         where.append('"hangarID" IN %s')
     
@@ -140,9 +140,9 @@ def stations_data(request, solarSystemID):
     
     where = []
     if not show_in_space:
-        where.append('"stationID" < %d' % constants.NPC_LOCATION_IDS)
+        where.append('"stationID" < %d' % constants.MAX_STATION_ID)
     if not show_in_stations:
-        where.append('"stationID" > %d' % constants.NPC_LOCATION_IDS)
+        where.append('"stationID" > %d' % constants.MAX_STATION_ID)
     if divisions is not None:
         where.append('"hangarID" IN %s')
     
@@ -162,7 +162,7 @@ def stations_data(request, solarSystemID):
         
     jstree_data = []
     for stationID, flag, items in cursor:
-        if stationID < constants.NPC_LOCATION_IDS:
+        if stationID < constants.MAX_STATION_ID:
             # it's a real station
             name = db.resolveLocationName(stationID)[0]
             icon = "station"
@@ -353,9 +353,9 @@ def search_items(request):
     if divisions is not None:
         query = query.filter(hangarID__in=divisions)
     if not show_in_space:
-        query = query.filter(stationID__lt=constants.NPC_LOCATION_IDS)
+        query = query.filter(stationID__lt=constants.MAX_STATION_ID)
     if not show_in_stations:
-        query = query.filter(stationID__gt=constants.NPC_LOCATION_IDS)
+        query = query.filter(stationID__gt=constants.MAX_STATION_ID)
 
 
     json_data = []

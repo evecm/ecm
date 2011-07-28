@@ -326,17 +326,17 @@ def assetFromRow(row):
 #------------------------------------------------------------------------------
 def locationIDtoStationID(locationID):
     """
-    to convert locationIDs starting 66 to stationIDs from staStations 
+    to convert locationIDs starting 66000000 to stationIDs from staStations 
                                                     subtract 6000001 from the locationID
-    to convert locationIDs starting 67 to stationIDs from the eveAPI 
+    to convert locationIDs starting 66014933 to stationIDs from the eveAPI 
                             ConquerableStationList subtract 6000000 from the locationID
     
     source : http://www.eveonline.com/ingameboard.asp?a=topic&threadID=667487
     """
-    if locationID < cst.NPC_LOCATION_IDS:
+    if locationID < 66000000:
         return locationID
-    elif locationID >= cst.CONQUERABLE_LOCATION_IDS:
-        return locationID - cst.CONQUERABLE_LOCATION_OFFSET
+    elif locationID < 66014933:
+        return locationID - 6000001
     else:
-        return locationID - cst.NPC_LOCATION_OFFSET
+        return locationID - 6000000
     
