@@ -123,39 +123,39 @@ def system_contrib_data(request):
 #------------------------------------------------------------------------------
 MEMBER_CONTRIB_SQL = '''SELECT m."characterID" AS "characterID", m."name" AS "name", SUM(j."amount") AS "tax_contrib"  
  FROM "roles_member" AS m, "accounting_journalentry" AS j  
- WHERE j."type_id" IN %s 
+ WHERE j."type_id" IN (16, 17, 33, 34, 85) 
   AND j."ownerID2" = m."characterID"  
   AND j."date" > %s 
   AND j."date" < %s 
  GROUP BY m."characterID", m."name" 
  ORDER BY '''
 def member_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(), 
-                      types=(16,17,33,34,85), order_by="tax_contrib", ascending=False):
+                         order_by="tax_contrib", ascending=False):
     
     sql = MEMBER_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;") 
     if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
         # MySQL doesn't like double quotes...
-        sql = sql.replace('"', '')
-    return Member.objects.raw(sql, [types, since, until])
+        sql = sql.replace('"', '`')
+    return Member.objects.raw(sql, [since, until])
 
 
 #------------------------------------------------------------------------------
 SYSTEM_CONTRIB_SQL = '''SELECT j."argName1" AS "argName1", SUM(j."amount") AS "tax_contrib" 
  FROM "accounting_journalentry" AS j 
- WHERE j."type_id" = %s 
+ WHERE j."type_id" IN (85) 
    AND j."date" > %s 
    AND j."date" < %s 
  GROUP BY j."argName1" 
  ORDER BY '''
 def system_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(), 
-                      types=85, order_by="tax_contrib", ascending=False):
+                         order_by="tax_contrib", ascending=False):
     
     sql = SYSTEM_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;") 
     if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
         # MySQL doesn't like double quotes...
-        sql = sql.replace('"', '')
+        sql = sql.replace('"', '`')
     
     cursor = connection.cursor()
-    cursor.execute(sql, [types, since, until])
+    cursor.execute(sql, [since, until])
     
     return cursor.fetchall()
