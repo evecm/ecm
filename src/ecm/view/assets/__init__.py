@@ -18,7 +18,6 @@ HTML_ITEM_SPAN = '<b>%s</b><i> - (%d item%s)</i>'
 
 def extract_divisions(request):
     try: 
-        div_list = [ int(div) for div in request.GET["divisions"].split(",") ]
-        return tuple(div_list)
+        return [ int(div) for div in request.GET["divisions"].split(",") ]
     except: 
         return None

@@ -93,20 +93,21 @@ def systems_data(request):
     if not show_in_stations:
         where.append('"stationID" > %d' % constants.MAX_STATION_ID)
     if divisions is not None:
-        where.append('"hangarID" IN %s')
+        s = ('%s,' * len(divisions))[:-1] 
+        where.append('"hangarID" IN (%s)' % s)
     
     sql = 'SELECT "solarSystemID", COUNT(*) AS "items" FROM "assets_asset"'
     if where: sql += ' WHERE ' + ' AND '.join(where)
     sql += ' GROUP BY "solarSystemID";'
     if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
         # MySQL doesn't like double quotes...
-        sql = sql.replace('"', '')
+        sql = sql.replace('"', '`')
 
     cursor = connection.cursor()
     if divisions is None:
         cursor.execute(sql)
     else:
-        cursor.execute(sql, [divisions])
+        cursor.execute(sql, divisions)
     
     jstree_data = []
     for solarSystemID, items in cursor:

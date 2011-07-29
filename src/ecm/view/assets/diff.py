@@ -129,7 +129,8 @@ def systems_data(request, date_str):
     if not show_in_stations:
         where.append('"stationID" > %d' % constants.MAX_STATION_ID)
     if divisions is not None:
-        where.append('"hangarID" IN %s')
+        s = ('%s,' * len(divisions))[:-1] 
+        where.append('"hangarID" IN (%s)' % s)
     
     sql = 'SELECT "solarSystemID", COUNT(*) AS "items" FROM "assets_assetdiff" '
     sql += 'WHERE date=%s'
@@ -140,7 +141,7 @@ def systems_data(request, date_str):
     if divisions is None:
         cursor.execute(sql, [date])
     else:
-        cursor.execute(sql, [date, divisions])
+        cursor.execute(sql, [date] + divisions)
     
     jstree_data = []
     for solarSystemID, items in cursor:
