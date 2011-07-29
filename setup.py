@@ -96,7 +96,7 @@ def upgrade():
     logs_folder = os.path.join(data_dict['install_dir'], "logs")
     if os.path.exists(db_folder): dir_util.copy_tree(db_folder, os.path.join(tempdir, 'db'))
     if os.path.exists(logs_folder): dir_util.copy_tree(logs_folder, os.path.join(tempdir, 'logs'))
-    if os.path.exists(settings_file): file_util.copy_file(settings_file, os.path.join(tempdir, 'ecm'))
+    if os.path.exists(settings_file): file_util.copy_file(settings_file, os.path.join(tempdir, 'ecm/settings.py'))
     if os.path.exists(vhost_file): file_util.copy_file(vhost_file, tempdir)
     print "done"
     install_files()
