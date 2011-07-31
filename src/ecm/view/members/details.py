@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 
 import json
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
@@ -62,6 +62,18 @@ def details(request, characterID):
     data = { 'member' : member }
     return render_to_response("members/member_details.html", data, RequestContext(request))
 
+#------------------------------------------------------------------------------
+@check_user_access()
+def update_member_notes(request, characterID):
+    try:
+        new_notes = request.POST["value"]
+        member = get_object_or_404(Member, characterID=int(characterID))
+        member.notes = new_notes
+        member.save()
+        return HttpResponse(new_notes)
+    except:
+        return HttpResponseBadRequest()
+    
 
 #------------------------------------------------------------------------------
 @check_user_access()

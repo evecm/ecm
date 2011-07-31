@@ -6,7 +6,7 @@
 
 {% block header_scripts %}
 <script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
-
+<script type="text/javascript" src="/m/js/lib/jquery.jeditable.js"></script>
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
 
 <script type="text/javascript">
@@ -43,6 +43,20 @@ MEMBER_ID = "{{ member.characterID }}";
         </td>
     </tr>
 </table>
+
+<h2>Notes</h2>
+
+<p id="notes" class="italic blue" >{{ member.notes }}</p>
+
+<script type="text/javascript">
+/* Apply a jEditable handler to the "notes" paragraph */
+$('#notes').editable( '/members/{{ member.characterID }}/updatenotes', {
+    "callback": function( sValue, y ) {
+        $('#notes').html(sValue);
+    },
+    tooltip   : 'Click to edit...'
+});
+</script>
 
 <h2>Access Level</h2>
 

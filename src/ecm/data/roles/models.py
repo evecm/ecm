@@ -47,6 +47,7 @@ class Member(models.Model):
     accessLvl = models.BigIntegerField(default=0)
     corped = models.BooleanField(default=True)
     owner = models.ForeignKey(User, related_name='characters', null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
 
     def get_implied_roles(self):
         """

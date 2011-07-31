@@ -105,6 +105,7 @@ urlpatterns += patterns('ecm.view.members',
     (r'^members/accesschanges/data$',       'access.access_changes_data'),
     (r'^members/(\d+)$',                    'details.details'),
     (r'^members/(\d+)/accesschanges/data',  'details.access_changes_member_data'),
+    (r'^members/(\d+)/updatenotes',         'details.update_member_notes'),
 )
 
 urlpatterns += patterns('ecm.view.titles',
