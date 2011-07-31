@@ -30,6 +30,17 @@ AJAX_URL = '/players/{{ player.id }}/data';
 
 
 {% block main_content %}
+<h1 class="pagetitle">Details for player <i>{{player.username}}</i></h1>
+{% if player.is_staff and player.is_superuser %}<h1 class="pagetitle error">ECM Administrator</h1>{% endif %} 
+
+<h1>Player Details</h1>
+
+<p><b>Account created:</b> {{player.date_joined|date:"Y F d - H:i"}}</p>
+<p><b>Last login in ECM:</b> {{player.last_login|date:"Y F d - H:i"}}</p>
+<p><b>Owned EVE Accounts:</b> {{eve_accounts}}</p>
+<p><b>Owned Characters:</b> {{characters}}</p>
+
+
 <h1>Owned Characters</h1>
 
 <form id="search_form" class="search_form"> 

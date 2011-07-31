@@ -55,7 +55,7 @@ class UserAPIKey(models.Model):
     """
     API credentials used to associate characters to users
     """
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name='eve_accounts')
     userID = models.IntegerField(primary_key=True)
     key = models.CharField(max_length=64)
     is_valid = models.BooleanField(default=True)

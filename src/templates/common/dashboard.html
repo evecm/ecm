@@ -32,9 +32,9 @@ DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 <script type="text/javascript" src="/m/js/access_distribution_chart.js" ></script>
 <script type="text/javascript" src="/m/js/character_positions_chart.js" ></script>
 
-<p><b>Registered Players:</b> {{playerCount}}</p>
+<p><a href="/players">Registered Players:</a> {{playerCount}}</p>
 <p><b>Average number of accounts by player:</b> {{accountsByPlayer|floatformat:2}} account / player</p>
 <p><b>Average number of characters by player:</b> {{chraractersByPlayer|floatformat:2}} character / player</p>
-<p><b>Unassociated Characters:</b> {{unassociatedCharacters}} / {{memberCount}}</p>
+<p><a href="/members/unassociated">Unassociated Characters:</a> {{unassociatedCharacters}} / {{memberCount}}</p>
 
 {% endblock %}

@@ -1,34 +1,22 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        """
-        Copy all the association data from CharacterOwnership into the Member 'owner' field.
-        """
-        for m in orm.Member.objects.all():
-            try:
-                owner = orm.CharacterOwnership.objects.get(character=m)
-            except ObjectDoesNotExist:
-                owner = None
-            m.owner = owner
-            m.save()
-        orm.CharacterOwnership.objects.all().delete()
         
+        # Adding field 'Member.owner'
+        db.add_column('roles_member', 'owner', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='characters', null=True, to=orm['auth.User']), keep_default=False)
+
 
     def backwards(self, orm):
-        """
-        Copy all the association data from Member to CharacterOwnership objects.
-        """
-        for m in orm.Member.objects.all():
-            if m.owner is not None:
-                orm.CharacterOwnership.objects.create(owner=m.owner, character=m)
-                m.owner = None
+        
+        # Deleting field 'Member.owner'
+        db.delete_column('roles_member', 'owner_id')
+
 
     models = {
         'auth.group': {
@@ -91,10 +79,10 @@ class Migration(DataMigration):
             'accessLvl': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
             'baseID': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
             'characterID': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
-            'corpDate': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 20, 40, 16, 828000)'}),
+            'corpDate': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 22, 3, 31, 661000)'}),
             'corped': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'lastLogin': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 20, 40, 16, 828000)'}),
-            'lastLogoff': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 20, 40, 16, 828000)'}),
+            'lastLogin': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 22, 3, 31, 661000)'}),
+            'lastLogoff': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 22, 3, 31, 661000)'}),
             'location': ('django.db.models.fields.CharField', [], {'default': "'???'", 'max_length': '256'}),
             'locationID': ('django.db.models.fields.IntegerField', [], {'default': '0', 'db_index': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'}),
@@ -104,7 +92,7 @@ class Migration(DataMigration):
         },
         'roles.memberdiff': {
             'Meta': {'object_name': 'MemberDiff'},
-            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 20, 40, 16, 831000)', 'db_index': 'True'}),
+            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 22, 3, 31, 664000)', 'db_index': 'True'}),
             'id': ('ecm.lib.bigintpatch.BigAutoField', [], {'primary_key': 'True'}),
             'member': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'diffs'", 'to': "orm['roles.Member']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'}),
@@ -126,7 +114,7 @@ class Migration(DataMigration):
         },
         'roles.rolememberdiff': {
             'Meta': {'object_name': 'RoleMemberDiff'},
-            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 20, 40, 16, 832000)', 'db_index': 'True'}),
+            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 22, 3, 31, 665000)', 'db_index': 'True'}),
             'id': ('ecm.lib.bigintpatch.BigAutoField', [], {'primary_key': 'True'}),
             'member': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['roles.Member']"}),
             'new': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
@@ -155,7 +143,7 @@ class Migration(DataMigration):
         },
         'roles.titlecompodiff': {
             'Meta': {'object_name': 'TitleCompoDiff'},
-            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 20, 40, 16, 831000)', 'db_index': 'True'}),
+            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 22, 3, 31, 664000)', 'db_index': 'True'}),
             'id': ('ecm.lib.bigintpatch.BigAutoField', [], {'primary_key': 'True'}),
             'new': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
             'role': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['roles.Role']"}),
@@ -169,7 +157,7 @@ class Migration(DataMigration):
         },
         'roles.titlememberdiff': {
             'Meta': {'object_name': 'TitleMemberDiff'},
-            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 20, 40, 16, 832000)', 'db_index': 'True'}),
+            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 22, 3, 31, 664000)', 'db_index': 'True'}),
             'id': ('ecm.lib.bigintpatch.BigAutoField', [], {'primary_key': 'True'}),
             'member': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['roles.Member']"}),
             'new': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),

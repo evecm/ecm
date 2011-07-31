@@ -142,12 +142,12 @@ def update_all_users_accesses():
 
 #------------------------------------------------------------------------------
 def update_user_accesses(user):
-    owned = user.characters.all()
+    ownedCharacters = user.characters.all()
     titles = Title.objects.none()
     director = False
-    for char in owned:
-        director = char.character.is_director() or director
-        titles |= char.character.titles.all()
+    for char in ownedCharacters:
+        director = char.is_director() or director
+        titles |= char.titles.all()
     ids = titles.distinct().values_list("titleID", flat=True)
     user.groups.clear()
     for id in ids:

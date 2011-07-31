@@ -19,17 +19,26 @@ $(document).ready(function() {
         "sAjaxSource": "/players/data",
         "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
-            { /* Username */    "sWidth": "30%",   "sType": "html"    },
-            { /* Char count */  "sWidth": "20%",   "sType": "string",   "bSortable": false  },
-            { /* Group count */ "sWidth": "20%",   "sType": "string",   "bSortable": false  },
-            { /* Joined date */ "sWidth": "30%",   "sType": "string"  }
+            { /* Username */        "sWidth": "30%",   "sType": "html"    },
+            { /* admin */           "sWidth": "10%",   "sType": "html"    },
+            { /* EVE accounts */    "sWidth": "10%",   "sType": "string"  },
+            { /* Char count */      "sWidth": "10%",   "sType": "string" },
+            { /* Group count */     "sWidth": "10%",   "sType": "string" },
+            { /* Last login */      "sWidth": "15%",   "sType": "string"  },
+            { /* Joined date */     "sWidth": "15%",   "sType": "string"  }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             /* if the player has no roles display him/her in red */
-            var group_count = aData[2];
+            var group_count = aData[4];
             if (group_count == 0) {
                 $(nRow).addClass("row-red");
-            }          
+            }
+            var admin = aData[1];
+            if (admin == 'true') {
+                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-yes.gif" alt="True">');
+            } else {
+                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-no.gif" alt="False">');
+            }
             return nRow;
         },
         /* the search field being outside the table object, we need to save its status

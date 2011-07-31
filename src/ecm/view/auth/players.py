@@ -14,7 +14,6 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db.models.aggregates import Count
 
 __date__ = "2011 4 17"
 __author__ = "diabeteman"
@@ -26,6 +25,7 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
+from django.db.models.aggregates import Count
 
 from ecm.core import utils
 from ecm.view.decorators import check_user_access
@@ -42,7 +42,7 @@ def player_list(request):
     return render_to_response("auth/player_list.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-USER_COLUMNS = ["username", "char_count", "group_count", "date_joined"]
+USER_COLUMNS = ["username", "is_superuser", "account_count", "char_count", "group_count", "last_login", "date_joined"]
 @check_user_access()
 def player_list_data(request):
     try:
@@ -51,8 +51,10 @@ def player_list_data(request):
         return HttpResponseBadRequest()
     
     query = User.objects.filter(is_active=True)
+    query = query.annotate(account_count=Count("eve_accounts"))
     query = query.annotate(char_count=Count("characters"))
-    query = query.filter(char_count__gt=0)
+    query = query.annotate(group_count=Count("groups"))
+    #query = query.filter(char_count__gt=0)
     query = query.exclude(username__in=[settings.CRON_USERNAME, settings.ADMIN_USERNAME])
     
     sort_by = USER_COLUMNS[params.column]
@@ -78,8 +80,11 @@ def player_list_data(request):
     for player in query:
         player_list.append([
             '<a href="/players/%d" class="player">%s</a>' % (player.id, player.username),
-            player.char_count,
-            player.groups.count(),
+            player.is_staff and player.is_superuser,
+            player.eve_accounts.all().count(),
+            player.characters.all().count(),
+            player.groups.all().count(),
+            utils.print_time_min(player.last_login),
             utils.print_time_min(player.date_joined)
         ])
     
@@ -96,9 +101,12 @@ def player_list_data(request):
 @check_user_access()
 def player_details(request, player_id):
     player = get_object_or_404(User, id=int(player_id))
-    
+    eve_accounts = player.eve_accounts.all().count()
+    characters = player.characters.all().count()
     data = {
         'player': player,
+        'eve_accounts': eve_accounts,
+        'characters': characters,
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }

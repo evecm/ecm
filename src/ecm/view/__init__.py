@@ -59,19 +59,12 @@ def extract_datatable_params(request):
 member_table_columns = [
     "name", # default
     "nickname",
-    "owner",
+    "owner__username",
     "accessLvl",
     "corpDate",
     "lastLogin",
     "location"
 ]
-
-SQL_USERNAME = '''SELECT "username" 
-FROM "auth_user" 
-WHERE "auth_user"."id" = "roles_member"."owner_id"'''
-if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
-    SQL_USERNAME.replace('"', '`')
-
 
 def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
 
@@ -80,12 +73,7 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
     if sort_by in (0, 1):
         sort_col = sort_col + "_nocase"
         query = query.extra(select={sort_col : LOWER % member_table_columns[sort_by]})
-    elif sort_by == 2:
-        sort_col = sort_col + "_nocase"
-        query = query.extra(select={
-                                sort_col : LOWER % 'owner_name',
-                                'owner_name' : SQL_USERNAME
-                            })
+
     if not asc: sort_col = "-" + sort_col
     query = query.extra(order_by=([sort_col]))
     
