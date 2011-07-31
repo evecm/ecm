@@ -20,8 +20,8 @@ $(document).ready(function() {
         "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
             { /* Name */         "sWidth": "20%",   "sType": "html"    },
-            { /* Nickname */     "sWidth": "20%",   "sType": "string",  "bSortable": false },
-            { /* Player */       "sWidth": "15%",   "sType": "html",    "bSortable": false },
+            { /* Nickname */     "sWidth": "20%",   "sType": "string"  },
+            { /* Player */       "sWidth": "15%",   "sType": "html"    },
             { /* Access Level */ "sWidth": "5%",    "sType": "numeric" },
             { /* Corp Date */    "sWidth": "10%",   "sType": "string"  },
             { /* Last Login */   "sWidth": "10%",   "sType": "string"  },

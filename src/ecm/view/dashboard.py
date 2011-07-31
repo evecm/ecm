@@ -26,7 +26,7 @@ from django.template.context import RequestContext
 from ecm.core.eve import db
 from ecm.core.eve import constants
 from ecm.view.decorators import check_user_access
-from ecm.data.roles.models import Member, CharacterOwnership
+from ecm.data.roles.models import Member
 from ecm.data.common.models import ColorThreshold, UserAPIKey
 
 
@@ -34,8 +34,8 @@ from ecm.data.common.models import ColorThreshold, UserAPIKey
 @check_user_access()
 def dashboard(request):
     data = {
-        'unassociatedCharacters' : Member.objects.filter(corped=True, ownership=None).count(),
-        'playerCount' : CharacterOwnership.objects.values("owner").distinct().count(),
+        'unassociatedCharacters' : Member.objects.filter(corped=True, owner=None).count(),
+        'playerCount' : Member.objects.filter(corped=True).exclude(owner=None).values("owner").distinct().count(),
         'memberCount' : Member.objects.filter(corped=True).count(),
         'accountsByPlayer' : avg_accounts_by_player(),
         'chraractersByPlayer' : avg_chraracters_by_player(),
@@ -48,8 +48,8 @@ def dashboard(request):
 
 #------------------------------------------------------------------------------
 def avg_chraracters_by_player():
-    players = CharacterOwnership.objects.values("owner").distinct().count()
-    characters = float(CharacterOwnership.objects.all().count())
+    players = Member.objects.filter(corped=True).exclude(owner=None).values("owner").distinct().count()
+    characters = float(Member.objects.filter(corped=True).exclude(owner=None).count())
     if players:
         return characters / players
     else:
@@ -57,7 +57,7 @@ def avg_chraracters_by_player():
 
 #------------------------------------------------------------------------------
 def avg_accounts_by_player():
-    players = CharacterOwnership.objects.values("owner").distinct().count()
+    players = Member.objects.filter(corped=True).exclude(owner=None).values("owner").distinct().count()
     accounts = float(UserAPIKey.objects.all().count())
     if players:
         return accounts / players

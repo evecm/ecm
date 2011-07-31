@@ -25,13 +25,13 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from ecm.view.decorators import forbidden
 from ecm.core.tasks.users import update_user_accesses
 from ecm.view.auth.forms import AddApiKeyForm, EditApiKeyForm
-from ecm.data.roles.models import CharacterOwnership, Member
+from ecm.data.roles.models import Member
 from ecm.data.common.models import UserAPIKey
 
 #------------------------------------------------------------------------------
 @login_required
 def account(request):
-    characters = [ owned.character for owned in CharacterOwnership.objects.filter(owner=request.user) ]
+    characters = Member.objects.filter(owner=request.user)
     api_keys = UserAPIKey.objects.filter(user=request.user)
     data = { 'characters' : characters,
             'api_keys' :  api_keys}
@@ -52,10 +52,9 @@ def add_api(request):
             for char in form.characters:
                 if char.is_corped:
                     try:
-                        owned = CharacterOwnership()
-                        owned.owner = request.user
-                        owned.character = Member.objects.get(characterID=char.characterID)
-                        owned.save()
+                        character = Member.objects.get(characterID=char.characterID)
+                        character.owner = request.user
+                        character.save()
                     except Member.DoesNotExist:
                         continue
             
@@ -96,13 +95,8 @@ def edit_api(request, userID):
                 if char.is_corped:
                     try:
                         member = Member.objects.get(characterID=char.characterID)
-                        try:
-                            ownership = member.ownership
-                        except CharacterOwnership.DoesNotExist:
-                            ownership = CharacterOwnership()
-                            ownership.character = member
-                        ownership.owner = request.user
-                        ownership.save()
+                        member.owner = request.user
+                        member.save()
                     except Member.DoesNotExist:
                         pass
             
@@ -119,14 +113,12 @@ def edit_api(request, userID):
 @login_required
 def delete_character(request, characterID):
     character = get_object_or_404(Member, characterID=int(characterID))
-    try:
-        if character.ownership.owner == request.user:
-            character.ownership.delete()
-            update_user_accesses(request.user)
-            return redirect('/account')
-        else:
-            return forbidden(request)
-    except CharacterOwnership.DoesNotExist:
+    if character.owner == request.user:
+        character.owner = None
+        character.save()
+        update_user_accesses(request.user)
+        return redirect('/account')
+    else:
         return forbidden(request)
     
     

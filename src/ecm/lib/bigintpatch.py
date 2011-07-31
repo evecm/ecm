@@ -21,6 +21,8 @@ class BigAutoField(fields.AutoField):
     def get_internal_type(self):
         return "BigAutoField"
     
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], [r'^ecm\.lib\.bigintpatch\.BigAutoField'])
 
 PostgresDBCreation.data_types['BigAutoField'] = 'bigserial'
 OracleDBCreation.data_types['BigAutoField'] = 'NUMBER(19)'

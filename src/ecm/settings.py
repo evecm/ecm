@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     
     'captcha',
+    'south',
     
     'ecm.data.assets',
     'ecm.data.corp',
@@ -137,7 +138,6 @@ INSTALLED_APPS = (
     'ecm.data.common',
     'ecm.data.scheduler',
     'ecm.data.accounting',
-#    'ecm.data.industry',
 )
 
 ###############################################################################

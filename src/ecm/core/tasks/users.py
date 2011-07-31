@@ -32,7 +32,7 @@ from django.core.mail.message import EmailMultiAlternatives
 from ecm.core.eve import api
 from ecm.lib import eveapi
 from ecm.data.common.models import RegistrationProfile, UserAPIKey
-from ecm.data.roles.models import CharacterOwnership, Title, Member
+from ecm.data.roles.models import Title, Member
 
 logger = logging.getLogger(__name__)
 
@@ -61,13 +61,7 @@ def update_character_associations(user):
             ids = [ char.characterID for char in api.get_account_characters(user_api) if char.is_corped ]
             user_api.is_valid = True
             for member in Member.objects.filter(characterID__in=ids):
-                try:
-                    ownership = member.ownership
-                except CharacterOwnership.DoesNotExist:
-                    ownership = CharacterOwnership()
-                    ownership.character = member
-                ownership.owner = user
-                new_ownerships.append(ownership)
+                new_ownerships.append((member, user))
         except eveapi.Error as e:
             if e.code in [202, 203, 204, 205, 210, 211, 212]:
                 # authentication failure error codes. 
@@ -103,9 +97,12 @@ def update_character_associations(user):
         msg.send()
         logger.warning("API credentials for '%s' are invalid. User notified by email." % user.username)
     # we delete all the previous ownerships
-    CharacterOwnership.objects.filter(owner=user).delete()
+    Member.objects.filter(owner=user).update(owner=None)
     # and save the new ones
-    for o in new_ownerships: o.save()
+    for member, user in new_ownerships:
+        member.owner = user
+        member.save()
+        
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def cleanup_unregistered_users():
@@ -145,7 +142,7 @@ def update_all_users_accesses():
 
 #------------------------------------------------------------------------------
 def update_user_accesses(user):
-    owned = CharacterOwnership.objects.filter(owner=user)
+    owned = user.characters.all()
     titles = Title.objects.none()
     director = False
     for char in owned:

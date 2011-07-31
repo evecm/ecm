@@ -31,7 +31,7 @@ from django.http import HttpResponse
 from django.conf import settings
 
 from ecm.data.common.models import user_has_access
-from ecm.data.roles.models import CharacterOwnership
+from ecm.data.roles.models import Member
 
 #------------------------------------------------------------------------------
 def basic_auth_required(username=None):
@@ -94,8 +94,7 @@ def check_user_access():
                         url_re = re.compile("^/members/\d+.*$")
                         if url_re.match(request.get_full_path()):
                             characterID = int(args[0])
-                            user = CharacterOwnership.objects.get(character=characterID).owner
-                            access_ok = (user == request.user)
+                            access_ok = (Member.objects.get(characterID=characterID).owner == request.user)
                     except:
                         pass
                 if request.user.is_superuser or access_ok:

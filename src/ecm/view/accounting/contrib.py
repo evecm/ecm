@@ -40,7 +40,9 @@ DATE_PATTERN = "%Y-%m-%d"
 @check_user_access()
 def member_contrib(request):
     from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
+    if from_date is None: from_date = datetime.fromtimestamp(0)
     to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
+    if to_date is None: to_date = datetime.now()
     data = {
         'scan_date' : getScanDate(JournalEntry),
         'from_date' : datetime.strftime(from_date, DATE_PATTERN),

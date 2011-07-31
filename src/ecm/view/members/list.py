@@ -89,7 +89,7 @@ def unassociated_data(request):
 
     total_members,\
     filtered_members,\
-    members = get_members(query=Member.objects.filter(corped=True, ownership=None),
+    members = get_members(query=Member.objects.filter(corped=True, owner=None),
                           first_id=params.first_id, 
                           last_id=params.last_id,
                           search_str=params.search,
@@ -108,6 +108,6 @@ def unassociated_data(request):
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def unassociated_clip(request):
-    query = Member.objects.filter(corped=True, ownership=None).order_by("name")
+    query = Member.objects.filter(corped=True, owner=None).order_by("name")
     data = query.values_list("name", flat=True)
     return HttpResponse("\n".join(data))

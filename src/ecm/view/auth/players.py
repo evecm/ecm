@@ -29,7 +29,7 @@ from django.template.context import RequestContext
 
 from ecm.core import utils
 from ecm.view.decorators import check_user_access
-from ecm.data.roles.models import Member, CharacterOwnership
+from ecm.data.roles.models import Member
 from ecm.data.common.models import ColorThreshold
 from ecm.view import extract_datatable_params, get_members
 
@@ -114,11 +114,10 @@ def player_details_data(request, player_id):
         return HttpResponseBadRequest()
 
     player = get_object_or_404(User, id=int(player_id))
-    owned = CharacterOwnership.objects.filter(owner=player)
     
     total_members,\
     filtered_members,\
-    members = get_members(query=Member.objects.filter(ownership__in=owned),
+    members = get_members(query=Member.objects.filter(owner=player),
                           first_id=params.first_id, 
                           last_id=params.last_id,
                           search_str=params.search,

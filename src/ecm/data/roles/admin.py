@@ -21,12 +21,12 @@ __author__ = "diabeteman"
 
 
 from ecm.data.roles.models import Role, Title, Member, RoleType, RoleMembership, MemberDiff,\
-    TitleCompoDiff, TitleMemberDiff, RoleMemberDiff, TitleMembership, TitleComposition, CharacterOwnership
+    TitleCompoDiff, TitleMemberDiff, RoleMemberDiff, TitleMembership, TitleComposition
 from django.contrib import admin
 
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ['name', 'characterID', 'nickname', 'baseID', 'lastLogin', 'corpDate']
-    search_fields = ['name', 'baseID', 'nickname', 'lastLogin']
+    list_display = ['name', 'characterID', 'nickname', 'owner', 'baseID', 'lastLogin', 'corpDate']
+    search_fields = ['name', 'baseID', 'nickname', 'owner', 'lastLogin']
     list_filter = ['baseID']
 
 class RoleAdmin(admin.ModelAdmin):
@@ -70,8 +70,6 @@ class RoleMemberDiffAdmin(admin.ModelAdmin):
     list_display = ['member', 'role', 'new', 'date']
     search_fields = ['member', 'role', 'new', 'date']
 
-class CharacterOwnershipAdmin(admin.ModelAdmin):
-    list_display = ['owner', 'character', 'main_or_alt_admin_display']
 
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Role, RoleAdmin)
@@ -80,7 +78,6 @@ admin.site.register(Title, TitleAdmin)
 admin.site.register(RoleMembership, RoleMembershipAdmin)
 admin.site.register(TitleMembership, TitleMembershipAdmin)
 admin.site.register(MemberDiff, MemberDiffAdmin)
-admin.site.register(CharacterOwnership, CharacterOwnershipAdmin)
 admin.site.register(TitleComposition, TitleCompositionAdmin)
 admin.site.register(TitleCompoDiff, TitleCompoDiffAdmin)
 admin.site.register(TitleMemberDiff, TitleMemberDiffAdmin)

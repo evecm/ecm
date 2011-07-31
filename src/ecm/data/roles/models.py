@@ -46,6 +46,7 @@ class Member(models.Model):
     ship = models.CharField(max_length=128, default="???")
     accessLvl = models.BigIntegerField(default=0)
     corped = models.BooleanField(default=True)
+    owner = models.ForeignKey(User, related_name='characters', null=True, blank=True)
 
     def get_implied_roles(self):
         """
@@ -82,11 +83,18 @@ class Member(models.Model):
     
     def permalink(self):
         return '<a href="%s" class="member">%s</a>' % (self.get_url(), self.name)
+        
+    def owner_url(self):
+        if self.owner_id:
+            return '/players/%d' % self.owner_id
+        else:
+            return None
     
     def owner_permalink(self):
-        try:
-            return self.ownership.owner_permalink()
-        except CharacterOwnership.DoesNotExist:
+        url = self.owner_url()
+        if url is not None:
+            return '<a href="%s" class="player">%s</a>' % (url, self.owner.username)
+        else:
             return '<span class="error bold">no owner</span>'
     
     def __eq__(self, other):

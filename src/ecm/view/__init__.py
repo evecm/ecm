@@ -19,13 +19,15 @@ __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
 from django.db.models import Q
+from django.conf import settings
 from django.utils.text import truncate_words
 
-from ecm.data.roles.models import Member, CharacterOwnership
+from ecm.data.roles.models import Member
 from ecm.core import utils
 from ecm.data.common.models import UpdateDate
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
+LOWER = 'LOWER(`%s`)' if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql' else 'LOWER("%s")'
 
 #------------------------------------------------------------------------------
 def getScanDate(model):
@@ -57,21 +59,35 @@ def extract_datatable_params(request):
 member_table_columns = [
     "name", # default
     "nickname",
-    "user", # not sortable
+    "owner",
     "accessLvl",
     "corpDate",
     "lastLogin",
     "location"
 ]
+
+SQL_USERNAME = '''SELECT "username" 
+FROM "auth_user" 
+WHERE "auth_user"."id" = "roles_member"."owner_id"'''
+if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
+    SQL_USERNAME.replace('"', '`')
+
+
 def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
 
     sort_col = member_table_columns[sort_by]
     # SQL hack for making a case insensitive sort
-    if sort_by in [0, 1]:
+    if sort_by in (0, 1):
         sort_col = sort_col + "_nocase"
-        query = query.extra(select={sort_col : 'LOWER("%s")' % member_table_columns[sort_by]})
+        query = query.extra(select={sort_col : LOWER % member_table_columns[sort_by]})
+    elif sort_by == 2:
+        sort_col = sort_col + "_nocase"
+        query = query.extra(select={
+                                sort_col : LOWER % 'owner_name',
+                                'owner_name' : SQL_USERNAME
+                            })
     if not asc: sort_col = "-" + sort_col
-    query = query.extra(order_by=[sort_col])
+    query = query.extra(order_by=([sort_col]))
     
     if search_str:
         total_members = query.count()

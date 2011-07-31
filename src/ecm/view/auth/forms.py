@@ -33,7 +33,7 @@ from captcha.fields import CaptchaField
 from ecm.core.eve import api
 from ecm.data.common.models import UserAPIKey
 from ecm.lib import eveapi
-from ecm.data.roles.models import CharacterOwnership, Member
+from ecm.data.roles.models import Member
 from ecm.view.auth.fields import PasswordField
 
 #------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ class AccountCreationForm(forms.Form):
                     valid_account |= exists and c.is_corped
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
-                    if CharacterOwnership.objects.filter(character__in=ids):
+                    if Member.objects.filter(characterID__in=ids).exclude(owner=None):
                         self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["userID"]
                 else:
@@ -240,7 +240,7 @@ class AddApiKeyForm(forms.Form):
                     valid_account |= exists and c.is_corped
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
-                    if CharacterOwnership.objects.filter(character__in=ids):
+                    if Member.objects.filter(characterID__in=ids).exclude(owner=None):
                         self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["userID"]
                 else:
@@ -277,7 +277,7 @@ class EditApiKeyForm(forms.Form):
                     valid_account |= exists and c.is_corped
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
-                    if CharacterOwnership.objects.filter(character__in=ids).exclude(owner=self.user):
+                    if Member.objects.filter(characterID__in=ids).exclude(owner__in=[None, self.user]):
                         self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["userID"]
                 else:
