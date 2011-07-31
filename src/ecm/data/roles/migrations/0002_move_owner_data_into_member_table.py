@@ -9,7 +9,7 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         """
-        We copy all the association data from CharacterOwnership into the Member 'owner' field.
+        Copy all the association data from CharacterOwnership into the Member 'owner' field.
         """
         for m in orm.Member.objects.all():
             try:
@@ -18,10 +18,17 @@ class Migration(DataMigration):
                 owner = None
             m.owner = owner
             m.save()
+        orm.CharacterOwnership.objects.all().delete()
+        
 
     def backwards(self, orm):
-        raise RuntimeError("Cannot reverse this migration.")
-
+        """
+        Copy all the association data from Member to CharacterOwnership objects.
+        """
+        for m in orm.Member.objects.all():
+            if m.owner is not None:
+                orm.CharacterOwnership.objects.create(owner=m.owner, character=m)
+                m.owner = None
 
     models = {
         'auth.group': {
