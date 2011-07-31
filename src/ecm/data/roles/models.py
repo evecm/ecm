@@ -55,7 +55,6 @@ class Member(models.Model):
         roles = self.roles.all()
         for t in self.titles.all():
             roles |= t.roles.all()
-        
         return roles.distinct()
     
     def is_director(self):
@@ -335,8 +334,8 @@ class CharacterOwnership(models.Model):
     """
     Associates EVE characters to ECM Users
     """
-    owner = models.ForeignKey(User, related_name="characters")
-    character = models.OneToOneField(Member, related_name="ownership")
+    owner = models.ForeignKey(User, related_name="__characters")
+    character = models.OneToOneField(Member, related_name="__ownership")
     is_main_character = models.BooleanField(default=False)
 
     def owner_url(self):
