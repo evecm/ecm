@@ -128,6 +128,7 @@ class Item(object):
         else:
             return object.__getattribute__(self, attrName)
     
+    
     @staticmethod
     def get(typeID):
         """
@@ -153,6 +154,7 @@ class Blueprint(Item):
                  productTypeID,
                  productionTime,
                  techLevel,
+                 dataInterfaceID,
                  researchProductivityTime,
                  researchMaterialTime,
                  researchCopyTime,
@@ -166,6 +168,7 @@ class Blueprint(Item):
         self.productTypeID = productTypeID
         self.productionTime = productionTime
         self.techLevel = techLevel
+        self.dataInterfaceID = dataInterfaceID
         self.researchProductivityTime = researchProductivityTime
         self.researchMaterialTime = researchMaterialTime
         self.researchCopyTime = researchCopyTime
@@ -176,6 +179,7 @@ class Blueprint(Item):
         self.maxProductionLimit = maxProductionLimit
         self.__activities = None # lazy attribute
         self.__item = None # lazy attribute
+        self.__parentBlueprint = None # lazy attribute
 
     
     def __getattr__(self, attrName):
@@ -198,6 +202,14 @@ class Blueprint(Item):
             else:
                 self.__item = Item.get(self.productTypeID)
                 return self.__item
+        elif attrName == 'parentBlueprint':
+            if self.parentBlueprintTypeID is None:
+                raise NoParentBlueprintException(self.blueprintTypeID)
+            if self.__parentBlueprint is not None:
+                return self.__parentBlueprint
+            else:
+                self.__parentBlueprint = Blueprint.get(self.parentBlueprintTypeID)
+                return self.__parentBlueprint
         else:
             try:
                 try:
@@ -213,7 +225,7 @@ class Blueprint(Item):
         try:
             return self.activities[activityID]
         except KeyError:
-            raise ValueError('Blueprint with blueprintTypeID=%d '
+            raise KeyError('Blueprint with blueprintTypeID=%d '
                              'has no activity with activityID=%s' 
                              % (self.blueprintTypeID, str(activityID)))
     
@@ -225,10 +237,8 @@ class Blueprint(Item):
                 if recurse:
                     blueprints.union(mat.blueprint.getInvolvedBlueprints(recurse=True))
         return blueprints
-            
         
-    
-    def getBillOfMaterials(self, runs=1, meLevel=0, activity=BpActivity.MANUFACTURING):
+    def getBillOfMaterials(self, runs, meLevel, activity):
         """
         Resolve the materials needed for the specified activity.
         Quantities are given as floats (to be rounded).
@@ -236,11 +246,12 @@ class Blueprint(Item):
         bill = []
         materials = self[activity].materials
         for m in materials:
-            qty = runs * apply_material_level(m.quantity, meLevel, self.wasteFactor)
-            bill.append(ActivityMaterial(m.requiredTypeID, qty, m.damagePerJob, m.baseMaterial))
+            if m.damagePerJob > 0:
+                qty = runs * apply_material_level(m.quantity, meLevel, self.wasteFactor)
+                bill.append(ActivityMaterial(m.requiredTypeID, qty, m.damagePerJob, m.baseMaterial))
         return bill
     
-    def getDuration(self, runs=1, peLevel=0, activity=BpActivity.MANUFACTURING):
+    def getDuration(self, runs, peLevel, activity):
         """
         Calculate the duration (in seconds) needed to perform the specified activity.
         """
@@ -366,10 +377,16 @@ class NoBlueprintException(UserWarning):
         self.typeID = typeID
     
     def __repr__(self):
-        return '<NoBlueprintException: %s>' % str(self)
+        return '<%s: %s>' % (self.__class__.__name__, str(self))
     
     def __str__(self):
-        return 'Item with typeID %d has no blueprint' % self.typeID
+        return 'Item with typeID %s has no blueprint' % str(self.typeID)
+
+#------------------------------------------------------------------------------
+class NoParentBlueprintException(NoBlueprintException):
+    
+    def __str__(self):
+        return 'Blueprint with id %s has no parent blueprint' % str(self.typeID)
 
 #------------------------------------------------------------------------------
 def apply_material_level(base, meLevel, wasteFactor, round=False):

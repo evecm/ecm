@@ -90,138 +90,67 @@ HAS_HANGAR_DIVISIONS = {
 HANGAR_FLAG = {62:1, 4:1000, 116:1001, 117:1002, 118:1003, 119:1004, 120:1005, 121:1006}
 CARGO_FLAG = [5].extend(range(133, 145))
 SLOT_FLAG = {'lo' : range(11, 19),
-               'med': range(19, 27),
-               'hi' : range(27, 35),
-               'rig': range(92, 100),
-               'sub': range(125, 133) }
+             'med': range(19, 27),
+             'hi' : range(27, 35),
+             'rig': range(92, 100),
+             'sub': range(125, 133) }
 
 
 
 
-# EVE inventory flags 
-# They can be found in the database but this is for quicker access
-FLAGS = { 
-      0: 'None',
-      1: 'Wallet',
-      2: 'Factory',
-      4: 'Hangar',
-      5: 'Cargo',
-      6: 'Briefcase',
-      7: 'Skill',
-      8: 'Reward',
-      9: 'Connected',
-     10: 'Disconnected',
-     11: 'LoSlot0',
-     12: 'LoSlot1',
-     13: 'LoSlot2',
-     14: 'LoSlot3',
-     15: 'LoSlot4',
-     16: 'LoSlot5',
-     17: 'LoSlot6',
-     18: 'LoSlot7',
-     19: 'MedSlot0',
-     20: 'MedSlot1',
-     21: 'MedSlot2',
-     22: 'MedSlot3',
-     23: 'MedSlot4',
-     24: 'MedSlot5',
-     25: 'MedSlot6',
-     26: 'MedSlot7',
-     27: 'HiSlot0',
-     28: 'HiSlot1',
-     29: 'HiSlot2',
-     30: 'HiSlot3',
-     31: 'HiSlot4',
-     32: 'HiSlot5',
-     33: 'HiSlot6',
-     34: 'HiSlot7',
-     35: 'Fixed Slot',
-     40: 'PromenadeSlot1',
-     41: 'PromenadeSlot2',
-     42: 'PromenadeSlot3',
-     43: 'PromenadeSlot4',
-     44: 'PromenadeSlot5',
-     45: 'PromenadeSlot6',
-     46: 'PromenadeSlot7',
-     47: 'PromenadeSlot8',
-     48: 'PromenadeSlot9',
-     49: 'PromenadeSlot10',
-     50: 'PromenadeSlot11',
-     51: 'PromenadeSlot12',
-     52: 'PromenadeSlot13',
-     53: 'PromenadeSlot14',
-     54: 'PromenadeSlot15',
-     55: 'PromenadeSlot16',
-     56: 'Capsule',
-     57: 'Pilot',
-     58: 'Passenger',
-     59: 'Boarding Gate',
-     60: 'Crew',
-     61: 'Skill In Training',
-     62: 'CorpMarket',
-     63: 'Locked',
-     64: 'Unlocked',
-     70: 'Office Slot 1',
-     71: 'Office Slot 2',
-     72: 'Office Slot 3',
-     73: 'Office Slot 4',
-     74: 'Office Slot 5',
-     75: 'Office Slot 6',
-     76: 'Office Slot 7',
-     77: 'Office Slot 8',
-     78: 'Office Slot 9',
-     79: 'Office Slot 10',
-     80: 'Office Slot 11',
-     81: 'Office Slot 12',
-     82: 'Office Slot 13',
-     83: 'Office Slot 14',
-     84: 'Office Slot 15',
-     85: 'Office Slot 16',
-     86: 'Bonus',
-     87: 'DroneBay',
-     88: 'Booster',
-     89: 'Implant',
-     90: 'ShipHangar',
-     91: 'ShipOffline',
-     92: 'RigSlot0',
-     93: 'RigSlot1',
-     94: 'RigSlot2',
-     95: 'RigSlot3',
-     96: 'RigSlot4',
-     97: 'RigSlot5',
-     98: 'RigSlot6',
-     99: 'RigSlot7',
-    100: 'Factory Operation',
-    116: 'CorpSAG2',
-    117: 'CorpSAG3',
-    118: 'CorpSAG4',
-    119: 'CorpSAG5',
-    120: 'CorpSAG6',
-    121: 'CorpSAG7',
-    122: 'SecondaryStorage',
-    123: 'CaptainsQuarters',
-    124: 'Wis Promenade',
-    125: 'SubSystem0',
-    126: 'SubSystem1',
-    127: 'SubSystem2',
-    128: 'SubSystem3',
-    129: 'SubSystem4',
-    130: 'SubSystem5',
-    131: 'SubSystem6',
-    132: 'SubSystem7',
-    133: 'SpecializedFuelBay',
-    134: 'SpecializedOreHold',
-    135: 'SpecializedGasHold',
-    136: 'SpecializedMineralHold',
-    137: 'SpecializedSalvageHold',
-    138: 'SpecializedShipHold',
-    139: 'SpecializedSmallShipHold',
-    140: 'SpecializedMediumShipHold',
-    141: 'SpecializedLargeShipHold',
-    142: 'SpecializedIndustrialShipHold',
-    143: 'SpecializedAmmoHold',
-    144: 'StructureActive',
-    145: 'StructureInactive',
-    146: 'JunkyardReprocessed',
-    147: 'JunkyardTrashed'
+DECRYPTORS = {
+#            typeID   CHANCE_mod   ME_mod   PE_mod   RUNS_mod  typeName
+# Amarr Interface                                              
+    728: (                                                     
+            (23178,   1.1,         3,       3,       0,        "Formation Layout"),
+            (23179,   1.2,         2,       5,       1,        "Classic Doctrine"),
+            (23180,   1.0,         1,       4,       2,        "Sacred Manifesto"),
+            (23182,   1.8,        -1,       2,       4,        "War Strategon"),
+            (23181,   0.6,        -2,       1,       9,        "Circular Logic")
+         ),                                                    
+# Minmatar Interface                                           
+    729: (                                                     
+            (21579,   1.1,         3,       3,       0,        "Calibration Data"),
+            (21580,   1.2,         2,       5,       1,        "Advanced Theories"),
+            (21581,   1.0,         1,       4,       2,        "Operation Handbook"),
+            (21583,   1.8,        -1,       2,       4,        "Assembly Instructions"),
+            (21582,   0.6,        -2,       1,       9,        "Circuitry Schematics")
+         ),                                                    
+# Gallente Interface                                           
+    730: (                                                     
+            (23183,   1.1,         3,       3,       0,        "Collision Measurements"),
+            (23184,   1.2,         2,       5,       1,        "Test Reports"),
+            (23185,   1.0,         1,       4,       2,        "Engagement Plan"),
+            (23187,   1.8,        -1,       2,       4,        "Stolen Formulas"),
+            (23186,   0.6,        -2,       1,       9,        "Symbiotic Figures")
+         ),                                                    
+# Caldalol Interface                                           
+    731: (                                                     
+            (21573,   1.1,         3,       3,       0,        "Tuning Instructions"),
+            (21574,   1.2,         2,       5,       1,        "Prototype Diagram"),
+            (21575,   1.0,         1,       4,       2,        "User Manual"),
+            (21577,   1.8,        -1,       2,       4,        "Installation Guide"),
+            (21576,   0.6,        -2,       1,       9,        "Interface Alignment Chart")
+         )
+}
+DATA_INTERFACES_GROUP_ID = 716
+
+INTERFACES_DECRYPTOR_MAPPING = {
+#   typeID   decryptorGroup   interfaceName
+# Amarr
+    25554:   728,             # Occult Data Interface
+    25851:   728,             # Occult Ship Data Interface
+    26603:   728,             # Occult Tuner Data Interface
+# Minmatar                
+    25553:   729,             # Cryptic Data Interface
+    25857:   729,             # Cryptic Ship Data Interface
+    26597:   729,             # Cryptic Tuner Data Interface
+# Gallente                
+    25556:   730,             # Incognito Data Interface
+    25855:   730,             # Incognito Ship Data Interface
+    26601:   730,             # Incognito Tuner Data Interface
+# Caldalol                
+    25555:   731,             # Esoteric Data Interface
+    25853:   731,             # Esoteric Ship Data Interface
+    26599:   731,             # Esoteric Tuner Data Interface
 }

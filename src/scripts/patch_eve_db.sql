@@ -216,6 +216,83 @@ SET "security" =
 WHERE "security" IS NULL
 ;
 
+----------------------------------------------------------
+-- ADD A dataInterfaceID TO THE invBlueprintTypes TABLE
+----------------------------------------------------------
+-- backup old table and delete it
+CREATE TABLE "invBlueprintTypes_temp" (
+  "blueprintTypeID" int(11) NOT NULL,
+  "parentBlueprintTypeID" int(11) DEFAULT NULL,
+  "productTypeID" int(11) DEFAULT NULL,
+  "productionTime" int(11) DEFAULT NULL,
+  "techLevel" smallint(6) DEFAULT NULL,
+  "researchProductivityTime" int(11) DEFAULT NULL,
+  "researchMaterialTime" int(11) DEFAULT NULL,
+  "researchCopyTime" int(11) DEFAULT NULL,
+  "researchTechTime" int(11) DEFAULT NULL,
+  "productivityModifier" int(11) DEFAULT NULL,
+  "materialModifier" smallint(6) DEFAULT NULL,
+  "wasteFactor" smallint(6) DEFAULT NULL,
+  "maxProductionLimit" int(11) DEFAULT NULL,
+  PRIMARY KEY ("blueprintTypeID")
+);
+INSERT INTO "invBlueprintTypes_temp" SELECT * FROM "invBlueprintTypes";
+DROP TABLE "invBlueprintTypes";
+
+-- create the new table
+CREATE TABLE "invBlueprintTypes" (
+  "blueprintTypeID" int(11) NOT NULL,
+  "parentBlueprintTypeID" int(11) DEFAULT NULL,
+  "productTypeID" int(11) DEFAULT NULL,
+  "productionTime" int(11) DEFAULT NULL,
+  "techLevel" smallint(6) DEFAULT NULL,
+  "dataInterfaceID" smallint(11) DEFAULT NULL,
+  "researchProductivityTime" int(11) DEFAULT NULL,
+  "researchMaterialTime" int(11) DEFAULT NULL,
+  "researchCopyTime" int(11) DEFAULT NULL,
+  "researchTechTime" int(11) DEFAULT NULL,
+  "productivityModifier" int(11) DEFAULT NULL,
+  "materialModifier" smallint(6) DEFAULT NULL,
+  "wasteFactor" smallint(6) DEFAULT NULL,
+  "maxProductionLimit" int(11) DEFAULT NULL,
+  PRIMARY KEY ("blueprintTypeID")
+)
+;
+CREATE INDEX "invBlueprintTypes_IX_parentBlueprintTypeID" ON "invBlueprintTypes" ("parentBlueprintTypeID");
+CREATE INDEX "invBlueprintTypes_IX_productTypeID" ON "invBlueprintTypes" ("productTypeID");
+
+-- fill the new table
+INSERT INTO "invBlueprintTypes" (
+	"blueprintTypeID",
+	"parentBlueprintTypeID",
+	"productTypeID",
+	"productionTime",
+	"techLevel",
+	"researchProductivityTime",
+	"researchMaterialTime",
+	"researchCopyTime",
+	"researchTechTime",
+	"productivityModifier",
+	"materialModifier",
+	"wasteFactor",
+	"maxProductionLimit"
+) SELECT * FROM "invBlueprintTypes_temp"
+;
+
+-- drop the temp table 
+DROP TABLE "invBlueprintTypes_temp";
+
+-- fill the dataInterfaceID field
+UPDATE "invBlueprintTypes" 
+SET "dataInterfaceID" = 
+	(SELECT r."requiredTypeID" 
+	   FROM "ramBlueprintReqs" AS r, 
+	        "invTypes" AS t
+	  WHERE "invBlueprintTypes"."blueprintTypeID" = r."blueprintTypeID"
+	    AND r."requiredTypeID" = t."typeID"
+	    AND r."activityID" = 8 /* invention */
+	    AND t."groupID" = 716 /* data interfaces*/)
+;
 
 ----------------------------------------------------------
 -- UPDATE THE parentBlueprintID FIELD IN THE invBlueprintTypes TABLE

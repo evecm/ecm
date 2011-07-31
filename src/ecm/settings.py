@@ -26,8 +26,7 @@ def resolvePath(relativePath):
 
 ###############################################################################
 # ECM SETTINGS
-ALL_GROUP_IDS = [ 1 << i  for i in range(17) ] # generates all titleIDs
-DIRECTOR_GROUP_ID = 1 << 16 # 65536 (it is twice the max titleID)
+DIRECTOR_GROUP_ID = 65536 # it is twice the max titleID
 DIRECTOR_GROUP_NAME = "Directors"
 CRON_USERNAME = "cron"
 ADMIN_USERNAME = "admin"
@@ -115,6 +114,7 @@ FIXTURE_DIRS = (
     resolvePath("fixtures/03-corp/"),
     resolvePath("fixtures/04-roles/"),
     resolvePath("fixtures/05-scheduler/"),
+    resolvePath("fixtures/06-industry/"),
 )
 
 CAPTCHA_LENGTH = 5
