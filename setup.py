@@ -7,6 +7,9 @@ import fnmatch
 import tarfile
 import re
 import tempfile
+import subprocess
+from django.core import management
+
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
 data_dict = {
@@ -27,26 +30,29 @@ data_dict = {
 }
 
 db_engines = {
-    'sqlite': "'django.db.backends.sqlite3'",
-    'mysql': "'django.db.backends.mysql'",
-    'postgresql': "'django.db.backends.postgresql'",
-    'postgresql_psycopg2': "'django.db.backends.postgresql_psycopg2'"
+    'sqlite': "django.db.backends.sqlite3",
+    'mysql': "django.db.backends.mysql",
+    'postgresql': "django.db.backends.postgresql",
+    'postgresql_psycopg2': "django.db.backends.postgresql_psycopg2"
 }
 
 db_settings_old = """'ENGINE': 'django.db.backends.sqlite3',
         'NAME': resolvePath('../db/ECM.db')"""
 
-db_settings_new = """'ENGINE': %(db_engine)s,
+db_settings_new = """'ENGINE': '%(db_engine)s',
         'NAME': '%(db_name)s',
         'USER': '%(db_user)s',
         'PASSWORD': '%(db_pass)s'"""
 
 sys.path.append(data_dict['src_dir'])
 import ecm
+FULL_VERSION = ecm.get_full_version()
+VERSION = ecm.version
+del(sys.modules["ecm"]) 
+sys.path.remove(data_dict['src_dir'])
 
 def install():
-
-    print "Installing ECM server version %s..." % ecm.get_full_version()
+    print "Installing ECM server version %s..." % FULL_VERSION
 
     while data_dict['install_dir'] == "":
         data_dict['install_dir'] = raw_input("ECM install directory? (example: '/var/ECM') ").replace("\\", "/")
@@ -80,10 +86,18 @@ def install():
               "Press 'enter' to proceed with the installation.")
     install_files()
     download_eve_db()
-    configure()
+    configure_apache()
+    configure_ecm()
+    init_ecm_db()
+    print
+    print "INSTALLATION SUCCESSFUL"
+    print
+    print "Apache virtual host file '%s' generated. Please include it to your apache configuration." % vhost_file
+    print
+    print "Note: if needed, you can edit '%s' to change database and email settings." % settings_file.replace("\\", "/")
 
 def upgrade():
-    print "Upgrading ECM server to version %s..." % ecm.get_full_version()
+    print "Upgrading ECM server to version %s..." % FULL_VERSION
     print "All existing settings will be preserved"
     while data_dict['install_dir'] == "":
         data_dict['install_dir'] = raw_input("ECM install directory? ").replace("\\", "/")
@@ -96,12 +110,29 @@ def upgrade():
     logs_folder = os.path.join(data_dict['install_dir'], "logs")
     if os.path.exists(db_folder): dir_util.copy_tree(db_folder, os.path.join(tempdir, 'db'))
     if os.path.exists(logs_folder): dir_util.copy_tree(logs_folder, os.path.join(tempdir, 'logs'))
-    if os.path.exists(settings_file): file_util.copy_file(settings_file, os.path.join(tempdir, 'ecm/settings.py'))
+    if os.path.exists(settings_file): 
+        dir_util.mkpath(os.path.join(tempdir, 'ecm'))
+        file_util.copy_file(settings_file, os.path.join(tempdir, 'ecm/settings.py.old'))
     if os.path.exists(vhost_file): file_util.copy_file(vhost_file, tempdir)
+    sys.path.append(data_dict['install_dir'])
+
+    import ecm.settings
+    data_dict['db_engine'] = ecm.settings.DATABASES['default']['ENGINE']
+    if not data_dict['db_engine'] == db_engines['sqlite']:
+        data_dict['db_name'] = ecm.settings.DATABASES['default']['NAME']
+        data_dict['db_user'] = ecm.settings.DATABASES['default']['USER']
+        data_dict['db_pass'] = ecm.settings.DATABASES['default']['PASSWORD']
+    data_dict['admin_email'] = ecm.settings.ADMINS[1]
+    data_dict['server_email'] = ecm.settings.DEFAULT_FROM_EMAIL
+    data_dict['vhost_name'] = ecm.settings.ECM_BASE_URL
+    sys.path.remove(data_dict['install_dir'])
+    del(sys.modules["ecm.settings"]) 
+    
     print "done"
     install_files()
     print "Restoring settings...",
     dir_util.copy_tree(tempdir, data_dict['install_dir'])
+    configure_ecm()
     print "done"
     print "Deleting temp dir %s..." % tempdir,
     dir_util.remove_tree(tempdir)
@@ -113,6 +144,11 @@ def upgrade():
     
     if answer in ['y', 'yes', 'Y']:
         download_eve_db()
+    
+    migrate_ecm_db()
+    
+    print
+    print "UPGRADE SUCCESSFUL"
 
 def install_files():
     if os.path.exists(data_dict['install_dir']):
@@ -130,8 +166,8 @@ def download_eve_db():
     options, _ = patch_eve_db.parser.parse_args([])
     patch_eve_db.main(options)
 
-def configure():
-    print "Configuring ECM...",
+def configure_apache():
+    print "Configuring Apache...",
     vhost_file = os.path.join(data_dict['install_dir'], "ecm.apache.vhost.conf").replace("\\", "/")
     f = open(vhost_file, "r")
     buff = f.read()
@@ -140,7 +176,10 @@ def configure():
     f = open(vhost_file, "w")
     f.write(buff)
     f.close()
-    
+    print "done"
+
+def configure_ecm():
+    print "Configuring ECM settings...",
     settings_file = os.path.join(data_dict['install_dir'], "ecm/settings.py")
     f = open(settings_file, "r")
     buff = f.read()
@@ -159,14 +198,46 @@ def configure():
     f.write(buff)
     f.close()
     print "done"
-    print
-    print "Apache virtual host file '%s' generated. Please include it to your apache configuration." % vhost_file
-    print
-    print "You can now run 'python manage.py syncdb' to initialize ECM database. Make sure you run the command from '%s'" % data_dict['install_dir']
-    print
-    print "Note: if needed, you can edit '%s' to configure custom database and email access." % settings_file.replace("\\", "/")
+    
+    
+def init_ecm_db():
+    print "Initializing database..."
+    run_dir = os.path.join(data_dict['install_dir'], 'ecm')
+    command = 'python manage.py syncdb --noinput --migrate'
+    print '>>>', command
+    code = subprocess.call(command, cwd=run_dir)
+    if code != 0: raise RuntimeError('Command execution failed') 
     
 
+def migrate_ecm_db():
+    print "Migrating database..."
+    run_dir = os.path.join(data_dict['install_dir'], 'ecm')
+    command = 'python manage.py syncdb --noinput'
+    print '>>>', command
+    code = subprocess.call(command, cwd=run_dir) # to install south tables
+    if code != 0: raise RuntimeError('Command execution failed') 
+    # now we must test if SOUTH was already installed/used 
+    # in the installation we are migrating
+    # we setup Django environment in order to be able to use DB models  
+    # and check if there were any existing SOUTH migrations made
+    sys.path.append(data_dict['install_dir'])
+    import ecm.settings
+    management.setup_environ(ecm.settings)
+    from south.models import MigrationHistory
+    if not MigrationHistory.objects.all():
+        # SOUTH has never been used in that installation.
+        # we MUST "fake" the first migration, 
+        # otherwise the migrate command will fail because DB tables already exist...
+        command = 'python manage.py migrate 0001 --all --fake --no-initial-data'
+        print '>>>', command
+        code = subprocess.call(command, cwd=run_dir)
+        if code != 0: raise RuntimeError('Command execution failed')
+    command = 'python manage.py migrate --all --no-initial-data'
+    print '>>>', command
+    code = subprocess.call(command, cwd=run_dir)
+    if code != 0: raise RuntimeError('Command execution failed')
+    del(sys.modules["ecm.settings"]) 
+    sys.path.remove(data_dict['install_dir'])
 
 def package():
     if os.path.exists(data_dict['package_dir']):
@@ -180,7 +251,7 @@ def package():
     print "Inserting timestamp in __init__.py file..."
     init_file = os.path.join(os.path.join(package_src_dir, "ecm/__init__.py"))
     timestamp = set_timestamp(init_file)
-    version = ecm.version
+    version = VERSION
     print "Version %s.%s" % (version, timestamp)
     
     print "Creating archive..."

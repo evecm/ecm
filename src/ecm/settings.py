@@ -109,11 +109,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 FIXTURE_DIRS = (
-    resolvePath("fixtures/01-auth/"),
-    resolvePath("fixtures/02-common/"),
-    resolvePath("fixtures/03-corp/"),
-    resolvePath("fixtures/04-roles/"),
-    resolvePath("fixtures/05-scheduler/"),
+    resolvePath("fixtures/"),
 )
 
 CAPTCHA_LENGTH = 5
