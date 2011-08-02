@@ -14,6 +14,8 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+import urllib2
+import urllib
 
 __date__ = "2011 4 6"
 __author__ = "diabeteman"
@@ -31,7 +33,7 @@ from django.utils.translation import ugettext_lazy as _
 from captcha.fields import CaptchaField
 
 from ecm.core.eve import api
-from ecm.data.common.models import UserAPIKey
+from ecm.data.common.models import UserAPIKey, UserBinding
 from ecm.lib import eveapi
 from ecm.data.roles.models import Member
 from ecm.view.auth.fields import PasswordField
@@ -289,3 +291,39 @@ class EditApiKeyForm(forms.Form):
 
         return cleaned_data
 
+#------------------------------------------------------------------------------
+class AddBindingForm(forms.Form):
+    username = forms.CharField(label=_("External Username"))
+    password = forms.CharField(label=_("External Password"), widget=forms.PasswordInput)
+    
+    def __init__(self, data=None, app=None, user=None):
+        forms.Form.__init__(self, data=data)
+        self.app = app
+        self.user = user
+    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        username = cleaned_data.get("username")
+        password = cleaned_data.get("password")
+        
+        data = {
+            'username' : username,
+            'password' : password
+        }
+        try:
+            request = urllib2.Request(self.app.url, urllib.urlencode(data))
+            response = urllib2.urlopen(request)
+            content = response.read().strip()
+            if content:
+                self.external_id = int(content)
+                query = UserBinding.objects.exclude(user=self.user).filter(external_app=self.app)
+                if query.filter(external_id=self.external_id):
+                    raise forms.ValidationError("This external user is already bound to someone else.")
+            else:
+                # content is empty
+                raise forms.ValidationError("Authentication failed. Bad username or password.")
+        except ValueError:
+            # bad response from server
+            raise forms.ValidationError("Bad response from external application.")
+        
+        return cleaned_data

@@ -22,6 +22,7 @@ __author__ = "diabeteman"
 import json
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.shortcuts import render_to_response, redirect
 from django.template.context import RequestContext
 from django.template.defaultfilters import pluralize
@@ -181,13 +182,17 @@ def stations_data(request, date_str, solarSystemID):
     if not show_in_stations:
         where.append('"stationID" > %d' % constants.MAX_STATION_ID)
     if divisions is not None:
-        where.append('"hangarID" IN %s')
+        s = ('%s,' * len(divisions))[:-1] 
+        where.append('"hangarID" IN (%s)' % s)
     
     sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items" FROM "assets_assetdiff" '
     sql += 'WHERE "solarSystemID"=%s AND "date"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "stationID";'
-     
+    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
+        # MySQL doesn't like double quotes...
+        sql = sql.replace('"', '`')
+    
     cursor = connection.cursor()
     if divisions is None:
         cursor.execute(sql, [solarSystemID, date])

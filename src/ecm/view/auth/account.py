@@ -24,17 +24,26 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 
 from ecm.view.decorators import forbidden
 from ecm.core.tasks.users import update_user_accesses
-from ecm.view.auth.forms import AddApiKeyForm, EditApiKeyForm
+from ecm.view.auth.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
 from ecm.data.roles.models import Member
-from ecm.data.common.models import UserAPIKey
+from ecm.data.common.models import UserAPIKey, ExternalApplication, UserBinding
 
 #------------------------------------------------------------------------------
 @login_required
 def account(request):
-    characters = Member.objects.filter(owner=request.user)
-    api_keys = UserAPIKey.objects.filter(user=request.user)
-    data = { 'characters' : characters,
-            'api_keys' :  api_keys}
+    external_apps = []
+    for app in ExternalApplication.objects.select_related(depth=2).all():
+        try:
+            binding = app.user_bindings.all().get(user=request.user)
+        except UserBinding.DoesNotExist:
+            binding = None 
+        external_apps.append({'app': app, 'binding': binding})
+    
+    data = { 
+        'characters' : Member.objects.filter(owner=request.user),
+        'api_keys' :  UserAPIKey.objects.filter(user=request.user),
+        'external_apps' : external_apps
+    }
     return render_to_response('auth/account.html', data, RequestContext(request))
 
 #------------------------------------------------------------------------------
@@ -121,5 +130,30 @@ def delete_character(request, characterID):
     else:
         return forbidden(request)
     
+#------------------------------------------------------------------------------
+@login_required
+def add_binding(request, app_id):
+    app = get_object_or_404(ExternalApplication, id=int(app_id))
+    if request.method == 'POST':
+        form = AddBindingForm(request.POST, app=app, user=request.user)
+        if form.is_valid():
+            UserBinding.objects.create(user=request.user, 
+                                       external_app=app, 
+                                       external_id=form.external_id, 
+                                       external_name=form.cleaned_data['username'])
+            return redirect('/account')
+    else: # request.method == 'GET'
+        form = AddBindingForm(app=app)
     
-    
+    data = {'form': form, 'request_path' : request.get_full_path(), 'app': app}
+    return render_to_response('auth/add_binding.html', data, RequestContext(request))
+
+#------------------------------------------------------------------------------
+@login_required
+def delete_binding(request, binding_id):
+    binding = get_object_or_404(UserBinding, id=int(binding_id))
+    if binding.user == request.user:
+        binding.delete()
+        return redirect('/account')
+    else:
+        return forbidden(request)

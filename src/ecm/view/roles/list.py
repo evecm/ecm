@@ -117,22 +117,16 @@ def update_access_level(request):
             #
             # note: this will propagate the change of access level 
             #       through all roles that depend on that hangar division
-            hangar = Hangar.objects.get(hangarID=role.hangar_id)
-            hangar.accessLvl = new_access_level
-            hangar.save()
+            Hangar.objects.filter(hangarID=role.hangar_id).update(accessLvl=new_access_level)
             
         elif role.wallet_id:
             # Same as above, but with wallet divisions
-            wallet = Wallet.objects.get(walletID=role.wallet_id)
-            wallet.accessLvl = new_access_level
-            wallet.save()
+            Wallet.objects.filter(walletID=role.wallet_id).update(accessLvl=new_access_level)
             
         elif role.roleID == 1:
             # the "director" role is specific, it is redundant in 4 role categories
             # we modify the access level of all 4 instances of the role at once
-            for r in Role.objects.filter(roleID=1):
-                r.accessLvl = new_access_level
-                r.save()
+            Role.objects.filter(roleID=1).update(accessLvl=new_access_level)
                 
         else:
             role.accessLvl = new_access_level

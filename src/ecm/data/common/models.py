@@ -91,10 +91,10 @@ class ExternalApplication(models.Model):
     Represents external applications to be used along with ECM such as
     bulletin boards or killboards.
     """
-    name = models.CharField(max_length=256, 
+    name = models.CharField(max_length=64, 
                             unique=True, 
                             validators=[RegexValidator(r'^\w+$', message='Only letters and digits')])
-    url = models.URLField()
+    url = models.CharField(max_length=1024)
 
     def __unicode__(self):
         return self.name
@@ -117,7 +117,7 @@ class UserBinding(models.Model):
     user = models.ForeignKey(User, related_name='bindings')
     external_app = models.ForeignKey(ExternalApplication, related_name='user_bindings')
     external_id = models.IntegerField()
-    external_name = models.CharField(max_length=256)
+    external_name = models.CharField(max_length=255)
     
     # override from models.Model
     def clean(self):

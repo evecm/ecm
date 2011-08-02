@@ -72,8 +72,12 @@ urlpatterns += patterns('ecm.view.auth',
     (r'^account/deleteapi/(\d+)$',       'account.delete_api'),
     (r'^account/deletecharacter/(\d+)$', 'account.delete_character'),
     (r'^account/editapi/(\d+)$',         'account.edit_api'),
+    (r'^account/binding/add/(\d+)$',     'account.add_binding'),
+    (r'^account/binding/delete/(\d+)$',  'account.delete_binding'),
+    
     (r'^account/create$',                'signup.create_account'),
     (r'^account/activate/(\w+)$',        'signup.activate_account'),
+    
     (r'^players$',                       'players.player_list'),
     (r'^players/data$',                  'players.player_list_data'),
     (r'^players/(\d+)$',                 'players.player_details'),

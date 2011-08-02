@@ -17,7 +17,7 @@
 
 <p>Click <a href="/account/passwordchange">here</a> to change your password.</p>
 
-<h2>Owned Characters</h2>
+<h1>Owned Characters</h1>
 <table class="transparent" style="width:50%;">
 {% for owned in characters %}
 <tr>
@@ -38,7 +38,7 @@ $(".del_character").click(function () {
 </script>
 
 
-<h2>EVE Account Credentials</h2>
+<h1>EVE Account Credentials</h1>
 <table class="transparent" style="width:50%;">
 {% for key in api_keys %}
 <tr>
@@ -67,5 +67,27 @@ $("#add_api").click(function () {
 });
 </script>
 
+<h1>External Application Bindings</h1>
+<table class="transparent" style="width:50%;">
+{% for app in external_apps %}
+<tr>
+  <td class="bold">{{ app.app.name }}</td>
+  <td>{% if app.binding %}<span class="bold ok">{{ app.binding.external_name }}</span>{% else %}None{% endif %}</td>
+  <td>{% if app.binding %}<input type="button" class="del_binding" id="{{app.binding.id}}" name="{{ app.app.name }}" value="Delete"/>
+                {% else %}<input type="button" class="add_binding" id="{{app.app.id}}" value="Bind"/>{%endif%}</td>
+</tr>
+{% endfor %}
+</table>
+<script type="text/javascript">
+$(".del_binding").click(function () {
+    var alert_text = "Are you sure you want to delete the binding with external application '" + this.name + "'?";
+    if (confirm(alert_text)) {
+        window.location = "/account/binding/delete/" + this.id;
+    }
+});
+$(".add_binding").click(function () {
+    window.location = "/account/binding/add/" + this.id;
+});
+</script>
 
 {% endblock %}

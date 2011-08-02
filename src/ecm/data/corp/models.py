@@ -70,7 +70,7 @@ class Corp(models.Model):
     allianceID = models.BigIntegerField()
     allianceName = models.CharField(max_length=256)
     allianceTicker = models.CharField(max_length=8)
-    description = models.CharField(max_length=2048)
+    description = models.TextField()
     taxRate = models.PositiveIntegerField()
     memberLimit = models.PositiveIntegerField()
     

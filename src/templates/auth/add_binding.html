@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+
+{% block headtitle %}Create Binding to External Application{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/account">Account</a></li>
+<li><a href="{{ request_path }}">Create Binding to External Application</a></li>
+{% endblock %}
+
+{% block main_content %}
+
+<h1 class="pagetitle">Create Binding to External Application <i>{{app}}</i></h1>
+
+<form class="signupform" action="{{ request_path }}" method="post" >{% csrf_token %}
+    {% if form.errors %}
+    <p class="error">{{ form.non_field_errors }}</p>
+    {% endif %} 
+    <fieldset>
+        <span class="label">{{ form.username.label_tag }}{{ form.username.errors }}</span>
+        {{ form.username }}
+        <span class="label">{{ form.password.label_tag }}{{ form.password.errors }}</span>
+        {{ form.password }}
+        <input type="submit" class="button" value="Bind"  />
+    </fieldset>
+</form>
+
+{% endblock %}

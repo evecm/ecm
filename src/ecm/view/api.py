@@ -32,15 +32,15 @@ from ecm.data.common.models import ExternalApplication, GroupBinding
 #------------------------------------------------------------------------------
 @basic_auth_required(username=settings.CRON_USERNAME)
 def players(request):
-    query = User.objects.filter(is_active=True)
+    query = User.objects.select_related(depth=3).filter(is_active=True)
     query = query.annotate(char_count=Count("characters"))
     query = query.filter(char_count__gt=0)
     query = query.exclude(username__in=[settings.CRON_USERNAME, settings.ADMIN_USERNAME])
     members = []
     for player in query:
-        characters = list(player.characters.values('character__name', 
-                                                   'character__characterID'))
-        characters.sort(key=lambda x: x['character__name'].lower())
+        characters = list(player.characters.values('name', 
+                                                   'characterID'))
+        characters.sort(key=lambda x: x['name'].lower())
         bindings = list(player.bindings.values('external_app__name', 
                                                'external_name', 
                                                'external_id'))
@@ -56,7 +56,7 @@ def players(request):
 @basic_auth_required(username=settings.CRON_USERNAME)
 def user_bindings(request, app_name):
     app = get_object_or_404(ExternalApplication, name=app_name)
-    query = app.user_bindings
+    query = app.user_bindings.select_related(depth=3)
     query = query.annotate(char_count=Count("user__characters"))
     query = query.filter(user__is_active=True)
     query = query.filter(char_count__gt=0)
@@ -67,9 +67,9 @@ def user_bindings(request, app_name):
     
     members = []
     for binding in query:
-        characters = list(binding.user.characters.values('character__name', 
-                                                         'character__characterID'))
-        characters.sort(key=lambda x: x['character__name'].lower())
+        characters = list(binding.user.characters.values('name', 
+                                                         'characterID'))
+        characters.sort(key=lambda x: x['name'].lower())
         
         groups = set()
         for g in binding.user.groups.all():

@@ -42,7 +42,7 @@ class Member(models.Model):
     lastLogin = models.DateTimeField(default=datetime.now())
     lastLogoff = models.DateTimeField(default=datetime.now())
     locationID = models.IntegerField(db_index=True, default=0)
-    location = models.CharField(max_length=256, default="???")
+    location = models.CharField(max_length=256, default="???", null=True, blank=True)
     ship = models.CharField(max_length=128, default="???")
     accessLvl = models.BigIntegerField(default=0)
     corped = models.BooleanField(default=True)
