@@ -46,7 +46,7 @@ MEMBER_ID = "{{ member.characterID }}";
 
 <h2>Notes</h2>
 
-<p id="notes" class="italic blue" >{{ member.notes }}</p>
+<p id="notes" class="italic blue" >{% if member.notes %}{{ member.notes }}{% else %}Click to add notes...{%endif%}</p>
 
 <script type="text/javascript">
 /* Apply a jEditable handler to the "notes" paragraph */
