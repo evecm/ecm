@@ -1,13 +1,28 @@
 #!/usr/bin/env python
+# Copyright (c) 2010-2011 Robin Jarry
+# 
+# This file is part of EVE Corporation Management.
+# 
+# EVE Corporation Management is free software: you can redistribute it and/or 
+# modify it under the terms of the GNU General Public License as published by 
+# the Free Software Foundation, either version 3 of the License, or (at your 
+# option) any later version.
+# 
+# EVE Corporation Management is distributed in the hope that it will be useful, 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+# more details.
+# 
+# You should have received a copy of the GNU General Public License along with 
+# EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+
 '''
 This script allows the synchronization of PHPBB2 user groups with ECM groups.
 
-You must have previously set up a binding for your forum in ECM:
+You must have previously set up a binding for your forum in ECM.
 
-    - Add one binding per user you want to sync
-    - Add one binding per group you want to sync
-
-
+Please read http://code.google.com/p/eve-corp-management/wiki/ExternalAppsSync
+for installation instructions.
 '''
 import MySQLdb
 import urllib2
@@ -17,6 +32,7 @@ import logging
 import os
 from os import path
 from logging import handlers
+import sys
 
 #------------------------------------------------------------------------------
 # database connection info
@@ -24,10 +40,10 @@ DB_HOST     = 'localhost'
 DB_PORT     = 3306
 DB_USER     = '' # to complete
 DB_PASSWD   = '' # to complete
-DB          = ''
-DB_TABLES   = {'groups'      : 'iceforum_groups', 
-               'users'       : 'iceforum_user', 
-               'user_groups' : 'iceforum_user_group'}
+DB_NAME     = ''
+DB_TABLES   = {'groups'      : 'forumprefix_groups', 
+               'users'       : 'forumprefix_user', 
+               'user_groups' : 'forumprefix_user_group'}
 #------------------------------------------------------------------------------
 # ECM connection info
 ECM_URL     = 'http://ecm.yourserver.com'
@@ -42,13 +58,13 @@ ECM_USERS   = '/api/bindings/%s/users' % ECM_BINDING
 LOG_DIR = '/var/log'
 LOG_FILE = 'ecm_forum_sync.log'
 if not path.exists(LOG_DIR): os.makedirs(LOG_DIR)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger()
 hdlr = handlers.TimedRotatingFileHandler(path.join(LOG_DIR, LOG_FILE), backupCount=15, when='midnight')
 #hdlr = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s [%(levelname)-5s] %(name)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s [%(levelname)-5s] %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 #------------------------------------------------------------------------------
 def main():
@@ -80,6 +96,15 @@ def fetch_ecm_data():
     return groups, users
 
 #------------------------------------------------------------------------------
+SQL_LOCK = 'LOCK TABLES `%s`.`%s` WRITE;' % (DB_NAME, DB_TABLES['user_groups'])
+SQL_UNLOCK = 'UNLOCK TABLES;'
+SQL_BEGIN = 'BEGIN;'
+SQL_COMMIT = 'COMMIT;'
+SQL_CLEAN_MANAGED_GROUPS = '''DELETE FROM `%s`.`%s` 
+WHERE `group_id` IN %%s;''' % (DB_NAME, DB_TABLES['user_groups'])
+SQL_ADD_USER_TO_GROUP = '''insert into `%s`.`%s`(group_id, user_id, user_pending) 
+values (%%s, %%s, 0);''' % (DB_NAME, DB_TABLES['user_groups'])
+
 def update_forum_access(managed_groups, users):
     if not managed_groups or not users:
         logger.info('Nothing to update.')
@@ -91,22 +116,26 @@ def update_forum_access(managed_groups, users):
                              port=DB_PORT, 
                              user=DB_USER, 
                              passwd=DB_PASSWD, 
-                             db=DB)
+                             db=DB_NAME)
         cursor = conn.cursor()
-        logger.debug('Locking table "%s"...' % DB_TABLES['user_groups'])
-        cursor.execute('LOCK TABLES `%s`.`%s` WRITE;' % (DB, DB_TABLES['user_groups']))
+        cursor.execute(SQL_LOCK)
+        logger.debug('Locked table "%s"' % DB_TABLES['user_groups'])
     
-        cursor.execute('BEGIN;')
-        cursor.execute('DELETE FROM `%s`.`%s` ' % (DB, DB_TABLES['user_groups']) + 
-                       'WHERE group_id IN %s;', (managed_groups,))
+        cursor.execute(SQL_BEGIN)
+        cursor.execute(SQL_CLEAN_MANAGED_GROUPS, (managed_groups,))
+        logger.info('Removed all users from groups %s' % str(managed_groups))
         for u in users:
-            update_user_access(u['external_id'], u['groups'], cursor) 
-            logger.debug('Updated user %s (%s) with groups %s', u['external_name'], str(u['external_id']), str(u['groups']))
+            id = u['external_id']
+            name = u['external_name']
+            groups = u['groups']
+            for g in groups:
+                cursor.execute(SQL_ADD_USER_TO_GROUP, (g, id))
+            logger.info('Updated user %s (%s) with groups %s', name, str(id), str(groups))
         
         logger.debug('Committing modifications to the database...')
-        cursor.execute('COMMIT;')
-        logger.debug('Unlocking tables...')
-        cursor.execute('UNLOCK TABLES;')
+        cursor.execute(SQL_COMMIT)
+        cursor.execute(SQL_UNLOCK)
+        logger.debug('Unlocked tables')
         cursor.close()
         conn.commit()
         logger.info('UPDATE SUCCESSFUL')
@@ -115,14 +144,9 @@ def update_forum_access(managed_groups, users):
             conn.rollback()
             logger.warning('Rollbacked modifications')
         raise
-#------------------------------------------------------------------------------
-def update_user_access(user_id, groups, cursor):
-    for g in groups:
-        cursor.execute('INSERT INTO `%s`.`%s`(group_id, user_id, user_pending) ' % (DB, DB_TABLES['user_groups']) +
-                       'VALUES (%s, %s, 0);', (g, user_id))
-
 
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] == 'quiet':
+        logger.setLevel(logging.INFO)
     main()
-

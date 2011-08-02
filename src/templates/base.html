@@ -57,7 +57,7 @@
             <li><a href="/account/create" >Create Account</a></li>
             <li><a href="/account/login?next=/account" >Login</a></li>
             {% endif %}
-            {% if user.is_staff or user.is_superuser %}
+            {% if user.is_staff and user.is_superuser %}
             <li><a href="/admin/" title="Restricted area :-)">Administration</a></li>
             {% endif %}
           </ul>
