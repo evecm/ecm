@@ -49,8 +49,8 @@ def access_changes_data(request):
     except:
         return HttpResponseBadRequest()
     
-    roles = RoleMemberDiff.objects.all().order_by("-date")
-    titles = TitleMemberDiff.objects.all().order_by("-date")
+    roles = RoleMemberDiff.objects.select_related(depth=1).all().order_by("-date")
+    titles = TitleMemberDiff.objects.select_related(depth=1).all().order_by("-date")
     
     count = roles.count() + titles.count()
     

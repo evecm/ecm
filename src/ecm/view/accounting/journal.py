@@ -76,7 +76,7 @@ def list_data(request):
     except:
         return HttpResponseBadRequest()
 
-    query = JournalEntry.objects.all().order_by('-date')
+    query = JournalEntry.objects.select_related(depth=1).all().order_by('-date')
 
     if params.search or params.walletID or params.entryTypeID:
         total_entries = query.count()
@@ -99,11 +99,18 @@ def list_data(request):
 
     query = query[params.first_id:params.last_id]
     entries = []
+    
+    # to improve performance
+    try: corporationID = Corp.objects.get(id=1).corporationID
+    except Corp.DoesNotExist: corporationID = 0
+    members = Member.objects.all()
+    other_entries = JournalEntry.objects.select_related().all()
+    
     for entry in query:
         
-        try: owner1 = Member.objects.get(characterID=entry.ownerID1).permalink()
+        try: owner1 = members.get(characterID=entry.ownerID1).permalink()
         except Member.DoesNotExist: owner1 = entry.ownerName1
-        try: owner2 = Member.objects.get(characterID=entry.ownerID2).permalink()
+        try: owner2 = members.get(characterID=entry.ownerID2).permalink()
         except Member.DoesNotExist: owner2 = entry.ownerName2
         
         if entry.type_id == EntryType.BOUNTY_PRIZES:
@@ -122,9 +129,8 @@ def list_data(request):
             reason = entry.reason[len('DESC: '):].strip('\n\t\'" ')
             reason = (u'Cash transfer by %s|' % entry.argName1) + reason
             try:
-                corporationID = Corp.objects.get(id=1).corporationID
                 if int(entry.ownerID1) == corporationID and int(entry.ownerID2) == corporationID:
-                    related_entry = JournalEntry.objects.filter(refID=entry.refID).exclude(id=entry.id)[0]
+                    related_entry = other_entries.filter(refID=entry.refID).exclude(id=entry.id)[0]
                     owner2 = related_entry.wallet.permalink()
             except:
                 pass

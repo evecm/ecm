@@ -67,7 +67,9 @@ member_table_columns = [
 ]
 
 def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
-
+    
+    query = query.select_related(depth=2) # improve performance
+    
     sort_col = member_table_columns[sort_by]
     # SQL hack for making a case insensitive sort
     if sort_by in (0, 1):

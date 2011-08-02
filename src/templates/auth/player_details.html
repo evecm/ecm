@@ -40,6 +40,15 @@ AJAX_URL = '/players/{{ player.id }}/data';
 <p><b>Owned EVE Accounts:</b> {{eve_accounts}}</p>
 <p><b>Owned Characters:</b> {{characters}}</p>
 
+<h1>Groups</h1>
+
+<ul>
+{% for g in groups %}
+  <li>{{ g }}</li>
+{% empty %}
+  <p>None</p>
+{% endfor %}
+</ul>
 
 <h1>Owned Characters</h1>
 

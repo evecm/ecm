@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 import json
 
 from django.conf import settings
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseBadRequest, HttpResponse, Http404
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
@@ -50,7 +50,7 @@ def player_list_data(request):
     except KeyError:
         return HttpResponseBadRequest()
     
-    query = User.objects.filter(is_active=True)
+    query = User.objects.select_related(depth=2).filter(is_active=True)
     query = query.annotate(account_count=Count("eve_accounts"))
     query = query.annotate(char_count=Count("characters"))
     query = query.annotate(group_count=Count("groups"))
@@ -101,12 +101,21 @@ def player_list_data(request):
 @check_user_access()
 def player_details(request, player_id):
     player = get_object_or_404(User, id=int(player_id))
+    
+    try:
+        player = User.objects.select_related(depth=1).get(id=int(player_id))
+    except User.DoesNotExist:
+        raise Http404()
+    
     eve_accounts = player.eve_accounts.all().count()
     characters = player.characters.all().count()
+    groups = player.groups.all().order_by('id')
+    
     data = {
         'player': player,
         'eve_accounts': eve_accounts,
         'characters': characters,
+        'groups': groups,
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }

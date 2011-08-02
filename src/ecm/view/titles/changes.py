@@ -50,7 +50,7 @@ def changes_data(request):
     except:
         return HttpResponseBadRequest()
 
-    titles = TitleCompoDiff.objects.all().order_by("-date")
+    titles = TitleCompoDiff.objects.select_related(depth=1).all().order_by("-date")
     
     count = titles.count()
     
