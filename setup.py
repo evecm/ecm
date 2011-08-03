@@ -114,8 +114,11 @@ def upgrade():
         dir_util.mkpath(os.path.join(tempdir, 'ecm'))
         file_util.copy_file(settings_file, os.path.join(tempdir, 'ecm/settings.py.old'))
     if os.path.exists(vhost_file): file_util.copy_file(vhost_file, tempdir)
-    sys.path.append(data_dict['install_dir'])
 
+    # backup the owner of apache.wsgi
+#    f_stat = os.stat(os.path.join(data_dict['install_dir'], "apache.wsgi"))
+
+    sys.path.append(data_dict['install_dir'])
     import ecm.settings
     data_dict['db_engine'] = ecm.settings.DATABASES['default']['ENGINE']
     if not data_dict['db_engine'] == db_engines['sqlite']:
@@ -130,10 +133,25 @@ def upgrade():
     
     print "done"
     install_files()
-    print "Restoring settings...",
     dir_util.copy_tree(tempdir, data_dict['install_dir'])
     configure_ecm()
-    print "done"
+#    try:
+#        print "Restoring file permissions...",
+#        import stat
+#        # change owner to backuped owner on installation folder recursively
+#        for root, dirs, files in os.walk(data_dict['install_dir']):  
+#            for d in dirs:  
+#                os.chown(os.path.join(root, d), f_stat.st_uid, f_stat.st_gid)
+#            for f in files:
+#                os.chown(os.path.join(root, f), f_stat.st_uid, f_stat.st_gid)
+#        for s in os.path.join(data_dict['install_dir'], 'scripts'):
+#            if s[-2:] == 'py':
+#                os.chmod(s, 0755)
+#        os.chmod(os.path.join(data_dict['install_dir'], 'ecm/manage.py'), 0755)
+#        print "done"
+#    except e:
+#        print e
+    
     print "Deleting temp dir %s..." % tempdir,
     dir_util.remove_tree(tempdir)
     print "done"
@@ -187,6 +205,7 @@ def configure_ecm():
     
     if data_dict['db_engine'] in ('mysql', 'postgresql', 'postgresql_psycopg2'):
         data_dict['db_engine'] = db_engines[data_dict['db_engine']]
+    if not 'sqlite' in data_dict['db_engine']:
         buff = buff.replace(db_settings_old, db_settings_new % data_dict)
     
     buff = buff.replace("DEBUG = True", "DEBUG = False")
@@ -215,7 +234,7 @@ def migrate_ecm_db():
     command = 'python manage.py syncdb --noinput'
     print '>>>', command
     code = subprocess.call(command, cwd=run_dir) # to install south tables
-    if code != 0: raise RuntimeError('Command execution failed') 
+    if code != 0: exit(code)
     # now we must test if SOUTH was already installed/used 
     # in the installation we are migrating
     # we setup Django environment in order to be able to use DB models  
@@ -231,11 +250,11 @@ def migrate_ecm_db():
         command = 'python manage.py migrate 0001 --all --fake --no-initial-data'
         print '>>>', command
         code = subprocess.call(command, cwd=run_dir)
-        if code != 0: raise RuntimeError('Command execution failed')
+        if code != 0: exit(code)
     command = 'python manage.py migrate --all --no-initial-data'
     print '>>>', command
     code = subprocess.call(command, cwd=run_dir)
-    if code != 0: raise RuntimeError('Command execution failed')
+    if code != 0: exit(code)
     del(sys.modules["ecm.settings"]) 
     sys.path.remove(data_dict['install_dir'])
 
