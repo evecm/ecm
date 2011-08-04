@@ -298,6 +298,7 @@ class Job(models.Model):
     
     maxDueDate = models.DateTimeField(null=True, blank=True)
     mileStone = models.ForeignKey(MileStone, related_name='jobs', null=True, blank=True)
+    site = models.ForeignKey('ProductionSite', related_name='jobs')
     startDate = models.DateTimeField(null=True, blank=True) 
     endDate = models.DateTimeField(null=True, blank=True)
 
@@ -371,7 +372,7 @@ class Job(models.Model):
                 # we're trying to manufacture a T2 item without owning its BPO
                 # we must create an OwnedBlueprint for this job only (that will 
                 # be consumed with it)
-                # The invention policies are to be specified in invention.py
+                # The invention policies are to be specified in InventionPolicies
                 bp = InventionPolicy.blueprint(item.blueprint)
                 runs = quantity / item.portionSize
                 if quantity % item.portionSize:
@@ -414,6 +415,25 @@ class ProductionSite(models.Model):
     locationID = models.BigIntegerField(primary_key=True)
     customName = models.CharField(max_length=255)
     discount = models.FloatField(default=0.0)
+
+
+
+#------------------------------------------------------------------------------
+class StockMargin(models.Model):
+    
+    site = models.ForeignKey(ProductionSite, related_name='stock_margins')
+    typeID = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
+
+#------------------------------------------------------------------------------
+class StockLevel(models.Model):
+    
+    site = models.ForeignKey(ProductionSite, related_name='stock_levels')
+    mileStone = models.ForeignKey(MileStone, related_name='jobs', null=True, blank=True)
+    typeID = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
+    
+
 
 #------------------------------------------------------------------------------
 class FactorySlot(models.Model):
