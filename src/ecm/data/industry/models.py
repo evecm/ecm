@@ -429,7 +429,7 @@ class StockMargin(models.Model):
 class StockLevel(models.Model):
     
     site = models.ForeignKey(ProductionSite, related_name='stock_levels')
-    mileStone = models.ForeignKey(MileStone, related_name='jobs', null=True, blank=True)
+    mileStone = models.ForeignKey(MileStone, related_name='stock_levels', null=True, blank=True)
     typeID = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
     
