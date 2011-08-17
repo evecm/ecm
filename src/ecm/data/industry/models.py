@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 6 7"
+__date__ = "2011 8 17"
 __author__ = "diabeteman"
 
 from datetime import timedelta
@@ -25,25 +25,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-from ecm.core.eve.classes import Item, Blueprint, NoBlueprintException
+from ecm.core.eve.classes import Blueprint, Item, NoBlueprintException
 from ecm.core.eve import db, constants
 
-#------------------------------------------------------------------------------
-class MileStone(models.Model):
-    """
-    To simulate a Tailor-like process, 
-    jobs are affected to MileStones which are 'fixed periodic delivery dates'.
-    """
-    date = models.DateField(unique=True)
-    
-    def next(self):
-        next_date = self.date + timedelta(days=settings.MILESTONE_INTERVAL_DAYS)
-        return MileStone.objects.get_or_create(date=next_date)
-    
-    def prev(self):
-        prev_date = self.date - timedelta(days=settings.MILESTONE_INTERVAL_DAYS)
-        return MileStone.objects.get_or_create(date=prev_date)
-
+###############################################################################
+############################# ORDER MANAGEMENT ################################
+###############################################################################
 #------------------------------------------------------------------------------
 class Order(models.Model):
     """
@@ -51,6 +38,9 @@ class Order(models.Model):
     each order must follow the same life cycle specified by the VALID_TRANSITIONS hash table.
     An order can contain multiple rows (one for each different item)
     """
+
+    class Meta:
+        ordering = ['id']
 
     # states
     DRAFT = 0
@@ -99,10 +89,10 @@ class Order(models.Model):
     deliveryMan = models.ForeignKey(User, null=True, blank=True, related_name='orders_delivered')
     client = models.CharField(max_length=255, null=True, blank=True)
     deliveryLocation = models.CharField(max_length=255, null=True, blank=True)
-    mileStone = models.ForeignKey(MileStone, related_name='orders', null=True, blank=True)
+    mileStone = models.ForeignKey('MileStone', related_name='orders', null=True, blank=True)
     state = models.PositiveIntegerField(default=DRAFT, choices=STATES_CHOICES)
     discount = models.FloatField(default=0.0)
-    quote = models.FloatField(null=True, blank=True)
+    quote = models.FloatField(default=0.0)
     
     #############################
     # TRANSISTIONS
@@ -196,9 +186,6 @@ class Order(models.Model):
         if missing_blueprints:
             raise OrderCannotBeFulfilled(missing_blueprints=missing_blueprints)
             
-            
-            
-    
     def createJobs(self):
         """
         Create all jobs needed to complete this order.
@@ -247,6 +234,27 @@ class OrderRow(models.Model):
     def __unicode__(self):
         return '%s x%d' % (self.item.typeName, self.quantity)
 
+
+
+#------------------------------------------------------------------------------ 
+class OrderCannotBeFulfilled(UserWarning):
+
+    def __init__(self, missing_blueprints):
+        self.missing_blueprints = missing_blueprints
+
+    def __str__(self):
+        output = "Missing Blueprints:\n\n"
+        for bp in self.missing_blueprints:
+            output += "  - %s\n" % bp.typeName
+        return output
+
+#------------------------------------------------------------------------------
+class IllegalStateError(UserWarning): pass
+
+
+###############################################################################
+############################## JOB MANAGEMENT #################################
+###############################################################################
 #------------------------------------------------------------------------------
 class Job(models.Model):
 
@@ -275,9 +283,9 @@ class Job(models.Model):
     )
 
     # self.order is None if this is an aggregation job
-    order = models.ForeignKey(Order, related_name='jobs', null=True, blank=True)
+    order = models.ForeignKey('Order', related_name='jobs', null=True, blank=True)
     # self.row is not None only if this is a root job
-    row = models.OneToOneField(OrderRow, related_name='job', null=True, blank=True)
+    row = models.OneToOneField('OrderRow', related_name='job', null=True, blank=True)
     # self.parentJob is None if this job is directly issued from an OrderRow
     parentJob = models.ForeignKey('self', related_name='childrenJobs', null=True, blank=True)
     # 
@@ -285,6 +293,7 @@ class Job(models.Model):
     # when a job is aggregated by another one, it goes to the AGGREGATED state...
     state = models.PositiveSmallIntegerField(default=PENDING, choices=STATES_CHOICES) 
     
+    site = models.ForeignKey('ProductionSite', related_name='jobs')
     factory = models.ForeignKey('FactorySlot', related_name='jobs', null=True, blank=True)
 
     owner = models.ForeignKey(User, related_name='jobs', null=True, blank=True)
@@ -294,11 +303,8 @@ class Job(models.Model):
     blueprint = models.ForeignKey('OwnedBlueprint', related_name='jobs', null=True, blank=True)
     activity = models.SmallIntegerField(default=MANUFACTURING, choices=ACTIVITY_CHOICES)
     
+    mileStone = models.ForeignKey('MileStone', related_name='jobs', null=True, blank=True)
     duration = models.BigIntegerField(default=0)
-    
-    maxDueDate = models.DateTimeField(null=True, blank=True)
-    mileStone = models.ForeignKey(MileStone, related_name='jobs', null=True, blank=True)
-    site = models.ForeignKey('ProductionSite', related_name='jobs')
     startDate = models.DateTimeField(null=True, blank=True) 
     endDate = models.DateTimeField(null=True, blank=True)
 
@@ -409,40 +415,14 @@ class Job(models.Model):
         else:
             return models.Model.__getattribute__(self, attrname)
 
-#------------------------------------------------------------------------------
-class ProductionSite(models.Model):
-    
-    locationID = models.BigIntegerField(primary_key=True)
-    customName = models.CharField(max_length=255)
-    discount = models.FloatField(default=0.0)
-
-
-
-#------------------------------------------------------------------------------
-class StockMargin(models.Model):
-    
-    site = models.ForeignKey(ProductionSite, related_name='stock_margins')
-    typeID = models.PositiveIntegerField()
-    quantity = models.PositiveIntegerField()
-
-#------------------------------------------------------------------------------
-class StockLevel(models.Model):
-    
-    site = models.ForeignKey(ProductionSite, related_name='stock_levels')
-    mileStone = models.ForeignKey(MileStone, related_name='stock_levels', null=True, blank=True)
-    typeID = models.PositiveIntegerField()
-    quantity = models.PositiveIntegerField()
-    
-
-
-#------------------------------------------------------------------------------
-class FactorySlot(models.Model):
-    
-    site = models.ForeignKey(ProductionSite, related_name='slots')
-    activity = models.SmallIntegerField(default=Job.MANUFACTURING, choices=Job.ACTIVITY_CHOICES)
-
+###############################################################################
+########################### BLUEPRINT MANAGEMENT ##############################
+###############################################################################
 #------------------------------------------------------------------------------
 class OwnedBlueprint(models.Model):
+    
+    class Meta:
+        ordering = ['blueprintTypeID', '-me']
     
     blueprintTypeID = models.PositiveIntegerField()
     me = models.PositiveIntegerField(default=0)
@@ -450,6 +430,11 @@ class OwnedBlueprint(models.Model):
     copy = models.BooleanField(default=False)
     runs = models.PositiveIntegerField(default=1)
     __blueprint = None
+    
+    def item_name_admin_display(self):
+        name, _ = db.resolveTypeName(self.blueprintTypeID)
+        return name
+    item_name_admin_display.short_description = 'Blueprint'
     
     def __getattr__(self, attrName):
         try:
@@ -472,6 +457,15 @@ class InventionPolicy(models.Model):
     itemGroupName = models.CharField(max_length=255)
     inventionChance = models.FloatField()
     targetME = models.IntegerField()
+
+    class Meta:
+        verbose_name = _("Invention Policy")
+        verbose_name_plural = _("Invention Policies")
+        
+    def invention_chance_admin_display(self):
+        return unicode('{0:.0%}'.format(self.inventionChance))
+    invention_chance_admin_display.short_description = "InventionChance"
+
 
     @staticmethod
     def attempts(blueprint):
@@ -525,6 +519,10 @@ class InventionPolicy(models.Model):
         
         return blueprint.blueprintTypeID, runsPerBp, me, pe, decriptorTypeID, attempts
 
+
+###############################################################################
+########################### INVENTORY MANAGEMENT ##############################
+###############################################################################
 #------------------------------------------------------------------------------
 class SupplyPrice(models.Model):
     
@@ -543,19 +541,77 @@ class PriceHistory(models.Model):
     price = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
     
+#------------------------------------------------------------------------------
+class StockMargin(models.Model):
+    
+    class Meta:
+        ordering = ['site', 'typeID']
+    
+    site = models.ForeignKey('ProductionSite', related_name='stock_margins')
+    typeID = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
+    
+    def item_admin_display(self):
+        name, _ = db.resolveTypeName(self.typeID)
+        return name
+    item_admin_display.short_description = 'Item'
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
+class StockLevel(models.Model):
+    
+    class Meta:
+        ordering = ['site', 'mileStone', 'typeID']
+    
+    site = models.ForeignKey('ProductionSite', related_name='stock_levels')
+    mileStone = models.ForeignKey('MileStone', related_name='stock_levels', null=True, blank=True)
+    typeID = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
+    
+    def item_admin_display(self):
+        name, _ = db.resolveTypeName(self.typeID)
+        return name
+    item_admin_display.short_description = 'Item'
 
-class OrderCannotBeFulfilled(UserWarning):
+###############################################################################
+############################ PLANNING MANAGEMENT ##############################
+###############################################################################
+#------------------------------------------------------------------------------
+class MileStone(models.Model):
+    """
+    To simulate a Tailor-like process, 
+    jobs are affected to MileStones which are 'fixed periodic delivery dates'.
+    """
+    date = models.DateField(unique=True)
+    
+    def next(self):
+        next_date = self.date + timedelta(days=settings.MILESTONE_INTERVAL_DAYS)
+        return MileStone.objects.get_or_create(date=next_date)
+    
+    def prev(self):
+        prev_date = self.date - timedelta(days=settings.MILESTONE_INTERVAL_DAYS)
+        return MileStone.objects.get_or_create(date=prev_date)
 
-    def __init__(self, missing_blueprints):
-        self.missing_blueprints = missing_blueprints
 
-    def __str__(self):
-        output = "Missing Blueprints:\n\n"
-        for bp in self.missing_blueprints:
-            output += "  - %s\n" % bp.typeName
-        return output
+#------------------------------------------------------------------------------
+class ProductionSite(models.Model):
+    
+    locationID = models.BigIntegerField(primary_key=True)
+    customName = models.CharField(max_length=255)
+    discount = models.FloatField(default=0.0)
 
-class IllegalStateError(UserWarning):
-    pass
+    def __unicode__(self):
+        return u'%s (%s)' % (self.customName, self.real_name_admin_display())
+    
+    def real_name_admin_display(self):
+        name, _ = db.resolveLocationName(self.locationID)
+        return name
+    real_name_admin_display.short_description = 'Real Name'
+
+#------------------------------------------------------------------------------
+class FactorySlot(models.Model):
+    
+    site = models.ForeignKey('ProductionSite', related_name='slots')
+    activity = models.SmallIntegerField(default=Job.MANUFACTURING, choices=Job.ACTIVITY_CHOICES)
+
+
+
