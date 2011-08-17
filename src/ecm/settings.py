@@ -26,8 +26,7 @@ def resolvePath(relativePath):
 
 ###############################################################################
 # ECM SETTINGS
-ALL_GROUP_IDS = [ 1 << i  for i in range(17) ] # generates all titleIDs
-DIRECTOR_GROUP_ID = 1 << 16 # 65536 (it is twice the max titleID)
+DIRECTOR_GROUP_ID = 65536 # it is twice the max titleID
 DIRECTOR_GROUP_NAME = "Directors"
 CRON_USERNAME = "cron"
 ADMIN_USERNAME = "admin"
@@ -35,6 +34,7 @@ EVE_API_VERSION = "2"
 ECM_BASE_URL = "127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
 BASIC_AUTH_ONLY_ON_LOCALHOST = False
+MILESTONE_INTERVAL_DAYS = 15
 
 ###############################################################################
 # DJANGO SPECIFIC SETTINGS
@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'ecm.data.common',
     'ecm.data.scheduler',
     'ecm.data.accounting',
+    'ecm.data.industry',
 )
 
 ###############################################################################

@@ -14,7 +14,6 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.data.scheduler.models import ScheduledTask
 
 __date__ = "2011 4 18"
 __author__ = "diabeteman"
@@ -29,8 +28,9 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail.message import EmailMultiAlternatives
 
-from ecm.core.eve import api
 from ecm.lib import eveapi
+from ecm.core.eve import api
+from ecm.data.scheduler.models import ScheduledTask
 from ecm.data.common.models import RegistrationProfile, UserAPIKey
 from ecm.data.roles.models import Title, Member
 

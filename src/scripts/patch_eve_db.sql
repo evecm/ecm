@@ -53,7 +53,8 @@ INSERT INTO "ramBlueprintReqs"
        LEFT OUTER JOIN "invTypeMaterials" AS itm
            ON itm."typeID" = b."productTypeID"
           AND itm."materialTypeID" = rtr."requiredTypeID"
-    WHERE rtr."quantity" > 0;
+    WHERE rtr."quantity" > 0
+;
 ----------------------------------------------------------
 INSERT INTO "ramBlueprintReqs"
     SELECT  b."blueprintTypeID", 
@@ -82,7 +83,8 @@ INSERT INTO "ramBlueprintReqs"
            ON sub."blueprintTypeID" = b."blueprintTypeID" 
            AND sub."recycledTypeID" = itm."materialTypeID" 
     WHERE m."blueprintTypeID" IS NULL -- partially waste-affected materials already added
-    AND (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)) > 0; -- ignore negative quantities
+    AND (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)) > 0 -- ignore negative quantities
+;
 ----------------------------------------------------------
 INSERT INTO ramBlueprintReqs("blueprintTypeID", 
                              "activityID", 
@@ -95,7 +97,8 @@ INSERT INTO ramBlueprintReqs("blueprintTypeID",
             rtr."quantity", 
             rtr."damagePerJob" 
     FROM "ramTypeRequirements" AS rtr 
-    WHERE rtr."activityID" NOT IN (1);
+    WHERE rtr."activityID" NOT IN (1)
+;
 ----------------------------------------------------------
 UPDATE "ramBlueprintReqs" SET "baseMaterial" = 0 WHERE "baseMaterial" IS NULL;
 
@@ -169,8 +172,9 @@ FROM "invTypes_temp" t LEFT OUTER JOIN "eveIcons" g ON t."graphicID" = g."iconID
      "invGroups" gg
 WHERE t."typeID" = t2."typeID"
   AND t."groupID" = gg."groupID"
-  AND t."typeID" NOT IN (23693); -- this dummy item has 4 different blueprints, 
-                                 -- if we do not ignore it, the SQL command fails... 
+  AND t."typeID" NOT IN (23693) -- this dummy item has 4 different blueprints, 
+                                -- if we do not ignore it, the SQL command fails... 
+;
 -- delete the temp table
 DROP TABLE "invTypes_temp";
 
@@ -201,15 +205,120 @@ SELECT  "itemID",
         "itemName", 
         "security"
 FROM "mapDenormalize"
-WHERE "groupID" IN (5 /*Solar System*/, 7 /*Planet*/, 8 /*Moon*/, 15 /*Station*/);
+WHERE "groupID" IN (5 /*Solar System*/, 7 /*Planet*/, 8 /*Moon*/, 15 /*Station*/)
+;
 
 UPDATE "mapCelestialObjects" 
 SET "security" = 
     (SELECT "mapSolarSystems"."security" 
        FROM "mapSolarSystems"
       WHERE "mapCelestialObjects"."itemID" = "mapSolarSystems"."solarSystemID") 
-WHERE "security" IS NULL;
+WHERE "security" IS NULL
+;
 
+----------------------------------------------------------
+-- ADD A dataInterfaceID TO THE invBlueprintTypes TABLE
+----------------------------------------------------------
+-- backup old table and delete it
+CREATE TABLE "invBlueprintTypes_temp" (
+  "blueprintTypeID" int(11) NOT NULL,
+  "parentBlueprintTypeID" int(11) DEFAULT NULL,
+  "productTypeID" int(11) DEFAULT NULL,
+  "productionTime" int(11) DEFAULT NULL,
+  "techLevel" smallint(6) DEFAULT NULL,
+  "researchProductivityTime" int(11) DEFAULT NULL,
+  "researchMaterialTime" int(11) DEFAULT NULL,
+  "researchCopyTime" int(11) DEFAULT NULL,
+  "researchTechTime" int(11) DEFAULT NULL,
+  "productivityModifier" int(11) DEFAULT NULL,
+  "materialModifier" smallint(6) DEFAULT NULL,
+  "wasteFactor" smallint(6) DEFAULT NULL,
+  "maxProductionLimit" int(11) DEFAULT NULL,
+  PRIMARY KEY ("blueprintTypeID")
+);
+INSERT INTO "invBlueprintTypes_temp" SELECT * FROM "invBlueprintTypes";
+DROP TABLE "invBlueprintTypes";
+
+-- create the new table
+CREATE TABLE "invBlueprintTypes" (
+  "blueprintTypeID" int(11) NOT NULL,
+  "parentBlueprintTypeID" int(11) DEFAULT NULL,
+  "productTypeID" int(11) DEFAULT NULL,
+  "productionTime" int(11) DEFAULT NULL,
+  "techLevel" smallint(6) DEFAULT NULL,
+  "dataInterfaceID" smallint(11) DEFAULT NULL,
+  "researchProductivityTime" int(11) DEFAULT NULL,
+  "researchMaterialTime" int(11) DEFAULT NULL,
+  "researchCopyTime" int(11) DEFAULT NULL,
+  "researchTechTime" int(11) DEFAULT NULL,
+  "productivityModifier" int(11) DEFAULT NULL,
+  "materialModifier" smallint(6) DEFAULT NULL,
+  "wasteFactor" smallint(6) DEFAULT NULL,
+  "maxProductionLimit" int(11) DEFAULT NULL,
+  PRIMARY KEY ("blueprintTypeID")
+)
+;
+CREATE INDEX "invBlueprintTypes_IX_parentBlueprintTypeID" ON "invBlueprintTypes" ("parentBlueprintTypeID");
+CREATE INDEX "invBlueprintTypes_IX_productTypeID" ON "invBlueprintTypes" ("productTypeID");
+
+-- fill the new table
+INSERT INTO "invBlueprintTypes" (
+	"blueprintTypeID",
+	"parentBlueprintTypeID",
+	"productTypeID",
+	"productionTime",
+	"techLevel",
+	"researchProductivityTime",
+	"researchMaterialTime",
+	"researchCopyTime",
+	"researchTechTime",
+	"productivityModifier",
+	"materialModifier",
+	"wasteFactor",
+	"maxProductionLimit"
+) SELECT * FROM "invBlueprintTypes_temp"
+;
+
+-- drop the temp table 
+DROP TABLE "invBlueprintTypes_temp";
+
+-- fill the dataInterfaceID field
+UPDATE "invBlueprintTypes" 
+SET "dataInterfaceID" = 
+	(SELECT r."requiredTypeID" 
+	   FROM "ramBlueprintReqs" AS r, 
+	        "invTypes" AS t
+	  WHERE "invBlueprintTypes"."blueprintTypeID" = r."blueprintTypeID"
+	    AND r."requiredTypeID" = t."typeID"
+	    AND r."activityID" = 8 /* invention */
+	    AND t."groupID" = 716 /* data interfaces*/)
+;
+
+----------------------------------------------------------
+-- UPDATE THE parentBlueprintID FIELD IN THE invBlueprintTypes TABLE
+-- FOR TECH II ITEMS BILL OF MATERIALS CALCULATION
+----------------------------------------------------------
+
+-- we first set all parentBlueprintTypeID to NULL 
+-- because some are already set to wrong values
+UPDATE "invBlueprintTypes"
+SET "parentBlueprintTypeID" = NULL;
+
+-- then we get the parent item (for each tech 2 item) 
+-- from the "invMetaTypes" table and resolve its blueprint.
+UPDATE "invBlueprintTypes"
+SET "parentBlueprintTypeID" = 
+    (SELECT b."blueprintTypeID"
+     FROM "invBlueprintTypes" AS b,
+          "invMetaTypes" AS m 
+     WHERE "invBlueprintTypes"."productTypeID" = m."typeID"
+       AND b."productTypeID" = m."parentTypeID" 
+       AND m."metaGroupID" = 2 /* only tech2 items are concerned with invention */)
+;
+
+-- this way, when manufacturing a tech 2 item, 
+-- we can easily know on which blueprint we need to run an invention job 
+-- in order to obtain the item's tech 2 BPC
 
 ----------------------------------------------------------
 -- DROP UNWANTED TABLES
