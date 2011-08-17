@@ -107,7 +107,7 @@ class Member(models.Model):
         return cmp(self.name.lower(), other.name.lower())
 
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 
 #------------------------------------------------------------------------------
@@ -132,9 +132,9 @@ class RoleType(models.Model):
     
     def __unicode__(self):
         if self.dispName:
-            return self.dispName
+            return unicode(self.dispName)
         else:
-            return self.typeName
+            return unicode(self.typeName)
 
 #------------------------------------------------------------------------------
 class Role(models.Model):

@@ -29,7 +29,7 @@ class Hangar(models.Model):
     accessLvl = models.PositiveIntegerField(default=1000)
 
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 #------------------------------------------------------------------------------
 class Wallet(models.Model):
@@ -40,7 +40,7 @@ class Wallet(models.Model):
     LINK = '<a href="%s" class="wallet" title="%s">%s</a>'
     
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
     
     def get_url(self):
         return "/accounting/wallet/%d" % self.walletID
@@ -75,6 +75,6 @@ class Corp(models.Model):
     memberLimit = models.PositiveIntegerField()
     
     def __unicode__(self):
-        return self.corporationName
+        return unicode(self.corporationName)
     
     

@@ -29,7 +29,6 @@ from django.db import models, transaction
 from django.conf import settings
 from django.utils.hashcompat import sha_constructor
 from django.core.validators import RegexValidator
-from django.db.models.query_utils import Q
 
 #------------------------------------------------------------------------------
 class APIKey(models.Model):
@@ -81,9 +80,9 @@ class UserAPIKey(models.Model):
 
     def __unicode__(self):
         try:
-            return "%s owns %d" % (self.user.username, self.userID)
+            return u"%s owns %d" % (self.user.username, self.userID)
         except:
-            return "%d owns %d" % (self.user_id, self.userID)
+            return u"%d owns %d" % (self.user_id, self.userID)
 
 #------------------------------------------------------------------------------
 class ExternalApplication(models.Model):
@@ -96,15 +95,14 @@ class ExternalApplication(models.Model):
                             validators=[RegexValidator(r'^\w+$', message='Only letters and digits')])
     url = models.CharField(max_length=1024)
 
-    def __unicode__(self):
-        return self.name
-    
     def __hash__(self):
         return self.id
     
     def __eq__(self, other):
         return isinstance(other, ExternalApplication) and self.name == other.name
     
+    def __unicode__(self):
+        return unicode(self.name)
 
 #------------------------------------------------------------------------------
 class UserBinding(models.Model):
@@ -139,7 +137,7 @@ class UserBinding(models.Model):
         return isinstance(other, UserBinding) and self.id == other.id
     
     def __unicode__(self):
-        return self.external_name
+        return unicode(self.external_name)
 
 #------------------------------------------------------------------------------
 class GroupBinding(models.Model):
@@ -161,7 +159,7 @@ class GroupBinding(models.Model):
         return isinstance(other, GroupBinding) and self.id == other.id
     
     def __unicode__(self):
-        return self.external_name
+        return unicode(self.external_name)
 
 #------------------------------------------------------------------------------
 class UpdateDate(models.Model):
@@ -173,7 +171,7 @@ class UpdateDate(models.Model):
     prev_update = models.DateTimeField(null=True, blank=True)
     
     def __unicode__(self):
-        return "%s updated %s" % (unicode(self.model_name), unicode(self.date))
+        return u"%s updated %s" % (self.model_name, self.date)
     
 #------------------------------------------------------------------------------
 class ColorThreshold(models.Model):
@@ -189,18 +187,19 @@ class ColorThreshold(models.Model):
         return json.dumps(list(th))
     
     def __unicode__(self):
-        return unicode("%s -> %d" % (self.color, self.threshold))
+        return u"%s -> %d" % (self.color, self.threshold)
 
 
 #------------------------------------------------------------------------------
 class Url(models.Model):
     """
+    Utility class for authorization management in ECM.
     """
     pattern = models.CharField(max_length=256)
     groups = models.ManyToManyField(Group, related_name='allowed_urls')
     
     def __unicode__(self):
-        return "<URL: %s>" % self.pattern
+        return u"<URL: %s>" % self.pattern
     
     def __eq__(self, other):
         return self.pattern == other.pattern
@@ -209,6 +208,9 @@ class Url(models.Model):
         return hash(self.pattern)
     
 def user_has_access(user, target_url):
+    """
+    Checks if a User has access to the specified target_url.
+    """
     for url in Url.objects.all():
         url_re = re.compile(url.pattern)
         if url_re.match(target_url):

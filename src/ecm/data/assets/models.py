@@ -41,12 +41,12 @@ class Asset(models.Model):
     def __repr__(self):
         return str(self)
 
-    def __str__(self):
+    def __unicode__(self):
         try:
-            item = db.resolveTypeName(self.typeID)[0]
-            return "<%s x%d>" % (item, self.quantity)
+            item, _ = db.resolveTypeName(self.typeID)
+            return u"<%s x%d>" % (item, self.quantity)
         except:
-            return "<Asset instance at %x>" % id(self)
+            return u"<Asset instance at %x>" % id(self)
 
     def __hash__(self):
         return self.itemID

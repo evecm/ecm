@@ -64,3 +64,6 @@ class JournalEntry(models.Model):
     class Meta:
         verbose_name = _("Journal Entry")
         verbose_name_plural = _("Journal Entries")
+    
+    def __unicode__(self):
+        return unicode(self.id)
