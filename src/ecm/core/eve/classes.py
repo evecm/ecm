@@ -123,18 +123,12 @@ class Item(object):
                     # Item cannot be manufactured nor invented.
                     raise NoBlueprintException(self.typeID)
                 else:
-                    self.__blueprint = Blueprint(*db.getBlueprint(self.blueprintTypeID))
+                    self.__blueprint = Blueprint.new(self.blueprintTypeID)
                     return self.__blueprint
         else:
             return object.__getattribute__(self, attrName)
     
     
-    @staticmethod
-    def get(typeID):
-        """
-        Static method for instanciating an Item from a typeID
-        """
-        return Item(*db.getItem(typeID=typeID))
     
     def __repr__(self):
         return '<Item: %s>' % self.typeName
@@ -145,11 +139,18 @@ class Item(object):
     def __hash__(self):
         return self.typeID
     
+    @staticmethod
+    def new(typeID):
+        """
+        Static method for instanciating an Item from a typeID
+        """
+        return Item(*db.getItem(typeID=typeID))
+
 #------------------------------------------------------------------------------
 class Blueprint(Item):
     
     def __init__(self, 
-                 blueprintTypeID, 
+                 typeID, 
                  parentBlueprintTypeID,
                  productTypeID,
                  productionTime,
@@ -163,7 +164,7 @@ class Blueprint(Item):
                  materialModifier,
                  wasteFactor,
                  maxProductionLimit):
-        self.blueprintTypeID = blueprintTypeID 
+        self.typeID = typeID 
         self.parentBlueprintTypeID = parentBlueprintTypeID
         self.productTypeID = productTypeID
         self.productionTime = productionTime
@@ -192,23 +193,23 @@ class Blueprint(Item):
                 return self.__activities
             else:
                 self.__activities = {}
-                for activityID, in db.getBpActivities(self.blueprintTypeID):
-                    self.__activities[activityID] = BpActivity(self.blueprintTypeID, activityID)
+                for activityID, in db.getBpActivities(self.typeID):
+                    self.__activities[activityID] = BpActivity(self.typeID, activityID)
                 return self.__activities
         elif attrName in ('item', 'product'):
             # item manufactured by this blueprint
             if self.__item is not None:
                 return self.__item
             else:
-                self.__item = Item.get(self.productTypeID)
+                self.__item = Item.new(self.productTypeID)
                 return self.__item
         elif attrName == 'parentBlueprint':
             if self.parentBlueprintTypeID is None:
-                raise NoParentBlueprintException(self.blueprintTypeID)
+                raise NoParentBlueprintException(self.typeID)
             if self.__parentBlueprint is not None:
                 return self.__parentBlueprint
             else:
-                self.__parentBlueprint = Blueprint.get(self.parentBlueprintTypeID)
+                self.__parentBlueprint = Blueprint.new(self.parentBlueprintTypeID)
                 return self.__parentBlueprint
         else:
             try:
@@ -216,18 +217,18 @@ class Blueprint(Item):
                     return Item.__getattr__(self, attrName)
                 except AttributeError:
                     # a Blueprint is also an Item. Item's constructor is only called if needed.
-                    Item.__init__(self, *db.getItem(typeID=self.blueprintTypeID))
+                    Item.__init__(self, *db.getItem(typeID=self.typeID))
                     return Item.__getattr__(self, attrName)
             except AttributeError:
                 return object.__getattribute__(self, attrName)
     
     def __getitem__(self, activityID):
         try:
-            return self.activities[activityID]
+            return getattr(self, 'activities')[activityID]
         except KeyError:
-            raise KeyError('Blueprint with blueprintTypeID=%d '
+            raise KeyError('Blueprint with blueprintTypeID=%s '
                              'has no activity with activityID=%s' 
-                             % (self.blueprintTypeID, str(activityID)))
+                             % (str(self.blueprintTypeID), str(activityID)))
     
     def getInvolvedBlueprints(self, recurse=False):
         blueprints = set()
@@ -235,7 +236,7 @@ class Blueprint(Item):
             if mat.blueprintTypeID is not None:
                 blueprints.add(mat.blueprint)
                 if recurse:
-                    blueprints.union(mat.blueprint.getInvolvedBlueprints(recurse=True))
+                    blueprints.update(mat.blueprint.getInvolvedBlueprints(recurse=True))
         return blueprints
         
     def getBillOfMaterials(self, runs, meLevel, activity):
@@ -247,7 +248,9 @@ class Blueprint(Item):
         materials = self[activity].materials
         for m in materials:
             if m.damagePerJob > 0:
-                qty = runs * apply_material_level(m.quantity, meLevel, self.wasteFactor)
+                qty = runs * m.quantity
+                if m.baseMaterial > 0:
+                    qty = apply_material_level(qty, meLevel, self.wasteFactor)
                 bill.append(ActivityMaterial(m.requiredTypeID, qty, m.damagePerJob, m.baseMaterial))
         return bill
     
@@ -262,18 +265,19 @@ class Blueprint(Item):
         else:
             return 0
     
-    @staticmethod
-    def get(blueprintTypeID):
-        """
-        Static method for instanciating a Blueprint from a blueprintTypeID
-        """
-        return Blueprint(*db.getBlueprint(blueprintTypeID))
     
     def __unicode__(self):
         return self.typeName
     
     def __repr__(self):
-        return '<Blueprint: %d>' % self.blueprintTypeID
+        return '<Blueprint: %s>' % self.typeName
+
+    @staticmethod
+    def new(typeID):
+        """
+        Static method for instanciating a Blueprint from its typeID
+        """
+        return Blueprint(*db.getBlueprint(typeID))
 
 #------------------------------------------------------------------------------
 class BpActivity(object):

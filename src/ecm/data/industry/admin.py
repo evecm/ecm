@@ -15,17 +15,23 @@
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-from django.contrib import admin
-from ecm.data.industry.models import *
-
 __date__ = "2011 6 9"
 __author__ = "diabeteman"
+
+from django.contrib import admin
+
+from ecm.data.industry.models import FactorySlot, InventionPolicy, Job, MileStone, Order, \
+                                     OrderLog, OrderRow, OwnedBlueprint, PriceHistory, \
+                                     Pricing, ProductionSite, StockLevel, StockMargin, SupplyPrice
 
 #------------------------------------------------------------------------------
 class MileStoneAdmin(admin.ModelAdmin):
     list_display = ['date']
 
-
+#------------------------------------------------------------------------------
+class PricingAdmin(admin.ModelAdmin):
+    list_display = ['name', 'margin']
+    
 #------------------------------------------------------------------------------
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
@@ -37,18 +43,19 @@ class OrderAdmin(admin.ModelAdmin):
         "deliveryLocation",
         "mileStone",
         "state",
-        "discount",
+        "pricing",
+        "extraDiscount",
         "quote",
     ]
-    
+
 #------------------------------------------------------------------------------
 class OrderLogAdmin(admin.ModelAdmin):
-    list_display = ["order", "state", "date", "user", "text",]
-    
+    list_display = ["order", "state", "date", "user", "text" ]
+
 #------------------------------------------------------------------------------
 class OrderRowAdmin(admin.ModelAdmin):
-    list_display = ["itemID", "quantity", "order",]
-    
+    list_display = ["itemID", "quantity", "quote", "order", ]
+
 #------------------------------------------------------------------------------
 class JobAdmin(admin.ModelAdmin):
     list_display = [
@@ -72,7 +79,7 @@ class JobAdmin(admin.ModelAdmin):
 #------------------------------------------------------------------------------
 class ProductionSiteAdmin(admin.ModelAdmin):
     list_display = ["locationID", "real_name_admin_display", "customName", "discount"]
-    
+
 #------------------------------------------------------------------------------
 class FactorySlotAdmin(admin.ModelAdmin):
     list_display = ["site", "activity"]
@@ -84,6 +91,15 @@ class StockMarginAdmin(admin.ModelAdmin):
 #------------------------------------------------------------------------------
 class StockLevelAdmin(admin.ModelAdmin):
     list_display = ["site", "mileStone", "item_admin_display", "typeID", "quantity"]
+
+
+#------------------------------------------------------------------------------
+class SupplyPriceAdmin(admin.ModelAdmin):
+    list_display = ["item_admin_display", "price", "autoUpdate"]
+
+#------------------------------------------------------------------------------
+class PriceHistoryAdmin(admin.ModelAdmin):
+    list_display = ["item_admin_display", "price", "date"]
 
 #------------------------------------------------------------------------------
 class OwnedBlueprintAdmin(admin.ModelAdmin):
@@ -98,12 +114,12 @@ class OwnedBlueprintAdmin(admin.ModelAdmin):
 #------------------------------------------------------------------------------
 class InventionPolicyAdmin(admin.ModelAdmin):
     list_display = [
-        "itemGroupID",
         "itemGroupName",
+        "itemGroupID",
         "invention_chance_admin_display",
         "targetME",
     ]
- 
+
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderLog, OrderLogAdmin)
 admin.site.register(OrderRow, OrderRowAdmin)
@@ -112,6 +128,10 @@ admin.site.register(ProductionSite, ProductionSiteAdmin)
 admin.site.register(FactorySlot, FactorySlotAdmin)
 admin.site.register(StockMargin, StockMarginAdmin)
 admin.site.register(StockLevel, StockLevelAdmin)
+admin.site.register(MileStone, MileStoneAdmin)
+admin.site.register(Pricing, PricingAdmin)
+admin.site.register(SupplyPrice, SupplyPriceAdmin)
+admin.site.register(PriceHistory, PriceHistoryAdmin)
 admin.site.register(OwnedBlueprint, OwnedBlueprintAdmin)
 admin.site.register(InventionPolicy, InventionPolicyAdmin)
 
