@@ -86,7 +86,7 @@ def resolveLocationName(locationID):
     except KeyError:
         cursor = EVE_DB.cursor()
         cursor.execute(QUERY_LOCATION, [locationID])
-        for itemName, security in cursor: 
+        for itemName, security in cursor:
             cache.setCachedLocation(id=locationID, name=itemName, security=security)
         cursor.close()
         try:
@@ -94,6 +94,8 @@ def resolveLocationName(locationID):
         except KeyError:
             # locationID was not valid
             return ("???", 0.0)
+
+#------------------------------------------------------------------------------
 SQL_UPDATE_OUTPOST_NAME = 'UPDATE mapCelestialObjects SET itemName=%s WHERE itemID=%s;'
 SQL_NEW_OUTPOST = '''INSERT INTO mapCelestialObjects
 (itemID, typeID, groupID, solarSystemID, regionID, itemName, security) 

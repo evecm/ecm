@@ -26,8 +26,7 @@ def resolvePath(relativePath):
 
 ###############################################################################
 # ECM SETTINGS
-ALL_GROUP_IDS = [ 1 << i  for i in range(17) ] # generates all titleIDs
-DIRECTOR_GROUP_ID = 1 << 16 # 65536 (it is twice the max titleID)
+DIRECTOR_GROUP_ID = 65536 # it is twice the max titleID
 DIRECTOR_GROUP_NAME = "Directors"
 CRON_USERNAME = "cron"
 ADMIN_USERNAME = "admin"
@@ -39,6 +38,11 @@ PASSWD_FORCE_SPECIAL_CHARS = False
 PASSWD_FORCE_DIGITS = False
 PASSWD_FORCE_LETTERS = False
 BASIC_AUTH_ONLY_ON_LOCALHOST = False
+MILESTONE_INTERVAL_DAYS = 15
+EVE_CENTRAL_URL = 'http://api.eve-central.com/api/marketstat'
+EVE_CENTRAL_BUY_SOURCE = 30002510 # Rens
+#EVE_CENTRAL_BUY_SOURCE = 30000142 # Jita
+#EVE_CENTRAL_BUY_SOURCE = 30002187 # Amarr
 
 ###############################################################################
 # DJANGO SPECIFIC SETTINGS
@@ -138,6 +142,7 @@ INSTALLED_APPS = (
     'ecm.data.common',
     'ecm.data.scheduler',
     'ecm.data.accounting',
+    'ecm.data.industry',
 )
 
 ###############################################################################
