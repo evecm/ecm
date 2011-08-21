@@ -24,8 +24,8 @@ from django.db import transaction
 
 from ecm.data.assets.models import Asset, AssetDiff
 from ecm.core.eve import api, db
-from ecm.core.parsers import utils
-import ecm.core.eve.constants as cst
+from ecm.core.eve import constants as cst
+from ecm.core.parsers import calcDiffs, markUpdated, checkApiVersion
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def update():
         logger.info("fetching /corp/AssetList.xml.aspx...")
         api_conn = api.connect()
         apiAssets = api_conn.corp.AssetList(characterID=api.get_api().charID)
-        utils.checkApiVersion(apiAssets._meta.version)
+        checkApiVersion(apiAssets._meta.version)
         
         currentTime = apiAssets._meta.currentTime
         cachedUntil = apiAssets._meta.cachedUntil
@@ -88,13 +88,13 @@ def update():
                 for assetDiff in diffs: 
                     assetDiff.save()
                 # we store the update time of the table
-                utils.markUpdated(model=AssetDiff, date=currentTime)
+                markUpdated(model=AssetDiff, date=currentTime)
             Asset.objects.all().delete()
         for asset in newItems.values(): 
             asset.save()
         
         # we store the update time of the table
-        utils.markUpdated(model=Asset, date=currentTime)
+        markUpdated(model=Asset, date=currentTime)
             
         logger.info("%d changes since last scan", len(diffs))
         logger.debug("saving to database...")
@@ -109,7 +109,7 @@ def update():
     
 #------------------------------------------------------------------------------
 def getAssetDiffs(oldItems, newItems, date):
-    removed, added = utils.calcDiffs(oldItems=oldItems, newItems=newItems)
+    removed, added = calcDiffs(oldItems=oldItems, newItems=newItems)
     __removeDuplicates(removed)
     __removeDuplicates(added)
     

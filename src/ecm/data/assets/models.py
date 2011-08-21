@@ -85,6 +85,7 @@ class AssetDiff(models.Model):
     new = models.BooleanField()
     flag = models.BigIntegerField() # used to determine the state or path of the asset
     
-
+    class Meta:
+        get_latest_by = 'date'
     
     

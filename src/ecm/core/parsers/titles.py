@@ -25,8 +25,7 @@ from django.db import transaction
 
 from ecm.data.roles.models import TitleComposition, Title, Role, TitleCompoDiff
 from ecm.core.eve import api
-from ecm.core.parsers import utils
-from ecm.core.parsers.utils import checkApiVersion, markUpdated
+from ecm.core.parsers import checkApiVersion, markUpdated, roleTypes
 
 import logging
 logger = logging.getLogger(__name__)
@@ -131,7 +130,7 @@ def parseOneTitle(titleApi):
         # the group doesn't exist yet, we create it
         Group.objects.create(id=id, name=name)
     
-    for roleType in utils.roleTypes().values():
+    for roleType in roleTypes().values():
         # for each role category, we extend the role composition list for the current title
         roleList.extend(parseRoleType( title    = title, 
                                        roleType = roleType,

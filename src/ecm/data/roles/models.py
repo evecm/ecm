@@ -333,7 +333,7 @@ class TitleComposition(models.Model):
 #------------------------------------------------------------------------------
 class CharacterOwnership(models.Model):
     """
-    Associates EVE characters to ECM Users
+    Associates EVE characters to ECM Users !!!! DEPRECATED !!!!
     """
     owner = models.ForeignKey(User, related_name="__characters")
     character = models.OneToOneField(Member, related_name="__ownership")

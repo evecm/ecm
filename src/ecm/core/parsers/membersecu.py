@@ -18,16 +18,15 @@
 __date__ = "2010-02-11"
 __author__ = "diabeteman"
 
-
-
-from ecm.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
-    TitleMemberDiff, Member
-from ecm.core.eve import api
-from ecm.core.parsers import utils
+import logging
 
 from django.db import transaction
 
-import logging
+from ecm.core.eve import api
+from ecm.core.parsers import checkApiVersion, roleTypes, allRoles, calcDiffs, markUpdated
+from ecm.data.roles.models import RoleMembership, TitleMembership, RoleMemberDiff, \
+    TitleMemberDiff, Member
+
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
@@ -46,7 +45,7 @@ def update():
         api_conn = api.connect()
         # retrieve /corp/MemberTracking.xml.aspx
         memberSecuApi = api_conn.corp.MemberSecurity(characterID=api.get_api().charID)
-        utils.checkApiVersion(memberSecuApi._meta.version)
+        checkApiVersion(memberSecuApi._meta.version)
         
         currentTime = memberSecuApi._meta.currentTime
         cachedUntil = memberSecuApi._meta.cachedUntil
@@ -97,8 +96,8 @@ def update():
 
 #------------------------------------------------------------------------------
 
-ROLE_TYPES = utils.roleTypes()
-ALL_ROLES  = utils.allRoles()
+ROLE_TYPES = roleTypes()
+ALL_ROLES  = allRoles()
 
 def parseOneMemberRoles(member):
     roles = {}
@@ -154,7 +153,7 @@ def __storeRoleDiffs(removed, added, date):
     return diffs
 
 def getRoleMemberDiffs(oldRoles, newRoles, date):
-    removed, added = utils.calcDiffs(newItems=newRoles, oldItems=oldRoles)
+    removed, added = calcDiffs(newItems=newRoles, oldItems=oldRoles)
     return __storeRoleDiffs(removed, added, date)
 #------------------------------------------------------------------------------
 def __storeTitleDiffs(removed, added, date):
@@ -180,7 +179,7 @@ def __storeTitleDiffs(removed, added, date):
     return diffs
 
 def getTitleMemberDiffs(oldTitles, newTitles, date):
-    removed, added = utils.calcDiffs(newItems=newTitles, oldItems=oldTitles)
+    removed, added = calcDiffs(newItems=newTitles, oldItems=oldTitles)
     return __storeTitleDiffs(removed, added, date)
 #------------------------------------------------------------------------------
 def storeRoles(oldRoles, newRoles, date):
@@ -189,19 +188,19 @@ def storeRoles(oldRoles, newRoles, date):
         if roleDiffs:
             for d in roleDiffs: d.save()
             # we store the update time of the table
-            utils.markUpdated(model=RoleMemberDiff, date=date)
+            markUpdated(model=RoleMemberDiff, date=date)
             
             RoleMembership.objects.all().delete()
             for rm in newRoles.values(): rm.save()
             # we store the update time of the table
-            utils.markUpdated(model=RoleMembership, date=date)
+            markUpdated(model=RoleMembership, date=date)
         # if no diff, we do nothing
         return len(roleDiffs)
     else:
         # 1st import, no diff to write
         for rm in newRoles.values(): rm.save()
         # we store the update time of the table
-        utils.markUpdated(model=RoleMembership, date=date)
+        markUpdated(model=RoleMembership, date=date)
         return 0
 
 #------------------------------------------------------------------------------
@@ -212,18 +211,18 @@ def storeTitles(oldTitles, newTitles, date):
             for d in titleDiffs: 
                 d.save()
             # we store the update time of the table
-            utils.markUpdated(model=TitleMemberDiff, date=date)
+            markUpdated(model=TitleMemberDiff, date=date)
             
             TitleMembership.objects.all().delete()
             for tm in newTitles.values(): tm.save()
             # we store the update time of the table
-            utils.markUpdated(model=TitleMembership, date=date)
+            markUpdated(model=TitleMembership, date=date)
         # if no diff, we do nothing
         return len(titleDiffs)
     else:
         # 1st import, no diff to write
         for tm in newTitles.values(): tm.save()
         # we store the update time of the table
-        utils.markUpdated(model=TitleMembership, date=date)
+        markUpdated(model=TitleMembership, date=date)
         return 0
         

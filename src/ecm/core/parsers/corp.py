@@ -26,7 +26,7 @@ from ecm.core.eve import api
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from ecm.core.parsers.utils import checkApiVersion, markUpdated
+from ecm.core.parsers import checkApiVersion, markUpdated
 
 import logging
 logger = logging.getLogger(__name__)

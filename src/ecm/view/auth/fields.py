@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.conf import settings
 
 __date__ = "2011 4 6"
 __author__ = "diabeteman"
@@ -28,6 +29,8 @@ SPECIAL_CHARS = '!@#$%^&*()[]{}-_+=:;.,<>/"\'~'
 class PasswordField(forms.CharField):
 
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
+        if min_length is None:
+            min_length = settings.PASSWD_MIN_LENGTH
         forms.CharField.__init__(self, 
                                  max_length=max_length, 
                                  min_length=max_length, 
@@ -38,9 +41,9 @@ class PasswordField(forms.CharField):
         passwd = set(value)
         if len(passwd) <= self.min_length:
             raise ValidationError('Must be at least %d different characters' % self.min_length)
-        if not passwd.intersection(set(string.digits)):
+        if settings.PASSWD_FORCE_DIGITS and not passwd.intersection(set(string.digits)):
             raise ValidationError('Must contain at least one digit')
-        if not passwd.intersection(set(string.ascii_letters)):
+        if settings.PASSWD_FORCE_LETTERS and not passwd.intersection(set(string.ascii_letters)):
             raise ValidationError('Must contain at least one letter')
-        if not passwd.intersection(set(SPECIAL_CHARS)):
+        if settings.PASSWD_FORCE_SPECIAL_CHARS and not passwd.intersection(set(SPECIAL_CHARS)):
             raise ValidationError('Must contain at least one special character ' + SPECIAL_CHARS)

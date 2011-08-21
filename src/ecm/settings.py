@@ -34,6 +34,10 @@ ADMIN_USERNAME = "admin"
 EVE_API_VERSION = "2"
 ECM_BASE_URL = "127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
+PASSWD_MIN_LENGTH = 6
+PASSWD_FORCE_SPECIAL_CHARS = False
+PASSWD_FORCE_DIGITS = False
+PASSWD_FORCE_LETTERS = False
 BASIC_AUTH_ONLY_ON_LOCALHOST = False
 
 ###############################################################################

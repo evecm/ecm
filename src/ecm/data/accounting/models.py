@@ -62,6 +62,7 @@ class JournalEntry(models.Model):
     reason     = models.CharField(max_length=512) # comment
 
     class Meta:
+        get_latest_by = 'refID'
         verbose_name = _("Journal Entry")
         verbose_name_plural = _("Journal Entries")
     

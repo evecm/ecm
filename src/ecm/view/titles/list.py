@@ -24,7 +24,6 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
-from django.conf import settings
 
 from ecm.view.decorators import check_user_access
 from ecm.data.roles.models import TitleComposition, Title, TitleCompoDiff
@@ -74,11 +73,9 @@ WHERE "roles_titlemembership"."title_id"="roles_title"."titleID"'''
 SQL_ROLES_IN_TITLES = '''SELECT COUNT(*) 
 FROM "roles_titlecomposition" 
 WHERE "roles_titlecomposition"."title_id"="roles_title"."titleID"'''
-if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
-    # MySQL doesn't like double quotes...
-    SQL_TITLE_MEMBERS = SQL_TITLE_MEMBERS.replace('"', '`')
-    SQL_ROLES_IN_TITLES = SQL_ROLES_IN_TITLES.replace('"', '`')
-    
+SQL_TITLE_MEMBERS = utils.fix_mysql_quotes(SQL_TITLE_MEMBERS)
+SQL_ROLES_IN_TITLES = utils.fix_mysql_quotes(SQL_ROLES_IN_TITLES)
+
 def getTitles(sort_by="titleID", asc=True):
     sort_col = "%s_nocase" % sort_by
     

@@ -14,6 +14,7 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.core import utils
 
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
@@ -135,9 +136,7 @@ def member_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(
                          order_by="tax_contrib", ascending=False):
     
     sql = MEMBER_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;") 
-    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
-        # MySQL doesn't like double quotes...
-        sql = sql.replace('"', '`')
+    sql = utils.fix_mysql_quotes(sql)
     return Member.objects.raw(sql, [since, until])
 
 
@@ -153,9 +152,7 @@ def system_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(
                          order_by="tax_contrib", ascending=False):
     
     sql = SYSTEM_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;") 
-    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
-        # MySQL doesn't like double quotes...
-        sql = sql.replace('"', '`')
+    sql = utils.fix_mysql_quotes(sql)
     
     cursor = connection.cursor()
     cursor.execute(sql, [since, until])

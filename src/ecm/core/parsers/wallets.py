@@ -14,22 +14,19 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.core.encoding import fix_encoding
 
 __date__ = "2011-03-27"
 __author__ = "diabeteman"
 
 
-from datetime import datetime
 import logging
-
+from datetime import datetime
 
 from django.db import transaction
-from django.db.models.aggregates import Max
 
 from ecm.core.eve import api
-from ecm.core.parsers import utils
-from ecm.core.parsers.utils import markUpdated
+from ecm.core.encoding import fix_encoding
+from ecm.core.parsers import markUpdated, checkApiVersion
 from ecm.data.corp.models import Wallet
 from ecm.data.accounting.models import JournalEntry
 
@@ -57,8 +54,11 @@ def update():
 
 
 def update_wallet(wallet):
-    lastKnownID = JournalEntry.objects.filter(wallet=wallet).aggregate(Max("refID")).get("refID__max")
-    if not lastKnownID: lastKnownID = 0
+    try:
+        lastKnownID = JournalEntry.objects.filter(wallet=wallet).latest().refID
+    except JournalEntry.DoesNotExist: 
+        lastKnownID = 0
+    print lastKnownID
     entries = fetch_entries(wallet, lastKnownID)
     
     logger.debug("parsing results...")
@@ -70,21 +70,19 @@ def update_wallet(wallet):
             e.reason = e.reason[len('DESC: '):]
             e.reason = fix_encoding(e.reason).strip('\'" \t\n')
             e.reason = u'DESC: ' + e.reason
-        entry = JournalEntry()
-        entry.refID      = e.refID
-        entry.wallet     = wallet
-        entry.date       = e.date
-        entry.type_id    = e.refTypeID
-        entry.ownerName1 = e.ownerName1
-        entry.ownerID1   = e.ownerID1
-        entry.ownerName2 = e.ownerName2
-        entry.ownerID2   = e.ownerID2
-        entry.argName1   = e.argName1
-        entry.argID1     = e.argID1
-        entry.amount     = e.amount
-        entry.balance    = e.balance
-        entry.reason     = e.reason
-        entry.save()
+        JournalEntry.objects.create(refID=e.refID,
+                                    wallet=wallet,
+                                    date=e.date,
+                                    type_id=e.refTypeID,
+                                    ownerName1=e.ownerName1,
+                                    ownerID1=e.ownerID1,
+                                    ownerName2=e.ownerName2,
+                                    ownerID2=e.ownerID2,
+                                    argName1=e.argName1,
+                                    argID1=e.argID1,
+                                    amount=e.amount,
+                                    balance=e.balance,
+                                    reason=e.reason)
     logger.info("%d entries added in journal" % len(entries))
 
 
@@ -97,7 +95,7 @@ def fetch_entries(wallet, lastKnownID):
     walletsApi = api_conn.corp.WalletJournal(characterID=charID, 
                                             accountKey=wallet.walletID, 
                                             rowCount=256)
-    utils.checkApiVersion(walletsApi._meta.version)   
+    checkApiVersion(walletsApi._meta.version)   
     
     entries = list(walletsApi.entries)
     if len(entries) > 0:
@@ -116,7 +114,7 @@ def fetch_entries(wallet, lastKnownID):
                                                  accountKey=wallet.walletID, 
                                                  fromID=minID,
                                                  rowCount=256)
-        utils.checkApiVersion(walletsApi._meta.version)
+        checkApiVersion(walletsApi._meta.version)
         entries.extend(list(walletsApi.entries))
         minID = min([e.refID for e in walletsApi.entries])
     

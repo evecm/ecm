@@ -19,14 +19,15 @@ __date__ = "2010-02-09"
 __author__ = "diabeteman"
 
 
+import logging
 
 from django.db import transaction
-from ecm.data.roles.models import Member, MemberDiff
-from ecm.core.eve import api
-from ecm.core.parsers import utils
-from ecm.core.eve import db
 
-import logging
+from ecm.core.eve import api
+from ecm.core.eve import db
+from ecm.core.parsers import checkApiVersion, calcDiffs, markUpdated
+from ecm.data.roles.models import Member, MemberDiff
+
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
@@ -45,7 +46,7 @@ def update():
         api_conn = api.connect()
         # retrieve /corp/MemberTracking.xml.aspx
         membersApi = api_conn.corp.MemberTracking(characterID=api.get_api().charID)
-        utils.checkApiVersion(membersApi._meta.version)
+        checkApiVersion(membersApi._meta.version)
         
         currentTime = membersApi._meta.currentTime
         cachedUntil = membersApi._meta.cachedUntil
@@ -103,13 +104,13 @@ def update():
             for d in diffs:
                 d.save()
             # we store the update time of the table
-            utils.markUpdated(model=MemberDiff, date=currentTime)
+            markUpdated(model=MemberDiff, date=currentTime)
         # to be sure to store the nicknames change, etc.
         # even if there are no diff, we always overwrite the members 
         for m in newMembers.values():
             m.save()
         # we store the update time of the table
-        utils.markUpdated(model=Member, date=currentTime)
+        markUpdated(model=Member, date=currentTime)
         
         logger.debug("saving to database...")
         transaction.commit()
@@ -143,7 +144,7 @@ def parseOneMember(member):
     
 #------------------------------------------------------------------------------
 def getDiffs(oldMembers, newMembers, date):
-    removed, added = utils.calcDiffs(oldItems=oldMembers, newItems=newMembers)
+    removed, added = calcDiffs(oldItems=oldMembers, newItems=newMembers)
     
     diffs  = []
     

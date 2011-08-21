@@ -18,12 +18,13 @@
 __date__ = "2010-04-08"
 __author__ = "diabeteman"
 
+import logging
+
 from django.db import transaction
 
-from ecm.core.parsers.utils import checkApiVersion
 from ecm.core.eve import api, db
+from ecm.core.parsers import checkApiVersion
 
-import logging
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------

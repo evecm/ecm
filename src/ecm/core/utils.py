@@ -19,6 +19,7 @@ __date__ = "2010-05-16"
 __author__ = "diabeteman"
 
 
+from django.conf import settings
 
 
 
@@ -102,4 +103,15 @@ def get_access_color(accessLvl, colorThresholds):
         if accessLvl <= t.threshold:
             return t.color
     return ""
+
+#------------------------------------------------------------------------------
+def fix_mysql_quotes(query):
+    """
+    MySQL doesn't like double quotes. We replace them by backticks.
+    """
+    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
+        return query.replace('"', '`')
+    else:
+        return query
+
 

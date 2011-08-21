@@ -22,7 +22,6 @@ __author__ = "diabeteman"
 import json
 from datetime import datetime, timedelta
 
-from django.conf import settings
 from django.shortcuts import render_to_response, redirect
 from django.template.context import RequestContext
 from django.template.defaultfilters import pluralize
@@ -137,7 +136,8 @@ def systems_data(request, date_str):
     sql += 'WHERE date=%s'
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "solarSystemID";'
-
+    sql = utils.fix_mysql_quotes(sql)
+    
     cursor = connection.cursor()
     if divisions is None:
         cursor.execute(sql, [date])
@@ -189,9 +189,7 @@ def stations_data(request, date_str, solarSystemID):
     sql += 'WHERE "solarSystemID"=%s AND "date"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "stationID";'
-    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
-        # MySQL doesn't like double quotes...
-        sql = sql.replace('"', '`')
+    sql = utils.fix_mysql_quotes(sql)
     
     cursor = connection.cursor()
     if divisions is None:
@@ -242,6 +240,7 @@ def hangars_data(request, date_str, solarSystemID, stationID):
     sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s AND "date"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "hangarID";'
+    sql = utils.fix_mysql_quotes(sql)
     
     cursor = connection.cursor()
     if divisions is None:

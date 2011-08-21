@@ -51,8 +51,8 @@ def list_data(request):
     entries = []
     for wallet in query:
         try:
-            balance = JournalEntry.objects.filter(wallet=wallet).order_by("-date")[0].balance
-        except IndexError:
+            balance = JournalEntry.objects.filter(wallet=wallet).latest().balance
+        except JournalEntry.DoesNotExist:
             # no journal information, we assume the balance is 0.0
             balance = 0.0
         entries.append([

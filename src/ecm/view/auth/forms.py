@@ -171,8 +171,8 @@ class PasswordSetForm(forms.Form):
     A form that lets a user change set his/her password without
     entering the old password
     """
-    new_password1 = PasswordField(label=_("New password"), min_length=6)
-    new_password2 = PasswordField(label=_("New Password (confirmation)"), min_length=6,
+    new_password1 = PasswordField(label=_("New password"))
+    new_password2 = PasswordField(label=_("New Password (confirmation)"),
                                 help_text=_("Enter the same password as above, for verification."))
 
     def __init__(self, user, *args, **kwargs):
@@ -199,7 +199,7 @@ class PasswordChangeForm(PasswordSetForm):
     A form that lets a user change his/her password by entering
     their old password.
     """
-    old_password = PasswordField(label=_("Old Password"), min_length=6)
+    old_password = PasswordField(label=_("Old Password"))
 
     def clean_old_password(self):
         """
