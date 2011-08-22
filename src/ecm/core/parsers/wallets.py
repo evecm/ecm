@@ -58,7 +58,6 @@ def update_wallet(wallet):
         lastKnownID = JournalEntry.objects.filter(wallet=wallet).latest().refID
     except JournalEntry.DoesNotExist: 
         lastKnownID = 0
-    print lastKnownID
     entries = fetch_entries(wallet, lastKnownID)
     
     logger.debug("parsing results...")

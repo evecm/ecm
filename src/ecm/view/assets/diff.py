@@ -142,7 +142,7 @@ def systems_data(request, date_str):
     if divisions is None:
         cursor.execute(sql, [date])
     else:
-        cursor.execute(sql, [date] + divisions)
+        cursor.execute(sql, [date] + list(divisions))
     
     jstree_data = []
     for solarSystemID, items in cursor:
@@ -195,7 +195,7 @@ def stations_data(request, date_str, solarSystemID):
     if divisions is None:
         cursor.execute(sql, [solarSystemID, date])
     else:
-        cursor.execute(sql, [solarSystemID, date, divisions])
+        cursor.execute(sql, [solarSystemID, date] + list(divisions))
         
     jstree_data = []
     for stationID, flag, items in cursor:
@@ -234,7 +234,8 @@ def hangars_data(request, date_str, solarSystemID, stationID):
     
     where = []
     if divisions is not None:
-        where.append('"hangarID" IN %s')
+        s = ('%s,' * len(divisions))[:-1] 
+        where.append('"hangarID" IN (%s)' % s)
     
     sql = 'SELECT "hangarID", COUNT(*) AS "items" FROM "assets_assetdiff" '
     sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s AND "date"=%s '
@@ -246,7 +247,7 @@ def hangars_data(request, date_str, solarSystemID, stationID):
     if divisions is None:
         cursor.execute(sql, [solarSystemID, stationID, date])
     else:
-        cursor.execute(sql, [solarSystemID, stationID, date, divisions])
+        cursor.execute(sql, [solarSystemID, stationID, date] + list(divisions))
     
     HANGAR = {}
     for h in Hangar.objects.all():

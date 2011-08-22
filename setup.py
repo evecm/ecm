@@ -1,3 +1,23 @@
+# Copyright (c) 2010-2011 Robin Jarry
+# 
+# This file is part of EVE Corporation Management.
+# 
+# EVE Corporation Management is free software: you can redistribute it and/or 
+# modify it under the terms of the GNU General Public License as published by 
+# the Free Software Foundation, either version 3 of the License, or (at your 
+# option) any later version.
+# 
+# EVE Corporation Management is distributed in the hope that it will be useful, 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+# more details.
+# 
+# You should have received a copy of the GNU General Public License along with 
+# EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+
+__date__ = "2010-01-24"
+__author__ = "diabeteman"
+
 import shutil
 from distutils import dir_util, archive_util, file_util
 import sys
@@ -116,7 +136,7 @@ def upgrade():
     if os.path.exists(vhost_file): file_util.copy_file(vhost_file, tempdir)
 
     # backup the owner of apache.wsgi
-#    f_stat = os.stat(os.path.join(data_dict['install_dir'], "apache.wsgi"))
+    f_stat = os.stat(os.path.join(data_dict['install_dir'], "apache.wsgi"))
 
     sys.path.append(data_dict['install_dir'])
     import ecm.settings
@@ -135,22 +155,22 @@ def upgrade():
     install_files()
     dir_util.copy_tree(tempdir, data_dict['install_dir'])
     configure_ecm()
-#    try:
-#        print "Restoring file permissions...",
-#        import stat
-#        # change owner to backuped owner on installation folder recursively
-#        for root, dirs, files in os.walk(data_dict['install_dir']):  
-#            for d in dirs:  
-#                os.chown(os.path.join(root, d), f_stat.st_uid, f_stat.st_gid)
-#            for f in files:
-#                os.chown(os.path.join(root, f), f_stat.st_uid, f_stat.st_gid)
-#        for s in os.path.join(data_dict['install_dir'], 'scripts'):
-#            if s[-2:] == 'py':
-#                os.chmod(s, 0755)
-#        os.chmod(os.path.join(data_dict['install_dir'], 'ecm/manage.py'), 0755)
-#        print "done"
-#    except e:
-#        print e
+    try:
+        print "Restoring file permissions...",
+        import stat
+        # change owner to backuped owner on installation folder recursively
+        for root, dirs, files in os.walk(data_dict['install_dir']):  
+            for d in dirs:  
+                os.chown(os.path.join(root, d), f_stat.st_uid, f_stat.st_gid)
+            for f in files:
+                os.chown(os.path.join(root, f), f_stat.st_uid, f_stat.st_gid)
+        for s in os.path.join(data_dict['install_dir'], 'scripts'):
+            if s[-2:] == 'py':
+                os.chmod(s, 0755)
+        os.chmod(os.path.join(data_dict['install_dir'], 'ecm/manage.py'), 0755)
+        print "done"
+    except e:
+        print e
     
     print "Deleting temp dir %s..." % tempdir,
     dir_util.remove_tree(tempdir)

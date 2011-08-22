@@ -14,7 +14,6 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.conf import settings
 
 __date__ = "2011-05-21"
 __author__ = "diabeteman"
@@ -143,7 +142,8 @@ def stations_data(request, solarSystemID):
     if not show_in_stations:
         where.append('"stationID" > %d' % constants.MAX_STATION_ID)
     if divisions is not None:
-        where.append('"hangarID" IN %s')
+        s = ('%s,' * len(divisions))[:-1] 
+        where.append('"hangarID" IN (%s)' % s)
     
     sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items" FROM "assets_asset" '
     sql += 'WHERE "solarSystemID"=%s '
@@ -155,7 +155,7 @@ def stations_data(request, solarSystemID):
     if divisions is None:
         cursor.execute(sql, [solarSystemID])
     else:
-        cursor.execute(sql, [solarSystemID, divisions])
+        cursor.execute(sql, [solarSystemID] + list(divisions))
         
     jstree_data = []
     for stationID, flag, items in cursor:
@@ -191,7 +191,8 @@ def hangars_data(request, solarSystemID, stationID):
     
     where = []
     if divisions is not None:
-        where.append('"hangarID" IN %s')
+        s = ('%s,' * len(divisions))[:-1] 
+        where.append('"hangarID" IN (%s)' % s)
     
     sql = 'SELECT "hangarID", COUNT(*) AS "items" FROM "assets_asset" '
     sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s '
@@ -203,7 +204,7 @@ def hangars_data(request, solarSystemID, stationID):
     if divisions is None:
         cursor.execute(sql, [solarSystemID, stationID])
     else:
-        cursor.execute(sql, [solarSystemID, stationID, divisions])
+        cursor.execute(sql, [solarSystemID, stationID] + list(divisions))
     
     HANGAR = {}
     for h in Hangar.objects.all():
