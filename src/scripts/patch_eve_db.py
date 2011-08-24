@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import logging
 
 # Copyright (c) 2010-2011 Robin Jarry
 # 
@@ -37,6 +38,11 @@ parser.add_option("-d", "--db-file", dest="db_file", default=os.path.normpath(sc
 
 
 def main(options):
+    if not hasattr(options, 'logger'):
+        options.logger = logging.getLogger()
+        options.logger.addHandler(logging.StreamHandler())
+        options.logger.setLevel(logging.INFO)
+    log = options.logger
     try:
         f = open(options.sql_script, 'r')
         sql_patch = f.read()
@@ -46,33 +52,33 @@ def main(options):
             tempdir = tempfile.mkdtemp()
         
             options.bz_file = os.path.join(tempdir, 'EVE.db.bz2')
-            print 'Downloading EVE original database from %s to %s...' % (options.url, options.bz_file),
+            log.info('Downloading EVE original database from %s to %s...', options.url, options.bz_file)
             req = urllib2.urlopen(options.url)
             with open(options.bz_file, 'wb') as fp:
                 shutil.copyfileobj(req, fp)
             req.close()
-            print 'complete'
+            log.info('Download complete.')
         else:
             tempdir = None
         
-        print 'Expanding %s to %s...' % (options.bz_file, options.db_file),
+        log.info('Expanding %s to %s...', options.bz_file, options.db_file)
         bz_file_desc = bz2.BZ2File(options.bz_file, 'rb')
         with open(options.db_file, 'wb') as db_file_desc:
             shutil.copyfileobj(bz_file_desc, db_file_desc)
         bz_file_desc.close()
-        print 'done'
+        log.info('Expansion complete.')
         
-        print 'Applying patch to EVE database...',
+        log.info('Applying SQL patch to EVE database...')
         conn = sqlite3.connect(options.db_file)
         conn.executescript(sql_patch)
         conn.commit()
         conn.close()
-        print 'done'
+        log.info('EVE database successfully patched.')
     finally:
         if tempdir is not None:
-            print 'Removing temp files...',
+            log.info('Removing temp files...')
             shutil.rmtree(tempdir)
-            print 'done'
+            log.info('done')
 
 if __name__ == '__main__':
     options, _ = parser.parse_args()
