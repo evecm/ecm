@@ -145,6 +145,7 @@ CREATE TABLE "invTypes" (
   "basePrice" double DEFAULT NULL,
   "marketGroupID" smallint(6) DEFAULT NULL,
   "icon" varchar(32) DEFAULT NULL,
+  "published" tinyint(1) DEFAULT NULL,
   PRIMARY KEY ("typeID")
 );
 
@@ -152,6 +153,7 @@ CREATE INDEX "invTypes_IX_Group" ON "invTypes" ("groupID");
 CREATE INDEX "invTypes_IX_iconID" ON "invTypes" ("icon");
 CREATE INDEX "invTypes_IX_marketGroupID" ON "invTypes" ("marketGroupID");
 CREATE INDEX "invTypes_IX_techLevel" ON "invTypes" ("techLevel");
+CREATE INDEX "invTypes_IX_published" ON "invTypes" ("published");
 
 -- fill the custom table
 INSERT INTO "invTypes"
@@ -166,7 +168,8 @@ SELECT  t."typeID",
         t."portionSize", 
         t."basePrice", 
         t."marketGroupID", 
-        IFNULL('icon' || g."iconFile", CAST(t."typeID" AS TEXT)) AS "icon"
+        IFNULL('icon' || g."iconFile", CAST(t."typeID" AS TEXT)) AS "icon",
+        t."published"
 FROM "invTypes_temp" t LEFT OUTER JOIN "eveIcons" g ON t."graphicID" = g."iconID",
      "invTypes_temp" t2 LEFT OUTER JOIN "invBlueprintTypes" b ON t."typeID" = b."productTypeID",
      "invGroups" gg

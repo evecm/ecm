@@ -22,7 +22,8 @@ from django.contrib import admin
 
 from ecm.data.industry.models import FactorySlot, InventionPolicy, Job, MileStone, Order, \
                                      OrderLog, OrderRow, OwnedBlueprint, PriceHistory, \
-                                     Pricing, ProductionSite, StockLevel, StockMargin, SupplyPrice
+                                     Pricing, ProductionSite, StockLevel, StockMargin, \
+                                     SupplyPrice, CatalogEntry
 
 #------------------------------------------------------------------------------
 class MileStoneAdmin(admin.ModelAdmin):
@@ -30,7 +31,7 @@ class MileStoneAdmin(admin.ModelAdmin):
 
 #------------------------------------------------------------------------------
 class PricingAdmin(admin.ModelAdmin):
-    list_display = ['name', 'margin']
+    list_display = ['name', 'margin_admin_display']
     
 #------------------------------------------------------------------------------
 class OrderAdmin(admin.ModelAdmin):
@@ -54,7 +55,7 @@ class OrderLogAdmin(admin.ModelAdmin):
 
 #------------------------------------------------------------------------------
 class OrderRowAdmin(admin.ModelAdmin):
-    list_display = ["itemID", "quantity", "quote", "order", ]
+    list_display = ["catalogEntry", "quantity", "cost", "order", ]
 
 #------------------------------------------------------------------------------
 class JobAdmin(admin.ModelAdmin):
@@ -102,6 +103,16 @@ class PriceHistoryAdmin(admin.ModelAdmin):
     list_display = ["item_admin_display", "price", "date"]
 
 #------------------------------------------------------------------------------
+class CatalogEntryAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "typeID",
+        "marketGroupID",
+        "fixedPrice",
+        "isAvailable",
+    ]
+
+#------------------------------------------------------------------------------
 class OwnedBlueprintAdmin(admin.ModelAdmin):
     list_display = [
         "item_name_admin_display",
@@ -132,6 +143,7 @@ admin.site.register(MileStone, MileStoneAdmin)
 admin.site.register(Pricing, PricingAdmin)
 admin.site.register(SupplyPrice, SupplyPriceAdmin)
 admin.site.register(PriceHistory, PriceHistoryAdmin)
+admin.site.register(CatalogEntry, CatalogEntryAdmin)
 admin.site.register(OwnedBlueprint, OwnedBlueprintAdmin)
 admin.site.register(InventionPolicy, InventionPolicyAdmin)
 

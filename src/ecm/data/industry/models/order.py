@@ -114,13 +114,13 @@ class Order(models.Model):
             self.addComment(user, comment)
     
     @transaction.commit_on_success
-    def modify(self, newItems):
+    def modify(self, entries):
         """
         Modification of the order. 
         An order can only be modified if its state is DRAFT or PENDING.
         
-        newItems must be a list of tuples such as :
-        [(itemID_A, qty_A), (itemID_B, qty_B), (itemID_C, qty_C)]
+        entries must be a list of tuples such as :
+        [(CatalogEntry_A, qty_A), (CatalogEntry_B, qty_B), (CatalogEntry_C, qty_C)]
         """
         if self.rows.all() or self.logs.all():
             comment = "Modified by originator."
@@ -128,8 +128,8 @@ class Order(models.Model):
             comment = "Created."
         self.changeState(Order.DRAFT, self.originator, comment)
         self.rows.all().delete()
-        for itemID, quantity in newItems:
-            self.rows.create(itemID=itemID, quantity=quantity)
+        for catalogEntry, quantity in entries:
+            self.rows.create(catalogEntry=catalogEntry, quantity=quantity)
         self.createJobs(dry_run=True)
         self.save()
     
@@ -185,10 +185,8 @@ class Order(models.Model):
         missing_blueprints = set()
         for row in self.rows.all():
             try:
-                blueprint = Item.new(row.itemID).blueprint
-                for bp in blueprint.getInvolvedBlueprints(recurse=True):
-                    if not OwnedBlueprint.objects.filter(blueprintTypeID=bp.typeID).exists():
-                        missing_blueprints.add(bp)
+                if not row.catalogEntry.blueprints.all():
+                    missing_blueprints.add(row.catalogEntry.blueprint)
             except NoBlueprintException:
                 pass
         if missing_blueprints:
@@ -328,7 +326,7 @@ class OrderRow(models.Model):
     
     @transaction.commit_manually
     def calculateJobs(self, prices=None, dry_run=False):
-        job = Job.create(self.itemID, self.quantity, order=self.order, row=self)
+        job = Job.create(self.catalogEntry_id, self.quantity, order=self.order, row=self)
         job.createRequirements()
         cost, missingPrices = self.calculateCost(prices)
         if dry_run:

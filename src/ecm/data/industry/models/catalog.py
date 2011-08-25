@@ -20,6 +20,7 @@ __author__ = "diabeteman"
 
 
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from ecm.core.eve.classes import Blueprint, Item
 from ecm.core.eve import db
@@ -33,6 +34,10 @@ class Pricing(models.Model):
     name = models.CharField(max_length=255)
     margin = models.FloatField()
     
+    def margin_admin_display(self):
+        return unicode('{0:.0%}'.format(self.margin))
+    margin_admin_display.short_description = 'Margin'
+    
     def __unicode__(self):
         return unicode(self.name)
 
@@ -41,16 +46,15 @@ class CatalogEntry(models.Model):
     
     class Meta:
         app_label = 'industry'
+        verbose_name = _("Catalog Entry")
+        verbose_name_plural = _("Catalog Enties")
     
     typeID = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
     marketGroupID = models.IntegerField(db_index=True, null=True, blank=True)
     fixedPrice = models.FloatField(null=True, blank=True)
     isAvailable = models.BooleanField(default=True)
     __item = None
-    
-    def item_name_admin_display(self):
-        return self.typeName
-    item_name_admin_display.short_description = 'Item'
     
     def __getattr__(self, attrName):
         try:
@@ -63,7 +67,7 @@ class CatalogEntry(models.Model):
             return models.Model.__getattribute__(self, attrName)
     
     def __unicode__(self):
-        return unicode(self.typeName)
+        return unicode(self.name)
 
 
 
@@ -74,11 +78,11 @@ class OwnedBlueprint(models.Model):
         app_label = 'industry'
         ordering = ['blueprintTypeID', '-me']
     
-    blueprintTypeID = models.PositiveIntegerField()
-    me = models.PositiveIntegerField(default=0)
-    pe = models.PositiveIntegerField(default=0)
+    blueprintTypeID = models.IntegerField()
+    me = models.SmallIntegerField(default=0)
+    pe = models.SmallIntegerField(default=0)
     copy = models.BooleanField(default=False)
-    runs = models.PositiveIntegerField(default=1)
+    runs = models.SmallIntegerField(default=1)
     catalogEntry = models.ForeignKey(CatalogEntry, related_name='blueprints', null=True, blank=True)
     __blueprint = None
     

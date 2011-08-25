@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Order #{{ order.id }} Details{% endblock %}
+
+
+
+{% block header_scripts %}
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.autocomplete.css" />
+<script type="text/javascript" src="/m/js/lib/jquery.autocomplete.js"></script>
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry">Industry</a></li>
+<li><a href="/industry/orders">Orders</a></li>
+<li><a href="/industry/orders/{{ order.id }}">#{{ order.id }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Order #{{ order.id }} Details</h1>
+
+<form id="search_form" class="search_form"> 
+    <label>Search for an item</label>
+    <input type="text" id="search_box" style="width: 300px;" /> 
+    <input type="button" class="button" id="add_button" value="Add to my order" /> 
+</form> 
+
+
+
+<form method="post" action="/order/create" id="items_form" class="search_form" style="margin: auto;">
+
+    <table class="transparent order_table" style="width: 60%;">
+        <thead>
+		    <tr>
+				<th>Icon</th>
+				<th>Item</th>
+				<th>Quantity</th>
+				<th>Remove</th>
+		    </tr>
+        </thead>
+		<tbody  id="items">
+		 
+		</tbody> 
+    </table>
+    
+
+</form>
+
+
+
+<script type="text/javascript">
+$().ready(function() {
+    $("#search_box").autocomplete("/industry/search/data", {
+        minChars: 3,
+        selectFirst: true,
+        width: 300
+    });
+    /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        addItem($("#search_box").val());
+        $("#search_box").val("");
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $("#add_button").click(function() {
+        addItem($("#search_box").val());
+        $("#search_box").val("");
+    });
+});
+
+
+function deleteItem(typeID) {
+    if (confirm("Are you sure you want to delete this item?")) {
+        $("#" + typeID).html("");
+    }
+}
+
+function addItem(name) {
+    $.getJSON("/industry/search/itemid", {q: name}, function(json) {
+        var typeID = json[0];
+        var typeName = json[1];
+        var row = '<tr id="' + typeID + '">';
+        row += '<td><img src="http://image.eveonline.com/Type/'  + typeID +'_32.png" /></td>';
+        row += '<td class="bold">' + typeName + '</td>' ;
+        row += '<td><input type="text" name="' + typeID + '_qty" value="1" /></td>';
+        row += '<td><img src="/m/img/trash.png" id="'  + typeID +'_del" class="clickable" onClick="javascript:deleteItem('+ typeID+ ');"/></td></tr>';
+        
+        
+        $(row).appendTo("#items")
+    });
+}
+
+</script>
+
+{% endblock %}

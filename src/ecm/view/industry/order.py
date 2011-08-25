@@ -65,5 +65,6 @@ def rows_data(request, order_id):
     
     return HttpResponse(json.dumps(rows))
     
-
+def modify(request):
+    return render_to_response('industry/order_modify.html', {}, RequestContext(request))
 

@@ -94,7 +94,8 @@ class Item(object):
                  portionSize,
                  basePrice,
                  marketGroupID,
-                 icon):
+                 icon,
+                 published):
         self.typeID = typeID
         self.groupID = groupID
         self.categoryID = categoryID
@@ -107,6 +108,7 @@ class Item(object):
         self.basePrice = basePrice
         self.marketGroupID = marketGroupID
         self.icon = icon
+        self.published = published
         self.__blueprint = None # lazy attribute
     
 
