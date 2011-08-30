@@ -18,13 +18,33 @@
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
-import os, sys
+# I modified the WSGI initialization script according to this post:
+# http://blog.dscpl.com.au/2010/03/improved-wsgi-script-for-use-with.html
+# which I found very interesting and pertinent.
 
-install_dir = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(install_dir)
+import sys
+from os import path
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'ecm.settings'
+install_dir = path.abspath(path.dirname(__file__))
+sys.path.insert(0, path.join(install_dir, 'ecm'))
 
+# this import should be marked as not found when analysing this module 
+# with the eclipse python editor.
+# This is normal, as the 'ecm' folder is not in sys.path when performing
+# a static analysis.
+import settings 
 
-import django.core.handlers.wsgi
-application = django.core.handlers.wsgi.WSGIHandler()
+from django.core import management
+
+management.setup_environ(settings)
+utility = management.ManagementUtility()
+command = utility.fetch_command('runserver')
+command.validate()
+
+import django.conf.settings
+from django.utils import translation
+translation.activate(django.conf.settings.LANGUAGE_CODE)
+
+from django.core.handlers import wsgi
+
+application = wsgi.WSGIHandler()

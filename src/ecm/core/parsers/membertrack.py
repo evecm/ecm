@@ -58,6 +58,7 @@ def update():
         oldMembers = {}
         notCorped  = {}
         oldAccessLvls = {}
+        oldOwners = {}
         
         # we get the old member list from the database
         for m in Member.objects.all(): 
@@ -66,6 +67,7 @@ def update():
             else:
                 notCorped[m] = m
             oldAccessLvls[m.characterID] = m.accessLvl
+            oldOwners[m.characterID] = m.owner
             
         for member in membersApi.members:
             m = parseOneMember(member=member)
@@ -95,6 +97,7 @@ def update():
             try: 
                 # we restore the old access levels from the database
                 m.accessLvl = oldAccessLvls[m.characterID]
+                m.owner = oldOwners[m.characterID]
             except KeyError:
                 # 'm' is a brand new member, his/her access level didn't exist before
                 # we leave it to the default value '0'
@@ -126,21 +129,16 @@ def update():
 
 #------------------------------------------------------------------------------
 def parseOneMember(member):
-    id         = member.characterID
-    name       = member.name
-    nick       = member.title
-    corpDate   = member.startDateTime
-    base       = member.baseID
-    login      = member.logonDateTime
-    logoff     = member.logoffDateTime
-    location   = db.resolveLocationName(member.locationID)[0]
-    locationID = member.locationID
-    ship       = member.shipType
-    
-    return Member(characterID=id,    name=name,         nickname=nick,
-                  baseID=base,       corpDate=corpDate, lastLogin=login,
-                  lastLogoff=logoff, location=location, locationID=locationID, 
-                  ship=ship)
+    return Member(characterID   = member.characterID,    
+                  name          = member.name,         
+                  nickname      = member.title,
+                  baseID        = member.baseID,       
+                  corpDate      = member.startDateTime, 
+                  lastLogin     = member.logonDateTime,
+                  lastLogoff    = member.logoffDateTime, 
+                  location      = db.resolveLocationName(member.locationID)[0], 
+                  locationID    = member.locationID, 
+                  ship          = member.shipType)
     
 #------------------------------------------------------------------------------
 def getDiffs(oldMembers, newMembers, date):
