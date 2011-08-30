@@ -41,9 +41,9 @@ utility = management.ManagementUtility()
 command = utility.fetch_command('runserver')
 command.validate()
 
-import django.conf.settings
+from django.conf import settings as django_settings
 from django.utils import translation
-translation.activate(django.conf.settings.LANGUAGE_CODE)
+translation.activate(django_settings.LANGUAGE_CODE)
 
 from django.core.handlers import wsgi
 
