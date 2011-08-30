@@ -48,9 +48,6 @@
     cursor: pointer;
     * cursor: hand;
 }
-.order_table th {
-	border-bottom: solid 1px rgb(99,99,99);
-}
 
 .main-content a.title {
 	padding-left: 14px;
