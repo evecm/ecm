@@ -20,6 +20,7 @@ __author__ = "diabeteman"
 
 from django.db import models, transaction, connection
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as tr
 
 from ecm.core.utils import fix_mysql_quotes
 from ecm.core.eve.classes import Item, NoBlueprintException
@@ -55,17 +56,17 @@ class Order(models.Model):
     
     # states text
     STATES = {
-        DRAFT:             'Draft',
-        PENDING:           'Pending',
-        PROBLEMATIC:       'Problematic',
-        ACCEPTED:          'Accepted',
-        PLANNED:           'Planned',
-        IN_PREPARATION:    'In Preparation',
-        READY:             'Ready',
-        DELIVERED:         'Delivered',
-        PAID:              'Paid',
-        CANCELED:          'Canceled by Client',
-        REJECTED:          'Rejected by Manufacturer',
+        DRAFT:             tr('Draft'),
+        PENDING:           tr('Pending'),
+        PROBLEMATIC:       tr('Problematic'),
+        ACCEPTED:          tr('Accepted'),
+        PLANNED:           tr('Planned'),
+        IN_PREPARATION:    tr('In Preparation'),
+        READY:             tr('Ready'),
+        DELIVERED:         tr('Delivered'),
+        PAID:              tr('Paid'),
+        CANCELED:          tr('Canceled by Client'),
+        REJECTED:          tr('Rejected by Manufacturer'),
     }
     
     # allowed transitions between states
@@ -98,7 +99,7 @@ class Order(models.Model):
     # TRANSISTIONS
     
     def addComment(self, user, comment):
-        self.logs.create(state=self.state, user=user, text=str(comment))
+        self.logs.create(state=self.state, user=user, text=unicode(comment))
     
     def changeState(self, newState, user, comment):
         """
@@ -123,9 +124,9 @@ class Order(models.Model):
         [(CatalogEntry_A, qty_A), (CatalogEntry_B, qty_B), (CatalogEntry_C, qty_C)]
         """
         if self.rows.all() or self.logs.all():
-            comment = "Modified by originator."
+            comment = tr("Modified by originator.")
         else:
-            comment = "Created."
+            comment = tr("Created.")
         self.changeState(Order.DRAFT, self.originator, comment)
         self.rows.all().delete()
         for catalogEntry, quantity in entries:
@@ -138,7 +139,7 @@ class Order(models.Model):
         """
         Originator's confirmation of the order. Warns the manufacturing team. 
         """
-        self.changeState(Order.PENDING, self.originator, "Confirmed by originator.")
+        self.changeState(Order.PENDING, self.originator, tr("Confirmed by originator."))
         self.save()
         # TODO: handle the alerts
     
@@ -153,7 +154,7 @@ class Order(models.Model):
         try:
             self.checkIfCanBeFulfilled()
             self.createJobs()
-            self.changeState(Order.ACCEPTED, user=manufacturer, comment="Accepted")
+            self.changeState(Order.ACCEPTED, user=manufacturer, comment=tr("Accepted"))
             self.save()
             return True
         except OrderCannotBeFulfilled as err:
@@ -362,7 +363,7 @@ class OrderCannotBeFulfilled(UserWarning):
         self.missing_blueprints = missing_blueprints
 
     def __str__(self):
-        output = "Missing Blueprints:\n\n"
+        output = "Missing Blueprints:"  + "\n\n"
         for bp in self.missing_blueprints:
             output += "  - %s (%s)\n" % (str(bp.typeName), str(bp.typeID))
         return output

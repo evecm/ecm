@@ -20,7 +20,6 @@ __author__ = "diabeteman"
 
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 
 from ecm.core.eve import db
 
@@ -50,8 +49,8 @@ class PriceHistory(models.Model):
     
     class Meta:
         app_label = 'industry'
-        verbose_name = _("Price History")
-        verbose_name_plural = _("Prices History")
+        verbose_name = "Price History"
+        verbose_name_plural = "Prices History"
         ordering = ['typeID', 'date']
     
     typeID = models.PositiveIntegerField()

@@ -41,9 +41,9 @@ def get_buy_prices(itemIDs, systemID=None):
     response = urllib2.urlopen(url)
     element = ElementTree.parse(source=response)
     prices = {}
-    for type in element.findall('.//type'):
-        typeID = int(type.attrib['id'])
-        buyMax = type.find('buy/max')
+    for typ in element.findall('.//type'):
+        typeID = int(typ.attrib['id'])
+        buyMax = typ.find('buy/max')
         if buyMax is not None:
             prices[typeID] = round(float(buyMax.text), 2)
     return prices

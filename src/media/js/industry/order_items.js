@@ -48,7 +48,7 @@ function addItem(name) {
         for (var i = 0 ; i < rows.length ; i++) {
             if (rows[i].id == typeID) {
                 var qty = parseInt($('td:eq(2) input').val());
-                $('td:eq(2) input').val(qty + 1);
+                $('td:eq(2) input', rows[i]).val(qty + 1);
                 $("#search_box").val("");
                 return;
             }

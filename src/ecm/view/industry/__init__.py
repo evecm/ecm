@@ -16,7 +16,7 @@ import time
 def search_item(request):
     querystring = request.GET.get('q', None)
     if querystring is not None:
-        query = CatalogEntry.objects.filter(name__icontains=querystring)
+        query = CatalogEntry.objects.filter(name__icontains=querystring).order_by('name')
         matches = query.values_list('name', flat=True)
         return HttpResponse('\n'.join(matches))
     else:

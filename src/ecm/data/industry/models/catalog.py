@@ -69,6 +69,8 @@ class CatalogEntry(models.Model):
     def __unicode__(self):
         return unicode(self.name)
 
+    def __hash__(self):
+        return self.typeID
 
 
 #------------------------------------------------------------------------------
@@ -103,3 +105,6 @@ class OwnedBlueprint(models.Model):
 
     def __unicode__(self):
         return unicode(self.typeName)
+
+    def __hash__(self):
+        return self.blueprintTypeID

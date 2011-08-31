@@ -23,7 +23,6 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 
 from ecm.core.eve import db
 from ecm.data.industry.models.job import Job
@@ -37,11 +36,11 @@ class MileStone(models.Model):
     
     class Meta:
         app_label = 'industry'
-        verbose_name = _("MileStone")
-        verbose_name_plural = _("MileStones")
+        verbose_name = "MileStone"
+        verbose_name_plural = "MileStones"
         ordering = ['date']
     
-    date = models.DateField(unique=True)
+    date = models.DateField(unique=True, auto_now_add=True)
     
     def next(self):
         next_date = self.date + timedelta(days=settings.MILESTONE_INTERVAL_DAYS)

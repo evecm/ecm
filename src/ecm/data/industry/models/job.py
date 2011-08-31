@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as tr
 
 from ecm.core.eve.classes import Item, NoBlueprintException
 from ecm.data.industry.models.research import InventionPolicy
@@ -40,11 +40,11 @@ class Job(models.Model):
     READY = 4
 
     STATES = {
-        PENDING:       _('Pending'),
-        PLANNED:       _('Planned'),
-        AGGREGATED:    _('Aggregated'),
-        IN_PRODUCTION: _('In Production'),
-        READY:         _('Ready'),
+        PENDING:       tr('Pending'),
+        PLANNED:       tr('Planned'),
+        AGGREGATED:    tr('Aggregated'),
+        IN_PRODUCTION: tr('In Production'),
+        READY:         tr('Ready'),
     }
 
     SUPPLY = 0
@@ -52,9 +52,9 @@ class Job(models.Model):
     INVENTION = 8
     
     ACTIVITIES = {
-        MANUFACTURING: _('Manufacturing'),
-        SUPPLY:        _('Supply'),
-        INVENTION:     _('Invention'),
+        MANUFACTURING: tr('Manufacturing'),
+        SUPPLY:        tr('Supply'),
+        INVENTION:     tr('Invention'),
     }
 
     # self.order is None if this is an aggregation job
