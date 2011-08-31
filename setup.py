@@ -88,6 +88,7 @@ def upgrade(options):
     
     functions.install_files(options)
     dir_util.copy_tree(tempdir, options.install_dir)
+    functions.configure_apache(options)
     functions.configure_ecm(options)
     if functions.prompt("Upgrade EVE database?") in ['y', 'yes', 'Y']:
         functions.download_eve_db(options)

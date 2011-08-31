@@ -24,6 +24,7 @@ import subprocess
 from django.core import management
 import logging
 import shlex
+import re
 
 __date__ = "2011 8 23"
 __author__ = "diabeteman"
@@ -150,7 +151,7 @@ def configure_ecm(options):
     buff = buff.replace('DEFAULT_FROM_EMAIL = ""', 
                         'DEFAULT_FROM_EMAIL = "%(server_email)s"' % options.__dict__)
     buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"', 
-                        'ECM_BASE_URL = "%(vhost_name)s"' % options.__dict__)
+                        'ECM_BASE_URL = "%(vhost_name)s:%(port)s"' % options.__dict__)
     
     f = open(settings_file, "w")
     f.write(buff)
@@ -158,12 +159,13 @@ def configure_ecm(options):
     log.info("settings.py successfully configured.")
 
 #-------------------------------------------------------------------------------
+VHOST_REGEXP = re.compile(r"<VirtualHost (?P<ip_address>[^\s]+):(?P<port>\d+)>")
 def backup_settings(options, tempdir):
     log = get_logger()
     
     log.info("Backuping settings...")
     settings_file = os.path.join(options.install_dir, "ecm/settings.py")
-    vhost_file = os.path.join(options.install_dir, "ecm.apache.vhost.conf")
+    
     db_folder = os.path.join(options.install_dir, "db")
     logs_folder = os.path.join(options.install_dir, "logs")
     if os.path.exists(db_folder):
@@ -176,13 +178,18 @@ def backup_settings(options, tempdir):
         dir_util.mkpath(os.path.join(tempdir, 'ecm'))
         log.info("Copying %s to %s...", settings_file, os.path.join(tempdir, 'ecm'))
         file_util.copy_file(settings_file, os.path.join(tempdir, 'ecm/settings.py.old'))
-    if os.path.exists(vhost_file): 
-        log.info("Copying %s to %s...", vhost_file, tempdir)
-        file_util.copy_file(vhost_file, tempdir)
 
     # backup the owner of apache.wsgi
     file_stat = os.stat(os.path.join(options.install_dir, "apache.wsgi"))
     log.info("Stored the owner info of %s", os.path.join(options.install_dir, "apache.wsgi"))
+
+    vhost_file = os.path.join(options.install_dir, "ecm.apache.vhost.conf")
+    with open(vhost_file, 'r') as fd:
+        buff = fd.read()
+    dic = VHOST_REGEXP.search(buff).groupdict()
+    options.ip_address = dic['ip_address']
+    options.port = dic['port']
+
 
     sys.path.append(options.install_dir)
     import ecm.settings
@@ -193,7 +200,7 @@ def backup_settings(options, tempdir):
         options.db_pass = ecm.settings.DATABASES['default']['PASSWORD']
     options.admin_email = ecm.settings.ADMINS[1]
     options.server_email = ecm.settings.DEFAULT_FROM_EMAIL
-    options.vhost_name = ecm.settings.ECM_BASE_URL
+    options.vhost_name = ecm.settings.ECM_BASE_URL.split(':')[0]
     log.info("Stored configuration from %s", ecm.settings.__file__)
     sys.path.remove(options.install_dir)
     del ecm.settings

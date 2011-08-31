@@ -128,7 +128,7 @@ def cleanup_unregistered_users():
 @transaction.commit_on_success
 def update_all_users_accesses():
     try:
-        t = ScheduledTask.objects.get(function__contains='update_all_users_accesses')
+        t = ScheduledTask.objects.get(function__contains='update_all_character_associations')
         if not t.is_last_exec_success:
             raise RuntimeWarning("Last character associations update failed. "
                                  "Skipping user access update.")

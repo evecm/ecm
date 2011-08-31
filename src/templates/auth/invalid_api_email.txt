@@ -5,7 +5,7 @@ The following API credentials are invalid:
 {% for api in invalid_apis %}* {{ api.userID }}: {{ api.error }}
 {% endfor %}
 All the characters from these accounts are not associated with your profile anymore. 
-Please log in to http://{{ site }} and enter correct API credentials.
+Please log-in to http://{{ site }} and enter correct API credentials.
 
 NB: If you don't own these accounts anymore, you can delete them from your profile.
 

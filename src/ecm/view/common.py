@@ -23,6 +23,7 @@ import json
 import re, time
 import httplib as http
 from datetime import datetime
+import logging
 
 from django.conf import settings
 from django.shortcuts import render_to_response, redirect
@@ -36,6 +37,8 @@ from ecm.data.corp.models import Corp
 from ecm.view.decorators import basic_auth_required, check_user_access
 from ecm.data.scheduler.models import ScheduledTask
 from ecm.data.scheduler.threads import TaskThread
+
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 SHOWINFO_PATTERN = re.compile(r"showinfo:13\d\d//(\d+)", re.IGNORECASE + re.DOTALL)
@@ -64,6 +67,7 @@ def trigger_scheduler(request):
         TaskThread(tasks=tasks_to_execute).start()
         return HttpResponse(status=http.ACCEPTED)
     else:
+        logger.warning("Some tasks are already running, skipping scheduler start.")
         return HttpResponse(status=http.NOT_MODIFIED)
 
 #------------------------------------------------------------------------------
@@ -110,18 +114,19 @@ def launch_task(request, task_id):
     except ValueError as e:
         raise HttpResponseBadRequest(str(e))
     
-    if not ScheduledTask.objects.filter(is_running=True):
+    if task.is_running:
         TaskThread(tasks=[task]).start()
         code = http.ACCEPTED
     else:
         code = http.NOT_MODIFIED
+        logger.warning("Task '%s' is already running." % task.function)
     
-    next = request.GET.get("next", None)
-    if next is not None:
+    next_page = request.GET.get("next", None)
+    if next_page is not None:
         # we let the task the time to start before redirecting
         # so the "next" web page can display that it is actually running
         time.sleep(0.2)
-        return redirect(next)
+        return redirect(next_page)
     else:
         return HttpResponse(status=code)
 
