@@ -150,8 +150,13 @@ def configure_ecm(options):
                         "ADMINS = ('admin', '%(admin_email)s')" % options.__dict__)
     buff = buff.replace('DEFAULT_FROM_EMAIL = ""', 
                         'DEFAULT_FROM_EMAIL = "%(server_email)s"' % options.__dict__)
-    buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"', 
-                        'ECM_BASE_URL = "%(vhost_name)s:%(port)s"' % options.__dict__)
+    
+    if options.port != "80":
+        buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"', 
+                            'ECM_BASE_URL = "%(vhost_name)s:%(port)s"' % options.__dict__)
+    else:
+        buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"', 
+                            'ECM_BASE_URL = "%(vhost_name)s"' % options.__dict__)
     
     f = open(settings_file, "w")
     f.write(buff)
@@ -186,10 +191,10 @@ def backup_settings(options, tempdir):
     vhost_file = os.path.join(options.install_dir, "ecm.apache.vhost.conf")
     with open(vhost_file, 'r') as fd:
         buff = fd.read()
-    dic = VHOST_REGEXP.search(buff).groupdict()
-    options.ip_address = dic['ip_address']
-    options.port = dic['port']
-
+    match = VHOST_REGEXP.search(buff)
+    if match is not None:
+        options.ip_address = match.groupdict()['ip_address']
+        options.port = match.groupdict()['port']
 
     sys.path.append(options.install_dir)
     import ecm.settings
