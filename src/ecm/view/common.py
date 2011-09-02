@@ -63,11 +63,10 @@ def trigger_scheduler(request):
     tasks_to_execute = ScheduledTask.objects.filter(is_active=True, 
                                                     is_running=False,
                                                     next_execution__lt=now).order_by("-priority")
-    if tasks_to_execute and not ScheduledTask.objects.filter(is_running=True):
+    if tasks_to_execute:
         TaskThread(tasks=tasks_to_execute).start()
         return HttpResponse(status=http.ACCEPTED)
     else:
-        logger.warning("Some tasks are already running, skipping scheduler start.")
         return HttpResponse(status=http.NOT_MODIFIED)
 
 #------------------------------------------------------------------------------
