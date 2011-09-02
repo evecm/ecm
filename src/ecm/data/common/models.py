@@ -14,7 +14,6 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.core.exceptions import ValidationError
 
 __date__ = '2010-05-17'
 __author__ = 'diabeteman'
@@ -24,30 +23,39 @@ import re
 import random
 import datetime
 
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
 from django.db import models, transaction
 from django.conf import settings
 from django.utils.hashcompat import sha_constructor
 from django.core.validators import RegexValidator
 
+from ecm.core.eve.validators import validate_director_api_key
+
 #------------------------------------------------------------------------------
 class APIKey(models.Model):
     """
     Represents API credentials that will be used to connect to CCP server
     """
+    class Meta:
+        get_latest_by = 'id'
+    
     name = models.CharField(max_length=64)
-    userID = models.IntegerField()
-    charID = models.IntegerField()
-    key = models.CharField(max_length=64)
+    keyID = models.IntegerField()
+    characterID = models.IntegerField()
+    vCode = models.CharField(max_length=255)
+    
+    def clean(self):
+        validate_director_api_key(self)
     
     def __eq__(self, other):
         return hash(self) == hash(other)
     
     def __hash__(self):
-        return self.userID * 100000000 + self.charID
+        return self.keyID * 100000000 + self.characterID
 
     def __unicode__(self):
-        return u'%s - userID: %d apiKey: %s' % (self.name, self.userID, self.key)
+        return u'%s - keyID: %d vCode: %s' % (self.name, self.keyID, self.vCode)
 
 #------------------------------------------------------------------------------
 class UserAPIKey(models.Model):
@@ -55,8 +63,8 @@ class UserAPIKey(models.Model):
     API credentials used to associate characters to users
     """
     user = models.ForeignKey(User, related_name='eve_accounts')
-    userID = models.IntegerField(primary_key=True)
-    key = models.CharField(max_length=64)
+    keyID = models.IntegerField(primary_key=True)
+    vCode = models.CharField(max_length=255)
     is_valid = models.BooleanField(default=True)
     
     def is_valid_admin_display(self):
@@ -76,13 +84,13 @@ class UserAPIKey(models.Model):
         return hash(self) == hash(other)
     
     def __hash__(self):
-        return self.userID * 10000 + self.user_id
+        return self.keyID * 10000 + self.user_id
 
     def __unicode__(self):
         try:
-            return u"%s owns %d" % (self.user.username, self.userID)
+            return u"%s owns %d" % (self.user.username, self.keyID)
         except:
-            return u"%d owns %d" % (self.user_id, self.userID)
+            return u"%d owns %d" % (self.user_id, self.keyID)
 
 #------------------------------------------------------------------------------
 class ExternalApplication(models.Model):

@@ -1,1 +1,1 @@
-[{{ corp_name }}] Invalid API credentials
+[{{ corp_name }}] Invalid API Key

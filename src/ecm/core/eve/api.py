@@ -21,29 +21,32 @@ __author__ = "diabeteman"
 import cPickle, os, tempfile, time, zlib
 from datetime import datetime
 
-from django.core.exceptions import ObjectDoesNotExist
-from ecm.lib import eveapi
+from django.conf import settings
 
+from ecm.lib import eveapi
+from ecm.core.eve.validators import check_user_access_mask
 from ecm.data.common.models import APIKey
 from ecm.data.corp.models import Corp
+
+
 
 #------------------------------------------------------------------------------
 def get_api():
     try:
-        return APIKey.objects.all().order_by("-id")[0]
-    except IndexError:
-        raise ObjectDoesNotExist("There is no APIKey registered in the database")
+        return APIKey.objects.latest()
+    except APIKey.DoesNotExist:
+        raise APIKey.DoesNotExist("There is no APIKey registered in the database")
 
 #------------------------------------------------------------------------------
 def set_api(api_new):
     try:
-        api = APIKey.objects.all().order_by("-id")[0]
-    except IndexError:
+        api = APIKey.objects.latest()
+    except APIKey.DoesNotExist:
         api = APIKey()
     api.name = api_new.name
-    api.userID = api_new.userID
-    api.charID = api_new.charID
-    api.key = api_new.key
+    api.keyID = api_new.keyID
+    api.characterID = api_new.characterID
+    api.vCode = api_new.vCode
     api.save()
 
 #------------------------------------------------------------------------------
@@ -55,7 +58,7 @@ def connect(proxy=None, cache=False):
     else     : handler = None
     conn = eveapi.EVEAPIConnection(scheme="https", cacheHandler=handler, proxy=proxy)
     api = get_api()
-    return conn.auth(userID=api.userID, apiKey=api.key)
+    return conn.auth(keyID=api.keyID, vCode=api.vCode)
 
 #------------------------------------------------------------------------------
 def connect_user(user_api, proxy=None, cache=False):
@@ -65,8 +68,7 @@ def connect_user(user_api, proxy=None, cache=False):
     if cache : handler = CacheHandler()
     else     : handler = None
     conn = eveapi.EVEAPIConnection(scheme="http", cacheHandler=handler, proxy=proxy)
-    return conn.auth(userID=user_api.userID, apiKey=user_api.key)
-
+    return conn.auth(keyID=user_api.keyID, vCode=user_api.vCode)
 
 
 #------------------------------------------------------------------------------
@@ -79,20 +81,27 @@ class Character:
 
 def get_account_characters(user_api):
     connection = connect_user(user_api)
-    response = connection.account.Characters()
+    response = connection.account.APIKeyInfo()
     corp = Corp.objects.get(id=1)
     characters = []
-    for char in response.characters:
+    if response.key.type.lower() != "account":
+        raise eveapi.Error(0, "Wrong API Key type '" + response.key.type + "'. " +
+                           "Please provide an API Key working for all characters of your account.")
+    
+    check_user_access_mask(response.key.accessMask)
+    
+    for char in response.key.characters:
         c = Character()
-        c.name = char.name
+        c.name = char.characterName
         c.characterID = char.characterID
         c.corporationID = char.corporationID
         c.corporationName = char.corporationName
-        c.is_corped = char.corporationID == corp.corporationID
+        c.is_corped = (char.corporationID == corp.corporationID)
         characters.append(c)
     return characters
 
 
+        
 #------------------------------------------------------------------------------
 class CacheHandler(object):
     # Note: this is an example handler to demonstrate how to use them.

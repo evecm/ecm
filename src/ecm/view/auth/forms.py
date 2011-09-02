@@ -50,8 +50,9 @@ class AccountCreationForm(forms.Form):
     password1 = PasswordField(label=_("Password"), min_length=6)
     password2 = PasswordField(label=_("Password (confirmation)"), min_length=6,
                                 help_text=_("Enter the same password as above, for verification."))
-    userID = forms.IntegerField(label="User ID")
-    apiKey = forms.CharField(label=_("Limited API Key"), min_length=64, max_length=64)
+    keyID = forms.IntegerField(label="API Key ID")
+    vCode = forms.CharField(label=_("Verification Code"),
+                            widget=forms.TextInput(attrs={'size':'100'}))
     captcha = CaptchaField()
     characters = []
     
@@ -73,25 +74,25 @@ class AccountCreationForm(forms.Form):
             raise forms.ValidationError(_("This email address is already in use."))
         return self.cleaned_data['email']
     
-    def clean_userID(self):
+    def clean_keyID(self):
         """
-        Validate that the supplied userID is not already associated to another User.
+        Validate that the supplied keyID is not already associated to another User.
         """
-        if UserAPIKey.objects.filter(userID=self.cleaned_data['userID']):
+        if UserAPIKey.objects.filter(keyID=self.cleaned_data['keyID']):
             raise forms.ValidationError(_("This EVE account is already registered."))
-        return self.cleaned_data['userID']
+        return self.cleaned_data['keyID']
     
     def clean(self):
         cleaned_data = self.cleaned_data
         
-        userID = cleaned_data.get("userID")
-        apiKey = cleaned_data.get("apiKey")
+        keyID = cleaned_data.get("keyID")
+        vCode = cleaned_data.get("vCode")
         username = cleaned_data.get("username")
         email = cleaned_data.get("email")
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
         
-        if not None in (userID, apiKey, username, email, password1, password2):
+        if not None in (keyID, vCode, username, email, password1, password2):
             # test if both password fields match
             if not password1 == password2:
                 self._errors["password2"] = self.error_class([_("Passwords don't match")])
@@ -100,7 +101,7 @@ class AccountCreationForm(forms.Form):
             # test if API credentials are valid and if EVE account contains 
             # characters which are members of the corporation
             try:
-                self.characters = api.get_account_characters(UserAPIKey(userID=userID, key=apiKey))
+                self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, key=vCode))
                 valid_account = False
                 for c in self.characters:
                     exists = Member.objects.filter(characterID=c.characterID).exists()
@@ -108,16 +109,16 @@ class AccountCreationForm(forms.Form):
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
                     if Member.objects.filter(characterID__in=ids).exclude(owner=None):
-                        self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
-                        del cleaned_data["userID"]
+                        self._errors["keyID"] = self.error_class([_("A character from this account is already registered by another player")])
+                        del cleaned_data["keyID"]
                 else:
-                    self._errors["userID"] = self.error_class([_("This EVE account has no character member of the corporation")])
-                    del cleaned_data["userID"]
+                    self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
+                    del cleaned_data["keyID"]
             except eveapi.Error as e:
-                self._errors["userID"] = self.error_class([str(e)])
-                self._errors["apiKey"] = self.error_class([str(e)])
-                del cleaned_data["userID"]
-                del cleaned_data["apiKey"]
+                self._errors["keyID"] = self.error_class([str(e)])
+                self._errors["vCode"] = self.error_class([str(e)])
+                del cleaned_data["keyID"]
+                del cleaned_data["vCode"]
 
         return cleaned_data
 
@@ -214,65 +215,68 @@ PasswordChangeForm.base_fields.keyOrder = ['old_password', 'new_password1', 'new
 
 #------------------------------------------------------------------------------
 class AddApiKeyForm(forms.Form):
-    userID = forms.IntegerField(label=_("User ID"))
-    apiKey = forms.CharField(label=_("Limited API Key"), min_length=64, max_length=64)
+    keyID = forms.IntegerField(label=_("API Key ID"))
+    vCode = forms.CharField(label=_("Verification Code"),
+                            widget=forms.TextInput(attrs={'size':'100'}))
+    user = AnonymousUser()
     
-    def clean_userID(self):
+    def clean_keyID(self):
         """
-        Validate that the supplied userID is not already associated to another User.
+        Validate that the supplied keyID is not already associated to another User.
         """
-        if UserAPIKey.objects.filter(userID=self.cleaned_data['userID']):
-            raise forms.ValidationError(_("This EVE account is already registered."))
-        return self.cleaned_data['userID']
+        if UserAPIKey.objects.filter(keyID=self.cleaned_data['keyID']):
+            raise forms.ValidationError(_("This API Key is already registered."))
+        return self.cleaned_data['keyID']
     
     def clean(self):
         cleaned_data = self.cleaned_data
         
-        userID = cleaned_data.get("userID")
-        apiKey = cleaned_data.get("apiKey")
+        keyID = cleaned_data.get("keyID")
+        vCode = cleaned_data.get("vCode")
         
-        if userID is not None and apiKey is not None:
+        if keyID is not None and vCode is not None:
             # test if API credentials are valid and if EVE account contains 
             # characters which are members of the corporation
             try:
-                self.characters = api.get_account_characters(UserAPIKey(userID=userID, key=apiKey))
+                self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
                 valid_account = False
                 for c in self.characters: 
                     exists = Member.objects.filter(characterID=c.characterID).exists()
                     valid_account |= exists and c.is_corped
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
-                    if Member.objects.filter(characterID__in=ids).exclude(owner=None):
-                        self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
-                        del cleaned_data["userID"]
+                    if Member.objects.filter(characterID__in=ids).exclude(owner=None).exclude(owner=self.user):
+                        self._errors["keyID"] = self.error_class([_("A character from this account is already registered by another player")])
+                        del cleaned_data["keyID"]
                 else:
-                    self._errors["userID"] = self.error_class([_("This EVE account has no character member of the corporation")])
-                    del cleaned_data["userID"]
+                    self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
+                    del cleaned_data["keyID"]
             except eveapi.Error as e:
-                self._errors["userID"] = self.error_class([str(e)])
-                self._errors["apiKey"] = self.error_class([str(e)])
-                del cleaned_data["userID"]
-                del cleaned_data["apiKey"]
+                self._errors["keyID"] = self.error_class([str(e)])
+                self._errors["vCode"] = self.error_class([str(e)])
+                del cleaned_data["keyID"]
+                del cleaned_data["vCode"]
 
         return cleaned_data
 
 #------------------------------------------------------------------------------
 class EditApiKeyForm(forms.Form):
-    userID = forms.IntegerField(label=_("User ID"), widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    apiKey = forms.CharField(label=_("Limited API Key"), min_length=64, max_length=64)
+    keyID = forms.IntegerField(label=_("API Key ID"), widget=forms.TextInput(attrs={'readonly':'readonly'}))
+    vCode = forms.CharField(label=_("Verification Code"),
+                            widget=forms.TextInput(attrs={'size':'100'}))
     user = AnonymousUser()
     
     def clean(self):
         cleaned_data = self.cleaned_data
         
-        userID = cleaned_data.get("userID")
-        apiKey = cleaned_data.get("apiKey")
+        keyID = cleaned_data.get("keyID")
+        vCode = cleaned_data.get("vCode")
         
-        if userID is not None and apiKey is not None:
+        if keyID is not None and vCode is not None:
             # test if API credentials are valid and if EVE account contains 
             # characters which are members of the corporation
             try:
-                self.characters = api.get_account_characters(UserAPIKey(userID=userID, key=apiKey))
+                self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
                 valid_account = False
                 for c in self.characters: 
                     exists = Member.objects.filter(characterID=c.characterID).exists()
@@ -280,14 +284,14 @@ class EditApiKeyForm(forms.Form):
                 if valid_account:
                     ids = [ c.characterID for c in self.characters ]
                     if Member.objects.filter(characterID__in=ids).exclude(owner__in=[None, self.user]):
-                        self._errors["userID"] = self.error_class([_("A character from this account is already registered by another player")])
-                        del cleaned_data["userID"]
+                        self._errors["keyID"] = self.error_class([_("A character from this account is already registered by another player")])
+                        del cleaned_data["keyID"]
                 else:
-                    self._errors["userID"] = self.error_class([_("This EVE account has no character member of the corporation")])
-                    del cleaned_data["userID"]
+                    self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
+                    del cleaned_data["keyID"]
             except eveapi.Error as e:
-                self._errors["apiKey"] = self.error_class([str(e)])
-                del cleaned_data["apiKey"]
+                self._errors["vCode"] = self.error_class([str(e)])
+                del cleaned_data["vCode"]
 
         return cleaned_data
 

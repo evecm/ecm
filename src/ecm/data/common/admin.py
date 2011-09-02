@@ -27,10 +27,10 @@ from ecm.data.common.models import UpdateDate, ColorThreshold, APIKey, UserAPIKe
     UserBinding, GroupBinding, ExternalApplication
 
 class APIKeyAdmin(admin.ModelAdmin):
-    list_display = ['name', 'userID', 'charID', 'key']
+    list_display = ['name', 'keyID', 'characterID', 'vCode']
 
 class UserAPIKeyAdmin(admin.ModelAdmin):
-    list_display = ['user', 'userID', 'key', 'is_valid']
+    list_display = ['user', 'keyID', 'vCode', 'is_valid']
 
 class ExternalAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'url']

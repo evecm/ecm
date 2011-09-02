@@ -39,6 +39,22 @@ PASSWD_FORCE_SPECIAL_CHARS = False
 PASSWD_FORCE_DIGITS = False
 PASSWD_FORCE_LETTERS = False
 BASIC_AUTH_ONLY_ON_LOCALHOST = False
+CORP_MEMBERS_GROUP_ID = 0
+CORP_MEMBERS_GROUP_NAME = "Members"
+MANDATORY_CORP_API_ACCESS_MASKS = [
+    1 << 1, # AssetList
+    1 << 3, # CorporationSheet
+    1 << 9, # MemberSecurity
+    1 << 11, # MemberTracking
+    1 << 14, # OutpostList
+    1 << 20, # WalletJournal
+    1 << 22, # Titles
+]
+MANDATORY_USER_API_ACCESS_MASKS = [
+    1 << 3, # CharacterSheet
+    1 << 23, # PublicCharacterInfo
+    1 << 24, # PrivateCharacterInfo
+]
 
 ###############################################################################
 # DJANGO SPECIFIC SETTINGS

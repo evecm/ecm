@@ -85,7 +85,7 @@ def task_list_data(request):
     
     functions = [ t[0] for t in ScheduledTask.FUNCTION_CHOICES ]
     tasks = []
-    for t in ScheduledTask.objects.filter(function__in=functions):
+    for t in ScheduledTask.objects.filter(function__in=functions, is_active=True):
         tasks.append([
             t.get_function_display(),
             t.next_execution_admin_display(),
@@ -115,11 +115,14 @@ def launch_task(request, task_id):
         raise HttpResponseBadRequest(str(e))
     
     if task.is_running:
-        TaskThread(tasks=[task]).start()
-        code = http.ACCEPTED
-    else:
         code = http.NOT_MODIFIED
         logger.warning("Task '%s' is already running." % task.function)
+    elif not task.is_active:
+        code = http.NOT_MODIFIED
+        logger.warning("Task '%s' is disabled." % task.function)
+    else:
+        code = http.ACCEPTED
+        TaskThread(tasks=[task]).start()
     
     next_page = request.GET.get("next", None)
     if next_page is not None:

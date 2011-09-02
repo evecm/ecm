@@ -25,6 +25,20 @@
 # OTHER DEALINGS IN THE SOFTWARE
 #
 #-----------------------------------------------------------------------------
+# Version: 1.1.9 - 2 September 2011
+# - added workaround for row tags with attributes that were not defined
+#   in their rowset (this should fix AssetList)
+#
+# Version: 1.1.8 - 1 September 2011
+# - fix for inconsistent columns attribute in rowsets.
+#
+# Version: 1.1.7 - 1 September 2011
+# - auth() method updated to work with the new authentication scheme.
+#
+# Version: 1.1.6 - 27 May 2011
+# - Now supports composite keys for IndexRowsets.
+# - Fixed calls not working if a path was specified in the root url.
+#
 # Version: 1.1.5 - 27 Januari 2011
 # - Now supports (and defaults to) HTTPS. Non-SSL proxies will still work by
 #   explicitly specifying http:// in the url.
@@ -128,7 +142,7 @@ def EVEAPIConnection(url="api.eveonline.com", cacheHandler=None, proxy=None, sch
     #          Called when eveapi wants to fetch a document.
     #          host is the address of the server, path is the full path to
     #          the requested document, and params is a dict containing the
-    #          parameters passed to this api call (userID, apiKey etc).
+    #          parameters passed to this api call (keyID, vCode, etc).
     #          The method MUST return one of the following types:
     #
     #           None - if your cache did not contain this entry
@@ -269,12 +283,10 @@ class _AuthContext(_Context):
 
 class _RootContext(_Context):
 
-    def auth(self, userID=None, apiKey=None):
-        # returns a copy of this object but for every call made through it, the
-        # userID and apiKey will be added to the API request.
-        if userID and apiKey:
-            return _AuthContext(self._root, self._path, self.parameters, {"userID":userID, "apiKey":apiKey})
-        raise ValueError("Must specify userID and apiKey")
+    def auth(self, **kw):
+        if len(kw) == 2 and (("keyID" in kw and "vCode" in kw) or ("userID" in kw and "apiKey" in kw)):
+            return _AuthContext(self._root, self._path, self.parameters, kw)
+        raise ValueError("Must specify keyID and vCode")
 
     def setcachehandler(self, handler):
         self._root._handler = handler
@@ -418,7 +430,7 @@ class _Parser(object):
         if name == "rowset":
             # for rowsets, use the given name
             try:
-                columns = attributes[attributes.index('columns')+1].split(",")
+                columns = attributes[attributes.index('columns')+1].replace(" ", "").split(",")
             except ValueError:
                 # rowset did not have columns tag set (this is a bug in API)
                 # columns will be extracted from first row instead.
@@ -451,9 +463,15 @@ class _Parser(object):
             self.root = this
 
         if isinstance(self.container, Rowset) and (self.container.__catch == this._name):
-            # check for missing columns attribute (see above)
-            if not self.container._cols:
+            # <hack>
+            # - check for missing columns attribute (see above)
+            # - check for extra attributes that were not defined in the rowset,
+            #   such as rawQuantity in the assets lists.
+            # In either case the tag is assumed to be correct and the rowset's
+            # columns are overwritten with the tag's version.
+            if not self.container._cols or (len(attributes)/2 > len(self.container._cols)):
                 self.container._cols = attributes[0::2]
+            # </hack>
 
             self.container.append([_autocast(attributes[i], attributes[i+1]) for i in xrange(0, len(attributes), 2)])
             this._isrow = True
@@ -761,13 +779,22 @@ class IndexRowset(Rowset):
 
     def __init__(self, cols=None, rows=None, key=None):
         try:
-            self._ki = ki = cols.index(key)
+            if "," in key:
+                self._ki = ki = [cols.index(k) for k in key.split(",")]
+                self.composite = True
+            else:
+                self._ki = ki = cols.index(key)
+                self.composite = False
         except IndexError:
             raise ValueError("Rowset has no column %s" % key)
 
         Rowset.__init__(self, cols, rows)
         self._key = key
-        self._items = dict((row[ki], row) for row in self._rows)
+
+        if self.composite:
+            self._items = dict((tuple([row[k] for k in ki]), row) for row in self._rows)
+        else:
+            self._items = dict((row[ki], row) for row in self._rows)
 
     def __getitem__(self, ix):
         if type(ix) is slice:
@@ -776,7 +803,10 @@ class IndexRowset(Rowset):
 
     def append(self, row):
         Rowset.append(self, row)
-        self._items[row[self._ki]] = row
+        if self.composite:
+            self._items[tuple([row[k] for k in self._ki])] = row
+        else:
+            self._items[row[self._ki]] = row
 
     def __getstate__(self):
         return (Rowset.__getstate__(self), self._items, self._ki)

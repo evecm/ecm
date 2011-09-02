@@ -45,7 +45,7 @@ def update():
         # connect to eve API
         api_conn = api.connect()
         # retrieve /corp/MemberTracking.xml.aspx
-        membersApi = api_conn.corp.MemberTracking(characterID=api.get_api().charID)
+        membersApi = api_conn.corp.MemberTracking(characterID=api.get_api().characterID)
         checkApiVersion(membersApi._meta.version)
         
         currentTime = membersApi._meta.currentTime

@@ -44,8 +44,8 @@ def create_account(request):
                                                                              email=email, 
                                                                              password=password)
             user_api = UserAPIKey()
-            user_api.userID = form.cleaned_data["userID"]
-            user_api.key = form.cleaned_data["apiKey"]
+            user_api.keyID = form.cleaned_data["keyID"]
+            user_api.vCode = form.cleaned_data["vCode"]
             user_api.user = user
             user_api.save()
             

@@ -40,7 +40,7 @@ def update():
     try:
         logger.info("fetching /corp/AssetList.xml.aspx...")
         api_conn = api.connect()
-        apiAssets = api_conn.corp.AssetList(characterID=api.get_api().charID)
+        apiAssets = api_conn.corp.AssetList(characterID=api.get_api().characterID)
         checkApiVersion(apiAssets._meta.version)
         
         currentTime = apiAssets._meta.currentTime

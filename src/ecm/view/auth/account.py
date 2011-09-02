@@ -51,10 +51,11 @@ def account(request):
 def add_api(request):
     if request.method == 'POST':
         form = AddApiKeyForm(request.POST)
+        form.user = request.user
         if form.is_valid():
             user_api = UserAPIKey()
-            user_api.userID = form.cleaned_data["userID"]
-            user_api.key = form.cleaned_data["apiKey"]
+            user_api.keyID = form.cleaned_data["keyID"]
+            user_api.vCode = form.cleaned_data["vCode"]
             user_api.user = request.user
             user_api.save()
             
@@ -77,8 +78,8 @@ def add_api(request):
 
 #------------------------------------------------------------------------------
 @login_required
-def delete_api(request, userID):
-    api = get_object_or_404(UserAPIKey, userID=int(userID))
+def delete_api(request, keyID):
+    api = get_object_or_404(UserAPIKey, keyID=int(keyID))
     if api.user == request.user:
         api.delete()
         return redirect("/account")
@@ -87,8 +88,8 @@ def delete_api(request, userID):
 
 #------------------------------------------------------------------------------
 @login_required
-def edit_api(request, userID):
-    api = get_object_or_404(UserAPIKey, userID=int(userID))
+def edit_api(request, keyID):
+    api = get_object_or_404(UserAPIKey, keyID=int(keyID))
     if api.user != request.user:
         return forbidden(request)
     
@@ -96,7 +97,7 @@ def edit_api(request, userID):
         form = EditApiKeyForm(request.POST)
         form.user = request.user
         if form.is_valid():
-            api.key = form.cleaned_data["apiKey"]
+            api.vCode = form.cleaned_data["vCode"]
             api.is_valid = True
             api.save()
             
@@ -113,7 +114,7 @@ def edit_api(request, userID):
             
             return redirect('/account')
     else: # request.method == 'GET'
-        form = EditApiKeyForm(initial={"userID" : api.userID, "apiKey" : api.key})
+        form = EditApiKeyForm(initial={"keyID" : api.keyID, "vCode" : api.vCode})
     
     data = {'form': form, 'request_path' : request.get_full_path()}
     return render_to_response('auth/edit_api.html', data, RequestContext(request))

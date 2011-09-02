@@ -63,11 +63,12 @@ def update_character_associations(user):
             for member in Member.objects.filter(characterID__in=ids):
                 new_ownerships.append((member, user))
         except eveapi.Error as e:
-            if e.code in [202, 203, 204, 205, 210, 211, 212]:
+            if e.code == 0 or 200 >= e.code > 300:
                 # authentication failure error codes. 
-                # This happens if the apiKey does not match the userID 
+                # This happens if the vCode does not match the keyID 
                 # or if the account is disabled
-                logger.warning("%s (user: '%s' userID: %d)" % (str(e), user.username, user_api.userID))
+                # or if the key does not allow to list characters from an account
+                logger.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, user_api.keyID))
                 user_api.is_valid = False
                 user_api.error = str(e)
                 invalid_apis.append(user_api)
@@ -140,6 +141,12 @@ def update_all_users_accesses():
         logger.exception("update failed")
         raise
 
+try:
+    MEMBERS_GROUP = Group.objects.get(id=settings.CORP_MEMBERS_GROUP_ID)
+except Group.DoesNotExist:
+    MEMBERS_GROUP = Group.objects.create(id=settings.CORP_MEMBERS_GROUP_ID,
+                                         name=settings.CORP_MEMBERS_GROUP_NAME)
+
 #------------------------------------------------------------------------------
 def update_user_accesses(user):
     ownedCharacters = user.characters.all()
@@ -148,9 +155,11 @@ def update_user_accesses(user):
     for char in ownedCharacters:
         director = char.is_director() or director
         titles |= char.titles.all()
-    ids = titles.distinct().values_list("titleID", flat=True)
+    titleIDs = titles.distinct().values_list("titleID", flat=True)
     user.groups.clear()
-    for id in ids:
-        user.groups.add(Group.objects.get(id=id))
+    if ownedCharacters.filter(corped=True):
+        user.groups.add(MEMBERS_GROUP)
+    for titleID in titleIDs:
+        user.groups.add(Group.objects.get(id=titleID))
     if director:
         user.groups.add(Group.objects.get(id=settings.DIRECTOR_GROUP_ID))

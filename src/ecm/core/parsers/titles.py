@@ -45,7 +45,7 @@ def update():
         # connect to eve API
         api_conn = api.connect()
         # retrieve /corp/Titles.xml.aspx
-        titlesApi = api_conn.corp.Titles(characterID=api.get_api().charID)
+        titlesApi = api_conn.corp.Titles(characterID=api.get_api().characterID)
         checkApiVersion(titlesApi._meta.version)
         
         currentTime = titlesApi._meta.currentTime

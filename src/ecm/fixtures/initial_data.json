@@ -36,6 +36,14 @@
     }
   },
     {
+      "pk": 0, 
+      "model": "auth.group", 
+      "fields": {
+        "name": "Members", 
+        "permissions": []
+      }
+    },
+    {
       "pk": 1, 
       "model": "auth.group", 
       "fields": {

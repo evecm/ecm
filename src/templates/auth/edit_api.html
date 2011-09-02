@@ -1,28 +1,28 @@
 {% extends "base.html" %}
 
 
-{% block headtitle %}Edit EVE Account Credentials{% endblock %}
+{% block headtitle %}Edit API Key{% endblock %}
 
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/account">Account</a></li>
-<li><a href="{{ request_path }}">Add EVE Account Credentials</a></li>
+<li><a href="{{ request_path }}">Edit API Key</a></li>
 {% endblock %}
 
 {% block main_content %}
 
-<h1 class="pagetitle">Edit EVE Account Credentials</h1>
+<h1 class="pagetitle">Edit API Key</h1>
 
 <form class="signupform" action="{{ request_path }}" method="post" >{% csrf_token %}
     {% if form.errors %}
     <p class="error">{{ form.non_field_errors }}</p>
     {% endif %} 
     <fieldset>
-        <span class="label">{{ form.userID.label_tag }}{{ form.userID.errors }}</span>
-        {{ form.userID }}
-        <span class="label">{{ form.apiKey.label_tag }}{{ form.apiKey.errors }}</span>
-        {{ form.apiKey }}
+        <span class="label">{{ form.keyID.label_tag }}{{ form.keyID.errors }}</span>
+        {{ form.keyID }}
+        <span class="label">{{ form.vCode.label_tag }}{{ form.vCode.errors }}</span>
+        {{ form.vCode }}
         <input type="submit" class="button" value="Submit Information"  />
     </fieldset>
 </form>

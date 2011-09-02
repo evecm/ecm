@@ -90,7 +90,7 @@ def fetch_entries(wallet, lastKnownID):
     
     logger.info("fetching /corp/WalletJournal.xml.aspx "
                 "(accountKey=%d)..." % wallet.walletID)
-    charID = api.get_api().charID
+    charID = api.get_api().characterID
     walletsApi = api_conn.corp.WalletJournal(characterID=charID, 
                                             accountKey=wallet.walletID, 
                                             rowCount=256)
@@ -115,7 +115,8 @@ def fetch_entries(wallet, lastKnownID):
                                                  rowCount=256)
         checkApiVersion(walletsApi._meta.version)
         entries.extend(list(walletsApi.entries))
-        minID = min([e.refID for e in walletsApi.entries])
+        if len(walletsApi.entries) > 0:
+            minID = min([e.refID for e in walletsApi.entries])
     
     # we sort the entries by increasing refIDs in order to remove 
     # the ones we already have in the database

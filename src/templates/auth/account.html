@@ -30,7 +30,7 @@
 <script type="text/javascript">
 $(".del_character").click(function () {
     var alert_text = "Are you sure you want to get rid of " + this.name + "?\n\n";
-    alert_text += "If this character is still in one of your registered EVE accounts, it will be associated with your profile again at next scan.";
+    alert_text += "If this character is still attached to one of your registered API Keys, it will be associated with your profile again at next scan.";
     if (confirm(alert_text)) {
         window.location = "/account/deletecharacter/" + this.id;
     }
@@ -38,23 +38,23 @@ $(".del_character").click(function () {
 </script>
 
 
-<h1>EVE Account Credentials</h1>
+<h1>EVE API Keys</h1>
 <table class="transparent" style="width:50%;">
 {% for key in api_keys %}
 <tr>
-  <td class="bold">{{ key.userID }}</td>
+  <td class="bold">{{ key.keyID }}</td>
   <td>{{ key.is_valid_html|safe }}</td>
-  <td><input type="button" class="edit_api" id="{{ key.userID }}" value="Edit"/></td>
-  <td><input type="button" class="del_api" id="{{ key.userID }}" value="Delete"/></td>
+  <td><input type="button" class="edit_api" id="{{ key.keyID }}" value="Edit"/></td>
+  <td><input type="button" class="del_api" id="{{ key.keyID }}" value="Delete"/></td>
 </tr>
 {% endfor %}
 </table>
 
-<input type="button" id="add_api" value="Add new EVE account"/>
+<input type="button" id="add_api" value="Add new API Key"/>
 
 <script type="text/javascript">
 $(".del_api").click(function () {
-    var alert_text = "Are you sure you want to delete API information for the EVE account with userID: " + this.id + "?";
+    var alert_text = "Are you sure you want to delete API Key #" + this.id + "?";
     if (confirm(alert_text)) {
         window.location = "/account/deleteapi/" + this.id;
     }
