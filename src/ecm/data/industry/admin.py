@@ -105,7 +105,7 @@ class PriceHistoryAdmin(admin.ModelAdmin):
 #------------------------------------------------------------------------------
 class CatalogEntryAdmin(admin.ModelAdmin):
     list_display = [
-        "name",
+        "typeName",
         "typeID",
         "marketGroupID",
         "fixedPrice",

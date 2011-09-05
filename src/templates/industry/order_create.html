@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Order #{{ order.id }} Modify{% endblock %}
+{% block headtitle %}Order #{{ order.id }} Items{% endblock %}
 
 
 
@@ -18,8 +18,7 @@
 <li><a href="/">Home</a></li>
 <li><a href="/industry">Industry</a></li>
 <li><a href="/industry/orders">Orders</a></li>
-<li><a href="/industry/orders/{{ order.id }}">#{{ order.id }}</a></li>
-<li><a href="/industry/orders/{{ order.id }}/modify">Modify</a></li>
+<li><a href="/industry/orders/create">Create New Order</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -31,7 +30,7 @@
     <input type="button" class="button" id="add_button" value="Add to my order" /> 
 </form> 
 
-<form method="post" action="/industry/orders/{{order.id}}/modify" id="items_form" >
+<form method="post" action="/industry/orders/create" id="items_form" >
 {% csrf_token %}
     <table class="order_table">
         <thead>
@@ -43,11 +42,11 @@
 		    </tr>
         </thead>
 		<tbody id="items">
-			{% for row in order.rows.all %}
+			{% for item in items %}
 			<tr id="{{item.typeID}}">
-            	<td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
-             	<td class="bold">{{row.catalogEntry.typeName}}</td>
-             	<td class="center"><input type="text" name="{{row.catalogEntry.typeID}}" value="{{row.quantity}}" /></td>
+            	<td class="center"><img src="http://image.eveonline.com/Type/{{item.typeID}}_32.png" /></td>
+             	<td class="bold">{{item.typeName}}</td>
+             	<td class="center"><input type="text" name="{{item.typeID}}" value="1" /></td>
              	<td class="center"><img src="/m/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/></td> 
            	</tr>
            	{% empty %}

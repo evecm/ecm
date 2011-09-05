@@ -14,57 +14,91 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.http import HttpResponse
 
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
 
 
-import json
 from datetime import datetime
 
+from django.http import Http404, HttpResponseBadRequest
 from django.template.context import RequestContext
-from django.shortcuts import get_object_or_404, render_to_response
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render_to_response, redirect
 
-from ecm.core import utils
 from ecm.data.industry.models import Order
+from ecm.data.industry.models.catalog import CatalogEntry
 
 
 #------------------------------------------------------------------------------
+@login_required
+def new(request):
+    return render_to_response('industry/order_create.html', {}, RequestContext(request))
 
+#------------------------------------------------------------------------------
+@login_required
+def create(request):
+    items, valid_order = extract_order_items(request)
+            
+    if valid_order:
+        order = Order.objects.create(originator=request.user, pricing_id=1)
+        order.modify(items)
+        return redirect('/industry/orders/%d' % order.id)
+    else:
+        return render_to_response('industry/order_create.html', {'items': items}, RequestContext(request))
+
+#------------------------------------------------------------------------------
+@login_required
 def details(request, order_id):
-    order = get_object_or_404(Order, id=int(order_id))
+    try:
+        order = get_object_or_404(Order, id=int(order_id))
+    except ValueError:
+        raise Http404()
     
-    logs = list(order.logs.all().order_by('date'))
-    try:
-        creationDate = utils.print_time_min(logs[0].date)
-    except IndexError:
-        creationDate = utils.print_time_min(datetime.now())
-    try:
-        lastModifiedDate = utils.print_time_min(logs[-1].date)
-    except IndexError:
-        lastModifiedDate = utils.print_time_min(datetime.now())
+    logs = order.logs.all().order_by('-date')
 
-    data = {'order' : order,
-       'creationDate' : creationDate,
-       'lastModifiedDate':lastModifiedDate}
+    data = {'order' : order, 'logs': logs}
     
     return render_to_response('industry/order_details.html', data, RequestContext(request))
 
-def rows_data(request, order_id):
-    order = get_object_or_404(Order, id=int(order_id))
-    rows = []
-    
-    for row in order.rows.all():
-        rows.append([
-            row.item.typeName,
-            row.quantity,
-            row.quote,
-            '<a href="/industry/row/%d/delete&next=/industry/order/%s">Remove</a>' % (row.id, order.id)
-        ])
-    
-    return HttpResponse(json.dumps(rows))
-    
-def modify(request):
-    return render_to_response('industry/order_modify.html', {}, RequestContext(request))
 
+
+#------------------------------------------------------------------------------
+@login_required
+def modify(request, order_id):
+    
+    try:
+        order = get_object_or_404(Order, id=int(order_id))
+    except ValueError:
+        raise Http404()
+    
+    if request.method == 'GET':
+        return render_to_response('industry/order_modify.html', {'order': order}, RequestContext(request))
+    elif request.method == 'POST':
+        items, valid_order = extract_order_items(request)
+        if valid_order:
+            order.modify(items)
+            return redirect('/industry/orders/%d' % order.id)
+        else:
+            return redirect('/industry/orders/%d/modify' % order.id)
+    else:
+        return HttpResponseBadRequest()
+
+
+
+
+
+def extract_order_items(request):
+    items = []
+    valid_order = True
+    for key, value in request.POST.items():
+        try:
+            typeID = int(key)
+            quantity = int(value)
+            item = CatalogEntry.objects.get(typeID=typeID)
+            items.append( (item, quantity) )
+        except ValueError:
+            pass
+        except CatalogEntry.DoesNotExist:
+            valid_order = False
+    return items, valid_order

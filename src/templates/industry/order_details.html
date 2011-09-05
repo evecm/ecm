@@ -7,12 +7,6 @@
 {% block header_scripts %}
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
 <script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
-
-<script type="text/javascript">
-AJAX_URL_ROWS = "/industry/orders/{{order.id}}/rows/data";
-</script>
-
-<script type="text/javascript" src="/m/js/order_rows_table.js"></script>
 {% endblock %}
 
 
@@ -30,38 +24,47 @@ AJAX_URL_ROWS = "/industry/orders/{{order.id}}/rows/data";
   <li><b>Originator:</b> {{order.originator_permalink|safe}}</li>
   <li><b>Manufacturer:</b> {{order.manufacturer_permalink|safe}}</li>
   <li><b>Delivery Man:</b> {{order.deliveryMan_permalink|safe}}</li>
-  <li><b>Creation Date:</b> {{creationDate}}</li>
-  <li><b>Last Modified:</b> {{lastModifiedDate}}</li>
-  <li><b>Delivery Date:</b> {{deliveryDate}}</li>
+  <li><b>Creation Date:</b> {{order.creationDate|ecm_datetime}}</li>
+  <li><b>Last Modified:</b> {{order.lastModified|ecm_datetime}}</li>
+  <li><b>Delivery Date:</b> {{deliveryDate|ecm_datetime}}</li>
+  <li><b>Pricing:</b> {{order.pricing}}</li>
+  <li><b>Quote:</b> {{order.quote|ecm_price}} ISK</li>
 </ul>
 
 <h1>Items</h1>
 
 
-
-<table class="table display" id="order_rows_table">
-<thead> 
-  <tr>
-    <th class="top" scope="col" >Item</th>
-    <th class="top" scope="col" >Quantity</th>
-    <th class="top" scope="col" >Price</th>
-    <th class="top" scope="col" >Remove</th>
-  </tr>
-</thead>
-<tbody> 
-  <tr>
-    <td colspan="4" class="dataTables_empty">Loading data from server...</td>
-  </tr>
-</tbody> 
-<tfoot> 
-  <tr>
-    <th>Item</th>
-    <th>Quantity</th>
-    <th>Price</th>
-    <th>Remove</th>
-  </tr>
-</tfoot>
+<form>
+<table class="order_table">
+    <thead>
+	    <tr>
+			<th style="width: 10%;">Icon</th>
+			<th style="width: 30%;">Item</th>
+			<th style="width: 20%;">Quantity</th>
+			<th style="width: 40%;">Price</th>
+	    </tr>
+    </thead>
+	<tbody>
+		{% for row in order.rows.all %}
+		<tr>
+        	<td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
+         	<td class="bold">{{row.catalogEntry.typeName}}</td>
+         	<td class="center">{{row.quantity|ecm_quantity}}</td>
+         	<td class="right">{{row.quote|ecm_price}} ISK</td> 
+       	</tr>
+       	{% empty %}
+       	<tr id="empty">
+       		<td colspan="4" class="order_cart_empty" >No items in order.</td>
+       	</tr>
+       	{% endfor %}
+	</tbody> 
 </table>
+</form>
 
+<ul>
+{% for log in logs %}
+  <li>{{log.date|ecm_datetime}} [{{log.state_text}}] {{log.user_permalink|safe}} - {{log.text}}</li>
+{% endfor %}
+</ul>
 
 {% endblock %}

@@ -18,14 +18,14 @@
 __date__ = "2011 8 17"
 __author__ = "diabeteman"
 
+from datetime import datetime
+
 from django.db import models, transaction, connection
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as tr
 
 from ecm.core.utils import fix_mysql_quotes
-from ecm.core.eve.classes import Item, NoBlueprintException
-
-from ecm.data.industry.models.catalog import OwnedBlueprint, CatalogEntry
+from ecm.core.eve.classes import NoBlueprintException
+from ecm.data.industry.models.catalog import CatalogEntry
 from ecm.data.industry.models.inventory import SupplyPrice
 from ecm.data.industry.models.job import Job
 
@@ -39,6 +39,7 @@ class Order(models.Model):
 
     class Meta:
         ordering = ['id']
+        get_latest_by = 'id'
         app_label = 'industry'
 
     # states
@@ -56,17 +57,17 @@ class Order(models.Model):
     
     # states text
     STATES = {
-        DRAFT:             tr('Draft'),
-        PENDING:           tr('Pending'),
-        PROBLEMATIC:       tr('Problematic'),
-        ACCEPTED:          tr('Accepted'),
-        PLANNED:           tr('Planned'),
-        IN_PREPARATION:    tr('In Preparation'),
-        READY:             tr('Ready'),
-        DELIVERED:         tr('Delivered'),
-        PAID:              tr('Paid'),
-        CANCELED:          tr('Canceled by Client'),
-        REJECTED:          tr('Rejected by Manufacturer'),
+        DRAFT:             'Draft',
+        PENDING:           'Pending',
+        PROBLEMATIC:       'Problematic',
+        ACCEPTED:          'Accepted',
+        PLANNED:           'Planned',
+        IN_PREPARATION:    'In Preparation',
+        READY:             'Ready',
+        DELIVERED:         'Delivered',
+        PAID:              'Paid',
+        CANCELED:          'Canceled by Client',
+        REJECTED:          'Rejected by Manufacturer',
     }
     
     # allowed transitions between states
@@ -95,6 +96,22 @@ class Order(models.Model):
     pricing = models.ForeignKey('Pricing', related_name='orders')
     extraDiscount = models.FloatField(default=0.0)
     
+    
+    @property
+    def lastModified(self):
+        try:
+            return self.logs.latest().date
+        except:
+            return datetime.now()
+    
+    @property
+    def creationDate(self):
+        try:
+            return self.logs.all()[0].date
+        except:
+            return datetime.now()
+    
+    
     #############################
     # TRANSISTIONS
     
@@ -114,7 +131,6 @@ class Order(models.Model):
             self.state = newState
             self.addComment(user, comment)
     
-    @transaction.commit_on_success
     def modify(self, entries):
         """
         Modification of the order. 
@@ -124,9 +140,9 @@ class Order(models.Model):
         [(CatalogEntry_A, qty_A), (CatalogEntry_B, qty_B), (CatalogEntry_C, qty_C)]
         """
         if self.rows.all() or self.logs.all():
-            comment = tr("Modified by originator.")
+            comment = "Modified by originator."
         else:
-            comment = tr("Created.")
+            comment = "Created."
         self.changeState(Order.DRAFT, self.originator, comment)
         self.rows.all().delete()
         for catalogEntry, quantity in entries:
@@ -134,12 +150,11 @@ class Order(models.Model):
         self.createJobs(dry_run=True)
         self.save()
     
-    @transaction.commit_on_success
     def confirm(self):
         """
         Originator's confirmation of the order. Warns the manufacturing team. 
         """
-        self.changeState(Order.PENDING, self.originator, tr("Confirmed by originator."))
+        self.changeState(Order.PENDING, self.originator, "Confirmed by originator.")
         self.save()
         # TODO: handle the alerts
     
@@ -154,7 +169,7 @@ class Order(models.Model):
         try:
             self.checkIfCanBeFulfilled()
             self.createJobs()
-            self.changeState(Order.ACCEPTED, user=manufacturer, comment=tr("Accepted"))
+            self.changeState(Order.ACCEPTED, user=manufacturer, comment="Accepted")
             self.save()
             return True
         except OrderCannotBeFulfilled as err:
@@ -204,13 +219,11 @@ class Order(models.Model):
         for sp in SupplyPrice.objects.all():
             prices[sp.typeID] = sp.price
         missingPrices = set([])
+        self.quote = 0.0
         for row in self.rows.all():
             row.cost, missPrices = row.calculateJobs(prices=prices, dry_run=dry_run)
-            missingPrices.add(missPrices)
-            if row.catalogEntry.fixedPrice is not None:
-                self.quote += row.catalogEntry.fixedPrice
-            else:
-                self.quote += row.cost * (1 + self.pricing.margin)
+            missingPrices.update(missPrices)
+            self.quote += row.quote
             row.save()
         self.save()
         with transaction.commit_on_success():
@@ -226,14 +239,17 @@ class Order(models.Model):
         """
         where = [ '"order_id" = %s' ]
         if activity is not None:
-            where.append('"activity" = %d' % activity)
+            where.append('"activity" = %d')
         sql = 'SELECT "itemID", SUM("runs"), "activity" FROM "industry_job"'
         sql += ' WHERE ' + ' AND '.join(where)
         sql += ' GROUP BY "itemID", "activity" ORDER BY "activity", "itemID";'
         sql = fix_mysql_quotes(sql)
         
         cursor = connection.cursor()
-        cursor.execute(sql, [self.id])
+        if activity is not None:
+            cursor.execute(sql, [self.id, activity])
+        else:
+            cursor.execute(sql, [self.id])
         
         jobs = []
         for i, r, a in cursor:
@@ -260,7 +276,7 @@ class Order(models.Model):
     def repr_as_tree(self):
         output = ''
         for r in self.rows.all():
-            for j in r.job.filter(parentJob=None):
+            for j in r.jobs.filter(parentJob=None):
                 output += j.repr_as_tree()
         return output
 
@@ -275,6 +291,7 @@ class OrderLog(models.Model):
     
     class Meta:
         app_label = 'industry'
+        get_latest_by = 'id'
         ordering = ['order', 'date']
     
     order = models.ForeignKey(Order, related_name='logs')
@@ -283,8 +300,23 @@ class OrderLog(models.Model):
     user = models.ForeignKey(User, related_name='logs')
     text = models.TextField()
     
+    @property
+    def user_permalink(self):
+        try:
+            url = '/player/%d' % self.user.id
+            return '<a href="%s" class="player">%s</a>' % (url, self.user.username)
+        except:
+            return '(None)'
+    
+    @property
+    def state_text(self):
+        try:
+            return Order.STATES[self.state]
+        except KeyError:
+            return str(self.state)
+    
     def __unicode__(self):
-        return u'%s: [%s] (%s) %s' % (self.date, Order.STATES.get(self.state), self.user, self.text)
+        return u'%s: [%s] (%s) %s' % (self.date, self.state_text, self.user, self.text)
     
     
 #------------------------------------------------------------------------------
@@ -325,6 +357,7 @@ class OrderRow(models.Model):
         
         return jobs
     
+    
     @transaction.commit_manually
     def calculateJobs(self, prices=None, dry_run=False):
         job = Job.create(self.catalogEntry_id, self.quantity, order=self.order, row=self)
@@ -350,6 +383,13 @@ class OrderRow(models.Model):
                 # to avoid the error next time :)
                 missingPrices.add(job.itemID)
         return cost, missingPrices
+
+    @property
+    def quote(self):
+        if self.catalogEntry.fixedPrice is not None:
+            return self.catalogEntry.fixedPrice
+        else:
+            return self.cost * (1 + self.order.pricing.margin)
 
     def __unicode__(self):
         return '%s x%d : %f' % (self.catalogEntry.typeName, self.quantity, self.cost)

@@ -40,11 +40,11 @@ class Job(models.Model):
     READY = 4
 
     STATES = {
-        PENDING:       tr('Pending'),
-        PLANNED:       tr('Planned'),
-        AGGREGATED:    tr('Aggregated'),
-        IN_PRODUCTION: tr('In Production'),
-        READY:         tr('Ready'),
+        PENDING:       'Pending',
+        PLANNED:       'Planned',
+        AGGREGATED:    'Aggregated',
+        IN_PRODUCTION: 'In Production',
+        READY:         'Ready',
     }
 
     SUPPLY = 0
@@ -52,15 +52,15 @@ class Job(models.Model):
     INVENTION = 8
     
     ACTIVITIES = {
-        MANUFACTURING: tr('Manufacturing'),
-        SUPPLY:        tr('Supply'),
-        INVENTION:     tr('Invention'),
+        MANUFACTURING: 'Manufacturing',
+        SUPPLY:        'Supply',
+        INVENTION:     'Invention',
     }
 
     # self.order is None if this is an aggregation job
     order = models.ForeignKey('Order', related_name='jobs', null=True, blank=True)
     # self.row is not None only if this is a root job
-    row = models.ForeignKey('OrderRow', related_name='job', null=True, blank=True)
+    row = models.ForeignKey('OrderRow', related_name='jobs', null=True, blank=True)
     # self.parentJob is None if this job is directly issued from an OrderRow
     parentJob = models.ForeignKey('self', related_name='childrenJobs', null=True, blank=True)
     # 
@@ -113,7 +113,7 @@ class Job(models.Model):
             # add an INVENTION job
             self.childrenJobs.create(itemID=parentBpID, 
                                      blueprint=bpc,
-                                     runs=self.runs * attempts, 
+                                     runs=round(self.runs) * attempts, 
                                      order=self.order,
                                      row=self.row,
                                      activity=Job.INVENTION)
@@ -121,7 +121,7 @@ class Job(models.Model):
         if self.activity == Job.INVENTION:
             # add a SUPPLY job for T1 BPCs
             self.childrenJobs.create(itemID=self.blueprint.typeID, 
-                                     runs=self.runs, 
+                                     runs=round(self.runs), 
                                      order=self.order,
                                      row=self.row,
                                      activity=Job.SUPPLY)
@@ -129,7 +129,7 @@ class Job(models.Model):
             if decriptorTypeID is not None:
                 # add a SUPPLY job for a decryptorif needed
                 self.childrenJobs.create(itemID=decriptorTypeID, 
-                                         runs=self.runs, 
+                                         runs=round(self.runs), 
                                          order=self.order,
                                          row=self.row,
                                          activity=Job.SUPPLY)
@@ -206,4 +206,4 @@ class Job(models.Model):
             return models.Model.__getattribute__(self, attrname)
 
     def __unicode__(self):
-        return u"[%s] %s x%s" % (Job.ACTIVITIES[self.activity], self.item.typeName, str(self.runs))
+        return u"[%s] %s x%d" % (Job.ACTIVITIES[self.activity], self.item.typeName, int(round(self.runs)))

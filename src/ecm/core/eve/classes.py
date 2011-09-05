@@ -247,10 +247,11 @@ class Blueprint(Item):
         Quantities are given as floats (to be rounded).
         """
         bill = []
+        roundedRuns = int(round(runs))
         materials = self[activity].materials
         for m in materials:
             if m.damagePerJob > 0:
-                qty = runs * m.quantity
+                qty = roundedRuns * m.quantity
                 if m.baseMaterial > 0:
                     qty = apply_material_level(qty, meLevel, self.wasteFactor)
                 bill.append(ActivityMaterial(m.requiredTypeID, qty, m.damagePerJob, m.baseMaterial))

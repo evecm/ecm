@@ -25,6 +25,7 @@ from django.utils.text import truncate_words
 from ecm.data.roles.models import Member
 from ecm.core import utils
 from ecm.data.common.models import UpdateDate
+from ecm.view import template_filters
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 LOWER = 'LOWER(`%s`)' if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql' else 'LOWER("%s")'

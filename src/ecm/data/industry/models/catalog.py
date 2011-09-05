@@ -50,7 +50,7 @@ class CatalogEntry(models.Model):
         verbose_name_plural = _("Catalog Enties")
     
     typeID = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100)
+    typeName = models.CharField(max_length=100)
     marketGroupID = models.IntegerField(db_index=True, null=True, blank=True)
     fixedPrice = models.FloatField(null=True, blank=True)
     isAvailable = models.BooleanField(default=True)
@@ -67,7 +67,7 @@ class CatalogEntry(models.Model):
             return models.Model.__getattribute__(self, attrName)
     
     def __unicode__(self):
-        return unicode(self.name)
+        return unicode(self.typeName)
 
     def __hash__(self):
         return self.typeID
