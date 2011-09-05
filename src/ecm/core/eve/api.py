@@ -21,8 +21,6 @@ __author__ = "diabeteman"
 import cPickle, os, tempfile, time, zlib
 from datetime import datetime
 
-from django.conf import settings
-
 from ecm.lib import eveapi
 from ecm.core.eve.validators import check_user_access_mask
 from ecm.data.common.models import APIKey

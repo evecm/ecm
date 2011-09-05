@@ -32,7 +32,7 @@ sys.path.insert(0, path.join(install_dir, 'ecm'))
 # with the eclipse python editor.
 # This is normal, as the 'ecm' folder is not in sys.path when performing
 # a static analysis.
-import settings 
+import settings #@UnresolvedImport
 
 from django.core import management
 

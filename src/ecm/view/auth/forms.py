@@ -101,7 +101,7 @@ class AccountCreationForm(forms.Form):
             # test if API credentials are valid and if EVE account contains 
             # characters which are members of the corporation
             try:
-                self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, key=vCode))
+                self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
                 valid_account = False
                 for c in self.characters:
                     exists = Member.objects.filter(characterID=c.characterID).exists()

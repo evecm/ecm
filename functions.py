@@ -25,6 +25,11 @@ from django.core import management
 import logging
 import shlex
 import re
+import tempfile
+import shutil 
+import urllib2
+import zipfile
+
 
 __date__ = "2011 8 23"
 __author__ = "diabeteman"
@@ -94,12 +99,32 @@ def prompt(message, valid_list=None):
     
 #-------------------------------------------------------------------------------
 def download_eve_db(options):
-    sys.path.append(os.path.join(options.install_dir, "scripts"))
-    import patch_eve_db
-    opt, _ = patch_eve_db.parser.parse_args([])
-    opt.logger = get_logger()
-    patch_eve_db.main(opt)
-
+    log = get_logger()
+    try:
+        tempdir = None
+        if options.eve_zip_archive is None:
+            tempdir = tempfile.mkdtemp()
+            options.eve_zip_archive = os.path.join(tempdir, 'EVE.db.zip')
+            log.info('Downloading EVE database from %s to %s...', options.eve_db_url, options.eve_zip_archive)
+            req = urllib2.urlopen(options.eve_db_url)
+            with open(options.eve_zip_archive, 'wb') as fp:
+                shutil.copyfileobj(req, fp)
+            req.close()
+            log.info('Download complete.')
+        
+        if options.eve_db_dir is None:
+            options.eve_db_dir = path.join(options.install_dir, "db")
+        
+        log.info('Expanding %s to %s...', options.eve_zip_archive, options.eve_db_dir)
+        zip_file_desc = zipfile.ZipFile(options.eve_zip_archive, 'r')
+        zip_file_desc.extractall(options.eve_db_dir)
+        zip_file_desc.close()
+        log.info('Expansion complete.')
+    finally:
+        if tempdir is not None:
+            log.info('Removing temp files...')
+            shutil.rmtree(tempdir)
+            log.info('done')
 
 #-------------------------------------------------------------------------------
 def install_files(options):

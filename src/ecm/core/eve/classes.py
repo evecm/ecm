@@ -79,7 +79,8 @@ class Item(object):
                  portionSize,
                  basePrice,
                  marketGroupID,
-                 icon):
+                 icon,
+                 published):
         self.typeID = typeID
         self.groupID = groupID
         self.categoryID = categoryID
@@ -92,7 +93,8 @@ class Item(object):
         self.basePrice = basePrice
         self.marketGroupID = marketGroupID
         self.icon = icon
-    
+        self.published = published
+        
     def getBillOfMaterials(self, quantity=1.0, meLevel=0):
         bill = []
         try:

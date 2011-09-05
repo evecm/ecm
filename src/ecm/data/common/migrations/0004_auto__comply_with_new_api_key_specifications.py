@@ -1,4 +1,4 @@
-# encoding: utf-8
+#@PydevCodeAnalysisIgnore
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -7,69 +7,34 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Deleting old table 'APIKey'
+        db.delete_table('common_apikey')
+        # Deleting old table 'APIKey'
+        db.delete_table('common_userapikey')
         
-        # Deleting field 'APIKey.userID'
-        db.delete_column('common_apikey', 'userID')
+        
+        # Adding new table 'APIKey'
+        db.create_table('common_apikey', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=64)),
+            ('keyID', self.gf('django.db.models.fields.IntegerField')()),
+            ('characterID', self.gf('django.db.models.fields.IntegerField')()),
+            ('vCode', self.gf('django.db.models.fields.CharField')(max_length=255)),
+        ))
+        db.send_create_signal('common', ['APIKey'])
 
-        # Deleting field 'APIKey.key'
-        db.delete_column('common_apikey', 'key')
-
-        # Deleting field 'APIKey.charID'
-        db.delete_column('common_apikey', 'charID')
-
-        # Adding field 'APIKey.keyID'
-        db.add_column('common_apikey', 'keyID', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
-
-        # Adding field 'APIKey.characterID'
-        db.add_column('common_apikey', 'characterID', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
-
-        # Adding field 'APIKey.vCode'
-        db.add_column('common_apikey', 'vCode', self.gf('django.db.models.fields.CharField')(default="", max_length=255), keep_default=False)
-
-        # Deleting field 'UserAPIKey.userID'
-        db.delete_column('common_userapikey', 'userID')
-
-        # Deleting field 'UserAPIKey.key'
-        db.delete_column('common_userapikey', 'key')
-
-        # Adding field 'UserAPIKey.keyID'
-        db.add_column('common_userapikey', 'keyID', self.gf('django.db.models.fields.IntegerField')(default=0, primary_key=True), keep_default=False)
-
-        # Adding field 'UserAPIKey.vCode'
-        db.add_column('common_userapikey', 'vCode', self.gf('django.db.models.fields.CharField')(default="", max_length=255), keep_default=False)
-
+        # Adding new table 'UserAPIKey'
+        db.create_table('common_userapikey', (
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('keyID', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('vCode', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('is_valid', self.gf('django.db.models.fields.BooleanField')(default=True)),
+        ))
+        db.send_create_signal('common', ['UserAPIKey'])
 
     def backwards(self, orm):
-        
         # User chose to not deal with backwards NULL issues for 'APIKey.userID'
-        raise RuntimeError("Cannot reverse this migration. 'APIKey.userID' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'APIKey.key'
-        raise RuntimeError("Cannot reverse this migration. 'APIKey.key' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'APIKey.charID'
-        raise RuntimeError("Cannot reverse this migration. 'APIKey.charID' and its values cannot be restored.")
-
-        # Deleting field 'APIKey.keyID'
-        db.delete_column('common_apikey', 'keyID')
-
-        # Deleting field 'APIKey.characterID'
-        db.delete_column('common_apikey', 'characterID')
-
-        # Deleting field 'APIKey.vCode'
-        db.delete_column('common_apikey', 'vCode')
-
-        # User chose to not deal with backwards NULL issues for 'UserAPIKey.userID'
-        raise RuntimeError("Cannot reverse this migration. 'UserAPIKey.userID' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'UserAPIKey.key'
-        raise RuntimeError("Cannot reverse this migration. 'UserAPIKey.key' and its values cannot be restored.")
-
-        # Deleting field 'UserAPIKey.keyID'
-        db.delete_column('common_userapikey', 'keyID')
-
-        # Deleting field 'UserAPIKey.vCode'
-        db.delete_column('common_userapikey', 'vCode')
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {

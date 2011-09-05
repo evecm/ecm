@@ -22,7 +22,7 @@ import os.path
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 def resolvePath(relativePath):
-    return str(os.path.join(ROOT, relativePath)).replace("\\", "/")
+    return str(os.path.abspath(os.path.join(ROOT, relativePath))).replace("\\", "/")
 
 ###############################################################################
 # ECM SETTINGS

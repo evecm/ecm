@@ -106,6 +106,8 @@
 #
 #-----------------------------------------------------------------------------
 
+#@PydevCodeAnalysisIgnore
+
 import httplib
 import urllib
 import copy

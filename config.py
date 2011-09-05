@@ -43,6 +43,9 @@ def parse_args(version, timestamp):
     parser = OptionParser(usage='setup.py {%s} [options] [install_dir]' % '|'.join(valid_commands), 
                           version="%s.%s" % (version, timestamp))
     
+    parser.add_option("-q", "--quiet", dest="quiet", default=False, action='store_true',
+                       help="Do not prompt the user for confirmations (assume 'yes').")
+    
     f_group = OptionGroup(parser, "Folders options")
     f_group.add_option("-s", "--src-dir", dest="src_dir", default=path.join(ROOT_DIR, "src"),
                        help="Source directory where to find the installation files.")
@@ -63,6 +66,12 @@ def parse_args(version, timestamp):
                         help="Database user (default: ecm)")
     db_group.add_option("-p", "--database-password", dest="db_pass", default='ecm',
                         help="Database user password (default: ecm)")
+    db_group.add_option("--eve-db-url", dest="eve_db_url", default='http://eve-corp-management.googlecode.com/files/ECM.EVE.db-1.zip',
+                        help="URL where to download EVE database archive.")
+    db_group.add_option("--eve-db-zip-archive", dest="eve_zip_archive",
+                        help="Local path to EVE database archive.")
+    db_group.add_option("--eve-db-file", dest="eve_db_dir",
+                        help="Local path to EVE database archive.")
     parser.add_option_group(db_group)
 
     w_group = OptionGroup(parser, "Web & Mail options")
@@ -97,3 +106,4 @@ def parse_args(version, timestamp):
             options.install_dir = prompt('ECM installation directory?')
 
     return cmd, options
+

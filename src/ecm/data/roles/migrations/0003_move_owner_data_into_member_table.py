@@ -15,7 +15,8 @@
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-# encoding: utf-8
+#@PydevCodeAnalysisIgnore
+
 import datetime
 from south.db import db
 from south.v2 import DataMigration

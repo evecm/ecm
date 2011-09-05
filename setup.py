@@ -56,9 +56,9 @@ def install(options):
     if options.server_email is None:
         domain = options.vhost_name.split('.', 1)
         options.server_email = 'ecm.admin@%s' % domain[-1]
-    
-    raw_input("If the installation directory already exists, it will be deleted. "
-              "Press 'enter' to proceed with the installation.")
+    if not options.quiet:
+        raw_input("If the installation directory already exists, it will be deleted. "
+                  "Press 'enter' to proceed with the installation.")
     functions.install_files(options)
     functions.download_eve_db(options)
     functions.configure_apache(options)
@@ -84,13 +84,14 @@ def upgrade(options):
     tempdir = tempfile.mkdtemp()
     file_stat = functions.backup_settings(options, tempdir)
 
-    raw_input("Press 'enter' to proceed with the migration.")
+    if not options.quiet:
+        raw_input("Press 'enter' to proceed with the migration.")
     
     functions.install_files(options)
     dir_util.copy_tree(tempdir, options.install_dir)
     functions.configure_apache(options)
     functions.configure_ecm(options)
-    if functions.prompt("Upgrade EVE database?") in ['y', 'yes', 'Y']:
+    if options.quiet or functions.prompt("Upgrade EVE database?") in ['y', 'yes', 'Y']:
         functions.download_eve_db(options)
     functions.restore_permissions(options.install_dir, file_stat)
     
@@ -115,6 +116,8 @@ def package(options):
         shutil.copy(path.join(root_dir, 'functions.py'), package_dir)
         shutil.copy(path.join(root_dir, 'config.py'), package_dir)
         shutil.copy(path.join(root_dir, 'setup.py'), package_dir)
+        shutil.copy(path.join(root_dir, 'LICENSE'), package_dir)
+        shutil.copy(path.join(root_dir, 'README'), package_dir)
         print "Inserting timestamp in __init__.py file..."
         init_file = os.path.join(os.path.join(package_src_dir, "ecm/__init__.py"))
         options.timestamp = functions.set_timestamp(init_file)

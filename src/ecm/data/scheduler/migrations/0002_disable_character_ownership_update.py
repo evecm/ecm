@@ -1,4 +1,5 @@
-# encoding: utf-8
+#@PydevCodeAnalysisIgnore
+
 import datetime
 from south.db import db
 from south.v2 import DataMigration
@@ -7,16 +8,23 @@ from django.db import models
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        task = orm.ScheduledTask.objects.get(function='ecm.core.tasks.users.update_all_character_associations')
-        task.is_active = False
-        task.save()
+        try:
+            task = orm.ScheduledTask.objects.get(function='ecm.core.tasks.users.update_all_character_associations')
+            task.is_active = False
+            task.save()
+        except:
+            # could fail at first install, don't bother then
+            pass
 
 
     def backwards(self, orm):
-        task = orm.ScheduledTask.objects.get(function='ecm.core.tasks.users.update_all_character_associations')
-        task.is_active = True
-        task.save()
-
+        try:
+            task = orm.ScheduledTask.objects.get(function='ecm.core.tasks.users.update_all_character_associations')
+            task.is_active = True
+            task.save()
+        except:
+            # could fail at first install, don't bother then
+            pass
 
     models = {
         'scheduler.garbagecollector': {

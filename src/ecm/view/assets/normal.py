@@ -100,7 +100,7 @@ def systems_data(request):
     sql += ' GROUP BY "solarSystemID";'
     sql = utils.fix_mysql_quotes(sql)
 
-    cursor = connection.cursor()
+    cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
         cursor.execute(sql)
     else:
@@ -151,7 +151,7 @@ def stations_data(request, solarSystemID):
     sql += ' GROUP BY "stationID";'
     sql = utils.fix_mysql_quotes(sql)
         
-    cursor = connection.cursor()
+    cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
         cursor.execute(sql, [solarSystemID])
     else:
@@ -200,7 +200,7 @@ def hangars_data(request, solarSystemID, stationID):
     sql += ' GROUP BY "hangarID";'
     sql = utils.fix_mysql_quotes(sql)
     
-    cursor = connection.cursor()
+    cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
         cursor.execute(sql, [solarSystemID, stationID])
     else:

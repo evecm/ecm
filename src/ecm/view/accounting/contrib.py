@@ -24,7 +24,6 @@ from datetime import datetime, timedelta
 
 from django.db.models.aggregates import Min, Max
 from django.db import connection
-from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
@@ -154,7 +153,7 @@ def system_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(
     sql = SYSTEM_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;") 
     sql = utils.fix_mysql_quotes(sql)
     
-    cursor = connection.cursor()
+    cursor = connection.cursor() #@UndefinedVariable
     cursor.execute(sql, [since, until])
     
     return cursor.fetchall()
