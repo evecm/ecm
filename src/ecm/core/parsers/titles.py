@@ -114,20 +114,24 @@ def parseOneTitle(titleApi):
         title = Title.objects.get(titleID=id)
         if not title.titleName == name:
             # if the titleName has changed, we update it
+            logger.info('Changing title name "%s" to "%s"...' % (title.titleName, name))
             title.titleName = name
             title.save()
     except Title.DoesNotExist:
         # the title doesn't exist yet, we create it
+        logger.info('Title "%s" does not exist. Creating...' % name)
         title = Title.objects.create(titleID=id, titleName=name)
     try:
         # retrieval of the group corresponding to the title from de DB
         group = Group.objects.get(id=id)
         if not group.name == name:
             # if the titleName has changed, we update the group
+            logger.info('Changing group name "%s" to "%s"...' % (group.name, name))
             group.name = name
             group.save()
     except Group.DoesNotExist:
         # the group doesn't exist yet, we create it
+        logger.info('Group "%s" does not exist. Creating...' % name)
         Group.objects.create(id=id, name=name)
     
     for roleType in roleTypes().values():

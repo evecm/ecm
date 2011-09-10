@@ -31,6 +31,9 @@ from ecm.data.common.models import UserAPIKey, RegistrationProfile
 from ecm.data.roles.models import Member
 from ecm.view.auth.forms import AccountCreationForm
 
+import logging
+logger = logging.getLogger(__name__)
+
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def create_account(request):
@@ -58,7 +61,9 @@ def create_account(request):
                     except Member.DoesNotExist:
                         continue
             
+            logger.info('"%s" created new account id=%d' % (user, user.id))
             send_activation_email(request, profile)
+            logger.info('activation email sent to "%s" for account "%s"' % (user.email, user))
             
             return render_to_response('auth/account_created.html', 
                                       { 'form': form }, 
@@ -75,10 +80,12 @@ def activate_account(request, activation_key):
     try:
         user = RegistrationProfile.objects.activate_user(activation_key)
         update_user_accesses(user)
+        logger.info('account "%s" activated' % (user.username))
         return render_to_response('auth/account_activated.html', 
                                   { 'activated_user' : user }, 
                                   context_instance=RequestContext(request))
     except (ValueError, UserWarning) as err:
+        logger.info('could not use activation key "%s": %s' % (activation_key, str(err)))
         return render_to_response('auth/activation_error.html', 
                                   { 'activation_key': activation_key,
                                    'error_reason': str(err) }, 
