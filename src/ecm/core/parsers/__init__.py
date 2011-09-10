@@ -19,14 +19,17 @@
 __date__ = "2010-02-08"
 __author__ = "diabeteman"
 
+import threading
+
+from django.contrib.auth.models import Group
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 from ecm.data.roles.models import RoleType, Role
 from ecm import settings 
 from ecm.data.common.models import UpdateDate
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-import threading
 
 
+#------------------------------------------------------------------------------
 LOCK_ROLE_TYPES = threading.RLock()
 _ROLE_TYPES = None
 LOCK_ALL_ROLES = threading.RLock()

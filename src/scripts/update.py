@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # Copyright (c) 2010-2011 Robin Jarry
 # 
 # This file is part of EVE Corporation Management.
@@ -50,8 +49,7 @@ if __name__ == "__main__":
     try:
         FUNCTIONS[sys.argv[1]]()
     except (IndexError, KeyError):
-        print >>sys.stderr, "usage: update.py",
         func_names = FUNCTIONS.keys()
         func_names.sort()
-        print >>sys.stderr, "{%s}" % "|".join(func_names)
+        print >>sys.stderr, "usage: update.py {%s}" % "|".join(func_names)
         sys.exit(1)

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import logging
-
 # Copyright (c) 2010-2011 Robin Jarry
 # 
 # This file is part of EVE Corporation Management.
@@ -23,6 +21,7 @@ __author__ = "diabeteman"
 
 import bz2, tempfile, shutil, urllib2, os, sqlite3
 from optparse import OptionParser
+import logging
 
 script_dir = os.path.abspath(os.path.dirname(__file__))
 parser = OptionParser()

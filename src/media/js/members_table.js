@@ -16,6 +16,7 @@ $(document).ready(function() {
         "iDisplayLength": 25, /* default display 25 items */
         "bStateSave": true, /* table state persistance */
         "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
+        "sCookiePrefix": COOKIE_NAME,
         "sAjaxSource": AJAX_URL,
         "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
@@ -35,7 +36,7 @@ $(document).ready(function() {
                 $('td:eq(3)', nRow).html('<b>DIRECTOR</b>');
             }
             $('td:eq(3)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
-            
+
             /* hide titles column */
             $('td:eq(7)', nRow).hide()
 
@@ -45,13 +46,13 @@ $(document).ready(function() {
                 $('td:eq(3)', nRow).attr("title", titles)
                 $('td:eq(3)', nRow).cluetip({
                     splitTitle: '|',
-                    dropShadow: false, 
+                    dropShadow: false,
                     cluetipClass: 'jtip',
                     positionBy: 'mouse',
                     tracking: true
                 });
             }
-            
+
             return nRow;
         },
         /* the search field being outside the table object, we need to save its status
@@ -67,7 +68,7 @@ $(document).ready(function() {
             return true;
         }
     });
-	
+
 	/* trigger the search when pressing return in the text field */
     $("#search_form").submit(function(event) {
         event.preventDefault();
@@ -92,6 +93,6 @@ $(document).ready(function() {
             event.shiftKey = false;
         }
     });
-    
+
 } );
 
