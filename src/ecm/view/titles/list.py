@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2010-07-11"
@@ -39,8 +39,8 @@ def all(request):
     for c in ColorThreshold.objects.all().order_by("threshold"):
         colorThresholds.append({ "threshold" : c.threshold, "color" : c.color })
 
-    data = { 
-        'scan_date' : getScanDate(TitleComposition), 
+    data = {
+        'scan_date' : getScanDate(TitleComposition),
         'colorThresholds' : json.dumps(colorThresholds)
     }
     return render_to_response("titles/titles.html", data, context_instance=RequestContext(request))
@@ -61,24 +61,24 @@ def all_data(request):
         "iTotalDisplayRecords" : len(titles),
         "aaData" : titles
     }
-    
+
     return HttpResponse(json.dumps(json_data))
 
 
 
 #------------------------------------------------------------------------------
-SQL_TITLE_MEMBERS = '''SELECT COUNT(*) 
-FROM "roles_titlemembership" 
+SQL_TITLE_MEMBERS = '''SELECT COUNT(*)
+FROM "roles_titlemembership"
 WHERE "roles_titlemembership"."title_id"="roles_title"."titleID"'''
-SQL_ROLES_IN_TITLES = '''SELECT COUNT(*) 
-FROM "roles_titlecomposition" 
+SQL_ROLES_IN_TITLES = '''SELECT COUNT(*)
+FROM "roles_titlecomposition"
 WHERE "roles_titlecomposition"."title_id"="roles_title"."titleID"'''
 SQL_TITLE_MEMBERS = utils.fix_mysql_quotes(SQL_TITLE_MEMBERS)
 SQL_ROLES_IN_TITLES = utils.fix_mysql_quotes(SQL_ROLES_IN_TITLES)
 
 def getTitles(sort_by="titleID", asc=True):
     sort_col = "%s_nocase" % sort_by
-    
+
     query = Title.objects.all().order_by("titleID")
 
     # SQL hack for making a case insensitive sort
@@ -89,7 +89,7 @@ def getTitles(sort_by="titleID", asc=True):
     # fetch the number of members having each title
     query = query.extra(select={
         "title_members" : SQL_TITLE_MEMBERS,
-        "roles_in_title": SQL_ROLES_IN_TITLES 
+        "roles_in_title": SQL_ROLES_IN_TITLES
     })
 
     titles = []
@@ -101,7 +101,7 @@ def getTitles(sort_by="titleID", asc=True):
             modification_date = "-"
 
         titles.append([
-            title.permalink(),
+            title.permalink,
             title.accessLvl,
             '<a href="/titles/%d/members">%d</a>' % (title.titleID, title.title_members),
             title.roles_in_title,

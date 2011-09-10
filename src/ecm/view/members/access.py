@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2011-03-13"
@@ -35,7 +35,7 @@ from ecm.core.utils import print_time_min
 @check_user_access()
 def access_changes(request):
     data = {
-        'scan_date' : getScanDate(TitleMembership) 
+        'scan_date' : getScanDate(TitleMembership)
     }
     return render_to_response("members/access_changes.html", data, RequestContext(request))
 
@@ -48,30 +48,30 @@ def access_changes_data(request):
         params = extract_datatable_params(request)
     except:
         return HttpResponseBadRequest()
-    
+
     roles = RoleMemberDiff.objects.select_related(depth=1).all().order_by("-date")
     titles = TitleMemberDiff.objects.select_related(depth=1).all().order_by("-date")
-    
+
     count = roles.count() + titles.count()
-    
+
     changes = list(roles) + list(titles)
     changes.sort(key=lambda e: e.date, reverse=True)
     changes = changes[params.first_id:params.last_id]
-    
+
     change_list = []
     for c in changes:
         change_list.append([
             c.new,
-            c.member_permalink(),
-            c.access_permalink(),
+            c.member_permalink,
+            c.access_permalink,
             print_time_min(c.date)
         ])
-    
+
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : count,
         "iTotalDisplayRecords" : count,
         "aaData" : change_list
     }
-    
+
     return HttpResponse(json.dumps(json_data))

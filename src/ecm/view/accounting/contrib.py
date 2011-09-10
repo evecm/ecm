@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from ecm.core import utils
 
@@ -56,32 +56,33 @@ columns = ['LOWER("name")', '"tax_contrib"']
 def member_contrib_data(request):
     try:
         params = extract_datatable_params(request)
-        params.from_date = datetime.strptime(params.from_date, DATE_PATTERN)
-        params.to_date = datetime.strptime(params.to_date, DATE_PATTERN)
+        REQ = request.GET if request.method == 'GET' else request.POST
+        params.from_date = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
+        params.to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
     except:
         return HttpResponseBadRequest()
 
     contributions = member_contributions(since=params.from_date,
                                          until=params.to_date,
-                                         order_by=columns[params.column], 
+                                         order_by=columns[params.column],
                                          ascending=params.asc)
     count = len(contributions[:])
     contributions = contributions[params.first_id:params.last_id]
-    
+
     contrib_list = []
     for c in contributions:
         contrib_list.append([
-            c.permalink(),
+            c.permalink,
             print_float(c.tax_contrib)
         ])
-    
+
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : count,
         "iTotalDisplayRecords" : count,
         "aaData" : contrib_list
     }
-    
+
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
@@ -89,71 +90,72 @@ def member_contrib_data(request):
 def system_contrib_data(request):
     try:
         params = extract_datatable_params(request)
-        params.from_date = datetime.strptime(params.from_date, DATE_PATTERN)
-        params.to_date = datetime.strptime(params.to_date, DATE_PATTERN)
+        REQ = request.GET if request.method == 'GET' else request.POST
+        params.from_date = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
+        params.to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
         # In the database query below, we use a BETWEEN operator.
-        # The upper bound 'to_date' will be excluded from the interval 
+        # The upper bound 'to_date' will be excluded from the interval
         # because it is a datetime with time set to 00:00 (beginning of the day).
-        # We add one day in order to include the last day in the interval.  
+        # We add one day in order to include the last day in the interval.
         params.to_date += timedelta(days=1)
     except:
         return HttpResponseBadRequest()
 
     contributions = system_contributions(since=params.from_date,
                                          until=params.to_date,
-                                         order_by=columns[params.column], 
+                                         order_by=columns[params.column],
                                          ascending=params.asc)
     count = len(contributions)
     contributions = contributions[params.first_id:params.last_id]
-    
+
     contrib_list = []
     for system, amount in contributions:
         contrib_list.append([
             '<b>%s</b>' % system,
             print_float(amount)
         ])
-    
+
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : count,
         "iTotalDisplayRecords" : count,
         "aaData" : contrib_list
     }
-    
+
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
-MEMBER_CONTRIB_SQL = '''SELECT m."characterID" AS "characterID", m."name" AS "name", SUM(j."amount") AS "tax_contrib"  
- FROM "roles_member" AS m, "accounting_journalentry" AS j  
- WHERE j."type_id" IN (16, 17, 33, 34, 85) 
-  AND j."ownerID2" = m."characterID"  
-  AND j."date" > %s 
-  AND j."date" < %s 
- GROUP BY m."characterID", m."name" 
+MEMBER_CONTRIB_SQL = '''SELECT m."characterID" AS "characterID", m."name" AS "name", SUM(j."amount") AS "tax_contrib"
+ FROM "roles_member" AS m, "accounting_journalentry" AS j
+ WHERE j."type_id" IN (16, 17, 33, 34, 85)
+  AND j."ownerID2" = m."characterID"
+  AND j."date" > %s
+  AND j."date" < %s
+ GROUP BY m."characterID", m."name"
  ORDER BY '''
-def member_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(), 
+def member_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(),
                          order_by="tax_contrib", ascending=False):
-    
-    sql = MEMBER_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;") 
+
+    sql = MEMBER_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;")
     sql = utils.fix_mysql_quotes(sql)
     return Member.objects.raw(sql, [since, until])
 
 
 #------------------------------------------------------------------------------
-SYSTEM_CONTRIB_SQL = '''SELECT j."argName1" AS "argName1", SUM(j."amount") AS "tax_contrib" 
- FROM "accounting_journalentry" AS j 
- WHERE j."type_id" IN (85) 
-   AND j."date" > %s 
-   AND j."date" < %s 
- GROUP BY j."argName1" 
+SYSTEM_CONTRIB_SQL = '''SELECT j."argName1" AS "argName1", SUM(j."amount") AS "tax_contrib"
+ FROM "accounting_journalentry" AS j
+ WHERE j."type_id" IN (85)
+   AND j."date" > %s
+   AND j."date" < %s
+ GROUP BY j."argName1"
  ORDER BY '''
-def system_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(), 
+def system_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(),
                          order_by="tax_contrib", ascending=False):
-    
-    sql = SYSTEM_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;") 
+
+    sql = SYSTEM_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;")
     sql = utils.fix_mysql_quotes(sql)
-    
+
     cursor = connection.cursor() #@UndefinedVariable
     cursor.execute(sql, [since, until])
-    
+
     return cursor.fetchall()

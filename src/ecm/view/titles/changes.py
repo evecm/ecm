@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2011-03-13"
@@ -37,7 +37,7 @@ from ecm.core.utils import print_time_min
 @check_user_access()
 def changes(request):
     data = {
-        'scan_date' : getScanDate(TitleComposition) 
+        'scan_date' : getScanDate(TitleComposition)
     }
     return render_to_response("titles/changes.html", data, RequestContext(request))
 
@@ -51,25 +51,25 @@ def changes_data(request):
         return HttpResponseBadRequest()
 
     titles = TitleCompoDiff.objects.select_related(depth=1).all().order_by("-date")
-    
+
     count = titles.count()
-    
+
     changes = titles[params.first_id:params.last_id]
-    
+
     change_list = []
     for c in changes:
         change_list.append([
             c.new,
-            c.title.permalink(),
-            c.role.permalink(),
+            c.title.permalink,
+            c.role.permalink,
             print_time_min(c.date)
         ])
-    
+
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : count,
         "iTotalDisplayRecords" : count,
         "aaData" : change_list
     }
-    
+
     return HttpResponse(json.dumps(json_data))
