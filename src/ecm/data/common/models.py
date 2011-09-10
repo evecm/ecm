@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = '2010-05-17'
@@ -39,18 +39,18 @@ class APIKey(models.Model):
     """
     class Meta:
         get_latest_by = 'id'
-    
+
     name = models.CharField(max_length=64)
     keyID = models.IntegerField()
     characterID = models.IntegerField()
     vCode = models.CharField(max_length=255)
-    
+
     def clean(self):
         validate_director_api_key(self)
-    
+
     def __eq__(self, other):
         return hash(self) == hash(other)
-    
+
     def __hash__(self):
         return self.keyID * 100000000 + self.characterID
 
@@ -66,14 +66,14 @@ class UserAPIKey(models.Model):
     keyID = models.IntegerField(primary_key=True)
     vCode = models.CharField(max_length=255)
     is_valid = models.BooleanField(default=True)
-    
+
     def is_valid_admin_display(self):
         if self.is_valid:
             return "OK"
         else:
             return "Invalid"
     is_valid_admin_display.short_description = "Valid"
-    
+
     def is_valid_html(self):
         if self.is_valid:
             return '<span class="bold ok">API key valid</span>'
@@ -82,7 +82,7 @@ class UserAPIKey(models.Model):
 
     def __eq__(self, other):
         return hash(self) == hash(other)
-    
+
     def __hash__(self):
         return self.keyID * 10000 + self.user_id
 
@@ -98,17 +98,17 @@ class ExternalApplication(models.Model):
     Represents external applications to be used along with ECM such as
     bulletin boards or killboards.
     """
-    name = models.CharField(max_length=64, 
-                            unique=True, 
+    name = models.CharField(max_length=64,
+                            unique=True,
                             validators=[RegexValidator(r'^\w+$', message='Only letters and digits')])
     url = models.CharField(max_length=1024)
 
     def __hash__(self):
         return self.id
-    
+
     def __eq__(self, other):
         return isinstance(other, ExternalApplication) and self.name == other.name
-    
+
     def __unicode__(self):
         return unicode(self.name)
 
@@ -116,15 +116,15 @@ class ExternalApplication(models.Model):
 class UserBinding(models.Model):
     """
     Allows to bind ECM users to external applications.
-    
-    The goal is to enable automatic synchronization of the external 
+
+    The goal is to enable automatic synchronization of the external
     application's user accesses with ECM user accesses.
     """
     user = models.ForeignKey(User, related_name='bindings')
     external_app = models.ForeignKey(ExternalApplication, related_name='user_bindings')
     external_id = models.IntegerField()
     external_name = models.CharField(max_length=255)
-    
+
     # override from models.Model
     def clean(self):
         query = UserBinding.objects.filter(external_app=self.external_app)
@@ -137,13 +137,13 @@ class UserBinding(models.Model):
         elif query.filter(external_name=self.external_name).exists():
             raise ValidationError('This external_name is already binded for the '
                                   'external application "%s"' % self.external_app.name)
-    
+
     def __hash__(self):
         return self.id
-    
+
     def __eq__(self, other):
         return isinstance(other, UserBinding) and self.id == other.id
-    
+
     def __unicode__(self):
         return unicode(self.external_name)
 
@@ -151,21 +151,21 @@ class UserBinding(models.Model):
 class GroupBinding(models.Model):
     """
     Allows to bind ECM groups to external applications.
-    
-    The goal is to enable automatic synchronization of the external 
+
+    The goal is to enable automatic synchronization of the external
     application's user accesses with ECM user accesses.
     """
     group = models.ForeignKey(Group, related_name='bindings')
     external_app = models.ForeignKey(ExternalApplication, related_name='group_bindings')
     external_id = models.IntegerField()
     external_name = models.CharField(max_length=256)
-    
+
     def __hash__(self):
         return self.id
-    
+
     def __eq__(self, other):
         return isinstance(other, GroupBinding) and self.id == other.id
-    
+
     def __unicode__(self):
         return unicode(self.external_name)
 
@@ -177,10 +177,10 @@ class UpdateDate(models.Model):
     model_name = models.CharField(primary_key=True, max_length=64)
     update_date = models.DateTimeField()
     prev_update = models.DateTimeField(null=True, blank=True)
-    
+
     def __unicode__(self):
         return u"%s updated %s" % (self.model_name, self.date)
-    
+
 #------------------------------------------------------------------------------
 class ColorThreshold(models.Model):
     """
@@ -188,38 +188,38 @@ class ColorThreshold(models.Model):
     """
     color = models.CharField(max_length=64)
     threshold = models.BigIntegerField()
-    
+
     @staticmethod
     def as_json():
         th = ColorThreshold.objects.values("threshold", "color").order_by("threshold")
         return json.dumps(list(th))
-    
+
     def __unicode__(self):
         return u"%s -> %d" % (self.color, self.threshold)
 
 
 #------------------------------------------------------------------------------
-class Url(models.Model):
+class UrlPermission(models.Model):
     """
     Utility class for authorization management in ECM.
     """
     pattern = models.CharField(max_length=256)
     groups = models.ManyToManyField(Group, related_name='allowed_urls')
-    
+
     def __unicode__(self):
         return u"<URL: %s>" % self.pattern
-    
+
     def __eq__(self, other):
         return self.pattern == other.pattern
-    
+
     def __hash__(self):
         return hash(self.pattern)
-    
+
 def user_has_access(user, target_url):
     """
     Checks if a User has access to the specified target_url.
     """
-    for url in Url.objects.all():
+    for url in UrlPermission.objects.all():
         url_re = re.compile(url.pattern)
         if url_re.match(target_url):
             if set(url.groups.all()).intersection(set(user.groups.all())):
@@ -228,9 +228,9 @@ def user_has_access(user, target_url):
                 return False
     return False
 
-        
-        
-    
+
+
+
 #------------------------------------------------------------------------------
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
@@ -256,7 +256,7 @@ class RegistrationManager(models.Manager):
                 raise UserWarning("Activation key has expired")
         else:
             raise ValueError("Invalid activation key")
-    
+
     def create_inactive_user(self, username, email, password):
         new_user = User.objects.create_user(username, email, password)
         new_user.is_active = False
@@ -274,30 +274,30 @@ class RegistrationManager(models.Manager):
             username = username.encode('utf-8')
         activation_key = sha_constructor(salt+username).hexdigest()
         return self.create(user=user, activation_key=activation_key)
-        
+
 
 class RegistrationProfile(models.Model):
 
     ACTIVATED = u"ALREADY_ACTIVATED"
-    
+
     user = models.OneToOneField(User)
     activation_key = models.CharField('activation key', max_length=40)
-    
+
     objects = RegistrationManager()
-    
+
     class Meta:
         verbose_name = 'registration profile'
         verbose_name_plural = 'registration profiles'
-    
+
     def __unicode__(self):
         return u"Registration information for %s" % self.user
 
     def __eq__(self, other):
         return hash(self) == hash(other)
-    
+
     def __hash__(self):
         return self.user_id
-    
+
     def activation_key_expired(self):
         expiration_date = datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
         return self.activation_key == self.ACTIVATED or \

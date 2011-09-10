@@ -1,156 +1,138 @@
 [
   {
-    "pk": 1, 
-    "model": "common.colorthreshold", 
+    "pk": 1,
+    "model": "common.colorthreshold",
     "fields": {
-      "color": "white", 
+      "color": "white",
       "threshold": 0
     }
-  }, 
+  },
   {
-    "pk": 2, 
-    "model": "common.colorthreshold", 
+    "pk": 2,
+    "model": "common.colorthreshold",
     "fields": {
-      "color": "blue", 
+      "color": "blue",
       "threshold": 4000
     }
-  }, 
+  },
   {
-    "pk": 3, 
-    "model": "common.colorthreshold", 
+    "pk": 3,
+    "model": "common.colorthreshold",
     "fields": {
-      "color": "green", 
+      "color": "green",
       "threshold": 12000
     }
-  }, 
+  },
   {
-    "pk": 4, 
-    "model": "common.colorthreshold", 
+    "pk": 4,
+    "model": "common.colorthreshold",
     "fields": {
-      "color": "yellow", 
+      "color": "yellow",
       "threshold": 30000
     }
-  }, 
+  },
   {
-    "pk": 5, 
-    "model": "common.colorthreshold", 
+    "pk": 5,
+    "model": "common.colorthreshold",
     "fields": {
-      "color": "orange", 
+      "color": "orange",
       "threshold": 200000
     }
-  }, 
+  },
   {
-    "pk": 6, 
-    "model": "common.colorthreshold", 
+    "pk": 6,
+    "model": "common.colorthreshold",
     "fields": {
-      "color": "red", 
+      "color": "red",
       "threshold": 600000
     }
-  }, 
+  },
   {
-    "pk": 7, 
-    "model": "common.colorthreshold", 
+    "pk": 7,
+    "model": "common.colorthreshold",
     "fields": {
-      "color": "purple", 
+      "color": "purple",
       "threshold": 3000000
     }
-  }, 
+  },
   {
-    "pk": 8, 
-    "model": "common.colorthreshold", 
+    "pk": 8,
+    "model": "common.colorthreshold",
     "fields": {
-      "color": "black", 
+      "color": "black",
       "threshold": 999999999999
     }
-  }, 
+  },
   {
-    "pk": 1, 
-    "model": "common.url", 
+    "pk": 1,
+    "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/members.*$", 
-      "groups": [
-        65536
-      ]
+      "pattern": "^/members.*$",
+      "groups": []
     }
-  }, 
+  },
   {
-    "pk": 2, 
-    "model": "common.url", 
+    "pk": 2,
+    "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/titles.*$", 
-      "groups": [
-        65536
-      ]
+      "pattern": "^/titles.*$",
+      "groups": []
     }
-  }, 
+  },
   {
-    "pk": 3, 
-    "model": "common.url", 
+    "pk": 3,
+    "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/roles.*$", 
-      "groups": [
-        65536
-      ]
+      "pattern": "^/roles.*$",
+      "groups": []
     }
-  }, 
+  },
   {
-    "pk": 4, 
-    "model": "common.url", 
+    "pk": 4,
+    "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/assets.*$", 
-      "groups": [
-        65536
-      ]
+      "pattern": "^/assets.*$",
+      "groups": []
     }
-  }, 
+  },
   {
-    "pk": 5, 
-    "model": "common.url", 
+    "pk": 5,
+    "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/$", 
-      "groups": [
-        65536
-      ]
+      "pattern": "^/$",
+      "groups": []
     }
-  }, 
+  },
   {
-    "pk": 6, 
-    "model": "common.url", 
+    "pk": 6,
+    "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/dashboard.*$", 
-      "groups": [
-        65536
-      ]
+      "pattern": "^/dashboard.*$",
+      "groups": []
     }
-  }, 
+  },
   {
-    "pk": 7, 
-    "model": "common.url", 
+    "pk": 7,
+    "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/players.*$", 
-      "groups": [
-        65536
-      ]
+      "pattern": "^/players.*$",
+      "groups": []
     }
-  }, 
+  },
   {
-    "pk": 8, 
-    "model": "common.url", 
+    "pk": 8,
+    "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/accounting.*$", 
-      "groups": [
-        65536
-      ]
+      "pattern": "^/accounting.*$",
+      "groups": []
     }
-  }, 
+  },
   {
-    "pk": 9, 
-    "model": "common.url", 
+    "pk": 9,
+    "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/tasks.*$", 
-      "groups": [
-        65536
-      ]
+      "pattern": "^/tasks.*$",
+      "groups": []
     }
   }
 ]
