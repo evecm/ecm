@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 import sys
@@ -26,7 +26,7 @@ import logging
 import shlex
 import re
 import tempfile
-import shutil 
+import shutil
 import urllib2
 import zipfile
 
@@ -47,7 +47,7 @@ def get_timestamp(root_dir):
     import ecm
     version = ecm.version
     timestamp = ecm.timestamp
-    del(sys.modules["ecm"]) 
+    del(sys.modules["ecm"])
     sys.path.remove(path.join(root_dir, 'src'))
     return version, timestamp
 #-------------------------------------------------------------------------------
@@ -63,28 +63,39 @@ def set_timestamp(file):
     f.close()
     return timestamp
 #-------------------------------------------------------------------------------
-def restore_permissions(dir, f_stat):
+def restore_permissions(options, f_stat=None):
     # change owner to backuped owner on installation folder recursively
     if not hasattr(os, 'chown'):
         return
+    if f_stat is None:
+        try:
+            import pwd
+            userid = pwd.getpwnam(options.apache_user).pw_uid
+            groupid = pwd.getpwnam(options.apache_user).pw_gid
+        except:
+            userid = 0
+            groupid = 0
+    else:
+        userid = f_stat.st_uid
+        groupid = f_stat.st_gid
     log = get_logger()
     log.info('Restoring owner info on the installation files...')
-    os.chown(dir, f_stat.st_uid, f_stat.st_gid)
-    for root, dirs, files in os.walk(dir):  
-        for d in dirs:  
+    os.chown(options.install_dir, userid, groupid)
+    for root, dirs, files in os.walk(options.install_dir):
+        for d in dirs:
             d_path = os.path.join(root, d)
-            os.chown(d_path, f_stat.st_uid, f_stat.st_gid)
+            os.chown(d_path, userid, groupid)
             os.chmod(d_path, 00755)
         for f in files:
             f_path = os.path.join(root, f)
-            os.chown(f_path, f_stat.st_uid, f_stat.st_gid)
+            os.chown(f_path, userid, groupid)
             os.chmod(f_path, 00644)
     log.info('Owner info restored.')
     log.info('Applying file permissions...')
-    for s in os.path.join(dir, 'scripts'):
-        if s[-2:] == 'py': 
-            os.chmod(os.path.join(dir, s), 00755)
-    os.chmod(os.path.join(dir, 'ecm/manage.py'), 00755)
+    for s in os.path.join(options.install_dir, 'scripts'):
+        if s[-2:] == 'py':
+            os.chmod(os.path.join(options.install_dir, s), 00755)
+    os.chmod(os.path.join(options.install_dir, 'ecm/manage.py'), 00755)
     log.info('Applied file permissions.')
 #-------------------------------------------------------------------------------
 def prompt(message, valid_list=None):
@@ -96,7 +107,7 @@ def prompt(message, valid_list=None):
         while not value:
             value = raw_input('%s ' % message)
     return value
-    
+
 #-------------------------------------------------------------------------------
 def download_eve_db(options):
     log = get_logger()
@@ -111,10 +122,10 @@ def download_eve_db(options):
                 shutil.copyfileobj(req, fp)
             req.close()
             log.info('Download complete.')
-        
+
         if options.eve_db_dir is None:
             options.eve_db_dir = path.join(options.install_dir, "db")
-        
+
         log.info('Expanding %s to %s...', options.eve_zip_archive, options.eve_db_dir)
         zip_file_desc = zipfile.ZipFile(options.eve_zip_archive, 'r')
         zip_file_desc.extractall(options.eve_db_dir)
@@ -153,9 +164,8 @@ def configure_apache(options):
 
 
 #-------------------------------------------------------------------------------
-DB_SETTINGS_SQLITE = """'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': resolvePath('../db/ECM.db')"""
-DB_SETTINGS_OTHER = """'ENGINE': '%(db_engine)s',
+DB_SETTING_RE = re.compile(r"DATABASES.*?'default'\s*:\s*\{[\s\r\n]*(.+?)[\s\r\n]*\},", re.DOTALL)
+DB_SETTINGS = """'ENGINE': '%(db_engine)s',
         'NAME': '%(db_name)s',
         'USER': '%(db_user)s',
         'PASSWORD': '%(db_pass)s'"""
@@ -166,23 +176,37 @@ def configure_ecm(options):
     f = open(settings_file, "r")
     buff = f.read()
     f.close()
-    
-    if not 'sqlite' in options.db_engine:
-        buff = buff.replace(DB_SETTINGS_SQLITE, DB_SETTINGS_OTHER % options.__dict__)
-    
-    buff = buff.replace("DEBUG = True", "DEBUG = False")
-    buff = buff.replace("ADMINS = ()", 
-                        "ADMINS = ('admin', '%(admin_email)s')" % options.__dict__)
-    buff = buff.replace('DEFAULT_FROM_EMAIL = ""', 
-                        'DEFAULT_FROM_EMAIL = "%(server_email)s"' % options.__dict__)
-    
+
     if options.port != "80":
-        buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"', 
+        buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"',
                             'ECM_BASE_URL = "%(vhost_name)s:%(port)s"' % options.__dict__)
     else:
-        buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"', 
+        buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"',
                             'ECM_BASE_URL = "%(vhost_name)s"' % options.__dict__)
-    
+
+    if not 'sqlite' in options.db_engine:
+        match = DB_SETTING_RE.search(buff)
+        db_str = DB_SETTINGS % options.__dict__
+        buff = buff[:match.start(1)] + db_str + buff[match.end(1):]
+
+    buff = buff.replace("DEBUG = True", "DEBUG = False")
+    buff = buff.replace("ADMINS = ()",
+                        "ADMINS = ('admin', '%(admin_email)s')" % options.__dict__)
+    buff = buff.replace('EMAIL_HOST = "localhost"',
+                        'EMAIL_HOST = "%(smtp_host)s"' % options.__dict__)
+    buff = buff.replace('EMAIL_PORT = ""',
+                        'EMAIL_PORT = "%(smtp_port)s"' % options.__dict__)
+    buff = buff.replace('EMAIL_USE_TLS = False',
+                        'EMAIL_USE_TLS = %(smtp_tls)s' % options.__dict__)
+    buff = buff.replace('EMAIL_HOST_USER = ""',
+                        'EMAIL_HOST_USER = "%(smtp_user)s"' % options.__dict__)
+    buff = buff.replace('EMAIL_HOST_PASSWORD = ""',
+                        'EMAIL_HOST_PASSWORD = "%(smtp_password)s"' % options.__dict__)
+    buff = buff.replace('DEFAULT_FROM_EMAIL = ""',
+                        'DEFAULT_FROM_EMAIL = "%(server_email)s"' % options.__dict__)
+    buff = buff.replace('SERVER_EMAIL = ""',
+                        'SERVER_EMAIL = "%(server_email)s"' % options.__dict__)
+
     f = open(settings_file, "w")
     f.write(buff)
     f.close()
@@ -192,19 +216,19 @@ def configure_ecm(options):
 VHOST_REGEXP = re.compile(r"<VirtualHost (?P<ip_address>[^\s]+):(?P<port>\d+)>")
 def backup_settings(options, tempdir):
     log = get_logger()
-    
+
     log.info("Backuping settings...")
     settings_file = os.path.join(options.install_dir, "ecm/settings.py")
-    
+
     db_folder = os.path.join(options.install_dir, "db")
     logs_folder = os.path.join(options.install_dir, "logs")
     if os.path.exists(db_folder):
         log.info("Copying %s to %s...", db_folder, tempdir)
         dir_util.copy_tree(db_folder, os.path.join(tempdir, 'db'))
-    if os.path.exists(logs_folder): 
+    if os.path.exists(logs_folder):
         log.info("Copying %s to %s...", logs_folder, tempdir)
         dir_util.copy_tree(logs_folder, os.path.join(tempdir, 'logs'))
-    if os.path.exists(settings_file): 
+    if os.path.exists(settings_file):
         dir_util.mkpath(os.path.join(tempdir, 'ecm'))
         log.info("Copying %s to %s...", settings_file, os.path.join(tempdir, 'ecm'))
         file_util.copy_file(settings_file, os.path.join(tempdir, 'ecm/settings.py.old'))
@@ -235,9 +259,9 @@ def backup_settings(options, tempdir):
     sys.path.remove(options.install_dir)
     del ecm.settings
     del(sys.modules["ecm.settings"])
-    
+
     log.info('All previous settings backuped.')
-    
+
     return file_stat
 
 
@@ -248,7 +272,7 @@ def init_ecm_db(options):
     run_dir = os.path.join(options.install_dir, 'ecm')
     run_command('python manage.py syncdb --noinput --migrate', run_dir)
     log.info('Database initialization successful.')
-    
+
 #-------------------------------------------------------------------------------
 def migrate_ecm_db(options):
     log = get_logger()
@@ -256,25 +280,25 @@ def migrate_ecm_db(options):
     run_dir = os.path.join(options.install_dir, 'ecm')
     run_command('python manage.py syncdb --noinput', run_dir)
 
-    # now we must test if SOUTH was already installed/used 
+    # now we must test if SOUTH was already installed/used
     # in the installation we are migrating
-    # we setup Django environment in order to be able to use DB models  
+    # we setup Django environment in order to be able to use DB models
     # and check if there were any existing SOUTH migrations made
     sys.path.append(options.install_dir)
     import ecm.settings
     management.setup_environ(ecm.settings)
     from south.models import MigrationHistory
-    
+
     if not MigrationHistory.objects.all():
         # SOUTH has never been used in that installation.
-        # we MUST "fake" the first migration, 
+        # we MUST "fake" the first migration,
         # otherwise the migrate command will fail because DB tables already exist...
         log.info('First use of South, faking the initial migration...')
         run_command('python manage.py migrate 0001 --all --fake --no-initial-data', run_dir)
-    
+
     run_command('python manage.py migrate --all --no-initial-data', run_dir)
 
-    del(sys.modules["ecm.settings"]) 
+    del(sys.modules["ecm.settings"])
     sys.path.remove(options.install_dir)
     log.info('Database Migration successful.')
 

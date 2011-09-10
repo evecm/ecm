@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2010-01-24"
@@ -26,35 +26,19 @@ def resolvePath(relativePath):
 
 ###############################################################################
 # ECM SETTINGS
-ALL_GROUP_IDS = [ 1 << i  for i in range(17) ] # generates all titleIDs
-DIRECTOR_GROUP_ID = 1 << 16 # 65536 (it is twice the max titleID)
+ECM_BASE_URL = "127.0.0.1:8000"
 DIRECTOR_GROUP_NAME = "Directors"
+CORP_MEMBERS_GROUP_NAME = "Members"
 CRON_USERNAME = "cron"
 ADMIN_USERNAME = "admin"
 EVE_API_VERSION = "2"
-ECM_BASE_URL = "127.0.0.1:8000"
 ACCOUNT_ACTIVATION_DAYS = 2
 PASSWD_MIN_LENGTH = 6
 PASSWD_FORCE_SPECIAL_CHARS = False
 PASSWD_FORCE_DIGITS = False
 PASSWD_FORCE_LETTERS = False
 BASIC_AUTH_ONLY_ON_LOCALHOST = False
-CORP_MEMBERS_GROUP_ID = 0
-CORP_MEMBERS_GROUP_NAME = "Members"
-MANDATORY_CORP_API_ACCESS_MASKS = [
-    1 << 1, # AssetList
-    1 << 3, # CorporationSheet
-    1 << 9, # MemberSecurity
-    1 << 11, # MemberTracking
-    1 << 14, # OutpostList
-    1 << 20, # WalletJournal
-    1 << 22, # Titles
-]
-MANDATORY_USER_API_ACCESS_MASKS = [
-    1 << 3, # CharacterSheet
-    1 << 23, # PublicCharacterInfo
-    1 << 24, # PrivateCharacterInfo
-]
+
 
 ###############################################################################
 # DJANGO SPECIFIC SETTINGS
@@ -64,11 +48,12 @@ ADMINS = () # to enable email error reporting, put a tuple in there, ('name', em
 # >>> python -m smtpd -n -c DebuggingServer localhost:25
 EMAIL_HOST = "localhost"
 EMAIL_PORT = 25
-EMAIL_HOST_USER = "" 
-EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
 # put a real email address here, if not, emails sent by the server will be discarded by the relay servers
-DEFAULT_FROM_EMAIL = "" 
+DEFAULT_FROM_EMAIL = ""
+SERVER_EMAIL = ""
 
 DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     'default': {
@@ -128,10 +113,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "ecm.view.context_processors.version",
 )
 
-FIXTURE_DIRS = (
-    resolvePath("fixtures/"),
-)
-
 CAPTCHA_LENGTH = 5
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 
@@ -144,10 +125,10 @@ INSTALLED_APPS = (
     'django.contrib.databrowse',
     'django.contrib.sessions',
     'django.contrib.sites',
-    
+
     'captcha',
     'south',
-    
+
     'ecm.data.assets',
     'ecm.data.corp',
     'ecm.data.roles',
@@ -173,7 +154,7 @@ LOGGING = {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'INFO',
-            'filename': resolvePath('../logs/scheduler.log'),
+            'filename': resolvePath('../logs/ecm.log'),
             'when': 'midnight', # roll over each day at midnight
             'backupCount': 15, # keep 15 backup files
         },
@@ -197,14 +178,20 @@ LOGGING = {
     },
     'loggers': {
         'ecm': {                            # remove console handler on production
-            'handlers':['ecm_file_handler', 'ecm_console_handler'], 
+            'handlers': ['ecm_file_handler', 'ecm_console_handler'],
             'propagate': True,
-            'level':'DEBUG',
+            'level': 'DEBUG',
+        },
+        'ecm.core.parsers': {
+            'handlers': ['django_error', 'django_mail_admins'],
+            'propagate': True,
+            'level': 'ERROR',
         },
         'django.request': {
-            'handlers': ['django_mail_admins', 'django_error'],
+            'handlers': ['django_mail_admins', 'django_error', 'ecm_file_handler'],
             'propagate': False,
             'level': 'ERROR',
         },
     }
+
 }
