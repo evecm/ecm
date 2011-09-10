@@ -26,7 +26,7 @@ import httplib as http
 from django.template.context import RequestContext
 from django.shortcuts import render
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import AnonymousUser, Group
+from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
 from django.conf import settings
 
@@ -115,12 +115,3 @@ def forbidden(request):
     response.status_code = http.FORBIDDEN
     return response
 
-#------------------------------------------------------------------------------
-try:
-    g = Group.objects.get(id=settings.DIRECTOR_GROUP_ID)
-    if g.name != settings.DIRECTOR_GROUP_NAME:
-        g.name = settings.DIRECTOR_GROUP_NAME
-        g.save()
-except Group.DoesNotExist:
-    Group.objects.create(id=settings.DIRECTOR_GROUP_ID, 
-                         name=settings.DIRECTOR_GROUP_NAME)
