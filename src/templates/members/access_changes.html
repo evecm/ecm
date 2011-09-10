@@ -22,11 +22,11 @@
 
 
 {% block main_content %}
-<h1 class="pagetitle">Security Access Changes <span class="time">- last update {{ scan_date }}</span></h1>
+<h1 class="pagetitle">Security Access Changes <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
 
 <script type="text/javascript" src="/m/js/access_changes_table.js"></script>
 <table class="table display" id="access_changes_table">
-  <thead> 
+  <thead>
     <tr>
       <th class="top" scope="col" >Change</th>
       <th class="top" scope="col" >Member</th>
@@ -34,12 +34,12 @@
       <th class="top" scope="col" >Date</th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="3" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Change</th>
       <th>Member</th>

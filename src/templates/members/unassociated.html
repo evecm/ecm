@@ -14,32 +14,33 @@
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 AJAX_URL = '/members/unassociated/data';
+COOKIE_NAME = 'ecm_unassociated_table_';
 </script>
 <script type="text/javascript" src="/m/js/members_table.js"></script>
 
 
-<style type="text/css"> 
+<style type="text/css">
 div.container {
-float:left; 
+float:left;
 }
 
 div.button {
-    float:left; 
-    margin:10px auto 5px auto; 
-    padding:3px 5px; 
-    background:rgb(230,230,230); 
-    border:solid 1px rgb(150,150,150); 
-    text-align:center; 
-    font-family:verdana,arial,sans-serif; 
+    float:left;
+    margin:10px auto 5px auto;
+    padding:3px 5px;
+    background:rgb(230,230,230);
+    border:solid 1px rgb(150,150,150);
+    text-align:center;
+    font-family:verdana,arial,sans-serif;
     color:rgb(150,150,150); font-size:110%;
 }
 div.button.hover {
-    cursor:pointer; 
-    border:solid 1px rgb(80,80,80); 
-    background:rgb(220,220,220); 
+    cursor:pointer;
+    border:solid 1px rgb(80,80,80);
+    background:rgb(220,220,220);
     color:rgb(80,80,80);
 }
-</style> 
+</style>
 
 <script type="text/javascript" src="/m/js/lib/ZeroClipboard.js"></script>
 {% endblock %}
@@ -55,13 +56,13 @@ div.button.hover {
 
 
 {% block main_content %}
-<h1 class="pagetitle">Unassociated Member List <span class="time">- last update {{ scan_date }}</span></h1>
+<h1 class="pagetitle">Unassociated Member List <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
 
-<form id="search_form" class="search_form"> 
-    <input type="text" id="search_text" value="" /> 
-    <input type="button" class="button" id="search_button" value="Search" /> 
-    <input type="button" class="button" id="clear_search" value="Reset" /> 
-</form> 
+<form id="search_form" class="search_form">
+    <input type="text" id="search_text" value="" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+</form>
 
 <div id="clip_container" class="container" style="position:relative">
     <div id="copy_to_clip" class="button"  >Copy to Clipboard...</div>
@@ -100,7 +101,7 @@ clip.glue('copy_to_clip' , "clip_container");
 
 
 <table class="table display" id="members_table">
-  <thead> 
+  <thead>
     <tr>
       <th class="top" scope="col" >Name</th>
       <th class="top" scope="col" >Nickname</th>
@@ -112,12 +113,12 @@ clip.glue('copy_to_clip' , "clip_container");
       <th class="top" scope="col" style="display:none;">Titles</th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="8" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Name</th>
       <th>Nickname</th>

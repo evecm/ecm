@@ -24,10 +24,10 @@
 
 
 {% block main_content %}
-<h1 class="pagetitle">Members History <span class="time">- last update {{ scan_date }}</span></h1>
+<h1 class="pagetitle">Members History <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
 
 <table class="table display" id="history_table">
-  <thead> 
+  <thead>
     <tr>
       <th class="top" scope="col" >Corped/Leaved</th>
       <th class="top" scope="col" >Name</th>
@@ -35,12 +35,12 @@
       <th class="top" scope="col" >Date</th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="4" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Corped/Leaved</th>
       <th>Name</th>

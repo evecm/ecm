@@ -22,7 +22,7 @@ SHOW_IN_STATIONS = {% if show_in_stations %}true{% else %}false{% endif %};
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Corporation Assets <span class="time">- last update {{ scan_date }}</span></h1>
+<h1 class="pagetitle">Corporation Assets <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
 
 <form id="search_form" class="search_form">
     <input type="text" id="search_text" value="" />

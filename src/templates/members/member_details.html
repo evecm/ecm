@@ -34,11 +34,11 @@ MEMBER_ID = "{{ member.characterID }}";
         </td>
         <td>
             <p>
-            <span class="bold">Corp Date:</span> {{ member.corpDate }}<br/>
-            <span class="bold">Last Login:</span> {{ member.lastLogin }}<br/>
-            <span class="bold">Last Logoff:</span> {{ member.lastLogoff }}
+            <span class="bold">Corp Date:</span> {{ member.corpDate|ecm_datetime }}<br/>
+            <span class="bold">Last Login:</span> {{ member.lastLogin|ecm_datetime }}<br/>
+            <span class="bold">Last Logoff:</span> {{ member.lastLogoff|ecm_datetime }}
             </p>
-            <p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ member.date }}</p>
+            <p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ member.date|ecm_datetime }}</p>
             <p><span class="bold">Owned by:</span> {{ member.owner_permalink|safe }}</p>
         </td>
     </tr>
@@ -85,7 +85,7 @@ None
     <td>
       <h2>Titles</h2>
       <ul>
-      {% for title in member.all_titles %}
+      {% for title in member.titles.all %}
         <li>{{ title.permalink|safe }}</li>
         {% empty %}
         <p>No titles</p>
@@ -108,19 +108,19 @@ None
 <h2>Security Access Changes</h2>
 
 <table class="table display" id="access_changes_table">
-  <thead> 
+  <thead>
     <tr>
       <th class="top" scope="col" >Change</th>
       <th class="top" scope="col" >Title/Role</th>
       <th class="top" scope="col" >Date</th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="3" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Change</th>
       <th>Title/Role</th>

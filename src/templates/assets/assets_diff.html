@@ -22,14 +22,14 @@ DATE = "{{ date_str }}";
 <li><a href="/">Home</a></li>
 <li><a href="/assets" >Assets</a></li>
 <li><a href="/assets/changes" >Changes</a></li>
-<li><a href="/assets/changes/{{ date_str }}" >{{ date }}</a></li>
+<li><a href="/assets/changes/{{ date_str }}" >{{ date|ecm_datetime }}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div>
     <h1 class="pagetitle">Asset Changes on <select id="date_selector" class="date_selector">
         {% for d in dates %}
-        <option value="{{ d.value }}" {% if d.value == date_str %}selected="selected"{% endif %}>{{ d.show }}</option>
+        <option value="{{ d.value }}" {% if d.value == date_str %}selected="selected"{% endif %}>{{ d.show|ecm_datetime }}</option>
         {% endfor %}
     </select>
 </h1>

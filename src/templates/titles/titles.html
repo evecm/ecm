@@ -22,12 +22,12 @@ COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Corporation Titles <span class="time">- last change {{ scan_date }}</span></h1>
+<h1 class="pagetitle">Corporation Titles <span class="time">- last change {{ scan_date|ecm_datetime }}</span></h1>
 
 
 
 <table class="table display" id="titles_table">
-  <thead> 
+  <thead>
     <tr>
       <th class="top" scope="col" >Title Name</th>
       <th class="top" scope="col" >Access Level</th>
@@ -36,12 +36,12 @@ COLOR_THRESHOLDS = {{ colorThresholds|safe }};
       <th class="top" scope="col" >Last Modified</th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="5" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Title Name</th>
       <th>Access Level</th>
