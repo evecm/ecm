@@ -155,6 +155,7 @@ LOGGING = {
             'formatter': 'ecm_formatter',
             'level': 'INFO',
             'filename': resolvePath('../logs/ecm.log'),
+            'delay': True, # wait until first log record is emitted to open file
             'when': 'midnight', # roll over each day at midnight
             'backupCount': 15, # keep 15 backup files
         },
@@ -171,9 +172,10 @@ LOGGING = {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'ERROR',
+            'filename': resolvePath('../logs/error.log'),
+            'delay': True,
             'when': 'midnight',
             'backupCount': 15,
-            'filename': resolvePath('../logs/error.log'),
         },
     },
     'loggers': {
@@ -182,7 +184,7 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
-        'ecm.core.parsers': {
+        'ecm.core': {
             'handlers': ['django_error', 'django_mail_admins'],
             'propagate': True,
             'level': 'ERROR',

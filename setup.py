@@ -61,7 +61,8 @@ def install(options):
         raw_input("If the installation directory already exists, it will be deleted. "
                   "Press 'enter' to proceed with the installation.")
     functions.install_files(options)
-    functions.download_eve_db(options)
+    if not options.skip_eve_db_download:
+        functions.download_eve_db(options)
     functions.configure_apache(options)
     functions.configure_ecm(options)
     functions.restore_permissions(options)
@@ -93,7 +94,8 @@ def upgrade(options):
     dir_util.copy_tree(tempdir, options.install_dir)
     functions.configure_apache(options)
     functions.configure_ecm(options)
-    if options.quiet or functions.prompt("Upgrade EVE database?") in ['y', 'yes', 'Y']:
+    if not options.skip_eve_db_download and (options.quiet or
+                functions.prompt("Upgrade EVE database?") in ['y', 'yes', 'Y']):
         functions.download_eve_db(options)
     functions.restore_permissions(options, file_stat)
 

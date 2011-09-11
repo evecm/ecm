@@ -74,6 +74,8 @@ def parse_args(version, timestamp):
                         help="Local path to EVE database archive.")
     db_group.add_option("--eve-db-file", dest="eve_db_dir",
                         help="Local folder where to extract EVE database file.")
+    db_group.add_option("--skip-eve-db-download", dest="skip_eve_db_download", default=False,
+                        action='store_true', help="Do NOT download EVE db (use with care).")
     parser.add_option_group(db_group)
 
     w_group = OptionGroup(parser, "Web & Mail options")
@@ -117,6 +119,11 @@ def parse_args(version, timestamp):
             options.install_dir = args[1]
         else:
             options.install_dir = prompt('ECM installation directory?')
+        options.install_dir = path.normpath(options.install_dir)
+
+    options.src_dir = path.normpath(options.src_dir)
+    options.dist_dir = path.normpath(options.dist_dir)
+    options.django_dir = path.normpath(options.django_dir)
 
     return cmd, options
 

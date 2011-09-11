@@ -207,7 +207,7 @@ class UrlPermission(models.Model):
     groups = models.ManyToManyField(Group, related_name='allowed_urls')
 
     def __unicode__(self):
-        return u"<URL: %s>" % self.pattern
+        return unicode(self.pattern)
 
     def __eq__(self, other):
         return self.pattern == other.pattern
