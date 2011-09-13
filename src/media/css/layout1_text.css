@@ -44,6 +44,10 @@
 .credit {color: green;}
 .debit {color: red;}
 .blue {color: blue;}
+.clickable {
+    cursor: pointer;
+    * cursor: hand;
+}
 
 .main-content a.title {
 	padding-left: 14px;

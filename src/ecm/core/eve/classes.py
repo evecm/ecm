@@ -20,14 +20,13 @@ __author__ = "diabeteman"
 
 
 from ecm.core.eve import db
-from django.db import connections
-
-EVE_DB = connections['eve']
 
 #------------------------------------------------------------------------------
-
-
 class MarketGroup(object):
+    """
+    Represents a market group from EVE's item database. 
+    Only convenient for item browsing.
+    """
     
     BLUEPRINTS = 2
     SKILLS = 150
@@ -38,12 +37,16 @@ class MarketGroup(object):
         self.marketGroupID = marketGroupID
         self.marketGroupName = marketGroupName
         self.hasTypes = hasTypes
+        self.__children = None # lazy attribute
     
     def __getattr__(self, attrName):
+        """
+        Lazy attributes are handled here.
+        """
         if attrName == 'children':
-            try:
+            if self.__children is not None:
                 return self.__children
-            except AttributeError:
+            else:
                 self.__children = [] 
                 if self.hasTypes:
                     for row in db.getMarketGroupChildren(self.marketGroupID):
@@ -57,13 +60,25 @@ class MarketGroup(object):
     
     @staticmethod
     def get(marketGroupID):
+        """
+        Static method for instanciating a MarketGroup from a marketGroupID
+        """
         return MarketGroup(*db.getMarketGroup(marketGroupID))
     
     def __repr__(self):
-        return '<MarketGroup: %s>' % (self.marketGroupName + ('*' if self.hasTypes else ''))  
+        return '<MarketGroup: %s>' % (self.marketGroupName + ('*' if self.hasTypes else ''))
+    
+    def __eq__(self, other):
+        return isinstance(other, MarketGroup) and self.marketGroupID == other.marketGroupID
+
+    def __hash__(self):
+        return self.marketGroupID
 
 #------------------------------------------------------------------------------
 class Item(object):
+    """
+    An item from EVE database. 
+    """
     
     BLUEPRINT_CATID = 9
     SKILL_CATID = 16
@@ -94,92 +109,117 @@ class Item(object):
         self.marketGroupID = marketGroupID
         self.icon = icon
         self.published = published
-        
-    def getBillOfMaterials(self, quantity=1.0, meLevel=0):
-        bill = []
-        try:
-            materials = self.blueprint[BpActivity.MANUFACTURING].materials
-            for m in materials:
-                qty = quantity * apply_material_level(m.quantity, meLevel, self.blueprint.wasteFactor)
-                bill.append(ActivityMaterial(m.requiredTypeID, qty, m.damagePerJob, m.baseMaterial))
-        except NoBlueprintException:
-            bill = []
-        return bill
-        
+        self.__blueprint = None # lazy attribute
+    
+
+    
     def __getattr__(self, attrName):
-        if attrName == 'blueprint':
-            try:
+        """
+        Lazy attributes are handled here.
+        """
+        if attrName in ('blueprint', 'bp', 'bpo', 'bpc'):
+            if self.__blueprint is not None:
                 return self.__blueprint
-            except AttributeError:
+            else:
                 if self.blueprintTypeID is None:
+                    # Item cannot be manufactured nor invented.
                     raise NoBlueprintException(self.typeID)
                 else:
-                    self.__blueprint = Blueprint(*db.getBlueprint(self.blueprintTypeID))
+                    self.__blueprint = Blueprint.new(self.blueprintTypeID)
                     return self.__blueprint
         else:
             return object.__getattribute__(self, attrName)
     
-    @staticmethod
-    def get(typeID):
-        return Item(*db.getItem(typeID=typeID))
+    
     
     def __repr__(self):
         return '<Item: %s>' % self.typeName
+
+    def __eq__(self, other):
+        return isinstance(other, Item) and self.typeID == other.typeID
+
+    def __hash__(self):
+        return self.typeID
+    
+    @staticmethod
+    def new(typeID):
+        """
+        Static method for instanciating an Item from a typeID
+        """
+        return Item(*db.getItem(typeID=typeID))
 
 #------------------------------------------------------------------------------
 class Blueprint(Item):
     
     def __init__(self, 
-                 blueprintTypeID, 
+                 typeID, 
                  parentBlueprintTypeID,
                  productTypeID,
                  productionTime,
                  techLevel,
+                 dataInterfaceID,
                  researchProductivityTime,
                  researchMaterialTime,
                  researchCopyTime,
-                 researcheTechTime,
+                 researchTechTime,
                  productivityModifier,
                  materialModifier,
                  wasteFactor,
                  maxProductionLimit):
-        self.blueprintTypeID = blueprintTypeID 
+        self.typeID = typeID 
         self.parentBlueprintTypeID = parentBlueprintTypeID
         self.productTypeID = productTypeID
         self.productionTime = productionTime
         self.techLevel = techLevel
+        self.dataInterfaceID = dataInterfaceID
         self.researchProductivityTime = researchProductivityTime
         self.researchMaterialTime = researchMaterialTime
         self.researchCopyTime = researchCopyTime
-        self.researcheTechTime = researcheTechTime
+        self.researchTechTime = researchTechTime
         self.productivityModifier = productivityModifier
         self.materialModifier = materialModifier
         self.wasteFactor = wasteFactor
         self.maxProductionLimit = maxProductionLimit
-    
+        self.__activities = None # lazy attribute
+        self.__item = None # lazy attribute
+        self.__parentBlueprint = None # lazy attribute
 
     
     def __getattr__(self, attrName):
+        """
+        Lazy attributes are handled here.
+        """
         if attrName == 'activities':
-            try:
+            # activities attached to this blueprint (i.e. manufacturing, invention, etc.)
+            if self.__activities is not None:
                 return self.__activities
-            except AttributeError:
+            else:
                 self.__activities = {}
-                for activityID, in db.getBpActivities(self.blueprintTypeID):
-                    self.__activities[activityID] = BpActivity(self.blueprintTypeID, activityID)
+                for activityID, in db.getBpActivities(self.typeID):
+                    self.__activities[activityID] = BpActivity(self.typeID, activityID)
                 return self.__activities
-        elif attrName == 'item':
-            try:
+        elif attrName in ('item', 'product'):
+            # item manufactured by this blueprint
+            if self.__item is not None:
                 return self.__item
-            except AttributeError:
-                self.__item = Item.get(self.productTypeID)
+            else:
+                self.__item = Item.new(self.productTypeID)
                 return self.__item
+        elif attrName == 'parentBlueprint':
+            if self.parentBlueprintTypeID is None:
+                raise NoParentBlueprintException(self.typeID)
+            if self.__parentBlueprint is not None:
+                return self.__parentBlueprint
+            else:
+                self.__parentBlueprint = Blueprint.new(self.parentBlueprintTypeID)
+                return self.__parentBlueprint
         else:
             try:
                 try:
                     return Item.__getattr__(self, attrName)
                 except AttributeError:
-                    Item.__init__(self, *db.getItem(typeID=self.blueprintTypeID))
+                    # a Blueprint is also an Item. Item's constructor is only called if needed.
+                    Item.__init__(self, *db.getItem(typeID=self.typeID))
                     return Item.__getattr__(self, attrName)
             except AttributeError:
                 return object.__getattribute__(self, attrName)
@@ -188,22 +228,66 @@ class Blueprint(Item):
         try:
             return getattr(self, 'activities')[activityID]
         except KeyError:
-            raise ValueError('Blueprint with blueprintTypeID=%d '
+            raise KeyError('Blueprint with blueprintTypeID=%s '
                              'has no activity with activityID=%s' 
-                             % (self.blueprintTypeID, str(activityID)))
+                             % (str(self.blueprintTypeID), str(activityID)))
     
-    @staticmethod
-    def get(blueprintTypeID):
-        return Blueprint(*db.getBlueprint(blueprintTypeID))
+    def getInvolvedBlueprints(self, recurse=False):
+        blueprints = set()
+        for mat in self[BpActivity.MANUFACTURING].materials:
+            if mat.blueprintTypeID is not None:
+                blueprints.add(mat.blueprint)
+                if recurse:
+                    blueprints.update(mat.blueprint.getInvolvedBlueprints(recurse=True))
+        return blueprints
+        
+    def getBillOfMaterials(self, runs, meLevel, activity):
+        """
+        Resolve the materials needed for the specified activity.
+        Quantities are given as floats (to be rounded).
+        """
+        bill = []
+        roundedRuns = int(round(runs))
+        materials = self[activity].materials
+        for m in materials:
+            if m.damagePerJob > 0:
+                qty = roundedRuns * m.quantity
+                if m.baseMaterial > 0:
+                    qty = apply_material_level(qty, meLevel, self.wasteFactor)
+                bill.append(ActivityMaterial(m.requiredTypeID, qty, m.damagePerJob, m.baseMaterial))
+        return bill
+    
+    def getDuration(self, runs, peLevel, activity):
+        """
+        Calculate the duration (in seconds) needed to perform the specified activity.
+        """
+        if activity == BpActivity.MANUFACTURING:
+            return apply_production_level(runs * self.productionTime, peLevel)
+        elif activity == BpActivity.INVENTION:
+            return runs * self.researchTechTime
+        else:
+            return 0
+    
     
     def __unicode__(self):
         return self.typeName
     
     def __repr__(self):
-        return '<Blueprint: %d>' % self.blueprintTypeID
+        return '<Blueprint: %s>' % self.typeName
+
+    @staticmethod
+    def new(typeID):
+        """
+        Static method for instanciating a Blueprint from its typeID
+        """
+        return Blueprint(*db.getBlueprint(typeID))
 
 #------------------------------------------------------------------------------
 class BpActivity(object):
+    """
+    An activity that can be performed on a blueprint.
+    Such as Manufacturing, Invention, etc.
+    """
     
     MANUFACTURING = 1
     RESEARCH_PE = 3
@@ -226,14 +310,18 @@ class BpActivity(object):
     def __init__(self, blueprintTypeID, activityID):
         self.blueprintTypeID = blueprintTypeID
         self.activityID = activityID
+        self.__materials = None # lazy attribute
     
     def __getattr__(self, attrName):
+        """
+        Lazy attributes are handled here.
+        """
         if attrName == 'name':
             return BpActivity.NAMES[self.activityID]
         elif attrName == 'materials':
-            try:
+            if self.__materials is not None:
                 return self.__materials
-            except AttributeError:
+            else:
                 self.__materials = []
                 for req in db.getActivityReqs(self.blueprintTypeID, self.activityID):
                     self.__materials.append(ActivityMaterial(*req))
@@ -250,8 +338,19 @@ class BpActivity(object):
     def __repr__(self):
         return '<BpActivity: %s>' % BpActivity.NAMES[self.activityID]
 
+    def __eq__(self, other):
+        return isinstance(other, BpActivity) and hash(self) == hash(other)
+
+    def __hash__(self):
+        return self.activityID * 1000000 + self.blueprintTypeID
+
+
 #------------------------------------------------------------------------------
 class ActivityMaterial(Item):
+    """
+    A material involved in the "execution" of a BpActivity.
+    Can be a raw material, manufactured item, skill, datacore, etc.
+    """
     
     def __init__(self, requiredTypeID, quantity, damagePerJob, baseMaterial):
         self.requiredTypeID = requiredTypeID
@@ -260,20 +359,19 @@ class ActivityMaterial(Item):
         self.baseMaterial = baseMaterial
     
     def __getattr__(self, attrName):
+        """
+        Lazy attributes are handled here.
+        """
         try:
             try:
                 return Item.__getattr__(self, attrName)
             except AttributeError:
+                # an ActivityMaterial is also an Item. 
+                # Item's constructor is only called if needed.
                 Item.__init__(self, *db.getItem(typeID=self.requiredTypeID))
                 return Item.__getattr__(self, attrName)
         except AttributeError:
             return object.__getattribute__(self, attrName)
-
-    def getBillOfMaterials(self, quantity=1.0, meLevel=0):
-        bill = Item.getBillOfMaterials(self, quantity, meLevel)
-        for m in bill: 
-            m.quantity *= self.quantity
-        return bill
 
     def __repr__(self):
         return '<ActivityMaterial: id=%d, qty=%d>' % (self.requiredTypeID, self.quantity)
@@ -281,19 +379,48 @@ class ActivityMaterial(Item):
 
 #------------------------------------------------------------------------------
 class NoBlueprintException(UserWarning):
+    
     def __init__(self, typeID):
         self.typeID = typeID
+    
     def __repr__(self):
-        return 'NoBlueprintException: Item with typeID %d has no blueprint' % self.typeID
+        return '<%s: %s>' % (self.__class__.__name__, str(self))
+    
     def __str__(self):
-        return 'Item with typeID %d has no blueprint' % self.typeID
+        return 'Item with typeID %s has no blueprint' % str(self.typeID)
+
+#------------------------------------------------------------------------------
+class NoParentBlueprintException(NoBlueprintException):
+    
+    def __str__(self):
+        return 'Blueprint with id %s has no parent blueprint' % str(self.typeID)
 
 #------------------------------------------------------------------------------
 def apply_material_level(base, meLevel, wasteFactor, round=False):
+    """
+    Calculate the quantity needed for a material 
+    considering the waste factor and the material efficiency of the blueprint involved.
+    """
     if meLevel < 0:
         value = base * (1.0 - ((meLevel - 1) * (wasteFactor * 0.01)));
     else:
         value = base * (1.0 + ((wasteFactor * 0.01) / (1.0 + meLevel)));
+    if round:
+        return int(round(value))
+    else:
+        return value
+
+#------------------------------------------------------------------------------
+def apply_production_level(base, peLevel, round=False):
+    """
+    Calculate the duration (in seconds) needed for the manufacturing of an item
+    considering the production efficiency of the item's blueprint.
+    """
+    baseTime = 0.8 * base # we consider the industry skill is at level 5
+    if peLevel >= 0:
+        value = baseTime * (1.0 - (0.2 * (peLevel / (1.0 + peLevel))))
+    else:
+        value = baseTime * (1.0 - 0.1 * peLevel)
     if round:
         return int(round(value))
     else:

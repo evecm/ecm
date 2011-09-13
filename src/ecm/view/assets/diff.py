@@ -291,7 +291,7 @@ def hangar_contents_data(request, date_str, solarSystemID, stationID, hangarID):
             icon = "added"
 
         jstree_data.append({
-            "data": "%s <i>(%s)</i>" % (name, utils.print_quantity(item.quantity)),
+            "data": "%s <i>(%s)</i>" % (name, utils.print_integer(item.quantity)),
             "attr" : {
                 "sort_key" : name.lower(),
                 "rel" : icon,

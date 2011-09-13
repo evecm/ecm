@@ -29,6 +29,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'ecm.settings'
 
 from ecm.core.parsers import * #@UnusedWildImport
 from ecm.core.tasks import users
+from ecm.core.tasks import industry
 
 FUNCTIONS = {
     "assets" : assets.update,
@@ -39,6 +40,7 @@ FUNCTIONS = {
     "reftypes" : reftypes.update,
     "titles" : titles.update,
     "wallets" : wallets.update,
+    "supply_prices" : industry.update_supply_prices,
     "user_access" : users.update_all_users_accesses,
     "clean_unregistered_users" : users.cleanup_unregistered_users,
     "update_user_accesses" : users.update_all_users_accesses

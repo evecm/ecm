@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Order #{{ order.id }} Modify{% endblock %}
+
+
+
+{% block header_scripts %}
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.autocomplete.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/industry.css" />
+<script type="text/javascript" src="/m/js/lib/jquery.autocomplete.js"></script>
+
+
+<script type="text/javascript"  src="/m/js/industry/order_items.js" ></script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry">Industry</a></li>
+<li><a href="/industry/orders">Orders</a></li>
+<li><a href="/industry/orders/{{ order.id }}">#{{ order.id }}</a></li>
+<li><a href="/industry/orders/{{ order.id }}/modify">Modify</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Please add items to your basket</h1>
+
+<form id="search_form" class="search_form order_form"> 
+    <label>Search for an item</label>
+    <input type="text" id="search_box" style="width: 300px;" /> 
+    <input type="button" class="button" id="add_button" value="Add to my order" /> 
+</form> 
+
+<form method="post" action="/industry/orders/{{order.id}}/modify" id="items_form" >
+{% csrf_token %}
+    <table class="order_table">
+        <thead>
+		    <tr>
+				<th style="width: 10%;">Icon</th>
+				<th style="width: 55%;">Item</th>
+				<th style="width: 20%;">Quantity</th>
+				<th style="width: 15%;">Remove</th>
+		    </tr>
+        </thead>
+		<tbody id="items">
+			{% for row in order.rows.all %}
+			<tr id="{{item.typeID}}">
+            	<td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
+             	<td class="bold">{{row.catalogEntry.typeName}}</td>
+             	<td class="center"><input type="text" name="{{row.catalogEntry.typeID}}" value="{{row.quantity}}" /></td>
+             	<td class="center"><img src="/m/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/></td> 
+           	</tr>
+           	{% empty %}
+           	<tr id="empty">
+           		<td colspan="4" class="order_cart_empty" >Your shopping cart is empty.</td>
+           	</tr>
+           	{% endfor %}
+		</tbody> 
+    </table>
+    <input type="submit" class="button" value="Submit Order"/>
+</form>
+{% endblock %}

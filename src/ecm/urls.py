@@ -184,6 +184,18 @@ urlpatterns += patterns('ecm.view.api',
     (r'^api/bindings/(\w+)/groups$', 'group_bindings'),
 )
 
+urlpatterns += patterns('ecm.view.industry',
+    ###########################################################################
+    # INDUSTRY VIEWS
+    (r'^industry/orders/(\d+)$',        'order.details'),
+    (r'^industry/orders/(\d+)/modify$',        'order.modify'),
+    (r'^industry/orders/new$',        'order.new'),
+    (r'^industry/orders/create$',        'order.create'),
+    (r'^industry/search/data$',        'search_item'),
+    (r'^industry/search/itemid$',        'get_item_id'),
+    
+)
+
 
 ###############################################################################
 #                                 ECM MENU                                    #

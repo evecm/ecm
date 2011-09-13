@@ -36,28 +36,7 @@ def print_date(date):
     return date.strftime("%Y-%m-%d")
 
 #------------------------------------------------------------------------------
-def limit_text_size(text, max_size):
-    if len(text) < max_size:
-        return text
-    else:
-        return text[:(max_size - 3)] + "..."
-
-#------------------------------------------------------------------------------
-def print_integer(number, thousand_separator=" "):
-    if type(number) not in [type(0), type(0L)]:
-        raise TypeError("Parameter must be an integer.")
-    
-    number = abs(number)
-
-    result = ''
-    while number >= 1000:
-        number, r = divmod(number, 1000)
-        result = "%s%03d%s" % (thousand_separator, r, result)
-    
-    return "%d%s" % (number, result)
-
-#------------------------------------------------------------------------------
-def print_quantity(number, thousand_separator=" "):
+def print_integer(number, thousand_separator=",", force_sign=False):
     if type(number) not in [type(0), type(0L)]:
         raise TypeError("Parameter must be an integer.")
     
@@ -72,7 +51,7 @@ def print_quantity(number, thousand_separator=" "):
     if negative:
         return "- %d%s" % (number, result)
     else:
-        return "+ %d%s" % (number, result)
+        return "%s%d%s" % ("+ " if force_sign else "", number, result)
 
 #------------------------------------------------------------------------------
 def print_delta(delta):
@@ -91,11 +70,11 @@ def print_delta(delta):
     return string
 
 #------------------------------------------------------------------------------
-def print_float(number, thousand_separator=" ", decimal_separator=","):
+def print_float(number, thousand_separator=",", decimal_separator=".", force_sign=False):
     if type(number) != type(0.0):
         raise TypeError("Parameter must be a float.")
     decimal_part = ("%.2f" % abs(number - int(number)))[2:]
-    return print_quantity(int(number), thousand_separator) + decimal_separator + decimal_part
+    return print_integer(int(number), thousand_separator, force_sign) + decimal_separator + decimal_part
 
 #------------------------------------------------------------------------------
 def get_access_color(accessLvl, colorThresholds):
