@@ -134,7 +134,7 @@ def list_data(request):
             try:
                 if int(entry.ownerID1) == corporationID and int(entry.ownerID2) == corporationID:
                     related_entry = other_entries.filter(refID=entry.refID).exclude(id=entry.id)[0]
-                    owner2 = related_entry.wallet.permalink
+                    owner2 = related_entry.wallet.name
             except:
                 pass
         else:
@@ -142,7 +142,7 @@ def list_data(request):
 
         entries.append([
             print_time_min(entry.date),
-            entry.wallet.permalink,
+            entry.wallet.name,
             entry.type.refTypeName,
             owner1,
             owner2,
