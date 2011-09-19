@@ -22,7 +22,7 @@ __author__ = "diabeteman"
 import json
 from datetime import datetime, timedelta
 
-from django.db.models.aggregates import Min, Max
+from django.db.models.aggregates import Min, Max, Sum
 from django.db import connection
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
@@ -39,14 +39,22 @@ DATE_PATTERN = "%Y-%m-%d"
 #------------------------------------------------------------------------------
 @check_user_access()
 def member_contrib(request):
+    """
+    View function URL : '/accounting/contributions'
+    """
     from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
     if from_date is None: from_date = datetime.fromtimestamp(0)
     to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
     if to_date is None: to_date = datetime.now()
+
+    query = JournalEntry.objects.filter(type__in=(16, 17, 33, 34, 85),
+                                        date__gte=from_date, date__lte=to_date)
+    total_contribs = query.aggregate(sum=Sum('amount'))['sum']
     data = {
         'scan_date' : getScanDate(JournalEntry),
         'from_date' : datetime.strftime(from_date, DATE_PATTERN),
-        'to_date' : datetime.strftime(to_date, DATE_PATTERN)
+        'to_date' : datetime.strftime(to_date, DATE_PATTERN),
+        'total_contribs' : total_contribs,
     }
     return render_to_response("accounting/contrib.html", data, RequestContext(request))
 
@@ -54,6 +62,9 @@ def member_contrib(request):
 columns = ['LOWER("name")', '"tax_contrib"']
 @check_user_access()
 def member_contrib_data(request):
+    """
+    View function URL : '/accounting/contributions/members/data'
+    """
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
@@ -88,6 +99,9 @@ def member_contrib_data(request):
 #------------------------------------------------------------------------------
 @check_user_access()
 def system_contrib_data(request):
+    """
+    View function URL : '/accounting/contributions/systems/data'
+    """
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
@@ -123,6 +137,28 @@ def system_contrib_data(request):
     }
 
     return HttpResponse(json.dumps(json_data))
+
+#------------------------------------------------------------------------------
+def total_contrib_data(request):
+    """
+    View function URL : '/accounting/contributions/total/data'
+    """
+    try:
+        REQ = request.GET if request.method == 'GET' else request.POST
+        from_date = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
+        to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+    except (KeyError, ValueError):
+        from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
+        if from_date is None: from_date = datetime.fromtimestamp(0)
+        to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
+        if to_date is None: to_date = datetime.now()
+
+    query = JournalEntry.objects.filter(type__in=(16, 17, 33, 34, 85),
+                                        date__gte=from_date, date__lte=to_date)
+    total_contribs = query.aggregate(sum=Sum('amount'))['sum']
+
+    return HttpResponse(utils.print_float(total_contribs))
+
 
 #------------------------------------------------------------------------------
 MEMBER_CONTRIB_SQL = '''SELECT m."characterID" AS "characterID", m."name" AS "name", SUM(j."amount") AS "tax_contrib"

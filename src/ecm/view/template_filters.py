@@ -34,3 +34,10 @@ def format_datetime(value):
         return unicode(utils.print_time_min(value))
     except:
         return unicode(value)
+
+@register.filter(name='ecm_price')
+def price_format(value):
+    try:
+        return unicode(utils.print_float(float(value)))
+    except:
+        return unicode(value)

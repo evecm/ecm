@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2010-01-24"
@@ -33,37 +33,37 @@ urlpatterns = patterns('',
     (r'^admin/',                                    include(admin.site.urls)),
     (r'^captcha/',                                  include('captcha.urls')),
     # static file serving for the development server
-    (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:],  'django.views.static.serve', 
+    (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:],  'django.views.static.serve',
                                                     {'document_root' : settings.MEDIA_ROOT}),
 )
 
 urlpatterns += patterns('django.contrib.auth.views',
     ###########################################################################
     # DJANGO BUILT-IN AUTH VIEWS
-    (r'^account/login$',                'login', 
+    (r'^account/login$',                'login',
                                             {'template_name' : 'auth/login.html'}),
-    (r'^account/logout$',               'logout', 
+    (r'^account/logout$',               'logout',
                                             {'next_page' : '/'}),
-    (r'^account/passwordchange$',       'password_change', 
-                                            {'template_name' : 'auth/password_change.html', 
+    (r'^account/passwordchange$',       'password_change',
+                                            {'template_name' : 'auth/password_change.html',
                                             'password_change_form' : PasswordChangeForm}),
-    (r'^account/passwordchange/done$',  'password_change_done', 
+    (r'^account/passwordchange/done$',  'password_change_done',
                                             {'template_name' : 'auth/password_change_done.html'}),
-    (r'^account/passwordreset$',        'password_reset', 
+    (r'^account/passwordreset$',        'password_reset',
                                             {'template_name' : 'auth/password_reset.html',
                                              'email_template_name' : 'auth/password_reset_email.txt',
                                              'password_reset_form' : PasswordResetForm,
                                              'post_reset_redirect' : '/account/passwordreset/sent'}),
-    (r'^account/passwordreset/sent$',   'password_reset_done', 
+    (r'^account/passwordreset/sent$',   'password_reset_done',
                                             {'template_name' : 'auth/password_reset_done.html'}),
-    (r'^account/passwordreset/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)$','password_reset_confirm', 
+    (r'^account/passwordreset/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)$','password_reset_confirm',
                                             {'template_name' : 'auth/password_reset_confirm.html',
                                              'set_password_form' : PasswordSetForm}),
     (r'^account/passwordreset/complete$','password_reset_complete',
                                             {'template_name' : 'auth/password_reset_complete.html'}),
-                                                    
+
 )
- 
+
 urlpatterns += patterns('ecm.view.auth',
     ###########################################################################
     # ECM AUTH + USER PROFILE VIEWS
@@ -74,10 +74,10 @@ urlpatterns += patterns('ecm.view.auth',
     (r'^account/editapi/(\d+)$',         'account.edit_api'),
     (r'^account/binding/add/(\d+)$',     'account.add_binding'),
     (r'^account/binding/delete/(\d+)$',  'account.delete_binding'),
-    
+
     (r'^account/create$',                'signup.create_account'),
     (r'^account/activate/(\w+)$',        'signup.activate_account'),
-    
+
     (r'^players$',                       'players.player_list'),
     (r'^players/data$',                  'players.player_list_data'),
     (r'^players/(\d+)$',                 'players.player_details'),
@@ -174,6 +174,8 @@ urlpatterns += patterns('ecm.view.accounting',
     (r'^accounting/contributions$', 'contrib.member_contrib'),
     (r'^accounting/contributions/members/data$', 'contrib.member_contrib_data'),
     (r'^accounting/contributions/systems/data$', 'contrib.system_contrib_data'),
+    (r'^accounting/contributions/total/data$', 'contrib.total_contrib_data'),
+
 )
 
 urlpatterns += patterns('ecm.view.api',
