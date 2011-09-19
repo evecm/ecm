@@ -95,6 +95,12 @@ MANDATORY_USER_API_ACCESS_MASKS = [
     1 << 24, # PrivateCharacterInfo
 ]
 
+#------------------------------------------------------------------------------
+def user_access_mask():
+    accessMask = 0
+    for mask in MANDATORY_USER_API_ACCESS_MASKS:
+        accessMask |= mask
+    return accessMask
 
 #------------------------------------------------------------------------------
 def check_user_access_mask(accessMask):

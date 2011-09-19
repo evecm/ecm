@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db import transaction
 
 __date__ = "2011 4 17"
 __author__ = "diabeteman"
@@ -22,12 +21,14 @@ __author__ = "diabeteman"
 from django.template.context import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.db import transaction
 
 from ecm.view.decorators import forbidden
 from ecm.core.tasks.users import update_user_accesses
 from ecm.view.auth.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
 from ecm.data.roles.models import Member
 from ecm.data.common.models import UserAPIKey, ExternalApplication, UserBinding
+from ecm.core.eve.validators import user_access_mask
 
 import logging
 logger = logging.getLogger(__name__)
@@ -81,7 +82,12 @@ def add_api(request):
     else: # request.method == 'GET'
         form = AddApiKeyForm()
 
-    return render_to_response('auth/add_api.html', {'form': form}, RequestContext(request))
+    data = {
+        'form': form,
+        'accessMask': user_access_mask()
+    }
+
+    return render_to_response('auth/add_api.html', data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -127,7 +133,11 @@ def edit_api(request, keyID):
     else: # request.method == 'GET'
         form = EditApiKeyForm(initial={"keyID" : api.keyID, "vCode" : api.vCode})
 
-    data = {'form': form, 'request_path' : request.get_full_path()}
+    data = {
+        'form': form,
+        'request_path' : request.get_full_path(),
+        'accessMask': user_access_mask()
+    }
     return render_to_response('auth/edit_api.html', data, RequestContext(request))
 
 #------------------------------------------------------------------------------

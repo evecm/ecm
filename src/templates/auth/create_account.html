@@ -16,36 +16,40 @@
 <form class="signupform" action="/account/create" method="post" id="character_form" >{% csrf_token %}
     {% if form.errors %}
     <p class="error">{{ form.non_field_errors }}</p>
-    {% endif %} 
+    {% endif %}
     <fieldset>
-    
+
     <h2>General Information</h2>
 	    <span class="label">{{ form.username.label_tag }}{{ form.username.errors }}</span>
 	    {{ form.username }}
-	
+
 	    <span class="label">{{ form.email.label_tag }}{{ form.email.errors }}</span>
 	    {{ form.email }}
-	
+
 	    <span class="label">{{ form.password1.label_tag }}{{ form.password1.errors }}</span>
 	    {{ form.password1 }}
-	
+
 	    <span class="label">{{ form.password2.label_tag }}{{ form.password2.errors }}</span>
 	    {{ form.password2 }}
-	    
+
 	<h2>EVE-Online API Key</h2>
+
+	<a href="https://support.eveonline.com/api/Key/CreatePredefined/{{accessMask}}" target="_blank">
+                  Create a new API Key on EVE-Online support website</a>
+
 	    <span class="label">{{ form.keyID.label_tag }}{{ form.keyID.errors }}</span>
 	    {{ form.keyID }}
 	    <span class="label">{{ form.vCode.label_tag }}{{ form.vCode.errors }}</span>
 	    {{ form.vCode }}
-	    
+
 	<h2>Anti-Robot Security</h2>
 	    <span class="label">{{ form.captcha.label_tag }}{{ form.captcha.errors }}</span>
 	    {{ form.captcha }}
-	    
+
 	    <input type="submit" class="button" value="Submit Information"  />
-    
+
     </fieldset>
 </form>
-    
+
 
 {% endblock %}
