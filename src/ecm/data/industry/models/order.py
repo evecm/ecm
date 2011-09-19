@@ -23,7 +23,8 @@ from datetime import datetime
 from django.db import models, transaction, connection
 from django.contrib.auth.models import User
 
-from ecm.core.utils import fix_mysql_quotes
+from ecm.core import utils
+from ecm.core.utils import fix_mysql_quotes, cached_property
 from ecm.core.eve.classes import NoBlueprintException
 from ecm.data.industry.models.catalog import CatalogEntry
 from ecm.data.industry.models.inventory import SupplyPrice
@@ -70,28 +71,14 @@ class Order(models.Model):
         REJECTED:          'Rejected by Manufacturer',
     }
     
-    # allowed transitions between states
-    VALID_TRANSITIONS = {
-        DRAFT : (DRAFT, PENDING, CANCELED),
-        PENDING : (DRAFT, PROBLEMATIC, ACCEPTED, CANCELED, REJECTED),
-        PROBLEMATIC : (DRAFT, ACCEPTED, REJECTED, CANCELED),
-        ACCEPTED : (PLANNED, IN_PREPARATION, CANCELED),
-        PLANNED : (IN_PREPARATION, CANCELED),
-        IN_PREPARATION : (READY, CANCELED),
-        READY : (DELIVERED, CANCELED),
-        DELIVERED : (PAID, CANCELED),
-        PAID : (),
-        CANCELED : (),
-        REJECTED : (),
-    }
-    
+ 
     state = models.PositiveIntegerField(default=DRAFT, choices=STATES.items())
     originator = models.ForeignKey(User, related_name='orders_created')
     manufacturer = models.ForeignKey(User, null=True, blank=True, related_name='orders_manufactured')
     deliveryMan = models.ForeignKey(User, null=True, blank=True, related_name='orders_delivered')
     client = models.CharField(max_length=255, null=True, blank=True)
     deliveryLocation = models.CharField(max_length=255, null=True, blank=True)
-    mileStone = models.ForeignKey('MileStone', related_name='orders', null=True, blank=True)
+    deliveryDate = models.DateField(null=True, blank=True)
     quote = models.FloatField(default=0.0)
     pricing = models.ForeignKey('Pricing', related_name='orders')
     extraDiscount = models.FloatField(default=0.0)
@@ -118,15 +105,15 @@ class Order(models.Model):
     def addComment(self, user, comment):
         self.logs.create(state=self.state, user=user, text=unicode(comment))
     
-    def changeState(self, newState, user, comment):
+    def applyTransition(self, function, newState, user, comment):
         """
         Modify the state of an order. Adding a comment in the order logs.
         
         Checks if the new state is allowed in the life cycle. If not, raises an IllegalStateError
         """
-        if newState not in Order.VALID_TRANSITIONS[self.state]:
-            raise IllegalStateError('Cannot change state from "%s" to "%s".' % 
-                                    (Order.STATES[self.state], Order.STATES[newState]))
+        if function not in Order.VALID_TRANSITIONS[self.state]:
+            raise IllegalTransition('Cannot apply transition "%s" from state "%s".' % 
+                                    (function.__name__, Order.STATES[self.state]))
         else:
             self.state = newState
             self.addComment(user, comment)
@@ -143,7 +130,7 @@ class Order(models.Model):
             comment = "Modified by originator."
         else:
             comment = "Created."
-        self.changeState(Order.DRAFT, self.originator, comment)
+        self.applyTransition(Order.modify, Order.DRAFT, self.originator, comment)
         self.rows.all().delete()
         for catalogEntry, quantity in entries:
             self.rows.create(catalogEntry=catalogEntry, quantity=quantity)
@@ -154,7 +141,7 @@ class Order(models.Model):
         """
         Originator's confirmation of the order. Warns the manufacturing team. 
         """
-        self.changeState(Order.PENDING, self.originator, "Confirmed by originator.")
+        self.applyTransition(Order.confirm, Order.PENDING, self.originator, "Confirmed by originator.")
         self.save()
         # TODO: handle the alerts
     
@@ -169,11 +156,11 @@ class Order(models.Model):
         try:
             self.checkIfCanBeFulfilled()
             self.createJobs()
-            self.changeState(Order.ACCEPTED, user=manufacturer, comment="Accepted")
+            self.applyTransition(Order.accept, Order.ACCEPTED, user=manufacturer, comment="Accepted")
             self.save()
             return True
         except OrderCannotBeFulfilled as err:
-            self.changeState(Order.PROBLEMATIC, user=manufacturer, comment=str(err))
+            self.applyTransition(Order.accept, Order.PROBLEMATIC, user=manufacturer, comment=str(err))
             self.save()
             return False 
     
@@ -185,8 +172,76 @@ class Order(models.Model):
         why the order was accepted despite the fact that is was PROBLEMATIC
         """
         self.createJobs()
-        self.changeState(Order.ACCEPTED, manufacturer, comment)
+        self.applyTransition(Order.resolve, Order.ACCEPTED, manufacturer, comment)
         self.save()
+    
+    def plan(self, manufacturer, date):
+        """
+        Plan an order for a delivery date
+        """
+        self.applyTransition(Order.plan, Order.PLANNED, manufacturer, 
+                             'Order planned for date "%s"' % utils.print_date(date))
+        self.deliveryDate = date
+        self.save()
+        
+    
+    def reject(self, manufacturer, comment):
+        """
+        Rejection of an order by a manufacturer.
+        
+        This is a manual operation and entering a comment is mandatory to explain 
+        why the order was rejected.
+        """
+        self.applyTransition(Order.reject, Order.REJECTED, manufacturer, comment)
+        self.save()
+    
+    def cancel(self, comment):
+        """
+        Cancellation of the order by its originator.
+        """
+        self.applyTransition(Order.cancel, Order.CANCELED, self.originator, comment)
+        self.save()
+
+    def startPreparation(self, user=None):
+        """
+        Order preparation started (first job is started)
+        """
+        self.applyTransition(Order.startPreparation, Order.IN_PREPARATION, 
+                             user or self.manufacturer, "Preparation started.")
+        self.save()
+    
+    def endPreparation(self, manufacturer=None, deliveryMan=None):
+        """
+        Order is ready (all jobs are ready)
+        
+        Delivery task is assigned to manufacturer by default, unless deliveryMan is not None.
+        """
+        self.applyTransition(Order.endPreparation, Order.READY, 
+                             manufacturer, "Order is ready.")
+        self.deliveryMan = deliveryMan or manufacturer or self.manufacturer
+        
+        self.save()
+    
+    def deliver(self, user=None):
+        """
+        Order has been delivered. 
+        """
+        self.applyTransition(Order.deliver, Order.DELIVERED, 
+                             user or self.deliveryMan, 
+                             "Order has been delivered to the client.")
+        self.save()
+        
+    
+    def pay(self, user=None):
+        """
+        Order has been paid. 
+        """
+        self.applyTransition(Order.pay, Order.PAID, 
+                             user or self.deliveryMan, "Order has been delivered to the client.")
+        self.save()
+    
+    ################################
+    # UTILITY FUNCTIONS
     
     def checkIfCanBeFulfilled(self):
         """
@@ -245,7 +300,7 @@ class Order(models.Model):
         sql += ' GROUP BY "itemID", "activity" ORDER BY "activity", "itemID";'
         sql = fix_mysql_quotes(sql)
         
-        cursor = connection.cursor()
+        cursor = connection.cursor() #@UndefinedVariable
         if activity is not None:
             cursor.execute(sql, [self.id, activity])
         else:
@@ -286,6 +341,24 @@ class Order(models.Model):
     def __repr__(self):
         return unicode(self) + '\n  ' + '\n  '.join(map(unicode, list(self.rows.all())))
 
+    # allowed transitions between states
+    VALID_TRANSITIONS = {
+        DRAFT : (modify, confirm, cancel),
+        PENDING : (modify, accept, cancel, reject),
+        PROBLEMATIC : (modify, resolve, cancel, reject),
+        ACCEPTED : (plan, startPreparation, cancel),
+        PLANNED : (startPreparation, cancel),
+        IN_PREPARATION : (endPreparation, cancel),
+        READY : (deliver, cancel),
+        DELIVERED : (pay, cancel),
+        PAID : (),
+        CANCELED : (),
+        REJECTED : (),
+    }
+    
+
+
+
 #------------------------------------------------------------------------------
 class OrderLog(models.Model):
     
@@ -300,7 +373,7 @@ class OrderLog(models.Model):
     user = models.ForeignKey(User, related_name='logs')
     text = models.TextField()
     
-    @property
+    @cached_property
     def user_permalink(self):
         try:
             url = '/player/%d' % self.user.id
@@ -330,7 +403,6 @@ class OrderRow(models.Model):
     catalogEntry = models.ForeignKey(CatalogEntry, related_name='order_rows')
     quantity = models.PositiveIntegerField()
     cost = models.FloatField(default=0.0)
-    __item = None
     
     
     def getAggregatedJobs(self, activity=None):
@@ -347,7 +419,7 @@ class OrderRow(models.Model):
         sql += ' GROUP BY "itemID", "activity" ORDER BY "activity", "itemID";'
         sql = fix_mysql_quotes(sql)
         
-        cursor = connection.cursor()
+        cursor = connection.cursor() #@UndefinedVariable
         cursor.execute(sql, [self.id])
         
         jobs = []
@@ -409,5 +481,5 @@ class OrderCannotBeFulfilled(UserWarning):
         return output
 
 #------------------------------------------------------------------------------
-class IllegalStateError(UserWarning): pass
+class IllegalTransition(UserWarning): pass
 
