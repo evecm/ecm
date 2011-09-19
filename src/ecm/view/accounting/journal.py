@@ -50,7 +50,7 @@ def list(request):
         })
 
     entryTypes = [{ 'refTypeID' : 0, 'refTypeName' : 'All', 'selected' : entryTypeID == 0 }]
-    for et in EntryType.objects.exclude(refTypeID=0).order_by('refTypeID'):
+    for et in EntryType.objects.exclude(refTypeID=0).order_by('refTypeName'):
         entryTypes.append({
             'refTypeID' : et.refTypeID,
             'refTypeName' : et.refTypeName,
