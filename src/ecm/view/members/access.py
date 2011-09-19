@@ -20,6 +20,7 @@ __author__ = "diabeteman"
 
 import json
 
+from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
@@ -28,7 +29,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
 from ecm.view.decorators import check_user_access
-from ecm.core.utils import print_time_min
+from ecm.core import utils
 
 
 #------------------------------------------------------------------------------
@@ -41,21 +42,34 @@ def access_changes(request):
 
 
 #------------------------------------------------------------------------------
+COLUMNS = ['change', 'name', 'role/title', 'date']
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def access_changes_data(request):
     try:
         params = extract_datatable_params(request)
+        if params.column == 1:
+            lambda_sort = lambda e: e.member.name.lower()
+        else:
+            lambda_sort = lambda e: e.date
     except:
         return HttpResponseBadRequest()
 
-    roles = RoleMemberDiff.objects.select_related(depth=1).all().order_by("-date")
-    titles = TitleMemberDiff.objects.select_related(depth=1).all().order_by("-date")
+    roles_query = RoleMemberDiff.objects.select_related(depth=1).all()
+    titles_query = TitleMemberDiff.objects.select_related(depth=1).all()
 
-    count = roles.count() + titles.count()
+    if params.search:
+        total_count = roles_query.count() + titles_query.count()
+        roles_search_args = Q(member__name__icontains=params.search) | Q(role__roleName__icontains=params.search)
+        roles_query = roles_query.filter(roles_search_args)
+        titles_search_args = Q(member__name__icontains=params.search) | Q(title__titleName__icontains=params.search)
+        titles_query = titles_query.filter(titles_search_args)
+        filtered_count = roles_query.count() + titles_query.count()
+    else:
+        total_count = filtered_count = roles_query.count() + titles_query.count()
 
-    changes = list(roles) + list(titles)
-    changes.sort(key=lambda e: e.date, reverse=True)
+    changes = list(roles_query) + list(titles_query)
+    changes.sort(key=lambda_sort, reverse=not params.asc)
     changes = changes[params.first_id:params.last_id]
 
     change_list = []
@@ -64,13 +78,13 @@ def access_changes_data(request):
             c.new,
             c.member_permalink,
             c.access_permalink,
-            print_time_min(c.date)
+            utils.print_time_min(c.date)
         ])
 
     json_data = {
         "sEcho" : params.sEcho,
-        "iTotalRecords" : count,
-        "iTotalDisplayRecords" : count,
+        "iTotalRecords" : total_count,
+        "iTotalDisplayRecords" : filtered_count,
         "aaData" : change_list
     }
 

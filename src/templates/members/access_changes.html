@@ -7,6 +7,7 @@
 {% block header_scripts %}
 <script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
+<script type="text/javascript" src="/m/js/access_changes_table.js"></script>
 {% endblock %}
 
 
@@ -24,7 +25,12 @@
 {% block main_content %}
 <h1 class="pagetitle">Security Access Changes <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
 
-<script type="text/javascript" src="/m/js/access_changes_table.js"></script>
+<form id="search_form" class="search_form">
+    <input type="text" id="search_text" value="" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+</form>
+
 <table class="table display" id="access_changes_table">
   <thead>
     <tr>

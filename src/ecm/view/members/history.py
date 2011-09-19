@@ -20,6 +20,7 @@ __author__ = "diabeteman"
 
 import json
 
+from django.db.models import Q
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
@@ -29,7 +30,7 @@ from django.utils.text import truncate_words
 from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.data.roles.models import Member, MemberDiff
-from ecm.core.utils import print_time_min
+from ecm.core import utils
 
 
 #------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ def history(request):
     return render_to_response("members/member_history.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
+COLUMNS = ['change', 'name', 'nickname', 'id']
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def history_data(request):
@@ -49,23 +51,39 @@ def history_data(request):
     except:
         return HttpResponseBadRequest()
 
-    queryset = MemberDiff.objects.all().order_by('-id')
-    total_members = queryset.count()
+    query = MemberDiff.objects.all()
 
-    queryset = queryset[params.first_id:params.last_id]
+    sort_col = COLUMNS[params.column]
+    # SQL hack for making a case insensitive sort
+    if params.column in (1, 2):
+        sort_col = sort_col + "_nocase"
+        sort_val = utils.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column])
+        query = query.extra(select={ sort_col : sort_val })
+
+    if not params.asc: sort_col = "-" + sort_col
+    query = query.extra(order_by=([sort_col]))
+
+    if params.search:
+        total_members = query.count()
+        search_args = Q(name__icontains=params.search) | Q(nickname__icontains=params.search)
+        query = query.filter(search_args)
+        filtered_members = query.count()
+    else:
+        total_members = filtered_members = query.count()
+
     members = []
-    for diff in queryset:
+    for diff in query[params.first_id:params.last_id]:
         members.append([
             diff.new,
             diff.permalink,
             truncate_words(diff.nickname, 5),
-            print_time_min(diff.date)
+            utils.print_time_min(diff.date)
         ])
 
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : total_members,
-        "iTotalDisplayRecords" : total_members,
+        "iTotalDisplayRecords" : filtered_members,
         "aaData" : members
     }
 
