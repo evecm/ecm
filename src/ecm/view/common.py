@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2010-05-16"
@@ -60,7 +60,7 @@ def corp(request):
 @basic_auth_required(username=settings.CRON_USERNAME)
 def trigger_scheduler(request):
     now = datetime.now()
-    tasks_to_execute = ScheduledTask.objects.filter(is_active=True, 
+    tasks_to_execute = ScheduledTask.objects.filter(is_active=True,
                                                     is_running=False,
                                                     next_execution__lt=now).order_by("-priority")
     if tasks_to_execute:
@@ -81,7 +81,7 @@ def task_list_data(request):
         params = extract_datatable_params(request)
     except:
         return HttpResponseBadRequest()
-    
+
     functions = [ t[0] for t in ScheduledTask.FUNCTION_CHOICES ]
     tasks = []
     for t in ScheduledTask.objects.filter(function__in=functions, is_active=True):
@@ -92,14 +92,14 @@ def task_list_data(request):
             t.is_running,
             t.as_html(next='/tasks')
         ])
-    
+
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : len(tasks),
         "iTotalDisplayRecords" : len(tasks),
         "aaData" : tasks
     }
-    
+
     return HttpResponse(json.dumps(json_data))
 
 
@@ -110,9 +110,9 @@ def launch_task(request, task_id):
         task = ScheduledTask.objects.get(id=int(task_id))
     except ScheduledTask.DoesNotExist:
         return HttpResponseNotFound('No task with ID ' + task_id)
-    except ValueError as e:
+    except ValueError, e:
         raise HttpResponseBadRequest(str(e))
-    
+
     if task.is_running:
         code = http.NOT_MODIFIED
         logger.warning("Task '%s' is already running." % task.function)
@@ -122,7 +122,7 @@ def launch_task(request, task_id):
     else:
         code = http.ACCEPTED
         TaskThread(tasks=[task]).start()
-    
+
     next_page = request.GET.get("next", None)
     if next_page is not None:
         # we let the task the time to start before redirecting

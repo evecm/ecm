@@ -87,7 +87,7 @@ def activate_account(request, activation_key):
         return render_to_response('auth/account_activated.html',
                                   { 'activated_user' : user },
                                   context_instance=RequestContext(request))
-    except (ValueError, UserWarning) as err:
+    except (ValueError, UserWarning), err:
         logger.info('could not use activation key "%s": %s' % (activation_key, str(err)))
         return render_to_response('auth/activation_error.html',
                                   { 'activation_key': activation_key,

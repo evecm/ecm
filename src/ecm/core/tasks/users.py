@@ -62,7 +62,7 @@ def update_character_associations(user):
             user_api.is_valid = True
             for member in Member.objects.filter(characterID__in=ids):
                 new_ownerships.append((member, user))
-        except eveapi.Error as e:
+        except eveapi.Error, e:
             if e.code == 0 or 200 >= e.code > 300:
                 # authentication failure error codes.
                 # This happens if the vCode does not match the keyID
