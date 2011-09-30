@@ -18,7 +18,11 @@
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
-import json
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest

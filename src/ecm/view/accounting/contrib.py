@@ -19,7 +19,11 @@ from ecm.core import utils
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
 
-import json
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 from datetime import datetime, timedelta
 
 from django.db.models.aggregates import Min, Max, Sum

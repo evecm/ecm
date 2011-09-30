@@ -28,7 +28,11 @@ import os
 from os import path
 import sys
 import base64
-import json
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 import urllib2
 import MySQLdb
 import logging

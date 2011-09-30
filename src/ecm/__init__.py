@@ -19,7 +19,7 @@ __author__ = "diabeteman"
 __date__ = "2011-05-17"
 
 timestamp = "%(timestamp)s"
-version = "1.4.5"
+version = "1.4.6"
 
 def get_full_version():
     return version + '.' + timestamp
