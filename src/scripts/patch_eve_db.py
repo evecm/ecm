@@ -16,13 +16,14 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import with_statement
+
 __date__ = "2011-06-17"
 __author__ = "diabeteman"
 
 import bz2, tempfile, shutil, urllib2, os, sqlite3
 from optparse import OptionParser
 import logging
-from __future__ import with_statement
 
 script_dir = os.path.abspath(os.path.dirname(__file__))
 parser = OptionParser()
