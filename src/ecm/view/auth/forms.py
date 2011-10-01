@@ -114,7 +114,7 @@ class AccountCreationForm(forms.Form):
                 else:
                     self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
                     del cleaned_data["keyID"]
-            except eveapi.Error as e:
+            except eveapi.Error, e:
                 self._errors["keyID"] = self.error_class([str(e)])
                 self._errors["vCode"] = self.error_class([str(e)])
                 del cleaned_data["keyID"]
@@ -251,7 +251,7 @@ class AddApiKeyForm(forms.Form):
                 else:
                     self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
                     del cleaned_data["keyID"]
-            except eveapi.Error as e:
+            except eveapi.Error, e:
                 self._errors["keyID"] = self.error_class([str(e)])
                 self._errors["vCode"] = self.error_class([str(e)])
                 del cleaned_data["keyID"]
@@ -289,7 +289,7 @@ class EditApiKeyForm(forms.Form):
                 else:
                     self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
                     del cleaned_data["keyID"]
-            except eveapi.Error as e:
+            except eveapi.Error, e:
                 self._errors["vCode"] = self.error_class([str(e)])
                 del cleaned_data["vCode"]
 
