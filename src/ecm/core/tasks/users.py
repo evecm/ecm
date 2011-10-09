@@ -149,10 +149,13 @@ except Group.DoesNotExist:
 @transaction.commit_on_success
 def update_all_users_accesses():
     try:
-        t = ScheduledTask.objects.get(function__contains='update_all_character_associations')
-        if not t.is_last_exec_success:
-            raise RuntimeWarning("Last character associations update failed. "
-                                 "Skipping user access update.")
+        try:
+            t = ScheduledTask.objects.get(function__contains='update_all_character_associations')
+            if not t.is_last_exec_success:
+                raise RuntimeWarning("Last character associations update failed. "
+                                     "Skipping user access update.")
+        except ScheduledTask.DoesNotExist:
+            pass
         logger.info("Updating user accesses from their in-game roles...")
         for user in User.objects.filter(is_active=True):
             update_user_accesses(user)
