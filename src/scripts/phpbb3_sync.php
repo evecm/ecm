@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 /*
 * Copyright (c) 2010-2011 Robin Jarry
@@ -32,6 +31,15 @@
 * 	- Request ECM managed groups for the forum
 * 	- Get the members that are to be put in these groups
 * 	- Update these groups members according to what ECM says
+*
+* IMPORTANT : do not put this script next to your forum files. Instead, put
+* it in a global "admin" scripts folder so that users cannot see or run it by
+* mistake.
+*
+* If you want to run this script periodically (which is pretty much the point ^^)
+* The crontab entry should look that way:
+*
+* 0 * * * * /usr/bin/php -f /root/scripts/phpbb3_sync.php 2>&1 1>>/some/file.log
 ******************************************************************************/
 
 /*****************************************************************************/
@@ -51,22 +59,44 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include(PHPBB_ROOT_PATH . 'common.' . $phpEx);
 include(PHPBB_ROOT_PATH . 'includes/functions_user.' . $phpEx);
 
+/*****************************************************************************/
+
+/**
+* Log some text to the console
+*
+* @param string $text
+*/
+function log($text) {
+    echo date("Ymd - H:i:s") . " - $text\n";
+}
+
+
 /**
  * Update a phpbb3 group
  *
  * @param int $group_id
- * @param array $members_to_remove
- * @param array $members_to_add
+ * @param array:int $members_to_remove
+ * @param array:int $members_to_add
  */
-function update_group($group_id, $members_to_remove, $members_to_add) {
-    global $db;
-
+function update_group($group_id, $members_to_remove, $members_to_add)
+{
     if (sizeof($members_to_remove)) {
-        group_user_del($group_id, $members_to_remove);
+        $err = group_user_del($group_id, $members_to_remove);
+        if ($err) {
+            log("[ERROR] could not remove members: $err");
+        } else {
+            log("Removed " . sizeof($members_to_remove)
+               . " members: " . implode(', ', $members_to_remove));
+        }
     }
-
     if (sizeof($members_to_add)) {
-        group_user_add($group_id, $members_to_remove);
+        $err = group_user_add($group_id, $members_to_add);
+        if ($err) {
+            log("[ERROR] could not add members: $err");
+        } else {
+            log("Added " . sizeof($members_to_add)
+                . " members: " . implode(', ', $members_to_add));
+        }
     }
 }
 
@@ -77,7 +107,8 @@ function update_group($group_id, $members_to_remove, $members_to_add) {
  * @param int $group_id
  * @return array:int group members
  */
-function get_group_members($group_id) {
+function get_group_members($group_id)
+{
     global $db;
 
     $sql = "SELECT user_id
@@ -102,7 +133,8 @@ function get_group_members($group_id) {
  * @param string $url
  * @return array json decoded data
  */
-function fetch_ecm_data($url) {
+function fetch_ecm_data($url)
+{
     $ch = curl_init();
     curl_setopt_array($ch, array(
         CURLOPT_USERAGENT      => 'ECM PHPBB3 Synchronizer',
@@ -131,16 +163,16 @@ function fetch_ecm_data($url) {
 /**
  * Update permissions according to what ECM says.
  */
-function main() {
-    global $db, $auth;
-
-    echo "Fetching data from ECM...\n";
-    $groups = fetch_ecm_data(ECM_URL . '/api/bindings/' . ECM_EXTERNAL_APP . '/groups');
-    echo "Fetched " . sizeof($groups) . " groups\n";
+function main()
+{
+    $url = ECM_URL . '/api/bindings/' . ECM_EXTERNAL_APP . '/groups';
+    log("Fetching data from $url...");
+    $groups = fetch_ecm_data($url);
+    log("Fetched " . sizeof($groups) . " groups");
 
     foreach ($groups as $g) {
         $group_id = (int) $g['group'];
-        echo "Updating group $group_id...\n";
+        log("Updating group $group_id...");
         $new_members = $g['members'];
         $old_members = get_group_members($group_id);
 
@@ -148,10 +180,9 @@ function main() {
         $members_to_add = array_diff($new_members, $old_members);
 
         update_group($group_id, $members_to_remove, $members_to_add);
-        echo "Added " . sizeof($members_to_add) . " members: " . implode(', ', $members_to_add) . "\n";
-        echo "Removed " . sizeof($members_to_remove) . " members: " . implode(', ', $members_to_remove) . "\n";
     }
 }
+
 
 main();
 
