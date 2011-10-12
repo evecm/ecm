@@ -57,6 +57,10 @@ def history_data(request):
 
     query = MemberDiff.objects.all()
 
+    if params.column == 0 or params.column > 3:
+        params.column = 3
+        params.asc = False
+
     sort_col = COLUMNS[params.column]
     # SQL hack for making a case insensitive sort
     if params.column in (1, 2):

@@ -46,7 +46,6 @@ def access_changes(request):
 
 
 #------------------------------------------------------------------------------
-COLUMNS = ['change', 'name', 'role/title', 'date']
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def access_changes_data(request):
