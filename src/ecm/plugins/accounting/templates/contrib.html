@@ -5,14 +5,16 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery-ui-1.8.13.custom.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.cluetip.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery-ui-1.8.13.custom.css" />
 
-<script type="text/javascript" src="/m/js/contrib_table.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.ui.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.ui.js"></script>
+
+<script type="text/javascript" src="/s/accounting/js/contrib_table.js"></script>
+
 <script type="text/javascript">
 FROM_DATE = "{{ from_date }}";
 TO_DATE = "{{ to_date }}";
@@ -27,8 +29,8 @@ YEAR = DAY * 365;
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/accounting">Accounting</a></li>
-<li><a href="/accounting/contributions">Contributions</a></li>
+<li><a href="/accounting/">Accounting</a></li>
+<li><a href="/accounting/contributions/">Contributions</a></li>
 {% endblock %}
 
 
@@ -37,20 +39,20 @@ YEAR = DAY * 365;
 
 
 <form id="search_form" class="search_form center">
-	<label>Period</label>
-	<select id="period_selector">
-	    <option value="all" selected="selected">All Time</option>
-	    <option value="week">Last Week</option>
-	    <option value="month">Last Month</option>
-	    <option value="year">Last Year</option>
-	</select>
+  <label>Period</label>
+  <select id="period_selector">
+      <option value="all" selected="selected">All Time</option>
+      <option value="week">Last Week</option>
+      <option value="month">Last Month</option>
+      <option value="year">Last Year</option>
+  </select>
 
-	<label for="from_date">From</label>
-	<input type="text" id="from_date" name="from_date" value="{{ from_date }}"/>
-	<label for="to_date">to</label>
-	<input type="text" id="to_date" name="to_date" value="{{ to_date }}"/>
+  <label for="from_date">From</label>
+  <input type="text" id="from_date" name="from_date" value="{{ from_date }}"/>
+  <label for="to_date">to</label>
+  <input type="text" id="to_date" name="to_date" value="{{ to_date }}"/>
 
-	<input type="button" class="button" id="refresh_table" value="Refresh" />
+  <input type="button" class="button" id="refresh_table" value="Refresh" />
 </form>
 
 <script type="text/javascript">
@@ -101,7 +103,7 @@ $(document).ready(function() {
             from_date: $("#from_date").val(),
             to_date: $("#to_date").val()
         };
-        var value = $.get('/accounting/contributions/total/data', params, function(data) {
+        var value = $.get('/accounting/contributions/total/data/', params, function(data) {
             $("#total_contribs").html(data);
         });
     });
@@ -116,46 +118,46 @@ $(document).ready(function() {
 <table style="width: 100%;">
     <tr>
         <td style="padding: 10px;">
-			<table class="table display" id="member_contrib_table">
-			  <thead>
-			    <tr>
-			      <th class="top" scope="col" >Member</th>
-			      <th class="top" scope="col" >Contributions</th>
-			    </tr>
-			  </thead>
-			  <tbody>
-			    <tr>
-			      <td colspan="2" class="dataTables_empty">Loading data from server...</td>
-			    </tr>
-			  </tbody>
-			  <tfoot>
-			    <tr>
-			      <th>Member</th>
-			      <th>Contributions</th>
-			    </tr>
-			  </tfoot>
-			</table>
+      <table class="table display" id="member_contrib_table">
+        <thead>
+          <tr>
+            <th class="top" scope="col" >Member</th>
+            <th class="top" scope="col" >Contributions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2" class="dataTables_empty">Loading data from server...</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>Member</th>
+            <th>Contributions</th>
+          </tr>
+        </tfoot>
+      </table>
         </td>
         <td style="padding: 10px;">
-			<table class="table display" id="system_contrib_table">
-			  <thead>
-			    <tr>
-			      <th class="top" scope="col" >Solar System</th>
-			      <th class="top" scope="col" >Contributions</th>
-			    </tr>
-			  </thead>
-			  <tbody>
-			    <tr>
-			      <td colspan="2" class="dataTables_empty">Loading data from server...</td>
-			    </tr>
-			  </tbody>
-			  <tfoot>
-			    <tr>
-			      <th>Solar System</th>
-			      <th>Contributions</th>
-			    </tr>
-			  </tfoot>
-			</table>
+      <table class="table display" id="system_contrib_table">
+        <thead>
+          <tr>
+            <th class="top" scope="col" >Solar System</th>
+            <th class="top" scope="col" >Contributions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2" class="dataTables_empty">Loading data from server...</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>Solar System</th>
+            <th>Contributions</th>
+          </tr>
+        </tfoot>
+      </table>
         </td>
     </tr>
 </table>

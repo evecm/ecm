@@ -39,7 +39,7 @@ def list(request):
     data = {
         'scan_date' : getScanDate(JournalEntry)
     }
-    return render_to_response("accounting/wallets.html", data, RequestContext(request))
+    return render_to_response("wallets.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

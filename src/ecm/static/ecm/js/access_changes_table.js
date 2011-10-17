@@ -1,3 +1,6 @@
+/*****************************************
+ * "Security access changes" table setup *
+ *****************************************/
 
 // disable multi column sorting
 $('#history_table thead th').click(function(event) {
@@ -6,34 +9,34 @@ $('#history_table thead th').click(function(event) {
     }
 });
 
-// dataTable setup
+
 $(document).ready(function() {
-	var table = $('#history_table').dataTable( {
-		"sPaginationType": "full_numbers",
-		"bProcessing": true,
-		"bServerSide": true,
-        "bAutoWidth": false,
-        "iDisplayLength": 25,
+    var table = $('#access_changes_table').dataTable({
+        "sPaginationType" : "full_numbers",
+        "bProcessing" : true,
+        "bServerSide" : true,
+        "bAutoWidth" : false,
+        "iDisplayLength" : 25,
         "bStateSave" : true,
-        "sCookiePrefix": "ecm_history_table_",
+        "sCookiePrefix": "ecm_access_changes_table_",
         "iCookieDuration" : 60 * 60 * 24,
-        "sAjaxSource": "/members/history/data",
-        "sDom": 'lprtip',
-        "aoColumns": [
-            { "sTitle": "Corped/Leaved","sWidth": "15%", "sType": "html" ,  "bSortable": false },
-            { "sTitle": "Name",         "sWidth": "30%", "sType": "html" },
-            { "sTitle": "Nickname",     "sWidth": "30%", "sType": "string" },
-            { "sTitle": "Corp/Leave Date",    "sWidth": "25%", "sType": "string" }
+        "sAjaxSource" : "/members/accesschanges/data/",
+        "sDom" : 'lprtip',
+        "aoColumns" : [
+            { "sTitle": "Change",     "sWidth": "10%", "sType": "html" ,  "bSortable": false },
+            { "sTitle": "Member",     "sWidth": "30%", "sType": "html"  },
+            { "sTitle": "Title/Role", "sWidth": "40%", "sType": "html" ,  "bSortable": false },
+            { "sTitle": "Date",       "sWidth": "20%", "sType": "string" }
         ],
         "aaSorting": [[3, 'desc']],
-        "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+        "fnRowCallback" : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
             if (aData[0] == "true") {
-                $('td:eq(0)', nRow).html('<img src="/m/img/plus.png"/>');
+                $('td:eq(0)', nRow).html('<img src="/s/ecm/img/plus.png"></img>');
             } else {
-                $('td:eq(0)', nRow).html('<img src="/m/img/minus.png"/>');
+                $('td:eq(0)', nRow).html('<img src="/s/ecm/img/minus.png"></img>');
             }
             return nRow;
-		},
+        },
         /* the search field being outside the table object, we need to save its status
          * explicitly here in order to restore it with the rest */
         "fnStateSaveCallback": function (oSettings, sValue) {
@@ -46,7 +49,7 @@ $(document).ready(function() {
             $("#search_text").val(oData.sFilter);
             return true;
         }
-    } );
+    });
 
     $("#search_form").submit(function(event) {
         event.preventDefault();
@@ -62,4 +65,4 @@ $(document).ready(function() {
         table.fnFilter("");
     });
 
-} );
+});

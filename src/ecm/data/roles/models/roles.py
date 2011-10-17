@@ -41,7 +41,7 @@ class RoleType(models.Model):
 
     @property
     def url(self):
-        return '/roles/%s' % self.typeName
+        return '/roles/%s/' % self.typeName
 
     @property
     def permalink(self):
@@ -128,7 +128,7 @@ class Role(models.Model):
 
     @property
     def url(self):
-        return '/roles/%s/%d' % (self.roleType.typeName, self.roleID)
+        return '/roles/%s/%d/' % (self.roleType.typeName, self.roleID)
 
     @property
     def permalink(self):
@@ -219,7 +219,7 @@ class RoleMemberDiff(models.Model):
             # this could fail if the RoleMemberDiff has been recorded from
             # /corp/MemberSecurity.xml.aspx but that the member has not been
             # parsed from /corp/MemberTracking.xml.aspx yet
-            return '<a href="/members/%d" class="member">???</a>' % self.member_id
+            return '<a href="/members/%d/" class="member">???</a>' % self.member_id
 
     def __eq__(self, other):
         return self.id == other.id

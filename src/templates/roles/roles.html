@@ -5,13 +5,13 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/m/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
 
-<script type="text/javascript" src="/m/js/roles_table.js"></script>
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
+<script type="text/javascript" src="/s/ecm/js/roles_table.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.cluetip.css" />
 
 <script type="text/javascript">
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
@@ -22,7 +22,7 @@ var current_role_type = "{{ current_role_type }}";
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/roles">Roles</a></li>
+<li><a href="/roles/">Roles</a></li>
 <li><a href="/roles/{{ current_role_type }}">{{ current_role_type_name }}</a></li>
 {% endblock %}
 

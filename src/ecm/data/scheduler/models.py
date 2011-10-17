@@ -93,7 +93,7 @@ class ScheduledTask(models.Model):
     function_admin_display.short_description = "Function"
 
     def permalink(self, next=None):
-        url = "/tasks/%d/launch" % self.id
+        url = "/tasks/%d/launch/" % self.id
         if next: url += "?next=%s" % next
         return url
 

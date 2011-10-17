@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 
 ECM_MENUS = [
      {'menu_title': 'Accounting',    'menu_url': '/accounting/',      'menu_items': [
-        {'item_title': 'Wallets Journal', 'item_url': '/accounting/journal', 'menu_items': []},
-        {'item_title': 'Tax Contributions', 'item_url': '/accounting/contributions', 'menu_items': []},
+        {'item_title': 'Wallets Journal', 'item_url': '/accounting/journal/', 'menu_items': []},
+        {'item_title': 'Tax Contributions', 'item_url': '/accounting/contributions/', 'menu_items': []},
     ]},
 ]

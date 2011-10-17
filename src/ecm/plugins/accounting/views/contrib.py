@@ -45,7 +45,7 @@ OPERATION_TYPES = (16, 17, 33, 34, 85, 99, 103)
 @check_user_access()
 def member_contrib(request):
     """
-    View function URL : '/accounting/contributions'
+    View function URL : '/accounting/contributions/'
     """
     from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
     if from_date is None: from_date = datetime.fromtimestamp(0)
@@ -61,14 +61,14 @@ def member_contrib(request):
         'to_date' : datetime.strftime(to_date, DATE_PATTERN),
         'total_contribs' : total_contribs,
     }
-    return render_to_response("accounting/contrib.html", data, RequestContext(request))
+    return render_to_response("contrib.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 columns = ['LOWER("name")', '"tax_contrib"']
 @check_user_access()
 def member_contrib_data(request):
     """
-    View function URL : '/accounting/contributions/members/data'
+    View function URL : '/accounting/contributions/members/data/'
     """
     try:
         params = extract_datatable_params(request)
@@ -105,7 +105,7 @@ def member_contrib_data(request):
 @check_user_access()
 def system_contrib_data(request):
     """
-    View function URL : '/accounting/contributions/systems/data'
+    View function URL : '/accounting/contributions/systems/data/'
     """
     try:
         params = extract_datatable_params(request)
@@ -147,7 +147,7 @@ def system_contrib_data(request):
 @check_user_access()
 def total_contrib_data(request):
     """
-    View function URL : '/accounting/contributions/total/data'
+    View function URL : '/accounting/contributions/total/data/'
     """
     try:
         REQ = request.GET if request.method == 'GET' else request.POST

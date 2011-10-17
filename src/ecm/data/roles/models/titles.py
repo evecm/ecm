@@ -54,7 +54,7 @@ class Title(models.Model):
 
     @property
     def url(self):
-        return '/titles/%d' % self.titleID
+        return '/titles/%d/' % self.titleID
 
     @property
     def permalink(self):
@@ -174,7 +174,7 @@ class TitleMemberDiff(models.Model):
             # this could fail if the RoleMemberDiff has been recorded from
             # /corp/MemberSecurity.xml.aspx but that the member has not been
             # parsed from /corp/MemberTracking.xml.aspx yet
-            return '<a href="/members/%d" class="member">???</a>' % self.member_id
+            return '<a href="/members/%d/" class="member">???</a>' % self.member_id
 
     def __eq__(self, other):
         return self.id == other.id

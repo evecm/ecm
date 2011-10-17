@@ -5,7 +5,7 @@ $(document).ready(function() {
 		"bServerSide": true,
         "bAutoWidth": false,
         "iDisplayLength": 25,
-		"sAjaxSource": "/tasks/data",
+		"sAjaxSource": "/tasks/data/",
         "sDom": 'rt',
         "aoColumns": [
             { "sTitle": "Task description",    "sWidth": "50%", "sType": "html", "bSearchable": false , "bSortable": false},
@@ -16,9 +16,9 @@ $(document).ready(function() {
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             if (aData[3] == 'true') {
-                $('td:eq(3)', nRow).html('<img src="/static/admin/img/admin/icon-yes.gif" alt="True">');
+                $('td:eq(3)', nRow).html('<img src="/s/admin/img/admin/icon-yes.gif" alt="True">');
             } else {
-                $('td:eq(3)', nRow).html('<img src="/static/admin/img/admin/icon-no.gif" alt="False">');
+                $('td:eq(3)', nRow).html('<img src="/s/admin/img/admin/icon-no.gif" alt="False">');
             }
             return nRow;
 		}

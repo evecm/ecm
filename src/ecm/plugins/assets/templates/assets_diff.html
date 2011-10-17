@@ -5,8 +5,8 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/m/js/lib/jquery.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.jstree.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jstree.js"></script>
 <script type="text/javascript">
 SHOW_DIVISIONS = "{{ divisions_str }}";
 SHOW_IN_SPACE = {% if show_in_space %}true{% else %}false{% endif %};
@@ -20,8 +20,8 @@ DATE = "{{ date_str }}";
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/assets" >Assets</a></li>
-<li><a href="/assets/changes" >Changes</a></li>
+<li><a href="/assets/" >Assets</a></li>
+<li><a href="/assets/changes/" >Changes</a></li>
 <li><a href="/assets/changes/{{ date_str }}" >{{ date|ecm_datetime }}</a></li>
 {% endblock %}
 
@@ -69,6 +69,6 @@ DATE = "{{ date_str }}";
 
 <div id="assets_tree"></div>
 
-<script type="text/javascript" src="/m/js/asset_changes_tree.js"></script>
+<script type="text/javascript" src="/s/assets/js/asset_changes_tree.js"></script>
 
 {% endblock %}

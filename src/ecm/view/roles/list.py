@@ -44,7 +44,7 @@ for t in RoleType.objects.all(): ROLE_TYPES[t.typeName] = t.id
 
 #------------------------------------------------------------------------------
 def root(request):
-    return redirect("/roles/roles")
+    return redirect("/roles/roles/")
 
 #------------------------------------------------------------------------------
 @check_user_access()

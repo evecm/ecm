@@ -4,27 +4,27 @@
 
 
 {% block header_scripts %}
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.cluetip.css" />
 
-<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
 
 
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = '/players/{{ player.id }}/data';
+AJAX_URL = '/players/{{ player.id }}/data/';
 COOKIE_NAME = 'ecm_player_characters_table_';
 </script>
-<script type="text/javascript" src="/m/js/members_table.js"></script>
+<script type="text/javascript" src="/s/ecm/js/members_table.js"></script>
 {% endblock %}
 
 
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/players">Players</a></li>
+<li><a href="/players/">Players</a></li>
 <li><a href="/players/{{ player.id }}">{{ player.username }}</a></li>
 {% endblock %}
 

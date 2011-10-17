@@ -50,7 +50,7 @@ SHOWINFO_PATTERN = re.compile(r"showinfo:13\d\d//(\d+)", re.IGNORECASE + re.DOTA
 def corp(request):
     try:
         corp = Corp.objects.get(id=1)
-        corp.description = SHOWINFO_PATTERN.subn(r"/members/\1", corp.description)[0]
+        corp.description = SHOWINFO_PATTERN.subn(r"/members/\1/", corp.description)[0]
         corp.memberCount = Member.objects.filter(corped=True).count()
     except Corp.DoesNotExist:
         corp = Corp(corporationName="No Corporation info")
@@ -94,7 +94,7 @@ def task_list_data(request):
             t.next_execution_admin_display(),
             t.frequency_admin_display(),
             t.is_running,
-            t.as_html(next='/tasks')
+            t.as_html(next='/tasks/')
         ])
 
     json_data = {

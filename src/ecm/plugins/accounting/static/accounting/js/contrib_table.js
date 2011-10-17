@@ -10,7 +10,7 @@ $(document).ready(function() {
         "iDisplayLength": 25, /* default display 25 items */
         "bStateSave": true, /* table state persistance */
         "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
-        "sAjaxSource": "/accounting/contributions/members/data",
+        "sAjaxSource": "/accounting/contributions/members/data/",
         "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         "aaSorting": [[1,'desc']],
         "aoColumns": [
@@ -62,7 +62,7 @@ $(document).ready(function() {
       "iDisplayLength": 25, /* default display 25 items */
       "bStateSave": true, /* table state persistance */
       "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
-      "sAjaxSource": "/accounting/contributions/systems/data",
+      "sAjaxSource": "/accounting/contributions/systems/data/",
       "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
       "aaSorting": [[1,'desc']],
       "aoColumns": [

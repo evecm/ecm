@@ -4,24 +4,23 @@ import os
 from os import path
 import imp
 import logging
-from ecm.settings import list_plugin_apps
+from ecm.settings import PLUGIN_APPS
 
 LOG = logging.getLogger(__name__)
 
-def app_urls():
-    urls = []
-    for plugin in list_plugin_apps():
-        app_prefix = plugin.rsplit('.', 1)[-1]
-        urlconf = plugin + '.urls'
-        urls.append( (app_prefix, urlconf) )
-    return urls
+DICT = {}
+LIST = []
 
-def app_menus():
-    menus = []
-    for app in list_plugin_apps():
-        m = __import__(app + '.menu', fromlist=[app])
-        menus.append(getattr(m, 'ECM_MENUS'))
-    return menus
+class ECMPlugin(object):
 
-URLS = app_urls()
-MENUS = app_menus()
+    def __init__(self, package):
+        self.package = package
+        self.app_prefix = package.rsplit('.', 1)[-1]
+        self.urlconf = package + '.urls'
+        self.menu_module = __import__(package + '.menu', fromlist=[package])
+        self.menu = self.menu_module.ECM_MENUS
+
+
+for app in PLUGIN_APPS:
+    DICT[app] = ECMPlugin(package=app)
+    LIST.append(DICT[app])

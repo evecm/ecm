@@ -12,7 +12,7 @@ $(document).ready(function() {
 		"bProcessing": true,
 		"bServerSide": true,
         "iDisplayLength": 25,
-		"sAjaxSource": "/accounting/wallets/data",
+		"sAjaxSource": "/accounting/wallets/data/",
         "sDom": 'rt',
         "aoColumns": [
             { /* Wallet */    "sType": "html"    },

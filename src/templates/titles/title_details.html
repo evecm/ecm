@@ -5,8 +5,8 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
 
 
 <script type="text/javascript">
@@ -14,21 +14,21 @@ COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 TITLE_ID = "{{ title.titleID }}";
 </script>
 
-<script type="text/javascript" src="/m/js/title_details_table.js"></script>
+<script type="text/javascript" src="/s/ecm/js/title_details_table.js"></script>
 
 {% endblock %}
 
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/titles">Titles</a></li>
+<li><a href="/titles/">Titles</a></li>
 <li><a href="/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <h1 class="pagetitle">{{ title.titleName }}{% if title.lastModified %}<span class="time"> - last modification {{ title.lastModified|ecm_datetime }}</span>{% endif %}</h1>
 
-<a href="/titles/{{ title.titleID }}/members" style="font-size:110%;" >Show all {{ member_count }} members having this title</a>
+<a href="/titles/{{ title.titleID }}/members/" style="font-size:110%;" >Show all {{ member_count }} members having this title</a>
 
 <h2>Access Level</h2>
 

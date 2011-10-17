@@ -83,7 +83,7 @@ def player_list_data(request):
     player_list = []
     for player in query:
         player_list.append([
-            '<a href="/players/%d" class="player">%s</a>' % (player.id, player.username),
+            '<a href="/players/%d/" class="player">%s</a>' % (player.id, player.username),
             player.is_staff and player.is_superuser,
             player.eve_accounts.all().count(),
             player.characters.all().count(),

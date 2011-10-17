@@ -14,7 +14,7 @@ $(document).ready(function() {
         "bServerSide": true,
         "bAutoWidth": false,
         "iDisplayLength": 50,
-        "sAjaxSource": "/roles/" + current_role_type + "/data",
+        "sAjaxSource": "/roles/" + current_role_type + "/data/",
         "sDom": 'rt',
         "aoColumns": [
             { "sTitle": "Role Name",    "sWidth": "30%", "sType": "html",    "bSortable": false },
@@ -68,7 +68,7 @@ $(document).ready(function() {
             }
             
             /* Apply jEditable handlers to the cells each time we redraw the table */
-            $('td:eq(2)', nRow).editable( '/roles/update', {
+            $('td:eq(2)', nRow).editable( '/roles/update/', {
                 "callback": function( sValue, y ) {
                     var aPos = oTable.fnGetPosition( this );
                     oTable.fnUpdate( sValue, aPos[0], aPos[1] );

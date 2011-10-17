@@ -4,19 +4,19 @@
 
 
 {% block header_scripts %}
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.cluetip.css" />
 
-<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
 
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = '/members/unassociated/data';
+AJAX_URL = '/members/unassociated/data/';
 COOKIE_NAME = 'ecm_unassociated_table_';
 </script>
-<script type="text/javascript" src="/m/js/members_table.js"></script>
+<script type="text/javascript" src="/s/ecm/js/members_table.js"></script>
 
 
 <style type="text/css">
@@ -42,15 +42,15 @@ div.button.hover {
 }
 </style>
 
-<script type="text/javascript" src="/m/js/lib/ZeroClipboard.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/ZeroClipboard.js"></script>
 {% endblock %}
 
 
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/members">Members</a></li>
-<li><a href="/members/unassociated">Unassociated</a></li>
+<li><a href="/members/">Members</a></li>
+<li><a href="/members/unassociated/">Unassociated</a></li>
 {% endblock %}
 
 
@@ -67,11 +67,11 @@ div.button.hover {
 <div id="clip_container" class="container" style="position:relative">
     <div id="copy_to_clip" class="button"  >Copy to Clipboard...</div>
 </div>
-<img id="loading_gif" alt="loading..." src="/m/img/throbber.gif" />
+<img id="loading_gif" alt="loading..." src="/s/ecm/img/throbber.gif" />
 
 <script type="text/javascript">
 $("#loading_gif").hide();
-ZeroClipboard.setMoviePath("/m/js/lib/ZeroClipboard.swf");
+ZeroClipboard.setMoviePath("/s/ecm/js/lib/ZeroClipboard.swf");
 var clip = new ZeroClipboard.Client();
 
 clip.setHandCursor( true );
@@ -90,7 +90,7 @@ clip.addEventListener('complete', function(client, text) {
 
 clip.addEventListener('mouseUp', function(client) {
     $("#loading_gif").show();
-    $.get("/members/unassociated/clip", callback);
+    $.get("/members/unassociated/clip/", callback);
 });
 
 clip.glue('copy_to_clip' , "clip_container");

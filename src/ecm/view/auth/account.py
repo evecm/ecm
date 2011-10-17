@@ -78,7 +78,7 @@ def add_api(request):
 
             logger.info('"%s" added new API Key %d' % (request.user, user_api.keyID))
 
-            return redirect('/account')
+            return redirect('/account/')
     else: # request.method == 'GET'
         form = AddApiKeyForm()
 
@@ -98,7 +98,7 @@ def delete_api(request, keyID):
         keyID = api.keyID
         api.delete()
         logger.info('"%s" deleted API Key %d' % (request.user, keyID))
-        return redirect("/account")
+        return redirect("/account/")
     else:
         return forbidden(request)
 
@@ -129,7 +129,7 @@ def edit_api(request, keyID):
             logger.info('"%s" edited API Key %d' % (request.user, api.keyID))
             update_user_accesses(request.user)
 
-            return redirect('/account')
+            return redirect('/account/')
     else: # request.method == 'GET'
         form = EditApiKeyForm(initial={"keyID" : api.keyID, "vCode" : api.vCode})
 
@@ -150,7 +150,7 @@ def delete_character(request, characterID):
         character.save()
         update_user_accesses(request.user)
         logger.info('"%s" gave up ownership of character "%s"' % (request.user, character.name))
-        return redirect('/account')
+        return redirect('/account/')
     else:
         return forbidden(request)
 
@@ -168,7 +168,7 @@ def add_binding(request, app_id):
                                        external_name=form.cleaned_data['username'])
             logger.info('"%s" enabled binding to external application "%s" with external_id=%d'
                         % (request.user, app.name, form.external_id))
-            return redirect('/account')
+            return redirect('/account/')
     else: # request.method == 'GET'
         form = AddBindingForm(app=app)
 
@@ -184,6 +184,6 @@ def delete_binding(request, binding_id):
         binding.delete()
         logger.info('"%s" removed binding to external application "%s"'
                         % (request.user, binding.external_app.name))
-        return redirect('/account')
+        return redirect('/account/')
     else:
         return forbidden(request)

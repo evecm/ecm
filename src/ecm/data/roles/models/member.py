@@ -84,7 +84,7 @@ class Member(models.Model):
 
     @property
     def url(self):
-        return '/members/%d' % self.characterID
+        return '/members/%d/' % self.characterID
 
     @property
     def permalink(self):
@@ -93,7 +93,7 @@ class Member(models.Model):
     @property
     def owner_url(self):
         if self.owner_id:
-            return '/players/%d' % self.owner_id
+            return '/players/%d/' % self.owner_id
         else:
             return None
 
@@ -137,7 +137,7 @@ class MemberDiff(models.Model):
 
     @property
     def url(self):
-        return '/members/%d' % self.member_id
+        return '/members/%d/' % self.member_id
 
     @property
     def permalink(self):

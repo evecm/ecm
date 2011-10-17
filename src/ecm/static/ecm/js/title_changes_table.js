@@ -13,7 +13,7 @@ $(document).ready(function() {
         "bAutoWidth": false,
         "iDisplayLength": 25,
         "bStateSave": true,
-		"sAjaxSource": "/titles/changes/data",
+		"sAjaxSource": "/titles/changes/data/",
         "sDom": 'lprtip',
         "aoColumns": [
             { "sTitle": "Change",       "sWidth": "5%", "sType": "html"  , 	"bSortable" : false},
@@ -23,9 +23,9 @@ $(document).ready(function() {
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             if (aData[0] == "true") {
-                $('td:eq(0)', nRow).html('<img src="/m/img/plus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="/s/ecm/img/plus.png"></img>');
             } else {
-                $('td:eq(0)', nRow).html('<img src="/m/img/minus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="/s/ecm/img/minus.png"></img>');
             }
             return nRow;
 		}

@@ -51,7 +51,7 @@ class Wallet(models.Model):
 
     @property
     def url(self):
-        return "/accounting/wallet/%d" % self.walletID
+        return "/accounting/wallet/%d/" % self.walletID
 
     @property
     def permalink(self):

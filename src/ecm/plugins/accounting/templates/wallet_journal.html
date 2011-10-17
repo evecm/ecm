@@ -5,20 +5,21 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.cluetip.css" />
 
-<script type="text/javascript" src="/m/js/journal_table.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
+
+<script type="text/javascript" src="/s/accounting/js/journal_table.js"></script>
 {% endblock %}
 
 
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/accounting">Accounting</a></li>
-<li><a href="/accounting/journal">Journal</a></li>
+<li><a href="/accounting/">Accounting</a></li>
+<li><a href="/accounting/journal/">Journal</a></li>
 {% endblock %}
 
 
@@ -28,29 +29,29 @@
 {% block main_content %}
 <h1 class="pagetitle">Wallets Journal <span class="time">- last update {{ scan_date }}</span></h1>
 
-<form id="search_form" class="search_form"> 
-    <input type="text" id="search_text" value="" /> 
-    <input type="button" class="button" id="search_button" value="Search" /> 
-    <input type="button" class="button" id="clear_search" value="Reset" /> 
-    
+<form id="search_form" class="search_form">
+    <input type="text" id="search_text" value="" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+
     <label>Wallet:</label>
     <select id="wallet_selector">
     {% for w in wallets %}
     <option value="{{ w.walletID }}" {% if w.selected %}selected="selected"{% endif %}>{{ w.name }}</option>
     {% endfor %}
     </select>
-    
+
     <label>Operation:</label>
     <select id="type_selector">
     {% for et in entryTypes %}
     <option value="{{ et.refTypeID }}" {% if et.selected %}selected="selected"{% endif %}>{{ et.refTypeName }}</option>
     {% endfor %}
     </select>
-    
-</form> 
+
+</form>
 
 <table class="table display" id="journal_table">
-  <thead> 
+  <thead>
     <tr>
       <th class="top" scope="col" >Date</th>
       <th class="top" scope="col" >Wallet</th>
@@ -62,12 +63,12 @@
       <th class="top" scope="col" style="display:none;">Reason</th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="7" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Date</th>
       <th>Wallet</th>

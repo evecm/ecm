@@ -5,19 +5,20 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.cluetip.css" />
 
-<script type="text/javascript" src="/m/js/wallets_table.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
+
+<script type="text/javascript" src="/s/accounting/js/wallets_table.js"></script>
 {% endblock %}
 
 
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/accounting">Accounting</a></li>
+<li><a href="/accounting/">Accounting</a></li>
 {% endblock %}
 
 
@@ -25,18 +26,18 @@
 <h1 class="pagetitle">Corporation Wallets <span class="time">- last update {{ scan_date }}</span></h1>
 
 <table class="table display" id="wallets_table" style="width: 50%;">
-  <thead> 
+  <thead>
     <tr>
       <th class="top" scope="col" >Wallet</th>
       <th class="top" scope="col" >Balance</th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="2" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Wallet</th>
       <th>Balance</th>

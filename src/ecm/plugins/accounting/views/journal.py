@@ -66,7 +66,7 @@ def list(request):
         'entryTypes' : entryTypes,
         'scan_date' : getScanDate(JournalEntry)
     }
-    return render_to_response("accounting/wallet_journal.html", data, RequestContext(request))
+    return render_to_response("wallet_journal.html", data, RequestContext(request))
 
 
 

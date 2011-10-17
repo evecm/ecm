@@ -1,8 +1,8 @@
 $(function () {
 
-    $("#assets_tree").jstree({ 
+    $("#assets_tree").jstree({
         "plugins" : [ "themes" , "json_data" , "search" , "adv_search" , "ui",  "types" , "sort" ],
-        "core" : { 
+        "core" : {
             "animation" : 150,
             "html_titles" : true
         },
@@ -10,7 +10,7 @@ $(function () {
             "select_limit" : 1
         },
         "themes" : {
-            "url" : "/m/css/jstree.css",
+            "url" : "/s/assets/css/jstree.css",
             "dots" : false
         },
         "search" : {
@@ -35,8 +35,8 @@ $(function () {
             "types" : {
                 "system" : {
                     "class" : "system-row",
-                    "icon" : { 
-                        "image" : "/m/img/system.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/system.png"
                     },
                     "valid_children" : [ "array", "station" ],
                     "max_depth" : 5,
@@ -45,8 +45,8 @@ $(function () {
                 },
                 "array" : {
                     "class" : "hangar-row",
-                    "icon" : { 
-                        "image" : "/m/img/array.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/array.png"
                     },
                     "valid_children" : [ "hangar" ],
                     "max_depth" : 4,
@@ -55,8 +55,8 @@ $(function () {
                 },
                 "station" : {
                     "class" : "station-row",
-                    "icon" : { 
-                        "image" : "/m/img/station.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/station.png"
                     },
                     "valid_children" : [ "hangar" ],
                     "max_depth" : 4,
@@ -65,8 +65,8 @@ $(function () {
                 },
                 "hangar" : {
                     "class" : "hangar-row",
-                    "icon" : { 
-                        "image" : "/m/img/hangar.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/hangar.png"
                     },
                     "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint", "item" ],
                     "max_depth" : 3,
@@ -74,8 +74,8 @@ $(function () {
                     "close_node"  : true
                 },
                 "ship" : {
-                    "icon" : { 
-                        "image" : "/m/img/ship.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/ship.png"
                     },
                     "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint", "item" ],
                     "max_depth" : 2,
@@ -83,8 +83,8 @@ $(function () {
                     "close_node"  : true
                 },
                 "can" : {
-                    "icon" : { 
-                        "image" : "/m/img/can.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/can.png"
                     },
                     "valid_children" : [ "can", "mineral", "ship",  "ammo", "blueprint", "item" ],
                     "max_depth" : 1,
@@ -92,8 +92,8 @@ $(function () {
                     "close_node"  : true
                 },
                 "item" : {
-                    "icon" : { 
-                        "image" : "/m/img/item.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/item.png"
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -104,8 +104,8 @@ $(function () {
                     "delete_node" : false
                 },
                 "mineral" : {
-                    "icon" : { 
-                        "image" : "/m/img/mineral.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/mineral.png"
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -116,8 +116,8 @@ $(function () {
                     "delete_node" : false
                 },
                 "blueprint" : {
-                    "icon" : { 
-                        "image" : "/m/img/blueprint.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/blueprint.png"
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -128,8 +128,8 @@ $(function () {
                     "delete_node" : false
                 },
                 "ammo" : {
-                    "icon" : { 
-                        "image" : "/m/img/ammo.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/ammo.png"
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -140,8 +140,8 @@ $(function () {
                     "delete_node" : false
                 },
                 "skill" : {
-                    "icon" : { 
-                        "image" : "/m/img/skill.png" 
+                    "icon" : {
+                        "image" : "/s/assets/img/skill.png"
                     },
                     "valid_children" : "none",
                     "max_depth" : 0,
@@ -155,10 +155,10 @@ $(function () {
         },
         "json_data" : {
             "ajax" : {
-                "url" : function(node) { 
+                "url" : function(node) {
                     var url = "/assets";
                     url += node.attr ? node.attr("id").replace(/_/g, "/") : "";
-                    url += "/data"
+                    url += "/data/"
                     var params = {
                         "stations" : SHOW_IN_STATIONS,
                         "space" : SHOW_IN_SPACE
@@ -166,7 +166,7 @@ $(function () {
                     if (SHOW_DIVISIONS != "None") {
                         params["divisions"] = SHOW_DIVISIONS;
                     }
-                    return url + "?" +  decodeURIComponent(jQuery.param(params)); 
+                    return url + "?" +  decodeURIComponent(jQuery.param(params));
                 }
             }
         },
@@ -222,12 +222,12 @@ $("#apply_filter").click(function() {
         divisions = divisions.substring(1);
         params["divisions"] = divisions;
     }
-    
-    window.location = "/assets?" + decodeURIComponent(jQuery.param(params)); 
+
+    window.location = "/assets?" + decodeURIComponent(jQuery.param(params));
 });
 
 $("#reset_filter").click(function() {
-    window.location = "/assets";
+    window.location = "/assets/";
 });
 
 $(".hangar-checkbox").click(function (event) {

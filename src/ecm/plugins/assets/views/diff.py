@@ -116,7 +116,7 @@ def root(request, date_str):
         else:
             return render_to_response("assets_no_data.html", RequestContext(request))
     except:
-        return redirect("/assets/changes")
+        return redirect("/assets/changes/")
 
 
 #------------------------------------------------------------------------------

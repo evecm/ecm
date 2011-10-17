@@ -10,7 +10,7 @@ $(document).ready(function() {
         "iDisplayLength": 25, /* default display 25 items */
         "bStateSave": true, /* table state persistance */
         "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
-        "sAjaxSource": "/accounting/journal/data",
+        "sAjaxSource": "/accounting/journal/data/",
         "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
             { /* Date */       "sWidth": "14%",   "sType": "string" },

@@ -12,7 +12,7 @@ $(document).ready(function() {
 		"bServerSide": true,
         "bAutoWidth": false,
         "iDisplayLength": 25,
-		"sAjaxSource": "/titles/data",
+		"sAjaxSource": "/titles/data/",
         "sDom": 'rt',
         "aoColumns": [
             { "sTitle": "Title Name",    "sWidth": "40%", "sType": "html" },

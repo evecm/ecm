@@ -5,8 +5,8 @@
 
 
 {% block header_scripts %}
-<script type="text/javascript" src="/m/js/lib/jquery.js"></script>
-<script type="text/javascript" src="/m/js/lib/jquery.jstree.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jstree.js"></script>
 <script type="text/javascript">
 SHOW_DIVISIONS = "{{ divisions_str }}";
 SHOW_IN_SPACE = {% if show_in_space %}true{% else %}false{% endif %};
@@ -18,7 +18,7 @@ SHOW_IN_STATIONS = {% if show_in_stations %}true{% else %}false{% endif %};
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/assets" >Assets</a></li>
+<li><a href="/assets/" >Assets</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -57,6 +57,6 @@ SHOW_IN_STATIONS = {% if show_in_stations %}true{% else %}false{% endif %};
 
 <div id="assets_tree"></div>
 
-<script type="text/javascript" src="/m/js/assets_tree.js"></script>
+<script type="text/javascript" src="/s/assets/js/assets_tree.js"></script>
 
 {% endblock %}

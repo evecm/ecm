@@ -6,7 +6,7 @@
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/account">Account</a></li>
+<li><a href="/account/">Account</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -15,7 +15,7 @@
 
 <p>Hello {{ user.username }}</p>
 
-<p>Click <a href="/account/passwordchange">here</a> to change your password.</p>
+<p>Click <a href="/account/passwordchange/">here</a> to change your password.</p>
 
 <h1>Owned Characters</h1>
 <table class="transparent" style="width:50%;">
@@ -63,7 +63,7 @@ $(".edit_api").click(function () {
     window.location = "/account/editapi/" + this.id;
 });
 $("#add_api").click(function () {
-    window.location = "/account/addapi";
+    window.location = "/account/addapi/";
 });
 </script>
 

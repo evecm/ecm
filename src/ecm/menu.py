@@ -23,27 +23,27 @@ from ecm.data.roles.models import RoleType
 
 role_types = []
 for rt in RoleType.objects.all().order_by('id'):
-    role_types.append({'item_title': rt.dispName, 'item_url': '/roles/%s' % rt.typeName})
+    role_types.append({'item_title': rt.dispName, 'item_url': '/roles/%s/' % rt.typeName})
 
 ECM_MENUS = [
     {'menu_title': 'Home',      'menu_url': '/',            'menu_items': []},
-    {'menu_title': 'Human Resources',   'menu_url': '/dashboard',     'menu_items': [
-        {'item_title': 'Members', 'item_url': '/members', 'menu_items': [
-             {'item_title': 'History', 'item_url': '/members/history'},
-             {'item_title': 'Access Changes', 'item_url': '/members/accesschanges'},
-             {'item_title': 'Unassociated Members', 'item_url': '/members/unassociated'},
+    {'menu_title': 'Human Resources',   'menu_url': '/dashboard/',     'menu_items': [
+        {'item_title': 'Members', 'item_url': '/members/', 'menu_items': [
+             {'item_title': 'History', 'item_url': '/members/history/'},
+             {'item_title': 'Access Changes', 'item_url': '/members/accesschanges/'},
+             {'item_title': 'Unassociated Members', 'item_url': '/members/unassociated/'},
         ]},
-        {'item_title': 'Titles',    'item_url': '/titles',      'menu_items': [
-             {'item_title': 'Changes', 'item_url': '/titles/changes'},
+        {'item_title': 'Titles',    'item_url': '/titles/',      'menu_items': [
+             {'item_title': 'Changes', 'item_url': '/titles/changes/'},
         ]},
-        {'item_title': 'Roles',     'item_url': '/roles',  'menu_items': role_types},
-        {'item_title': 'Players',   'item_url': '/players',     'menu_items': []},
+        {'item_title': 'Roles',     'item_url': '/roles/',  'menu_items': role_types},
+        {'item_title': 'Players',   'item_url': '/players/',     'menu_items': []},
     ]},
 ]
 
-for menus in plugins.MENUS:
-    ECM_MENUS += menus
+for plugin in plugins.LIST:
+    ECM_MENUS += plugin.menu
 
 ECM_MENUS += [
-    {'menu_title': 'Scheduled Tasks',   'menu_url': '/tasks',     'menu_items': []},
+    {'menu_title': 'Scheduled Tasks',   'menu_url': '/tasks/',     'menu_items': []},
 ]

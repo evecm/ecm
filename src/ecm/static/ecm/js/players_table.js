@@ -16,7 +16,7 @@ $(document).ready(function() {
         "iDisplayLength": 25, /* default display 25 items */
         "bStateSave": true, /* table state persistance */
         "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
-        "sAjaxSource": "/players/data",
+        "sAjaxSource": "/players/data/",
         "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
             { /* Username */        "sWidth": "30%",   "sType": "html"    },
@@ -35,9 +35,9 @@ $(document).ready(function() {
             }
             var admin = aData[1];
             if (admin == 'true') {
-                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-yes.gif" alt="True">');
+                $('td:eq(1)', nRow).html('<img src="/s/admin/img/admin/icon-yes.gif" alt="True">');
             } else {
-                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-no.gif" alt="False">');
+                $('td:eq(1)', nRow).html('<img src="/s/admin/img/admin/icon-no.gif" alt="False">');
             }
             return nRow;
         },

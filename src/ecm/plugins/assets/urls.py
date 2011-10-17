@@ -24,13 +24,13 @@ urlpatterns = patterns('ecm.plugins.assets.views.normal',
     ###########################################################################
     # ASSETS VIEWS
     (r'^$',                                     'root'),
-    (r'^data$',                                 'systems_data'),
-    (r'^(\d+)/data$',                           'stations_data'),
-    (r'^(\d+)/(\d+)/data$',                     'hangars_data'),
-    (r'^(\d+)/(\d+)/(\d+)/data$',               'hangar_content_data'),
-    (r'^(\d+)/(\d+)/(\d+)/(\d+)/data$',         'can1_content_data'),
-    (r'^(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/data$',   'can2_content_data'),
-    (r'^search$',                               'search_items'),
+    (r'^data/$',                                 'systems_data'),
+    (r'^(\d+)/data/$',                           'stations_data'),
+    (r'^(\d+)/(\d+)/data/$',                     'hangars_data'),
+    (r'^(\d+)/(\d+)/(\d+)/data/$',               'hangar_content_data'),
+    (r'^(\d+)/(\d+)/(\d+)/(\d+)/data/$',         'can1_content_data'),
+    (r'^(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/data/$',   'can2_content_data'),
+    (r'^search/$',                               'search_items'),
 )
 
 DATE = r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})"
@@ -38,11 +38,11 @@ DATE = r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})"
 urlpatterns += patterns('ecm.plugins.assets.views.diff',
     ###########################################################################
     # ASSET DIFF VIEWS
-    (r'^changes$',                                      'last_date'),
-    (r'^changes/' + DATE + r'$',                        'root'),
-    (r'^changes/' + DATE + r'/data$',                   'systems_data'),
-    (r'^changes/' + DATE + r'/(\d+)/data$',             'stations_data'),
-    (r'^changes/' + DATE + r'/(\d+)/(\d+)/data$',       'hangars_data'),
-    (r'^changes/' + DATE + r'/(\d+)/(\d+)/(\d+)/data$', 'hangar_contents_data'),
-    (r'^changes/' + DATE + r'/search$',                 'search_items'),
+    (r'^changes/$',                                      'last_date'),
+    (r'^changes/' + DATE + r'/$',                        'root'),
+    (r'^changes/' + DATE + r'/data/$',                   'systems_data'),
+    (r'^changes/' + DATE + r'/(\d+)/data/$',             'stations_data'),
+    (r'^changes/' + DATE + r'/(\d+)/(\d+)/data/$',       'hangars_data'),
+    (r'^changes/' + DATE + r'/(\d+)/(\d+)/(\d+)/data/$', 'hangar_contents_data'),
+    (r'^changes/' + DATE + r'/search/$',                 'search_items'),
 )

@@ -4,8 +4,8 @@
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/account">Account</a></li>
-<li><a href="/account/create">Create</a></li>
+<li><a href="/account/">Account</a></li>
+<li><a href="/account/create/">Create</a></li>
 {% endblock %}
 
 
@@ -13,7 +13,7 @@
 
 <h1 class="pagetitle">Create Account</h1>
 
-<form class="signupform" action="/account/create" method="post" id="character_form" >{% csrf_token %}
+<form class="signupform" action="/account/create/" method="post" id="character_form" >{% csrf_token %}
     {% if form.errors %}
     <p class="error">{{ form.non_field_errors }}</p>
     {% endif %}

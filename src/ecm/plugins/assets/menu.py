@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 
 ECM_MENUS = [
-    {'menu_title': 'Assets',    'menu_url': '/assets',      'menu_items': [
-        {'item_title': 'Changes', 'item_url': '/assets/changes', 'menu_items': []},
+    {'menu_title': 'Assets',    'menu_url': '/assets/',      'menu_items': [
+        {'item_title': 'Changes', 'item_url': '/assets/changes/', 'menu_items': []},
     ]},
 ]

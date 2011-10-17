@@ -54,8 +54,8 @@ ECM_URL     = 'http://ecm.yourserver.com'
 ECM_USER    = '' # to complete
 ECM_PASSWD  = '' # to complete
 ECM_BINDING = 'forum'
-ECM_GROUPS  = '/api/bindings/%s/groups' % ECM_BINDING
-ECM_USERS   = '/api/bindings/%s/users' % ECM_BINDING
+ECM_GROUPS  = '/api/bindings/%s/groups/' % ECM_BINDING
+ECM_USERS   = '/api/bindings/%s/users/' % ECM_BINDING
 
 #------------------------------------------------------------------------------
 # logging settings
