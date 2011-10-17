@@ -36,7 +36,7 @@ from ecm.data.corp.models import Wallet, Corp
 from ecm.data.roles.models import Member
 from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
-from ecm.data.accounting.models import JournalEntry, EntryType
+from ecm.plugins.accounting.models import JournalEntry, EntryType
 
 
 #------------------------------------------------------------------------------

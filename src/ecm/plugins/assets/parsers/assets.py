@@ -22,7 +22,7 @@ import logging
 
 from django.db import transaction
 
-from ecm.data.assets.models import Asset, AssetDiff
+from ecm.plugins.assets.models import Asset, AssetDiff
 from ecm.core.eve import api, db
 from ecm.core.eve import constants as cst
 from ecm.core.parsers import calcDiffs, markUpdated, checkApiVersion

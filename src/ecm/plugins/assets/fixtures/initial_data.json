@@ -1,0 +1,16 @@
+[ {
+    "pk" : 1,
+    "model" : "scheduler.scheduledtask",
+    "fields" : {
+        "function" : "ecm.plugins.assets.parsers.assets.update",
+        "args" : "{}",
+        "is_active" : true,
+        "is_running" : false,
+        "priority" : 0,
+        "is_one_shot" : false,
+        "is_last_exec_success" : false,
+        "frequency" : 6,
+        "frequency_units" : 3600,
+        "next_execution" : "2011-03-31 08:17:29"
+    }
+} ]

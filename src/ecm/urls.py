@@ -22,8 +22,8 @@ from django.conf.urls.defaults import patterns, include
 from django.conf import settings
 from django.contrib import admin
 
+from ecm import plugins
 from ecm.view.auth.forms import PasswordChangeForm, PasswordResetForm, PasswordSetForm
-from ecm.data.roles.models import RoleType
 
 admin.autodiscover()
 
@@ -137,32 +137,6 @@ urlpatterns += patterns('ecm.view.roles',
     (r'^roles/([a-zA-Z_]+)/(\d+)/data$', 'details.role_data'),
 )
 
-urlpatterns += patterns('ecm.view.assets.normal',
-    ###########################################################################
-    # ASSETS VIEWS
-    (r'^assets$',                                   'root'),
-    (r'^assets/data$',                              'systems_data'),
-    (r'^assets/(\d+)/data$',                        'stations_data'),
-    (r'^assets/(\d+)/(\d+)/data$',                  'hangars_data'),
-    (r'^assets/(\d+)/(\d+)/(\d+)/data$',            'hangar_content_data'),
-    (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)/data$',      'can1_content_data'),
-    (r'^assets/(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/data$', 'can2_content_data'),
-    (r'^assets/search$',                            'search_items'),
-)
-
-DATE = r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})"
-
-urlpatterns += patterns('ecm.view.assets.diff',
-    ###########################################################################
-    # ASSET DIFF VIEWS
-    (r'^assets/changes$',                           'last_date'),
-    (r'^assets/changes/' + DATE + r'$',              'root'),
-    (r'^assets/changes/' + DATE + r'/data$',         'systems_data'),
-    (r'^assets/changes/' + DATE + r'/(\d+)/data$',   'stations_data'),
-    (r'^assets/changes/' + DATE + r'/(\d+)/(\d+)/data$', 'hangars_data'),
-    (r'^assets/changes/' + DATE + r'/(\d+)/(\d+)/(\d+)/data$', 'hangar_contents_data'),
-    (r'^assets/changes/' + DATE + r'/search$',       'search_items'),
-)
 
 urlpatterns += patterns('ecm.view.accounting',
     ###########################################################################
@@ -187,32 +161,10 @@ urlpatterns += patterns('ecm.view.api',
 )
 
 
-###############################################################################
-#                                 ECM MENU                                    #
-###############################################################################
-role_types = []
-for rt in RoleType.objects.all().order_by('id'):
-    role_types.append({'item_title': rt.dispName, 'item_url': '/roles/%s' % rt.typeName})
+PLUGINS_URLS = []
+for app_prefix, urlconf in plugins.URLS:
+    PLUGINS_URLS.append( (r'^' + app_prefix + '/', include(urlconf)) )
 
-ecm_menus = [
-    {'menu_title': 'Home',      'menu_url': '/',            'menu_items': []},
-    {'menu_title': 'Dashboard', 'menu_url': '/dashboard',   'menu_items': []},
-    {'menu_title': 'Members',   'menu_url': '/members',     'menu_items': [
-        {'item_title': 'History', 'item_url': '/members/history'},
-        {'item_title': 'Access Changes', 'item_url': '/members/accesschanges'},
-        {'item_title': 'Unassociated Members', 'item_url': '/members/unassociated'},
-    ]},
-    {'menu_title': 'Titles',    'menu_url': '/titles',      'menu_items': [
-        {'item_title': 'Changes', 'item_url': '/titles/changes'},
-    ]},
-    {'menu_title': 'Roles',     'menu_url': '/roles',       'menu_items': role_types},
-    {'menu_title': 'Accounting',    'menu_url': '/accounting',      'menu_items': [
-        {'item_title': 'Wallets Journal', 'item_url': '/accounting/journal'},
-        {'item_title': 'Tax Contributions', 'item_url': '/accounting/contributions'},
-    ]},
-    {'menu_title': 'Assets',    'menu_url': '/assets',      'menu_items': [
-        {'item_title': 'Changes', 'item_url': '/assets/changes'},
-    ]},
-    {'menu_title': 'Players',   'menu_url': '/players',     'menu_items': []},
-    {'menu_title': 'Scheduled Tasks',   'menu_url': '/tasks',     'menu_items': []},
-]
+if PLUGINS_URLS:
+    urlpatterns += patterns('',  *PLUGINS_URLS)
+

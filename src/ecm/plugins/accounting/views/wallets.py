@@ -31,7 +31,7 @@ from django.template.context import RequestContext
 from ecm.data.corp.models import Wallet
 from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
-from ecm.data.accounting.models import JournalEntry
+from ecm.plugins.accounting.models import JournalEntry
 
 #------------------------------------------------------------------------------
 @check_user_access()

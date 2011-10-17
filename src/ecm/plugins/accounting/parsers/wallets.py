@@ -28,9 +28,9 @@ from ecm.core.eve import api
 from ecm.core.encoding import fix_encoding
 from ecm.core.parsers import markUpdated, checkApiVersion
 from ecm.data.corp.models import Wallet
-from ecm.data.accounting.models import JournalEntry
+from ecm.plugins.accounting.models import JournalEntry
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_manually
@@ -43,13 +43,13 @@ def update():
             update_wallet(wallet)
             
         markUpdated(model=JournalEntry, date=datetime.now())
-        logger.debug("saving data to the database...")
+        LOG.debug("saving data to the database...")
         transaction.commit()
-        logger.debug("update sucessfull")
+        LOG.debug("update sucessfull")
     except:
         # error catched, rollback changes
         transaction.rollback()
-        logger.exception("update failed")
+        LOG.exception("update failed")
         raise
 
 
@@ -60,7 +60,7 @@ def update_wallet(wallet):
         lastKnownID = 0
     entries = fetch_entries(wallet, lastKnownID)
     
-    logger.debug("parsing results...")
+    LOG.debug("parsing results...")
     for e in entries:
         if e.reason.startswith('DESC:'):
             # the "reason" field encoding is bugged
@@ -82,13 +82,13 @@ def update_wallet(wallet):
                                     amount=e.amount,
                                     balance=e.balance,
                                     reason=e.reason)
-    logger.info("%d entries added in journal" % len(entries))
+    LOG.info("%d entries added in journal" % len(entries))
 
 
 def fetch_entries(wallet, lastKnownID):
     api_conn = api.connect()
     
-    logger.info("fetching /corp/WalletJournal.xml.aspx "
+    LOG.info("fetching /corp/WalletJournal.xml.aspx "
                 "(accountKey=%d)..." % wallet.walletID)
     charID = api.get_api().characterID
     walletsApi = api_conn.corp.WalletJournal(characterID=charID, 
@@ -107,7 +107,7 @@ def fetch_entries(wallet, lastKnownID):
     # or if the lastKnownID is in the current 256 entries
     # (entries are supposed to be sorted by decreasing refIDs)
     while len(walletsApi.entries) == 256 and minID > lastKnownID:
-        logger.info("fetching /corp/WalletJournal.xml.aspx "
+        LOG.info("fetching /corp/WalletJournal.xml.aspx "
                     "(accountKey=%d, fromID=%d)..." % (wallet.walletID, minID))
         walletsApi = api_conn.corp.WalletJournal(characterID=charID, 
                                                  accountKey=wallet.walletID, 

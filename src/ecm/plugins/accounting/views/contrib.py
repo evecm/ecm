@@ -35,7 +35,7 @@ from django.template.context import RequestContext
 from ecm.core.utils import print_float
 from ecm.view.decorators import check_user_access
 from ecm.data.roles.models import Member
-from ecm.data.accounting.models import JournalEntry
+from ecm.plugins.accounting.models import JournalEntry
 from ecm.view import extract_datatable_params, getScanDate
 
 DATE_PATTERN = "%Y-%m-%d"

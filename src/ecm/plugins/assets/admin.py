@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 
 from django.contrib import admin
-from ecm.data.assets.models import Asset, AssetDiff
+from ecm.plugins.assets.models import Asset, AssetDiff
 
 class AssetAdmin(admin.ModelAdmin):
     list_display = ['itemID', 'solarSystemID', 'stationID', 'hangarID', 'container1', 'container2', 

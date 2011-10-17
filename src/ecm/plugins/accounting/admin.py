@@ -19,7 +19,7 @@ __date__ = "2010-06-03"
 __author__ = "diabeteman"
 
 
-from ecm.data.accounting.models import JournalEntry, EntryType
+from ecm.plugins.accounting.models import JournalEntry, EntryType
 from django.contrib import admin
 
 #------------------------------------------------------------------------------
