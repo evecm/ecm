@@ -14,45 +14,71 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-import ecm
 
 __date__ = '2011-02-19'
 __author__ = 'diabeteman'
 
 
-from ecm.data.common.models import user_has_access
+import ecm
+from ecm.apps.common.models import user_has_access
 from ecm.menu import ECM_MENUS
-from ecm.data.corp.models import Corp
+from ecm.apps.corp.models import Corp
 
+#------------------------------------------------------------------------------
 def corporation_name(request):
+    """
+    Adds the variable {{ corp_name }} to all the templates.
+    """
     try:
         return { "corp_name" : Corp.objects.get(id=1).corporationName }
     except Corp.DoesNotExist:
         return { "corp_name" : "No Corporation" }
 
+#------------------------------------------------------------------------------
+def version(request):
+    """
+    Adds the variable {{ ecm_version }} to all the templates.
+    """
+    return {'ecm_version': ecm.version}
 
-menu_html = '''<ul>
+#------------------------------------------------------------------------------
+def menu(request):
+    """
+    Adds the variable {{ user_menu }} to all the templates.
+
+    The menu is composed with items from each ECM app/plugin (see the menu.py files)
+    The items are dynamically displayed according to user accesses.
+    """
+    user_menu = ''
+    for menu in ECM_MENUS:
+        menu = menu.copy()
+        if request.user.is_superuser or user_has_access(request.user, menu['menu_url']):
+            menu_items = ''
+            for item in menu['menu_items']:
+                item = item.copy()
+                sub_menu = '\n'.join([ _SUBMENU_HTML % i for i in item['menu_items'] ])
+                if sub_menu:
+                    sub_menu = '<ul>%s</ul>' % sub_menu
+                item['sub_menu'] = sub_menu
+                menu_items += _MENU_ITEM_HTML % item
+
+            if menu_items:
+                menu_items = '<ul>%s</ul>' % menu_items
+            menu['sub_menu'] = menu_items
+            user_menu += _MENU_HTML % menu
+
+    return {'user_menu': user_menu}
+
+_MENU_HTML = '''<ul>
   <li>
     <a href="%(menu_url)s">%(menu_title)s</a>
     %(sub_menu)s
   </li>
 </ul>
 '''
-
-submenu_item_html = '<li><a href="%(item_url)s">%(item_title)s</a></li>'
-
-def menu(request):
-    user_menu = ''
-    for menu in ECM_MENUS:
-        menu = menu.copy()
-        if request.user.is_superuser or user_has_access(request.user, menu['menu_url']):
-            sub_menu = '\n'.join([submenu_item_html % item for item in menu['menu_items']])
-            if sub_menu:
-                sub_menu = '<ul>%s</ul>' % sub_menu
-            menu['sub_menu'] = sub_menu
-            user_menu += menu_html % menu
-    return {'user_menu': user_menu}
-
-def version(request):
-    return {'ecm_version': ecm.version}
-
+_MENU_ITEM_HTML = '''    <li>
+      <a href="%(item_url)s">%(item_title)s</a>
+      %(sub_menu)s
+    </li>
+'''
+_SUBMENU_HTML = '      <li><a href="%(item_url)s">%(item_title)s</a></li>'

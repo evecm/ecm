@@ -83,7 +83,7 @@
     "pk": 3,
     "model": "common.urlpermission",
     "fields": {
-      "pattern": "^/roles.*$",
+      "pattern": "^/hr.*$",
       "groups": []
     }
   },

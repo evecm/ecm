@@ -104,7 +104,8 @@ class ExternalApplication(models.Model):
     """
     name = models.CharField(max_length=64,
                             unique=True,
-                            validators=[RegexValidator(r'^\w+$', message='Only letters and digits')])
+                            validators=[RegexValidator(r'^\w+$',
+                                                       message='Only letters and digits')])
     url = models.CharField(max_length=1024)
 
     def __hash__(self):

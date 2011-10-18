@@ -20,8 +20,8 @@ __author__ = "diabeteman"
 
 from ecm.lib import eveapi
 from ecm.core.eve.validators import check_user_access_mask
-from ecm.data.common.models import APIKey
-from ecm.data.corp.models import Corp
+from ecm.apps.common.models import APIKey
+from ecm.apps.corp.models import Corp
 
 #------------------------------------------------------------------------------
 def get_api():

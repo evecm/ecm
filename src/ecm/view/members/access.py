@@ -31,7 +31,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.view import getScanDate, extract_datatable_params
-from ecm.data.roles.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
+from ecm.apps.hr.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
 from ecm.view.decorators import check_user_access
 from ecm.core import utils
 

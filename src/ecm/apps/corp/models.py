@@ -19,7 +19,6 @@ __date__ = "2010-02-08"
 __author__ = "diabeteman"
 
 from django.db import models
-from ecm.core.utils import print_float
 
 #------------------------------------------------------------------------------
 class Hangar(models.Model):
@@ -44,28 +43,8 @@ class Wallet(models.Model):
     name = models.CharField(max_length=128)
     accessLvl = models.PositiveIntegerField(default=1000)
 
-    LINK = '<a href="%s" class="wallet" title="%s">%s</a>'
-
     def __unicode__(self):
         return unicode(self.name)
-
-    @property
-    def url(self):
-        return "/accounting/wallet/%d/" % self.walletID
-
-    @property
-    def permalink(self):
-        return Wallet.LINK % (self.url, "Click for details on this wallet", self.name)
-
-    def get_journal_url(self):
-        return "/accounting/journal?walletID=%d" % self.walletID
-
-    def permalink_to_journal(self, balance=None):
-        if balance is None:
-            name = self.name
-        else:
-            name = print_float(balance)
-        return Wallet.LINK % (self.get_journal_url(), "Click to access this wallet's journal", name)
 
 #------------------------------------------------------------------------------
 class Corp(models.Model):

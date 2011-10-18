@@ -24,8 +24,8 @@ from datetime import datetime
 from django.db import models
 
 from ecm.lib import bigintpatch
-from ecm.data.roles.models.member import Member
-from ecm.data.roles.models.roles import Role
+from ecm.apps.hr.models.member import Member
+from ecm.apps.hr.models.roles import Role
 
 
 #------------------------------------------------------------------------------

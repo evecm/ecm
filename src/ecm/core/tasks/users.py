@@ -30,9 +30,9 @@ from django.core.mail.message import EmailMultiAlternatives
 from ecm.core.eve import api
 from ecm.lib import eveapi
 from ecm import settings
-from ecm.data.common.models import RegistrationProfile, UserAPIKey
-from ecm.data.roles.models import Title, Member
-from ecm.data.scheduler.models import ScheduledTask
+from ecm.apps.common.models import RegistrationProfile, UserAPIKey
+from ecm.apps.hr.models import Title, Member
+from ecm.apps.scheduler.models import ScheduledTask
 
 logger = logging.getLogger(__name__)
 

@@ -37,7 +37,7 @@ from ecm.view.decorators import check_user_access
 from ecm.core.eve import constants, db
 from ecm.core import utils
 from ecm.plugins.assets.models import Asset
-from ecm.data.corp.models import Hangar
+from ecm.apps.corp.models import Hangar
 from ecm.view import getScanDate
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 

@@ -31,10 +31,10 @@ from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, Http404
 
-from ecm.data.roles.models import Role, RoleType
-from ecm.data.common.models import ColorThreshold
+from ecm.apps.hr.models import Role, RoleType
+from ecm.apps.common.models import ColorThreshold
 from ecm.view.decorators import check_user_access
-from ecm.data.corp.models import Hangar, Wallet
+from ecm.apps.corp.models import Hangar, Wallet
 
 import logging
 logger = logging.getLogger(__name__)

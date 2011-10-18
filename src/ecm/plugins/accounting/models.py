@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 
 from django.db import models
 from ecm.lib import bigintpatch
-from ecm.data.corp.models import Wallet
+from ecm.apps.corp.models import Wallet
 from django.utils.translation import ugettext_lazy as _
 
 #------------------------------------------------------------------------------

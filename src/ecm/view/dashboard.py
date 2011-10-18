@@ -30,8 +30,8 @@ from django.template.context import RequestContext
 from ecm.core.eve import db
 from ecm.core.eve import constants
 from ecm.view.decorators import check_user_access
-from ecm.data.roles.models import Member
-from ecm.data.common.models import ColorThreshold, UserAPIKey
+from ecm.apps.hr.models import Member
+from ecm.apps.common.models import ColorThreshold, UserAPIKey
 
 
 #------------------------------------------------------------------------------

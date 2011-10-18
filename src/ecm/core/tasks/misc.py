@@ -23,7 +23,7 @@ import logging
 
 from django.db import transaction
 
-from ecm.data.scheduler.models import GarbageCollector
+from ecm.apps.scheduler.models import GarbageCollector
 
 logger = logging.getLogger(__name__)
 

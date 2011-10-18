@@ -31,7 +31,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from ecm.view.decorators import basic_auth_required
-from ecm.data.common.models import ExternalApplication, GroupBinding, UserBinding
+from ecm.apps.common.models import ExternalApplication, GroupBinding, UserBinding
 
 #------------------------------------------------------------------------------
 @basic_auth_required(username=settings.CRON_USERNAME)

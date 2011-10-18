@@ -27,8 +27,8 @@ from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 
 from ecm.core.tasks.users import update_user_accesses
-from ecm.data.common.models import UserAPIKey, RegistrationProfile
-from ecm.data.roles.models import Member
+from ecm.apps.common.models import UserAPIKey, RegistrationProfile
+from ecm.apps.hr.models import Member
 from ecm.view.auth.forms import AccountCreationForm
 from ecm.core.eve.validators import user_access_mask
 

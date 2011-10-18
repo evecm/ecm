@@ -23,9 +23,9 @@ from django.conf import settings
 from django.utils.text import truncate_words
 from django.contrib.auth.models import User
 
-from ecm.data.roles.models import Member
+from ecm.apps.hr.models import Member
 from ecm.core import utils
-from ecm.data.common.models import UpdateDate
+from ecm.apps.common.models import UpdateDate
 from ecm.view import template_filters
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"

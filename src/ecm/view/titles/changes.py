@@ -29,7 +29,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
 
-from ecm.data.roles.models import TitleComposition, TitleCompoDiff
+from ecm.apps.hr.models import TitleComposition, TitleCompoDiff
 from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.core.utils import print_time_min

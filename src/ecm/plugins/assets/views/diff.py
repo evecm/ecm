@@ -38,7 +38,7 @@ from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 from ecm.core.eve import constants, db
 from ecm.core import utils
 from ecm.plugins.assets.models import Asset, AssetDiff
-from ecm.data.corp.models import Hangar
+from ecm.apps.corp.models import Hangar
 from ecm.view import getScanDate, DATE_PATTERN
 
 

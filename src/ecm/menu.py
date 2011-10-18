@@ -19,7 +19,7 @@ __date__ = "2011 10 16"
 __author__ = "diabeteman"
 
 from ecm import plugins
-from ecm.data.roles.models import RoleType
+from ecm.apps.hr.models import RoleType
 
 role_types = []
 for rt in RoleType.objects.all().order_by('id'):

@@ -7,7 +7,6 @@ import logging
 from ecm.settings import PLUGIN_APPS
 
 LOG = logging.getLogger(__name__)
-
 DICT = {}
 LIST = []
 

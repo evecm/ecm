@@ -169,10 +169,10 @@ INSTALLED_APPS = [
     'captcha',
     'south',
 
-    'ecm.data.corp',
-    'ecm.data.roles',
-    'ecm.data.common',
-    'ecm.data.scheduler',
+    'ecm.apps.corp',
+    'ecm.apps.roles',
+    'ecm.apps.common',
+    'ecm.apps.scheduler',
 ]
 
 PLUGIN_APPS = []

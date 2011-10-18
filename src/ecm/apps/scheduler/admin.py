@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 
 from django.contrib import admin
-from ecm.data.scheduler.models import ScheduledTask, GarbageCollector
+from ecm.apps.scheduler.models import ScheduledTask, GarbageCollector
 
 class ScheduledTaskOptions(admin.ModelAdmin):
     list_display = ["function_admin_display", 

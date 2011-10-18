@@ -29,9 +29,9 @@ from django.views.decorators.cache import cache_page
 from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
 
-from ecm.data.roles.models import Member
+from ecm.apps.hr.models import Member
 from ecm.view.decorators import check_user_access
-from ecm.data.common.models import ColorThreshold
+from ecm.apps.common.models import ColorThreshold
 from ecm.view import getScanDate, get_members, extract_datatable_params
 
 

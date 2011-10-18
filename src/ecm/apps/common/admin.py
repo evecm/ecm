@@ -15,24 +15,24 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2010-01-24"
+__date__ = "2010-05-17"
 __author__ = "diabeteman"
 
 
 from django.contrib import admin
-
-from ecm.data.roles.models import Role, Title, Member, RoleType, RoleMembership, MemberDiff,\
-    TitleCompoDiff, TitleMemberDiff, RoleMemberDiff, TitleMembership, TitleComposition
-
-admin.site.register(Member)
-admin.site.register(Role)
-admin.site.register(RoleType)
-admin.site.register(Title)
-admin.site.register(RoleMembership)
-admin.site.register(TitleMembership)
-admin.site.register(MemberDiff)
-admin.site.register(TitleComposition)
-admin.site.register(TitleCompoDiff)
-admin.site.register(TitleMemberDiff)
-admin.site.register(RoleMemberDiff)
-
+from ecm.apps.common.models import  APIKey,\
+                                    UserAPIKey,\
+                                    ExternalApplication,\
+                                    UserBinding,\
+                                    GroupBinding,\
+                                    UpdateDate,\
+                                    ColorThreshold,\
+                                    UrlPermission
+admin.site.register(APIKey)
+admin.site.register(UserAPIKey)
+admin.site.register(ExternalApplication)
+admin.site.register(UserBinding)
+admin.site.register(GroupBinding)
+admin.site.register(UpdateDate)
+admin.site.register(ColorThreshold)
+admin.site.register(UrlPermission)

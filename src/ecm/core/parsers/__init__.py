@@ -25,36 +25,9 @@ import threading
 from django.contrib.auth.models import Group
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-from ecm.data.roles.models import RoleType, Role
+from ecm.apps.hr.models import RoleType, Role
 from ecm import settings
-from ecm.data.common.models import UpdateDate
-
-
-#------------------------------------------------------------------------------
-LOCK_ROLE_TYPES = threading.RLock()
-_ROLE_TYPES = None
-LOCK_ALL_ROLES = threading.RLock()
-_ALL_ROLES = None
-
-#------------------------------------------------------------------------------
-def roleTypes():
-    global _ROLE_TYPES
-    with LOCK_ROLE_TYPES:
-        if _ROLE_TYPES == None:
-            _ROLE_TYPES = {}
-            for type in RoleType.objects.all() :
-                _ROLE_TYPES[type.typeName] = type
-    return _ROLE_TYPES
-
-#------------------------------------------------------------------------------
-def allRoles():
-    global _ALL_ROLES
-    with LOCK_ALL_ROLES:
-        if _ALL_ROLES == None:
-            _ALL_ROLES = {}
-            for role in Role.objects.all() :
-                _ALL_ROLES[(role.roleID, role.roleType_id)] = role
-    return _ALL_ROLES
+from ecm.apps.common.models import UpdateDate
 
 #------------------------------------------------------------------------------
 def checkApiVersion(version):

@@ -33,7 +33,7 @@ from django.utils.text import truncate_words
 
 from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
-from ecm.data.roles.models import Member, MemberDiff
+from ecm.apps.hr.models import Member, MemberDiff
 from ecm.core import utils
 
 

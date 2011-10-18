@@ -32,8 +32,8 @@ from django.db.models import Q
 
 from ecm.core.utils import print_time_min, print_float
 from ecm.core.eve import db
-from ecm.data.corp.models import Wallet, Corp
-from ecm.data.roles.models import Member
+from ecm.apps.corp.models import Wallet, Corp
+from ecm.apps.hr.models import Member
 from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.plugins.accounting.models import JournalEntry, EntryType

@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.plugins.accounting.views import wallet_journal_permalink
 
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
@@ -28,7 +29,7 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
-from ecm.data.corp.models import Wallet
+from ecm.apps.corp.models import Wallet
 from ecm.view.decorators import check_user_access
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.plugins.accounting.models import JournalEntry
@@ -74,7 +75,7 @@ def list_data(request):
     entries.sort(key=sort_key, reverse=not params.asc)
 
     for wallet in entries:
-        wallet[1] = wallet[0].permalink_to_journal(wallet[1])
+        wallet[1] = wallet_journal_permalink(wallet[0], wallet[1])
         wallet[0] = wallet[0].name
 
     json_data = {

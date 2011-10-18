@@ -26,8 +26,8 @@ from django.db import transaction
 from ecm.view.decorators import forbidden
 from ecm.core.tasks.users import update_user_accesses
 from ecm.view.auth.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
-from ecm.data.roles.models import Member
-from ecm.data.common.models import UserAPIKey, ExternalApplication, UserBinding
+from ecm.apps.hr.models import Member
+from ecm.apps.common.models import UserAPIKey, ExternalApplication, UserBinding
 from ecm.core.eve.validators import user_access_mask
 
 import logging

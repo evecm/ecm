@@ -18,9 +18,9 @@
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
 
-from ecm.data.roles.models.member import Member, MemberDiff
-from ecm.data.roles.models.roles import RoleType, Role, RoleMembership, RoleMemberDiff
-from ecm.data.roles.models.titles import Title, TitleComposition, TitleMembership, TitleCompoDiff,\
+from ecm.apps.hr.models.member import Member, MemberDiff
+from ecm.apps.hr.models.roles import RoleType, Role, RoleMembership, RoleMemberDiff
+from ecm.apps.hr.models.titles import Title, TitleComposition, TitleMembership, TitleCompoDiff,\
     TitleMemberDiff
 
 # How to split models in separate python modules

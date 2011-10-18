@@ -33,9 +33,9 @@ from django.utils.translation import ugettext_lazy as _
 from captcha.fields import CaptchaField
 
 from ecm.core.eve import api
-from ecm.data.common.models import UserAPIKey, UserBinding
+from ecm.apps.common.models import UserAPIKey, UserBinding
 from ecm.lib import eveapi
-from ecm.data.roles.models import Member
+from ecm.apps.hr.models import Member
 from ecm.view.auth.fields import PasswordField
 
 #------------------------------------------------------------------------------

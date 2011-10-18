@@ -30,8 +30,8 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 
 from ecm.view.decorators import check_user_access
-from ecm.data.roles.models import TitleComposition, Title, TitleCompoDiff
-from ecm.data.common.models import ColorThreshold
+from ecm.apps.hr.models import TitleComposition, Title, TitleCompoDiff
+from ecm.apps.common.models import ColorThreshold
 from ecm.core import utils
 from ecm.view import getScanDate
 

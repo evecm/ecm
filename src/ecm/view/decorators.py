@@ -30,8 +30,8 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
 from django.conf import settings
 
-from ecm.data.common.models import user_has_access
-from ecm.data.roles.models import Member
+from ecm.apps.common.models import user_has_access
+from ecm.apps.hr.models import Member
 
 #------------------------------------------------------------------------------
 def basic_auth_required(username=None):

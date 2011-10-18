@@ -1,7 +1,7 @@
 [
   {
     "pk": 1, 
-    "model": "roles.roletype", 
+    "model": "hr.roletype", 
     "fields": {
       "typeName": "roles", 
       "dispName": "General"
@@ -9,7 +9,7 @@
   }, 
   {
     "pk": 2, 
-    "model": "roles.roletype", 
+    "model": "hr.roletype", 
     "fields": {
       "typeName": "grantableRoles", 
       "dispName": "Grantable General"
@@ -17,7 +17,7 @@
   }, 
   {
     "pk": 3, 
-    "model": "roles.roletype", 
+    "model": "hr.roletype", 
     "fields": {
       "typeName": "rolesAtHQ", 
       "dispName": "At HQ"
@@ -25,7 +25,7 @@
   }, 
   {
     "pk": 4, 
-    "model": "roles.roletype", 
+    "model": "hr.roletype", 
     "fields": {
       "typeName": "grantableRolesAtHQ", 
       "dispName": "Grantable At HQ"
@@ -33,7 +33,7 @@
   }, 
   {
     "pk": 5, 
-    "model": "roles.roletype", 
+    "model": "hr.roletype", 
     "fields": {
       "typeName": "rolesAtBase", 
       "dispName": "At Base"
@@ -41,7 +41,7 @@
   }, 
   {
     "pk": 6, 
-    "model": "roles.roletype", 
+    "model": "hr.roletype", 
     "fields": {
       "typeName": "grantableRolesAtBase", 
       "dispName": "Grantable At Base"
@@ -49,7 +49,7 @@
   }, 
   {
     "pk": 7, 
-    "model": "roles.roletype", 
+    "model": "hr.roletype", 
     "fields": {
       "typeName": "rolesAtOther", 
       "dispName": "At Other"
@@ -57,7 +57,7 @@
   }, 
   {
     "pk": 8, 
-    "model": "roles.roletype", 
+    "model": "hr.roletype", 
     "fields": {
       "typeName": "grantableRolesAtOther", 
       "dispName": "Grantable At Other"
@@ -65,7 +65,7 @@
   }, 
   {
     "pk": 1, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can do anything the CEO can do. Including giving roles to anyone.", 
@@ -79,7 +79,7 @@
   }, 
   {
     "pk": 2, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can accept applications to join the corporation.", 
@@ -93,7 +93,7 @@
   }, 
   {
     "pk": 3, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can view/use corporation accountancy info.", 
@@ -107,7 +107,7 @@
   }, 
   {
     "pk": 4, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can view the content of other members hangars (in stations where the corporation has an office)", 
@@ -121,7 +121,7 @@
   }, 
   {
     "pk": 5, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can perform factory management tasks.", 
@@ -135,7 +135,7 @@
   }, 
   {
     "pk": 6, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can perform station management for a corporation.", 
@@ -149,7 +149,7 @@
   }, 
   {
     "pk": 7, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can perform audits on corporation security event logs", 
@@ -163,7 +163,7 @@
   }, 
   {
     "pk": 8, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can take funds from this divisions account", 
@@ -177,7 +177,7 @@
   }, 
   {
     "pk": 9, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can take funds from this divisions account", 
@@ -191,7 +191,7 @@
   }, 
   {
     "pk": 10, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can take funds from this divisions account", 
@@ -205,7 +205,7 @@
   }, 
   {
     "pk": 11, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can take funds from this divisions account", 
@@ -219,7 +219,7 @@
   }, 
   {
     "pk": 12, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can take funds from this divisions account", 
@@ -233,7 +233,7 @@
   }, 
   {
     "pk": 13, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can take funds from this divisions account", 
@@ -247,7 +247,7 @@
   }, 
   {
     "pk": 14, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can take funds from this divisions account", 
@@ -261,7 +261,7 @@
   }, 
   {
     "pk": 15, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can deploy and configure equipment in space.", 
@@ -275,7 +275,7 @@
   }, 
   {
     "pk": 16, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "When assigned to a member, the member can rent offices on behalf of the corporation", 
@@ -289,7 +289,7 @@
   }, 
   {
     "pk": 17, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "When assigned to a member, the member can rent factory slots on behalf of the corporation", 
@@ -303,7 +303,7 @@
   }, 
   {
     "pk": 18, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "When assigned to a member, the member can rent research facilities on behalf of the corporation", 
@@ -317,7 +317,7 @@
   }, 
   {
     "pk": 19, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can view corporation accountancy info.", 
@@ -331,7 +331,7 @@
   }, 
   {
     "pk": 20, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can deploy and configure starbase structures in space.", 
@@ -345,7 +345,7 @@
   }, 
   {
     "pk": 21, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can buy and sell things on behalf of the corporation", 
@@ -359,7 +359,7 @@
   }, 
   {
     "pk": 22, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can moderate corporation/alliance communications channels", 
@@ -373,7 +373,7 @@
   }, 
   {
     "pk": 23, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can create, edit and oversee all contracts made on behalf of the corportation as well as accept contracts on behalf of the corporation", 
@@ -387,7 +387,7 @@
   }, 
   {
     "pk": 24, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can operate defensive starbase structures", 
@@ -401,7 +401,7 @@
   }, 
   {
     "pk": 25, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can refuel starbases and take from silo bins", 
@@ -415,7 +415,7 @@
   }, 
   {
     "pk": 26, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can add and delete corporation fittings", 
@@ -429,7 +429,7 @@
   }, 
   {
     "pk": 27, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can accept applications to join the corporation.", 
@@ -443,7 +443,7 @@
   }, 
   {
     "pk": 28, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can view/use corporation accountancy info.", 
@@ -457,7 +457,7 @@
   }, 
   {
     "pk": 29, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can view the content of other members hangars (in stations where the corporation has an office)", 
@@ -471,7 +471,7 @@
   }, 
   {
     "pk": 30, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can perform factory management tasks.", 
@@ -485,7 +485,7 @@
   }, 
   {
     "pk": 31, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can perform station management for a corporation.", 
@@ -499,7 +499,7 @@
   }, 
   {
     "pk": 32, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can perform audits on corporation security event logs", 
@@ -513,7 +513,7 @@
   }, 
   {
     "pk": 33, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can take funds from this divisions account", 
@@ -527,7 +527,7 @@
   }, 
   {
     "pk": 34, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can take funds from this divisions account", 
@@ -541,7 +541,7 @@
   }, 
   {
     "pk": 35, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can take funds from this divisions account", 
@@ -555,7 +555,7 @@
   }, 
   {
     "pk": 36, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can take funds from this divisions account", 
@@ -569,7 +569,7 @@
   }, 
   {
     "pk": 37, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can take funds from this divisions account", 
@@ -583,7 +583,7 @@
   }, 
   {
     "pk": 38, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can take funds from this divisions account", 
@@ -597,7 +597,7 @@
   }, 
   {
     "pk": 39, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can take funds from this divisions account", 
@@ -611,7 +611,7 @@
   }, 
   {
     "pk": 40, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can deploy and configure equipment in space.", 
@@ -625,7 +625,7 @@
   }, 
   {
     "pk": 41, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "When assigned to a member, the member can rent offices on behalf of the corporation", 
@@ -639,7 +639,7 @@
   }, 
   {
     "pk": 42, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "When assigned to a member, the member can rent factory slots on behalf of the corporation", 
@@ -653,7 +653,7 @@
   }, 
   {
     "pk": 43, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "When assigned to a member, the member can rent research facilities on behalf of the corporation", 
@@ -667,7 +667,7 @@
   }, 
   {
     "pk": 44, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can view corporation accountancy info.", 
@@ -681,7 +681,7 @@
   }, 
   {
     "pk": 45, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can deploy and configure starbase structures in space.", 
@@ -695,7 +695,7 @@
   }, 
   {
     "pk": 46, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can buy and sell things on behalf of the corporation", 
@@ -709,7 +709,7 @@
   }, 
   {
     "pk": 47, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can moderate corporation/alliance communications channels", 
@@ -723,7 +723,7 @@
   }, 
   {
     "pk": 48, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can create, edit and oversee all contracts made on behalf of the corportation as well as accept contracts on behalf of the corporation", 
@@ -737,7 +737,7 @@
   }, 
   {
     "pk": 49, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can operate defensive starbase structures", 
@@ -751,7 +751,7 @@
   }, 
   {
     "pk": 50, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can refuel starbases and take from silo bins", 
@@ -765,7 +765,7 @@
   }, 
   {
     "pk": 51, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can add and delete corporation fittings", 
@@ -779,7 +779,7 @@
   }, 
   {
     "pk": 52, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can do anything the CEO can do. Including giving roles to anyone.", 
@@ -793,7 +793,7 @@
   }, 
   {
     "pk": 53, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take items from this divisions hangar", 
@@ -807,7 +807,7 @@
   }, 
   {
     "pk": 54, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take items from this divisions hangar", 
@@ -821,7 +821,7 @@
   }, 
   {
     "pk": 55, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take items from this divisions hangar", 
@@ -835,7 +835,7 @@
   }, 
   {
     "pk": 56, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take items from this divisions hangar", 
@@ -849,7 +849,7 @@
   }, 
   {
     "pk": 57, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take items from this divisions hangar", 
@@ -863,7 +863,7 @@
   }, 
   {
     "pk": 58, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take items from this divisions hangar", 
@@ -877,7 +877,7 @@
   }, 
   {
     "pk": 59, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take items from this divisions hangar", 
@@ -891,7 +891,7 @@
   }, 
   {
     "pk": 60, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can query the content of this divisions hangar", 
@@ -905,7 +905,7 @@
   }, 
   {
     "pk": 61, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can query the content of this divisions hangar", 
@@ -919,7 +919,7 @@
   }, 
   {
     "pk": 62, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can query the content of this divisions hangar", 
@@ -933,7 +933,7 @@
   }, 
   {
     "pk": 63, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can query the content of this divisions hangar", 
@@ -947,7 +947,7 @@
   }, 
   {
     "pk": 64, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can query the content of this divisions hangar", 
@@ -961,7 +961,7 @@
   }, 
   {
     "pk": 65, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can query the content of this divisions hangar", 
@@ -975,7 +975,7 @@
   }, 
   {
     "pk": 66, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can query the content of this divisions hangar", 
@@ -989,7 +989,7 @@
   }, 
   {
     "pk": 67, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take containers from this divisional hangar", 
@@ -1003,7 +1003,7 @@
   }, 
   {
     "pk": 68, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take containers from this divisional hangar", 
@@ -1017,7 +1017,7 @@
   }, 
   {
     "pk": 69, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take containers from this divisional hangar", 
@@ -1031,7 +1031,7 @@
   }, 
   {
     "pk": 70, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take containers from this divisional hangar", 
@@ -1045,7 +1045,7 @@
   }, 
   {
     "pk": 71, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take containers from this divisional hangar", 
@@ -1059,7 +1059,7 @@
   }, 
   {
     "pk": 72, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take containers from this divisional hangar", 
@@ -1073,7 +1073,7 @@
   }, 
   {
     "pk": 73, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 3, 
       "description": "Can take containers from this divisional hangar", 
@@ -1087,7 +1087,7 @@
   }, 
   {
     "pk": 74, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take items from this divisions hangar", 
@@ -1101,7 +1101,7 @@
   }, 
   {
     "pk": 75, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take items from this divisions hangar", 
@@ -1115,7 +1115,7 @@
   }, 
   {
     "pk": 76, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take items from this divisions hangar", 
@@ -1129,7 +1129,7 @@
   }, 
   {
     "pk": 77, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take items from this divisions hangar", 
@@ -1143,7 +1143,7 @@
   }, 
   {
     "pk": 78, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take items from this divisions hangar", 
@@ -1157,7 +1157,7 @@
   }, 
   {
     "pk": 79, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take items from this divisions hangar", 
@@ -1171,7 +1171,7 @@
   }, 
   {
     "pk": 80, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take items from this divisions hangar", 
@@ -1185,7 +1185,7 @@
   }, 
   {
     "pk": 81, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can query the content of this divisions hangar", 
@@ -1199,7 +1199,7 @@
   }, 
   {
     "pk": 82, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can query the content of this divisions hangar", 
@@ -1213,7 +1213,7 @@
   }, 
   {
     "pk": 83, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can query the content of this divisions hangar", 
@@ -1227,7 +1227,7 @@
   }, 
   {
     "pk": 84, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can query the content of this divisions hangar", 
@@ -1241,7 +1241,7 @@
   }, 
   {
     "pk": 85, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can query the content of this divisions hangar", 
@@ -1255,7 +1255,7 @@
   }, 
   {
     "pk": 86, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can query the content of this divisions hangar", 
@@ -1269,7 +1269,7 @@
   }, 
   {
     "pk": 87, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can query the content of this divisions hangar", 
@@ -1283,7 +1283,7 @@
   }, 
   {
     "pk": 88, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take containers from this divisional hangar", 
@@ -1297,7 +1297,7 @@
   }, 
   {
     "pk": 89, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take containers from this divisional hangar", 
@@ -1311,7 +1311,7 @@
   }, 
   {
     "pk": 90, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take containers from this divisional hangar", 
@@ -1325,7 +1325,7 @@
   }, 
   {
     "pk": 91, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take containers from this divisional hangar", 
@@ -1339,7 +1339,7 @@
   }, 
   {
     "pk": 92, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take containers from this divisional hangar", 
@@ -1353,7 +1353,7 @@
   }, 
   {
     "pk": 93, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take containers from this divisional hangar", 
@@ -1367,7 +1367,7 @@
   }, 
   {
     "pk": 94, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 4, 
       "description": "Can take containers from this divisional hangar", 
@@ -1381,7 +1381,7 @@
   }, 
   {
     "pk": 95, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can do anything the CEO can do. Including giving roles to anyone.", 
@@ -1395,7 +1395,7 @@
   }, 
   {
     "pk": 96, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take items from this divisions hangar", 
@@ -1409,7 +1409,7 @@
   }, 
   {
     "pk": 97, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take items from this divisions hangar", 
@@ -1423,7 +1423,7 @@
   }, 
   {
     "pk": 98, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take items from this divisions hangar", 
@@ -1437,7 +1437,7 @@
   }, 
   {
     "pk": 99, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take items from this divisions hangar", 
@@ -1451,7 +1451,7 @@
   }, 
   {
     "pk": 100, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take items from this divisions hangar", 
@@ -1465,7 +1465,7 @@
   }, 
   {
     "pk": 101, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take items from this divisions hangar", 
@@ -1479,7 +1479,7 @@
   }, 
   {
     "pk": 102, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take items from this divisions hangar", 
@@ -1493,7 +1493,7 @@
   }, 
   {
     "pk": 103, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can query the content of this divisions hangar", 
@@ -1507,7 +1507,7 @@
   }, 
   {
     "pk": 104, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can query the content of this divisions hangar", 
@@ -1521,7 +1521,7 @@
   }, 
   {
     "pk": 105, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can query the content of this divisions hangar", 
@@ -1535,7 +1535,7 @@
   }, 
   {
     "pk": 106, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can query the content of this divisions hangar", 
@@ -1549,7 +1549,7 @@
   }, 
   {
     "pk": 107, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can query the content of this divisions hangar", 
@@ -1563,7 +1563,7 @@
   }, 
   {
     "pk": 108, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can query the content of this divisions hangar", 
@@ -1577,7 +1577,7 @@
   }, 
   {
     "pk": 109, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can query the content of this divisions hangar", 
@@ -1591,7 +1591,7 @@
   }, 
   {
     "pk": 110, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take containers from this divisional hangar", 
@@ -1605,7 +1605,7 @@
   }, 
   {
     "pk": 111, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take containers from this divisional hangar", 
@@ -1619,7 +1619,7 @@
   }, 
   {
     "pk": 112, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take containers from this divisional hangar", 
@@ -1633,7 +1633,7 @@
   }, 
   {
     "pk": 113, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take containers from this divisional hangar", 
@@ -1647,7 +1647,7 @@
   }, 
   {
     "pk": 114, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take containers from this divisional hangar", 
@@ -1661,7 +1661,7 @@
   }, 
   {
     "pk": 115, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take containers from this divisional hangar", 
@@ -1675,7 +1675,7 @@
   }, 
   {
     "pk": 116, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 5, 
       "description": "Can take containers from this divisional hangar", 
@@ -1689,7 +1689,7 @@
   }, 
   {
     "pk": 117, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take items from this divisions hangar", 
@@ -1703,7 +1703,7 @@
   }, 
   {
     "pk": 118, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take items from this divisions hangar", 
@@ -1717,7 +1717,7 @@
   }, 
   {
     "pk": 119, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take items from this divisions hangar", 
@@ -1731,7 +1731,7 @@
   }, 
   {
     "pk": 120, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take items from this divisions hangar", 
@@ -1745,7 +1745,7 @@
   }, 
   {
     "pk": 121, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take items from this divisions hangar", 
@@ -1759,7 +1759,7 @@
   }, 
   {
     "pk": 122, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take items from this divisions hangar", 
@@ -1773,7 +1773,7 @@
   }, 
   {
     "pk": 123, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take items from this divisions hangar", 
@@ -1787,7 +1787,7 @@
   }, 
   {
     "pk": 124, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can query the content of this divisions hangar", 
@@ -1801,7 +1801,7 @@
   }, 
   {
     "pk": 125, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can query the content of this divisions hangar", 
@@ -1815,7 +1815,7 @@
   }, 
   {
     "pk": 126, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can query the content of this divisions hangar", 
@@ -1829,7 +1829,7 @@
   }, 
   {
     "pk": 127, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can query the content of this divisions hangar", 
@@ -1843,7 +1843,7 @@
   }, 
   {
     "pk": 128, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can query the content of this divisions hangar", 
@@ -1857,7 +1857,7 @@
   }, 
   {
     "pk": 129, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can query the content of this divisions hangar", 
@@ -1871,7 +1871,7 @@
   }, 
   {
     "pk": 130, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can query the content of this divisions hangar", 
@@ -1885,7 +1885,7 @@
   }, 
   {
     "pk": 131, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take containers from this divisional hangar", 
@@ -1899,7 +1899,7 @@
   }, 
   {
     "pk": 132, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take containers from this divisional hangar", 
@@ -1913,7 +1913,7 @@
   }, 
   {
     "pk": 133, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take containers from this divisional hangar", 
@@ -1927,7 +1927,7 @@
   }, 
   {
     "pk": 134, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take containers from this divisional hangar", 
@@ -1941,7 +1941,7 @@
   }, 
   {
     "pk": 135, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take containers from this divisional hangar", 
@@ -1955,7 +1955,7 @@
   }, 
   {
     "pk": 136, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take containers from this divisional hangar", 
@@ -1969,7 +1969,7 @@
   }, 
   {
     "pk": 137, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 6, 
       "description": "Can take containers from this divisional hangar", 
@@ -1983,7 +1983,7 @@
   }, 
   {
     "pk": 138, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can do anything the CEO can do. Including giving roles to anyone.", 
@@ -1997,7 +1997,7 @@
   }, 
   {
     "pk": 139, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take items from this divisions hangar", 
@@ -2011,7 +2011,7 @@
   }, 
   {
     "pk": 140, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take items from this divisions hangar", 
@@ -2025,7 +2025,7 @@
   }, 
   {
     "pk": 141, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take items from this divisions hangar", 
@@ -2039,7 +2039,7 @@
   }, 
   {
     "pk": 142, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take items from this divisions hangar", 
@@ -2053,7 +2053,7 @@
   }, 
   {
     "pk": 143, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take items from this divisions hangar", 
@@ -2067,7 +2067,7 @@
   }, 
   {
     "pk": 144, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take items from this divisions hangar", 
@@ -2081,7 +2081,7 @@
   }, 
   {
     "pk": 145, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take items from this divisions hangar", 
@@ -2095,7 +2095,7 @@
   }, 
   {
     "pk": 146, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can query the content of this divisions hangar", 
@@ -2109,7 +2109,7 @@
   }, 
   {
     "pk": 147, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can query the content of this divisions hangar", 
@@ -2123,7 +2123,7 @@
   }, 
   {
     "pk": 148, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can query the content of this divisions hangar", 
@@ -2137,7 +2137,7 @@
   }, 
   {
     "pk": 149, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can query the content of this divisions hangar", 
@@ -2151,7 +2151,7 @@
   }, 
   {
     "pk": 150, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can query the content of this divisions hangar", 
@@ -2165,7 +2165,7 @@
   }, 
   {
     "pk": 151, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can query the content of this divisions hangar", 
@@ -2179,7 +2179,7 @@
   }, 
   {
     "pk": 152, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can query the content of this divisions hangar", 
@@ -2193,7 +2193,7 @@
   }, 
   {
     "pk": 153, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take containers from this divisional hangar", 
@@ -2207,7 +2207,7 @@
   }, 
   {
     "pk": 154, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take containers from this divisional hangar", 
@@ -2221,7 +2221,7 @@
   }, 
   {
     "pk": 155, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take containers from this divisional hangar", 
@@ -2235,7 +2235,7 @@
   }, 
   {
     "pk": 156, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take containers from this divisional hangar", 
@@ -2249,7 +2249,7 @@
   }, 
   {
     "pk": 157, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take containers from this divisional hangar", 
@@ -2263,7 +2263,7 @@
   }, 
   {
     "pk": 158, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take containers from this divisional hangar", 
@@ -2277,7 +2277,7 @@
   }, 
   {
     "pk": 159, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 7, 
       "description": "Can take containers from this divisional hangar", 
@@ -2291,7 +2291,7 @@
   }, 
   {
     "pk": 160, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take items from this divisions hangar", 
@@ -2305,7 +2305,7 @@
   }, 
   {
     "pk": 161, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take items from this divisions hangar", 
@@ -2319,7 +2319,7 @@
   }, 
   {
     "pk": 162, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take items from this divisions hangar", 
@@ -2333,7 +2333,7 @@
   }, 
   {
     "pk": 163, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take items from this divisions hangar", 
@@ -2347,7 +2347,7 @@
   }, 
   {
     "pk": 164, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take items from this divisions hangar", 
@@ -2361,7 +2361,7 @@
   }, 
   {
     "pk": 165, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take items from this divisions hangar", 
@@ -2375,7 +2375,7 @@
   }, 
   {
     "pk": 166, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take items from this divisions hangar", 
@@ -2389,7 +2389,7 @@
   }, 
   {
     "pk": 167, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can query the content of this divisions hangar", 
@@ -2403,7 +2403,7 @@
   }, 
   {
     "pk": 168, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can query the content of this divisions hangar", 
@@ -2417,7 +2417,7 @@
   }, 
   {
     "pk": 169, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can query the content of this divisions hangar", 
@@ -2431,7 +2431,7 @@
   }, 
   {
     "pk": 170, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can query the content of this divisions hangar", 
@@ -2445,7 +2445,7 @@
   }, 
   {
     "pk": 171, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can query the content of this divisions hangar", 
@@ -2459,7 +2459,7 @@
   }, 
   {
     "pk": 172, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can query the content of this divisions hangar", 
@@ -2473,7 +2473,7 @@
   }, 
   {
     "pk": 173, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can query the content of this divisions hangar", 
@@ -2487,7 +2487,7 @@
   }, 
   {
     "pk": 174, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take containers from this divisional hangar", 
@@ -2501,7 +2501,7 @@
   }, 
   {
     "pk": 175, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take containers from this divisional hangar", 
@@ -2515,7 +2515,7 @@
   }, 
   {
     "pk": 176, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take containers from this divisional hangar", 
@@ -2529,7 +2529,7 @@
   }, 
   {
     "pk": 177, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take containers from this divisional hangar", 
@@ -2543,7 +2543,7 @@
   }, 
   {
     "pk": 178, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take containers from this divisional hangar", 
@@ -2557,7 +2557,7 @@
   }, 
   {
     "pk": 179, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take containers from this divisional hangar", 
@@ -2571,7 +2571,7 @@
   }, 
   {
     "pk": 180, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 8, 
       "description": "Can take containers from this divisional hangar", 
@@ -2585,7 +2585,7 @@
   }, 
   {
     "pk": 181, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 2, 
       "description": "Can set standings for the corporation.", 
@@ -2599,7 +2599,7 @@
   }, 
   {
     "pk": 182, 
-    "model": "roles.role", 
+    "model": "hr.role", 
     "fields": {
       "roleType": 1, 
       "description": "Can set standings for the corporation.", 

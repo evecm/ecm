@@ -35,12 +35,12 @@ from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
-from ecm.data.roles.models import Member
+from ecm.apps.hr.models import Member
 from ecm.view import extract_datatable_params
-from ecm.data.corp.models import Corp
+from ecm.apps.corp.models import Corp
 from ecm.view.decorators import basic_auth_required, check_user_access
-from ecm.data.scheduler.models import ScheduledTask
-from ecm.data.scheduler.threads import TaskThread
+from ecm.apps.scheduler.models import ScheduledTask
+from ecm.apps.scheduler.threads import TaskThread
 
 logger = logging.getLogger(__name__)
 

@@ -19,7 +19,7 @@ __date__ = "2011-03-09"
 __author__ = "diabeteman"
 
 
-from ecm.data.scheduler.validators import FunctionValidator, extract_function, extract_model,\
+from ecm.apps.scheduler.validators import FunctionValidator, extract_function, extract_model,\
     ModelValidator, extract_args, ArgsValidator
 from datetime import datetime, timedelta
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -133,10 +133,10 @@ class GarbageCollector(models.Model):
     )
 
     DB_TABLE_CHOICES = (
-        ("ecm.data.roles.models.RoleMemberDiff",    "Role membership history"),
-        ("ecm.data.roles.models.TitleMemberDiff",   "Title membership history"),
-        ("ecm.data.roles.models.MemberDiff",        "Member history"),
-        ("ecm.data.roles.models.TitleCompoDiff",    "Titles modifications history"),
+        ("ecm.apps.hr.models.RoleMemberDiff",    "Role membership history"),
+        ("ecm.apps.hr.models.TitleMemberDiff",   "Title membership history"),
+        ("ecm.apps.hr.models.MemberDiff",        "Member history"),
+        ("ecm.apps.hr.models.TitleCompoDiff",    "Titles modifications history"),
         ("ecm.plugins.assets.models.AssetDiff",      "Assets history"),
         ("ecm.plugins.accounting.models.JournalEntry", "Wallet journal"),
     )

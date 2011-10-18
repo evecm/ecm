@@ -21,8 +21,6 @@ __author__ = "diabeteman"
 from django.core.exceptions import ValidationError
 from ecm.lib import eveapi
 
-
-
 #------------------------------------------------------------------------------
 USER_API_KEY_ACCESS_MASKS = {
     1 << 0: "AccountBalance",

@@ -26,7 +26,7 @@ from django.db import transaction
 from ecm.core.eve import api
 from ecm.core.eve import db
 from ecm.core.parsers import checkApiVersion, calcDiffs, markUpdated
-from ecm.data.roles.models import Member, MemberDiff
+from ecm.apps.hr.models import Member, MemberDiff
 
 logger = logging.getLogger(__name__)
 

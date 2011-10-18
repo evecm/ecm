@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 
 from django.contrib import admin, databrowse
-from ecm.data.corp.models import Hangar, Wallet
+from ecm.apps.corp.models import Hangar, Wallet
 
 class HangarAdmin(admin.ModelAdmin):
     list_display = ['hangarID', 'name']

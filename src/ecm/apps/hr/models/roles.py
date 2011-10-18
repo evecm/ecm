@@ -23,8 +23,8 @@ from datetime import datetime
 from django.db import models
 
 from ecm.lib import bigintpatch
-from ecm.data.corp.models import Hangar, Wallet
-from ecm.data.roles.models.member import Member
+from ecm.apps.corp.models import Hangar, Wallet
+from ecm.apps.hr.models.member import Member
 
 #------------------------------------------------------------------------------
 class RoleType(models.Model):

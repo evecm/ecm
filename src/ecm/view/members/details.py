@@ -31,10 +31,10 @@ from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
-from ecm.data.roles.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
+from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
 from ecm.view import getScanDate, extract_datatable_params
 from ecm.view.decorators import check_user_access
-from ecm.data.common.models import ColorThreshold
+from ecm.apps.common.models import ColorThreshold
 from ecm.core.utils import print_time_min, get_access_color
 from ecm.core.eve import db
 

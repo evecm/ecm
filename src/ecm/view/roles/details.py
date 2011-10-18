@@ -32,8 +32,8 @@ from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.view.decorators import check_user_access
 from ecm.view import extract_datatable_params, get_members
-from ecm.data.roles.models import Role, RoleType, Member
-from ecm.data.common.models import ColorThreshold
+from ecm.apps.hr.models import Role, RoleType, Member
+from ecm.apps.common.models import ColorThreshold
 
 
 #------------------------------------------------------------------------------

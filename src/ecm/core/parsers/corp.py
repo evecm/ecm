@@ -25,7 +25,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 from ecm.lib import eveapi
-from ecm.data.corp.models import Corp, Hangar, Wallet
+from ecm.apps.corp.models import Corp, Hangar, Wallet
 from ecm.core.eve import api
 from ecm.core.parsers import checkApiVersion, markUpdated
 
@@ -69,7 +69,6 @@ def update():
         LOG.info("corp info updated")
     except:
         # error catched, rollback changes
-        transaction.rollback()
         LOG.exception("update failed")
         raise
 

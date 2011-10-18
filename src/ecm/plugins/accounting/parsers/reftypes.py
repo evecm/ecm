@@ -29,7 +29,7 @@ from ecm.plugins.accounting.models import EntryType
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_manually
+@transaction.commit_on_success
 def update():
     try:
         LOG.info("fetching /eve/RefTypes.xml.aspx...")
@@ -45,20 +45,17 @@ def update():
         LOG.debug("cached util : %s", str(cachedUntil))
         LOG.debug("parsing api response...")
 
-
         for type in typesApi.refTypes:
             entryType = EntryType()
             entryType.refTypeID = type.refTypeID
             entryType.refTypeName = type.refTypeName
             entryType.save()
 
-        LOG.debug("Saving to database...")
-        transaction.commit()
-        LOG.info("Update successfull")
+        LOG.info("transaction types updated")
     except:
         # error catched, rollback changes
-        transaction.rollback()
         LOG.exception("update failed")
+        raise
 
 
 
