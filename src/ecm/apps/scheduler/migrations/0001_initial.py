@@ -1,22 +1,4 @@
-# Copyright (c) 2010-2011 Robin Jarry
-# 
-# This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
-# option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
-# more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
-# EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-
 #@PydevCodeAnalysisIgnore
-
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -32,7 +14,7 @@ class Migration(SchemaMigration):
             ('function', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('args', self.gf('django.db.models.fields.CharField')(default='{}', max_length=256)),
             ('priority', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('next_execution', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 7, 31, 4, 47, 58, 371000))),
+            ('next_execution', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 12, 43, 28, 762160))),
             ('frequency', self.gf('django.db.models.fields.IntegerField')()),
             ('frequency_units', self.gf('django.db.models.fields.IntegerField')(default=3600)),
             ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
@@ -41,6 +23,9 @@ class Migration(SchemaMigration):
             ('is_last_exec_success', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal('scheduler', ['ScheduledTask'])
+
+        # Adding unique constraint on 'ScheduledTask', fields ['function', 'args']
+        db.create_unique('scheduler_scheduledtask', ['function', 'args'])
 
         # Adding model 'GarbageCollector'
         db.create_table('scheduler_garbagecollector', (
@@ -54,6 +39,9 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         
+        # Removing unique constraint on 'ScheduledTask', fields ['function', 'args']
+        db.delete_unique('scheduler_scheduledtask', ['function', 'args'])
+
         # Deleting model 'ScheduledTask'
         db.delete_table('scheduler_scheduledtask')
 
@@ -70,7 +58,7 @@ class Migration(SchemaMigration):
             'min_entries_threshold': ('django.db.models.fields.BigIntegerField', [], {'default': '10000'})
         },
         'scheduler.scheduledtask': {
-            'Meta': {'ordering': "('-priority', 'function')", 'object_name': 'ScheduledTask'},
+            'Meta': {'ordering': "('-priority', 'function')", 'unique_together': "(('function', 'args'),)", 'object_name': 'ScheduledTask'},
             'args': ('django.db.models.fields.CharField', [], {'default': "'{}'", 'max_length': '256'}),
             'frequency': ('django.db.models.fields.IntegerField', [], {}),
             'frequency_units': ('django.db.models.fields.IntegerField', [], {'default': '3600'}),
@@ -80,7 +68,7 @@ class Migration(SchemaMigration):
             'is_last_exec_success': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_one_shot': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_running': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'next_execution': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 4, 47, 58, 371000)'}),
+            'next_execution': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 10, 22, 12, 43, 28, 762160)'}),
             'priority': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         }
     }

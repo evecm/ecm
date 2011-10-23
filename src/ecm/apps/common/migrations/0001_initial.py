@@ -1,22 +1,4 @@
-# Copyright (c) 2010-2011 Robin Jarry
-# 
-# This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
-# option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
-# more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
-# EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-
 #@PydevCodeAnalysisIgnore
-
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -30,17 +12,17 @@ class Migration(SchemaMigration):
         db.create_table('common_apikey', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('userID', self.gf('django.db.models.fields.IntegerField')()),
-            ('charID', self.gf('django.db.models.fields.IntegerField')()),
-            ('key', self.gf('django.db.models.fields.CharField')(max_length=64)),
+            ('keyID', self.gf('django.db.models.fields.IntegerField')()),
+            ('characterID', self.gf('django.db.models.fields.IntegerField')()),
+            ('vCode', self.gf('django.db.models.fields.CharField')(max_length=255)),
         ))
-        db.send_create_signal('common', ['APIKey'])
+        db.send_create_signal('common', ['APIKey']) 
 
         # Adding model 'UserAPIKey'
         db.create_table('common_userapikey', (
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('userID', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
-            ('key', self.gf('django.db.models.fields.CharField')(max_length=64)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='eve_accounts', to=orm['auth.User'])),
+            ('keyID', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('vCode', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('is_valid', self.gf('django.db.models.fields.BooleanField')(default=True)),
         ))
         db.send_create_signal('common', ['UserAPIKey'])
@@ -48,8 +30,8 @@ class Migration(SchemaMigration):
         # Adding model 'ExternalApplication'
         db.create_table('common_externalapplication', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=256)),
-            ('url', self.gf('django.db.models.fields.URLField')(max_length=200)),
+            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=64)),
+            ('url', self.gf('django.db.models.fields.CharField')(max_length=1024)),
         ))
         db.send_create_signal('common', ['ExternalApplication'])
 
@@ -59,7 +41,7 @@ class Migration(SchemaMigration):
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='bindings', to=orm['auth.User'])),
             ('external_app', self.gf('django.db.models.fields.related.ForeignKey')(related_name='user_bindings', to=orm['common.ExternalApplication'])),
             ('external_id', self.gf('django.db.models.fields.IntegerField')()),
-            ('external_name', self.gf('django.db.models.fields.CharField')(max_length=256)),
+            ('external_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
         ))
         db.send_create_signal('common', ['UserBinding'])
 
@@ -89,20 +71,20 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('common', ['ColorThreshold'])
 
-        # Adding model 'Url'
-        db.create_table('common_url', (
+        # Adding model 'UrlPermission'
+        db.create_table('common_urlpermission', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('pattern', self.gf('django.db.models.fields.CharField')(max_length=256)),
         ))
-        db.send_create_signal('common', ['Url'])
+        db.send_create_signal('common', ['UrlPermission'])
 
-        # Adding M2M table for field groups on 'Url'
-        db.create_table('common_url_groups', (
+        # Adding M2M table for field groups on 'UrlPermission'
+        db.create_table('common_urlpermission_groups', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('url', models.ForeignKey(orm['common.url'], null=False)),
+            ('urlpermission', models.ForeignKey(orm['common.urlpermission'], null=False)),
             ('group', models.ForeignKey(orm['auth.group'], null=False))
         ))
-        db.create_unique('common_url_groups', ['url_id', 'group_id'])
+        db.create_unique('common_urlpermission_groups', ['urlpermission_id', 'group_id'])
 
         # Adding model 'RegistrationProfile'
         db.create_table('common_registrationprofile', (
@@ -136,11 +118,11 @@ class Migration(SchemaMigration):
         # Deleting model 'ColorThreshold'
         db.delete_table('common_colorthreshold')
 
-        # Deleting model 'Url'
-        db.delete_table('common_url')
+        # Deleting model 'UrlPermission'
+        db.delete_table('common_urlpermission')
 
-        # Removing M2M table for field groups on 'Url'
-        db.delete_table('common_url_groups')
+        # Removing M2M table for field groups on 'UrlPermission'
+        db.delete_table('common_urlpermission_groups')
 
         # Deleting model 'RegistrationProfile'
         db.delete_table('common_registrationprofile')
@@ -178,11 +160,11 @@ class Migration(SchemaMigration):
         },
         'common.apikey': {
             'Meta': {'object_name': 'APIKey'},
-            'charID': ('django.db.models.fields.IntegerField', [], {}),
+            'characterID': ('django.db.models.fields.IntegerField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'key': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
+            'keyID': ('django.db.models.fields.IntegerField', [], {}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'userID': ('django.db.models.fields.IntegerField', [], {})
+            'vCode': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'common.colorthreshold': {
             'Meta': {'object_name': 'ColorThreshold'},
@@ -193,8 +175,8 @@ class Migration(SchemaMigration):
         'common.externalapplication': {
             'Meta': {'object_name': 'ExternalApplication'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '256'}),
-            'url': ('django.db.models.fields.URLField', [], {'max_length': '200'})
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64'}),
+            'url': ('django.db.models.fields.CharField', [], {'max_length': '1024'})
         },
         'common.groupbinding': {
             'Meta': {'object_name': 'GroupBinding'},
@@ -216,8 +198,8 @@ class Migration(SchemaMigration):
             'prev_update': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'update_date': ('django.db.models.fields.DateTimeField', [], {})
         },
-        'common.url': {
-            'Meta': {'object_name': 'Url'},
+        'common.urlpermission': {
+            'Meta': {'object_name': 'UrlPermission'},
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'allowed_urls'", 'symmetrical': 'False', 'to': "orm['auth.Group']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'pattern': ('django.db.models.fields.CharField', [], {'max_length': '256'})
@@ -225,15 +207,15 @@ class Migration(SchemaMigration):
         'common.userapikey': {
             'Meta': {'object_name': 'UserAPIKey'},
             'is_valid': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'key': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'userID': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'})
+            'keyID': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'eve_accounts'", 'to': "orm['auth.User']"}),
+            'vCode': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'common.userbinding': {
             'Meta': {'object_name': 'UserBinding'},
             'external_app': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_bindings'", 'to': "orm['common.ExternalApplication']"}),
             'external_id': ('django.db.models.fields.IntegerField', [], {}),
-            'external_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'external_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'bindings'", 'to': "orm['auth.User']"})
         },

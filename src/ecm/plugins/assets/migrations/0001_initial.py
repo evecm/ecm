@@ -1,20 +1,3 @@
-# Copyright (c) 2010-2011 Robin Jarry
-# 
-# This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
-# option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
-# more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
-# EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-
 #@PydevCodeAnalysisIgnore
 import datetime
 from south.db import db
@@ -49,7 +32,7 @@ class Migration(SchemaMigration):
             ('hangarID', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('typeID', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
             ('quantity', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 7, 31, 4, 47, 27, 970000), db_index=True)),
+            ('date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 13, 30, 17, 818604), db_index=True)),
             ('new', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('flag', self.gf('django.db.models.fields.BigIntegerField')()),
         ))
@@ -82,7 +65,7 @@ class Migration(SchemaMigration):
         },
         'assets.assetdiff': {
             'Meta': {'object_name': 'AssetDiff'},
-            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 7, 31, 4, 47, 27, 970000)', 'db_index': 'True'}),
+            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 10, 22, 13, 30, 17, 818604)', 'db_index': 'True'}),
             'flag': ('django.db.models.fields.BigIntegerField', [], {}),
             'hangarID': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'id': ('ecm.lib.bigintpatch.BigAutoField', [], {'primary_key': 'True'}),
