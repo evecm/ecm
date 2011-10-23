@@ -33,13 +33,13 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 from django.db import connection
 
-from ecm.view.decorators import check_user_access
+from ecm.views.decorators import check_user_access
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 from ecm.core.eve import constants, db
 from ecm.core import utils
 from ecm.plugins.assets.models import Asset, AssetDiff
 from ecm.apps.corp.models import Hangar
-from ecm.view import getScanDate, DATE_PATTERN
+from ecm.views import getScanDate, DATE_PATTERN
 
 
 

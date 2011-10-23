@@ -18,8 +18,12 @@ __author__ = "diabeteman"
 
 __date__ = "2011-05-17"
 
-timestamp = "%(timestamp)s"
-version = "1.4.7"
+TIMESTAMP = "%(timestamp)s"
+VERSION = (2, 0, 0)
+__version_str__ = '.'.join(map(str, VERSION))
+
+def get_version():
+    return __version_str__
 
 def get_full_version():
-    return version + '.' + timestamp
+    return  get_version() + '.' + TIMESTAMP

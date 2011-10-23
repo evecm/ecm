@@ -25,6 +25,7 @@ from django.db import models
 from ecm.lib import bigintpatch
 from ecm.apps.corp.models import Hangar, Wallet
 from ecm.apps.hr.models.member import Member
+from ecm.apps.hr import NAME as app_prefix
 
 #------------------------------------------------------------------------------
 class RoleType(models.Model):
@@ -33,7 +34,7 @@ class RoleType(models.Model):
     """
 
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['dispName']
 
     typeName = models.CharField(max_length=64, unique=True)
@@ -41,7 +42,7 @@ class RoleType(models.Model):
 
     @property
     def url(self):
-        return '/roles/%s/' % self.typeName
+        return '/%s/roles/%s/' % (app_prefix, self.typeName)
 
     @property
     def permalink(self):
@@ -75,7 +76,7 @@ class Role(models.Model):
     """
 
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['id']
 
     roleType = models.ForeignKey(RoleType, db_index=True, related_name="roles")
@@ -128,7 +129,7 @@ class Role(models.Model):
 
     @property
     def url(self):
-        return '/roles/%s/%d/' % (self.roleType.typeName, self.roleID)
+        return '/%s/roles/%s/%d/' % (app_prefix, self.roleType.typeName, self.roleID)
 
     @property
     def permalink(self):
@@ -167,7 +168,7 @@ class RoleMembership(models.Model):
     """
 
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['member']
 
     member = models.ForeignKey(Member)
@@ -196,7 +197,7 @@ class RoleMemberDiff(models.Model):
     """
 
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['date']
 
     id = bigintpatch.BigAutoField(primary_key=True)
@@ -219,7 +220,7 @@ class RoleMemberDiff(models.Model):
             # this could fail if the RoleMemberDiff has been recorded from
             # /corp/MemberSecurity.xml.aspx but that the member has not been
             # parsed from /corp/MemberTracking.xml.aspx yet
-            return '<a href="/members/%d/" class="member">???</a>' % self.member_id
+            return '<a href="/%s/members/%d/" class="member">???</a>' % (app_prefix, self.member_id)
 
     def __eq__(self, other):
         return self.id == other.id

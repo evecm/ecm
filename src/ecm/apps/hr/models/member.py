@@ -25,6 +25,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from ecm.lib import bigintpatch
+from ecm.apps.hr import NAME as app_prefix
 
 #------------------------------------------------------------------------------
 class Member(models.Model):
@@ -32,7 +33,7 @@ class Member(models.Model):
     Member of the corporation
     """
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['name']
 
     DIRECTOR_ACCESS_LVL = 999999999999
@@ -84,7 +85,7 @@ class Member(models.Model):
 
     @property
     def url(self):
-        return '/members/%d/' % self.characterID
+        return '/%s/members/%d/' % (app_prefix, self.characterID)
 
     @property
     def permalink(self):
@@ -93,7 +94,7 @@ class Member(models.Model):
     @property
     def owner_url(self):
         if self.owner_id:
-            return '/players/%d/' % self.owner_id
+            return '/%s/players/%d/' % (app_prefix, self.owner_id)
         else:
             return None
 
@@ -123,7 +124,7 @@ class MemberDiff(models.Model):
     Represents the arrival or departure of a member of the corporation
     """
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['date']
 
     id = bigintpatch.BigAutoField(primary_key=True)
@@ -137,7 +138,7 @@ class MemberDiff(models.Model):
 
     @property
     def url(self):
-        return '/members/%d/' % self.member_id
+        return '/%s/members/%d/' % (app_prefix, self.member_id)
 
     @property
     def permalink(self):

@@ -26,7 +26,7 @@ from django.db import models
 from ecm.lib import bigintpatch
 from ecm.apps.hr.models.member import Member
 from ecm.apps.hr.models.roles import Role
-
+from ecm.apps.hr import NAME as app_prefix
 
 #------------------------------------------------------------------------------
 class Title(models.Model):
@@ -35,7 +35,7 @@ class Title(models.Model):
     """
 
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['titleID']
 
     titleID = models.BigIntegerField(primary_key=True)
@@ -54,7 +54,7 @@ class Title(models.Model):
 
     @property
     def url(self):
-        return '/titles/%d/' % self.titleID
+        return '/%s/titles/%d/' % (app_prefix, self.titleID)
 
     @property
     def permalink(self):
@@ -79,7 +79,7 @@ class TitleMembership(models.Model):
     """
 
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['member']
 
     member = models.ForeignKey(Member)
@@ -104,7 +104,7 @@ class TitleComposition(models.Model):
     """
 
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['title']
 
     title = models.ForeignKey(Title)
@@ -127,7 +127,7 @@ class TitleCompoDiff(models.Model):
     """
 
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['date']
 
     id = bigintpatch.BigAutoField(primary_key=True)
@@ -151,7 +151,7 @@ class TitleMemberDiff(models.Model):
     """
 
     class Meta:
-        app_label = 'roles'
+        app_label = 'hr'
         ordering = ['date']
 
     id = bigintpatch.BigAutoField(primary_key=True)
@@ -174,7 +174,7 @@ class TitleMemberDiff(models.Model):
             # this could fail if the RoleMemberDiff has been recorded from
             # /corp/MemberSecurity.xml.aspx but that the member has not been
             # parsed from /corp/MemberTracking.xml.aspx yet
-            return '<a href="/members/%d/" class="member">???</a>' % self.member_id
+            return '<a href="/%s/members/%d/" class="member">???</a>' % (app_prefix, self.member_id)
 
     def __eq__(self, other):
         return self.id == other.id

@@ -125,9 +125,9 @@ TEMPLATE_DIRS = (
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
-    "ecm.view.context_processors.corporation_name",
-    "ecm.view.context_processors.menu",
-    "ecm.view.context_processors.version",
+    "ecm.views.context_processors.corporation_name",
+    "ecm.views.context_processors.menu",
+    "ecm.views.context_processors.version",
 )
 
 ########
@@ -168,19 +168,21 @@ INSTALLED_APPS = [
 
     'captcha',
     'south',
-
-    'ecm.apps.corp',
-    'ecm.apps.roles',
-    'ecm.apps.common',
-    'ecm.apps.scheduler',
 ]
 
-PLUGIN_APPS = []
-for f in os.listdir(resolvePath('plugins')):
-    if os.path.isdir(os.path.join(resolvePath('plugins'), f)):
-        PLUGIN_APPS.append('ecm.plugins.' + f)
+ECM_CORE_APPS = [
+    'ecm.apps.common',
+    'ecm.apps.corp',
+    'ecm.apps.hr',
+    'ecm.apps.scheduler',
+]
+INSTALLED_APPS += ECM_CORE_APPS
 
-INSTALLED_APPS += PLUGIN_APPS
+ECM_PLUGIN_APPS = [
+    'ecm.plugins.accounting',
+    'ecm.plugins.assets',
+]
+INSTALLED_APPS += ECM_PLUGIN_APPS
 
 ###########
 # LOGGING #

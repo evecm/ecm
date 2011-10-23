@@ -33,10 +33,10 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
 from ecm.core.utils import print_float
-from ecm.view.decorators import check_user_access
+from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
 from ecm.plugins.accounting.models import JournalEntry
-from ecm.view import extract_datatable_params, getScanDate
+from ecm.views import extract_datatable_params, getScanDate
 
 DATE_PATTERN = "%Y-%m-%d"
 OPERATION_TYPES = (16, 17, 33, 34, 85, 99, 103)
@@ -168,7 +168,7 @@ def total_contrib_data(request):
 
 #------------------------------------------------------------------------------
 MEMBER_CONTRIB_SQL = '''SELECT m."characterID" AS "characterID", m."name" AS "name", SUM(j."amount") AS "tax_contrib"
- FROM "roles_member" AS m, "accounting_journalentry" AS j
+ FROM "hr_member" AS m, "accounting_journalentry" AS j
  WHERE j."type_id" IN %s
   AND j."ownerID2" = m."characterID"
   AND j."date" > %%s

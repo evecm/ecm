@@ -30,8 +30,8 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
 from ecm.apps.corp.models import Wallet
-from ecm.view.decorators import check_user_access
-from ecm.view import getScanDate, extract_datatable_params
+from ecm.views.decorators import check_user_access
+from ecm.views import getScanDate, extract_datatable_params
 from ecm.plugins.accounting.models import JournalEntry
 
 #------------------------------------------------------------------------------
