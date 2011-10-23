@@ -1,0 +1,57 @@
+{% extends "hr_base.html" %}
+
+{% block headtitle %}Members History{% endblock %}
+
+
+
+{% block other_scripts %}
+<script type="text/javascript" src="/s/hr/js/access_changes_table.js"></script>
+{% endblock %}
+
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/{{ app_prefix }}/members/">Members</a></li>
+<li><a href="/{{ app_prefix }}/members/access_changes/">Security Access Changes</a></li>
+{% endblock %}
+
+
+
+
+
+{% block main_content %}
+<h1 class="pagetitle">Security Access Changes <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
+
+<form id="search_form" class="search_form">
+    <input type="text" id="search_text" value="" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+</form>
+
+<table class="table display" id="access_changes_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Change</th>
+      <th class="top" scope="col" >Member</th>
+      <th class="top" scope="col" >Title/Role</th>
+      <th class="top" scope="col" >Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Change</th>
+      <th>Member</th>
+      <th>Title/Role</th>
+      <th>Date</th>
+    </tr>
+  </tfoot>
+</table>
+
+
+{% endblock %}
