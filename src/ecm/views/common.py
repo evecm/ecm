@@ -36,9 +36,9 @@ from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
 from ecm.apps.hr.models import Member
-from ecm.view import extract_datatable_params
+from ecm.views import extract_datatable_params
 from ecm.apps.corp.models import Corp
-from ecm.view.decorators import basic_auth_required, check_user_access
+from ecm.views.decorators import basic_auth_required, check_user_access
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.scheduler.threads import TaskThread
 
@@ -50,7 +50,7 @@ SHOWINFO_PATTERN = re.compile(r"showinfo:13\d\d//(\d+)", re.IGNORECASE + re.DOTA
 def corp(request):
     try:
         corp = Corp.objects.get(id=1)
-        corp.description = SHOWINFO_PATTERN.subn(r"/members/\1/", corp.description)[0]
+        corp.description = SHOWINFO_PATTERN.subn(r"/hr/members/\1/", corp.description)[0]
         corp.memberCount = Member.objects.filter(corped=True).count()
     except Corp.DoesNotExist:
         corp = Corp(corporationName="No Corporation info")

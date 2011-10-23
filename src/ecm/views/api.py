@@ -30,7 +30,7 @@ from django.db.models.aggregates import Count
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from ecm.view.decorators import basic_auth_required
+from ecm.views.decorators import basic_auth_required
 from ecm.apps.common.models import ExternalApplication, GroupBinding, UserBinding
 
 #------------------------------------------------------------------------------

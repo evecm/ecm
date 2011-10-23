@@ -23,9 +23,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.db import transaction
 
-from ecm.view.decorators import forbidden
+from ecm.views.decorators import forbidden
 from ecm.core.tasks.users import update_user_accesses
-from ecm.view.auth.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
+from ecm.views.auth.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import UserAPIKey, ExternalApplication, UserBinding
 from ecm.core.eve.validators import user_access_mask

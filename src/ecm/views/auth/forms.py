@@ -36,7 +36,7 @@ from ecm.core.eve import api
 from ecm.apps.common.models import UserAPIKey, UserBinding
 from ecm.lib import eveapi
 from ecm.apps.hr.models import Member
-from ecm.view.auth.fields import PasswordField
+from ecm.views.auth.fields import PasswordField
 
 #------------------------------------------------------------------------------
 class AccountCreationForm(forms.Form):

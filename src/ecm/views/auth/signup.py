@@ -29,7 +29,7 @@ from django.core.mail.message import EmailMultiAlternatives
 from ecm.core.tasks.users import update_user_accesses
 from ecm.apps.common.models import UserAPIKey, RegistrationProfile
 from ecm.apps.hr.models import Member
-from ecm.view.auth.forms import AccountCreationForm
+from ecm.views.auth.forms import AccountCreationForm
 from ecm.core.eve.validators import user_access_mask
 
 import logging
