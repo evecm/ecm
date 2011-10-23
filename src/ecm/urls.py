@@ -22,8 +22,7 @@ from django.conf.urls.defaults import patterns, include
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-import ecm.plugins
-from ecm.view.auth.forms import PasswordChangeForm, PasswordResetForm, PasswordSetForm
+from ecm.views.auth.forms import PasswordChangeForm, PasswordResetForm, PasswordSetForm
 
 admin.autodiscover()
 
@@ -63,7 +62,7 @@ urlpatterns += patterns('django.contrib.auth.views',
 
 )
 
-urlpatterns += patterns('ecm.view.auth',
+urlpatterns += patterns('ecm.views.auth',
     ###########################################################################
     # ECM AUTH + USER PROFILE VIEWS
     (r'^account/$',                       'account.account'),
@@ -77,66 +76,20 @@ urlpatterns += patterns('ecm.view.auth',
     (r'^account/create/$',                'signup.create_account'),
     (r'^account/activate/(\w+)/$',        'signup.activate_account'),
 
-    (r'^players/$',                       'players.player_list'),
-    (r'^players/data/$',                  'players.player_list_data'),
-    (r'^players/(\d+)/$',                 'players.player_details'),
-    (r'^players/(\d+)/data/$',            'players.player_details_data'),
 )
 
-urlpatterns += patterns('ecm.view',
+urlpatterns += patterns('ecm.views',
     ###########################################################################
     # COMMON VIEWS
     (r'^$',                     'common.corp'),
-    (r'^dashboard/$',            'dashboard.dashboard'),
     (r'^cron/$',                 'common.trigger_scheduler'),
     (r'^tasks/$',                'common.task_list'),
     (r'^tasks/data/$',           'common.task_list_data'),
     (r'^tasks/(\d+)/launch/$',   'common.launch_task'),
 )
 
-urlpatterns += patterns('ecm.view.members',
-    ###########################################################################
-    # MEMBERS VIEWS
-    (r'^members/$',                          'list.all'),
-    (r'^members/data/$',                     'list.all_data'),
-    (r'^members/history/$',                  'history.history'),
-    (r'^members/history/data/$',             'history.history_data'),
-    (r'^members/unassociated/$',             'list.unassociated'),
-    (r'^members/unassociated/data/$',        'list.unassociated_data'),
-    (r'^members/unassociated/clip/$',        'list.unassociated_clip'),
-    (r'^members/accesschanges/$',            'access.access_changes'),
-    (r'^members/accesschanges/data/$',       'access.access_changes_data'),
-    (r'^members/(\d+)/$',                    'details.details'),
-    (r'^members/(\d+)/accesschanges/data/$', 'details.access_changes_member_data'),
-    (r'^members/(\d+)/updatenotes/$',        'details.update_member_notes'),
-)
 
-urlpatterns += patterns('ecm.view.titles',
-    ###########################################################################
-    # TITLES VIEWS
-    (r'^titles/$',                        'list.all'),
-    (r'^titles/data/$',                   'list.all_data'),
-    (r'^titles/changes/$',                'changes.changes'),
-    (r'^titles/changes/data/$',           'changes.changes_data'),
-    (r'^titles/(\d+)/$',                  'details.details'),
-    (r'^titles/(\d+)/composition/data/$', 'details.composition_data'),
-    (r'^titles/(\d+)/compodiff/data/$',   'details.compo_diff_data'),
-    (r'^titles/(\d+)/members/$',          'members.members'),
-    (r'^titles/(\d+)/members/data/$',     'members.members_data'),
-)
-
-urlpatterns += patterns('ecm.view.roles',
-    ###########################################################################
-    # ROLES VIEWS
-    (r'^roles/$',                         'list.root'),
-    (r'^roles/update/$',                  'list.update_access_level'),
-    (r'^roles/([a-zA-Z_]+)/$',            'list.role_type'),
-    (r'^roles/([a-zA-Z_]+)/data/$',       'list.role_type_data'),
-    (r'^roles/([a-zA-Z_]+)/(\d+)/$',      'details.role'),
-    (r'^roles/([a-zA-Z_]+)/(\d+)/data/$', 'details.role_data'),
-)
-
-urlpatterns += patterns('ecm.view.api',
+urlpatterns += patterns('ecm.views.api',
     ###########################################################################
     # JSON API VIEWS
     (r'^api/players/$',               'players'),
@@ -144,11 +97,23 @@ urlpatterns += patterns('ecm.view.api',
     (r'^api/bindings/(\w+)/groups/$', 'group_bindings'),
 )
 
+urlpatterns += patterns('',
+    (r'^hr/', include('ecm.apps.hr.urls'))
+)
 
+import ecm.apps
+CORE_APPS_URLS = []
+for app in ecm.apps.LIST:
+    if app.urlconf is not None:
+        CORE_APPS_URLS.append( (r'^' + app.app_prefix + '/', include(app.urlconf)) )
+if CORE_APPS_URLS:
+    urlpatterns += patterns('',  *CORE_APPS_URLS)
+
+
+import ecm.plugins
 PLUGINS_URLS = []
 for plugin in ecm.plugins.LIST:
     PLUGINS_URLS.append( (r'^' + plugin.app_prefix + '/', include(plugin.urlconf)) )
-
 if PLUGINS_URLS:
     urlpatterns += patterns('',  *PLUGINS_URLS)
 

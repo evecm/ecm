@@ -13,6 +13,7 @@
   <meta name="author" content="diabeteman" />
   <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/layout1_setup.css" />
   <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/layout1_text.css" />
+  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/menu.css" />
   <script type="text/javascript" src="/s/ecm/js/lib/jquery.js"></script>
   <script type="text/javascript" src="/s/ecm/js/csrf.js"></script>
   <script type="text/javascript" src="/s/ecm/js/ecm_lib.js"></script>
@@ -63,17 +64,7 @@
           </ul>
         </div>              
       </div>
-      {% block menu %}
-      <!-- A.2 HEADER BOTTOM -->
-	{% if user.is_authenticated %}
-      <div class="header-bottom">
-        <!-- Navigation Level 2 (Drop-down menus) -->
-        <div class="nav2">
-{{ user_menu|safe }}         
-        </div>
-	  </div>
-       {% endif %} {# user.is_authenticated #}
-      {% endblock %} {# menu #}
+
       <!-- A.3 HEADER BREADCRUMBS -->
 
       <!-- Breadcrumbs -->
@@ -89,6 +80,16 @@
 
     <!-- B. MAIN -->
     <div class="main">
+  
+        {% block menu %}
+	{% if user.is_authenticated %}
+        <!-- Navigation Level 2 (Drop-down menus) -->
+        <div class="menu">
+{{ user_menu|safe }}         
+        </div>
+       {% endif %} {# user.is_authenticated #}
+      {% endblock %} {# menu #}
+  
   
       <!-- B.1 MAIN CONTENT -->
       <div class="main-content">

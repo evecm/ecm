@@ -45,24 +45,6 @@
 .debit {color: red;}
 .blue {color: blue;}
 
-.main-content a.title {
-	padding-left: 14px;
-	background: url(../img/title.png) no-repeat left;
-}
-.main-content a.role {
-	padding-left: 14px;
-    background: url(../img/role.png) no-repeat left;
-}
-
-.main-content a.member {
-    padding-left: 14px;
-    background: url(../img/member.png) no-repeat left;
-}
-
-.main-content a.player {
-    padding-left: 18px;
-    background: url(../img/user.png) no-repeat left;
-}
 
 .main-content a.wallet {
     padding-left: 18px;
