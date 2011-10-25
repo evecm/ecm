@@ -30,28 +30,28 @@ from django.core.mail.message import EmailMultiAlternatives
 from ecm.core.eve import api
 from ecm.lib import eveapi
 from ecm import settings
-from ecm.apps.common.models import RegistrationProfile, UserAPIKey
+from ecm.apps.common.models import UserAPIKey
 from ecm.apps.hr.models import Title, Member
 from ecm.apps.scheduler.models import ScheduledTask
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def update_all_character_associations():
     try:
-        logger.info("Updating character associations with players...")
+        LOG.info("Updating character associations with players...")
         for user in User.objects.filter(is_active=True):
             update_character_associations(user)
-        logger.info("Character associations updated")
+        LOG.info("Character associations updated")
     except:
-        logger.exception("update failed")
+        LOG.exception("update failed")
         raise
 
 #------------------------------------------------------------------------------
 def update_character_associations(user):
-    logger.debug("Updating character ownerships for '%s'..." % user.username)
+    LOG.debug("Updating character ownerships for '%s'..." % user.username)
     # get all the user's registered api credentials
     user_apis = UserAPIKey.objects.filter(user=user)
     invalid_apis = []
@@ -68,7 +68,7 @@ def update_character_associations(user):
                 # This happens if the vCode does not match the keyID
                 # or if the account is disabled
                 # or if the key does not allow to list characters from an account
-                logger.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, user_api.keyID))
+                LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, user_api.keyID))
                 user_api.is_valid = False
                 user_api.error = str(e)
                 invalid_apis.append(user_api)
@@ -85,18 +85,18 @@ def update_character_associations(user):
                     'invalid_apis': invalid_apis}
         dummy_request = HttpRequest()
         dummy_request.user = AnonymousUser()
-        subject = render_to_string('auth/invalid_api_email_subject.txt', ctx_dict,
+        subject = render_to_string('email/invalid_api_subject.txt', ctx_dict,
                                    RequestContext(dummy_request))
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
-        txt_content = render_to_string('auth/invalid_api_email.txt', ctx_dict,
+        txt_content = render_to_string('email/invalid_api.txt', ctx_dict,
                                        RequestContext(dummy_request))
-        html_content = render_to_string('auth/invalid_api_email.html', ctx_dict,
+        html_content = render_to_string('email/invalid_api.html', ctx_dict,
                                         RequestContext(dummy_request))
         msg = EmailMultiAlternatives(subject, body=txt_content, to=[user.email])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-        logger.warning("API credentials for '%s' are invalid. User notified by email." % user.username)
+        LOG.warning("API credentials for '%s' are invalid. User notified by email." % user.username)
     # we delete all the previous ownerships
     Member.objects.filter(owner=user).update(owner=None)
     # and save the new ones
@@ -105,45 +105,24 @@ def update_character_associations(user):
         member.save()
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
-def cleanup_unregistered_users():
-    try:
-        logger.info("Deleting activation keys...")
-        count = 0
-        for profile in RegistrationProfile.objects.all():
-            if profile.activation_key_expired():
-                user = profile.user
-                count += 1
-                if user.is_active:
-                    # user has activated his/her account. we delete the activation key
-                    profile.delete()
-                else:
-                    logger.info("activation key has exprired for '%s', deleting user..." % user.username)
-                    user.delete() # this will delete the profile along with the user
-        logger.info("%d activation keys deleted" % count)
-    except:
-        logger.exception("cleanup failed")
-        raise
-
-#------------------------------------------------------------------------------
 try:
     DIRECTORS = Group.objects.get(name=settings.DIRECTOR_GROUP_NAME)
 except Group.DoesNotExist:
     try:
-        logger.info('Group "%s" does not exists. Creating...' % settings.DIRECTOR_GROUP_NAME)
+        LOG.info('Group "%s" does not exists. Creating...' % settings.DIRECTOR_GROUP_NAME)
         DIRECTORS = Group.objects.create(name=settings.DIRECTOR_GROUP_NAME)
     except:
-        logger.exception("")
+        LOG.exception("")
         raise
 #------------------------------------------------------------------------------
 try:
     MEMBERS = Group.objects.get(name=settings.CORP_MEMBERS_GROUP_NAME)
 except Group.DoesNotExist:
     try:
-        logger.info('Group "%s" does not exists. Creating...' % settings.DIRECTOR_GROUP_NAME)
+        LOG.info('Group "%s" does not exists. Creating...' % settings.DIRECTOR_GROUP_NAME)
         MEMBERS = Group.objects.create(name=settings.CORP_MEMBERS_GROUP_NAME)
     except:
-        logger.exception("")
+        LOG.exception("")
         raise
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -156,12 +135,12 @@ def update_all_users_accesses():
                                      "Skipping user access update.")
         except ScheduledTask.DoesNotExist:
             pass
-        logger.info("Updating user accesses from their in-game roles...")
+        LOG.info("Updating user accesses from their in-game roles...")
         for user in User.objects.filter(is_active=True):
             update_user_accesses(user)
-        logger.info("User accesses updated")
+        LOG.info("User accesses updated")
     except:
-        logger.exception("update failed")
+        LOG.exception("update failed")
         raise
 
 #------------------------------------------------------------------------------

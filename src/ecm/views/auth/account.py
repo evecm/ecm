@@ -24,7 +24,7 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.db import transaction
 
 from ecm.views.decorators import forbidden
-from ecm.core.tasks.users import update_user_accesses
+from ecm.apps.hr.tasks.users import update_user_accesses
 from ecm.views.auth.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import UserAPIKey, ExternalApplication, UserBinding

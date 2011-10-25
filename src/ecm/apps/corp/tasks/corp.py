@@ -49,9 +49,6 @@ def update():
         checkApiVersion(corpApi._meta.version)
 
         currentTime = corpApi._meta.currentTime
-        cachedUntil = corpApi._meta.cachedUntil
-        LOG.debug("current time : %s", str(currentTime))
-        LOG.debug("cached util : %s", str(cachedUntil))
 
         LOG.debug("parsing api response...")
         corp = update_corp_info(corpApi, currentTime)

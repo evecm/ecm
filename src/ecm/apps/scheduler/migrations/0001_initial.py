@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'ScheduledTask'
         db.create_table('scheduler_scheduledtask', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -24,9 +24,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('scheduler', ['ScheduledTask'])
 
-        # Adding unique constraint on 'ScheduledTask', fields ['function', 'args']
-        db.create_unique('scheduler_scheduledtask', ['function', 'args'])
-
         # Adding model 'GarbageCollector'
         db.create_table('scheduler_garbagecollector', (
             ('db_table', self.gf('django.db.models.fields.CharField')(max_length=255, primary_key=True)),
@@ -38,9 +35,6 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
-        # Removing unique constraint on 'ScheduledTask', fields ['function', 'args']
-        db.delete_unique('scheduler_scheduledtask', ['function', 'args'])
 
         # Deleting model 'ScheduledTask'
         db.delete_table('scheduler_scheduledtask')

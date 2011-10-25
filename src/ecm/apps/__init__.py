@@ -1,63 +1,99 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2011 10 16"
 __author__ = "diabeteman"
 
 import logging
+
 import ecm
 from ecm.settings import ECM_CORE_APPS
+from ecm.apps.scheduler.models import ScheduledTask
 
-LOG = logging.getLogger(__name__)
 DICT = {}
 LIST = []
 
+#------------------------------------------------------------------------------
 class ECMApp(object):
+    """
+    This is a utility class to describe a django app
 
+    ECM will use the instances of this class to perform various tasks:
+
+      - dependencies between apps
+      - creation of objects (without the 'initial_data' django feature)
+      - contribution to ECM urls
+      - contribution to ECM menus
+      - etc.
+    """
     def __init__(self, package):
+        logger = logging.getLogger(__name__)
         try:
-            LOG.info("Importing core app '%s'..." % package)
+            logger.info("Importing app '%s'..." % package)
             self.package = package
             package_module = __import__(package)
-            
+
+            # get basic info
+            try:
+                self.version = package_module.VERSION
+            except AttributeError:
+                self.version = ecm.VERSION
+            try:
+                self.dependencies = package_module.DEPENDS_ON
+            except AttributeError:
+                self.dependencies = {}
             try:
                 self.app_prefix = package_module.NAME
-            except AttributeError:  
+            except AttributeError:
                 self.app_prefix = package.rsplit('.', 1)[-1]
-            
+
+            # create declared tasks for each app
+            try:
+                for task in package_module.TASKS:
+                    if not ScheduledTask.objects.exists(function=task['function']):
+                        # we only consider the function as these tasks should
+                        # be unique in the database
+                        ScheduledTask.objects.create(**task)
+                        logger.info("Created task '%s'" % task['function'])
+            except AttributeError:
+                pass
+
+            # get this app declared urls
             try:
                 self.urlconf = package + '.urls'
                 __import__(self.urlconf, fromlist=[package]).urlpatterns
             except (ImportError, AttributeError), e:
-                LOG.warning(e)
+                logger.warning(e)
                 self.urlconf = None
+
+            # get this app menu contribution
             try:
                 self.menu = __import__(package + '.menu', fromlist=[package]).ECM_MENUS
+                if not type(self.menu) == type([]):
+                    raise AttributeError("attribute 'ECM_MENUS' should be a list")
             except (ImportError, AttributeError), e:
-                LOG.warning(e)
+                logger.warning(e)
                 self.menu = []
-            LOG.debug('app_prefix: %s', self.app_prefix)
-            LOG.debug('urlconf: %s', self.urlconf)
-            LOG.debug('menus: %s', self.menu)
         except:
-            LOG.exception("")
+            logger.exception("")
             raise
-            
 
+#------------------------------------------------------------------------------
+# detection of all 'core' apps
 for app in ECM_CORE_APPS:
     DICT[app] = ECMApp(package=app)
     LIST.append(DICT[app])

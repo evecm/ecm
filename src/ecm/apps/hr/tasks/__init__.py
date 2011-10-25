@@ -14,15 +14,3 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-
-
-NAME = 'corp'
-
-TASKS = [
-    {
-        'function' : 'ecm.apps.corp.tasks.corp.update',
-        'priority' : 200,
-        'frequency' : 12,
-        'frequency_units' : 3600, # hour
-    },
-]

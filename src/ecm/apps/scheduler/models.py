@@ -26,14 +26,8 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.db import models
 
-class ScheduledTaskManager(models.Manager):
-    def get_by_natural_key(self, function, args):
-        return self.get(function=function, args=args)
-
-
+#------------------------------------------------------------------------------
 class ScheduledTask(models.Model):
-
-    objects = ScheduledTaskManager()
 
     FREQUENCY_UNIT_CHOICES = (
         (1, _("seconds")),
@@ -43,25 +37,7 @@ class ScheduledTask(models.Model):
         (3600 * 24 * 7, _("weeks"))
     )
 
-    FUNCTION_CHOICES = (
-        ("ecm.core.parsers.corp.update", "Update corp details"),
-        ("ecm.core.parsers.assets.update", "Update assets"),
-        ("ecm.core.parsers.membertrack.update", "Update members"),
-        ("ecm.core.parsers.membersecu.update", "Update security accesses"),
-        ("ecm.core.parsers.outposts.update", "Update ouposts"),
-        ("ecm.core.parsers.titles.update", "Update titles"),
-        ("ecm.core.parsers.wallets.update", "Update wallets"),
-        ("ecm.core.parsers.reftypes.update", "Update wallet transaction types"),
-        ("ecm.core.tasks.misc.collect_garbage", "Delete old records for the database"),
-        ("ecm.core.tasks.users.cleanup_unregistered_users", "Remove unregistered users"),
-        ("ecm.core.tasks.users.update_all_users_accesses", "Update user accesses from their in-game roles"),
-        ("ecm.core.tasks.users.update_all_character_associations", "Update associations between users and characters"),
-
-    )
-
-    function = models.CharField(max_length=256,
-                                validators=[FunctionValidator()],
-                                choices=FUNCTION_CHOICES)
+    function = models.CharField(max_length=256, validators=[FunctionValidator()])
     args = models.CharField(max_length=256, default="{}", validators=[ArgsValidator()])
     priority = models.IntegerField(default=0)
     next_execution = models.DateTimeField(default=datetime.now())
@@ -73,16 +49,12 @@ class ScheduledTask(models.Model):
     is_last_exec_success = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = (('function', 'args'),)
         verbose_name = _("scheduled task")
         verbose_name_plural = _("scheduled tasks")
         ordering = ("-priority", "function")
 
     def __unicode__(self):
         return force_unicode(self.function)
-
-    def natural_key(self):
-        return (self.function, self.args)
 
     def frequency_admin_display(self):
         return ugettext("Every %s %s") % (self.frequency, self.get_frequency_units_display())
@@ -124,6 +96,7 @@ class ScheduledTask(models.Model):
         args = self.get_args()
         return func(**args)
 
+#------------------------------------------------------------------------------
 class GarbageCollector(models.Model):
 
     AGE_UNIT_CHOICES = (
@@ -132,17 +105,8 @@ class GarbageCollector(models.Model):
         (3600 * 24 * 7 * 30, _("months"))
     )
 
-    DB_TABLE_CHOICES = (
-        ("ecm.apps.hr.models.RoleMemberDiff",    "Role membership history"),
-        ("ecm.apps.hr.models.TitleMemberDiff",   "Title membership history"),
-        ("ecm.apps.hr.models.MemberDiff",        "Member history"),
-        ("ecm.apps.hr.models.TitleCompoDiff",    "Titles modifications history"),
-        ("ecm.plugins.assets.models.AssetDiff",      "Assets history"),
-        ("ecm.plugins.accounting.models.JournalEntry", "Wallet journal"),
-    )
     db_table = models.CharField(max_length=255, primary_key=True,
-                                validators=[ModelValidator()],
-                                choices=DB_TABLE_CHOICES)
+                                validators=[ModelValidator()])
     min_entries_threshold = models.BigIntegerField(default=10000)
     max_age_threshold = models.BigIntegerField()
     age_units = models.BigIntegerField(default=3600 * 24 * 7 * 30, choices=AGE_UNIT_CHOICES)

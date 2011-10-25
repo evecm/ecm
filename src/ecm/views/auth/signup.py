@@ -26,7 +26,7 @@ from django.db import transaction
 from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 
-from ecm.core.tasks.users import update_user_accesses
+from ecm.apps.hr.tasks.users import update_user_accesses
 from ecm.apps.common.models import UserAPIKey, RegistrationProfile
 from ecm.apps.hr.models import Member
 from ecm.views.auth.forms import AccountCreationForm
