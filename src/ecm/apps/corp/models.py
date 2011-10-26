@@ -61,8 +61,12 @@ class Corp(models.Model):
     description = models.TextField()
     taxRate = models.PositiveIntegerField()
     memberLimit = models.PositiveIntegerField()
+    killboardUrl = models.URLField(max_length=255, null=True)
+
+    class Meta:
+        get_latest_by = 'id'
+        ordering = ['id']
 
     def __unicode__(self):
         return unicode(self.corporationName)
-
 

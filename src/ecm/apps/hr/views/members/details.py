@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.corp.models import Corp
 
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
@@ -59,7 +60,9 @@ def details(request, characterID):
     except ObjectDoesNotExist:
         member = Member(characterID=int(characterID), name="???")
 
-    data = { 'member' : member }
+    corp = Corp.objects.latest()
+
+    data = { 'member' : member, 'corp': corp }
     return render_to_response("members/member_details.html", data, hr_ctx(request))
 
 #------------------------------------------------------------------------------

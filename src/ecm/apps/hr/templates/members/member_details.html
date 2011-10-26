@@ -42,6 +42,9 @@ MEMBER_ID = "{{ member.characterID }}";
     </tr>
 </table>
 
+<a class="kill"
+   href="{{corp.killboardUrl}}?a=search&searchtype=pilot&searchphrase={{member.name}}">Link to killboard</a>
+
 <h2>Notes</h2>
 
 <p id="notes" class="italic blue" >{% if member.notes %}{{ member.notes }}{% else %}Click to add notes...{%endif%}</p>
