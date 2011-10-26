@@ -29,7 +29,7 @@ def compute_menu(plugin):
                 ii['item_url'] = '/%s/%s' % (plugin.app_prefix,  ii['item_url'])
         menus.append(m)
     return menus
-            
+
 
 ECM_MENUS = [
     {'menu_title': 'Home',      'menu_url': '/',            'menu_items': []},
@@ -38,11 +38,6 @@ import ecm.apps
 for app in ecm.apps.LIST:
     ECM_MENUS += compute_menu(app)
 
-
 import ecm.plugins
 for plugin in ecm.plugins.LIST:
     ECM_MENUS += compute_menu(plugin)
-
-ECM_MENUS += [
-    {'menu_title': 'Scheduled Tasks',   'menu_url': '/tasks/',     'menu_items': []},
-]

@@ -64,30 +64,6 @@
     }
   },
   {
-    "pk": 1,
-    "model": "common.urlpermission",
-    "fields": {
-      "pattern": "^/members.*$",
-      "groups": []
-    }
-  },
-  {
-    "pk": 2,
-    "model": "common.urlpermission",
-    "fields": {
-      "pattern": "^/titles.*$",
-      "groups": []
-    }
-  },
-  {
-    "pk": 3,
-    "model": "common.urlpermission",
-    "fields": {
-      "pattern": "^/hr.*$",
-      "groups": []
-    }
-  },
-  {
     "pk": 4,
     "model": "common.urlpermission",
     "fields": {
@@ -104,14 +80,6 @@
     }
   },
   {
-    "pk": 6,
-    "model": "common.urlpermission",
-    "fields": {
-      "pattern": "^/dashboard.*$",
-      "groups": []
-    }
-  },
-  {
     "pk": 7,
     "model": "common.urlpermission",
     "fields": {
@@ -124,14 +92,6 @@
     "model": "common.urlpermission",
     "fields": {
       "pattern": "^/accounting.*$",
-      "groups": []
-    }
-  },
-  {
-    "pk": 9,
-    "model": "common.urlpermission",
-    "fields": {
-      "pattern": "^/tasks.*$",
       "groups": []
     }
   }

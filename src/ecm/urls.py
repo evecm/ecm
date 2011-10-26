@@ -82,10 +82,6 @@ urlpatterns += patterns('ecm.views',
     ###########################################################################
     # COMMON VIEWS
     (r'^$',                     'common.corp'),
-    (r'^cron/$',                 'common.trigger_scheduler'),
-    (r'^tasks/$',                'common.task_list'),
-    (r'^tasks/data/$',           'common.task_list_data'),
-    (r'^tasks/(\d+)/launch/$',   'common.launch_task'),
 )
 
 
@@ -95,10 +91,6 @@ urlpatterns += patterns('ecm.views.api',
     (r'^api/players/$',               'players'),
     (r'^api/bindings/(\w+)/users/$',  'user_bindings'),
     (r'^api/bindings/(\w+)/groups/$', 'group_bindings'),
-)
-
-urlpatterns += patterns('',
-    (r'^hr/', include('ecm.apps.hr.urls'))
 )
 
 import ecm.apps

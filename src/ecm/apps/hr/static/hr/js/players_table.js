@@ -16,7 +16,7 @@ $(document).ready(function() {
         "iDisplayLength": 25, /* default display 25 items */
         "bStateSave": true, /* table state persistance */
         "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
-        "sAjaxSource": "/players/data/",
+        "sAjaxSource": "/hr/players/data/",
         "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
             { /* Username */        "sWidth": "30%",   "sType": "html"    },
@@ -54,7 +54,7 @@ $(document).ready(function() {
             return true;
         }
     });
-    
+
     /* trigger the search when pressing return in the text field */
     $("#search_form").submit(function(event) {
         event.preventDefault();
@@ -79,5 +79,5 @@ $(document).ready(function() {
             event.shiftKey = false;
         }
     });
-    
+
 } );

@@ -15,12 +15,16 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-NAME = 'scheduler'
+__date__ = "2011 10 26"
+__author__ = "diabeteman"
 
-MENUS = [
-    {'menu_title': 'Scheduled Tasks',   'menu_url': 'tasks/',     'menu_items': []},
-]
+from django.conf.urls.defaults import patterns
 
-URL_PERMISSIONS = [
-    r'^/scheduler/.*$',
-]
+urlpatterns = patterns('ecm.apps.scheduler.views',
+    ###########################################################################
+    # COMMON VIEWS
+    (r'^cron/$',                 'trigger_scheduler'),
+    (r'^tasks/$',                'task_list'),
+    (r'^tasks/data/$',           'task_list_data'),
+    (r'^tasks/(\d+)/launch/$',   'launch_task'),
+)

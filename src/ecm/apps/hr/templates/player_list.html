@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "hr_base.html" %}
 
 
 {% block headtitle %}Player List{% endblock %}
 
-{% block header_scripts %}
+{% block other_scripts %}
 <script type="text/javascript" src="/s/hr/js/players_table.js"></script>
 {% endblock %}
 
@@ -18,14 +18,14 @@
 
 <h1 class="pagetitle">Player List</h1>
 
-<form id="search_form" class="search_form"> 
-    <input type="text" id="search_text" value="" /> 
-    <input type="button" class="button" id="search_button" value="Search" /> 
-    <input type="button" class="button" id="clear_search" value="Reset" /> 
-</form> 
+<form id="search_form" class="search_form">
+    <input type="text" id="search_text" value="" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+</form>
 
 <table class="table display" id="players_table">
-  <thead> 
+  <thead>
     <tr>
       <th class="top" scope="col" >Username</th>
       <th class="top" scope="col" >Admin</th>
@@ -36,12 +36,12 @@
       <th class="top" scope="col" >Joined Date</th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="6" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Username</th>
       <th>Admin</th>

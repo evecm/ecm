@@ -103,6 +103,7 @@ APPEND_SLASH = True
 STATIC_ROOT = resolvePath('../media/')
 # value of the {{ STATIC_URL }} variable in templates
 STATIC_URL = '/s/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 STATICFILES_DIRS = (
     # aside from looking in each django app, the 'collectstatic' command
     # will look in these directories for static files

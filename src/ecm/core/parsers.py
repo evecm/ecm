@@ -15,17 +15,11 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import with_statement
-
 __date__ = "2010-02-08"
 __author__ = "diabeteman"
 
-import threading
-
-from django.contrib.auth.models import Group
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-from ecm.apps.hr.models import RoleType, Role
 from ecm import settings
 from ecm.apps.common.models import UpdateDate
 

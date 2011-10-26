@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 import urllib2
 import urllib
@@ -55,7 +55,7 @@ class AccountCreationForm(forms.Form):
                             widget=forms.TextInput(attrs={'size':'100'}))
     captcha = CaptchaField()
     characters = []
-    
+
     def clean_username(self):
         """
         Validate that the username is alphanumeric and is not already in use.
@@ -65,7 +65,7 @@ class AccountCreationForm(forms.Form):
             raise forms.ValidationError(_("A user with that username already exists."))
         except User.DoesNotExist:
             return self.cleaned_data['username']
-    
+
     def clean_email(self):
         """
         Validate that the supplied email address is unique for the site.
@@ -73,7 +73,7 @@ class AccountCreationForm(forms.Form):
         if User.objects.filter(email__iexact=self.cleaned_data['email']):
             raise forms.ValidationError(_("This email address is already in use."))
         return self.cleaned_data['email']
-    
+
     def clean_keyID(self):
         """
         Validate that the supplied keyID is not already associated to another User.
@@ -81,24 +81,24 @@ class AccountCreationForm(forms.Form):
         if UserAPIKey.objects.filter(keyID=self.cleaned_data['keyID']):
             raise forms.ValidationError(_("This EVE account is already registered."))
         return self.cleaned_data['keyID']
-    
+
     def clean(self):
         cleaned_data = self.cleaned_data
-        
+
         keyID = cleaned_data.get("keyID")
         vCode = cleaned_data.get("vCode")
         username = cleaned_data.get("username")
         email = cleaned_data.get("email")
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
-        
+
         if not None in (keyID, vCode, username, email, password1, password2):
             # test if both password fields match
             if not password1 == password2:
                 self._errors["password2"] = self.error_class([_("Passwords don't match")])
                 del cleaned_data["password2"]
-            
-            # test if API credentials are valid and if EVE account contains 
+
+            # test if API credentials are valid and if EVE account contains
             # characters which are members of the corporation
             try:
                 self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
@@ -219,7 +219,7 @@ class AddApiKeyForm(forms.Form):
     vCode = forms.CharField(label=_("Verification Code"),
                             widget=forms.TextInput(attrs={'size':'100'}))
     user = AnonymousUser()
-    
+
     def clean_keyID(self):
         """
         Validate that the supplied keyID is not already associated to another User.
@@ -227,20 +227,20 @@ class AddApiKeyForm(forms.Form):
         if UserAPIKey.objects.filter(keyID=self.cleaned_data['keyID']):
             raise forms.ValidationError(_("This API Key is already registered."))
         return self.cleaned_data['keyID']
-    
+
     def clean(self):
         cleaned_data = self.cleaned_data
-        
+
         keyID = cleaned_data.get("keyID")
         vCode = cleaned_data.get("vCode")
-        
+
         if keyID is not None and vCode is not None:
-            # test if API credentials are valid and if EVE account contains 
+            # test if API credentials are valid and if EVE account contains
             # characters which are members of the corporation
             try:
                 self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
                 valid_account = False
-                for c in self.characters: 
+                for c in self.characters:
                     exists = Member.objects.filter(characterID=c.characterID).exists()
                     valid_account |= exists and c.is_corped
                 if valid_account:
@@ -265,20 +265,20 @@ class EditApiKeyForm(forms.Form):
     vCode = forms.CharField(label=_("Verification Code"),
                             widget=forms.TextInput(attrs={'size':'100'}))
     user = AnonymousUser()
-    
+
     def clean(self):
         cleaned_data = self.cleaned_data
-        
+
         keyID = cleaned_data.get("keyID")
         vCode = cleaned_data.get("vCode")
-        
+
         if keyID is not None and vCode is not None:
-            # test if API credentials are valid and if EVE account contains 
+            # test if API credentials are valid and if EVE account contains
             # characters which are members of the corporation
             try:
                 self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
                 valid_account = False
-                for c in self.characters: 
+                for c in self.characters:
                     exists = Member.objects.filter(characterID=c.characterID).exists()
                     valid_account |= exists and c.is_corped
                 if valid_account:
@@ -298,21 +298,22 @@ class EditApiKeyForm(forms.Form):
 #------------------------------------------------------------------------------
 class AddBindingForm(forms.Form):
     username = forms.CharField(label=_("External Username"))
-    password = forms.CharField(label=_("External Password"), widget=forms.PasswordInput)
-    
+    password = forms.CharField(label=_("External Password"),
+                               widget=forms.PasswordInput, required=False)
+
     def __init__(self, data=None, app=None, user=None):
         forms.Form.__init__(self, data=data)
         self.app = app
         self.user = user
-    
+
     def clean(self):
         cleaned_data = self.cleaned_data
         username = cleaned_data.get("username")
         password = cleaned_data.get("password")
-        
+
         data = {
             'username' : username,
-            'password' : password
+            'password' : password or ''
         }
         try:
             request = urllib2.Request(self.app.url, urllib.urlencode(data))
@@ -329,5 +330,5 @@ class AddBindingForm(forms.Form):
         except ValueError:
             # bad response from server
             raise forms.ValidationError("Bad response from external application.")
-        
+
         return cleaned_data

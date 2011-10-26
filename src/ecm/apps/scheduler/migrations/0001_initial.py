@@ -14,7 +14,7 @@ class Migration(SchemaMigration):
             ('function', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('args', self.gf('django.db.models.fields.CharField')(default='{}', max_length=256)),
             ('priority', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('next_execution', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 12, 43, 28, 762160))),
+            ('next_execution', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 26, 0, 53, 37, 20000))),
             ('frequency', self.gf('django.db.models.fields.IntegerField')()),
             ('frequency_units', self.gf('django.db.models.fields.IntegerField')(default=3600)),
             ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
@@ -52,7 +52,7 @@ class Migration(SchemaMigration):
             'min_entries_threshold': ('django.db.models.fields.BigIntegerField', [], {'default': '10000'})
         },
         'scheduler.scheduledtask': {
-            'Meta': {'ordering': "('-priority', 'function')", 'unique_together': "(('function', 'args'),)", 'object_name': 'ScheduledTask'},
+            'Meta': {'ordering': "('-priority', 'function')", 'object_name': 'ScheduledTask'},
             'args': ('django.db.models.fields.CharField', [], {'default': "'{}'", 'max_length': '256'}),
             'frequency': ('django.db.models.fields.IntegerField', [], {}),
             'frequency_units': ('django.db.models.fields.IntegerField', [], {'default': '3600'}),
@@ -62,7 +62,7 @@ class Migration(SchemaMigration):
             'is_last_exec_success': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_one_shot': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_running': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'next_execution': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 10, 22, 12, 43, 28, 762160)'}),
+            'next_execution': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 10, 26, 0, 53, 37, 20000)'}),
             'priority': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         }
     }

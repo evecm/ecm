@@ -71,12 +71,8 @@ class UserAPIKey(models.Model):
     vCode = models.CharField(max_length=255)
     is_valid = models.BooleanField(default=True)
 
-    def is_valid_admin_display(self):
-        if self.is_valid:
-            return "OK"
-        else:
-            return "Invalid"
-    is_valid_admin_display.short_description = "Valid"
+    class Meta:
+        ordering = ['user']
 
     def is_valid_html(self):
         if self.is_valid:
@@ -183,8 +179,11 @@ class UpdateDate(models.Model):
     update_date = models.DateTimeField()
     prev_update = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        ordering = ['-update_date']
+
     def __unicode__(self):
-        return u"%s updated %s" % (self.model_name, self.date)
+        return u"%s updated %s" % (self.model_name, self.update_date)
 
 #------------------------------------------------------------------------------
 class ColorThreshold(models.Model):
@@ -210,6 +209,10 @@ class UrlPermission(models.Model):
     """
     pattern = models.CharField(max_length=256)
     groups = models.ManyToManyField(Group, related_name='allowed_urls')
+
+    def groups_admin_display(self):
+        return ', '.join(self.groups.values_list('name', flat=True))
+    groups_admin_display.short_description = 'Groups'
 
     def __unicode__(self):
         return unicode(self.pattern)

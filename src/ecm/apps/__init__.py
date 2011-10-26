@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.common.models import UrlPermission
 
 __date__ = "2011 10 16"
 __author__ = "diabeteman"
@@ -43,9 +44,9 @@ class ECMApp(object):
     def __init__(self, package):
         logger = logging.getLogger(__name__)
         try:
-            logger.info("Importing app '%s'..." % package)
             self.package = package
-            package_module = __import__(package)
+
+            package_module = __import__(package, fromlist=['ecm.apps', 'ecm.plugins'])
 
             # get basic info
             try:
@@ -63,30 +64,39 @@ class ECMApp(object):
 
             # create declared tasks for each app
             try:
-                for task in package_module.TASKS:
-                    if not ScheduledTask.objects.exists(function=task['function']):
+                self.tasks = package_module.TASKS
+                for task in self.tasks:
+                    if not ScheduledTask.objects.filter(function=task['function']):
                         # we only consider the function as these tasks should
                         # be unique in the database
                         ScheduledTask.objects.create(**task)
                         logger.info("Created task '%s'" % task['function'])
             except AttributeError:
-                pass
+                self.tasks = []
+
+            # create declared UrlPermissions for each app
+            try:
+                self.permissions = package_module.URL_PERMISSIONS
+                for perm in self.permissions:
+                    if not UrlPermission.objects.filter(pattern=perm):
+                        UrlPermission.objects.create(pattern=perm)
+                        logger.info("Created UrlPermission r'%s'" % perm)
+            except AttributeError:
+                self.permissions = []
 
             # get this app declared urls
             try:
                 self.urlconf = package + '.urls'
                 __import__(self.urlconf, fromlist=[package]).urlpatterns
-            except (ImportError, AttributeError), e:
-                logger.warning(e)
+            except (ImportError, AttributeError):
                 self.urlconf = None
 
             # get this app menu contribution
             try:
-                self.menu = __import__(package + '.menu', fromlist=[package]).ECM_MENUS
+                self.menu = package_module.MENUS
                 if not type(self.menu) == type([]):
-                    raise AttributeError("attribute 'ECM_MENUS' should be a list")
-            except (ImportError, AttributeError), e:
-                logger.warning(e)
+                    raise TypeError("attribute 'MENUS' should be a list")
+            except AttributeError:
                 self.menu = []
         except:
             logger.exception("")

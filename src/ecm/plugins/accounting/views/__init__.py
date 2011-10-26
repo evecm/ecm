@@ -28,7 +28,7 @@ def wallet_journal_url(wallet):
     return "/accounting/journal?walletID=%d" % wallet.walletID
 #------------------------------------------------------------------------------
 def wallet_permalink(wallet):
-    return WALLET_LINK % (wallet.url, "Click for details on this wallet",
+    return WALLET_LINK % (wallet_url(wallet), "Click for details on this wallet",
                           wallet.name)
 #------------------------------------------------------------------------------
 def wallet_journal_permalink(wallet, balance=None):
@@ -36,5 +36,5 @@ def wallet_journal_permalink(wallet, balance=None):
         name = wallet.name
     else:
         name = print_float(balance)
-    return WALLET_LINK % (wallet.get_journal_url(),
+    return WALLET_LINK % (wallet_journal_url(wallet),
                           "Click to access this wallet's journal", name)

@@ -21,17 +21,17 @@ __author__ = "diabeteman"
 
 from django.contrib import admin
 
-from ecm.apps.hr.models import   Member,\
-                                    Role,\
-                                    RoleType,\
-                                    Title,\
-                                    RoleMembership,\
-                                    TitleMembership,\
-                                    MemberDiff,\
-                                    TitleComposition,\
-                                    TitleCompoDiff,\
-                                    TitleMemberDiff,\
-                                    RoleMemberDiff
+from ecm.apps.hr.models import Member,\
+                               Role,\
+                               RoleType,\
+                               Title,\
+                               RoleMembership,\
+                               TitleMembership,\
+                               MemberDiff,\
+                               TitleComposition,\
+                               TitleCompoDiff,\
+                               TitleMemberDiff,\
+                               RoleMemberDiff
 admin.site.register(Member)
 admin.site.register(Role)
 admin.site.register(RoleType)

@@ -20,19 +20,39 @@ __author__ = "diabeteman"
 
 
 from django.contrib import admin
-from ecm.apps.common.models import  APIKey,\
-                                    UserAPIKey,\
-                                    ExternalApplication,\
-                                    UserBinding,\
-                                    GroupBinding,\
-                                    UpdateDate,\
-                                    ColorThreshold,\
-                                    UrlPermission
-admin.site.register(APIKey)
-admin.site.register(UserAPIKey)
-admin.site.register(ExternalApplication)
-admin.site.register(UserBinding)
-admin.site.register(GroupBinding)
-admin.site.register(UpdateDate)
-admin.site.register(ColorThreshold)
-admin.site.register(UrlPermission)
+from ecm.apps.common.models import APIKey,\
+                                   ColorThreshold,\
+                                   ExternalApplication,\
+                                   GroupBinding,\
+                                   RegistrationProfile,\
+                                   UpdateDate,\
+                                   UrlPermission,\
+                                   UserAPIKey,\
+                                   UserBinding
+
+class APIKeyAdmin(admin.ModelAdmin):
+    list_display = ['name', 'keyID', 'vCode', 'characterID']
+class ColorThresholdAdmin(admin.ModelAdmin):
+    list_display = ['color', 'threshold']
+class ExternalApplicationAdmin(admin.ModelAdmin):
+    list_display = ['name', 'url']
+class GroupBindingAdmin(admin.ModelAdmin):
+    list_display = ['external_name', 'external_id', 'group', 'external_app']
+class UpdateDateAdmin(admin.ModelAdmin):
+    list_display = ['model_name', 'update_date', 'prev_update']
+class UrlPermissionAdmin(admin.ModelAdmin):
+    list_display = ['pattern', 'groups_admin_display']
+class UserAPIKeyAdmin(admin.ModelAdmin):
+    list_display = ['user', 'keyID', 'vCode', 'is_valid']
+class UserBindingAdmin(admin.ModelAdmin):
+    list_display = ['external_name', 'external_id', 'user', 'external_app']
+
+admin.site.register(APIKey, APIKeyAdmin)
+admin.site.register(ColorThreshold, ColorThresholdAdmin)
+admin.site.register(ExternalApplication, ExternalApplicationAdmin)
+admin.site.register(GroupBinding, GroupBindingAdmin)
+admin.site.register(RegistrationProfile)
+admin.site.register(UpdateDate, UpdateDateAdmin)
+admin.site.register(UrlPermission, UrlPermissionAdmin)
+admin.site.register(UserAPIKey, UserAPIKeyAdmin)
+admin.site.register(UserBinding, UserBindingAdmin)

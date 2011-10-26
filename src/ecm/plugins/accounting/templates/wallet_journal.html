@@ -1,16 +1,10 @@
-{% extends "base.html" %}
+{% extends "accounting_base.html" %}
 
 {% block headtitle %}Wallets Journal{% endblock %}
 
 
 
-{% block header_scripts %}
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.cluetip.css" />
-
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
-
+{% block other_scripts %}
 <script type="text/javascript" src="/s/accounting/js/journal_table.js"></script>
 {% endblock %}
 

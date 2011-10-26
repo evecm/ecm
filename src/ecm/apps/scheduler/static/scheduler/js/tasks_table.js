@@ -1,11 +1,11 @@
 // dataTable setup
 $(document).ready(function() {
-	table = $('#tasks_table').dataTable( {
-		"bProcessing": true,
-		"bServerSide": true,
+  table = $('#tasks_table').dataTable( {
+    "bProcessing": true,
+    "bServerSide": true,
         "bAutoWidth": false,
         "iDisplayLength": 25,
-		"sAjaxSource": "/tasks/data/",
+    "sAjaxSource": "/scheduler/tasks/data/",
         "sDom": 'rt',
         "aoColumns": [
             { "sTitle": "Task description",    "sWidth": "50%", "sType": "html", "bSearchable": false , "bSortable": false},
@@ -21,7 +21,7 @@ $(document).ready(function() {
                 $('td:eq(3)', nRow).html('<img src="/s/admin/img/admin/icon-no.gif" alt="False">');
             }
             return nRow;
-		}
+    }
     } );
 
 } );
