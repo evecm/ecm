@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2011-03-08"
@@ -35,31 +35,34 @@ from ecm.apps.hr.models import Member
 
 #------------------------------------------------------------------------------
 def basic_auth_required(username=None):
+    """
+    Checks for HTTP Basic authentication in the request
+    """
     def decorator(view_function):
         def _wrapped_view(request, *args, **kwargs):
-            if (settings.BASIC_AUTH_ONLY_ON_LOCALHOST 
+            if (settings.BASIC_AUTH_ONLY_ON_LOCALHOST
                 and request.get_host() not in ('localhost', '127.0.0.1')):
                 return HttpResponse(status=http.UNAUTHORIZED)
-                
+
             if request.user in (False, None, AnonymousUser()):
                 auth_string = request.META.get('HTTP_AUTHORIZATION', None)
-            
+
                 if not auth_string:
                     return HttpResponse(status=http.UNAUTHORIZED)
-                    
+
                 try:
                     (auth_method, auth_credentials) = auth_string.split(" ", 1)
-            
+
                     if not auth_method.lower() == 'basic':
                         return HttpResponse(status=http.UNAUTHORIZED)
-            
+
                     auth_credentials = auth_credentials.strip().decode('base64')
                     user, pwd = auth_credentials.split(':', 1)
                 except (ValueError, binascii.Error):
                     return HttpResponse(status=http.UNAUTHORIZED)
-            
+
                 request.user = authenticate(username=user, password=pwd) or AnonymousUser()
-            
+
             if not request.user in (False, None, AnonymousUser()):
                 if username and not (request.user.username == username
                                   or request.user.is_superuser):
@@ -68,9 +71,9 @@ def basic_auth_required(username=None):
                     return view_function(request, *args, **kwargs)
             else:
                 return HttpResponse(status=http.UNAUTHORIZED)
-            
+
         return _wrapped_view
-    
+
     return decorator
 
 
@@ -78,10 +81,10 @@ def basic_auth_required(username=None):
 def check_user_access():
     """
     Decorator for views that matches the asked URL against those configured in the database
-    
+
     if the user is not logged in, redirect him/her to the login page
     if the user is allowed to consult the URL, then return to the view function
-    if the page is the details of a member, check if the user owns the character. 
+    if the page is the details of a member, check if the user owns the character.
        If so, allow the user to consult the page anyway
     if the user is not allowed, issue a "forbidden" page
     """

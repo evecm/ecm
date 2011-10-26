@@ -19,7 +19,10 @@
 NAME = 'accounting'
 
 DEPENDS_ON = {
-    'ecm' : (2,),
+    'common' : (2,),
+    'corp' : (2,),
+    'hr' : (2,),
+    'scheduler' : (2,),
 }
 
 MENUS = [
@@ -31,12 +34,12 @@ MENUS = [
 
 TASKS = [
     {
-        'function' : 'ecm.plugins.accounting.parsers.reftypes.update',
+        'function' : 'ecm.plugins.accounting.tasks.reftypes.update',
         'priority' : 100,
         'frequency' : 7,
         'frequency_units' : 86400, # day
     }, {
-        'function' : 'ecm.plugins.accounting.parsers.wallets.update',
+        'function' : 'ecm.plugins.accounting.tasks.wallets.update',
         'priority' : 0,
         'frequency' : 6,
         'frequency_units' : 3600, # hour

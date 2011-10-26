@@ -29,7 +29,7 @@ MENUS = [
 
 TASKS = [
     {
-        'function' : 'ecm.plugins.assets.parsers.assets.update',
+        'function' : 'ecm.plugins.assets.tasks.assets.update',
         'priority' : 0,
         'frequency' : 6,
         'frequency_units' : 3600, # hour

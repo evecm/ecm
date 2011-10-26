@@ -28,7 +28,7 @@ from ecm.core.eve import api
 
 from ecm.apps.corp.models import Wallet
 from ecm.core.parsers import markUpdated, checkApiVersion
-from ecm.plugins.accounting.parsers import fix_encoding
+from ecm.plugins.accounting.tasks import fix_encoding
 from ecm.plugins.accounting.models import JournalEntry
 
 LOG = logging.getLogger(__name__)

@@ -22,11 +22,14 @@ def compute_menu(plugin):
     menus = []
     for m in plugin.menu:
         m = m.copy()
-        m['menu_url'] = '/%s/%s' % (plugin.app_prefix,  m['menu_url'])
+        if not m['menu_url'].startswith('/'):
+            m['menu_url'] = '/%s/%s' % (plugin.app_prefix,  m['menu_url'])
         for i in m['menu_items']:
-            i['item_url'] = '/%s/%s' % (plugin.app_prefix,  i['item_url'])
+            if not i['item_url'].startswith('/'):
+                i['item_url'] = '/%s/%s' % (plugin.app_prefix,  i['item_url'])
             for ii in i['menu_items']:
-                ii['item_url'] = '/%s/%s' % (plugin.app_prefix,  ii['item_url'])
+                if not ii['item_url'].startswith('/'):
+                    ii['item_url'] = '/%s/%s' % (plugin.app_prefix,  ii['item_url'])
         menus.append(m)
     return menus
 
