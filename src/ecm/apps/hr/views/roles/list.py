@@ -40,12 +40,9 @@ from ecm.apps.corp.models import Hangar, Wallet
 import logging
 logger = logging.getLogger(__name__)
 
-ROLE_TYPES = {}
-for t in RoleType.objects.all(): ROLE_TYPES[t.typeName] = t.id
-
 #------------------------------------------------------------------------------
 def root(request):
-    return redirect("/%s/roles/" % app_prefix)
+    return redirect("/%s/roles/roles/" % app_prefix)
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -57,7 +54,7 @@ def role_type(request, role_typeName):
 
     data = {
         'colorThresholds' : ColorThreshold.as_json(),
-        'role_types' : RoleType.objects.all(),
+        'role_types' : RoleType.objects.all().order_by('id'),
         'current_role_type' : role_type.typeName,
         'current_role_type_name' : role_type.dispName,
     }

@@ -1,32 +1,36 @@
 
-
 .menu {
-    display:inline; /*Fix IE floating margin bug*/; 
-    float:left; 
-    width:200px; 
-    margin:0; 
-    overflow:visible !important /*Firefox*/; 
-    overflow:hidden /*IE6*/; 
-    font-size:1.0em;
+    font-family: sans-serif;
+    font-size: 110%;
+}
+
+.menu a {
+    color:rgb(42,90,138);
+    text-decoration:none;
+}
+
+.menu a:hover {
+    color:rgb(42,90,138);
+    text-decoration:underline;
 }
 
 .menu ul {
+    padding-left: 1em;
+    list-style: none;
+
 }
 
-.menu ul a {
+.menu > ul {
+    margin: 5px 0;
 }
 
-.menu ul a {
+.menu > ul > li > a {
+    font-weight: bold;
+    font-size: 130%;
 }
 
-.menu ul a {
+.menu > ul > li > ul > li > a {
+    font-weight: bold;
+    font-size: 110%;
 }
 
-.menu ul a {
-}
-
-.menu ul a {
-}
-
-.menu ul a {
-}

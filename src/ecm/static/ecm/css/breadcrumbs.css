@@ -1,0 +1,30 @@
+/***************/
+/* BREADCRUMBS */
+/***************/
+
+.breadcrumbs ul {
+    float:left;
+    width:700px;
+    list-style:none;
+    padding:0;
+    font-family:verdana,arial,sans-serif;
+}
+
+.breadcrumbs ul li {
+    display:inline;
+    padding:0 0 0 10px;
+    background:transparent url(../img/bg_bullet_arrow.gif) no-repeat 0 50%;
+    font-weight:bold;
+    color:rgb(125,125,125);
+    font-size:100%;
+}
+
+.breadcrumbs ul a {
+    color:rgb(70,122,167);
+    text-decoration:none;
+}
+
+.breadcrumbs ul a:hover {
+    color:rgb(42,90,138);
+    text-decoration:underline;
+}

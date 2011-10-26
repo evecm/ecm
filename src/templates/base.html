@@ -11,16 +11,20 @@
   <meta http-equiv="expires" content="3600" />
   <meta name="revisit-after" content="2 days" />
   <meta name="author" content="diabeteman" />
-  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/layout1_setup.css" />
-  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/layout1_text.css" />
-  <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/menu.css" />
+
+  <title>ECM - {% block headtitle %}{% endblock %}</title>
+
+  <link rel="stylesheet" type="text/css" href="/s/ecm/css/ecm.css" />
+
+  <link rel="icon" type="image/png" href="/s/ecm/img/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="/s/ecm/img/favicon.png" />
+
   <script type="text/javascript" src="/s/ecm/js/lib/jquery.js"></script>
   <script type="text/javascript" src="/s/ecm/js/csrf.js"></script>
   <script type="text/javascript" src="/s/ecm/js/ecm_lib.js"></script>
-  <link rel="icon" type="image/png" href="/s/ecm/img/favicon.png" />
-  <link rel="shortcut icon" type="image/png" href="/s/ecm/img/favicon.png" />
-  <title>ECM - {% block headtitle %}{% endblock %}</title>
-  {% block header_scripts %}{% endblock %}
+
+{% block header_scripts %}{% endblock %}
+{% block other_scripts %}{% endblock %}
 </head>
 
 <!-- Global IE fix to avoid layout crash when single word size wider than column width -->
@@ -29,85 +33,81 @@
   <!-- Main Page Container -->
   <div class="page-container">
 
-    <!-- A. HEADER -->      
+    <!-- begin HEADER -->
     <div class="header">
-      
-      <!-- A.1 HEADER MIDDLE -->
-      <div class="header-middle">    
-   
-        <!-- Sitelogo and sitename -->
-        <a class="sitelogo" href="/" title="Go to Start page"></a>
-        <div class="sitename">
-          <h1><a href="/" title="Go to Start page">{{ corp_name }}</a></h1>
-          <h2>EVE Corporation Management</h2>
-        </div>
 
-        <!-- logged user -->
-        <div class="nav0">
-            {% if user.is_authenticated %}Logged in as <b>{{ user.username }}</b>
-            {% else %}Please log in.
-            {% endif %}
-        </div>
-        <!-- header links -->
-        <div class="nav1">
-          <ul>
-            {% if user.is_authenticated %}
-            <li><a href="/account/" >User Profile</a></li>
-            <li><a href="/account/logout/" title="Log out from ECM">Logout</a></li>
-            {% else %}
-            <li><a href="/account/create/" >Create Account</a></li>
-            <li><a href="/account/login?next=/account" >Login</a></li>
-            {% endif %}
-            {% if user.is_staff and user.is_superuser %}
-            <li><a href="/admin/" title="Restricted area :-)">Administration</a></li>
-            {% endif %}
-          </ul>
-        </div>              
+      <!-- Sitelogo and sitename -->
+      <a class="sitelogo" href="/" title="Go to Start page"></a>
+      <div class="sitename">
+        <h1><a href="/" title="Go to Start page">{{ corp_name }}</a></h1>
+        <h2>EVE Corporation Management</h2>
       </div>
 
-      <!-- A.3 HEADER BREADCRUMBS -->
+      <!-- logged user -->
+      <div class="logged_user">
+          {% if user.is_authenticated %}Logged in as <b>{{ user.username }}</b>
+          {% else %}Please log in.
+          {% endif %}
+      </div>
 
-      <!-- Breadcrumbs -->
-      <div class="header-breadcrumbs">
+      <!-- header links -->
+      <div class="header-links">
         <ul>
-          {% block breadcrumbs %}
-          {# insert a list of breadcrumbs here #}
-          {% endblock %}
+          {% if user.is_authenticated %}
+          <li><a href="/account/" >User Profile</a></li>
+          <li><a href="/account/logout/" title="Log out from ECM">Logout</a></li>
+          {% else %}
+          <li><a href="/account/create/" >Create Account</a></li>
+          <li><a href="/account/login?next=/account" >Login</a></li>
+          {% endif %}
+          {% if user.is_staff and user.is_superuser %}
+          <li><a href="/admin/" title="Restricted area :-)">Administration</a></li>
+          {% endif %}
         </ul>
       </div>
- 
-    </div>
+
+    </div> <!-- end HEADER -->
 
     <!-- B. MAIN -->
-    <div class="main">
-  
-        {% block menu %}
-	{% if user.is_authenticated %}
-        <!-- Navigation Level 2 (Drop-down menus) -->
-        <div class="menu">
-{{ user_menu|safe }}         
-        </div>
-       {% endif %} {# user.is_authenticated #}
-      {% endblock %} {# menu #}
-  
-  
-      <!-- B.1 MAIN CONTENT -->
-      <div class="main-content">
-        <!-- Pagetitle -->
-        {% block main_content %}
-        {# main page content here #}
-        {% endblock %}
-      </div>
-    </div>
-      
-    <!-- C. FOOTER AREA -->      
+    <table class="main">
+      <tr>
+
+        <!-- MENU -->
+        <td class="menu">
+          {% if user.is_authenticated %}
+          {{ user_menu|safe }}
+          {% endif %}
+        </td>
+
+        <!-- MAIN CONTENT -->
+        <td class="page-content">
+
+          <!-- Breadcrumbs -->
+          <div class="breadcrumbs">
+            <ul>
+              {% block breadcrumbs %}
+              {# insert a list of breadcrumbs here #}
+              {% endblock %}
+            </ul>
+          </div>
+
+          <div class="content">
+          {% block main_content %}
+          {# main page content here #}
+          {% endblock %}
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- C. FOOTER AREA -->
 
     <div class="footer">
       <p>version {{ecm_version}} | Copyright &copy; 2010-2011 diabeteman | All Rights Reserved</p>
       <p class="credits"><a href="http://code.google.com/p/eve-corp-management/">Project on google code</a> | Powered by <a href="http://www.python.org/">Python</a> and <a href="http://www.djangoproject.com/">Django</a></p>
-    </div>      
-  </div> 
-  
+    </div>
+  </div>
+
 </body>
 </html>
 

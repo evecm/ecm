@@ -1,0 +1,25 @@
+/********************/
+/*  FOOTER SECTION  */
+/********************/
+.footer {
+    color: #eee;
+}
+
+.footer p {
+    line-height:1.3em;
+    text-align:center;
+    font-weight:bold;
+    font-size:120%;
+}
+.footer p.credits {
+    font-weight:normal;
+}
+.footer a {
+    text-decoration:none;
+    font-weight: bold;
+    color: #fff;
+}
+.footer a:hover {
+    text-decoration:none;
+    color:#76baff;
+}

@@ -1,0 +1,32 @@
+.content table.table {
+    font-size: 120%;
+}
+
+.content table.transparent {
+    width:100%;
+    border-collapse:collapse;
+    empty-cells:show;
+}
+
+.content table.transparent th {
+    margin:1.0em;
+    border-collapse:collapse;
+    empty-cells:show;
+    text-align:left;
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.content table.transparent td {
+    margin:1.0em;
+    border-collapse:collapse;
+    empty-cells:show;
+    text-align:left;
+}
+
+.content table.transparent img {
+    text-align:center;
+    display:inline;
+    border: none;
+}
+
