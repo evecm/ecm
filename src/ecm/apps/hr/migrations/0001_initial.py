@@ -7,29 +7,28 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         try:
             # if old "roles" app tables are found, rename them to "hr" tables
             db.rename_table('roles_member', 'hr_member')
             db.rename_table('roles_memberdiff', 'hr_memberdiff')
-            
+
             db.rename_table('roles_roletype', 'hr_roletype')
             db.rename_table('roles_role', 'hr_role')
             db.rename_table('roles_rolemembership', 'hr_rolemembership')
             db.rename_table('roles_rolememberdiff', 'hr_rolememberdiff')
-            
+
             db.rename_table('roles_title', 'hr_title')
             db.rename_table('roles_titlemembership', 'hr_titlemembership')
             db.rename_table('roles_titlecomposition', 'hr_titlecomposition')
             db.rename_table('roles_titlecompodiff', 'hr_titlecompodiff')
             db.rename_table('roles_titlememberdiff', 'hr_titlememberdiff')
-            
+
             return
         except:
             # if tables not found, do the standard migration
-            pass
-        
-        
+            db.rollback_transaction()
+            db.start_transaction()
         # Adding model 'Member'
         db.create_table('hr_member', (
             ('characterID', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
@@ -147,7 +146,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting model 'Member'
         db.delete_table('hr_member')
 

@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.common.models import UrlPermission
 
 __date__ = "2011 10 16"
 __author__ = "diabeteman"
@@ -23,7 +22,6 @@ import logging
 
 import ecm
 from ecm.settings import ECM_CORE_APPS
-from ecm.apps.scheduler.models import ScheduledTask
 
 DICT = {}
 LIST = []
@@ -62,25 +60,15 @@ class ECMApp(object):
             except AttributeError:
                 self.app_prefix = package.rsplit('.', 1)[-1]
 
-            # create declared tasks for each app
+            # get declared tasks for each app
             try:
                 self.tasks = package_module.TASKS
-                for task in self.tasks:
-                    if not ScheduledTask.objects.filter(function=task['function']):
-                        # we only consider the function as these tasks should
-                        # be unique in the database
-                        ScheduledTask.objects.create(**task)
-                        logger.info("Created task '%s'" % task['function'])
             except AttributeError:
                 self.tasks = []
 
-            # create declared UrlPermissions for each app
+            # get declared UrlPermissions for each app
             try:
                 self.permissions = package_module.URL_PERMISSIONS
-                for perm in self.permissions:
-                    if not UrlPermission.objects.filter(pattern=perm):
-                        UrlPermission.objects.create(pattern=perm)
-                        logger.info("Created UrlPermission r'%s'" % perm)
             except AttributeError:
                 self.permissions = []
 

@@ -23,9 +23,11 @@ from django.conf import settings
 from django.utils.text import truncate_words
 from django.contrib.auth.models import User
 
+from ecm import apps, plugins
 from ecm.apps.hr.models import Member
 from ecm.core import utils
-from ecm.apps.common.models import UpdateDate
+from ecm.apps.common.models import UpdateDate, UrlPermission
+from ecm.apps.scheduler.models import ScheduledTask
 from ecm.views import template_filters
 
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
@@ -73,3 +75,23 @@ if not User.objects.filter(username=settings.CRON_USERNAME):
     except:
         logger.exception("")
         raise
+#------------------------------------------------------------------------------
+def create_app_objects(app):
+    for task in app.tasks:
+        if not ScheduledTask.objects.filter(function=task['function']):
+            # we only consider the function as these tasks should
+            # be unique in the database
+            ScheduledTask.objects.create(**task)
+            logger.info("Created task '%s'" % task['function'])
+    for perm in app.permissions:
+        if not UrlPermission.objects.filter(pattern=perm):
+            UrlPermission.objects.create(pattern=perm)
+            logger.info("Created UrlPermission r'%s'" % perm)
+
+# The creation of the declared objects is delayed here.
+# If not, it would crash at first try of synchronizing the db
+# as tables are not created yet.
+for app in apps.LIST:
+    create_app_objects(app)
+for plugin in plugins.LIST:
+    create_app_objects(plugin)

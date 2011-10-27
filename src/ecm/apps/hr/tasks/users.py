@@ -63,7 +63,7 @@ def update_character_associations(user):
             for member in Member.objects.filter(characterID__in=ids):
                 new_ownerships.append((member, user))
         except eveapi.Error, e:
-            if e.code == 0 or 200 >= e.code > 300:
+            if e.code == 0 or 200 <= e.code < 300:
                 # authentication failure error codes.
                 # This happens if the vCode does not match the keyID
                 # or if the account is disabled
@@ -76,6 +76,7 @@ def update_character_associations(user):
                 # for all other errors, we abort the operation so that
                 # character associations are not deleted by mistake and
                 # therefore, that users find themselves with no access :)
+                LOG.error("%d: %s (user: '%s' keyID: %d)" % (e.code, str(e), user.username, user_api.keyID))
                 raise
         user_api.save()
     if invalid_apis:

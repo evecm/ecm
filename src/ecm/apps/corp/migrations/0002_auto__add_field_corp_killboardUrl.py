@@ -20,7 +20,7 @@ class Migration(SchemaMigration):
 
     models = {
         'corp.corp': {
-            'Meta': {'object_name': 'Corp'},
+            'Meta': {'ordering': "['id']", 'object_name': 'Corp'},
             'allianceID': ('django.db.models.fields.BigIntegerField', [], {}),
             'allianceName': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'allianceTicker': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
