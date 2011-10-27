@@ -1,4 +1,4 @@
-# encoding: utf-8
+#@PydevCodeAnalysisIgnore
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -7,13 +7,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'Corp.killboardUrl'
         db.add_column('corp_corp', 'killboardUrl', self.gf('django.db.models.fields.URLField')(max_length=255, null=True), keep_default=False)
 
 
     def backwards(self, orm):
-        
+
         # Deleting field 'Corp.killboardUrl'
         db.delete_column('corp_corp', 'killboardUrl')
 
