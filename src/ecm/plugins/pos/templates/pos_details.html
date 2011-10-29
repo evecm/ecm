@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block headtitle %}POS Details - {{ pos }}{% endblock %}
+
+{% block header_scripts %}
+<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+<!--<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.cluetip.css" />
+
+<script type="text/javascript" src="/m/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/m/js/lib/jquery.jeditable.js"></script>
+
+//-->
+<script type="text/javascript">
+<!--//const DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+//const COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+//-->
+AJAX_URL = "/pos/{{ pos.itemID }}/data";
+</script>
+
+<script type="text/javascript" src="/m/js/pos_table.js"></script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/pos">POS</a></li>
+<li><a href="/pos/{{ pos.itemID }}">{{ pos.mlocation }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">{{ pos.mlocation }}{%if pos.state != 4 %} <FONT color="Red"><B>NOT ONLINE !!</B></FONT>{% endif %}</h1>
+<table>
+<tr><td>
+<a Href="http://evemaps.dotlan.net/system/{{pos.location}}" target="_blank"><center>{{pos.location}} <img src="/m/img/DotLan.jpg" width=20 height=20/></center> </a>
+</td><td>
+<a Href="http://evemaps.dotlan.net/system/{{pos.location}}/{{mooname}}" target="_blank"><center>{{mooname}} <img src="/m/img/DotLan.jpg" width=20 height=20/></center> </a>
+</td></tr>
+</table>
+
+<table class="table display" id="fuel_table">
+  <thead> 
+    <tr>
+      {% for i in fields %}
+    	<th class="top" scope="col" >{{i}}</th>
+     {% endfor %} 
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="{{fields|length }}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <!-- display POS table -->
+  <tfoot> 
+    <tr> <!-- Headers -->
+    {% for i in fields %}
+    	<th>{{i}}</th>
+    {% endfor %}
+    </tr>
+  </tfoot>
+</table>
+{% endblock %}

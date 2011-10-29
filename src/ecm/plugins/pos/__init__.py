@@ -31,7 +31,7 @@ MENUS = [
 
 TASKS = [
     {
-        'function' : 'ecm.plugins.pos.tasks.reftypes.update',
+        'function' : 'ecm.plugins.pos.tasks.pos.update',
         'priority' : 100,
         'frequency' : 7,
         'frequency_units' : 43200, # twice a day
