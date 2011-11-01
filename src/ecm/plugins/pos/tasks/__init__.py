@@ -15,31 +15,5 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-
-NAME = 'pos'
-
-DEPENDS_ON = {
-    'common' : (2,),
-    'corp' : (2,),
-    'hr' : (2,),
-    'scheduler' : (2,),
-}
-
-MENUS = [
-     {'menu_title': 'POSes',    'menu_url': '',      'menu_items': [
-        {'item_title': 'POS', 'item_url': '', 'menu_items': []},
-    ]},
-]
-
-TASKS = [
-    {
-        'function' : 'ecm.plugins.pos.tasks.pos.update',
-        'priority' : 100,
-        'frequency' : 7,
-        'frequency_units' : 43200, # twice a day
-    },
-]
-
-URL_PERMISSIONS = [
-    r'^/pos.*$',
-]
+__date__ = "2011 11 01"
+__author__ = "JerryKhan"

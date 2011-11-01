@@ -18,7 +18,7 @@
 __date__ = "2011 04 23"
 __author__ = "JerryKhan"
 
-from ecm.data.pos.models import POS
+from ecm.plugins.pos.models import POS
 from django.contrib import admin
 
 class POSAdmin(admin.ModelAdmin):

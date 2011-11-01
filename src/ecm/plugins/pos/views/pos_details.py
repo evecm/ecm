@@ -24,9 +24,9 @@ from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, Http404
 from django.core.exceptions import ObjectDoesNotExist
-from ecm.data.pos.models import POS
+from ecm.plugins.pos.models import POS
 #from ecm.data.common.models import ColorThreshold
-from ecm.view.decorators import check_user_access
+from ecm.views.decorators import check_user_access
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -45,7 +45,7 @@ def onePos(request, pos_id):
         , 'mooname' : mooname
         , 'fields' : ['-','compo_name','compo_qte','compo_Nb jour','compo_nbHeures','compo_consomation','autres','graph']
     }
-    return render_to_response("pos/pos_details.html", data, RequestContext(request))
+    return render_to_response("pos_details.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 #@check_user_access()

@@ -18,7 +18,7 @@
 __date__ = "2010 04 23"
 __author__ = "JerryKhan"
 
-from ecm.data.pos.models import POS,FuelLevel,FUELCOMPOS # TODO database POS
+from ecm.plugins.pos.models import POS,FuelLevel,FUELCOMPOS # TODO database POS
 from ecm.core.eve import api,db,constants
 from ecm.core.parsers import checkApiVersion    
 from django.db import transaction

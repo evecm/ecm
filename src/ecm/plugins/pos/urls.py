@@ -20,14 +20,14 @@ __author__ = "JerryKhan"
 
 from django.conf.urls.defaults import patterns
 
-urlpatterns = patterns('ecm.view.pos',
+urlpatterns = patterns('ecm.plugins.pos.views',
     ###########################################################################
     # POS VIEWS
-    (r'^pos$',                                      'pos_list.all'),          # To access the list definition 
-    (r'^pos/list$',                                 'pos_list.all'),          # To access the list definition
-    (r'^pos/data$',                                 'pos_list.all_data'),     # for table jquery content getter
-    (r'^pos/test',                                  'pos_list.test'),         # for table jquery content getter
-    (r'^pos/(\d+)$',                                'pos_details.onePos'),    # TO BE DEFINED
-    (r'^pos/(\d+)/data$',                           'pos_details.fuel_data'), # NOT SURE IT IS NECESSARY NOW
+    (r'^$',                                     'pos_list.all'),          # To access the list definition 
+    (r'^list$',                                 'pos_list.all'),          # To access the list definition
+    (r'^data$',                                 'pos_list.all_data'),     # for table jquery content getter
+    (r'^test',                                  'pos_list.test'),         # for table jquery content getter
+    (r'^(\d+)$',                                'pos_details.onePos'),    # TO BE DEFINED
+    (r'^(\d+)/data$',                           'pos_details.fuel_data'), # NOT SURE IT IS NECESSARY NOW
 )
 

@@ -27,10 +27,10 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.text import truncate_words
 
-from ecm.data.pos.models import POS, FuelLevel, FUELCOMPOS, FUELID
-from ecm.data.common.models import ColorThreshold
-from ecm.view import extract_datatable_params
-from ecm.view.decorators import check_user_access #???
+from ecm.plugins.pos.models import POS, FuelLevel, FUELCOMPOS, FUELID
+from ecm.apps.common.models import ColorThreshold
+from ecm.views import extract_datatable_params
+from ecm.views.decorators import check_user_access #???
 from ecm.core import utils
 
 from ecm.core.eve import db # For getting invormation on POS type.
@@ -70,7 +70,7 @@ def all(request):
         , 'posColorStatus' : json.dumps(posColorStatus)
         #, 'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
-    return render_to_response("pos/pos_list.html", data, RequestContext(request))
+    return render_to_response("pos_list.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -187,4 +187,4 @@ def test(request):
         #, 'colorThresholds' : ColorThreshold.as_json()
         #, 'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
-    return render_to_response("pos/pos_list.html", data, RequestContext(request))
+    return render_to_response("pos_list.html", data, RequestContext(request))
