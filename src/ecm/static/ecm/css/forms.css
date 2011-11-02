@@ -1,5 +1,6 @@
 
 .content form {
+    width: auto;
     margin:10px auto 0 auto;
     text-align: center;
 }
@@ -33,11 +34,10 @@
 .content form fieldset {
     border:none;
     margin: 10px auto 0 auto;
-    width:300px;
 }
 .content form input {
     clear: both;
-    float: left;
+    /*float: left;*/
     margin:0 auto 5px auto;
     width:auto;
     padding:0.1em 0 0.2em 0;
@@ -62,6 +62,7 @@
     background:rgb(220,220,220);
     color:rgb(80,80,80);
 }
+
 
 .filter_form {
     clear: both;
@@ -95,3 +96,11 @@
     background:rgb(220,220,220);
     color:rgb(80,80,80);
 }
+
+ul.errorlist {
+    list-style: none;
+    color: red;
+    font-size: 120%;
+    padding-bottom: 1em;
+}
+

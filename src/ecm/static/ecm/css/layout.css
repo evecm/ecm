@@ -72,6 +72,11 @@ body {
     display: inherit;
 }
 
+.main > tbody, .main tbody > tr {
+        width: 100%  !important;
+        display: block;
+}
+
 .menu {
     min-width: 200px;
     width: 200px;
@@ -84,16 +89,16 @@ body {
 
 .page-content {
     width: 100%;
-    overflow:visible !important /*Firefox*/;
-    overflow:hidden /*IE6*/;
     font-size:1.0em;
     padding: 0 10px 10px 10px;
+    display: block;
 }
 
 .breadcrumbs {
     clear:both;
     padding: 1.0em 0 1.5em 0;
     margin-bottom: 10px;
+    width: 100%;
 }
 /* details in 'breadcrumbs.css' */
 

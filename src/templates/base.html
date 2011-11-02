@@ -81,11 +81,11 @@
       <tr>
 
         <!-- MENU -->
+        {% if user.is_authenticated %}
         <td class="menu">
-          {% if user.is_authenticated %}
           {{ user_menu|safe }}
-          {% endif %}
         </td>
+        {% endif %}
 
         <!-- MAIN CONTENT -->
         <td class="page-content">
