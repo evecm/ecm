@@ -1,4 +1,4 @@
-# encoding: utf-8
+#@PydevCodeAnalysisIgnore
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'POS'
         db.create_table('pos_pos', (
             ('itemID', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
@@ -70,7 +70,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting model 'POS'
         db.delete_table('pos_pos')
 
