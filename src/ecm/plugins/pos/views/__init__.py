@@ -17,3 +17,33 @@
 
 __date__ = "2011 11 01"
 __author__ = "JerryKhan"
+
+
+
+def print_duration(hours):
+    if hours / 24 > 0:
+        days = hours / 24
+        duration = '%dd' % days
+        hours = hours % 24
+        if hours > 0:
+            duration += '&nbsp;%dh' % hours
+        return duration
+    else:
+        return '%dh' % hours
+
+
+def print_fuel_quantity(quantity):
+    if quantity < 1000:
+        return str(quantity)
+    else:
+        quantity = quantity / 1000.0
+        if quantity < 1000:
+            return '%.1fK' % quantity
+        else:
+            return '%.1fM' % (quantity / 1000.0)
+
+def print_time(time):
+    try:
+        return time.strftime('%H:%M')
+    except ValueError:
+        return '???'

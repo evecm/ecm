@@ -26,17 +26,15 @@ DEPENDS_ON = {
 }
 
 MENUS = [
-     {'menu_title': 'POSes',    'menu_url': '',      'menu_items': [
-        {'item_title': 'POS', 'item_url': '', 'menu_items': []},
-    ]},
+     {'menu_title': 'POS',    'menu_url': '',      'menu_items': []},
 ]
 
 TASKS = [
     {
         'function' : 'ecm.plugins.pos.tasks.pos.update',
         'priority' : 100,
-        'frequency' : 7,
-        'frequency_units' : 43200, # twice a day
+        'frequency' : 6,
+        'frequency_units' : 3600, # hour
     },
 ]
 

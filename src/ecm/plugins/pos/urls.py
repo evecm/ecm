@@ -23,11 +23,10 @@ from django.conf.urls.defaults import patterns
 urlpatterns = patterns('ecm.plugins.pos.views',
     ###########################################################################
     # POS VIEWS
-    (r'^$',                                     'pos_list.all'),          # To access the list definition 
-    (r'^list$',                                 'pos_list.all'),          # To access the list definition
-    (r'^data$',                                 'pos_list.all_data'),     # for table jquery content getter
-    (r'^test',                                  'pos_list.test'),         # for table jquery content getter
-    (r'^(\d+)$',                                'pos_details.onePos'),    # TO BE DEFINED
-    (r'^(\d+)/data$',                           'pos_details.fuel_data'), # NOT SURE IT IS NECESSARY NOW
+    (r'^$',             'pos_list.all'),          # To access the list definition
+    (r'^data/$',        'pos_list.all_data'),     # ajax datatable getter
+    (r'^test/',         'pos_list.test'),         # ajax datatable getter
+    (r'^(\d+)/$',       'pos_details.onePos'),    # TO BE DEFINED
+    (r'^(\d+)/data/$',  'pos_details.fuel_data'), # NOT SURE IT IS NECESSARY NOW
 )
 

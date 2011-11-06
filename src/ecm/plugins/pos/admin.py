@@ -18,12 +18,39 @@
 __date__ = "2011 04 23"
 __author__ = "JerryKhan"
 
-from ecm.plugins.pos.models import POS
 from django.contrib import admin
 
-class POSAdmin(admin.ModelAdmin):
-    list_display = ['itemID', 'locationID', 'moonID', 'typeID', 'state', 'stateTimestamp','onlineTimestamp','standingOwnerID']
+from ecm.plugins.pos.models import POS, FuelLevel, FuelConsumption
 
+#------------------------------------------------------------------------------
+class POSAdmin(admin.ModelAdmin):
+    list_display = ['moon',
+                    'typeName',
+                    'state',
+                    'onlineTimestamp',
+                    'lastUpdate',
+                    'cachedUntil',
+                    'isotopes_admin_display']
+
+#------------------------------------------------------------------------------
+class FuelLevelAdmin(admin.ModelAdmin):
+    list_display = ['pos',
+                    'date',
+                    'fuel_admin_display',
+                    'quantity']
+
+#------------------------------------------------------------------------------
+class FuelConsumptionAdmin(admin.ModelAdmin):
+    list_display = ['pos',
+                    'fuel_admin_display',
+                    'consumption',
+                    'stability',
+                    'probableConsumption',
+                    'probableStability']
+
+#------------------------------------------------------------------------------
 admin.site.register(POS, POSAdmin)
+admin.site.register(FuelLevel, FuelLevelAdmin)
+admin.site.register(FuelConsumption, FuelConsumptionAdmin)
 
 

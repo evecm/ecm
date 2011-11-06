@@ -18,173 +18,167 @@
 __date__ = "2011-04-25"
 __author__ = "JerryKhan"
 
-import json
+import sys
+try:
+    import json
+except ImportError:
+    import django.utils.simplejson as json
 
-from django.db.models.aggregates import Min, Max
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.utils.text import truncate_words
 
-from ecm.plugins.pos.models import POS, FuelLevel, FUELCOMPOS, FUELID
-from ecm.apps.common.models import ColorThreshold
+from ecm.plugins.pos.views import print_fuel_quantity, print_duration, print_time
+from ecm.plugins.pos.models import POS, FuelLevel, FuelConsumption
 from ecm.views import extract_datatable_params
-from ecm.views.decorators import check_user_access #???
+from ecm.views.decorators import check_user_access
 from ecm.core import utils
+from ecm.plugins.pos import constants as C
 
-from ecm.core.eve import db # For getting invormation on POS type.
-from ecm.core.eve import constants as C
+# This table gives the association between the status of the POS
+# and the related CSS class for display
+POS_CSS_STATUS = {
+    0: 'pos-unanchored',
+    1: 'pos-offline',
+    2: 'pos-onlining',
+    3: 'pos-reinforced',
+    4: 'pos-online',
+}
 
-# Used to show shorter string for Titles
-pos_columns=[
-         ['Moon', 'mlocation'] 
-       , ['POS Type', 'typeID'] # This is an Hack ... should be better to have the complete type icone.
-       , ['Status', 'state']
-       , ['Online date','onlineTimeStamp']
-       , ['EU','enrichedUranium']   # 44
-       , ['O2','oxygen']            # 3683
-       , ['MP','mechanicalParts']   # 3689
-       , ['Coo','coolant']          # 9832       
-       , ['Rob','robotics']         # 9848
-       , ['LO','liquidOzone']       # 16273
-       , ['HW','heavyWater']        # 16272
-       , ['Isot.','']    # WE cannot sort with this column (more complex request maybe for future. (deactivated in js) 17887o,17888n,17889hy,16274he
-       , ['Stro.','strontiumClathrates'] # 16275
-       , ['hiden','hiden']
-       ]
-
-# This table gives the association between the status of the POS and the name of the related Lens Color for display
-# Keep in mind the state_texts defined in the POS model.
-posColorStatus={'Online':'Green', 'Onlining':'Yellow', 'Reinforced':'RedLight', 'Anchored/Offline':'Blue', 'Unanchorded':'Gray'}
-
-posColorChange={'1':'Green', '2':'Yellow', '3':'RedLight'} # not finished : ideato give a color to the risk of updating in the current hour.
+# not finished : idea to give a color to the risk of updating in the current hour.
+posColorChange = {
+    '1':'Green',
+    '2':'Yellow',
+    '3':'RedLight'
+}
 
 #------------------------------------------------------------------------------
+COLUMNS = [
+    # Name              Tooltip                 db_field
+    ['Location',        'Location',             'moon'],
+    ['Type',            'Type',                 'typeID'],
+    ['Status',          'Status',               'state'],
+    ['Cycle',           'Cycle Time',           'onlineTimestamp'],
+    ['EU',              'Enriched Uranium',     None],
+    ['O<sub>2</sub>',   'Oxygen',               None],
+    ['MP',              'Mechanical Parts',     None],
+    ['Cool',            'Coolant',              None],
+    ['Robo.',           'Robotics',             None],
+    ['LO',              'Liquid Ozone',         None],
+    ['HW',              'Heavy Water',          None],
+    ['Iso.',            'Isotopes',             None],
+    ['Sr',              'Strontium Clathrates', None],
+    ['Name',            None,                   None],
+]
 @check_user_access()
-def all(request):   
+def all(request):
     data = {
-          'posViewMode' : 'list'
-        , 'fields' : [ f for f,g in pos_columns ]
-        , 'colorThresholds' : ColorThreshold.as_json()
-        , 'posColorStatus' : json.dumps(posColorStatus)
-        #, 'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
+        'posViewMode' : 'List',
+        'columns' : [ (col, title) for col, title, _ in COLUMNS ],
+        'posCSSStatus' : json.dumps(POS_CSS_STATUS),
+        'posTextStatus' : json.dumps(POS.STATES),
     }
     return render_to_response("pos_list.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
-def all_data(request,b=False):
-    '''Read data when table request by Ajax.
-    This method takes into account search filter and segmentation table 
-    Read the http request (GET methode handling)
+def all_data(request):
+    '''
+    Read data when table request by Ajax.
+    This method takes into account search filter and segmentation table
+    Read the http request (GET method handling)
     '''
     try:
-        request=extract_datatable_params(request)
-    except KeyError:
+        params = extract_datatable_params(request)
+        REQ = request.GET if request.method == 'GET' else request.POST
+        params.displayMode = REQ.get('displayMode', 'quantities')
+    except:
         return HttpResponseBadRequest()
 
     # Query all by default.
-    query = POS.objects.all().select_related(depth=1) # manage cursor on all data
+    query = POS.objects.all().select_related(depth=1)
 
-    # Sortting
-    sort_col = "%s_nocase" % pos_columns[request.column][1]
-    # SQLite hack for making a case insensitive sort
-    query = query.extra(select={sort_col : "%s COLLATE NOCASE" % pos_columns[request.column][1]})
-    if not request.asc: sort_col = "-" + sort_col
-    query = query.extra(order_by=[sort_col])
+    # Sorting
+    if params.column > 3:
+        params.column = 0
+    sort_col = COLUMNS[params.column][2]
+    # SQL hack for making a case insensitive sort
+    if params.column == 1:
+        sort_col = sort_col + "_nocase"
+        sort_val = utils.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column][2])
+        query = query.extra(select={ sort_col : sort_val })
+
+    if not params.asc: sort_col = "-" + sort_col
+    query = query.extra(order_by=([sort_col]))
 
     # Then get the database content and translate to display table
     # manage the search filter
-    displayMode = 'Qtes' # by default
-    total_count = 0
-    filtered_count = 0
-    if request.search:
-        if request.search == 'Qtes':   displayMode = 'Qtes'
-        elif request.search == 'Days': displayMode = 'Days'
-        elif request.search == 'Hours': displayMode = 'Hours'    
-        else:
-            total_count = query.count()
-            query = POS.objects.filter(location__icontains=request.search)
-            filtered_count = query.count()
+    if params.search:
+        total_count = query.count()
+        query = POS.objects.filter(moon__icontains=params.search)
+        filtered_count = query.count()
     else:
         total_count = filtered_count = query.count()
-    
+
     pos_table = []
-    
-    #___________
-    def getit(typeid, _in=False):
-        try:
-            if _in: qlst = pos.fuel_levels.filter(typeID__in=typeid)
-            else:   qlst = pos.fuel_levels.filter(typeID=typeid)
-            quantity = qlst.latest().quantity
-            #print quantity,
-            if displayMode == 'Qtes': return quantity
-            if _in: cline = pos.fuel_consumptions.filter(typeID__in=typeid).get()
-            else:   cline = pos.fuel_consumptions.filter(typeID=typeid).get()
-            cons = cline.consumption
-            if not cons: return 'No Limit'
-            #print cons,
-            nbh = int(1.0 *quantity/cons)
-            #print nbh,
-            if displayMode == 'Hours': return nbh
-            nbj = nbh / 24
-            if displayMode == 'Days': return nbj
-            nbh = nbh % 24
-            st =  '%dD%dH' % (nbj,nbh)
-            #print st
-            return st 
-            
-        except Exception,msg:
-            print "ERROR",msg
-            return "ERR"
-    #___________
-         
-    #for pos in query:
-    for pos in query[request.first_id:request.last_id]:
+    for pos in query[params.first_id:params.last_id]:
         # Query into Fuel table to get last values. for the current POS
-        #print pos.Lk2Detail
-        try:
-            row = [
-                 pos.Lk2Detail()
-            #, pos.moonID
-               , pos.typeID
-               , pos.stateText()
-               , utils.print_time_min(pos.onlineTimestamp)
-               , getit(C.ID_EnrichedUranium)
-               , getit(C.ID_Oxygen)
-               , getit(C.ID_MechanicalPart)
-               , getit(C.ID_Coolant)
-               , getit(C.ID_Robotics)
-               , getit(C.ID_LiquidOzone)
-               , getit(C.ID_HeavyWater)
-               , getit(C.ID_ISOTOPS, _in=True)
-               , getit(C.ID_strontiumClathrates)
-               , pos.isotope
-               ]
-        except Exception,msg:
-            print msg
-            row = ['ERR','ERR','ERR','ERR','ERR','ERR','ERR','ERR','ERR','ERR','ERR','ERR','ERR','ERR']
-        #print row
+        row = [
+            pos.permalink,
+            pos.typeID,
+            pos.state,
+            print_time(pos.onlineTimestamp),
+            getFuelValue(pos, C.ENRICHED_URANIUM_TYPEID, params.displayMode),
+            getFuelValue(pos, C.OXYGEN_TYPEID, params.displayMode),
+            getFuelValue(pos, C.MECHANICAL_PARTS_TYPEID, params.displayMode),
+            getFuelValue(pos, C.COOLANT_TYPEID, params.displayMode),
+            getFuelValue(pos, C.ROBOTICS_TYPEID, params.displayMode),
+            getFuelValue(pos, C.LIQUID_OZONE_TYPEID, params.displayMode),
+            getFuelValue(pos, C.HEAVY_WATER_TYPEID, params.displayMode),
+            getFuelValue(pos, pos.isotopeTypeID, params.displayMode),
+            getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode),
+            pos.typeName,
+        ]
         pos_table.append(row)
-    
+
     json_data = {
-        "sEcho" : request.sEcho,
-        "iTotalRecords" : total_count,  # Number of lines 
+        "sEcho" : params.sEcho,
+        "iTotalRecords" : total_count,  # Number of lines
         "iTotalDisplayRecords" : filtered_count,# Number of displayed lines,
         "aaData" : pos_table
     }
     return HttpResponse(json.dumps(json_data))
 
+#------------------------------------------------------------------------------
+def getFuelValue(pos, fuelTypeID, displayMode):
+    try:
+        quantity = pos.fuel_levels.filter(typeID=fuelTypeID).latest().quantity
+    except FuelLevel.DoesNotExist:
+        quantity = 0
 
-def test(request):
-    '''fONCTION DE TEST
-    '''
-    data = {
-          'posViewMode' : 'list'
-        , 'fields' : [ f for f,g in pos_columns ]
-        #, 'colorThresholds' : ColorThreshold.as_json()
-        #, 'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
-    }
-    return render_to_response("pos_list.html", data, RequestContext(request))
+    if displayMode == 'quantities':
+        value = print_fuel_quantity(quantity)
+    else:
+        try:
+            fuelCons = pos.fuel_consumptions.get(typeID=fuelTypeID)
+            if fuelCons.probableConsumption == 0:
+                # if "probableConsumption" is 0, we fallback to "consumption"
+                consumption = fuelCons.consumption
+            else:
+                consumption = fuelCons.probableConsumption
+        except FuelConsumption.DoesNotExist:
+            consumption = sys.maxint
+
+        if consumption == 0:
+            value = '-'
+        else:
+            hoursLeft = int(quantity / consumption)
+
+            if displayMode == 'hours':
+                value = '%dh' % hoursLeft
+            else:
+                value = print_duration(hoursLeft)
+    return value
+

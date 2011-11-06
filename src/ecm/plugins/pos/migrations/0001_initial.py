@@ -11,29 +11,30 @@ class Migration(SchemaMigration):
         # Adding model 'POS'
         db.create_table('pos_pos', (
             ('itemID', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
-            ('locationID', self.gf('django.db.models.fields.BigIntegerField')(db_index=True)),
-            ('location', self.gf('django.db.models.fields.CharField')(default='???', max_length=256)),
-            ('moonID', self.gf('django.db.models.fields.BigIntegerField')()),
-            ('mlocation', self.gf('django.db.models.fields.CharField')(default='???', max_length=256)),
-            ('typeID', self.gf('django.db.models.fields.IntegerField')()),
-            ('state', self.gf('django.db.models.fields.IntegerField')()),
-            ('stateTimestamp', self.gf('django.db.models.fields.DateTimeField')()),
-            ('onlineTimestamp', self.gf('django.db.models.fields.DateTimeField')()),
-            ('cachedUntil', self.gf('django.db.models.fields.DateTimeField')()),
-            ('standingOwnerID', self.gf('django.db.models.fields.BigIntegerField')()),
-            ('typeName', self.gf('django.db.models.fields.CharField')(default='???', max_length=256)),
-            ('usageFlags', self.gf('django.db.models.fields.SmallIntegerField')()),
-            ('deployFlags', self.gf('django.db.models.fields.SmallIntegerField')()),
-            ('onStandingDropStanding', self.gf('django.db.models.fields.SmallIntegerField')()),
+            ('locationID', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
+            ('location', self.gf('django.db.models.fields.CharField')(default='', max_length=255)),
+            ('moonID', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
+            ('moon', self.gf('django.db.models.fields.CharField')(default='', max_length=255)),
+            ('typeID', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('typeName', self.gf('django.db.models.fields.CharField')(default='', max_length=255)),
+            ('state', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
+            ('stateTimestamp', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('onlineTimestamp', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('cachedUntil', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('usageFlags', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
+            ('deployFlags', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
             ('allowCorporationMembers', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('allowAllianceMembers', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('onStatusDropEnabled', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('onStatusDropStanding', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('onAggressionEnabled', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('onCorporationWarEnabled', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('customName', self.gf('django.db.models.fields.CharField')(max_length=256, null=True, blank=True)),
+            ('useStandingsFrom', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
+            ('standingThreshold', self.gf('django.db.models.fields.FloatField')(default=0.0)),
+            ('securityStatusThreshold', self.gf('django.db.models.fields.FloatField')(default=0.0)),
+            ('attackOnConcordFlag', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('attackOnAggression', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('attackOnCorpWar', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('lastUpdate', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('isotopeTypeID', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
+            ('customName', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('notes', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('lastUpdate', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
         ))
         db.send_create_signal('pos', ['POS'])
 
@@ -49,11 +50,23 @@ class Migration(SchemaMigration):
         db.create_table('pos_fuellevel', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('pos', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fuel_levels', to=orm['pos.POS'])),
-            ('typeID', self.gf('django.db.models.fields.IntegerField')()),
-            ('quantity', self.gf('django.db.models.fields.IntegerField')()),
             ('date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, db_index=True, blank=True)),
+            ('typeID', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
+            ('quantity', self.gf('django.db.models.fields.IntegerField')()),
         ))
         db.send_create_signal('pos', ['FuelLevel'])
+
+        # Adding model 'FuelConsumption'
+        db.create_table('pos_fuelconsumption', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('pos', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fuel_consumptions', to=orm['pos.POS'])),
+            ('typeID', self.gf('django.db.models.fields.IntegerField')()),
+            ('consumption', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('stability', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('probableConsumption', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('probableStability', self.gf('django.db.models.fields.IntegerField')(default=0)),
+        ))
+        db.send_create_signal('pos', ['FuelConsumption'])
 
 
     def backwards(self, orm):
@@ -66,6 +79,9 @@ class Migration(SchemaMigration):
 
         # Deleting model 'FuelLevel'
         db.delete_table('pos_fuellevel')
+
+        # Deleting model 'FuelConsumption'
+        db.delete_table('pos_fuelconsumption')
 
 
     models = {
@@ -105,41 +121,52 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        'pos.fuelconsumption': {
+            'Meta': {'ordering': "['pos', 'typeID']", 'object_name': 'FuelConsumption'},
+            'consumption': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'pos': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'fuel_consumptions'", 'to': "orm['pos.POS']"}),
+            'probableConsumption': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'probableStability': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'stability': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'typeID': ('django.db.models.fields.IntegerField', [], {})
+        },
         'pos.fuellevel': {
-            'Meta': {'ordering': "['pos', 'typeID', 'date']", 'object_name': 'FuelLevel'},
+            'Meta': {'ordering': "['pos', 'date', 'typeID']", 'object_name': 'FuelLevel'},
             'date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'pos': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'fuel_levels'", 'to': "orm['pos.POS']"}),
             'quantity': ('django.db.models.fields.IntegerField', [], {}),
-            'typeID': ('django.db.models.fields.IntegerField', [], {})
+            'typeID': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'})
         },
         'pos.pos': {
             'Meta': {'object_name': 'POS'},
             'allowAllianceMembers': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allowCorporationMembers': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'cachedUntil': ('django.db.models.fields.DateTimeField', [], {}),
-            'customName': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
-            'deployFlags': ('django.db.models.fields.SmallIntegerField', [], {}),
+            'attackOnAggression': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'attackOnConcordFlag': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'attackOnCorpWar': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'cachedUntil': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'customName': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'deployFlags': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
+            'isotopeTypeID': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
             'itemID': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
-            'lastUpdate': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'location': ('django.db.models.fields.CharField', [], {'default': "'???'", 'max_length': '256'}),
-            'locationID': ('django.db.models.fields.BigIntegerField', [], {'db_index': 'True'}),
-            'mlocation': ('django.db.models.fields.CharField', [], {'default': "'???'", 'max_length': '256'}),
-            'moonID': ('django.db.models.fields.BigIntegerField', [], {}),
+            'lastUpdate': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'location': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
+            'locationID': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
+            'moon': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
+            'moonID': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
             'notes': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'onAggressionEnabled': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'onCorporationWarEnabled': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'onStandingDropStanding': ('django.db.models.fields.SmallIntegerField', [], {}),
-            'onStatusDropEnabled': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'onStatusDropStanding': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'onlineTimestamp': ('django.db.models.fields.DateTimeField', [], {}),
+            'onlineTimestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'operators': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'operated_poses'", 'symmetrical': 'False', 'to': "orm['auth.User']"}),
-            'standingOwnerID': ('django.db.models.fields.BigIntegerField', [], {}),
-            'state': ('django.db.models.fields.IntegerField', [], {}),
-            'stateTimestamp': ('django.db.models.fields.DateTimeField', [], {}),
-            'typeID': ('django.db.models.fields.IntegerField', [], {}),
-            'typeName': ('django.db.models.fields.CharField', [], {'default': "'???'", 'max_length': '256'}),
-            'usageFlags': ('django.db.models.fields.SmallIntegerField', [], {})
+            'securityStatusThreshold': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
+            'standingThreshold': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
+            'state': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
+            'stateTimestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'typeID': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'typeName': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
+            'usageFlags': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
+            'useStandingsFrom': ('django.db.models.fields.BigIntegerField', [], {'default': '0'})
         }
     }
 

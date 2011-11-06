@@ -2,64 +2,91 @@
  * "POS" table setup *
  *************************/
 /**
- * Needs three global constants to be defined in the HTML page.
- *      - XXXX DIRECTOR_ACCESS_LVL XXXX
- *      - COLOR_THRESHOLDS
- *      - POSCOLORSTATUS
+ * Needs 4 global constants to be defined in the HTML page.
+ *      - POS_CSS_STATUS
+ *      - POS_TEXT_STATUS
  *      - AJAX_URL
+ *      - DISPLAY_MODE
  **/
 $(document).ready(function() {
-	  var table = $('#pos_table').dataTable( {
+    updateButtons();
+    var table = $('#pos_table').dataTable( {
         "sPaginationType": "full_numbers",
         "bProcessing": true,
         "bServerSide": true,
         "bAutoWidth": false,
-        "iDisplayLength": 25, 		/* default display 25 items */
+        "iDisplayLength": 10, 		/* default display 10 items */
         "bStateSave": true, 		/* table state persistance */
         "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
         "sAjaxSource": AJAX_URL,
         "sDom": 'lprtip', 			/* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
-            { /* System 0*/       "sWidth": "18%",  "sType": "html"    },
-            { /* Type 1*/         "sWidth": "1%",   "sType": "html"    },
-            { /* status 3*/       "sWidth": "6%",   "sType": "string"  },
-            { /* Time 2*/ 	      "sWidth": "7%",  "sType": "string"  },
-            { /* EU 4*/           "sWidth": "4%",   "sType": "string"  },
-            { /* O2 5*/           "sWidth": "4%",   "sType": "string"  },
-            { /* MP 6*/           "sWidth": "4%",   "sType": "string"  },
-            { /* Coo 7*/          "sWidth": "4%",   "sType": "string"  },
-            { /* Rob 8*/          "sWidth": "4%",   "sType": "string"  },
-            { /* LO 9*/           "sWidth": "4%",   "sType": "string"  },
-            { /* HW 10*/          "sWidth": "4%",   "sType": "string"  },
-            { /* ISOT 11*/        "sWidth": "4%",   "sType": "string"  },
-            { /* Stront 12*/      "sWidth": "3%",   "sType": "string"  },
-            { /* ISOTy -> HIDDEN */ "bVisible": false }
-            //{ /* ISOTy -> HIDDEN */"sWidth": "4%",   "sType": "string"  },
+            { /* 0 Location */ "sWidth": "12%", "sType": "html" },
+            { /* 1 Type */     "sWidth": "1%",  "sType": "html", "sClass": "center" },
+            { /* 2 status */   "sWidth": "1%",  "sType": "html" },
+            { /* 3 Time */ 	   "sWidth": "2%",  "sType": "string" },
+            { /* 4 EU */       "sWidth": "4%",  "sType": "string", "bSortable": false },
+            { /* 5 O2 */       "sWidth": "4%",  "sType": "string", "bSortable": false },
+            { /* 6 MP */       "sWidth": "4%",  "sType": "string", "bSortable": false },
+            { /* 7 Coo */      "sWidth": "4%",  "sType": "string", "bSortable": false },
+            { /* 8 Rob */      "sWidth": "4%",  "sType": "string", "bSortable": false },
+            { /* 9 LO */       "sWidth": "4%",  "sType": "string", "bSortable": false },
+            { /* 10 HW */      "sWidth": "4%",  "sType": "string", "bSortable": false },
+            { /* 11 Isot */    "sWidth": "4%",  "sType": "string", "bSortable": false },
+            { /* 12 Stront */  "sWidth": "4%",  "sType": "string", "bSortable": false },
+            { /* 13 Name HIDDEN */  "bVisible": false, "bSortable": false }
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-		  	$('td:eq(1)', nRow).html('<img src="../m/img/'+aData[13]+'.png" title="'+aData[1]+'-'+aData[13]+'">')
-		  	//$('td:eq(2)', nRow).addClass("row-" + getAccessColor(aData[2], COLOR_THRESHOLDS));
-		  	$('td:eq(2)', nRow).html('<span valign="middle"><img src="../m/img/lens'+POSCOLORSTATUS[aData[2]]+'.png" title="'+aData[2]+'" style="vertical-align: middle;">'+aData[2]+'</span>')
-		  	$('td:eq(3)', nRow).html('<span valign="middle"><img src="../m/img/lensGreen.png" title="'+aData[3]+'" style="vertical-align: middle;">'+aData[3].split(' ')[4]+'</span>')
-            //$('td:eq(13)', nRow).hide()
+            posTypeID = aData[1];
+            posImgUrl = 'http://image.eveonline.com/Type/' + posTypeID + '_32.png';
+            $('td:eq(1)', nRow).html('<img src="' + posImgUrl + '" title="' + aData[13] + '"/>');
+
+            posState = aData[2];
+            $('td:eq(2)', nRow).addClass(POS_CSS_STATUS[posState]);
+            $('td:eq(2)', nRow).attr('title', POS_TEXT_STATUS[posState]);
+            $('td:eq(2)', nRow).html('');
+
+            for (var i=4; i<13; i++) {
+                $('td:eq(' + i + ')', nRow).addClass('right');
+                if (aData[i] == '0' || aData[i] == '0h') {
+                    $('td:eq(' + i + ')', nRow).addClass('fuel-warning');
+                }
+            }
+
+            $('td:eq(13)', nRow).hide();
             return nRow;
         },
-       
+
+        /* this function will be called when the table has to query data to be displayed */
+        "fnServerData": function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                "name": "displayMode",
+                "value": DISPLAY_MODE
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+
         /* the search field being outside the table object, we need to save its status
          * explicitly here in order to restore it with the rest */
         "fnStateSaveCallback": function (oSettings, sValue) {
             var sFilter = $("#search_text").val();
             sValue = sValue.replace( /"sFilter":".*?"/, '"sFilter":"' + sFilter + '"' );
+            sValue += ', "displayMode": "' + DISPLAY_MODE + '"';
             return sValue;
         },
         /* restore the search field content */
         "fnStateLoadCallback": function (oSettings, oData) {
             $("#search_text").val(oData.sFilter);
+            DISPLAY_MODE = oData.displayMode;
+            updateButtons();
             return true;
         }
     });
-	
-	/* trigger the search when pressing return in the text field */
+
+    /* trigger the search when pressing return in the text field */
     $("#search_form").submit(function(event) {
         event.preventDefault();
         table.fnFilter($("#search_text").val());
@@ -81,20 +108,44 @@ $(document).ready(function() {
             event.shiftKey = false;
         }
     });
+
     /* Button to select quatities values */
-    $("#Quantities_button").click(function() {
-        //$("#search_text").val("");
-        table.fnFilter("Qtes");
+    $("#quantities_button").click(function() {
+        if (DISPLAY_MODE != 'quantities') {
+            DISPLAY_MODE = 'quantities';
+            updateButtons();
+            table.fnDraw();
+        }
     });
-    /* reset the search when clicking the "reset" button */
-    $("#Days_button").click(function() {
-        //$("#search_text").val("");
-        table.fnFilter("Days");
+    $("#days_button").click(function() {
+        if (DISPLAY_MODE != 'days') {
+            DISPLAY_MODE = 'days';
+            updateButtons();
+            table.fnDraw();
+        }
     });
-    /* reset the search when clicking the "reset" button */
-    $("#Hours_button").click(function() {
-        //$("#search_text").val("");
-        table.fnFilter("Hours");
+    $("#hours_button").click(function() {
+        if (DISPLAY_MODE != 'hours') {
+            DISPLAY_MODE = 'hours';
+            updateButtons();
+            table.fnDraw();
+        }
     });
 });
 
+
+function updateButtons() {
+    if (DISPLAY_MODE == 'quantities') {
+        $("#quantities_button").addClass('selected');
+        $("#days_button").removeClass('selected');
+        $("#hours_button").removeClass('selected');
+    } else if (DISPLAY_MODE == 'days') {
+        $("#quantities_button").removeClass('selected');
+        $("#days_button").addClass('selected');
+        $("#hours_button").removeClass('selected');
+    } else if (DISPLAY_MODE == 'hours') {
+        $("#quantities_button").removeClass('selected');
+        $("#days_button").removeClass('selected');
+        $("#hours_button").addClass('selected');
+    }
+}
