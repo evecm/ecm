@@ -23,7 +23,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from ecm.core.eve import constants
-from ecm.data.industry.models.catalog import OwnedBlueprint
+from ecm.plugins.industry.models.catalog import OwnedBlueprint
 
 #------------------------------------------------------------------------------
 class InventionPolicy(models.Model):

@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 from django.contrib import admin
 
-from ecm.data.industry.models import FactorySlot, InventionPolicy, Job, MileStone, Order, \
+from ecm.plugins.industry.models import FactorySlot, InventionPolicy, Job, MileStone, Order, \
                                      OrderLog, OrderRow, OwnedBlueprint, PriceHistory, \
                                      Pricing, ProductionSite, StockLevel, StockMargin, \
                                      SupplyPrice, CatalogEntry

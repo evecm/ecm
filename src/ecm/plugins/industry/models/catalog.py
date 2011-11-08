@@ -59,10 +59,10 @@ class CatalogEntry(models.Model):
     def __getattr__(self, attrName):
         try:
             if self.__item is not None:
-                return Item.__getattr__(self.__item, attrName)
+                return getattr(self.__item, attrName)
             else:
                 self.__item = Item.new(self.typeID)
-                return Item.__getattr__(self.__item, attrName)
+                return getattr(self.__item, attrName)
         except AttributeError:
             return models.Model.__getattribute__(self, attrName)
 

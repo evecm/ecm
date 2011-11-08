@@ -25,26 +25,24 @@ from django.template.context import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 
-from ecm.data.industry.models import Order
-from ecm.data.industry.models.catalog import CatalogEntry
+from ecm.plugins.industry.models import Order
+from ecm.plugins.industry.models.catalog import CatalogEntry
 
-
-#------------------------------------------------------------------------------
-@login_required
-def new(request):
-    return render_to_response('industry/order_create.html', {}, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @login_required
 def create(request):
-    items, valid_order = extract_order_items(request)
+    if request.method == 'POST':
+        items, valid_order = extract_order_items(request)
 
-    if valid_order:
-        order = Order.objects.create(originator=request.user, pricing_id=1)
-        order.modify(items)
-        return redirect('/industry/orders/%d' % order.id)
+        if valid_order:
+            order = Order.objects.create(originator=request.user, pricing_id=1)
+            order.modify(items)
+            return redirect('/industry/orders/%d/' % order.id)
     else:
-        return render_to_response('industry/order_create.html', {'items': items}, RequestContext(request))
+        items = []
+
+    return render_to_response('order_create.html', {'items': items}, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -58,8 +56,7 @@ def details(request, order_id):
 
     data = {'order' : order, 'logs': logs}
 
-    return render_to_response('industry/order_details.html', data, RequestContext(request))
-
+    return render_to_response('order_details.html', data, RequestContext(request))
 
 
 #------------------------------------------------------------------------------
@@ -72,14 +69,14 @@ def modify(request, order_id):
         raise Http404()
 
     if request.method == 'GET':
-        return render_to_response('industry/order_modify.html', {'order': order}, RequestContext(request))
+        return render_to_response('order_modify.html', {'order': order}, RequestContext(request))
     elif request.method == 'POST':
         items, valid_order = extract_order_items(request)
         if valid_order:
             order.modify(items)
-            return redirect('/industry/orders/%d' % order.id)
+            return redirect('/industry/orders/%d/' % order.id)
         else:
-            return redirect('/industry/orders/%d/modify' % order.id)
+            return redirect('/industry/orders/%d/modify/' % order.id)
     else:
         return HttpResponseBadRequest()
 

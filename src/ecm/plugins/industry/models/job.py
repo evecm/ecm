@@ -23,8 +23,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from ecm.core.eve.classes import Item, NoBlueprintException
-from ecm.data.industry.models.research import InventionPolicy
-from ecm.data.industry.models.catalog import OwnedBlueprint
+from ecm.plugins.industry.models.research import InventionPolicy
+from ecm.plugins.industry.models.catalog import OwnedBlueprint
 
 #------------------------------------------------------------------------------
 class Job(models.Model):

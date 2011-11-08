@@ -24,7 +24,7 @@ from django.db import transaction
 from django.conf import settings
 
 from ecm.core import evecentral
-from ecm.data.industry.models import SupplyPrice
+from ecm.plugins.industry.models import SupplyPrice
 
 logger = logging.getLogger(__name__)
 
