@@ -19,10 +19,14 @@ from ecm.core import utils
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
 
-import json
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 from datetime import datetime, timedelta
 
-from django.db.models.aggregates import Min, Max
+from django.db.models.aggregates import Min, Max, Sum
 from django.db import connection
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
@@ -35,18 +39,27 @@ from ecm.data.accounting.models import JournalEntry
 from ecm.view import extract_datatable_params, getScanDate
 
 DATE_PATTERN = "%Y-%m-%d"
+OPERATION_TYPES = (16, 17, 33, 34, 85, 99, 103)
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def member_contrib(request):
+    """
+    View function URL : '/accounting/contributions'
+    """
     from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
     if from_date is None: from_date = datetime.fromtimestamp(0)
     to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
     if to_date is None: to_date = datetime.now()
+
+    query = JournalEntry.objects.filter(type__in=OPERATION_TYPES,
+                                        date__gte=from_date, date__lte=to_date)
+    total_contribs = query.aggregate(sum=Sum('amount'))['sum']
     data = {
         'scan_date' : getScanDate(JournalEntry),
         'from_date' : datetime.strftime(from_date, DATE_PATTERN),
-        'to_date' : datetime.strftime(to_date, DATE_PATTERN)
+        'to_date' : datetime.strftime(to_date, DATE_PATTERN),
+        'total_contribs' : total_contribs,
     }
     return render_to_response("accounting/contrib.html", data, RequestContext(request))
 
@@ -54,6 +67,9 @@ def member_contrib(request):
 columns = ['LOWER("name")', '"tax_contrib"']
 @check_user_access()
 def member_contrib_data(request):
+    """
+    View function URL : '/accounting/contributions/members/data'
+    """
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
@@ -88,6 +104,9 @@ def member_contrib_data(request):
 #------------------------------------------------------------------------------
 @check_user_access()
 def system_contrib_data(request):
+    """
+    View function URL : '/accounting/contributions/systems/data'
+    """
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
@@ -125,14 +144,37 @@ def system_contrib_data(request):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
+@check_user_access()
+def total_contrib_data(request):
+    """
+    View function URL : '/accounting/contributions/total/data'
+    """
+    try:
+        REQ = request.GET if request.method == 'GET' else request.POST
+        from_date = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
+        to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+    except (KeyError, ValueError):
+        from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
+        if from_date is None: from_date = datetime.fromtimestamp(0)
+        to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
+        if to_date is None: to_date = datetime.now()
+
+    query = JournalEntry.objects.filter(type__in=OPERATION_TYPES,
+                                        date__gte=from_date, date__lte=to_date)
+    total_contribs = query.aggregate(sum=Sum('amount'))['sum']
+
+    return HttpResponse(utils.print_float(total_contribs))
+
+
+#------------------------------------------------------------------------------
 MEMBER_CONTRIB_SQL = '''SELECT m."characterID" AS "characterID", m."name" AS "name", SUM(j."amount") AS "tax_contrib"
  FROM "roles_member" AS m, "accounting_journalentry" AS j
- WHERE j."type_id" IN (16, 17, 33, 34, 85)
+ WHERE j."type_id" IN %s
   AND j."ownerID2" = m."characterID"
-  AND j."date" > %s
-  AND j."date" < %s
+  AND j."date" > %%s
+  AND j."date" < %%s
  GROUP BY m."characterID", m."name"
- ORDER BY '''
+ ORDER BY ''' % str(OPERATION_TYPES)
 def member_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(),
                          order_by="tax_contrib", ascending=False):
 
@@ -144,11 +186,11 @@ def member_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(
 #------------------------------------------------------------------------------
 SYSTEM_CONTRIB_SQL = '''SELECT j."argName1" AS "argName1", SUM(j."amount") AS "tax_contrib"
  FROM "accounting_journalentry" AS j
- WHERE j."type_id" IN (85)
-   AND j."date" > %s
-   AND j."date" < %s
+ WHERE j."type_id" IN %s
+   AND j."date" > %%s
+   AND j."date" < %%s
  GROUP BY j."argName1"
- ORDER BY '''
+ ORDER BY ''' % str(OPERATION_TYPES)
 def system_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(),
                          order_by="tax_contrib", ascending=False):
 

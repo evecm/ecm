@@ -49,7 +49,7 @@ def check_file(file, license, modify):
                     INSERTED += 1
                 else:
                     print "No license header in", file
-        except Exception as e:
+        except Exception, e:
             print e
             
 

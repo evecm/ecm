@@ -19,7 +19,11 @@ __date__ = "2011 5 23"
 __author__ = "diabeteman"
 
 
-import json
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
@@ -50,7 +54,7 @@ def list(request):
         })
 
     entryTypes = [{ 'refTypeID' : 0, 'refTypeName' : 'All', 'selected' : entryTypeID == 0 }]
-    for et in EntryType.objects.exclude(refTypeID=0).order_by('refTypeID'):
+    for et in EntryType.objects.exclude(refTypeID=0).order_by('refTypeName'):
         entryTypes.append({
             'refTypeID' : et.refTypeID,
             'refTypeName' : et.refTypeName,
@@ -134,7 +138,7 @@ def list_data(request):
             try:
                 if int(entry.ownerID1) == corporationID and int(entry.ownerID2) == corporationID:
                     related_entry = other_entries.filter(refID=entry.refID).exclude(id=entry.id)[0]
-                    owner2 = related_entry.wallet.permalink
+                    owner2 = related_entry.wallet.name
             except:
                 pass
         else:
@@ -142,7 +146,7 @@ def list_data(request):
 
         entries.append([
             print_time_min(entry.date),
-            entry.wallet.permalink,
+            entry.wallet.name,
             entry.type.refTypeName,
             owner1,
             owner2,

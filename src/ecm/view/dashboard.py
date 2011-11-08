@@ -18,7 +18,11 @@
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
-import json
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext

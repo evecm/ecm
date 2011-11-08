@@ -19,7 +19,11 @@ __date__ = "2010-12-25"
 
 __author__ = "diabeteman"
 
-import json
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 from datetime import datetime, timedelta
 
 from django.shortcuts import render_to_response, redirect

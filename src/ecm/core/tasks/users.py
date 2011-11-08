@@ -62,7 +62,7 @@ def update_character_associations(user):
             user_api.is_valid = True
             for member in Member.objects.filter(characterID__in=ids):
                 new_ownerships.append((member, user))
-        except eveapi.Error as e:
+        except eveapi.Error, e:
             if e.code == 0 or 200 >= e.code > 300:
                 # authentication failure error codes.
                 # This happens if the vCode does not match the keyID
@@ -149,10 +149,13 @@ except Group.DoesNotExist:
 @transaction.commit_on_success
 def update_all_users_accesses():
     try:
-        t = ScheduledTask.objects.get(function__contains='update_all_character_associations')
-        if not t.is_last_exec_success:
-            raise RuntimeWarning("Last character associations update failed. "
-                                 "Skipping user access update.")
+        try:
+            t = ScheduledTask.objects.get(function__contains='update_all_character_associations')
+            if not t.is_last_exec_success:
+                raise RuntimeWarning("Last character associations update failed. "
+                                     "Skipping user access update.")
+        except ScheduledTask.DoesNotExist:
+            pass
         logger.info("Updating user accesses from their in-game roles...")
         for user in User.objects.filter(is_active=True):
             update_user_accesses(user)

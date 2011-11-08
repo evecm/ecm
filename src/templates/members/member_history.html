@@ -26,6 +26,12 @@
 {% block main_content %}
 <h1 class="pagetitle">Members History <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
 
+<form id="search_form" class="search_form">
+    <input type="text" id="search_text" value="" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+</form>
+
 <table class="table display" id="history_table">
   <thead>
     <tr>

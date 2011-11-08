@@ -14,10 +14,13 @@
 
 <h1 class="pagetitle">Add API Key</h1>
 
+<a href="https://support.eveonline.com/api/Key/CreatePredefined/{{accessMask}}" target="_blank">
+    Create a new API Key on EVE-Online support website</a>
+
 <form class="signupform" action="/account/addapi" method="post">{% csrf_token %}
     {% if form.errors %}
     <p class="error">{{ form.non_field_errors }}</p>
-    {% endif %} 
+    {% endif %}
     <fieldset>
         <span class="label">{{ form.keyID.label_tag }}{{ form.keyID.errors }}</span>
         {{ form.keyID }}

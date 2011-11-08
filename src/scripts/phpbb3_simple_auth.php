@@ -19,18 +19,18 @@
  */
 
 /******************************************************************************
- * PHPBB2 synchronization script for ECM
+ * PHPBB3 synchronization script for ECM
  *
  * Please read http://code.google.com/p/eve-corp-management/wiki/ExternalAppsSync
  * for installation instructions.
  *
  * It accepts a HTTP POST request with 2 parameters 'username' and 'password'
- * It looks in PHPBB's user table if the username exists. Then it checks if 
+ * It looks in PHPBB's user table if the username exists. Then it checks if
  * passwords match.
- * If the passwords match, the script returns a HTTP 200 OK response containing 
+ * If the passwords match, the script returns a HTTP 200 OK response containing
  * the 'user_id'
  *
- * If the user does not exist or if the passwords don't match, it returns an 
+ * If the user does not exist or if the passwords don't match, it returns an
  * empty HTTP 200 response.
  * If there is an error accessing the DB, a HTTP 500 error is returned.
  ******************************************************************************/

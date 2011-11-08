@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 '''
@@ -28,7 +28,11 @@ import os
 from os import path
 import sys
 import base64
-import json
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 import urllib2
 import MySQLdb
 import logging
@@ -41,8 +45,8 @@ DB_PORT     = 3306
 DB_USER     = '' # to complete
 DB_PASSWD   = '' # to complete
 DB_NAME     = ''
-DB_TABLES   = {'groups'      : 'forumprefix_groups', 
-               'users'       : 'forumprefix_user', 
+DB_TABLES   = {'groups'      : 'forumprefix_groups',
+               'users'       : 'forumprefix_user',
                'user_groups' : 'forumprefix_user_group'}
 #------------------------------------------------------------------------------
 # ECM connection info
@@ -87,7 +91,7 @@ def fetch_ecm_data():
     response = urllib2.urlopen(request)
     groups = json.loads(response.read())
     response.close()
-    
+
     request = urllib2.Request(ECM_URL + ECM_USERS)
     request.add_header("Authorization", "Basic %s" % base64string)
     response = urllib2.urlopen(request)
@@ -101,10 +105,12 @@ SQL_LOCK = 'LOCK TABLES `%s`.`%s` WRITE;' % (DB_NAME, DB_TABLES['user_groups'])
 SQL_UNLOCK = 'UNLOCK TABLES;'
 SQL_BEGIN = 'BEGIN;'
 SQL_COMMIT = 'COMMIT;'
-SQL_CLEAN_MANAGED_GROUPS = '''DELETE FROM `%s`.`%s` 
+SQL_CLEAN_MANAGED_GROUPS = '''DELETE FROM `%s`.`%s`
 WHERE `group_id` IN %%s;''' % (DB_NAME, DB_TABLES['user_groups'])
-SQL_ADD_USER_TO_GROUP = '''insert into `%s`.`%s`(group_id, user_id, user_pending) 
+SQL_ADD_USER_TO_GROUP = '''insert into `%s`.`%s`(group_id, user_id, user_pending)
 values (%%s, %%s, 0);''' % (DB_NAME, DB_TABLES['user_groups'])
+SQL_RESET_DEFAULT_GROUPS = '''UPDATE `%s`.`%s`
+SET `group_id` = 3 WHERE `group_id` IN %%s;''' % (DB_NAME, DB_TABLES['users'])
 
 def update_forum_access(managed_groups, users):
     if not managed_groups or not users:
@@ -113,17 +119,18 @@ def update_forum_access(managed_groups, users):
     try:
         logger.debug('Updating database...')
         conn = None
-        conn = MySQLdb.connect(host=DB_HOST, 
-                             port=DB_PORT, 
-                             user=DB_USER, 
-                             passwd=DB_PASSWD, 
+        conn = MySQLdb.connect(host=DB_HOST,
+                             port=DB_PORT,
+                             user=DB_USER,
+                             passwd=DB_PASSWD,
                              db=DB_NAME)
         cursor = conn.cursor()
         cursor.execute(SQL_LOCK)
         logger.debug('Locked table "%s"' % DB_TABLES['user_groups'])
-    
+
         cursor.execute(SQL_BEGIN)
         cursor.execute(SQL_CLEAN_MANAGED_GROUPS, (managed_groups,))
+        cursor.execute(SQL_RESET_DEFAULT_GROUPS, (managed_groups,))
         logger.info('Removed all users from groups %s' % str(managed_groups))
         for u in users:
             id = u['external_id']
@@ -132,7 +139,7 @@ def update_forum_access(managed_groups, users):
             for g in groups:
                 cursor.execute(SQL_ADD_USER_TO_GROUP, (g, id))
             logger.info('Updated user %s (%s) with groups %s', name, str(id), str(groups))
-        
+
         logger.debug('Committing modifications to the database...')
         cursor.execute(SQL_COMMIT)
         cursor.execute(SQL_UNLOCK)
@@ -141,7 +148,7 @@ def update_forum_access(managed_groups, users):
         conn.commit()
         logger.info('UPDATE SUCCESSFUL')
     except:
-        if conn is not None: 
+        if conn is not None:
             conn.rollback()
             logger.warning('Rollbacked modifications')
         raise

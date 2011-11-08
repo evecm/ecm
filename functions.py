@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import with_statement
+
 import sys
 from os import path
 import fnmatch
@@ -128,7 +130,14 @@ def download_eve_db(options):
 
         log.info('Expanding %s to %s...', options.eve_zip_archive, options.eve_db_dir)
         zip_file_desc = zipfile.ZipFile(options.eve_zip_archive, 'r')
-        zip_file_desc.extractall(options.eve_db_dir)
+        for info in zip_file_desc.infolist():
+            fname = info.filename
+            data = zip_file_desc.read(fname)
+            filename = os.path.join(options.eve_db_dir, fname)
+            file_out = open(filename, 'wb')
+            file_out.write(data)
+            file_out.flush()
+            file_out.close()
         zip_file_desc.close()
         log.info('Expansion complete.')
     finally:

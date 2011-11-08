@@ -174,6 +174,8 @@ urlpatterns += patterns('ecm.view.accounting',
     (r'^accounting/contributions$', 'contrib.member_contrib'),
     (r'^accounting/contributions/members/data$', 'contrib.member_contrib_data'),
     (r'^accounting/contributions/systems/data$', 'contrib.system_contrib_data'),
+    (r'^accounting/contributions/total/data$', 'contrib.total_contrib_data'),
+
 )
 
 urlpatterns += patterns('ecm.view.api',
