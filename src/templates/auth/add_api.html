@@ -6,8 +6,8 @@
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/account">Account</a></li>
-<li><a href="/account/addapi">Add API Key</a></li>
+<li><a href="/account/">Account</a></li>
+<li><a href="/account/addapi/">Add API Key</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -17,7 +17,7 @@
 <a href="https://support.eveonline.com/api/Key/CreatePredefined/{{accessMask}}" target="_blank">
     Create a new API Key on EVE-Online support website</a>
 
-<form class="signupform" action="/account/addapi" method="post">{% csrf_token %}
+<form class="signupform" action="/account/addapi/" method="post">{% csrf_token %}
     {% if form.errors %}
     <p class="error">{{ form.non_field_errors }}</p>
     {% endif %}

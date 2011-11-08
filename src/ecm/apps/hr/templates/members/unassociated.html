@@ -1,0 +1,130 @@
+{% extends "hr_base.html" %}
+
+{% block headtitle %}Unassociated Members{% endblock %}
+
+
+{% block other_scripts %}
+<script type="text/javascript">
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+AJAX_URL = '/{{ app_prefix }}/members/unassociated/data/';
+COOKIE_NAME = 'ecm_unassociated_table_';
+</script>
+<script type="text/javascript" src="/s/hr/js/members_table.js"></script>
+
+
+<style type="text/css">
+div.container {
+float:left;
+}
+
+div.button {
+    float:left;
+    margin:10px auto 5px auto;
+    padding:3px 5px;
+    background:rgb(230,230,230);
+    border:solid 1px rgb(150,150,150);
+    text-align:center;
+    font-family:verdana,arial,sans-serif;
+    color:rgb(150,150,150); font-size:110%;
+}
+div.button.hover {
+    cursor:pointer;
+    border:solid 1px rgb(80,80,80);
+    background:rgb(220,220,220);
+    color:rgb(80,80,80);
+}
+</style>
+
+<script type="text/javascript" src="/s/hr/js/lib/ZeroClipboard.js"></script>
+{% endblock %}
+
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/{{ app_prefix }}/members/">Members</a></li>
+<li><a href="/{{ app_prefix }}/members/unassociated/">Unassociated</a></li>
+{% endblock %}
+
+
+
+{% block main_content %}
+<h1 class="pagetitle">Unassociated Member List <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
+
+<form id="search_form" class="search_form">
+    <input type="text" id="search_text" value="" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+</form>
+
+<div id="clip_container" class="container" style="position:relative">
+    <div id="copy_to_clip" class="button"  >Copy to Clipboard...</div>
+</div>
+<img id="loading_gif" alt="loading..." src="/s/ecm/img/throbber.gif" />
+
+<script type="text/javascript">
+$("#loading_gif").hide();
+ZeroClipboard.setMoviePath("/s/hr/js/lib/ZeroClipboard.swf");
+var clip = new ZeroClipboard.Client();
+
+clip.setHandCursor( true );
+clip.setCSSEffects( true );
+
+
+function callback(data) {
+    $("#loading_gif").hide();
+    clip.setText(data);
+}
+
+
+clip.addEventListener('complete', function(client, text) {
+    alert("Data has been copied to the clipboard.");
+});
+
+clip.addEventListener('mouseUp', function(client) {
+    $("#loading_gif").show();
+    $.get("/{{ app_prefix }}/members/unassociated/clip/", callback);
+});
+
+clip.glue('copy_to_clip' , "clip_container");
+</script>
+
+
+
+
+
+<table class="table display" id="members_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Name</th>
+      <th class="top" scope="col" >Nickname</th>
+      <th class="top" scope="col" >Player</th>
+      <th class="top" scope="col" >Access Level</th>
+      <th class="top" scope="col" >Corp Date</th>
+      <th class="top" scope="col" >Last Login</th>
+      <th class="top" scope="col" >Location</th>
+      <th class="top" scope="col" style="display:none;">Titles</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Name</th>
+      <th>Nickname</th>
+      <th>Player</th>
+      <th>Access Level</th>
+      <th>Corp Date</th>
+      <th>Last Login</th>
+      <th>Location</th>
+      <th style="display:none;">Titles</th>
+    </tr>
+  </tfoot>
+
+</table>
+
+{% endblock %}

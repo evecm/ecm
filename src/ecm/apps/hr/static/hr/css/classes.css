@@ -1,0 +1,25 @@
+a.title {
+  padding-left: 14px;
+  background: url(../img/title.png) no-repeat left;
+}
+a.role {
+  padding-left: 14px;
+    background: url(../img/role.png) no-repeat left;
+}
+
+a.member {
+    padding-left: 14px;
+    background: url(../img/member.png) no-repeat left;
+}
+
+a.player {
+    padding-left: 18px;
+    background: url(../img/user.png) no-repeat left;
+}
+
+a.kill {
+    padding: 4px 0;
+    padding-left: 20px;
+    background: url(../img/kills.png) no-repeat left;
+    font-size:120%;
+}

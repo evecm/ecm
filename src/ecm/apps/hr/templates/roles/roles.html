@@ -1,0 +1,77 @@
+{% extends "hr_base.html" %}
+
+{% block headtitle %}Roles - {{ current_role_type_name }}{% endblock %}
+
+
+
+{% block other_scripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+
+<script type="text/javascript" src="/s/hr/js/roles_table.js"></script>
+<script type="text/javascript">
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+var current_role_type = "{{ current_role_type }}";
+</script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/{{ app_prefix }}/roles/">Roles</a></li>
+<li><a href="/{{ app_prefix }}/roles/{{ current_role_type }}">{{ current_role_type_name }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Roles <span class="time">- <span id="role_category">{{ current_role_type_name }}</span></span></h1>
+
+<!-- buttons -->
+<form id="role_categories" class="search_form">
+{% for rt in role_types %}
+    <input type="button" class="button{% if rt.typeName == current_role_type %} selected{% endif %}" 
+           id="{{ rt.typeName }}_button" value="{{ rt.dispName }}" />
+{% endfor %}
+</form>
+
+<!-- bind urls to the buttons -->
+<script type="text/javascript">
+{% for rt in role_types %}
+$("#{{ rt.typeName }}_button").click(function() {
+    window.location = "/{{ app_prefix }}/roles/{{ rt.typeName }}";
+});
+{% endfor %}
+</script>
+
+<table class="table display" id="roles_table">
+  <thead> 
+    <tr>
+      <th class="top" scope="col" >Role Name</th>
+      <th class="top" scope="col" >Description</th>
+      <th class="top" scope="col" >Access Level</th>
+      <th class="top" scope="col" >Members</th>
+      <th class="top" scope="col" >Titles</th>
+      <th class="top" scope="col" style="display:none;"></th>
+      <th class="top" scope="col" style="display:none;"></th>
+      <th class="top" scope="col" style="display:none;"></th>
+    </tr>
+  </thead>
+  <tbody> 
+    <tr>
+      <td colspan="5" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody> 
+  <tfoot> 
+    <tr>
+      <th>Role Name</th>
+      <th>Description</th>
+      <th>Access Level</th>
+      <th>Members</th>
+      <th>Titles</th>
+      <th style="display:none;"></th>
+      <th style="display:none;"></th>
+      <th style="display:none;"></th>
+    </tr>
+  </tfoot>
+</table>
+
+
+{% endblock %}

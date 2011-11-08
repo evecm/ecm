@@ -255,7 +255,9 @@ def backup_settings(options, tempdir):
         options.port = match.groupdict()['port']
 
     sys.path.append(options.install_dir)
+    import ecm
     import ecm.settings
+    options.old_version = ecm.version
     options.db_engine = ecm.settings.DATABASES['default']['ENGINE']
     if not 'sqlite' in options.db_engine:
         options.db_name = ecm.settings.DATABASES['default']['NAME']
@@ -266,7 +268,9 @@ def backup_settings(options, tempdir):
     options.vhost_name = ecm.settings.ECM_BASE_URL.split(':')[0]
     log.info("Stored configuration from %s", ecm.settings.__file__)
     sys.path.remove(options.install_dir)
+    del ecm
     del ecm.settings
+    del(sys.modules["ecm"])
     del(sys.modules["ecm.settings"])
 
     log.info('All previous settings backuped.')
@@ -298,7 +302,13 @@ def migrate_ecm_db(options):
     management.setup_environ(ecm.settings)
     from south.models import MigrationHistory
 
-    if not MigrationHistory.objects.all():
+    if options.old_version.startswith('1.'):
+        # we are upgrading from ECM 1.X.Y, we must perform the init migration 
+        # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
+        MigrationHistory.objects.delete()
+        log.info('Migrating from ECM 1.x.y   ...')
+        run_command('python manage.py migrate 0001 hr --no-initial-data', run_dir)
+    if not MigrationHistory.objects.exclude(app_name='hr'):
         # SOUTH has never been used in that installation.
         # we MUST "fake" the first migration,
         # otherwise the migrate command will fail because DB tables already exist...

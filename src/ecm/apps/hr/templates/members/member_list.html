@@ -1,0 +1,67 @@
+{% extends "hr_base.html" %}
+
+{% block headtitle %}Members{% endblock %}
+
+
+{% block other_scripts %}
+<script type="text/javascript">
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+AJAX_URL = '/{{ app_prefix }}/members/data/';
+COOKIE_NAME = 'ecm_members_table_';
+</script>
+<script type="text/javascript" src="/s/hr/js/members_table.js"></script>
+{% endblock %}
+
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/{{ app_prefix }}/members/">Members</a></li>
+{% endblock %}
+
+
+
+{% block main_content %}
+<h1 class="pagetitle">Member List <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
+
+<form id="search_form" class="search_form">
+    <input type="text" id="search_text" value="" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+</form>
+
+<table class="table display" id="members_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Name</th>
+      <th class="top" scope="col" >Nickname</th>
+      <th class="top" scope="col" >Player</th>
+      <th class="top" scope="col" >Access Level</th>
+      <th class="top" scope="col" >Corp Date</th>
+      <th class="top" scope="col" >Last Login</th>
+      <th class="top" scope="col" >Location</th>
+      <th class="top" scope="col" style="display:none;">Titles</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Name</th>
+      <th>Nickname</th>
+      <th>Player</th>
+      <th>Access Level</th>
+      <th>Corp Date</th>
+      <th>Last Login</th>
+      <th>Location</th>
+      <th style="display:none;">Titles</th>
+    </tr>
+  </tfoot>
+
+</table>
+
+{% endblock %}

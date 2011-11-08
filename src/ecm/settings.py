@@ -22,43 +22,38 @@ import os.path
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 def resolvePath(relativePath):
-    return str(os.path.abspath(os.path.join(ROOT, relativePath))).replace("\\", "/")
+    return os.path.abspath(os.path.join(ROOT, relativePath)).replace("\\", "/")
 
 ###############################################################################
-# ECM SETTINGS
+################
+# ECM SETTINGS #
+################
+
 ECM_BASE_URL = "127.0.0.1:8000"
+
 DIRECTOR_GROUP_NAME = "Directors"
 CORP_MEMBERS_GROUP_NAME = "Members"
 CRON_USERNAME = "cron"
 ADMIN_USERNAME = "admin"
+
 EVE_API_VERSION = "2"
+
 ACCOUNT_ACTIVATION_DAYS = 2
+
 PASSWD_MIN_LENGTH = 6
 PASSWD_FORCE_SPECIAL_CHARS = False
 PASSWD_FORCE_DIGITS = False
 PASSWD_FORCE_LETTERS = False
+
 BASIC_AUTH_ONLY_ON_LOCALHOST = False
-MILESTONE_INTERVAL_DAYS = 15
-EVE_CENTRAL_URL = 'http://api.eve-central.com/api/marketstat'
-EVE_CENTRAL_BUY_SOURCE = 30002510 # Rens
-#EVE_CENTRAL_BUY_SOURCE = 30000142 # Jita
-#EVE_CENTRAL_BUY_SOURCE = 30002187 # Amarr
 
 
 ###############################################################################
-# DJANGO SPECIFIC SETTINGS
+###################
+# DJANGO SETTINGS #
+###################
+
 DEBUG = True # turn this to False when on production !!!
-ADMINS = () # to enable email error reporting, put a tuple in there, ('name', email@adddress.com')
-# for development, you can use python dummy smtp server, run this command:
-# >>> python -m smtpd -n -c DebuggingServer localhost:25
-EMAIL_HOST = "localhost"
-EMAIL_PORT = 25
-EMAIL_USE_TLS = False
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
-# put a real email address here, if not, emails sent by the server will be discarded by the relay servers
-DEFAULT_FROM_EMAIL = ""
-SERVER_EMAIL = ""
 
 DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     'default': {
@@ -71,27 +66,77 @@ DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     }
 }
 
-USE_I18N = False # for optimization
-LOCAL_DEVELOPMENT = True
-APPEND_SLASH = False
-TEMPLATE_DEBUG = DEBUG
-MANAGERS = ADMINS
-TIME_ZONE = 'Europe/Paris'
-LANGUAGE_CODE = 'en-us'
-SITE_ID = 1
-MEDIA_ROOT = resolvePath('../media/')
-MEDIA_URL = "/m/"
-SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
-ROOT_URLCONF = 'ecm.urls'
-LOGIN_URL = '/account/login'
-LOGOUT_URL = '/account/logout'
-LOGIN_REDIRECT_URL = '/account'
+##########
+# E-MAIL #
+##########
+# to enable email error reporting, put a tuple in there, ('name', 'email@adddress.com')
+ADMINS = ()
+# for development, you can use python dummy smtp server, run this command:
+# >>> python -m smtpd -n -c DebuggingServer localhost:25
+EMAIL_HOST = "localhost"
+EMAIL_PORT = 25
+EMAIL_USE_TLS = False
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+# put a real email address here, if not, emails sent by the server
+# will be discarded by the relay servers
+DEFAULT_FROM_EMAIL = ""
+SERVER_EMAIL = ""
 
+
+##################
+# URL MANAGEMENT #
+##################
+ROOT_URLCONF = 'ecm.urls'
+
+LOGIN_URL = '/account/login/'
+LOGOUT_URL = '/account/logout/'
+LOGIN_REDIRECT_URL = '/account/'
+
+APPEND_SLASH = True
+
+################
+# STATIC FILES #
+################
+
+# target dir for the 'collectstatic' command
+STATIC_ROOT = resolvePath('../media/')
+# value of the {{ STATIC_URL }} variable in templates
+STATIC_URL = '/s/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+STATICFILES_DIRS = (
+    # aside from looking in each django app, the 'collectstatic' command
+    # will look in these directories for static files
+    resolvePath('static'),
+)
+
+#############
+# TEMPLATES #
+#############
+TEMPLATE_DEBUG = DEBUG
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 )
+TEMPLATE_DIRS = (
+    # aside from looking in each django app, the template loaders
+    # will look in these directories
+    resolvePath('../templates/'),
+)
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "ecm.views.context_processors.corporation_name",
+    "ecm.views.context_processors.menu",
+    "ecm.views.context_processors.version",
+)
+
+########
+# MISC #
+########
+USE_I18N = False # for optimization
+TIME_ZONE = None
+SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -103,48 +148,48 @@ MIDDLEWARE_CLASSES = (
 CACHES = {
     'default': {
 #        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-#        'LOCATION': '/var/django/cache',
+#        'LOCATION': '/var/django/cache/',
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
 
-TEMPLATE_DIRS = (
-        resolvePath('../templates/'),
-)
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "ecm.view.context_processors.corporation_name",
-    "ecm.view.context_processors.menu",
-    "ecm.view.context_processors.version",
-)
-
 CAPTCHA_LENGTH = 5
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 
-INSTALLED_APPS = (
+#################
+# DJANGO 'APPS' #
+#################
+
+INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.admindocs',
-    'django.contrib.databrowse',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.databrowse',
     'django.contrib.sessions',
-    'django.contrib.sites',
+    'django.contrib.contenttypes',
+    'django.contrib.staticfiles',
 
     'captcha',
     'south',
+]
 
-    'ecm.data.assets',
-    'ecm.data.corp',
-    'ecm.data.roles',
-    'ecm.data.common',
-    'ecm.data.scheduler',
-    'ecm.data.accounting',
-    'ecm.data.industry',
-)
+ECM_CORE_APPS = [
+    'ecm.apps.common',
+    'ecm.apps.corp',
+    'ecm.apps.hr',
+    'ecm.apps.scheduler',
+]
+INSTALLED_APPS += ECM_CORE_APPS
 
-###############################################################################
-# LOGGING SETTINGS
+ECM_PLUGIN_APPS = [
+    'ecm.plugins.accounting',
+    'ecm.plugins.assets',
+    'ecm.plugins.industry',
+]
+INSTALLED_APPS += ECM_PLUGIN_APPS
+
+###########
+# LOGGING #
+###########
+
 if not os.path.exists(resolvePath('../logs')):
     os.makedirs(resolvePath('../logs'))
 LOGGING = {
