@@ -5,8 +5,8 @@
 
 
 {% block header_scripts %}
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/m/css/jquery.dataTables.css" />
-<script type="text/javascript" src="/m/js/lib/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
 {% endblock %}
 
 
@@ -32,10 +32,10 @@
 </ul>
 
 <div>
-	<input type="button" class="button" id="modify" value="Modify Order"/>
-	<input type="button" class="button" id="accept" value="Cancel Order"/>
-	<input type="button" class="button" id="accept" value="Accept Order"/>
-	<input type="button" class="button" id="accept" value="Reject Order"/>
+  <input type="button" class="button" id="modify" value="Modify Order"/>
+  <input type="button" class="button" id="accept" value="Cancel Order"/>
+  <input type="button" class="button" id="accept" value="Accept Order"/>
+  <input type="button" class="button" id="accept" value="Reject Order"/>
 </div>
 
 <h1>Items</h1>
@@ -44,27 +44,27 @@
 <form>
 <table class="order_table">
     <thead>
-	    <tr>
-			<th style="width: 10%;">Icon</th>
-			<th style="width: 30%;">Item</th>
-			<th style="width: 20%;">Quantity</th>
-			<th style="width: 40%;">Price</th>
-	    </tr>
+      <tr>
+      <th style="width: 10%;">Icon</th>
+      <th style="width: 30%;">Item</th>
+      <th style="width: 20%;">Quantity</th>
+      <th style="width: 40%;">Price</th>
+      </tr>
     </thead>
-	<tbody>
-		{% for row in order.rows.all %}
-		<tr>
-        	<td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
-         	<td class="bold">{{row.catalogEntry.typeName}}</td>
-         	<td class="center">{{row.quantity|ecm_quantity}}</td>
-         	<td class="right">{{row.quote|ecm_price}} ISK</td> 
-       	</tr>
-       	{% empty %}
-       	<tr id="empty">
-       		<td colspan="4" class="order_cart_empty" >No items in order.</td>
-       	</tr>
-       	{% endfor %}
-	</tbody> 
+  <tbody>
+    {% for row in order.rows.all %}
+    <tr>
+          <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
+           <td class="bold">{{row.catalogEntry.typeName}}</td>
+           <td class="center">{{row.quantity|ecm_quantity}}</td>
+           <td class="right">{{row.quote|ecm_price}} ISK</td>
+         </tr>
+         {% empty %}
+         <tr id="empty">
+           <td colspan="4" class="order_cart_empty" >No items in order.</td>
+         </tr>
+         {% endfor %}
+  </tbody>
 </table>
 </form>
 

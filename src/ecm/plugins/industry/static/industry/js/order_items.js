@@ -4,7 +4,7 @@ NEW_ITEM = '<tr id="%typeID">' +
              '<td class="center"><img src="http://image.eveonline.com/Type/%typeID_32.png" /></td>' +
              '<td class="bold">%typeName</td>' +
              '<td class="center"><input type="text" name="%typeID" value="1" /></td>' + 
-             '<td class="center"><img src="/m/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/></td>' + 
+             '<td class="center"><img src="/s/industry/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/></td>' + 
            '</tr>';
 EMPTY = '<tr id="empty"><td colspan="4" class="order_cart_empty" >Your shopping cart is empty.</td></tr>';
 
