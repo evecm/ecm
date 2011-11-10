@@ -15,22 +15,27 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 9 10"
+__date__ = "2011 8 20"
 __author__ = "diabeteman"
 
-from django.template.defaultfilters import register
-from ecm.core import utils
+# How to split models in separate python modules
+# http://www.acooke.org/cute/UsingaDire0.html
 
-@register.filter(name='ecm_date')
-def format_date(value):
-    try:
-        return unicode(utils.print_date(value))
-    except:
-        return unicode(value)
+from ecm.plugins.industry.models.catalog import OwnedBlueprint, Pricing, CatalogEntry
+from ecm.plugins.industry.models.inventory import PriceHistory, SupplyPrice
+from ecm.plugins.industry.models.job import Job
+from ecm.plugins.industry.models.order import Order, OrderLog, OrderRow
+from ecm.plugins.industry.models.research import InventionPolicy
 
-@register.filter(name='ecm_datetime')
-def format_datetime(value):
-    try:
-        return unicode(utils.print_time_min(value))
-    except:
-        return unicode(value)
+__all__ = (
+    'InventionPolicy',
+    'Job',
+    'Order',
+    'OrderLog',
+    'OrderRow',
+    'CatalogEntry',
+    'OwnedBlueprint',
+    'PriceHistory',
+    'Pricing',
+    'SupplyPrice',
+)

@@ -15,22 +15,31 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 9 10"
+__date__ = "2011 8 17"
 __author__ = "diabeteman"
 
-from django.template.defaultfilters import register
-from ecm.core import utils
 
-@register.filter(name='ecm_date')
-def format_date(value):
-    try:
-        return unicode(utils.print_date(value))
-    except:
-        return unicode(value)
+NAME = 'industry'
 
-@register.filter(name='ecm_datetime')
-def format_datetime(value):
-    try:
-        return unicode(utils.print_time_min(value))
-    except:
-        return unicode(value)
+DEPENDS_ON = {
+    'ecm' : (2,),
+}
+
+MENUS = [
+    {'menu_title': 'Industry',    'menu_url': '',      'menu_items': [
+        {'item_title': 'Changes', 'item_url': 'changes/', 'menu_items': []},
+    ]},
+]
+
+TASKS = [
+    {
+        'function' : 'ecm.plugins.industry.tasks.industry.update_supply_prices',
+        'priority' : 0,
+        'frequency' : 24,
+        'frequency_units' : 3600, # hour
+    },
+]
+
+URL_PERMISSIONS = [
+    r'^/industry.*$',
+]

@@ -1,0 +1,39 @@
+
+.order_form {
+	width: 60%;
+	margin: auto;
+	font-size: 120%;
+}
+
+.order_form label {
+    color: rgb(120,120,120);
+}
+
+
+.order_cart_empty {
+    padding: 1em 0; 
+    text-align: center !important;	
+}
+
+.order_table {
+	margin: auto !important;
+	font-size: 120%;
+}
+
+.order_table th {
+    border-bottom: solid 1px rgb(99,99,99);
+}
+
+.order_table input {
+	width: 100%;
+    margin: auto !important;
+    text-align: center;
+}
+
+.order_table .center {
+	align: center !important;
+}
+
+.order_table .submit {
+	align: right;
+}

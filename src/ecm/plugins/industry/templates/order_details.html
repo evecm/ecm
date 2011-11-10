@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Order #{{ order.id }} Details{% endblock %}
+
+
+
+{% block header_scripts %}
+<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry">Industry</a></li>
+<li><a href="/industry/orders">Orders</a></li>
+<li><a href="/industry/orders/{{ order.id }}">#{{ order.id }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Order #{{ order.id }} Details</h1>
+<p>
+<ul>
+  <li><b>Originator:</b> {{order.originator_permalink|safe}}</li>
+  <li><b>Manufacturer:</b> {{order.manufacturer_permalink|safe}}</li>
+  <li><b>Delivery Man:</b> {{order.deliveryMan_permalink|safe}}</li>
+  <li><b>Creation Date:</b> {{order.creationDate|ecm_datetime}}</li>
+  <li><b>Last Modified:</b> {{order.lastModified|ecm_datetime}}</li>
+  <li><b>Delivery Date:</b> {{deliveryDate|ecm_datetime}}</li>
+  <li><b>Pricing:</b> {{order.pricing}}</li>
+  <li><b>Quote:</b> {{order.quote|ecm_price}} ISK</li>
+</ul>
+
+<div>
+  <input type="button" class="button" id="modify" value="Modify Order"/>
+  <input type="button" class="button" id="accept" value="Cancel Order"/>
+  <input type="button" class="button" id="accept" value="Accept Order"/>
+  <input type="button" class="button" id="accept" value="Reject Order"/>
+</div>
+
+<h1>Items</h1>
+
+
+<form>
+<table class="order_table">
+    <thead>
+      <tr>
+      <th style="width: 10%;">Icon</th>
+      <th style="width: 30%;">Item</th>
+      <th style="width: 20%;">Quantity</th>
+      <th style="width: 40%;">Price</th>
+      </tr>
+    </thead>
+  <tbody>
+    {% for row in order.rows.all %}
+    <tr>
+          <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
+           <td class="bold">{{row.catalogEntry.typeName}}</td>
+           <td class="center">{{row.quantity|ecm_quantity}}</td>
+           <td class="right">{{row.quote|ecm_price}} ISK</td>
+         </tr>
+         {% empty %}
+         <tr id="empty">
+           <td colspan="4" class="order_cart_empty" >No items in order.</td>
+         </tr>
+         {% endfor %}
+  </tbody>
+</table>
+</form>
+
+<ul>
+{% for log in logs %}
+  <li>{{log.date|ecm_datetime}} [{{log.state_text}}] {{log.user_permalink|safe}} - {{log.text}}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

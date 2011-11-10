@@ -82,6 +82,6 @@ def main(options):
             log.info('done')
 
 if __name__ == '__main__':
-    options, _ = parser.parse_args()
-    main(options)
+    opts, _ = parser.parse_args()
+    main(opts)
 

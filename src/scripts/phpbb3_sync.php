@@ -66,7 +66,7 @@ include(PHPBB_ROOT_PATH . 'includes/functions_user.' . $phpEx);
 *
 * @param string $text
 */
-function log($text) {
+function logln($text) {
     echo date("Ymd - H:i:s") . " - $text\n";
 }
 
@@ -83,18 +83,18 @@ function update_group($group_id, $members_to_remove, $members_to_add)
     if (sizeof($members_to_remove)) {
         $err = group_user_del($group_id, $members_to_remove);
         if ($err) {
-            log("[ERROR] could not remove members: $err");
+            logln("[ERROR] could not remove members: $err");
         } else {
-            log("Removed " . sizeof($members_to_remove)
+            logln("Removed " . sizeof($members_to_remove)
                . " members: " . implode(', ', $members_to_remove));
         }
     }
     if (sizeof($members_to_add)) {
         $err = group_user_add($group_id, $members_to_add);
         if ($err) {
-            log("[ERROR] could not add members: $err");
+            logln("[ERROR] could not add members: $err");
         } else {
-            log("Added " . sizeof($members_to_add)
+            logln("Added " . sizeof($members_to_add)
                 . " members: " . implode(', ', $members_to_add));
         }
     }
@@ -166,13 +166,13 @@ function fetch_ecm_data($url)
 function main()
 {
     $url = ECM_URL . '/api/bindings/' . ECM_EXTERNAL_APP . '/groups';
-    log("Fetching data from $url...");
+    logln("Fetching data from $url...");
     $groups = fetch_ecm_data($url);
-    log("Fetched " . sizeof($groups) . " groups");
+    logln("Fetched " . sizeof($groups) . " groups");
 
     foreach ($groups as $g) {
         $group_id = (int) $g['group'];
-        log("Updating group $group_id...");
+        logln("Updating group $group_id...");
         $new_members = $g['members'];
         $old_members = get_group_members($group_id);
 
