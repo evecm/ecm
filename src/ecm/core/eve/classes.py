@@ -93,6 +93,7 @@ class Item(object):
                  description,
                  volume,
                  portionSize,
+                 raceID,
                  basePrice,
                  marketGroupID,
                  icon,
@@ -106,6 +107,7 @@ class Item(object):
         self.description = description
         self.volume = volume
         self.portionSize = portionSize
+        self.raceID = raceID
         self.basePrice = basePrice
         self.marketGroupID = marketGroupID
         self.icon = icon

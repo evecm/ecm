@@ -18,30 +18,66 @@
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Order #{{ order.id }} Details</h1>
-<p>
-<ul>
-  <li><b>Originator:</b> {{order.originator_permalink|safe}}</li>
-  <li><b>Manufacturer:</b> {{order.manufacturer_permalink|safe}}</li>
-  <li><b>Delivery Man:</b> {{order.deliveryMan_permalink|safe}}</li>
-  <li><b>Creation Date:</b> {{order.creationDate|ecm_datetime}}</li>
-  <li><b>Last Modified:</b> {{order.lastModified|ecm_datetime}}</li>
-  <li><b>Delivery Date:</b> {{deliveryDate|ecm_datetime}}</li>
-  <li><b>Pricing:</b> {{order.pricing}}</li>
-  <li><b>Quote:</b> {{order.quote|ecm_price}} ISK</li>
-</ul>
+<h1 class="pagetitle">Order #{{ order.id }} <span class="date">- {{order.stateText}}</span></h1>
+
+<table class="transparent">
+  <tbody>
+    <tr>
+      <td class="bold">Originator</td>
+      <td class="right">{{order.originator_permalink|safe}}</td>
+    </tr>
+    <tr>
+      <td class="bold">Manufacturer</td>
+      <td class="right">{{order.manufacturer_permalink|safe}}</td>
+    </tr>
+    <tr>
+      <td class="bold">Delivery Man</td>
+      <td class="right">{{order.deliveryMan_permalink|safe}}</td>
+    </tr>
+    <tr>
+      <td class="bold">Creation Date</td>
+      <td class="right">{{order.creationDate|ecm_datetime}}</td>
+    </tr>
+    <tr>
+      <td class="bold">Last Modified</td>
+      <td class="right">{{order.lastModified|ecm_datetime}}</td>
+    </tr>
+    <tr>
+      <td class="bold">Delivery Date</td>
+      <td class="right">{{order.deliveryDate|ecm_datetime}}</td>
+    </tr>
+    <tr>
+      <td class="bold">Pricing</td>
+      <td class="right">{{order.pricing}}</td>
+    </tr>
+    <tr>
+      <td class="bold">Quote</td>
+      <td class="right">{%if order.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
+    </tr>
+  </tbody>
+</table>
 
 <div>
-  <input type="button" class="button" id="modify" value="Modify Order"/>
-  <input type="button" class="button" id="accept" value="Cancel Order"/>
-  <input type="button" class="button" id="accept" value="Accept Order"/>
-  <input type="button" class="button" id="accept" value="Reject Order"/>
+  {% for transition, name in validTransitions %}
+  <input type="button" class="button" id="{{transition}}_button" value="{{name}}"/>
+  {% endfor %}
 </div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+{% for transition, name in validTransitions %}
+$("#{{transition}}_button").click(function() {
+    window.location = "/industry/orders/{{order.id}}/{{transition}}/";
+});
+{% endfor %}
+});
+</script>
+
+
 
 <h1>Items</h1>
 
 
-<form>
 <table class="order_table">
     <thead>
       <tr>
@@ -57,7 +93,7 @@
           <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
            <td class="bold">{{row.catalogEntry.typeName}}</td>
            <td class="center">{{row.quantity|ecm_quantity}}</td>
-           <td class="right">{{row.quote|ecm_price}} ISK</td>
+           <td class="right">{%if row.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
          </tr>
          {% empty %}
          <tr id="empty">
@@ -66,7 +102,6 @@
          {% endfor %}
   </tbody>
 </table>
-</form>
 
 <ul>
 {% for log in logs %}

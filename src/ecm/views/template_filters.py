@@ -34,3 +34,36 @@ def format_datetime(value):
         return unicode(utils.print_time_min(value))
     except:
         return unicode(value)
+
+#------------------------------------------------------------------------------
+@register.filter(name='ecm_qty_diff')
+def qty_diff_format(value):
+    try:
+        return unicode(utils.print_integer(int(value), force_sign=True))
+    except:
+        return unicode(value)
+
+#------------------------------------------------------------------------------
+@register.filter(name='ecm_quantity')
+def qty_format(value):
+    try:
+        return unicode(utils.print_float(int(value)))
+    except:
+        return unicode(value)
+
+
+#------------------------------------------------------------------------------
+@register.filter(name='ecm_amount')
+def amount_format(value):
+    try:
+        return unicode(utils.print_float(float(value), force_sign=True))
+    except:
+        return unicode(value)
+
+#------------------------------------------------------------------------------
+@register.filter(name='ecm_price')
+def price_format(value):
+    try:
+        return unicode(utils.print_float(float(value)))
+    except:
+        return unicode(value)

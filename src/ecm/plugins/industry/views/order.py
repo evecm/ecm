@@ -14,19 +14,83 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.core import utils
 
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
 
 
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 
-from django.http import Http404, HttpResponseBadRequest
+from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.template.context import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.utils.text import truncate_words
 
+from ecm.views import extract_datatable_params
 from ecm.plugins.industry.models import Order
 from ecm.plugins.industry.models.catalog import CatalogEntry
+
+#------------------------------------------------------------------------------
+COLUMNS = [
+    ['#', 'id'],
+    ['State', 'stateText'],
+    ['Originator', 'originator'],
+    ['Client', 'client'],
+    ['Delivery Date', 'deliveryDate'],
+    ['Items', None],
+    ['Quote', 'quote'],
+]
+
+
+
+@login_required
+def all(request):
+    columns = [ col[0] for col in COLUMNS ]
+    return render_to_response('orders_list.html', {'columns' : columns}, RequestContext(request))
+
+#------------------------------------------------------------------------------
+@login_required
+def all_data(request):
+    try:
+        params = extract_datatable_params(request)
+    except Exception, e:
+        return HttpResponseBadRequest(str(e))
+
+    query = Order.objects.all()
+
+    orders = []
+    for order in query:
+        items = [ row.catalogEntry.typeName for row in order.rows.all() ]
+        if order.deliveryDate is not None:
+            delivDate = utils.print_date(order.deliveryDate)
+        else:
+            delivDate = '(none)'
+        orders.append([
+            order.permalink,
+            order.stateText,
+            order.originator_permalink,
+            order.client or '(none)',
+            delivDate,
+            truncate_words(', '.join(items), 6),
+            utils.print_float(order.quote),
+        ])
+
+    json_data = {
+        "sEcho" : params.sEcho,
+        "iTotalRecords" : len(orders),
+        "iTotalDisplayRecords" : len(orders),
+        "aaData" : orders
+    }
+
+    return HttpResponse(json.dumps(json_data))
+
+
 
 
 #------------------------------------------------------------------------------
@@ -53,20 +117,25 @@ def details(request, order_id):
         raise Http404()
 
     logs = order.logs.all().order_by('-date')
+    validTransitions = [ (trans.id, trans.text) for trans in order.validTransitions ]
 
-    data = {'order' : order, 'logs': logs}
+
+    data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions}
 
     return render_to_response('order_details.html', data, RequestContext(request))
 
 
 #------------------------------------------------------------------------------
 @login_required
-def modify(request, order_id):
-
+def change_state(request, order_id, transition):
     try:
         order = get_object_or_404(Order, id=int(order_id))
     except ValueError:
         raise Http404()
+
+
+
+
 
     if request.method == 'GET':
         return render_to_response('order_modify.html', {'order': order}, RequestContext(request))
@@ -98,3 +167,4 @@ def extract_order_items(request):
         except CatalogEntry.DoesNotExist:
             valid_order = False
     return items, valid_order
+

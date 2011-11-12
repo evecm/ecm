@@ -113,7 +113,8 @@ class Order(models.Model):
 
         Checks if the new state is allowed in the life cycle. If not, raises an IllegalStateError
         """
-        if function not in Order.VALID_TRANSITIONS[self.state]:
+        validTransitionNames = [ t.__name__ for t in Order.VALID_TRANSITIONS[self.state] ]
+        if function.__name__ not in validTransitionNames:
             raise IllegalTransition('Cannot apply transition "%s" from state "%s".' %
                                     (function.__name__, Order.STATES[self.state]))
         else:
@@ -138,6 +139,9 @@ class Order(models.Model):
             self.rows.create(catalogEntry=catalogEntry, quantity=quantity)
         self.createJobs(dry_run=True)
         self.save()
+    modify.text = 'Modify order'
+    modify.id = 'modify'
+    modify.customerAccess = True
 
     def confirm(self):
         """
@@ -146,6 +150,9 @@ class Order(models.Model):
         self.applyTransition(Order.confirm, Order.PENDING, self.originator, "Confirmed by originator.")
         self.save()
         # TODO: handle the alerts
+    confirm.text = 'Confirm order'
+    confirm.id = 'confirm'
+    confirm.customerAccess = True
 
     def accept(self, manufacturer):
         """
@@ -165,6 +172,9 @@ class Order(models.Model):
             self.applyTransition(Order.accept, Order.PROBLEMATIC, user=manufacturer, comment=str(err))
             self.save()
             return False
+    accept.text = 'Accept order'
+    accept.id = 'accept'
+    accept.customerAccess = False
 
     def resolve(self, manufacturer, comment):
         """
@@ -176,6 +186,9 @@ class Order(models.Model):
         self.createJobs()
         self.applyTransition(Order.resolve, Order.ACCEPTED, manufacturer, comment)
         self.save()
+    resolve.text = 'Resolve order'
+    resolve.id = 'resolve'
+    resolve.customerAccess = False
 
     def plan(self, manufacturer, date):
         """
@@ -185,7 +198,9 @@ class Order(models.Model):
                              'Order planned for date "%s"' % utils.print_date(date))
         self.deliveryDate = date
         self.save()
-
+    plan.text = 'Plan order'
+    plan.id = 'plan'
+    plan.customerAccess = False
 
     def reject(self, manufacturer, comment):
         """
@@ -196,6 +211,10 @@ class Order(models.Model):
         """
         self.applyTransition(Order.reject, Order.REJECTED, manufacturer, comment)
         self.save()
+        # TODO: handle the alerts
+    reject.text = 'Reject order'
+    reject.id = 'reject'
+    reject.customerAccess = False
 
     def cancel(self, comment):
         """
@@ -203,6 +222,9 @@ class Order(models.Model):
         """
         self.applyTransition(Order.cancel, Order.CANCELED, self.originator, comment)
         self.save()
+    cancel.text = 'Cancel order'
+    cancel.id = 'cancel'
+    cancel.customerAccess = True
 
     def startPreparation(self, user=None):
         """
@@ -211,6 +233,9 @@ class Order(models.Model):
         self.applyTransition(Order.startPreparation, Order.IN_PREPARATION,
                              user or self.manufacturer, "Preparation started.")
         self.save()
+    startPreparation.text = 'Start preparation'
+    startPreparation.id = 'startpreparation'
+    startPreparation.customerAccess = False
 
     def endPreparation(self, manufacturer=None, deliveryMan=None):
         """
@@ -223,6 +248,9 @@ class Order(models.Model):
         self.deliveryMan = deliveryMan or manufacturer or self.manufacturer
 
         self.save()
+    endPreparation.text = 'End preparation'
+    endPreparation.id = 'endpreparation'
+    endPreparation.customerAccess = False
 
     def deliver(self, user=None):
         """
@@ -232,7 +260,10 @@ class Order(models.Model):
                              user or self.deliveryMan,
                              "Order has been delivered to the client.")
         self.save()
-
+        # TODO: handle the alerts
+    deliver.text = 'Deliver order'
+    deliver.id = 'deliver'
+    deliver.customerAccess = False
 
     def pay(self, user=None):
         """
@@ -241,6 +272,39 @@ class Order(models.Model):
         self.applyTransition(Order.pay, Order.PAID,
                              user or self.deliveryMan, "Order has been delivered to the client.")
         self.save()
+    pay.text = 'Pay order'
+    pay.id = 'pay'
+    pay.customerAccess = True
+
+    # allowed transitions between states
+    VALID_TRANSITIONS = {
+        DRAFT : (modify, confirm, cancel),
+        PENDING : (modify, accept, cancel, reject),
+        PROBLEMATIC : (modify, resolve, cancel, reject),
+        ACCEPTED : (plan, startPreparation, cancel),
+        PLANNED : (startPreparation, cancel),
+        IN_PREPARATION : (endPreparation, cancel),
+        READY : (deliver, cancel),
+        DELIVERED : (pay, cancel),
+        PAID : (),
+        CANCELED : (),
+        REJECTED : (),
+    }
+
+    @property
+    def validTransitions(self):
+        return self.getValidTransitions()
+
+    @property
+    def customerTransitions(self):
+        return self.getValidTransitions(customer=True)
+
+
+    def getValidTransitions(self, customer=False):
+        if customer:
+            return [ tr for tr in Order.VALID_TRANSITIONS[self.state] if tr.customerAccess ]
+        else:
+            return Order.VALID_TRANSITIONS[self.state]
 
     ################################
     # UTILITY FUNCTIONS
@@ -337,26 +401,23 @@ class Order(models.Model):
                 output += j.repr_as_tree()
         return output
 
+    @property
+    def url(self):
+        return '/industry/orders/%d/' % self.id
+
+    @property
+    def permalink(self):
+        return '<a href="%s" class="order">Order &#35;%d</a>' % (self.url, self.id)
+
+    @property
+    def stateText(self):
+        return Order.STATES[self.state]
+
     def __unicode__(self):
         return 'Order #%d from %s [%s]' % (self.id, str(self.originator), Order.STATES[self.state])
 
     def __repr__(self):
         return unicode(self) + '\n  ' + '\n  '.join(map(unicode, list(self.rows.all())))
-
-    # allowed transitions between states
-    VALID_TRANSITIONS = {
-        DRAFT : (modify, confirm, cancel),
-        PENDING : (modify, accept, cancel, reject),
-        PROBLEMATIC : (modify, resolve, cancel, reject),
-        ACCEPTED : (plan, startPreparation, cancel),
-        PLANNED : (startPreparation, cancel),
-        IN_PREPARATION : (endPreparation, cancel),
-        READY : (deliver, cancel),
-        DELIVERED : (pay, cancel),
-        PAID : (),
-        CANCELED : (),
-        REJECTED : (),
-    }
 
 
 
