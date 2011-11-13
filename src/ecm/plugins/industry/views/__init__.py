@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.db import transaction
 
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
@@ -24,11 +25,15 @@ try:
 except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
+import logging
 
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseNotFound
 from django.contrib.auth.decorators import login_required
+from django.db import connections
 
 from ecm.plugins.industry.models import CatalogEntry
+
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @login_required
@@ -64,8 +69,21 @@ SQL_MISSING_ITEMS = '''SELECT "typeID", "typeName", "marketGroupID"
 FROM "invTypes"
 WHERE "blueprintTypeID" IS NOT NULL
   AND "published" = 1
-  AND "typeID" NOT IN %s;'''
-CatalogEntry.objects.values_list('typeID', flat=True)
+  AND "metaGroupID" IN (0,2)
+  AND "marketGroupID" IS NOT NULL
+  AND "typeID" NOT IN (2836, 17922, 29266, 17928, 17932, 3532, 32207, 32209);'''
+@transaction.commit_on_success
+def createMissingCatalogEntries():
+    typeIDs = CatalogEntry.objects.values_list('typeID', flat=True)
+    cursor = connections['eve'].cursor()
+    cursor.execute(SQL_MISSING_ITEMS)
+    created = 0
+    for typeID, typeName, marketGroupID in cursor:
+        if typeID not in typeIDs:
+            CatalogEntry.objects.create(typeID=typeID, typeName=typeName, marketGroupID=marketGroupID)
+            created += 1
+    logger.info('added %d missing catalog entries', created)
+createMissingCatalogEntries()
 
 
 

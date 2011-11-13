@@ -1,18 +1,18 @@
 -- Copyright (c) 2010-2011 Robin Jarry
--- 
+--
 -- This file is part of EVE Corporation Management.
--- 
--- EVE Corporation Management is free software: you can redistribute it and/or 
--- modify it under the terms of the GNU General Public License as published by 
--- the Free Software Foundation, either version 3 of the License, or (at your 
+--
+-- EVE Corporation Management is free software: you can redistribute it and/or
+-- modify it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or (at your
 -- option) any later version.
--- 
--- EVE Corporation Management is distributed in the hope that it will be useful, 
--- but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
--- or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+--
+-- EVE Corporation Management is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+-- or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 -- more details.
--- 
--- You should have received a copy of the GNU General Public License along with 
+--
+-- You should have received a copy of the GNU General Public License along with
 -- EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 
@@ -27,7 +27,7 @@ CREATE TABLE "ramBlueprintReqs" (
     "requiredTypeID" SMALLINT,        -- id of resource used for this activity
     "quantity" INT,                   -- how many of this resource is used
     "damagePerJob" DOUBLE,            -- how much of the resource is expended
-    "baseMaterial" INT,               -- how much is the base material.  
+    "baseMaterial" INT,               -- how much is the base material.
                                     -- 0 means unaffected by waste, >=quantity means entirely affected
     CONSTRAINT "materials_PK" PRIMARY KEY ("blueprintTypeID", "activityID", "requiredTypeID")
 );
@@ -35,8 +35,8 @@ CREATE TABLE "ramBlueprintReqs" (
 CREATE INDEX "ramBlueprintReqs_IX_blueprintTypeID" ON "ramBlueprintReqs" ("blueprintTypeID");
 CREATE INDEX "ramBlueprintReqs_IX_activityID" ON "ramBlueprintReqs" ("activityID");
 
--- The following queries take invTypeMaterials and ramTypeRequirements and combine them 
--- into a single table showing all the materials a blueprint requires, and how much of each 
+-- The following queries take invTypeMaterials and ramTypeRequirements and combine them
+-- into a single table showing all the materials a blueprint requires, and how much of each
 -- material is affected by waste when building.
 -------------------------------------------------------
 INSERT INTO "ramBlueprintReqs"
@@ -57,46 +57,46 @@ INSERT INTO "ramBlueprintReqs"
 ;
 ----------------------------------------------------------
 INSERT INTO "ramBlueprintReqs"
-    SELECT  b."blueprintTypeID", 
+    SELECT  b."blueprintTypeID",
             1,  -- manufacturing activityID
             itm."materialTypeID",   -- requiredTypeID
             (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)),  -- quantity
             1,   -- damagePerJob
             (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0))  -- baseMaterial
-    FROM "invBlueprintTypes" AS b 
-       INNER JOIN "invTypeMaterials" AS itm 
-           ON itm."typeID" = b."productTypeID" 
-       LEFT OUTER JOIN "ramBlueprintReqs" m 
-           ON b."blueprintTypeID" = m."blueprintTypeID" 
-           AND m."requiredTypeID" = itm."materialTypeID" 
-       LEFT OUTER JOIN ( 
+    FROM "invBlueprintTypes" AS b
+       INNER JOIN "invTypeMaterials" AS itm
+           ON itm."typeID" = b."productTypeID"
+       LEFT OUTER JOIN "ramBlueprintReqs" m
+           ON b."blueprintTypeID" = m."blueprintTypeID"
+           AND m."requiredTypeID" = itm."materialTypeID"
+       LEFT OUTER JOIN (
            SELECT srtr."typeID" AS "blueprintTypeID", -- tech 2 items recycle into their materials
                   sitm."materialTypeID" AS "recycledTypeID",   -- plus the t1 item's materials
-                  srtr."quantity" AS "recycledQuantity", 
+                  srtr."quantity" AS "recycledQuantity",
                   sitm."quantity" AS "quantity"
-           FROM "ramTypeRequirements" AS srtr 
-               INNER JOIN "invTypeMaterials" AS sitm 
-                   ON srtr."requiredTypeID" = sitm."typeID" 
+           FROM "ramTypeRequirements" AS srtr
+               INNER JOIN "invTypeMaterials" AS sitm
+                   ON srtr."requiredTypeID" = sitm."typeID"
            WHERE srtr."recycle" = 1   -- the recycle flag determines whether or not this requirement's materials are added
-             AND srtr."activityID" = 1 
-       ) AS sub 
-           ON sub."blueprintTypeID" = b."blueprintTypeID" 
-           AND sub."recycledTypeID" = itm."materialTypeID" 
+             AND srtr."activityID" = 1
+       ) AS sub
+           ON sub."blueprintTypeID" = b."blueprintTypeID"
+           AND sub."recycledTypeID" = itm."materialTypeID"
     WHERE m."blueprintTypeID" IS NULL -- partially waste-affected materials already added
     AND (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)) > 0 -- ignore negative quantities
 ;
 ----------------------------------------------------------
-INSERT INTO ramBlueprintReqs("blueprintTypeID", 
-                             "activityID", 
-                             "requiredTypeID", 
-                             "quantity", 
-                             "damagePerJob") 
-    SELECT  rtr."typeID", 
+INSERT INTO ramBlueprintReqs("blueprintTypeID",
+                             "activityID",
+                             "requiredTypeID",
+                             "quantity",
+                             "damagePerJob")
+    SELECT  rtr."typeID",
             rtr."activityID",
-            rtr."requiredTypeID", 
-            rtr."quantity", 
-            rtr."damagePerJob" 
-    FROM "ramTypeRequirements" AS rtr 
+            rtr."requiredTypeID",
+            rtr."quantity",
+            rtr."damagePerJob"
+    FROM "ramTypeRequirements" AS rtr
     WHERE rtr."activityID" NOT IN (1)
 ;
 ----------------------------------------------------------
@@ -130,8 +130,8 @@ INSERT INTO "invTypes_temp" SELECT * FROM "invTypes";
 DROP TABLE "invTypes";
 
 -- create the new patched one
--- this is an optimization of the invTypes table,  
--- the icons and corresponding blueprints are directly available without the need for SQL joins 
+-- this is an optimization of the invTypes table,
+-- the icons and corresponding blueprints are directly available without the need for SQL joins
 CREATE TABLE "invTypes" (
   "typeID" int(11) NOT NULL,
   "groupID" smallint(6) DEFAULT NULL,
@@ -144,6 +144,7 @@ CREATE TABLE "invTypes" (
   "portionSize" int(11) DEFAULT NULL,
   "basePrice" double DEFAULT NULL,
   "marketGroupID" smallint(6) DEFAULT NULL,
+  "metaGroupID" smallint(6) DEFAULT NULL,
   "icon" varchar(32) DEFAULT NULL,
   "published" tinyint(1) DEFAULT NULL,
   PRIMARY KEY ("typeID")
@@ -157,31 +158,34 @@ CREATE INDEX "invTypes_IX_published" ON "invTypes" ("published");
 
 -- fill the custom table
 INSERT INTO "invTypes"
-SELECT  t."typeID", 
-        t."groupID", 
+SELECT  t."typeID",
+        t."groupID",
         gg."categoryID",
         t."typeName",
-        b."blueprintTypeID" AS blueprintTypeID, 
+        b."blueprintTypeID" AS blueprintTypeID,
         b."techLevel",
-        t."description", 
-        t."volume", 
-        t."portionSize", 
-        t."basePrice", 
-        t."marketGroupID", 
+        t."description",
+        t."volume",
+        t."portionSize",
+        t."basePrice",
+        t."marketGroupID",
+        IFNULL(m."metaGroupID", 0) AS "metaGroupID",
         IFNULL('icon' || g."iconFile", CAST(t."typeID" AS TEXT)) AS "icon",
         t."published"
 FROM "invTypes_temp" t LEFT OUTER JOIN "eveIcons" g ON t."graphicID" = g."iconID",
-     "invTypes_temp" t2 LEFT OUTER JOIN "invBlueprintTypes" b ON t."typeID" = b."productTypeID",
+     "invTypes_temp" t2 LEFT OUTER JOIN "invBlueprintTypes" b ON t2."typeID" = b."productTypeID",
+     "invTypes_temp" t3 LEFT OUTER JOIN "invMetaTypes" m ON t3."typeID" = m."typeID",
      "invGroups" gg
 WHERE t."typeID" = t2."typeID"
+  AND t."typeID" = t3."typeID"
   AND t."groupID" = gg."groupID"
-  AND t."typeID" NOT IN (23693) -- this dummy item has 4 different blueprints, 
-                                -- if we do not ignore it, the SQL command fails... 
+  AND t."typeID" NOT IN (23693) -- this dummy item has 4 different blueprints,
+                                -- if we do not ignore it, the SQL command fails...
 ;
 -- delete the temp table
 DROP TABLE "invTypes_temp";
 
-  
+
 ----------------------------------------------------------
 -- CREATE A SPECIAL SYSTEMS, MOONS & PLANETS TABLE for quick name resolution
 
@@ -200,22 +204,22 @@ CREATE INDEX "mapCelestialObjects_IX_region" ON "mapCelestialObjects" ("regionID
 CREATE INDEX "mapCelestialObjects_IX_system" ON "mapCelestialObjects" ("solarSystemID");
 
 INSERT INTO "mapCelestialObjects"
-SELECT  "itemID", 
-        "typeID", 
-        "groupID", 
-        "solarSystemID", 
-        "regionID", 
-        "itemName", 
+SELECT  "itemID",
+        "typeID",
+        "groupID",
+        "solarSystemID",
+        "regionID",
+        "itemName",
         "security"
 FROM "mapDenormalize"
 WHERE "groupID" IN (5 /*Solar System*/, 7 /*Planet*/, 8 /*Moon*/, 15 /*Station*/)
 ;
 
-UPDATE "mapCelestialObjects" 
-SET "security" = 
-    (SELECT "mapSolarSystems"."security" 
+UPDATE "mapCelestialObjects"
+SET "security" =
+    (SELECT "mapSolarSystems"."security"
        FROM "mapSolarSystems"
-      WHERE "mapCelestialObjects"."itemID" = "mapSolarSystems"."solarSystemID") 
+      WHERE "mapCelestialObjects"."itemID" = "mapSolarSystems"."solarSystemID")
 WHERE "security" IS NULL
 ;
 
@@ -266,35 +270,35 @@ CREATE INDEX "invBlueprintTypes_IX_productTypeID" ON "invBlueprintTypes" ("produ
 
 -- fill the new table
 INSERT INTO "invBlueprintTypes" (
-	"blueprintTypeID",
-	"parentBlueprintTypeID",
-	"productTypeID",
-	"productionTime",
-	"techLevel",
-	"researchProductivityTime",
-	"researchMaterialTime",
-	"researchCopyTime",
-	"researchTechTime",
-	"productivityModifier",
-	"materialModifier",
-	"wasteFactor",
-	"maxProductionLimit"
+  "blueprintTypeID",
+  "parentBlueprintTypeID",
+  "productTypeID",
+  "productionTime",
+  "techLevel",
+  "researchProductivityTime",
+  "researchMaterialTime",
+  "researchCopyTime",
+  "researchTechTime",
+  "productivityModifier",
+  "materialModifier",
+  "wasteFactor",
+  "maxProductionLimit"
 ) SELECT * FROM "invBlueprintTypes_temp"
 ;
 
--- drop the temp table 
+-- drop the temp table
 DROP TABLE "invBlueprintTypes_temp";
 
 -- fill the dataInterfaceID field
-UPDATE "invBlueprintTypes" 
-SET "dataInterfaceID" = 
-	(SELECT r."requiredTypeID" 
-	   FROM "ramBlueprintReqs" AS r, 
-	        "invTypes" AS t
-	  WHERE "invBlueprintTypes"."blueprintTypeID" = r."blueprintTypeID"
-	    AND r."requiredTypeID" = t."typeID"
-	    AND r."activityID" = 8 /* invention */
-	    AND t."groupID" = 716 /* data interfaces*/)
+UPDATE "invBlueprintTypes"
+SET "dataInterfaceID" =
+  (SELECT r."requiredTypeID"
+     FROM "ramBlueprintReqs" AS r,
+          "invTypes" AS t
+    WHERE "invBlueprintTypes"."blueprintTypeID" = r."blueprintTypeID"
+      AND r."requiredTypeID" = t."typeID"
+      AND r."activityID" = 8 /* invention */
+      AND t."groupID" = 716 /* data interfaces*/)
 ;
 
 ----------------------------------------------------------
@@ -302,25 +306,25 @@ SET "dataInterfaceID" =
 -- FOR TECH II ITEMS BILL OF MATERIALS CALCULATION
 ----------------------------------------------------------
 
--- we first set all parentBlueprintTypeID to NULL 
+-- we first set all parentBlueprintTypeID to NULL
 -- because some are already set to wrong values
 UPDATE "invBlueprintTypes"
 SET "parentBlueprintTypeID" = NULL;
 
--- then we get the parent item (for each tech 2 item) 
+-- then we get the parent item (for each tech 2 item)
 -- from the "invMetaTypes" table and resolve its blueprint.
 UPDATE "invBlueprintTypes"
-SET "parentBlueprintTypeID" = 
+SET "parentBlueprintTypeID" =
     (SELECT b."blueprintTypeID"
      FROM "invBlueprintTypes" AS b,
-          "invMetaTypes" AS m 
+          "invMetaTypes" AS m
      WHERE "invBlueprintTypes"."productTypeID" = m."typeID"
-       AND b."productTypeID" = m."parentTypeID" 
+       AND b."productTypeID" = m."parentTypeID"
        AND m."metaGroupID" = 2 /* only tech2 items are concerned with invention */)
 ;
 
--- this way, when manufacturing a tech 2 item, 
--- we can easily know on which blueprint we need to run an invention job 
+-- this way, when manufacturing a tech 2 item,
+-- we can easily know on which blueprint we need to run an invention job
 -- in order to obtain the item's tech 2 BPC
 
 ----------------------------------------------------------

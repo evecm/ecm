@@ -56,6 +56,15 @@ class CatalogEntry(models.Model):
     isAvailable = models.BooleanField(default=True)
     __item = None
 
+    @property
+    def url(self):
+        return '/industry/catalog/%d/' % self.typeID
+
+    @property
+    def permalink(self):
+        return '<a href="%s" class="catalog-entry">%s</a>' % (self.url, self.typeName)
+
+
     def __getattr__(self, attrName):
         try:
             if self.__item is not None:

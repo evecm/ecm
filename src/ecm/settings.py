@@ -183,6 +183,7 @@ ECM_PLUGIN_APPS = [
     'ecm.plugins.accounting',
     'ecm.plugins.assets',
     'ecm.plugins.industry',
+    'ecm.plugins.shop',
 ]
 INSTALLED_APPS += ECM_PLUGIN_APPS
 

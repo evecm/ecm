@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block headtitle %}{{item.typeName}}{% endblock %}
+
+
+{% block header_scripts %}
+<script type="text/javascript"  src="/s/industry/js/catalog_details.js" ></script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry">Industry</a></li>
+<li><a href="/industry/catalog/">Catalog</a></li>
+<li><a href="/industry/catalog/{{ item.typeID }}">{{ item.typeName }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">{{item.typeName}}</h1>
+
+<img src="http://image.eveonline.com/Type/{{item.typeID}}_64.png" />
+
+
+<h2>Owned Blueprints</h2>
+<ul>
+{% for bp in item.blueprints.all %}
+<li>{{bp.typeName}} - ME: {{bp.me}} - PE: {{bp.pe}}{% if bp.copy %} (Copy: {{bp.runs}} runs){% endif %}</li>
+{% empty %}
+None
+{% endfor %}
+</ul>
+
+<form method="post" action="/industry/catalog/{{ item.typeID }}/addblueprint/">
+{% csrf_token %}
+<table>
+  <tr>
+    <td><label for="me">ME</label><input id="me" name="me" value="0" size="2" maxlength="3" onKeyPress="return numbersonly(event)" onClick="this.select()"/></td>
+    <td><label for="pe">PE</label><input id="pe" name="pe" value="0" size="2" maxlength="3" onKeyPress="return numbersonly(event)" onClick="this.select()"/></td>
+    <td><label for="copy">Copy</label><input id="copy" type="checkbox" name="copy"/></td>
+    <td><label for="runs">Runs</label><input id="runs" name="runs" value="0" size="3" maxlength="3" onKeyPress="return numbersonly(event)" onClick="this.select()"/></td>
+    <td><input class="button" type="submit" value="Add New Blueprint"/></td>
+  </tr>
+</table>
+</form>
+
+{% endblock %}

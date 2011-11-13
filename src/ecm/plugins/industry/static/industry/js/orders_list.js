@@ -60,7 +60,7 @@ $(document).ready(function() {
     });
 
     /* disable multi column sorting */
-    $('#journal_table thead th').click(function(event) {
+    $('#orders_list thead th').click(function(event) {
         if (!$(event.target).hasClass('sorthandle')) {
             event.shiftKey = false;
         }

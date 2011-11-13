@@ -20,8 +20,6 @@ from __future__ import with_statement
 __date__ = "2011 8 17"
 __author__ = "diabeteman"
 
-from datetime import datetime
-
 from django.db import models, transaction, connection
 from django.contrib.auth.models import User
 
@@ -90,15 +88,15 @@ class Order(models.Model):
     def lastModified(self):
         try:
             return self.logs.latest().date
-        except:
-            return datetime.now()
+        except OrderLog.DoesNotExist:
+            return None
 
     @property
     def creationDate(self):
         try:
             return self.logs.all()[0].date
-        except:
-            return datetime.now()
+        except IndexError:
+            return None
 
 
     #############################
@@ -113,13 +111,9 @@ class Order(models.Model):
 
         Checks if the new state is allowed in the life cycle. If not, raises an IllegalStateError
         """
-        validTransitionNames = [ t.__name__ for t in Order.VALID_TRANSITIONS[self.state] ]
-        if function.__name__ not in validTransitionNames:
-            raise IllegalTransition('Cannot apply transition "%s" from state "%s".' %
-                                    (function.__name__, Order.STATES[self.state]))
-        else:
-            self.state = newState
-            self.addComment(user, comment)
+        self.checkCanPassTransition(function.__name__)
+        self.state = newState
+        self.addComment(user, comment)
 
     def modify(self, entries):
         """
@@ -139,9 +133,7 @@ class Order(models.Model):
             self.rows.create(catalogEntry=catalogEntry, quantity=quantity)
         self.createJobs(dry_run=True)
         self.save()
-    modify.text = 'Modify order'
-    modify.id = 'modify'
-    modify.customerAccess = True
+
 
     def confirm(self):
         """
@@ -150,9 +142,7 @@ class Order(models.Model):
         self.applyTransition(Order.confirm, Order.PENDING, self.originator, "Confirmed by originator.")
         self.save()
         # TODO: handle the alerts
-    confirm.text = 'Confirm order'
-    confirm.id = 'confirm'
-    confirm.customerAccess = True
+
 
     def accept(self, manufacturer):
         """
@@ -172,9 +162,6 @@ class Order(models.Model):
             self.applyTransition(Order.accept, Order.PROBLEMATIC, user=manufacturer, comment=str(err))
             self.save()
             return False
-    accept.text = 'Accept order'
-    accept.id = 'accept'
-    accept.customerAccess = False
 
     def resolve(self, manufacturer, comment):
         """
@@ -186,9 +173,6 @@ class Order(models.Model):
         self.createJobs()
         self.applyTransition(Order.resolve, Order.ACCEPTED, manufacturer, comment)
         self.save()
-    resolve.text = 'Resolve order'
-    resolve.id = 'resolve'
-    resolve.customerAccess = False
 
     def plan(self, manufacturer, date):
         """
@@ -198,9 +182,6 @@ class Order(models.Model):
                              'Order planned for date "%s"' % utils.print_date(date))
         self.deliveryDate = date
         self.save()
-    plan.text = 'Plan order'
-    plan.id = 'plan'
-    plan.customerAccess = False
 
     def reject(self, manufacturer, comment):
         """
@@ -212,9 +193,6 @@ class Order(models.Model):
         self.applyTransition(Order.reject, Order.REJECTED, manufacturer, comment)
         self.save()
         # TODO: handle the alerts
-    reject.text = 'Reject order'
-    reject.id = 'reject'
-    reject.customerAccess = False
 
     def cancel(self, comment):
         """
@@ -222,9 +200,6 @@ class Order(models.Model):
         """
         self.applyTransition(Order.cancel, Order.CANCELED, self.originator, comment)
         self.save()
-    cancel.text = 'Cancel order'
-    cancel.id = 'cancel'
-    cancel.customerAccess = True
 
     def startPreparation(self, user=None):
         """
@@ -233,9 +208,6 @@ class Order(models.Model):
         self.applyTransition(Order.startPreparation, Order.IN_PREPARATION,
                              user or self.manufacturer, "Preparation started.")
         self.save()
-    startPreparation.text = 'Start preparation'
-    startPreparation.id = 'startpreparation'
-    startPreparation.customerAccess = False
 
     def endPreparation(self, manufacturer=None, deliveryMan=None):
         """
@@ -248,9 +220,6 @@ class Order(models.Model):
         self.deliveryMan = deliveryMan or manufacturer or self.manufacturer
 
         self.save()
-    endPreparation.text = 'End preparation'
-    endPreparation.id = 'endpreparation'
-    endPreparation.customerAccess = False
 
     def deliver(self, user=None):
         """
@@ -261,9 +230,6 @@ class Order(models.Model):
                              "Order has been delivered to the client.")
         self.save()
         # TODO: handle the alerts
-    deliver.text = 'Deliver order'
-    deliver.id = 'deliver'
-    deliver.customerAccess = False
 
     def pay(self, user=None):
         """
@@ -272,9 +238,6 @@ class Order(models.Model):
         self.applyTransition(Order.pay, Order.PAID,
                              user or self.deliveryMan, "Order has been delivered to the client.")
         self.save()
-    pay.text = 'Pay order'
-    pay.id = 'pay'
-    pay.customerAccess = True
 
     # allowed transitions between states
     VALID_TRANSITIONS = {
@@ -291,6 +254,42 @@ class Order(models.Model):
         REJECTED : (),
     }
 
+    modify.text = 'Modify order'
+    confirm.text = 'Confirm order'
+    accept.text = 'Accept order'
+    resolve.text = 'Resolve order'
+    plan.text = 'Plan order'
+    reject.text = 'Reject order'
+    cancel.text = 'Cancel order'
+    startPreparation.text = 'Start preparation'
+    endPreparation.text = 'End preparation'
+    deliver.text = 'Deliver order'
+    pay.text = 'Pay order'
+
+    modify.id = modify.__name__
+    confirm.id = confirm.__name__
+    accept.id = accept.__name__
+    resolve.id = resolve.__name__
+    plan.id = plan.__name__
+    reject.id = reject.__name__
+    cancel.id = cancel.__name__
+    startPreparation.id = startPreparation.__name__
+    endPreparation.id = endPreparation.__name__
+    deliver.id = deliver.__name__
+    pay.id = pay.__name__
+
+    modify.customerAccess = True
+    confirm.customerAccess = True
+    accept.customerAccess = False
+    resolve.customerAccess = False
+    plan.customerAccess = False
+    reject.customerAccess = False
+    cancel.customerAccess = True
+    startPreparation.customerAccess = False
+    endPreparation.customerAccess = False
+    deliver.customerAccess = False
+    pay.customerAccess = True
+
     @property
     def validTransitions(self):
         return self.getValidTransitions()
@@ -305,6 +304,12 @@ class Order(models.Model):
             return [ tr for tr in Order.VALID_TRANSITIONS[self.state] if tr.customerAccess ]
         else:
             return Order.VALID_TRANSITIONS[self.state]
+
+    def checkCanPassTransition(self, transitionName):
+        validTransitionNames = [ t.__name__ for t in Order.VALID_TRANSITIONS[self.state] ]
+        if transitionName not in validTransitionNames:
+            raise IllegalTransition('Cannot apply transition "%s" from state "%s".' %
+                                    (transitionName, Order.STATES[self.state]))
 
     ################################
     # UTILITY FUNCTIONS

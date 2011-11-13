@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Catalog{% endblock %}
+
+
+
+{% block header_scripts %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript"  src="/s/industry/js/catalog_table.js" ></script>
+
+<script type="text/javascript"  >
+AJAX_URL = '/industry/catalog/data/';
+SHOW_UNAVAILABLE = true;
+</script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry/">Industry</a></li>
+<li><a href="/industry/catalog/">Catalog</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Catalog</h1>
+
+<form id="search_form" class="search_form">
+  <table>
+    <tr>
+      <td><input type="text"  id="search_text"  value="" /></td>
+      <td><input type="button"  class="button"  id="search_button"  value="Search" /></td>
+      <td><input type="button"  class="button"  id="clear_search"  value="Reset" /></td>
+      <td>Display: </td>
+      <td><input type="button" class="button" id="show_unavailable_button" value="Show Unavailable Items"/></td>
+      <td><input type="button" class="button" id="hide_unavailable_button" value="Hide Unavailable Items"/></td>
+    </tr>
+  </table>
+</form>
+
+<form id="update_catalog_form" method="post" action="/industry/catalog/">
+{% csrf_token %}
+<table class="table display" id="catalog_table">
+  <thead>
+    <tr>
+      {%for col in columns%}
+      <th class="top" scope="col" >{{col}}</th>
+      {%endfor%}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {%for col in columns%}
+      <th>{{col}}</th>
+      {%endfor%}
+    </tr>
+  </tfoot>
+
+</table>
+<input type='hidden' name='available' value='' />
+<input type='hidden' name='unavailable' value='' />
+<input type="submit" class="button" id="update_availabilities" value="Update Availabilities" />
+</form>
+{% endblock %}

@@ -27,7 +27,9 @@ DEPENDS_ON = {
 
 MENUS = [
     {'menu_title': 'Industry',    'menu_url': '',      'menu_items': [
-        {'item_title': 'Changes', 'item_url': 'changes/', 'menu_items': []},
+        {'item_title': 'Orders', 'item_url': 'orders/', 'menu_items': []},
+        {'item_title': 'Catalog', 'item_url': 'catalog/', 'menu_items': []},
+        {'item_title': 'Supply Prices', 'item_url': 'prices/', 'menu_items': []},
     ]},
 ]
 

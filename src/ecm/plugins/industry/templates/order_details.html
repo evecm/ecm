@@ -91,7 +91,7 @@ $("#{{transition}}_button").click(function() {
     {% for row in order.rows.all %}
     <tr>
           <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
-           <td class="bold">{{row.catalogEntry.typeName}}</td>
+           <td>{{row.catalogEntry.permalink|safe}}</td>
            <td class="center">{{row.quantity|ecm_quantity}}</td>
            <td class="right">{%if row.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
          </tr>

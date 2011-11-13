@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.core import utils
 
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
@@ -33,6 +32,7 @@ from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.text import truncate_words
 
 from ecm.views import extract_datatable_params
+from ecm.core import utils
 from ecm.plugins.industry.models import Order
 from ecm.plugins.industry.models.catalog import CatalogEntry
 
@@ -93,20 +93,7 @@ def all_data(request):
 
 
 
-#------------------------------------------------------------------------------
-@login_required
-def create(request):
-    if request.method == 'POST':
-        items, valid_order = extract_order_items(request)
 
-        if valid_order:
-            order = Order.objects.create(originator=request.user, pricing_id=1)
-            order.modify(items)
-            return redirect('/industry/orders/%d/' % order.id)
-    else:
-        items = []
-
-    return render_to_response('order_create.html', {'items': items}, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -133,26 +120,29 @@ def change_state(request, order_id, transition):
     except ValueError:
         raise Http404()
 
-
-
-
-
-    if request.method == 'GET':
-        return render_to_response('order_modify.html', {'order': order}, RequestContext(request))
-    elif request.method == 'POST':
-        items, valid_order = extract_order_items(request)
-        if valid_order:
-            order.modify(items)
-            return redirect('/industry/orders/%d/' % order.id)
+    if transition == Order.modif.__name__:
+        if request.method == 'GET':
+            return render_to_response('order_modify.html', {'order': order}, RequestContext(request))
+        elif request.method == 'POST':
+            items, valid_order = extract_order_items(request)
+            if valid_order:
+                order.modify(items)
+                return redirect('/industry/orders/%d/' % order.id)
+            else:
+                return redirect('/industry/orders/%d/modify/' % order.id)
         else:
-            return redirect('/industry/orders/%d/modify/' % order.id)
-    else:
-        return HttpResponseBadRequest()
+            return HttpResponseBadRequest()
+    elif transition == Order.confirm.__name__:
+        order.confirm()
+        return redirect('/shop/orders/%d/' % order.id)
 
 
 
 
 
+
+
+#------------------------------------------------------------------------------
 def extract_order_items(request):
     items = []
     valid_order = True
