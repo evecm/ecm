@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Shop{% endblock %}
+
+
+{% block header_scripts %}
+<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/shop/">Shop</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Welcome to our EVE-Online shop</h1>
+
+<ul>
+  <li><a href="/shop/orders/create/">Create a new order</a></li>
+  <li><a href="/shop/orders/">See/follow my orders</a></li>
+</ul>
+
+{% endblock %}
