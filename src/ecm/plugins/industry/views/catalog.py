@@ -149,3 +149,30 @@ def add_blueprint(request, item_id):
 
     return redirect('/industry/catalog/%s/' % item_id)
 
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def get_price(request, item_id):
+    try:
+        item = get_object_or_404(CatalogEntry, typeID=int(item_id))
+    except ValueError:
+        raise Http404()
+    return HttpResponse(str(item.fixedPrice))
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def update_price(request, item_id):
+    try:
+        item = get_object_or_404(CatalogEntry, typeID=int(item_id))
+    except ValueError:
+        raise Http404()
+    price = request.POST.get('value', '')
+    try:
+        price = float(price)
+    except ValueError:
+        price = None
+
+    item.fixedPrice = price
+    item.save()
+
+    return utils.print_float(price)

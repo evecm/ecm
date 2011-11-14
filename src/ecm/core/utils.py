@@ -38,7 +38,7 @@ def print_date(date):
 #------------------------------------------------------------------------------
 def print_integer(number, thousand_separator=",", force_sign=False):
     if type(number) not in [type(0), type(0L)]:
-        raise TypeError("Parameter must be an integer.")
+        return number
 
     negative = number < 0
     number = abs(number)
@@ -72,7 +72,7 @@ def print_delta(delta):
 #------------------------------------------------------------------------------
 def print_float(number, thousand_separator=",", decimal_separator=".", force_sign=False):
     if type(number) != type(0.0):
-        raise TypeError("Parameter must be a float.")
+        return number
     decimal_part = ("%.2f" % abs(number - int(number)))[2:]
     return print_integer(int(number), thousand_separator, force_sign) + decimal_separator + decimal_part
 
