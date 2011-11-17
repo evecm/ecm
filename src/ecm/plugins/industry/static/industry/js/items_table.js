@@ -20,20 +20,43 @@ $(document).ready(function() {
         "sDom": 'lprtip', 			/* table layout. see http://www.datatables.net/usage/options */
         "aoColumns": [
             { /* 0 Item */         "sWidth": "50%" },
-            { /* 1 Available */    "sWidth": "10%", "sClass": "center"},
-            { /* 2 Blueprints */   "sWidth": "5%" },
-            { /* 3 Ordered */ 	   "sWidth": "5%" },
-            { /* 4 typeID */      "bVisible": false },
+            { /* 1 Available */    "sWidth": "5%", "sClass": "center"},
+            { /* 2 Price */        "sWidth": "10%"},
+            { /* 3 Blueprints */   "sWidth": "5%" },
+            { /* 4 Ordered */ 	   "sWidth": "5%" },
+            { /* 5 typeID */      "bVisible": false },
         ],
         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             var available = aData[1];
-            var typeID = aData[4];
-            var params = 'name="' + typeID + '" ';
+            var typeID = aData[5];
+            var checked = '';
             if (available == 'true') {
-                params += 'checked ';
+            	checked += 'checked ';
             }
-            $('td:eq(1)', nRow).html('<input type="checkbox" ' + params + '/>');
-            $('td:eq(4)', nRow).hide();
+            $('td:eq(1)', nRow).html('<input type="checkbox" ' + checked + '/>');
+            $('td:eq(1) input', nRow).click(function () {
+            	var params = {
+            		available: $(this).is(':checked')
+            	};
+            	$.post('/industry/catalog/items/' + typeID + '/availability/', params)
+            	 .error(function () {
+             		alert('Failed to change availability!'); 
+             	});
+            });
+            
+            $('td:eq(2)', nRow).addClass('right');
+            /* Apply jEditable handlers to the cells each time we redraw the table */
+            $('td:eq(2)', nRow).editable( '/industry/catalog/items/' + typeID + '/price/', {
+                callback: function( sValue, y ) {
+                    var aPos = oTable.fnGetPosition( this );
+                    oTable.fnUpdate( sValue, aPos[0], aPos[1] );
+                },
+                loadurl: '/industry/catalog/items/' + typeID + '/price/',
+                name: 'price',
+                
+            } );
+            
+            $('td:eq(5)', nRow).hide();
             return nRow;
         },
 
@@ -105,27 +128,6 @@ $(document).ready(function() {
             updateButtons();
             table.fnDraw();
         }
-    });
-
-    $("#update_catalog_form").submit(function() {
-        var checkboxes = $('#update_catalog_form input:checkbox');
-        var available = "";
-        var unavailable = "";
-        for (var i=0 ; i < checkboxes.length ; i++) {
-            if (checkboxes[i].checked) {
-                available += "," + checkboxes[i].name;
-            } else {
-                unavailable += "," + checkboxes[i].name;
-            }
-        }
-        if (available.length != 0) {
-            available = available.substring(1);
-        }
-        if (unavailable.length != 0) {
-            unavailable = unavailable.substring(1);
-        }
-        $('#update_catalog_form [name=available]').val(available);
-        $('#update_catalog_form [name=unavailable]').val(unavailable);
     });
 
     updateButtons();

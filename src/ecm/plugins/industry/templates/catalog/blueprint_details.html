@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block headtitle %}{{blueprint.typeName}}{% endblock %}
+
+
+{% block header_scripts %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript"  src="/s/industry/js/blueprint_details.js" ></script>
+<script type="text/javascript">
+BLUEPRINT_ID = {{blueprint.id}};
+</script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry">Industry</a></li>
+<li><a href="/industry/catalog/blueprints/">Blueprints Catalog</a></li>
+<li><a href="/industry/catalog/blueprints/{{ blueprint.typeID }}/">{{ blueprint.typeName }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">{{blueprint.typeName}} <span class="time">&#35;{{blueprint.id}}</span></h1>
+
+<table class="transparent">
+  <tr>
+    <td><img src="http://image.eveonline.com/Type/{{blueprint.blueprintTypeID}}_64.png" /></td>
+    <td>
+      <table class="transparent">
+        <tr><td class="bold">Material Efficiency</td><td id="{{blueprint.id}}" class="me">{{blueprint.me}}</td></tr>
+        <tr><td class="bold">Production Efficiency</td><td id="{{blueprint.id}}" class="pe" >{{blueprint.pe}}</td></tr>
+        <tr>
+          <td class="bold">Copy</td>
+          <td>
+            <input type="checkbox" id="{{blueprint.id}}" class="copy" {% if blueprint.copy %}checked{% endif %} />
+          </td>
+        </tr>
+        <tr><td class="bold">Runs</td><td id="{{blueprint.runs}}" class="runs" >{{blueprint.runs}}</td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<h2>Needed Materials (for 1 run)</h2>
+
+<table id="materials_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Icon</th>
+      <th class="top" scope="col" >Item</th>
+      <th class="top" scope="col" >Quantity</th>
+      <th class="top" scope="col" >Damage Per Job</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="4" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+</table>
+
+{% endblock %}

@@ -58,11 +58,11 @@ class CatalogEntry(models.Model):
 
     @property
     def url(self):
-        return '/industry/catalog/%d/' % self.typeID
+        return '/industry/catalog/items/%d/' % self.typeID
 
     @property
     def permalink(self):
-        return '<a href="%s" class="catalog-entry">%s</a>' % (self.url, self.typeName)
+        return '<a href="%s" class="catalog-item">%s</a>' % (self.url, self.typeName)
 
 
     def __getattr__(self, attrName):
@@ -93,9 +93,17 @@ class OwnedBlueprint(models.Model):
     me = models.SmallIntegerField(default=0)
     pe = models.SmallIntegerField(default=0)
     copy = models.BooleanField(default=False)
-    runs = models.SmallIntegerField(default=1)
+    runs = models.SmallIntegerField(default=0)
     catalogEntry = models.ForeignKey(CatalogEntry, related_name='blueprints', null=True, blank=True)
     __blueprint = None
+
+    @property
+    def url(self):
+        return '/industry/catalog/blueprints/%d/' % self.id
+
+    @property
+    def permalink(self):
+        return '<a href="%s" class="catalog-blueprint">%s</a>' % (self.url, self.typeName)
 
     def item_name_admin_display(self):
         name, _ = db.resolveTypeName(self.blueprintTypeID)

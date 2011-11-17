@@ -23,24 +23,25 @@ from django.conf.urls.defaults import patterns
 urlpatterns = patterns('ecm.plugins.industry.views',
     ###########################################################################
     # INDUSTRY VIEWS
-    (r'^search/data$',          'search_item'),
-    (r'^search/itemid$',        'get_item_id'),
+    (r'^search/data$',                          'search_item'),
+    (r'^search/itemid$',                        'get_item_id'),
 
-    (r'^orders/$',       'order.all'),
-    (r'^orders/all/data/$',       'order.all_data'),
+    (r'^orders/$',                              'orders.all'),
+    (r'^orders/all/data/$',                     'orders.all_data'),
 
-    (r'^orders/create/$',       'order.create'),
-    (r'^orders/(\d+)/$',        'order.details'),
-    (r'^orders/(\d+)/(\w+)/$',  'order.change_state'),
+    (r'^catalog/items/$',                       'catalog.items.all'),
+    (r'^catalog/items/data/$',                  'catalog.items.all_data'),
 
+    (r'^catalog/items/(\d+)/$',                 'catalog.items.details'),
+    (r'^catalog/items/(\d+)/price/$',           'catalog.items.price'),
+    (r'^catalog/items/(\d+)/availability/$',    'catalog.items.availability'),
+    (r'^catalog/items/(\d+)/addblueprint/$',    'catalog.items.blueprint_add'),
 
-    (r'^catalog/$',             'catalog.catalog'),
-    (r'^catalog/update/$',      'catalog.update'),
-    (r'^catalog/data/$',        'catalog.catalog_data'),
-    (r'^catalog/(\d+)/$',       'catalog.item_details'),
-    (r'^catalog/(\d+)/price/$',       'catalog.get_price'),
-    (r'^catalog/(\d+)/update/price/$',       'catalog.update_price'),
-    (r'^catalog/(\d+)/addblueprint/$',       'catalog.add_blueprint'),
-
+    (r'^catalog/blueprints/$',                  'catalog.blueprints.all'),
+    (r'^catalog/blueprints/data/$',             'catalog.blueprints.all_data'),
+    (r'^catalog/blueprints/(\d+)/$',            'catalog.blueprints.details'),
+    (r'^catalog/blueprints/(\d+)/materials/$',  'catalog.blueprints.materials'),
+    (r'^catalog/blueprints/(\d+)/delete/$',     'catalog.blueprints.delete'),
+    (r'^catalog/blueprints/(\w+)/$',            'catalog.blueprints.info'),
 )
 

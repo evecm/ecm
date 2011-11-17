@@ -69,7 +69,7 @@ SQL_MISSING_ITEMS = '''SELECT "typeID", "typeName", "marketGroupID"
 FROM "invTypes"
 WHERE "blueprintTypeID" IS NOT NULL
   AND "published" = 1
-  AND "metaGroupID" IN (0,2)
+  AND "metaGroupID" IN (0,2,14)
   AND "marketGroupID" IS NOT NULL
   AND "typeID" NOT IN (2836, 17922, 29266, 17928, 17932, 3532, 32207, 32209);'''
 @transaction.commit_on_success
@@ -80,7 +80,8 @@ def createMissingCatalogEntries():
     created = 0
     for typeID, typeName, marketGroupID in cursor:
         if typeID not in typeIDs:
-            CatalogEntry.objects.create(typeID=typeID, typeName=typeName, marketGroupID=marketGroupID)
+            CatalogEntry.objects.create(typeID=typeID, typeName=typeName, 
+                                        marketGroupID=marketGroupID, isAvailable=False)
             created += 1
     logger.info('added %d missing catalog entries', created)
 createMissingCatalogEntries()

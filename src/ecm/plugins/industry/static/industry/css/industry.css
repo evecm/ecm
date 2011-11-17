@@ -1,8 +1,8 @@
 
 .order_form {
-	width: 60%;
-	margin: auto;
-	font-size: 120%;
+  width: 60%;
+  margin: auto;
+  font-size: 120%;
 }
 
 .order_form label {
@@ -11,13 +11,13 @@
 
 
 .order_cart_empty {
-    padding: 1em 0; 
-    text-align: center !important;	
+    padding: 1em 0;
+    text-align: center !important;
 }
 
 .order_table {
-	margin: auto !important;
-	font-size: 120%;
+  margin: auto !important;
+  font-size: 120%;
 }
 
 .order_table th {
@@ -25,15 +25,39 @@
 }
 
 .order_table input {
-	width: 100%;
+  width: 100%;
     margin: auto !important;
     text-align: center;
 }
 
 .order_table .center {
-	align: center !important;
+  align: center !important;
 }
 
 .order_table .submit {
-	align: right;
+  align: right;
+}
+
+
+.blueprints_table {
+  width: 50%;
+  text-align: left !important;
+}
+
+
+
+a.catalog-blueprint {
+    padding-left: 18px;
+    background: url(../img/catalog-blueprint.png) no-repeat left;
+}
+
+
+a.catalog-item {
+    padding-left: 18px;
+    background: url(../img/catalog-item.png) no-repeat left;
+}
+
+a.catalog-supply {
+    padding-left: 18px;
+    background: url(../img/catalog-supply.png) no-repeat left;
 }

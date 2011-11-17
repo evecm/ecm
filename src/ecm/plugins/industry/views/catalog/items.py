@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db.models.aggregates import Count
 
 __date__ = "2011 11 13"
 __author__ = "diabeteman"
@@ -25,47 +24,43 @@ try:
 except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
+import logging
 
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.template.context import RequestContext
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.db.models.aggregates import Count
+from django.shortcuts import get_object_or_404, render_to_response
 
 from ecm.core import utils
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.models.catalog import CatalogEntry
 
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 COLUMNS = [
     ['Item', 'typeName'],
     ['Available', 'isAvailable'],
+    ['Fixed Price', 'fixedPrice'],
     ['Blueprints', 'blueprint_count'],
     ['Ordered', 'order_count'],
     [None, None], # hidden
 ]
 @check_user_access()
-def catalog(request):
-    try:
-        if request.method == 'POST':
-            available = request.POST.get('available', '')
-            unavailable = request.POST.get('unavailable', '')
-            if available:
-                available = [ int(typeID.strip()) for typeID in available.split(',') ]
-                CatalogEntry.objects.filter(typeID__in=available).update(isAvailable=True)
-            if unavailable:
-                unavailable = [ int(typeID.strip()) for typeID in unavailable.split(',') ]
-                CatalogEntry.objects.filter(typeID__in=unavailable).update(isAvailable=False)
-    except ValueError, e:
-        pass
-
+def all(request):
+    """
+    Serves URL /industry/catalog/items/
+    """
     columns = [ col[0] for col in COLUMNS ]
-    return render_to_response('catalog.html', {'columns' : columns}, RequestContext(request))
+    return render_to_response('catalog/items.html', {'columns' : columns}, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def catalog_data(request):
+def all_data(request):
+    """
+    Serves URL /industry/catalog/items/data/ (jQuery datatables plugin)
+    """
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
@@ -102,6 +97,7 @@ def catalog_data(request):
         items.append([
             item.permalink,
             bool(item.isAvailable),
+            utils.print_float(item.fixedPrice),
             item.blueprint_count,
             item.order_count,
             item.typeID,
@@ -113,66 +109,104 @@ def catalog_data(request):
         "iTotalDisplayRecords" : filtered_items,
         "aaData" : items
     }
-
     return HttpResponse(json.dumps(json_data))
 
-
 #------------------------------------------------------------------------------
 @check_user_access()
-def item_details(request, item_id):
+def details(request, item_id):
+    """
+    Serves URL /industry/catalog/items/<item_id>/
+    """
     try:
         item = get_object_or_404(CatalogEntry, typeID=int(item_id))
     except ValueError:
         raise Http404()
 
-    return render_to_response('catalog_details.html', {'item': item}, RequestContext(request))
-
+    return render_to_response('catalog/item_details.html', {'item': item}, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def add_blueprint(request, item_id):
+def price(request, item_id):
+    """
+    Serves URL /industry/catalog/items/<item_id>/price/
+    
+    If request is GET: 
+        return the price as a raw float
+    If request is POST:
+        update the price of the item
+        return the price formatted as a string
+    """
     try:
         item = get_object_or_404(CatalogEntry, typeID=int(item_id))
     except ValueError:
         raise Http404()
-
-    copy = request.POST.get('copy', 'off') == 'on'
-    me = int(request.POST.get('me', '0'))
-    pe = int(request.POST.get('pe', '0'))
-    runs = int(request.POST.get('runs', '0'))
-
-    item.blueprints.create(blueprintTypeID=item.blueprintTypeID,
-                           copy=copy,
-                           me=me,
-                           pe=pe,
-                           runs=runs)
-
-    return redirect('/industry/catalog/%s/' % item_id)
-
+    if request.method == 'POST':
+        try:
+            price = float(request.POST['price'])
+        except KeyError:
+            return HttpResponseBadRequest('Missing "price" parameter')
+        except ValueError:
+            # price cannot be cast to a float
+            price = None
+        item.fixedPrice = price
+        item.save()
+        displayPrice = utils.print_float(price)
+        logger.info('"%s" changed fixedPrice for item "%s" -> %s' % (request.user, 
+                                                                     item.typeName, 
+                                                                     displayPrice))
+        return HttpResponse(displayPrice)
+    else:
+        return HttpResponse(str(item.fixedPrice))
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def get_price(request, item_id):
+def availability(request, item_id):
+    """
+    Serves URL /industry/catalog/items/<item_id>/availability/
+    
+    If request is POST:
+        update the availability of the item
+    return the json formatted availability
+    """
     try:
         item = get_object_or_404(CatalogEntry, typeID=int(item_id))
     except ValueError:
         raise Http404()
-    return HttpResponse(str(item.fixedPrice))
+    if request.method == 'POST':
+        try:
+            available = json.loads(request.POST['available'])
+            if type(available) != type(True):
+                return HttpResponseBadRequest('"available" parameter must be a boolean')
+        except (KeyError, ValueError):
+            return HttpResponseBadRequest('Missing "available" parameter')
+        item.isAvailable = available
+        item.save()
+        logger.info('"%s" changed availability for item "%s" -> %s' % (request.user, 
+                                                                       item.typeName, 
+                                                                       available))
+    return HttpResponse(json.dumps(item.isAvailable))
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def update_price(request, item_id):
+def blueprint_add(request, item_id):
+    """
+    Serves URL /industry/catalog/items/<item_id>/addblueprint/
+    
+    Create a new blueprint for the given item.
+    return the json formatted blueprint fields.
+    """
     try:
         item = get_object_or_404(CatalogEntry, typeID=int(item_id))
     except ValueError:
         raise Http404()
-    price = request.POST.get('value', '')
-    try:
-        price = float(price)
-    except ValueError:
-        price = None
-
-    item.fixedPrice = price
-    item.save()
-
-    return utils.print_float(price)
+    bp = item.blueprints.create(blueprintTypeID=item.blueprintTypeID)
+    bp_dict = {
+                     'id': bp.id, 
+        'blueprintTypeID': item.blueprintTypeID, 
+                     'me': bp.me, 
+                     'pe': bp.pe, 
+                   'copy': bp.copy, 
+                   'runs': bp.runs, 
+                    'url': bp.url,
+    }
+    return HttpResponse(json.dumps(bp_dict))

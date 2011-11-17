@@ -197,7 +197,7 @@ class Blueprint(Item):
                     blueprints.update(mat.blueprint.getInvolvedBlueprints(recurse=True))
         return blueprints
 
-    def getBillOfMaterials(self, runs, meLevel, activity):
+    def getBillOfMaterials(self, runs, meLevel, activity, round_result=False):
         """
         Resolve the materials needed for the specified activity.
         Quantities are given as floats (to be rounded).
@@ -209,7 +209,7 @@ class Blueprint(Item):
             if m.damagePerJob > 0:
                 qty = roundedRuns * m.quantity
                 if m.baseMaterial > 0:
-                    qty = apply_material_level(qty, meLevel, self.wasteFactor)
+                    qty = apply_material_level(qty, meLevel, self.wasteFactor, round_result)
                 bill.append(ActivityMaterial(m.requiredTypeID, qty, m.damagePerJob, m.baseMaterial))
         return bill
 
@@ -376,7 +376,7 @@ class NoParentBlueprintException(NoBlueprintException):
         return 'Blueprint with id %s has no parent blueprint' % str(self.typeID)
 
 #------------------------------------------------------------------------------
-def apply_material_level(base, meLevel, wasteFactor, round=False):
+def apply_material_level(base, meLevel, wasteFactor, round_result=False):
     """
     Calculate the quantity needed for a material
     considering the waste factor and the material efficiency of the blueprint involved.
@@ -385,13 +385,13 @@ def apply_material_level(base, meLevel, wasteFactor, round=False):
         value = base * (1.0 - ((meLevel - 1) * (wasteFactor * 0.01)));
     else:
         value = base * (1.0 + ((wasteFactor * 0.01) / (1.0 + meLevel)));
-    if round:
+    if round_result:
         return int(round(value))
     else:
         return value
 
 #------------------------------------------------------------------------------
-def apply_production_level(base, peLevel, round=False):
+def apply_production_level(base, peLevel, round_result=False):
     """
     Calculate the duration (in seconds) needed for the manufacturing of an item
     considering the production efficiency of the item's blueprint.
@@ -401,7 +401,7 @@ def apply_production_level(base, peLevel, round=False):
         value = baseTime * (1.0 - (0.2 * (peLevel / (1.0 + peLevel))))
     else:
         value = baseTime * (1.0 - 0.1 * peLevel)
-    if round:
+    if round_result:
         return int(round(value))
     else:
         return value

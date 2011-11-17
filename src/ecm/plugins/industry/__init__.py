@@ -28,8 +28,10 @@ DEPENDS_ON = {
 MENUS = [
     {'menu_title': 'Industry',    'menu_url': '',      'menu_items': [
         {'item_title': 'Orders', 'item_url': 'orders/', 'menu_items': []},
-        {'item_title': 'Catalog', 'item_url': 'catalog/', 'menu_items': []},
-        {'item_title': 'Supply Prices', 'item_url': 'prices/', 'menu_items': []},
+        {'item_title': 'Catalog', 'item_url': 'catalog/items/', 'menu_items': [
+            {'item_title': 'Blueprints',    'item_url': 'catalog/blueprints/'},
+            {'item_title': 'Supplies',      'item_url': 'catalog/supplies/'},
+        ]},
     ]},
 ]
 
