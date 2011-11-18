@@ -80,6 +80,7 @@ function addBlueprint(itemID) {
                             .replace(/%checked/g, checked)
                             .replace(/%runs/g, json['runs']);
             $(row).appendTo("#blueprints")
+            setEditableHandlers();
         }).error(function () {
             alert('Failed to add blueprint.');
         });

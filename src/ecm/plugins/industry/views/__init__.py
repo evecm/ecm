@@ -36,6 +36,35 @@ from ecm.plugins.industry.models import CatalogEntry
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
+MINUTE = 60
+HOUR = 60 * MINUTE
+DAY = 24 * HOUR
+def print_duration(seconds):
+    seconds = int(seconds)
+    if not seconds > 0:
+        return '0 sec.'
+    duration = ''
+    days = seconds / DAY
+    if days > 0:
+        duration += '%d day' % days
+        if days > 1:
+            duration += 's'
+    rest = seconds % DAY
+    hours = rest / HOUR
+    if hours > 0:
+        duration += ' %d hour' % hours
+        if hours > 1:
+            duration += 's'
+    rest = rest % HOUR
+    minutes = rest / MINUTE
+    if minutes > 0:
+        duration += ' %d min.' % minutes
+    rest = rest % MINUTE
+    if rest > 0:
+        duration += ' %d sec.' % rest
+    return duration.strip()
+
+#------------------------------------------------------------------------------
 @login_required
 def search_item(request):
     querystring = request.GET.get('q', None)

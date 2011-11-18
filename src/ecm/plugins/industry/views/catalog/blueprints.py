@@ -14,7 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.core.eve.classes import Blueprint, BpActivity
+from ecm.core.eve.classes import BpActivity
+from ecm.plugins.industry.views import print_duration
 
 __date__ = "2011 11 13"
 __author__ = "diabeteman"
@@ -42,14 +43,14 @@ logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def all(request):
+def blueprints(request):
     """
     Serves URL /industry/catalog/blueprints/
     """
     return render_to_response('catalog/blueprints.html', {}, RequestContext(request))
 #------------------------------------------------------------------------------
 @check_user_access()
-def all_data(request):
+def blueprints_data(request):
     """
     Serves URL /industry/catalog/blueprints/data/
     """
@@ -65,8 +66,17 @@ def details(request, blueprint_id):
         bp = get_object_or_404(OwnedBlueprint, id=int(blueprint_id))
     except ValueError:
         raise Http404()
+    
+    activities = bp.activities.values()
+    activities.sort(key=lambda a: a.activityID)
     data = {
         'blueprint': bp,
+        'activities': activities,
+        'prodDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.MANUFACTURING)),
+        'meDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.RESEARCH_ME)),
+        'peDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.RESEARCH_PE)),
+        'copyDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.COPY)),
+        'invDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.INVENTION)),
     }
     return render_to_response('catalog/blueprint_details.html', data, RequestContext(request))
 
@@ -80,13 +90,17 @@ def materials(request, blueprint_id):
     try:
         bp = get_object_or_404(OwnedBlueprint, id=int(blueprint_id))
         params = extract_datatable_params(request)
+        REQ = request.GET if request.method == 'GET' else request.POST
+        params.activityID = int(REQ.get('activityID', '1'))
     except (KeyError, ValueError), e:
         raise HttpResponseBadRequest(str(e))
 
     materials = bp.getBillOfMaterials(runs=1,
                                       meLevel=bp.me,
-                                      activity=BpActivity.MANUFACTURING,
+                                      activity=params.activityID,
                                       round_result=True)
+    materials.sort(key=lambda m: m.typeID)
+    
     mat_table = []
     for mat in materials:
         if mat.blueprintTypeID is not None:
@@ -98,8 +112,8 @@ def materials(request, blueprint_id):
         mat_table.append([
             mat.typeID,
             '<a href="%s" class="%s">%s</a>' % (url, css, mat.typeName),
-            mat.quantity,
-            "{:.00%}".format(mat.damagePerJob),
+            utils.print_integer(mat.quantity),
+            '%d%%' % (mat.damagePerJob * 100),
         ])
 
     json_data = {
@@ -110,6 +124,20 @@ def materials(request, blueprint_id):
     }
     return HttpResponse(json.dumps(json_data))
 
+#------------------------------------------------------------------------------
+@check_user_access()
+def manufacturing_time(request, blueprint_id):
+    """
+    Serves URL /industry/catalog/blueprint/<blueprint_id>/time/
+    """
+    try:
+        bp = get_object_or_404(OwnedBlueprint, id=int(blueprint_id))
+    except (KeyError, ValueError), e:
+        raise HttpResponseBadRequest(str(e))
+    duration = print_duration(bp.getDuration(1, bp.pe, BpActivity.MANUFACTURING))
+    return HttpResponse(duration)
+
+    
 
 
 #------------------------------------------------------------------------------

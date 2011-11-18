@@ -218,11 +218,19 @@ class Blueprint(Item):
         Calculate the duration (in seconds) needed to perform the specified activity.
         """
         if activity == BpActivity.MANUFACTURING:
-            return apply_production_level(runs * self.productionTime, peLevel)
+            return apply_production_level(runs * self.productionTime, peLevel, 
+                                          self.productivityModifier)
         elif activity == BpActivity.INVENTION:
             return runs * self.researchTechTime
+        elif activity == BpActivity.RESEARCH_ME:
+            return runs * self.researchMaterialTime
+        elif activity == BpActivity.RESEARCH_PE:
+            return runs * self.researchProductivityTime
+        elif activity == BpActivity.COPY:
+            return runs * self.researchCopyTime
         else:
             return 0
+        
 
 
     def __getattr__(self, attrName):
@@ -391,16 +399,17 @@ def apply_material_level(base, meLevel, wasteFactor, round_result=False):
         return value
 
 #------------------------------------------------------------------------------
-def apply_production_level(base, peLevel, round_result=False):
+def apply_production_level(base, peLevel, baseProdModifier, round_result=False):
     """
     Calculate the duration (in seconds) needed for the manufacturing of an item
     considering the production efficiency of the item's blueprint.
     """
     baseTime = 0.8 * base # we consider the industry skill is at level 5
-    if peLevel >= 0:
-        value = baseTime * (1.0 - (0.2 * (peLevel / (1.0 + peLevel))))
+    prodModifier = baseProdModifier / float(base)
+    if peLevel < 0:
+        value = baseTime * (1.0 - (prodModifier * (peLevel - 1.0)))
     else:
-        value = baseTime * (1.0 - 0.1 * peLevel)
+        value = baseTime * (1.0 - (prodModifier * peLevel / (1.0 + peLevel)))
     if round_result:
         return int(round(value))
     else:

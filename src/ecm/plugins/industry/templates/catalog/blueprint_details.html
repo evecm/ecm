@@ -11,6 +11,7 @@
 <script type="text/javascript"  src="/s/industry/js/blueprint_details.js" ></script>
 <script type="text/javascript">
 BLUEPRINT_ID = {{blueprint.id}};
+ACTIVITY_ID = 1; /* manufacturing by default */
 </script>
 {% endblock %}
 
@@ -30,23 +31,50 @@ BLUEPRINT_ID = {{blueprint.id}};
     <td><img src="http://image.eveonline.com/Type/{{blueprint.blueprintTypeID}}_64.png" /></td>
     <td>
       <table class="transparent">
-        <tr><td class="bold">Material Efficiency</td><td id="{{blueprint.id}}" class="me">{{blueprint.me}}</td></tr>
-        <tr><td class="bold">Production Efficiency</td><td id="{{blueprint.id}}" class="pe" >{{blueprint.pe}}</td></tr>
+        <tr>
+          <td class="bold">Material Efficiency</td>
+          <td id="{{blueprint.id}}" class="me right">{{blueprint.me}}</td>
+        </tr>
+        <tr>
+          <td class="bold">Production Efficiency</td>
+          <td id="{{blueprint.id}}" class="pe right" >{{blueprint.pe}}</td>
+        </tr>
         <tr>
           <td class="bold">Copy</td>
           <td>
             <input type="checkbox" id="{{blueprint.id}}" class="copy" {% if blueprint.copy %}checked{% endif %} />
           </td>
         </tr>
-        <tr><td class="bold">Runs</td><td id="{{blueprint.runs}}" class="runs" >{{blueprint.runs}}</td></tr>
+        <tr>
+          <td class="bold">Runs</td>
+          <td id="{{blueprint.runs}}" class="runs right" >{{blueprint.runs}}</td>
+        </tr>
+      </table>
+    </td>
+    <td>
+      <table class="transparent">
+        <tr><td class="bold">Manufacturing Time</td><td id="time">{{prodDuration}}</td></tr>
+        <tr><td class="bold">Material Research Time</td><td>{{meDuration}}</td></tr>
+        <tr><td class="bold">Productivity Research Time</td><td>{{peDuration}}</td></tr>
+        <tr><td class="bold">Copy Time</td><td>{{copyDuration}}</td></tr>
+        <tr><td class="bold">Invention Time</td><td>{{invDuration}}</td></tr>
       </table>
     </td>
   </tr>
 </table>
 
 <h2>Needed Materials (for 1 run)</h2>
-
-<table id="materials_table">
+<form>
+<table>
+  <tr>
+  {% for act in activities %}
+    <td><input type="button" class="button activity_button" value="{{act.name}}" 
+               id="{{act.activityID}}" onClick="setActivity({{act.activityID}});"/></td>
+  {% endfor %}
+  </tr>
+</table>
+</form>
+<table id="materials_table" style="width: 60%;">
   <thead>
     <tr>
       <th class="top" scope="col" >Icon</th>

@@ -29,19 +29,21 @@ urlpatterns = patterns('ecm.plugins.industry.views',
     (r'^orders/$',                              'orders.all'),
     (r'^orders/all/data/$',                     'orders.all_data'),
 
-    (r'^catalog/items/$',                       'catalog.items.all'),
-    (r'^catalog/items/data/$',                  'catalog.items.all_data'),
-
+    (r'^catalog/items/$',                       'catalog.items.items'),
+    (r'^catalog/items/data/$',                  'catalog.items.items_data'),
     (r'^catalog/items/(\d+)/$',                 'catalog.items.details'),
     (r'^catalog/items/(\d+)/price/$',           'catalog.items.price'),
     (r'^catalog/items/(\d+)/availability/$',    'catalog.items.availability'),
     (r'^catalog/items/(\d+)/addblueprint/$',    'catalog.items.blueprint_add'),
 
-    (r'^catalog/blueprints/$',                  'catalog.blueprints.all'),
-    (r'^catalog/blueprints/data/$',             'catalog.blueprints.all_data'),
+    (r'^catalog/blueprints/$',                  'catalog.blueprints.blueprints'),
+    (r'^catalog/blueprints/data/$',             'catalog.blueprints.blueprints_data'),
     (r'^catalog/blueprints/(\d+)/$',            'catalog.blueprints.details'),
     (r'^catalog/blueprints/(\d+)/materials/$',  'catalog.blueprints.materials'),
+    (r'^catalog/blueprints/(\d+)/time/$',       'catalog.blueprints.manufacturing_time'),
     (r'^catalog/blueprints/(\d+)/delete/$',     'catalog.blueprints.delete'),
     (r'^catalog/blueprints/(\w+)/$',            'catalog.blueprints.info'),
+    
+    (r'^catalog/supplies/$',                    'catalog.supplies.supplies'),
 )
 

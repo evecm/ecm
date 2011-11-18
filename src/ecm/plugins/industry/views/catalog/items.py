@@ -48,7 +48,7 @@ COLUMNS = [
     [None, None], # hidden
 ]
 @check_user_access()
-def all(request):
+def items(request):
     """
     Serves URL /industry/catalog/items/
     """
@@ -57,7 +57,7 @@ def all(request):
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def all_data(request):
+def items_data(request):
     """
     Serves URL /industry/catalog/items/data/ (jQuery datatables plugin)
     """
@@ -200,6 +200,7 @@ def blueprint_add(request, item_id):
     except ValueError:
         raise Http404()
     bp = item.blueprints.create(blueprintTypeID=item.blueprintTypeID)
+    logger.info('"%s" created "%s" #%s' % (request.user, bp.typeName, bp.id))
     bp_dict = {
                      'id': bp.id, 
         'blueprintTypeID': item.blueprintTypeID, 
