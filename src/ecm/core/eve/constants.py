@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2011 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2010-02-15"
@@ -30,8 +30,8 @@ MAX_STATION_ID = 62000000
 BOOKMARK_TYPEID = 51
 OFFICE_TYPEID = 27
 HAS_HANGAR_DIVISIONS = {
-#  typeID: has_hangar_divisions 
-    
+#  typeID: has_hangar_divisions
+
     # MISC
     17621: True, # Corporate Hangar Array
     12237: False, # Ship Maintenance Array
@@ -91,59 +91,3 @@ SLOT_FLAG = {'lo' : range(11, 19),
 
 
 
-DECRYPTORS = {
-#            typeID   CHANCE_mod   ME_mod   PE_mod   RUNS_mod  typeName
-# Amarr Interface                                              
-    728: (                                                     
-            (23178,   1.1,         3,       3,       0,        "Formation Layout"),
-            (23179,   1.2,         2,       5,       1,        "Classic Doctrine"),
-            (23180,   1.0,         1,       4,       2,        "Sacred Manifesto"),
-            (23182,   1.8,        -1,       2,       4,        "War Strategon"),
-            (23181,   0.6,        -2,       1,       9,        "Circular Logic")
-         ),                                                    
-# Minmatar Interface                                           
-    729: (                                                     
-            (21579,   1.1,         3,       3,       0,        "Calibration Data"),
-            (21580,   1.2,         2,       5,       1,        "Advanced Theories"),
-            (21581,   1.0,         1,       4,       2,        "Operation Handbook"),
-            (21583,   1.8,        -1,       2,       4,        "Assembly Instructions"),
-            (21582,   0.6,        -2,       1,       9,        "Circuitry Schematics")
-         ),                                                    
-# Gallente Interface                                           
-    730: (                                                     
-            (23183,   1.1,         3,       3,       0,        "Collision Measurements"),
-            (23184,   1.2,         2,       5,       1,        "Test Reports"),
-            (23185,   1.0,         1,       4,       2,        "Engagement Plan"),
-            (23187,   1.8,        -1,       2,       4,        "Stolen Formulas"),
-            (23186,   0.6,        -2,       1,       9,        "Symbiotic Figures")
-         ),                                                    
-# Caldalol Interface                                           
-    731: (                                                     
-            (21573,   1.1,         3,       3,       0,        "Tuning Instructions"),
-            (21574,   1.2,         2,       5,       1,        "Prototype Diagram"),
-            (21575,   1.0,         1,       4,       2,        "User Manual"),
-            (21577,   1.8,        -1,       2,       4,        "Installation Guide"),
-            (21576,   0.6,        -2,       1,       9,        "Interface Alignment Chart")
-         )
-}
-DATA_INTERFACES_GROUP_ID = 716
-
-INTERFACES_DECRYPTOR_MAPPING = {
-#   typeID   decryptorGroup   interfaceName
-# Amarr
-    25554:   728,             # Occult Data Interface
-    25851:   728,             # Occult Ship Data Interface
-    26603:   728,             # Occult Tuner Data Interface
-# Minmatar                
-    25553:   729,             # Cryptic Data Interface
-    25857:   729,             # Cryptic Ship Data Interface
-    26597:   729,             # Cryptic Tuner Data Interface
-# Gallente                
-    25556:   730,             # Incognito Data Interface
-    25855:   730,             # Incognito Ship Data Interface
-    26601:   730,             # Incognito Tuner Data Interface
-# Caldalol                
-    25555:   731,             # Esoteric Data Interface
-    25853:   731,             # Esoteric Ship Data Interface
-    26599:   731,             # Esoteric Tuner Data Interface
-}

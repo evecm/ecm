@@ -63,12 +63,14 @@ ACTIVITY_ID = 1; /* manufacturing by default */
   </tr>
 </table>
 
+<p><b>Produces item:</b> {{blueprint.catalogEntry.permalink|safe}}</p>
+
 <h2>Needed Materials (for 1 run)</h2>
 <form>
 <table>
   <tr>
   {% for act in activities %}
-    <td><input type="button" class="button activity_button" value="{{act.name}}" 
+    <td><input type="button" class="button activity_button" value="{{act.name}}"
                id="{{act.activityID}}" onClick="setActivity({{act.activityID}});"/></td>
   {% endfor %}
   </tr>

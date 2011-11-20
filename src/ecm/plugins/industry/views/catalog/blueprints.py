@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.core.eve.classes import BpActivity
-from ecm.plugins.industry.views import print_duration
 
 __date__ = "2011 11 13"
 __author__ = "diabeteman"
@@ -30,31 +28,78 @@ import logging
 
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.template.context import RequestContext
-from django.db.models.aggregates import Count
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.shortcuts import get_object_or_404, render_to_response
 
+from ecm.core.eve.classes import BpActivity
+from ecm.plugins.industry.views import print_duration
 from ecm.core import utils
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
-from ecm.plugins.industry.models.catalog import CatalogEntry, OwnedBlueprint
+from ecm.plugins.industry.models.catalog import OwnedBlueprint
 
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
+COLUMNS = [
+    'Blueprint',
+    'ME',
+    'PE',
+    'Copy',
+    'Runs',
+    None, # hidden
+]
 @check_user_access()
 def blueprints(request):
     """
     Serves URL /industry/catalog/blueprints/
     """
-    return render_to_response('catalog/blueprints.html', {}, RequestContext(request))
+    return render_to_response('catalog/blueprints.html', {'columns' : COLUMNS}, RequestContext(request))
 #------------------------------------------------------------------------------
 @check_user_access()
 def blueprints_data(request):
     """
     Serves URL /industry/catalog/blueprints/data/
     """
-    return HttpResponse()
+    try:
+        params = extract_datatable_params(request)
+        REQ = request.GET if request.method == 'GET' else request.POST
+        params.displayMode = REQ.get('displayMode', 'all')
+    except Exception, e:
+        return HttpResponseBadRequest(str(e))
+
+    query = list(OwnedBlueprint.objects.all())
+    query.sort(key=lambda b: b.typeName)
+
+    if params.displayMode == 'copies':
+        query = [ bp for bp in query if bp.copy ]
+    elif params.displayMode == 'originals':
+        query = [ bp for bp in query if not bp.copy ]
+
+    if params.search:
+        total_items = len(query)
+        query = [ bp for bp in query if params.search.lower() in bp.typeName.lower() ]
+        filtered_items = len(query)
+    else:
+        total_items = filtered_items = len(query)
+
+    blueprints = []
+    for bp in query[params.first_id:params.last_id]:
+        blueprints.append([
+            bp.permalink,
+            bp.me,
+            bp.pe,
+            bool(bp.copy),
+            bp.runs,
+            bp.id,
+        ])
+
+    json_data = {
+        "sEcho" : params.sEcho,
+        "iTotalRecords" : total_items,
+        "iTotalDisplayRecords" : filtered_items,
+        "aaData" : blueprints
+    }
+    return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -66,7 +111,7 @@ def details(request, blueprint_id):
         bp = get_object_or_404(OwnedBlueprint, id=int(blueprint_id))
     except ValueError:
         raise Http404()
-    
+
     activities = bp.activities.values()
     activities.sort(key=lambda a: a.activityID)
     data = {
@@ -100,7 +145,7 @@ def materials(request, blueprint_id):
                                       activity=params.activityID,
                                       round_result=True)
     materials.sort(key=lambda m: m.typeID)
-    
+
     mat_table = []
     for mat in materials:
         if mat.blueprintTypeID is not None:
@@ -137,7 +182,7 @@ def manufacturing_time(request, blueprint_id):
     duration = print_duration(bp.getDuration(1, bp.pe, BpActivity.MANUFACTURING))
     return HttpResponse(duration)
 
-    
+
 
 
 #------------------------------------------------------------------------------

@@ -21,28 +21,68 @@ __author__ = "diabeteman"
 
 from django.db import models
 
+from ecm.core.eve.classes import Item
 from ecm.core.eve import db
 
 
 #------------------------------------------------------------------------------
-class SupplyPrice(models.Model):
+class SupplySource(models.Model):
+
+    class Meta:
+        app_label = 'industry'
+        ordering = ['name']
+
+    locationID = models.PositiveIntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+#------------------------------------------------------------------------------
+class Supply(models.Model):
 
     class Meta:
         app_label = 'industry'
         ordering = ['typeID']
 
     typeID = models.PositiveIntegerField(primary_key=True)
-    price = models.FloatField()
+    price = models.FloatField(default=0.0)
     autoUpdate = models.BooleanField(default=True)
+    supplySource = models.ForeignKey('SupplySource', related_name='prices', default=1)
+    __item = None
 
-    def save(self, force_insert=False, force_update=False, using=None):
-        models.Model.save(self, force_insert=force_insert, force_update=force_update, using=using)
-        PriceHistory.objects.create(typeID=self.typeID, price=self.price)
+    def updatePrice(self, newPrice):
+        self.price = newPrice
+        self.save()
+        self.price_histories.create(price=self.price)
 
     def item_admin_display(self):
-        name, _ = db.resolveTypeName(self.typeID)
-        return name
+        return self.typeName
     item_admin_display.short_description = 'Item'
+
+    @property
+    def url(self):
+        return '/industry/catalog/supplies/%d/' % self.typeID
+
+    @property
+    def permalink(self):
+        return '<a href="%s" class="catalog-supply">%s</a>' % (self.url, self.typeName)
+
+    def __unicode__(self):
+        return unicode(self.typeName)
+
+    def __hash__(self):
+        return self.typeID
+
+    def __getattr__(self, attrName):
+        try:
+            if self.__item is not None:
+                return getattr(self.__item, attrName)
+            else:
+                self.__item = Item.new(self.typeID)
+                return getattr(self.__item, attrName)
+        except AttributeError:
+            return models.Model.__getattribute__(self, attrName)
 
 #------------------------------------------------------------------------------
 class PriceHistory(models.Model):
@@ -51,13 +91,13 @@ class PriceHistory(models.Model):
         app_label = 'industry'
         verbose_name = "Price History"
         verbose_name_plural = "Prices History"
-        ordering = ['typeID', 'date']
+        ordering = ['supply', '-date']
 
-    typeID = models.PositiveIntegerField()
+    supply = models.ForeignKey('Supply', related_name='price_histories')
     price = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
 
     def item_admin_display(self):
-        name, _ = db.resolveTypeName(self.typeID)
+        name, _ = db.resolveTypeName(self.supply_id)
         return name
     item_admin_display.short_description = 'Item'

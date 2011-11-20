@@ -35,7 +35,7 @@ from ecm.views import extract_datatable_params
 from ecm.core import utils
 from ecm.views.decorators import forbidden
 from ecm.plugins.industry.models.order import Order, IllegalTransition
-from ecm.plugins.industry.views.order import extract_order_items
+from ecm.plugins.industry.views.orders import extract_order_items
 
 #------------------------------------------------------------------------------
 COLUMNS = [
@@ -101,6 +101,21 @@ def create(request):
 
     return render_to_response('shop_createorder.html', {'items': items}, RequestContext(request))
 
+#------------------------------------------------------------------------------
+@login_required
+def details(request, order_id):
+    try:
+        order = get_object_or_404(Order, id=int(order_id))
+    except ValueError:
+        raise Http404()
+
+    logs = order.logs.all().order_by('-date')
+    validTransitions = [ (trans.id, trans.text) for trans in order.validTransitions ]
+
+
+    data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions}
+
+    return render_to_response('order_details.html', data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @login_required

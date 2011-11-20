@@ -21,7 +21,7 @@
 }
 .content h2 {
     clear:both;
-    margin:1.0em 0 0.5em 0;
+    margin:0.5em 0 0.5em 0;
     font-family:"trebuchet ms",arial,sans-serif;
     color:rgb(80,80,80);
     font-weight:normal;
@@ -29,7 +29,7 @@
 }
 
 .content p {
-    margin:0 0 1.0em 0;
+    margin:1.0em 0 1.0em 0;
     line-height:1.5em;
     font-size:120%;
 }

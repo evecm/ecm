@@ -24,5 +24,9 @@ urlpatterns = patterns('ecm.plugins.shop.views',
     ###########################################################################
     # INDUSTRY VIEWS
     (r'^$',                     'home'),
+    (r'^orders/$',              'orders.myorders'),
+    (r'^orders/data/$',         'orders.myorders_data'),
+    (r'^orders/create/$',       'orders.create'),
+    (r'^orders/(\d+)/$',        'orders.details'),
 )
 

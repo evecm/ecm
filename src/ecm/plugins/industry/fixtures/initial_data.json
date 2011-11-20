@@ -176,5 +176,33 @@
       "margin": 0.3,
       "name": "External"
     }
+  },
+  {
+    "pk": 1,
+    "model": "industry.supplysource",
+    "fields": {
+      "name": "All Systems"
+    }
+  },
+  {
+    "pk": 30000142,
+    "model": "industry.supplysource",
+    "fields": {
+      "name": "Jita"
+    }
+  },
+  {
+    "pk": 30002510,
+    "model": "industry.supplysource",
+    "fields": {
+      "name": "Rens"
+    }
+  },
+  {
+    "pk": 30002187,
+    "model": "industry.supplysource",
+    "fields": {
+      "name": "Amarr"
+    }
   }
 ]

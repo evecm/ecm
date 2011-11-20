@@ -1,0 +1,62 @@
+<html>
+	<head>
+		<title>jstree treegrid plugin demo</title>
+		<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="jquery.jstree.js"></script>
+		<script type="text/javascript" src="jstreegrid.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var data = [{
+					data: "Root 1",
+					attr: {price: "$5.00", size: "4"},
+					children: [
+						{data: "Really long named child whose name gets cut off", attr: {price: "<b>$4.00</b>", size: "3"}},
+						{data: "Child 2", attr: {price: "<i>$3.00</i>", size: "2"}}
+					]
+				}];
+				$("div#jstree").bind("loaded_grid.jstree",function(){
+					$("span#status").text("loaded");
+				});
+				$("div#jstree").jstree({
+					plugins: ["themes","json_data","grid","dnd"],
+					json_data: {data: data},
+					grid: {
+						columns: [
+							{width: 120, header: "Nodes",title:"_DATA_"},
+							{cellClass: "col1", value: "price", width: 50, header: "Price", title:"price"},
+							{cellClass: "col2", value: "size", width: 40, header: "Qty", title:"size"}
+						]
+					},
+					dnd: {
+		                drop_finish : function () { 
+		                }, 
+		                drag_finish : function () { 
+		                }, 
+		                drag_check : function (data) { 
+		                    return { 
+		                        after : true, 
+		                        before : true, 
+		                        inside : true 
+		                    }; 
+		                } 
+					}
+				});
+				$("a#change").click(function(){
+					var li = $("li:eq(0)","div#jstree"), val = li.attr("size"), newval = parseInt(val,10)*2;
+					li.attr("size",newval).trigger("change_node.jstree");
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<h2>Tree Grid Demo</h2>
+		This page gives a demo for using the excellent <a href="http://www.jstree.com">jstree</a>, built on the
+		amazing <a href="http://jquery.com">jQuery</a> library, with a tree grid. The treegrid is implemented
+		as a standard jstree plugin. Simply include jquery and jstree, and the plugin library jstreegrid.js,
+		and include it as a plugin. Look at the source to this page to see how it is done.
+		<div id="jstree"></div>
+		<div>Tree grid is <span id="status">loading</span>.</div>
+		<div><a href="#" id="change">Click here to double the root Qty</a></div>
+		
+	</body>
+</html>

@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from django.db import transaction
+from ecm.plugins.industry.models.inventory import Supply
 
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
@@ -73,7 +74,8 @@ def search_item(request):
     except ValueError:
         limit = 10
     if querystring is not None:
-        query = CatalogEntry.objects.filter(typeName__icontains=querystring).order_by('typeName')
+        query = CatalogEntry.objects.filter(typeName__icontains=querystring)
+        query = query.filter(isAvailable=True).order_by('typeName')
         matches = query[:limit].values_list('typeName', flat=True)
         return HttpResponse( '\n'.join(matches) )
     else:
@@ -109,12 +111,27 @@ def createMissingCatalogEntries():
     created = 0
     for typeID, typeName, marketGroupID in cursor:
         if typeID not in typeIDs:
-            CatalogEntry.objects.create(typeID=typeID, typeName=typeName, 
+            CatalogEntry.objects.create(typeID=typeID, typeName=typeName,
                                         marketGroupID=marketGroupID, isAvailable=False)
             created += 1
     logger.info('added %d missing catalog entries', created)
 createMissingCatalogEntries()
-
-
-
+#------------------------------------------------------------------------------
+SQL_MISSING_SUPPLIES = '''SELECT DISTINCT "requiredTypeID"
+FROM "ramBlueprintReqs" AS r JOIN "invTypes" AS i ON r."requiredTypeID" = i."typeID"
+WHERE i."blueprintTypeID" IS NULL
+AND i."published" = 1
+AND r."damagePerJob" > 0.0;'''
+@transaction.commit_on_success
+def createMissingSupplies():
+    typeIDs = Supply.objects.values_list('typeID', flat=True)
+    cursor = connections['eve'].cursor()
+    cursor.execute(SQL_MISSING_SUPPLIES)
+    created = 0
+    for typeID, in cursor:
+        if typeID not in typeIDs:
+            Supply.objects.create(typeID=typeID)
+            created += 1
+    logger.info('added %d missing supplies', created)
+createMissingSupplies()
 

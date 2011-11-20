@@ -35,7 +35,7 @@ class Pricing(models.Model):
     margin = models.FloatField()
 
     def margin_admin_display(self):
-        return unicode('{0:.0%}'.format(self.margin))
+        return unicode('%d%%}' % (self.margin * 100.0))
     margin_admin_display.short_description = 'Margin'
 
     def __unicode__(self):

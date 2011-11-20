@@ -50,13 +50,13 @@ COLUMNS = [
 
 
 @login_required
-def all(request):
+def orders(request):
     columns = [ col[0] for col in COLUMNS ]
     return render_to_response('orders_list.html', {'columns' : columns}, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @login_required
-def all_data(request):
+def orders_data(request):
     try:
         params = extract_datatable_params(request)
     except Exception, e:

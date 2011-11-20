@@ -22,8 +22,8 @@ from django.contrib import admin
 
 from ecm.plugins.industry.models import InventionPolicy, Job, Order, \
                                      OrderLog, OrderRow, OwnedBlueprint, PriceHistory, \
-                                     Pricing, \
-                                     SupplyPrice, CatalogEntry
+                                     Pricing, SupplySource, \
+                                     Supply, CatalogEntry
 
 #------------------------------------------------------------------------------
 class MileStoneAdmin(admin.ModelAdmin):
@@ -73,10 +73,13 @@ class JobAdmin(admin.ModelAdmin):
         "startDate",
         "endDate",
     ]
+#------------------------------------------------------------------------------
+class SupplySourceAdmin(admin.ModelAdmin):
+    list_display = ["name", "locationID"]
 
 #------------------------------------------------------------------------------
-class SupplyPriceAdmin(admin.ModelAdmin):
-    list_display = ["item_admin_display", "price", "autoUpdate"]
+class SupplyAdmin(admin.ModelAdmin):
+    list_display = ["item_admin_display", "price", "autoUpdate", "supplySource"]
 
 #------------------------------------------------------------------------------
 class PriceHistoryAdmin(admin.ModelAdmin):
@@ -116,7 +119,8 @@ admin.site.register(OrderLog, OrderLogAdmin)
 admin.site.register(OrderRow, OrderRowAdmin)
 admin.site.register(Job, JobAdmin)
 admin.site.register(Pricing, PricingAdmin)
-admin.site.register(SupplyPrice, SupplyPriceAdmin)
+admin.site.register(SupplySource, SupplySourceAdmin)
+admin.site.register(Supply, SupplyAdmin)
 admin.site.register(PriceHistory, PriceHistoryAdmin)
 admin.site.register(CatalogEntry, CatalogEntryAdmin)
 admin.site.register(OwnedBlueprint, OwnedBlueprintAdmin)

@@ -1,4 +1,4 @@
-# encoding: utf-8
+#@PydevCodeAnalysisIgnore
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Pricing'
         db.create_table('industry_pricing', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -33,23 +33,31 @@ class Migration(SchemaMigration):
             ('me', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
             ('pe', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
             ('copy', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('runs', self.gf('django.db.models.fields.SmallIntegerField')(default=1)),
+            ('runs', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
             ('catalogEntry', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='blueprints', null=True, to=orm['industry.CatalogEntry'])),
         ))
         db.send_create_signal('industry', ['OwnedBlueprint'])
 
-        # Adding model 'SupplyPrice'
-        db.create_table('industry_supplyprice', (
-            ('typeID', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True)),
-            ('price', self.gf('django.db.models.fields.FloatField')()),
-            ('autoUpdate', self.gf('django.db.models.fields.BooleanField')(default=True)),
+        # Adding model 'SupplySource'
+        db.create_table('industry_supplysource', (
+            ('locationID', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
         ))
-        db.send_create_signal('industry', ['SupplyPrice'])
+        db.send_create_signal('industry', ['SupplySource'])
+
+        # Adding model 'Supply'
+        db.create_table('industry_supply', (
+            ('typeID', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True)),
+            ('price', self.gf('django.db.models.fields.FloatField')(default=0.0)),
+            ('autoUpdate', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('supplySource', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='prices', to=orm['industry.SupplySource'])),
+        ))
+        db.send_create_signal('industry', ['Supply'])
 
         # Adding model 'PriceHistory'
         db.create_table('industry_pricehistory', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('typeID', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('supply', self.gf('django.db.models.fields.related.ForeignKey')(related_name='price_histories', to=orm['industry.Supply'])),
             ('price', self.gf('django.db.models.fields.FloatField')()),
             ('date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
         ))
@@ -122,7 +130,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting model 'Pricing'
         db.delete_table('industry_pricing')
 
@@ -132,8 +140,11 @@ class Migration(SchemaMigration):
         # Deleting model 'OwnedBlueprint'
         db.delete_table('industry_ownedblueprint')
 
-        # Deleting model 'SupplyPrice'
-        db.delete_table('industry_supplyprice')
+        # Deleting model 'SupplySource'
+        db.delete_table('industry_supplysource')
+
+        # Deleting model 'Supply'
+        db.delete_table('industry_supply')
 
         # Deleting model 'PriceHistory'
         db.delete_table('industry_pricehistory')
@@ -262,14 +273,14 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'me': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
             'pe': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
-            'runs': ('django.db.models.fields.SmallIntegerField', [], {'default': '1'})
+            'runs': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'})
         },
         'industry.pricehistory': {
-            'Meta': {'ordering': "['typeID', 'date']", 'object_name': 'PriceHistory'},
+            'Meta': {'ordering': "['supply', '-date']", 'object_name': 'PriceHistory'},
             'date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'price': ('django.db.models.fields.FloatField', [], {}),
-            'typeID': ('django.db.models.fields.PositiveIntegerField', [], {})
+            'supply': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'price_histories'", 'to': "orm['industry.Supply']"})
         },
         'industry.pricing': {
             'Meta': {'object_name': 'Pricing'},
@@ -277,11 +288,17 @@ class Migration(SchemaMigration):
             'margin': ('django.db.models.fields.FloatField', [], {}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'industry.supplyprice': {
-            'Meta': {'ordering': "['typeID']", 'object_name': 'SupplyPrice'},
+        'industry.supply': {
+            'Meta': {'ordering': "['typeID']", 'object_name': 'Supply'},
             'autoUpdate': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'price': ('django.db.models.fields.FloatField', [], {}),
+            'price': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
+            'supplySource': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'related_name': "'prices'", 'to': "orm['industry.SupplySource']"}),
             'typeID': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'})
+        },
+        'industry.supplysource': {
+            'Meta': {'ordering': "['name']", 'object_name': 'SupplySource'},
+            'locationID': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         }
     }
 

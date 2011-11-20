@@ -1,0 +1,133 @@
+Plugin for the jstree www.jstree.com tree component that provides a grid extension to the tree.
+
+Allows any number of columns, and can use any property of the node to display data in the grid
+
+Usage:
+1) Include jquery and jstree in your page, as usual
+2) Include jstreegrid.js
+<script src="/path/to/jstreegrid.js"></script>
+<link href="treegrid.css" rel="stylesheet" type="text/css"> 
+
+3) Include grid as a plugin
+$("div#id").jstree({
+..
+	plugins: ["core","ui",...,"grid"],
+..
+})
+
+4) Include relevant parameters. 
+$("div#id").jstree({
+..
+	plugins: ["core","ui",...,"grid"],
+	grid: {
+		columns: [{},{},...,{}],
+		width: 25
+	} 
+..
+});
+
+Events
+------
+When the tree is done loading, as usual, it fires a "loaded.jstree" event on the div to which you added jstree. jsTreeGrid uses this event
+to start its own load process. When jsTreeGrid is done, it fires a "loaded_grid.jstree" event on the same div. If you need to run some 
+code after the jsTreeGrid is done loading, just listen for that event. An example is in the treegrid.html sample page.
+
+The grid is built by adding divs <div></div> to each <li> entry for a row in the tree. Inside the <div> is a <span></span> with the data.
+Thus, an entry is likely to look like:
+<div><span>$5.00</span></div>
+
+We use the div to control the entire height and width, and the span to get access to the actual data itself.
+
+The options are as follows:
+- width: default width for a column for which no width is given. If no width is given, the default is 25px
+- columns: an array of columns to create, on order. Each entry is an object with the following parameters:
+	width: width of the column in pixels.
+	header: string to use as a header for the column.
+	cellClass: a CSS class to add to each cell in this column (except for the header) - added to the <span>
+	wideCellClass: a CSS class to add to each cell in this column (except for the header) - added to the <div>
+	headerClass: a CSS class to add to the header cell in this column - added to the <div>
+	value: the attribute on the node to use as the value for this cell - entered as the <span> text
+	valueClass: the attribute on the node to use as a class on this cell - added to the <span>
+	valueClassPrefix: a prefix to add to the valueClass to use as a class on this cell
+	wideValueClass: the attribute on the node to use as a class on this cell - added to the <div>
+	wideValueClassPrefix: a prefix to add to the wideValueClass to use as a class on this cell
+	
+The reason for both valueClass and wideValueClass is to give you the ability to control both the narrow part of the text,
+and the entire width of the cell. For example, if the cell is 56px wide, but the text in it is "OK" and thus only 20px wide.
+Suppose you have a class "important" which backgrounds in red, and a class "clickable" which changes the cursor to a pointer.
+You want the entire width of the cell to be red, but just the word "OK" to be clickable. 
+You would ensure that "clickable" is applied to the span, but important to the div.
+
+
+Value is the name of the attribute whose content will be used. Thus, if you have a node whose data is given by:
+{data: "My Node", attr: {price: "$10"}}
+and we want the price value ($10) to be in column 1, then we have a config of:
+grid: {
+	columns: [
+		{width: 50, header: "Nodes"},
+		{width: 30, header: "Price", value: "price"}
+	]
+}
+
+ValueClass is the name of the attribute that will be added as a class to this cell. Thus, if you have a node whose data is given by:
+{data: "My Node", attr: {price: "$10", scale: "expensive"}}
+and we want the cell to have the class "expensive", then we have a config of:
+grid: {
+	columns: [
+		{width: 50, header: "Nodes"},
+		{width: 30, header: "Price", value: "price", valueClass: "scale"}
+	]
+}
+
+The result would be:
+<div><span class="expensive">$10</span></div>
+
+Conversely, if we want it to be "price-expensive", we would have a config of:
+grid: {
+	columns: [
+		{width: 50, header: "Nodes"},
+		{width: 30, header: "Price", value: "price", valueClass: "scale", valueClassPrefix: "price-"}
+	]
+}
+The result would be:
+<div><span class="price-expensive">$10</span></div>
+
+You can add a tooltip to each element in the grid by adding the name of it to the title, with the HTML stripped out. For example:
+grid: {
+	columns: [
+		{width: 50, header: "Nodes"},
+		{width: 30, header: "Price", value: "price", title: "price"}
+	]
+}
+
+The result would be:
+<div><span title="$10">$10</span></div>
+
+This includes the actual tree node, not just the added grid cells:
+grid: {
+	columns: [
+		{width: 50, header: "Nodes", title:"price"},
+		{width: 30, header: "Price", value: "price", title: "price"}
+	]
+}
+
+You also can have the contents of the tree node (value of tree.get_text()) itself made into the tooltip by using the special title keyword
+"_DATA_".
+grid: {
+	columns: [
+		{width: 50, header: "Nodes", title:"_DATA_"},
+		{width: 30, header: "Price", value: "price", title: "price"}
+	]
+}
+
+Finally, you can change a node contents on the fly using "change_node.jstree". You change the attribute of the node, then trigger the event,
+for example:
+
+$("li.mynode").attr("value","25").trigger("change_node.jstree");
+
+HTML
+----
+Note that the data in each cell is treated as html content for the span, rather than raw text. You can use HTML in any cell, except for the 
+base tree node cell, which follows jstree rules.
+
+

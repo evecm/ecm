@@ -27,7 +27,7 @@ from ecm.core import utils
 from ecm.core.utils import fix_mysql_quotes, cached_property
 from ecm.core.eve.classes import NoBlueprintException
 from ecm.plugins.industry.models.catalog import CatalogEntry
-from ecm.plugins.industry.models.inventory import SupplyPrice
+from ecm.plugins.industry.models.inventory import Supply
 from ecm.plugins.industry.models.job import Job
 
 #------------------------------------------------------------------------------
@@ -342,7 +342,7 @@ class Order(models.Model):
         If dry_run is True, only the prices are written, and any job creation is rollbacked.
         """
         prices = {}
-        for sp in SupplyPrice.objects.all():
+        for sp in Supply.objects.all():
             prices[sp.typeID] = sp.price
         missingPrices = set([])
         self.quote = 0.0
@@ -354,7 +354,7 @@ class Order(models.Model):
         self.save()
         with transaction.commit_on_success():
             for itemID in missingPrices:
-                SupplyPrice.objects.create(typeID=itemID, price=0.0)
+                Supply.objects.create(typeID=itemID, price=0.0)
 
 
     def getAggregatedJobs(self, activity=None):
@@ -512,7 +512,7 @@ class OrderRow(models.Model):
     def calculateCost(self, prices=None):
         if prices is None:
             prices = {}
-            for sp in SupplyPrice.objects.all():
+            for sp in Supply.objects.all():
                 prices[sp.typeID] = sp.price
         cost = 0.0
         missingPrices = set([])

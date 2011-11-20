@@ -26,8 +26,9 @@ urlpatterns = patterns('ecm.plugins.industry.views',
     (r'^search/data$',                          'search_item'),
     (r'^search/itemid$',                        'get_item_id'),
 
-    (r'^orders/$',                              'orders.all'),
-    (r'^orders/all/data/$',                     'orders.all_data'),
+    (r'^orders/$',                              'orders.orders'),
+    (r'^orders/all/data/$',                     'orders.orders_data'),
+    (r'^orders/(\d+)/$',                        'orders.details'),
 
     (r'^catalog/items/$',                       'catalog.items.items'),
     (r'^catalog/items/data/$',                  'catalog.items.items_data'),
@@ -43,7 +44,12 @@ urlpatterns = patterns('ecm.plugins.industry.views',
     (r'^catalog/blueprints/(\d+)/time/$',       'catalog.blueprints.manufacturing_time'),
     (r'^catalog/blueprints/(\d+)/delete/$',     'catalog.blueprints.delete'),
     (r'^catalog/blueprints/(\w+)/$',            'catalog.blueprints.info'),
-    
+
     (r'^catalog/supplies/$',                    'catalog.supplies.supplies'),
+    (r'^catalog/supplies/data/$',               'catalog.supplies.supplies_data'),
+    (r'^catalog/supplies/(\d+)/$',              'catalog.supplies.details'),
+    (r'^catalog/supplies/(\d+)/data/$',         'catalog.supplies.details_data'),
+    (r'^catalog/supplies/(\d+)/updateprice/$',  'catalog.supplies.update_price'),
+    (r'^catalog/supplies/(\w+)/$',              'catalog.supplies.info'),
 )
 
