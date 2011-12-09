@@ -41,11 +41,11 @@
         </tr>
         </thead>
     <tbody id="items">
-      {% for item in items %}
+      {% for item, quantity in items %}
       <tr id="{{item.typeID}}">
               <td class="center"><img src="http://image.eveonline.com/Type/{{item.typeID}}_32.png" /></td>
                <td class="bold">{{item.typeName}}</td>
-               <td class="center"><input type="text" name="{{item.typeID}}" value="1" /></td>
+               <td class="center"><input type="text" name="{{item.typeID}}" value="{{quantity}}" /></td>
                <td class="center"><img src="/s/industry/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/></td>
              </tr>
              {% empty %}

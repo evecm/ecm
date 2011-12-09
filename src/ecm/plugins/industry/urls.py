@@ -29,6 +29,7 @@ urlpatterns = patterns('ecm.plugins.industry.views',
     (r'^orders/$',                              'orders.orders'),
     (r'^orders/all/data/$',                     'orders.orders_data'),
     (r'^orders/(\d+)/$',                        'orders.details'),
+    (r'^orders/(\d+)/(\w+)/$',                  'orders.change_state'),
 
     (r'^catalog/items/$',                       'catalog.items.items'),
     (r'^catalog/items/data/$',                  'catalog.items.items_data'),

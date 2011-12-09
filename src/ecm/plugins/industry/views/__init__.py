@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db import transaction
-from ecm.plugins.industry.models.inventory import Supply
 
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
@@ -30,9 +28,9 @@ import logging
 
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseNotFound
 from django.contrib.auth.decorators import login_required
-from django.db import connections
+from django.db import connections, transaction
 
-from ecm.plugins.industry.models import CatalogEntry
+from ecm.plugins.industry.models import CatalogEntry, Supply
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +85,7 @@ def get_item_id(request):
     querystring = request.GET.get('q', None)
     if querystring is not None:
         query = CatalogEntry.objects.filter(typeName__iexact=querystring)
-        if query.exists():
+        if query.filter(isAvailable=True).exists():
             item = query[0]
             return HttpResponse( json.dumps( [item.typeID, item.typeName] ) )
         else:

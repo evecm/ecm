@@ -14,11 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.plugins.industry.models.catalog import CatalogEntry
 
 __date__ = "2011 11 12"
 __author__ = "diabeteman"
 
-
+import re
 try:
     import json
 except ImportError:
@@ -41,8 +42,6 @@ from ecm.plugins.industry.views.orders import extract_order_items
 COLUMNS = [
     ['#', 'id'],
     ['State', 'stateText'],
-    ['Originator', 'originator'],
-    ['Client', 'client'],
     ['Delivery Date', 'deliveryDate'],
     ['Items', None],
     ['Quote', 'quote'],
@@ -72,8 +71,6 @@ def myorders_data(request):
         orders.append([
             order.permalink,
             order.stateText,
-            order.originator_permalink,
-            order.client or '(none)',
             delivDate,
             truncate_words(', '.join(items), 6),
             utils.print_float(order.quote),
@@ -130,5 +127,58 @@ def change_state(request, order_id, transition):
     except IllegalTransition, e:
         data = {'order':order, 'err': e}
         return render_to_response('shop_illegaltransition.html', data, RequestContext(request))
+
+
+
+
+#------------------------------------------------------------------------------
+HEADER = re.compile(r'\[(?P<ship>.+),.*')
+ITEM = re.compile(r'^(?P<item>\w[^,\n]+)(,\s+(?P<charge>(.*)))?$', re.MULTILINE)
+STACK = re.compile(r'(.*)\s+x(\d+)')
+def allFittingItems(eftExport):
+    all_items = {}
+    match = HEADER.search(eftExport)
+    if match:
+        all_items[match.groupdict()['ship']] = 1
+    for match in ITEM.finditer(eftExport):
+        item = match.groupdict()['item'].strip()
+
+        match_stack = STACK.search(item)
+        if match_stack:
+            item = match_stack.group(1)
+            stack = int(match_stack.group(2))
+        else:
+            stack = 1
+
+        if all_items.has_key(item):
+            all_items[item] += stack
+        else:
+            all_items[item] = stack
+
+        if match.groupdict()['charge'] is not None:
+            charge = match.groupdict()['charge']
+            if all_items.has_key(charge):
+                all_items[charge] += 1
+            else:
+                all_items[charge] = 1
+    return all_items
+
+
+
+#------------------------------------------------------------------------------
+@login_required
+def create_from_eft(request):
+    if request.method == 'POST':
+        try:
+            eftBlock = request.POST['eftBlock'].replace('\r\n', '\n')
+            items_dict = allFittingItems(eftBlock)
+            query = CatalogEntry.objects.filter(typeName__in=items_dict.keys(), isAvailable=True)
+            items = [ (i, items_dict[i.typeName]) for i in query ]
+            return render_to_response('shop_createorder.html', {'items': items}, RequestContext(request))
+        except:
+            pass
+    return render_to_response('shop_createorder_eft.html', {}, RequestContext(request))
+
+
 
 

@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.plugins.industry import constants as C
-from ecm.plugins.industry.models.inventory import PriceHistory
 
 __date__ = "2011 11 19"
 __author__ = "diabeteman"
@@ -29,14 +27,14 @@ import logging
 
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.template.context import RequestContext
-from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, render_to_response
 
-from ecm.core import utils, evecentral
+from ecm.core import utils
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
-from ecm.plugins.industry.models.catalog import CatalogEntry
-from ecm.plugins.industry.models import SupplySource, Supply
+from ecm.plugins.industry.tasks import evecentral
+from ecm.plugins.industry.models import SupplySource, Supply, PriceHistory
+from ecm.plugins.industry import constants as C
 
 logger = logging.getLogger(__name__)
 
@@ -74,14 +72,13 @@ def supplies(request):
 
 
 #------------------------------------------------------------------------------
-MISC_ITEMS = (C.BASE_MINERALS
-              + C.COMPOSITE_MATERIALS
-              + C.DATACORES
-              + C.DECRYPTORS
-              + C.ICE_PRODUCTS
-              + C.SLAVAGE
-              + C.PLANETARY_MATERIALS)
-
+MISC_ITEMS = (C.BASE_MINERALS +
+              C.COMPOSITE_MATERIALS +
+              C.DATACORES +
+              C.DECRYPTORS +
+              C.ICE_PRODUCTS +
+              C.SLAVAGE +
+              C.PLANETARY_MATERIALS)
 @check_user_access()
 def supplies_data(request):
     """
@@ -138,11 +135,9 @@ def supplies_data(request):
         "aaData" : items
     }
     return HttpResponse(json.dumps(json_data))
+
 #------------------------------------------------------------------------------
-DETAILS_COLUMNS = [
-    'Date',
-    'Price',
-]
+DETAILS_COLUMNS = ['Date', 'Price']
 @check_user_access()
 def details(request, supply_id):
     """
@@ -187,6 +182,7 @@ def details_data(request, supply_id):
         "aaData" : histories
     }
     return HttpResponse(json.dumps(json_data))
+
 #------------------------------------------------------------------------------
 @check_user_access()
 def update_price(request, supply_id):

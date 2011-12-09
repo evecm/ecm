@@ -33,8 +33,7 @@ from django.utils.text import truncate_words
 
 from ecm.views import extract_datatable_params
 from ecm.core import utils
-from ecm.plugins.industry.models import Order
-from ecm.plugins.industry.models.catalog import CatalogEntry
+from ecm.plugins.industry.models import Order, CatalogEntry
 
 #------------------------------------------------------------------------------
 COLUMNS = [
@@ -46,9 +45,6 @@ COLUMNS = [
     ['Items', None],
     ['Quote', 'quote'],
 ]
-
-
-
 @login_required
 def orders(request):
     columns = [ col[0] for col in COLUMNS ]
@@ -90,11 +86,6 @@ def orders_data(request):
 
     return HttpResponse(json.dumps(json_data))
 
-
-
-
-
-
 #------------------------------------------------------------------------------
 @login_required
 def details(request, order_id):
@@ -119,28 +110,20 @@ def change_state(request, order_id, transition):
         order = get_object_or_404(Order, id=int(order_id))
     except ValueError:
         raise Http404()
-
-    if transition == Order.modif.__name__:
-        if request.method == 'GET':
-            return render_to_response('order_modify.html', {'order': order}, RequestContext(request))
-        elif request.method == 'POST':
-            items, valid_order = extract_order_items(request)
-            if valid_order:
-                order.modify(items)
-                return redirect('/industry/orders/%d/' % order.id)
-            else:
-                return redirect('/industry/orders/%d/modify/' % order.id)
-        else:
-            return HttpResponseBadRequest()
-    elif transition == Order.confirm.__name__:
+    if transition == Order.modify.id: #@UndefinedVariable
+        return modify(request, order)
+    elif transition == Order.confirm.id: #@UndefinedVariable
         order.confirm()
         return redirect('/shop/orders/%d/' % order.id)
 
-
-
-
-
-
+#------------------------------------------------------------------------------
+def modify(request, order):
+    if request.method == 'POST':
+        items, valid_order = extract_order_items(request)
+        if valid_order:
+            order.modify(items)
+            return redirect('/industry/orders/%d/' % order.id)
+    return render_to_response('order_modify.html', {'order': order}, RequestContext(request))
 
 #------------------------------------------------------------------------------
 def extract_order_items(request):
@@ -151,7 +134,10 @@ def extract_order_items(request):
             typeID = int(key)
             quantity = int(value)
             item = CatalogEntry.objects.get(typeID=typeID)
-            items.append( (item, quantity) )
+            if item.isAvailable:
+                items.append( (item, quantity) )
+            else:
+                valid_order = False
         except ValueError:
             pass
         except CatalogEntry.DoesNotExist:
