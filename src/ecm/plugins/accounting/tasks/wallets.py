@@ -88,7 +88,7 @@ def fetch_entries(wallet, lastKnownID):
 
     LOG.info("fetching /corp/WalletJournal.xml.aspx "
                 "(accountKey=%d)..." % wallet.walletID)
-    charID = api.get_api().characterID
+    charID = api.get_charID()
     walletsApi = api_conn.corp.WalletJournal(characterID=charID,
                                             accountKey=wallet.walletID,
                                             rowCount=256)

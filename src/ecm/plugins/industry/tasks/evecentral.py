@@ -23,9 +23,9 @@ import urllib
 import urllib2
 from xml.etree import ElementTree
 
-logger = logging.getLogger(__name__)
+from ecm.apps.common.models import Setting
 
-EVE_CENTRAL_URL = 'http://api.eve-central.com/api/marketstat'
+logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 def get_buy_prices(itemIDs, systemID):
@@ -36,7 +36,8 @@ def get_buy_prices(itemIDs, systemID):
     params.append(("minQ", 1000))
     if systemID != 1:
         params.append(("usesystem", systemID))
-    url = EVE_CENTRAL_URL + '?' + urllib.urlencode(params)
+    evecentralurl = Setting.objects.get(name='industry_evecentral_url').getValue()
+    url = evecentralurl + '?' + urllib.urlencode(params)
     logger.info('Fetching market info from %s...' % url)
     response = urllib2.urlopen(url)
     element = ElementTree.parse(source=response)

@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 
 from django.contrib import admin
-from ecm.apps.common.models import APIKey,\
+from ecm.apps.common.models import Setting,\
                                    ColorThreshold,\
                                    ExternalApplication,\
                                    GroupBinding,\
@@ -30,8 +30,8 @@ from ecm.apps.common.models import APIKey,\
                                    UserAPIKey,\
                                    UserBinding
 
-class APIKeyAdmin(admin.ModelAdmin):
-    list_display = ['name', 'keyID', 'vCode', 'characterID']
+class SettingAdmin(admin.ModelAdmin):
+    list_display = ['name', 'value']
 class ColorThresholdAdmin(admin.ModelAdmin):
     list_display = ['color', 'threshold']
 class ExternalApplicationAdmin(admin.ModelAdmin):
@@ -47,7 +47,7 @@ class UserAPIKeyAdmin(admin.ModelAdmin):
 class UserBindingAdmin(admin.ModelAdmin):
     list_display = ['external_name', 'external_id', 'user', 'external_app']
 
-admin.site.register(APIKey, APIKeyAdmin)
+admin.site.register(Setting, SettingAdmin)
 admin.site.register(ColorThreshold, ColorThresholdAdmin)
 admin.site.register(ExternalApplication, ExternalApplicationAdmin)
 admin.site.register(GroupBinding, GroupBindingAdmin)

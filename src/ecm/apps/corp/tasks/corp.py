@@ -45,7 +45,7 @@ def update():
         # connect to eve API
         api_conn = api.connect()
         # retrieve /corp/CorporationSheet.xml.aspx
-        corpApi = api_conn.corp.CorporationSheet(characterID=api.get_api().characterID)
+        corpApi = api_conn.corp.CorporationSheet(characterID=api.get_charID())
         checkApiVersion(corpApi._meta.version)
 
         currentTime = corpApi._meta.currentTime

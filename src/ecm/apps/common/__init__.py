@@ -30,3 +30,9 @@ TASKS = [
         'frequency_units' : 86400, # day
     },
 ]
+
+SETTINGS = {
+    'common_api_keyID': 0,
+    'common_api_vCode': '',
+    'common_api_characterID': 0,
+}

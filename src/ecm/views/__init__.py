@@ -26,7 +26,7 @@ from django.contrib.auth.models import User
 from ecm import apps, plugins
 from ecm.apps.hr.models import Member
 from ecm.core import utils
-from ecm.apps.common.models import UpdateDate, UrlPermission
+from ecm.apps.common.models import UpdateDate, UrlPermission, Setting
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.views import template_filters
 
@@ -87,6 +87,10 @@ def create_app_objects(app):
         if not UrlPermission.objects.filter(pattern=perm):
             UrlPermission.objects.create(pattern=perm)
             logger.info("Created UrlPermission r'%s'" % perm)
+    for name, value in app.settings.items():
+        if not Setting.objects.filter(name=name):
+            Setting.objects.create(name=name, value=repr(value))
+            logger.info("Created Setting %s=%s" % (repr(name), repr(value)))
 
 # The creation of the declared objects is delayed here.
 # If not, it would crash at first try of synchronizing the db

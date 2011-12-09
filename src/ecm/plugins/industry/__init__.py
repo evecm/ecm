@@ -47,3 +47,10 @@ TASKS = [
 URL_PERMISSIONS = [
     r'^/industry.*$',
 ]
+
+SETTINGS = {
+    'industry_group_name': 'Industry Team',
+    'industry_evecentral_url': 'http://api.eve-central.com/api/marketstat',
+}
+
+

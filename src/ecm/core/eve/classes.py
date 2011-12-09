@@ -96,6 +96,7 @@ class Item(object):
                  raceID,
                  basePrice,
                  marketGroupID,
+                 metaGroupID,
                  icon,
                  published):
         self.typeID = typeID
@@ -110,6 +111,7 @@ class Item(object):
         self.raceID = raceID
         self.basePrice = basePrice
         self.marketGroupID = marketGroupID
+        self.metaGroupID = metaGroupID
         self.icon = icon
         self.published = published
 
@@ -218,7 +220,7 @@ class Blueprint(Item):
         Calculate the duration (in seconds) needed to perform the specified activity.
         """
         if activity == BpActivity.MANUFACTURING:
-            return apply_production_level(runs * self.productionTime, peLevel, 
+            return apply_production_level(runs * self.productionTime, peLevel,
                                           self.productivityModifier)
         elif activity == BpActivity.INVENTION:
             return runs * self.researchTechTime
@@ -230,7 +232,7 @@ class Blueprint(Item):
             return runs * self.researchCopyTime
         else:
             return 0
-        
+
 
 
     def __getattr__(self, attrName):

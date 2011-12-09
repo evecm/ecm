@@ -34,32 +34,33 @@ from django.conf import settings
 from django.utils.hashcompat import sha_constructor
 from django.core.validators import RegexValidator
 
-from ecm.core.eve.validators import validate_director_api_key
-
 #------------------------------------------------------------------------------
-class APIKey(models.Model):
+class Setting(models.Model):
     """
-    Represents API credentials that will be used to connect to CCP server
+    ECM settings stored in the database.
     """
     class Meta:
-        get_latest_by = 'id'
+        ordering = ['name']
 
-    name = models.CharField(max_length=64)
-    keyID = models.IntegerField()
-    characterID = models.IntegerField()
-    vCode = models.CharField(max_length=255)
+    name = models.CharField(max_length=200, primary_key=True)
+    value = models.CharField(max_length=1000, default='')
+
+    def getValue(self):
+        return eval(self.value)
 
     def clean(self):
-        validate_director_api_key(self)
+        eval(self.value)
 
     def __eq__(self, other):
-        return hash(self) == hash(other)
+        return isinstance(other, Setting) and self.name == other.name
 
     def __hash__(self):
-        return self.keyID * 100000000 + self.characterID
+        return hash(self.name)
 
     def __unicode__(self):
-        return u'%s - keyID: %d vCode: %s' % (self.name, self.keyID, self.vCode)
+        return u'%s = %s' % (self.name, self.value)
+
+
 
 #------------------------------------------------------------------------------
 class UserAPIKey(models.Model):

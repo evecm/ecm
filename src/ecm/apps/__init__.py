@@ -86,6 +86,12 @@ class ECMApp(object):
                     raise TypeError("attribute 'MENUS' should be a list")
             except AttributeError:
                 self.menu = []
+
+            try:
+                self.settings = package_module.SETTINGS
+            except AttributeError:
+                self.settings = {}
+
         except:
             logger.exception("")
             raise

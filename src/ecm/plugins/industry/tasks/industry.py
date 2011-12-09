@@ -22,7 +22,8 @@ import logging
 
 from django.db import transaction
 
-from ecm.core import evecentral, utils
+from ecm.core import utils
+from ecm.plugins.industry.tasks import evecentral
 from ecm.plugins.industry.models import Supply, SupplySource
 
 logger = logging.getLogger(__name__)

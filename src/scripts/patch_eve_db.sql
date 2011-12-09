@@ -142,6 +142,7 @@ CREATE TABLE "invTypes" (
   "description" varchar(3000) DEFAULT NULL,
   "volume" double DEFAULT NULL,
   "portionSize" int(11) DEFAULT NULL,
+  "raceID" tinyint(3) DEFAULT NULL,
   "basePrice" double DEFAULT NULL,
   "marketGroupID" smallint(6) DEFAULT NULL,
   "metaGroupID" smallint(6) DEFAULT NULL,
@@ -167,6 +168,7 @@ SELECT  t."typeID",
         t."description",
         t."volume",
         t."portionSize",
+        t."raceID",
         t."basePrice",
         t."marketGroupID",
         IFNULL(m."metaGroupID", 0) AS "metaGroupID",
@@ -362,9 +364,6 @@ DROP TABLE "dgmTypeEffects";
 
 DROP TABLE "eveGraphics";
 DROP TABLE "eveIcons";
-DROP TABLE "eveLocations";
-DROP TABLE "eveNames";
-DROP TABLE "eveOwners";
 DROP TABLE "eveUnits";
 
 -- DROP TABLE "invBlueprintTypes";
@@ -378,9 +377,12 @@ DROP TABLE "invItems";
 -- DROP TABLE "invMarketGroups";
 DROP TABLE "invMetaGroups";
 DROP TABLE "invMetaTypes";
+DROP TABLE "invNames";
+DROP TABLE "invPositions";
 DROP TABLE "invTypeMaterials";
 DROP TABLE "invTypeReactions";
 -- DROP TABLE "invTypes";
+DROP TABLE "invUniqueNames";
 
 DROP TABLE "mapCelestialStatistics";
 DROP TABLE "mapConstellationJumps";
@@ -415,8 +417,14 @@ DROP TABLE "staServices";
 DROP TABLE "staStationTypes";
 DROP TABLE "staStations";
 
+DROP TABLE "translationLaguages";
+DROP TABLE "translationTables";
 DROP TABLE "trnTranslationColumns";
+DROP TABLE "trnTranslationLanguages";
 DROP TABLE "trnTranslations";
+
+DROP TABLE "warCombatZoneSystems";
+DROP TABLE "warCombatZones";
 
 COMMIT;
 

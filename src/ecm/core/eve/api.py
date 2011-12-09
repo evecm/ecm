@@ -20,27 +20,31 @@ __author__ = "diabeteman"
 
 from ecm.lib import eveapi
 from ecm.core.eve.validators import check_user_access_mask
-from ecm.apps.common.models import APIKey
+from ecm.apps.common.models import Setting
 from ecm.apps.corp.models import Corp
 
 #------------------------------------------------------------------------------
 def get_api():
-    try:
-        return APIKey.objects.latest()
-    except APIKey.DoesNotExist:
-        raise APIKey.DoesNotExist("There is no APIKey registered in the database")
+    keyID = Setting.objects.get(name='common_api_keyID').getValue()
+    vCode = Setting.objects.get(name='common_api_vCode').getValue()
+    if not keyID or not vCode:
+        raise Setting.DoesNotExist('the settings "common_api_keyID" or "common_api_vCode" are empty')
+    else:
+        return keyID, vCode
 
 #------------------------------------------------------------------------------
-def set_api(api_new):
-    try:
-        api = APIKey.objects.latest()
-    except APIKey.DoesNotExist:
-        api = APIKey()
-    api.name = api_new.name
-    api.keyID = api_new.keyID
-    api.characterID = api_new.characterID
-    api.vCode = api_new.vCode
-    api.save()
+def get_charID():
+    characterID = Setting.objects.get(name='common_api_characterID').getValue()
+    if not characterID:
+        raise Setting.DoesNotExist('the setting "common_api_characterID" is empty')
+    else:
+        return characterID
+
+#------------------------------------------------------------------------------
+def set_api(keyID, vCode, characterID):
+    Setting.objects.get_or_create(name='common_api_keyID').update(value=repr(keyID))
+    Setting.objects.get_or_create(name='common_api_vCode').update(value=repr(vCode))
+    Setting.objects.get_or_create(name='common_api_characterID').update(value=repr(characterID))
 
 #------------------------------------------------------------------------------
 def connect(proxy=None):
@@ -48,8 +52,8 @@ def connect(proxy=None):
     Creates a connection to the web API with director credentials
     """
     conn = eveapi.EVEAPIConnection(scheme="https", proxy=proxy)
-    api = get_api()
-    return conn.auth(keyID=api.keyID, vCode=api.vCode)
+    keyID, vCode = get_api()
+    return conn.auth(keyID=keyID, vCode=vCode)
 
 #------------------------------------------------------------------------------
 def connect_user(user_api, proxy=None):
