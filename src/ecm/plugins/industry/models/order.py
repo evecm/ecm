@@ -365,7 +365,7 @@ class Order(models.Model):
         """
         where = [ '"order_id" = %s' ]
         if activity is not None:
-            where.append('"activity" = %d')
+            where.append('"activity" = %s')
         sql = 'SELECT "itemID", SUM("runs"), "activity" FROM "industry_job"'
         sql += ' WHERE ' + ' AND '.join(where)
         sql += ' GROUP BY "itemID", "activity" ORDER BY "activity", "itemID";'

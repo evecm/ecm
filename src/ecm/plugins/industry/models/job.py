@@ -97,7 +97,8 @@ class Job(models.Model):
                                              row=self.row))
 
         parentBpID = self.blueprint.parentBlueprintTypeID
-        if parentBpID is not None:
+        if parentBpID is not None and self.blueprint.runs == -1:
+            # only create invention jobs if we don't own a BPO/BPC (runs == -1)
             attempts  = InventionPolicy.attempts(self.blueprint)
             # create a temp OwnedBlueprint that will be used to run the invention
             bpc = OwnedBlueprint.objects.create(blueprintTypeID=parentBpID, copy=True)
@@ -143,13 +144,13 @@ class Job(models.Model):
         try:
             bpID = item.blueprint.typeID
             activity = Job.MANUFACTURING
-            bp = OwnedBlueprint.objects.filter(blueprintTypeID=bpID).order_by('-me')[0]
+            bp = OwnedBlueprint.objects.filter(blueprintTypeID=bpID, copy=False).order_by('-me')[0]
             runs = quantity / item.portionSize
             if quantity % item.portionSize:
                 runs += 1
             duration = item.blueprint.getDuration(runs, bp.pe, activity)
         except IndexError:
-            if item.techLevel == 2:
+            if item.techLevel == 2 and item.blueprint.parentBlueprintTypeID is not None:
                 # we're trying to manufacture a T2 item without owning its BPO
                 # we must create an OwnedBlueprint for this job only (that will
                 # be consumed with it)
@@ -159,7 +160,7 @@ class Job(models.Model):
                 if quantity % item.portionSize:
                     runs += 1
                 duration = item.blueprint.getDuration(runs, bp.pe, activity)
-                bp.runs = runs
+                bp.runs = -1 # to identify that this BPC will be invented
                 bp.save()
             else:
                 bp = None
