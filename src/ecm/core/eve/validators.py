@@ -121,9 +121,9 @@ def check_corp_access_mask(accessMask):
                            + ', '.join([ CORP_API_KEY_ACCESS_MASKS[m] for m in missing ]))
 
 #------------------------------------------------------------------------------
-def validate_director_api_key(api_key):
+def validate_director_api_key(keyID, vCode, characterID):
     try:
-        connection = eveapi.EVEAPIConnection().auth(keyID=api_key.keyID, vCode=api_key.vCode)
+        connection = eveapi.EVEAPIConnection().auth(keyID=keyID, vCode=vCode)
         response = connection.account.APIKeyInfo()
         if response.key.type.lower() != "corporation":
             raise ValidationError("Wrong API Key type '%s'. Please provide a Corporation API Key." % response.key.type)
@@ -132,5 +132,5 @@ def validate_director_api_key(api_key):
         raise ValidationError(str(e))
 
     keyCharIDs = [char.characterID for char in response.key.characters]
-    if api_key.characterID not in keyCharIDs:
+    if characterID not in keyCharIDs:
         raise ValidationError("Wrong characterID provided, API Key has %s" % str(keyCharIDs))

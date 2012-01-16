@@ -48,7 +48,7 @@ def resolveTypeNames(typeIDs):
     names = {}
     for typeID, typeName, categoryID in cursor:
         names[typeID] = (typeName, categoryID)
-        cache.setCachedTypeName(id, (typeName, categoryID))
+        cache.setCachedTypeName(typeID, (typeName, categoryID))
     cursor.close()
     return names
 #------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ def resolveLocationName(locationID):
         cursor = EVE_DB.cursor()
         cursor.execute(QUERY_LOCATION, [locationID])
         for itemName, security in cursor:
-            cache.setCachedLocation(id=locationID, name=itemName, security=security)
+            cache.setCachedLocation(locID=locationID, name=itemName, security=security)
         cursor.close()
         try:
             return cache.getCachedLocation(locationID)

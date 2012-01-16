@@ -42,9 +42,9 @@ def get_charID():
 
 #------------------------------------------------------------------------------
 def set_api(keyID, vCode, characterID):
-    Setting.objects.get_or_create(name='common_api_keyID').update(value=repr(keyID))
-    Setting.objects.get_or_create(name='common_api_vCode').update(value=repr(vCode))
-    Setting.objects.get_or_create(name='common_api_characterID').update(value=repr(characterID))
+    Setting.objects.filter(name='common_api_keyID').update(value=repr(keyID))
+    Setting.objects.filter(name='common_api_vCode').update(value=repr(vCode))
+    Setting.objects.filter(name='common_api_characterID').update(value=repr(characterID))
 
 #------------------------------------------------------------------------------
 def connect(proxy=None):
