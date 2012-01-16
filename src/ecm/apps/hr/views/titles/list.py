@@ -38,7 +38,7 @@ from ecm.apps.hr import NAME as app_prefix
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def all(request):
+def titles(request):
     colorThresholds = []
     for c in ColorThreshold.objects.all().order_by("threshold"):
         colorThresholds.append({ "threshold" : c.threshold, "color" : c.color })
@@ -53,7 +53,7 @@ def all(request):
 all_columns = [ "titleName", "accessLvl" ]
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def all_data(request):
+def titles_data(request):
     sEcho = int(request.GET["sEcho"])
     column = int(request.GET["iSortCol_0"])
     ascending = (request.GET["sSortDir_0"] == "asc")

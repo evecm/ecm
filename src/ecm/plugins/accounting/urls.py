@@ -21,10 +21,10 @@ __author__ = "diabeteman"
 from django.conf.urls.defaults import patterns
 
 urlpatterns = patterns('ecm.plugins.accounting.views',
-    (r'^$',                             'wallets.list'),
-    (r'^wallets/data/$',                 'wallets.list_data'),
-    (r'^journal/$',                      'journal.list'),
-    (r'^journal/data/$',                 'journal.list_data'),
+    (r'^$',                              'wallets.wallets'),
+    (r'^wallets/data/$',                 'wallets.wallets_data'),
+    (r'^journal/$',                      'journal.journal'),
+    (r'^journal/data/$',                 'journal.journal_data'),
     (r'^contributions/$',                'contrib.member_contrib'),
     (r'^contributions/members/data/$',   'contrib.member_contrib_data'),
     (r'^contributions/systems/data/$',   'contrib.system_contrib_data'),

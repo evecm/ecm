@@ -22,8 +22,8 @@ from django.conf.urls.defaults import patterns
 
 urlpatterns = patterns('ecm.apps.hr.views',
     (r'^$',                                     'dashboard.dashboard'),
-    
-    
+
+
     (r'^players/$',                             'players.player_list'),
     (r'^players/data/$',                        'players.player_list_data'),
     (r'^players/(\d+)/$',                       'players.player_details'),
@@ -33,8 +33,8 @@ urlpatterns = patterns('ecm.apps.hr.views',
 urlpatterns += patterns('ecm.apps.hr.views.members',
     ###########################################################################
     # MEMBERS VIEWS
-    (r'^members/$',                             'list.all'),
-    (r'^members/data/$',                        'list.all_data'),
+    (r'^members/$',                             'list.members'),
+    (r'^members/data/$',                        'list.members_data'),
     (r'^members/history/$',                     'history.history'),
     (r'^members/history/data/$',                'history.history_data'),
     (r'^members/unassociated/$',                'list.unassociated'),
@@ -50,8 +50,8 @@ urlpatterns += patterns('ecm.apps.hr.views.members',
 urlpatterns += patterns('ecm.apps.hr.views.titles',
     ###########################################################################
     # TITLES VIEWS
-    (r'^titles/$',                              'list.all'),
-    (r'^titles/data/$',                         'list.all_data'),
+    (r'^titles/$',                              'list.titles'),
+    (r'^titles/data/$',                         'list.titles_data'),
     (r'^titles/changes/$',                      'changes.changes'),
     (r'^titles/changes/data/$',                 'changes.changes_data'),
     (r'^titles/(\d+)/$',                        'details.details'),

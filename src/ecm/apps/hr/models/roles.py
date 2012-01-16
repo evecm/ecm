@@ -200,7 +200,7 @@ class RoleMemberDiff(models.Model):
         app_label = 'hr'
         ordering = ['date']
 
-    id = bigintpatch.BigAutoField(primary_key=True)
+    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     member = models.ForeignKey(Member)
     role = models.ForeignKey(Role)
     # true if role is new for member, false if role was removed

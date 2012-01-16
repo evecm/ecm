@@ -41,7 +41,7 @@ from ecm.plugins.accounting.models import JournalEntry, EntryType
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def list(request):
+def journal(request):
     walletID = int(request.GET.get('walletID', 0))
     entryTypeID = int(request.GET.get('entryTypeID', 0))
 
@@ -74,7 +74,7 @@ def list(request):
 #------------------------------------------------------------------------------
 journal_cols = ['wallet', 'date', 'type', 'ownerName1', 'ownerName2', 'amount', 'balance']
 @check_user_access()
-def list_data(request):
+def journal_data(request):
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
@@ -121,7 +121,7 @@ def list_data(request):
         except Member.DoesNotExist: owner2 = entry.ownerName2
 
         if entry.type_id == EntryType.BOUNTY_PRIZES:
-            rats = [ str.split(':') for str in entry.reason.split(',') if ':' in str ]
+            rats = [ s.split(':') for s in entry.reason.split(',') if ':' in s ]
             rat_list = []
             for rat_id, rat_count in rats:
                 rat_list.append('%s x%s' % (db.resolveTypeName(int(rat_id))[0], rat_count))

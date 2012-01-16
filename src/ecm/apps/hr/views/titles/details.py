@@ -40,9 +40,9 @@ from ecm.views import extract_datatable_params
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def details(request, id):
+def details(request, titleID):
 
-    title = get_object_or_404(Title, titleID=int(id))
+    title = get_object_or_404(Title, titleID=int(titleID))
     title.lastModified = TitleCompoDiff.objects.filter(title=title).order_by("-id")
     if title.lastModified:
         title.lastModified = title.lastModified[0].date
@@ -64,13 +64,13 @@ def details(request, id):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def composition_data(request, id):
+def composition_data(request, titleID):
     try:
         params = extract_datatable_params(request)
     except KeyError:
         return HttpResponseBadRequest()
 
-    title = get_object_or_404(Title, titleID=int(id))
+    title = get_object_or_404(Title, titleID=int(titleID))
     query = TitleComposition.objects.filter(title=title)
 
     if params.asc:
@@ -103,13 +103,13 @@ def composition_data(request, id):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def compo_diff_data(request, id):
+def compo_diff_data(request, titleID):
     try:
         params = extract_datatable_params(request)
     except KeyError:
         return HttpResponseBadRequest()
 
-    title = get_object_or_404(Title, titleID=int(id))
+    title = get_object_or_404(Title, titleID=int(titleID))
     query = TitleCompoDiff.objects.filter(title=title).order_by("-date")
     total_diffs = query.count()
 

@@ -75,7 +75,7 @@ class Asset(models.Model):
 
 #------------------------------------------------------------------------------
 class AssetDiff(models.Model):
-    id = bigintpatch.BigAutoField(primary_key=True)
+    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     solarSystemID = models.BigIntegerField()
     stationID = models.BigIntegerField()
     hangarID = models.PositiveIntegerField() # hangar division

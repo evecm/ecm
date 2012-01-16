@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2012 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2010-05-16"
@@ -38,9 +38,9 @@ from ecm.apps.hr.views import get_members, hr_ctx
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def all(request):
-    data = { 
-        'scan_date' : getScanDate(Member), 
+def members(request):
+    data = {
+        'scan_date' : getScanDate(Member),
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
@@ -49,7 +49,7 @@ def all(request):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
-def all_data(request):
+def members_data(request):
     try:
         params = extract_datatable_params(request)
     except KeyError:
@@ -58,10 +58,10 @@ def all_data(request):
     total_members,\
     filtered_members,\
     members = get_members(query=Member.objects.filter(corped=True),
-                          first_id=params.first_id, 
+                          first_id=params.first_id,
                           last_id=params.last_id,
                           search_str=params.search,
-                          sort_by=params.column, 
+                          sort_by=params.column,
                           asc=params.asc)
     json_data = {
         "sEcho" : params.sEcho,
@@ -69,14 +69,14 @@ def all_data(request):
         "iTotalDisplayRecords" : filtered_members,
         "aaData" : members
     }
-    
+
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def unassociated(request):
-    data = { 
-        'scan_date' : getScanDate(Member), 
+    data = {
+        'scan_date' : getScanDate(Member),
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
@@ -94,10 +94,10 @@ def unassociated_data(request):
     total_members,\
     filtered_members,\
     members = get_members(query=Member.objects.filter(corped=True, owner=None),
-                          first_id=params.first_id, 
+                          first_id=params.first_id,
                           last_id=params.last_id,
                           search_str=params.search,
-                          sort_by=params.column, 
+                          sort_by=params.column,
                           asc=params.asc)
     json_data = {
         "sEcho" : params.sEcho,
@@ -105,7 +105,7 @@ def unassociated_data(request):
         "iTotalDisplayRecords" : filtered_members,
         "aaData" : members
     }
-    
+
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------

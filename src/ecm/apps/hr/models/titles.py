@@ -130,7 +130,7 @@ class TitleCompoDiff(models.Model):
         app_label = 'hr'
         ordering = ['date']
 
-    id = bigintpatch.BigAutoField(primary_key=True)
+    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
     # true if role is new in title, false if role was removed
@@ -154,7 +154,7 @@ class TitleMemberDiff(models.Model):
         app_label = 'hr'
         ordering = ['date']
 
-    id = bigintpatch.BigAutoField(primary_key=True)
+    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
     # true if title is new for member, false if title was removed

@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2012 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2011-03-13"
@@ -37,9 +37,9 @@ from ecm.apps.hr.views import get_members, hr_ctx
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def members(request, id):
-    data = { 
-        'title' : get_object_or_404(Title, titleID=int(id)),
+def members(request, titleID):
+    data = {
+        'title' : get_object_or_404(Title, titleID=int(titleID)),
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
@@ -49,10 +49,10 @@ def members(request, id):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
-def members_data(request, id):
+def members_data(request, titleID):
     try:
         params = extract_datatable_params(request)
-        title = Title.objects.get(titleID=int(id))
+        title = Title.objects.get(titleID=int(titleID))
     except KeyError:
         return HttpResponseBadRequest()
     except ObjectDoesNotExist:
@@ -61,10 +61,10 @@ def members_data(request, id):
     total_members,\
     filtered_members,\
     members = get_members(query=title.members.filter(corped=True),
-                          first_id=params.first_id, 
+                          first_id=params.first_id,
                           last_id=params.last_id,
                           search_str=params.search,
-                          sort_by=params.column, 
+                          sort_by=params.column,
                           asc=params.asc)
     json_data = {
         "sEcho" : params.sEcho,
@@ -72,6 +72,6 @@ def members_data(request, id):
         "iTotalDisplayRecords" : filtered_members,
         "aaData" : members
     }
-    
+
     return HttpResponse(json.dumps(json_data))
 

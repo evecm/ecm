@@ -127,7 +127,7 @@ class MemberDiff(models.Model):
         app_label = 'hr'
         ordering = ['date']
 
-    id = bigintpatch.BigAutoField(primary_key=True)
+    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     member = models.ForeignKey(Member, related_name="diffs")
     name = models.CharField(max_length=100, db_index=True)
     nickname = models.CharField(max_length=256, db_index=True)

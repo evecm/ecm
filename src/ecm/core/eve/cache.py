@@ -24,21 +24,21 @@ import threading
 #------------------------------------------------------------------------------
 CACHE_TYPENAMES = {}
 LOCK_TYPENAMES = threading.RLock()
-def getCachedTypeName(id):
+def getCachedTypeName(typeID):
     with LOCK_TYPENAMES:
-        return CACHE_TYPENAMES[id]
-def setCachedTypeName(id, type):
+        return CACHE_TYPENAMES[typeID]
+def setCachedTypeName(typeID, name):
     with LOCK_TYPENAMES:
-        CACHE_TYPENAMES[id] = type
+        CACHE_TYPENAMES[typeID] = name
 #------------------------------------------------------------------------------
 CACHE_LOCATIONS = {}
 LOCK_LOCATIONS = threading.RLock()
-def getCachedLocation(id):
+def getCachedLocation(locID):
     with LOCK_LOCATIONS:
-        return CACHE_LOCATIONS[id]
-def setCachedLocation(id, name, security=0):
+        return CACHE_LOCATIONS[locID]
+def setCachedLocation(locID, name, security=0):
     with LOCK_LOCATIONS:
-        CACHE_LOCATIONS[id] = (name, security)
+        CACHE_LOCATIONS[locID] = (name, security)
 
 #------------------------------------------------------------------------------
 CACHE_ITEMS = {}

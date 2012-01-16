@@ -36,7 +36,7 @@ from ecm.plugins.accounting.models import JournalEntry
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def list(request):
+def wallets(request):
     data = {
         'scan_date' : getScanDate(JournalEntry)
     }
@@ -44,7 +44,7 @@ def list(request):
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def list_data(request):
+def wallets_data(request):
     try:
         params = extract_datatable_params(request)
     except:
