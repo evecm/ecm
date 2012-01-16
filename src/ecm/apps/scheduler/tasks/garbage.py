@@ -30,28 +30,23 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def collect_garbage():
-    try:
-        count = 0
-        for collector in GarbageCollector.objects.all():
-            LOG.info("collecting old records for model: %s" % collector.db_table)
-            model = collector.get_model()
-            count = model.objects.all().count()
+    count = 0
+    for collector in GarbageCollector.objects.all():
+        LOG.info("collecting old records for model: %s" % collector.db_table)
+        model = collector.get_model()
+        count = model.objects.all().count()
 
-            if count > collector.min_entries_threshold:
-                entries = model.objects.filter(date__lt=collector.get_expiration_date())
-                for entry in entries:
-                    entry.delete()
+        if count > collector.min_entries_threshold:
+            entries = model.objects.filter(date__lt=collector.get_expiration_date())
+            for entry in entries:
+                entry.delete()
 
-                deleted_entries = entries.count()
-            else:
-                deleted_entries = 0
+            deleted_entries = entries.count()
+        else:
+            deleted_entries = 0
 
-            LOG.info("%d entries will be deleted" % deleted_entries)
-            count += deleted_entries
+        LOG.info("%d entries will be deleted" % deleted_entries)
+        count += deleted_entries
 
-        LOG.info("%d old records deleted" % count)
-    except:
-        # error catched, rollback changes
-        LOG.exception("cleanup failed")
-        raise
+    LOG.info("%d old records deleted" % count)
 

@@ -29,20 +29,16 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def cleanup_unregistered_users():
-    try:
-        LOG.info("Deleting activation keys...")
-        count = 0
-        for profile in RegistrationProfile.objects.all():
-            if profile.activation_key_expired():
-                user = profile.user
-                count += 1
-                if user.is_active:
-                    # user has activated his/her account. we delete the activation key
-                    profile.delete()
-                else:
-                    LOG.info("activation key has exprired for '%s', deleting user..." % user.username)
-                    user.delete() # this will delete the profile along with the user
-        LOG.info("%d activation keys deleted" % count)
-    except:
-        LOG.exception("cleanup failed")
-        raise
+    LOG.info("Deleting activation keys...")
+    count = 0
+    for profile in RegistrationProfile.objects.all():
+        if profile.activation_key_expired():
+            user = profile.user
+            count += 1
+            if user.is_active:
+                # user has activated his/her account. we delete the activation key
+                profile.delete()
+            else:
+                LOG.info("activation key has exprired for '%s', deleting user..." % user.username)
+                user.delete() # this will delete the profile along with the user
+    LOG.info("%d activation keys deleted" % count)

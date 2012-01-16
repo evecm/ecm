@@ -19,12 +19,17 @@ __date__ = "2011-03-09"
 __author__ = "diabeteman"
 
 
-from ecm.apps.scheduler.validators import FunctionValidator, extract_function, extract_model,\
-    ModelValidator, extract_args, ArgsValidator
+import logging
 from datetime import datetime, timedelta
+
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import force_unicode
 from django.db import models
+
+from ecm.apps.scheduler.validators import (FunctionValidator, extract_function, extract_model,
+                                           ModelValidator, extract_args, ArgsValidator)
+
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 class ScheduledTask(models.Model):
@@ -92,9 +97,28 @@ class ScheduledTask(models.Model):
         return extract_args(self.args)
 
     def run(self):
-        func = self.get_function()
-        args = self.get_args()
-        return func(**args)
+        try:
+            if self.is_running:
+                return
+            else:
+                self.is_running = True
+                self.save()
+
+            func = self.get_function()
+            args = self.get_args()
+            func(**args)
+
+            self.is_last_exec_success = True
+            # TODO : add listeners handling here
+        except:
+            # error during the execution of the task
+            self.is_last_exec_success = False
+            LOG.exception("")
+        finally:
+            delta = self.frequency * self.frequency_units
+            self.next_execution = datetime.now() + timedelta(seconds=delta)
+            self.is_running = False
+            self.save()
 
 #------------------------------------------------------------------------------
 class GarbageCollector(models.Model):

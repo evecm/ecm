@@ -27,10 +27,10 @@ from ecm.core.parsers import checkApiVersion, calcDiffs, markUpdated
 from ecm.apps.hr.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff, Member, RoleType, Role
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_manually
+@transaction.commit_on_success
 def update():
     """
     Retrieve all corp members' titles and roles.
@@ -38,67 +38,55 @@ def update():
 
     If there's an error, nothing is written in the database
     """
+    LOG.info("fetching /corp/MemberSecurity.xml.aspx...")
+    # connect to eve API
+    api_conn = api.connect()
+    # retrieve /corp/MemberTracking.xml.aspx
+    memberSecuApi = api_conn.corp.MemberSecurity(characterID=api.get_charID())
+    checkApiVersion(memberSecuApi._meta.version)
 
-    try:
-        logger.info("fetching /corp/MemberSecurity.xml.aspx...")
-        # connect to eve API
-        api_conn = api.connect()
-        # retrieve /corp/MemberTracking.xml.aspx
-        memberSecuApi = api_conn.corp.MemberSecurity(characterID=api.get_charID())
-        checkApiVersion(memberSecuApi._meta.version)
+    currentTime = memberSecuApi._meta.currentTime
+    cachedUntil = memberSecuApi._meta.cachedUntil
+    LOG.debug("current time : %s", str(currentTime))
+    LOG.debug("cached util : %s", str(cachedUntil))
 
-        currentTime = memberSecuApi._meta.currentTime
-        cachedUntil = memberSecuApi._meta.cachedUntil
-        logger.debug("current time : %s", str(currentTime))
-        logger.debug("cached util : %s", str(cachedUntil))
+    LOG.debug("parsing api response...")
+    oldRoles  = {}
+    oldTitles = {}
 
-        logger.debug("parsing api response...")
-        oldRoles  = {}
-        oldTitles = {}
+    # we fetch the old data from the database
+    for role in RoleMembership.objects.all():
+        oldRoles[role] = role
+    for title in TitleMembership.objects.all():
+        oldTitles[title] = title
 
-        # we fetch the old data from the database
-        for role in RoleMembership.objects.all():
-            oldRoles[role] = role
-        for title in TitleMembership.objects.all():
-            oldTitles[title] = title
+    newRoles  = {}
+    newTitles = {}
 
-        newRoles  = {}
-        newTitles = {}
+    # for performance, we fetch all the Roles & RoleTypes here
+    allRoleTypes = RoleType.objects.all()
+    allRoles = {}
+    for role in Role.objects.all():
+        allRoles[(role.roleID, role.roleType_id)] = role
 
-        # for performance, we fetch all the Roles & RoleTypes here
-        allRoleTypes = RoleType.objects.all()
-        allRoles = {}
-        for role in Role.objects.all():
-            allRoles[(role.roleID, role.roleType_id)] = role
+    for member in memberSecuApi.members:
+        # A.update(B) works as a merge of 2 hashtables A and B in A
+        # if a key is already present in A, it takes B's value
+        newRoles.update(parseOneMemberRoles(member, allRoleTypes, allRoles))
+        newTitles.update(parseOneMemberTitles(member))
 
-        for member in memberSecuApi.members:
-            # A.update(B) works as a merge of 2 hashtables A and B in A
-            # if a key is already present in A, it takes B's value
-            newRoles.update(parseOneMemberRoles(member, allRoleTypes, allRoles))
-            newTitles.update(parseOneMemberTitles(member))
+    # Store role changes
+    roleDiffs = storeRoles(oldRoles, newRoles, currentTime)
 
-        # Store role changes
-        roleDiffs = storeRoles(oldRoles, newRoles, currentTime)
+    # Store title changes
+    titleDiffs = storeTitles(oldTitles, newTitles, currentTime)
+    LOG.info("%d role changes, %d title changes", roleDiffs, titleDiffs)
 
-        # Store title changes
-        titleDiffs = storeTitles(oldTitles, newTitles, currentTime)
-        logger.info("%d role changes, %d title changes", roleDiffs, titleDiffs)
+    # update members access levels
+    for m in Member.objects.all():
+        m.accessLvl = m.get_access_lvl()
+        m.save()
 
-        # update members access levels
-        for m in Member.objects.all():
-            m.accessLvl = m.get_access_lvl()
-            m.save()
-
-        logger.debug("saving data to the database...")
-        transaction.commit()
-        logger.debug("DATABASE UPDATED!")
-        logger.info("member roles/titles updated")
-
-    except:
-        # error catched, rollback changes
-        transaction.rollback()
-        logger.exception("update failed")
-        raise
 
 #------------------------------------------------------------------------------
 def parseOneMemberRoles(member, allRoleTypes, allRoles):
@@ -130,19 +118,19 @@ def parseOneMemberTitles(member):
 #------------------------------------------------------------------------------
 def __storeRoleDiffs(removed, added, date):
     diffs    = []
-    logger.debug("REMOVED ROLES:")
+    LOG.debug("REMOVED ROLES:")
     if not removed :
-        logger.debug("(none)")
+        LOG.debug("(none)")
     for remrole in removed:
-        logger.debug("- " + unicode(remrole))
+        LOG.debug("- " + unicode(remrole))
         diffs.append(RoleMemberDiff(role_id   = remrole.role_id,
                                     member_id = remrole.member_id,
                                     new=False, date=date))
-    logger.debug("ADDED ROLES:")
+    LOG.debug("ADDED ROLES:")
     if not added :
-        logger.debug("(none)")
+        LOG.debug("(none)")
     for addrole in added:
-        logger.debug("+ " + unicode(addrole))
+        LOG.debug("+ " + unicode(addrole))
         diffs.append(RoleMemberDiff(role_id   = addrole.role_id,
                                     member_id = addrole.member_id,
                                     new=True, date=date))
@@ -155,20 +143,20 @@ def getRoleMemberDiffs(oldRoles, newRoles, date):
 #------------------------------------------------------------------------------
 def __storeTitleDiffs(removed, added, date):
     diffs = []
-    logger.debug("REMOVED TITLES:")
+    LOG.debug("REMOVED TITLES:")
     if not removed:
-        logger.debug("(none)")
+        LOG.debug("(none)")
     for remtitle in removed:
-        logger.debug("- " + unicode(remtitle))
+        LOG.debug("- " + unicode(remtitle))
         diffs.append(TitleMemberDiff(title_id=remtitle.title_id,
                                      member_id=remtitle.member_id,
                                      new=False, date=date))
 
-    logger.debug("ADDED TITLES:")
+    LOG.debug("ADDED TITLES:")
     if not added:
-        logger.debug("(none)")
+        LOG.debug("(none)")
     for addtitle in added:
-        logger.debug("+ " + unicode(addtitle))
+        LOG.debug("+ " + unicode(addtitle))
         diffs.append(TitleMemberDiff(title_id=addtitle.title_id,
                                      member_id=addtitle.member_id,
                                      new=True, date=date))

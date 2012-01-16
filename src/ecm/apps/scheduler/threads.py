@@ -21,9 +21,7 @@ __author__ = "diabeteman"
 import logging
 
 from threading import Thread
-from datetime import datetime, timedelta
 
-from django.core.exceptions import ValidationError
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
@@ -36,34 +34,4 @@ class TaskThread(Thread):
     def run(self):
         logger.debug("executing %d task(s)" % len(self.tasks))
         for task in self.tasks:
-            try:
-                if task.is_running:
-                    continue
-                else:
-                    task.is_running = True
-                    task.save()
-                logger.info(unicode(task) + " triggered")
-                task.invalid_function = False
-                task.run()
-                logger.info(unicode(task) + " success")
-                task.is_last_exec_success = True
-            except ValidationError, ve:
-                # task cannot be run (invalid function string)
-                logger.error(ve.messages[0])
-                task.is_last_exec_success = False
-                task.invalid_function = True
-            except:
-                # error during the execution of the task
-                task.is_last_exec_success = False
-            finally:
-                if task.is_one_shot and task.is_last_exec_success:
-                    logger.info(unicode(task) + " was one shot, deleting...")
-                    task.delete()
-                elif task.invalid_function:
-                    logger.warning(unicode(task) + " is invalid, deleting...")
-                    task.delete()
-                else:
-                    delta = task.frequency * task.frequency_units
-                    task.next_execution = datetime.now() + timedelta(seconds=delta)
-                    task.is_running = False
-                    task.save()
+            task.run()

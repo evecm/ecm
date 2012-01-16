@@ -27,7 +27,7 @@ from ecm.core.eve import api, db
 from ecm.core.eve import constants as cst
 from ecm.core.parsers import calcDiffs, markUpdated, checkApiVersion
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -37,71 +37,65 @@ def update():
 
     If there's an error, nothing is written in the database
     """
-    try:
-        logger.info("fetching /corp/AssetList.xml.aspx...")
-        api_conn = api.connect()
-        apiAssets = api_conn.corp.AssetList(characterID=api.get_charID())
-        checkApiVersion(apiAssets._meta.version)
+    LOG.info("fetching /corp/AssetList.xml.aspx...")
+    api_conn = api.connect()
+    apiAssets = api_conn.corp.AssetList(characterID=api.get_charID())
+    checkApiVersion(apiAssets._meta.version)
 
-        currentTime = apiAssets._meta.currentTime
-        cachedUntil = apiAssets._meta.cachedUntil
-        logger.debug("current time : %s", str(currentTime))
-        logger.debug("cached util : %s", str(cachedUntil))
+    currentTime = apiAssets._meta.currentTime
+    cachedUntil = apiAssets._meta.cachedUntil
+    LOG.debug("current time : %s", str(currentTime))
+    LOG.debug("cached util : %s", str(cachedUntil))
 
-        logger.debug("fetching old assets from the database...")
-        oldItems = {}
-        for a in Asset.objects.all():
-            oldItems[a] = a
+    LOG.debug("fetching old assets from the database...")
+    oldItems = {}
+    for a in Asset.objects.all():
+        oldItems[a] = a
 
-        newItems = {}
-        logger.debug("%d assets fetched", len(oldItems.keys()))
+    newItems = {}
+    LOG.debug("%d assets fetched", len(oldItems.keys()))
 
-        logger.info("parsing api response...")
-        for row in apiAssets.assets:
-            if row.typeID == cst.BOOKMARK_TYPEID:
-                continue # we don't give a flying @#!$ about the bookmarks...
+    LOG.info("parsing api response...")
+    for row in apiAssets.assets:
+        if row.typeID == cst.BOOKMARK_TYPEID:
+            continue # we don't give a flying @#!$ about the bookmarks...
 
-            if row.locationID >= cst.STATIONS_IDS:
-                # this row contains assets in a station
-                if row.typeID == cst.OFFICE_TYPEID:
-                    rowIsOffice(office=row, items_dic=newItems)
-                else:
-                    rowIsInHangar(item=row, items_dic=newItems)
+        if row.locationID >= cst.STATIONS_IDS:
+            # this row contains assets in a station
+            if row.typeID == cst.OFFICE_TYPEID:
+                rowIsOffice(office=row, items_dic=newItems)
             else:
-                # this row contains assets in space
-                try:
-                    if cst.HAS_HANGAR_DIVISIONS[row.typeID]:
-                        rowIsPOSCorporateHangarArray(corpArray=row, items_dic=newItems)
-                    else:
-                        rowIsPOSArray(array=row, items_dic=newItems)
-                except KeyError:
-                    # unhandled typeID, this may be a reactor array or some other crap
-                    pass
+                rowIsInHangar(item=row, items_dic=newItems)
+        else:
+            # this row contains assets in space
+            try:
+                if cst.HAS_HANGAR_DIVISIONS[row.typeID]:
+                    rowIsPOSCorporateHangarArray(corpArray=row, items_dic=newItems)
+                else:
+                    rowIsPOSArray(array=row, items_dic=newItems)
+            except KeyError:
+                # unhandled typeID, this may be a reactor array or some other crap
+                pass
 
-        logger.info("%d assets parsed", len(newItems))
+    LOG.info("%d assets parsed", len(newItems))
 
-        diffs = []
-        if len(oldItems) != 0:
-            logger.debug("computing diffs since last asset scan...")
-            diffs = getAssetDiffs(newItems=newItems, oldItems=oldItems, date=currentTime)
-            if diffs:
-                for assetDiff in diffs:
-                    assetDiff.save()
-                # we store the update time of the table
-                markUpdated(model=AssetDiff, date=currentTime)
-            Asset.objects.all().delete()
-        for asset in newItems.values():
-            asset.save()
+    diffs = []
+    if len(oldItems) != 0:
+        LOG.debug("computing diffs since last asset scan...")
+        diffs = getAssetDiffs(newItems=newItems, oldItems=oldItems, date=currentTime)
+        if diffs:
+            for assetDiff in diffs:
+                assetDiff.save()
+            # we store the update time of the table
+            markUpdated(model=AssetDiff, date=currentTime)
+        Asset.objects.all().delete()
+    for asset in newItems.values():
+        asset.save()
 
-        # we store the update time of the table
-        markUpdated(model=Asset, date=currentTime)
+    # we store the update time of the table
+    markUpdated(model=Asset, date=currentTime)
 
-        logger.info("%d changes since last scan", len(diffs))
-        logger.info("assets updated")
-    except:
-        # error catched, rollback changes
-        logger.exception("update failed")
-        raise
+    LOG.info("%d changes since last scan", len(diffs))
 
 #------------------------------------------------------------------------------
 def getAssetDiffs(oldItems, newItems, date):

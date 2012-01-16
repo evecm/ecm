@@ -39,35 +39,28 @@ def update():
     Fetch a /corp/CorporationSheet.xml.aspx api response, parse it and store it to
     the database.
     """
+    LOG.info("fetching /corp/CorporationSheet.xml.aspx...")
+    # connect to eve API
+    api_conn = api.connect()
+    # retrieve /corp/CorporationSheet.xml.aspx
+    corpApi = api_conn.corp.CorporationSheet(characterID=api.get_charID())
+    checkApiVersion(corpApi._meta.version)
 
-    try:
-        LOG.info("fetching /corp/CorporationSheet.xml.aspx...")
-        # connect to eve API
-        api_conn = api.connect()
-        # retrieve /corp/CorporationSheet.xml.aspx
-        corpApi = api_conn.corp.CorporationSheet(characterID=api.get_charID())
-        checkApiVersion(corpApi._meta.version)
+    currentTime = corpApi._meta.currentTime
 
-        currentTime = corpApi._meta.currentTime
+    LOG.debug("parsing api response...")
+    corp = update_corp_info(corpApi, currentTime)
 
-        LOG.debug("parsing api response...")
-        corp = update_corp_info(corpApi, currentTime)
+    LOG.debug("name: %s [%s]", corp.corporationName, corp.ticker)
+    LOG.debug("alliance: %s <%s>", corp.allianceName, corp.allianceTicker)
+    LOG.debug("CEO: %s", corpApi.ceoName)
+    LOG.debug("tax rate: %d%%", corp.taxRate)
+    LOG.debug("member limit: %d", corp.memberLimit)
 
-        LOG.debug("name: %s [%s]", corp.corporationName, corp.ticker)
-        LOG.debug("alliance: %s <%s>", corp.allianceName, corp.allianceTicker)
-        LOG.debug("CEO: %s", corpApi.ceoName)
-        LOG.debug("tax rate: %d%%", corp.taxRate)
-        LOG.debug("member limit: %d", corp.memberLimit)
+    update_hangar_divisions(corpApi, currentTime)
+    update_wallet_divisions(corpApi, currentTime)
 
-        update_hangar_divisions(corpApi, currentTime)
-        update_wallet_divisions(corpApi, currentTime)
-
-        # all ok
-        LOG.info("corp info updated")
-    except:
-        # error catched, rollback changes
-        LOG.exception("update failed")
-        raise
+    LOG.info("corp info updated")
 
 #------------------------------------------------------------------------------
 def update_corp_info(corpApi, currentTime):

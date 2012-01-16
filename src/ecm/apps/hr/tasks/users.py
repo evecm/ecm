@@ -40,14 +40,10 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def update_all_character_associations():
-    try:
-        LOG.info("Updating character associations with players...")
-        for user in User.objects.filter(is_active=True):
-            update_character_associations(user)
-        LOG.info("Character associations updated")
-    except:
-        LOG.exception("update failed")
-        raise
+    LOG.info("Updating character associations with players...")
+    for user in User.objects.filter(is_active=True):
+        update_character_associations(user)
+    LOG.info("Character associations updated")
 
 #------------------------------------------------------------------------------
 def update_character_associations(user):
@@ -129,20 +125,16 @@ except Group.DoesNotExist:
 @transaction.commit_on_success
 def update_all_users_accesses():
     try:
-        try:
-            t = ScheduledTask.objects.get(function__contains='update_all_character_associations')
-            if not t.is_last_exec_success:
-                raise RuntimeWarning("Last character associations update failed. "
-                                     "Skipping user access update.")
-        except ScheduledTask.DoesNotExist:
-            pass
-        LOG.info("Updating user accesses from their in-game roles...")
-        for user in User.objects.filter(is_active=True):
-            update_user_accesses(user)
-        LOG.info("User accesses updated")
-    except:
-        LOG.exception("update failed")
-        raise
+        t = ScheduledTask.objects.get(function__contains='update_all_character_associations')
+        if not t.is_last_exec_success:
+            raise RuntimeWarning("Last character associations update failed. "
+                                 "Skipping user access update.")
+    except ScheduledTask.DoesNotExist:
+        pass
+    LOG.info("Updating user accesses from their in-game roles...")
+    for user in User.objects.filter(is_active=True):
+        update_user_accesses(user)
+    LOG.info("User accesses updated")
 
 #------------------------------------------------------------------------------
 def update_user_accesses(user):

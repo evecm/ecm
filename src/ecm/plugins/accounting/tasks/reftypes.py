@@ -31,31 +31,26 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def update():
-    try:
-        LOG.info("fetching /eve/RefTypes.xml.aspx...")
-        # connect to eve API
-        api_conn = api.connect()
-        # retrieve /corp/CorporationSheet.xml.aspx
-        typesApi = api_conn.eve.RefTypes()
-        checkApiVersion(typesApi._meta.version)
+    LOG.info("fetching /eve/RefTypes.xml.aspx...")
+    # connect to eve API
+    api_conn = api.connect()
+    # retrieve /corp/CorporationSheet.xml.aspx
+    typesApi = api_conn.eve.RefTypes()
+    checkApiVersion(typesApi._meta.version)
 
-        currentTime = typesApi._meta.currentTime
-        cachedUntil = typesApi._meta.cachedUntil
-        LOG.debug("current time : %s", str(currentTime))
-        LOG.debug("cached util : %s", str(cachedUntil))
-        LOG.debug("parsing api response...")
+    currentTime = typesApi._meta.currentTime
+    cachedUntil = typesApi._meta.cachedUntil
+    LOG.debug("current time : %s", str(currentTime))
+    LOG.debug("cached util : %s", str(cachedUntil))
+    LOG.debug("parsing api response...")
 
-        for type in typesApi.refTypes:
-            entryType = EntryType()
-            entryType.refTypeID = type.refTypeID
-            entryType.refTypeName = type.refTypeName
-            entryType.save()
+    for refType in typesApi.refTypes:
+        entryType = EntryType()
+        entryType.refTypeID = refType.refTypeID
+        entryType.refTypeName = refType.refTypeName
+        entryType.save()
 
-        LOG.info("transaction types updated")
-    except:
-        # error catched, rollback changes
-        LOG.exception("update failed")
-        raise
+    LOG.info("transaction types updated")
 
 
 

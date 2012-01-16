@@ -39,16 +39,11 @@ def update():
     """
     Updates all wallets with the missing accounting entries since last scan.
     """
-    try:
-        for wallet in Wallet.objects.all():
-            update_wallet(wallet)
+    for wallet in Wallet.objects.all():
+        update_wallet(wallet)
 
-        markUpdated(model=JournalEntry, date=datetime.now())
-        LOG.debug("wallets journal updated")
-    except:
-        # error catched, rollback changes
-        LOG.exception("update failed")
-        raise
+    markUpdated(model=JournalEntry, date=datetime.now())
+    LOG.debug("wallets journal updated")
 
 #------------------------------------------------------------------------------
 def update_wallet(wallet):

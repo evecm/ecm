@@ -25,7 +25,7 @@ from django.db import transaction
 from ecm.core.eve import api, db
 from ecm.core.parsers import checkApiVersion
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success(using='eve')
@@ -36,24 +36,18 @@ def update():
 
     If there's an error, nothing is written in the database
     """
-    try:
-        logger.info("fetching /eve/ConquerableStationList.xml.aspx...")
-        api_conn = api.connect()
-        apiOutposts = api_conn.eve.ConquerableStationList()
-        checkApiVersion(apiOutposts._meta.version)
+    LOG.info("fetching /eve/ConquerableStationList.xml.aspx...")
+    api_conn = api.connect()
+    apiOutposts = api_conn.eve.ConquerableStationList()
+    checkApiVersion(apiOutposts._meta.version)
 
-        created = 0
-        updated = 0
-        for outpost in apiOutposts.outposts :
-            if db.updateLocationName(stationID=outpost.stationID,
-                                     solarSystemID=outpost.solarSystemID,
-                                     locationName=outpost.stationName):
-                created += 1
-            else:
-                updated += 1
-        logger.info("%d new outposts, %d updated", created, updated)
-        logger.info("outposts updated")
-    except:
-        # error catched, rollback changes
-        logger.exception("update failed")
-        raise
+    created = 0
+    updated = 0
+    for outpost in apiOutposts.outposts :
+        if db.updateLocationName(stationID=outpost.stationID,
+                                 solarSystemID=outpost.solarSystemID,
+                                 locationName=outpost.stationName):
+            created += 1
+        else:
+            updated += 1
+    LOG.info("%d new outposts, %d updated", created, updated)

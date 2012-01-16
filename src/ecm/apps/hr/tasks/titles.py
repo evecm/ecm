@@ -31,7 +31,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_manually
+@transaction.commit_on_success
 def update():
     """
     Retrieve all corp titles, their names and their role composition.
@@ -40,61 +40,52 @@ def update():
 
     If there's an error, nothing is written in the database
     """
-    try:
-        logger.info("fetching /corp/Titles.xml.aspx...")
-        # connect to eve API
-        api_conn = api.connect()
-        # retrieve /corp/Titles.xml.aspx
-        titlesApi = api_conn.corp.Titles(characterID=api.get_charID())
-        checkApiVersion(titlesApi._meta.version)
+    logger.info("fetching /corp/Titles.xml.aspx...")
+    # connect to eve API
+    api_conn = api.connect()
+    # retrieve /corp/Titles.xml.aspx
+    titlesApi = api_conn.corp.Titles(characterID=api.get_charID())
+    checkApiVersion(titlesApi._meta.version)
 
-        currentTime = titlesApi._meta.currentTime
-        cachedUntil = titlesApi._meta.cachedUntil
-        logger.debug("current time : %s", str(currentTime))
-        logger.debug("cached util : %s", str(cachedUntil))
+    currentTime = titlesApi._meta.currentTime
+    cachedUntil = titlesApi._meta.cachedUntil
+    logger.debug("current time : %s", str(currentTime))
+    logger.debug("cached util : %s", str(cachedUntil))
 
-        logger.debug("parsing api response...")
+    logger.debug("parsing api response...")
 
-        newList = []
-        # we get all the old TitleComposition from the database
-        oldList = list(TitleComposition.objects.all())
+    newList = []
+    # we get all the old TitleComposition from the database
+    oldList = list(TitleComposition.objects.all())
 
-        for title in titlesApi.titles:
-            newList.extend(parseOneTitle(titleApi=title))
+    for title in titlesApi.titles:
+        newList.extend(parseOneTitle(titleApi=title))
 
-        diffs = []
-        if len(oldList) != 0 :
-            diffs = getDiffs(newList, oldList, currentTime)
-            if diffs :
-                for d in diffs: d.save()
-                # we store the update time of the table
-                markUpdated(model=TitleCompoDiff, date=currentTime)
+    diffs = []
+    if len(oldList) != 0 :
+        diffs = getDiffs(newList, oldList, currentTime)
+        if diffs :
+            for d in diffs: d.save()
+            # we store the update time of the table
+            markUpdated(model=TitleCompoDiff, date=currentTime)
 
-                TitleComposition.objects.all().delete()
-                for c in newList: c.save()
-                # we store the update time of the table
-                markUpdated(model=TitleComposition, date=currentTime)
-            # if no diff, we do nothing
-        else:
-            # 1st import
+            TitleComposition.objects.all().delete()
             for c in newList: c.save()
             # we store the update time of the table
             markUpdated(model=TitleComposition, date=currentTime)
+        # if no diff, we do nothing
+    else:
+        # 1st import
+        for c in newList: c.save()
+        # we store the update time of the table
+        markUpdated(model=TitleComposition, date=currentTime)
 
-        # update titles access levels
-        for t in Title.objects.all():
-            t.accessLvl = t.get_access_lvl()
-            t.save()
+    # update titles access levels
+    for t in Title.objects.all():
+        t.accessLvl = t.get_access_lvl()
+        t.save()
 
-        logger.info("%d roles in titles parsed, %d changes since last scan", len(newList), len(diffs))
-        transaction.commit()
-        logger.debug("DATABASE UPDATED!")
-        logger.info("titles updated")
-    except:
-        # error catched, rollback changes
-        transaction.rollback()
-        logger.exception("update failed")
-        raise
+    logger.info("%d roles in titles parsed, %d changes since last scan", len(newList), len(diffs))
 
 #------------------------------------------------------------------------------
 def parseOneTitle(titleApi):
@@ -106,12 +97,12 @@ def parseOneTitle(titleApi):
     '''
     roleList = []
 
-    id   = titleApi["titleID"]
+    titleID   = titleApi["titleID"]
     name = titleApi["titleName"]
 
     try:
         # retrieval of the title from the database
-        title = Title.objects.get(titleID=id)
+        title = Title.objects.get(titleID=titleID)
         if not title.titleName == name:
             # if the titleName has changed, we update it
             logger.info('Changing title name "%s" to "%s"...' % (title.titleName, name))
@@ -120,10 +111,10 @@ def parseOneTitle(titleApi):
     except Title.DoesNotExist:
         # the title doesn't exist yet, we create it
         logger.info('Title "%s" does not exist. Creating...' % name)
-        title = Title.objects.create(titleID=id, titleName=name)
+        title = Title.objects.create(titleID=titleID, titleName=name)
     try:
         # retrieval of the group corresponding to the title from de DB
-        group = Group.objects.get(id=id)
+        group = Group.objects.get(id=titleID)
         if not group.name == name:
             # if the titleName has changed, we update the group
             logger.info('Changing group name "%s" to "%s"...' % (group.name, name))
@@ -132,7 +123,7 @@ def parseOneTitle(titleApi):
     except Group.DoesNotExist:
         # the group doesn't exist yet, we create it
         logger.info('Group "%s" does not exist. Creating...' % name)
-        Group.objects.create(id=id, name=name)
+        Group.objects.create(id=titleID, name=name)
 
     for roleType in RoleType.objects.all():
         # for each role category, we extend the role composition list for the current title
