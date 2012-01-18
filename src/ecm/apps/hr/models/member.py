@@ -27,6 +27,9 @@ from django.db import models
 from ecm.lib import bigintpatch
 from ecm.apps.hr import NAME as app_prefix
 
+# little trick to change the Users' absolute urls
+User.get_absolute_url = lambda self: '/hr/players/%s/' % self.id
+
 #------------------------------------------------------------------------------
 class Member(models.Model):
     """
