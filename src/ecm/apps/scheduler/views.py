@@ -83,7 +83,7 @@ def task_list_data(request):
             t.next_execution_admin_display(),
             t.frequency_admin_display(),
             t.is_running,
-            t.as_html(nexturl='/scheduler/tasks/')
+            t.as_html(next_page='/scheduler/tasks/')
         ])
 
     json_data = {

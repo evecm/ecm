@@ -99,3 +99,9 @@ for app in apps.LIST:
     create_app_objects(app)
 for plugin in plugins.LIST:
     create_app_objects(plugin)
+
+# When the server is shutdown while a scheduled task is running, it gets frozen
+# and cannot be triggered anymore.
+# The first time this module is imported, we reset all the scheduled tasks to
+# is_running = False to avoid this problem.
+ScheduledTask.objects.all().update(is_running=False)

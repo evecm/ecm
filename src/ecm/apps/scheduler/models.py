@@ -69,13 +69,13 @@ class ScheduledTask(models.Model):
         return self.get_function_display()
     function_admin_display.short_description = "Function"
 
-    def permalink(self, nexturl=None):
+    def permalink(self, next_page=None):
         url = "/scheduler/tasks/%d/launch/" % self.id
-        if next: url += "?next=%s" % next
+        if next_page: url += "?next=%s" % next_page
         return url
 
-    def as_html(self, nexturl=None):
-        return '<a class="task" href="%s">Launch task</a>' % self.permalink(nexturl)
+    def as_html(self, next_page=None):
+        return '<a class="task" href="%s">Launch task</a>' % self.permalink(next_page)
 
     def launch_task_admin_display(self):
         return self.as_html(nexturl="/admin/scheduler/scheduledtask/")
