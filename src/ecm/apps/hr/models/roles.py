@@ -232,7 +232,7 @@ class RoleMemberDiff(models.Model):
         try:
             membername = self.member.name
         except:
-            membername = str(self.member_id)
-        if self.new: return '%s got %s' % (membername, self.role.name)
-        else       : return '%s lost %s' % (membername, self.role.name)
+            membername = unicode(self.member_id)
+        if self.new: return u'%s got %s' % (membername, self.role.name)
+        else       : return u'%s lost %s' % (membername, self.role.name)
 

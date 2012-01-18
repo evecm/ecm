@@ -95,7 +95,7 @@ class TitleMembership(models.Model):
         try:
             return unicode(self.member) + u' is ' + unicode(self.title)
         except:
-            return u'member_id:%d is %s' % (self.member_id, str(self.title))
+            return u'member_id:%d is %s' % (self.member_id, unicode(self.title))
 
 #------------------------------------------------------------------------------
 class TitleComposition(models.Model):
@@ -186,7 +186,7 @@ class TitleMemberDiff(models.Model):
         try:
             membername = self.member.name
         except:
-            membername = str(self.member_id)
-        if self.new: return '%s got %s' % (membername, self.title.titleName)
-        else       : return '%s lost %s' % (membername, self.title.titleName)
+            membername = unicode(self.member_id)
+        if self.new: return u'%s got %s' % (membername, self.title.titleName)
+        else       : return u'%s lost %s' % (membername, self.title.titleName)
 

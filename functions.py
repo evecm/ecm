@@ -47,8 +47,8 @@ def ignore_func(dir, names):
 def get_timestamp(root_dir):
     sys.path.append(path.join(root_dir, 'src'))
     import ecm
-    version = ecm.version
-    timestamp = ecm.timestamp
+    version = ecm.VERSION
+    timestamp = ecm.TIMESTAMP
     del(sys.modules["ecm"])
     sys.path.remove(path.join(root_dir, 'src'))
     return version, timestamp
@@ -303,7 +303,7 @@ def migrate_ecm_db(options):
     from south.models import MigrationHistory
 
     if options.old_version.startswith('1.'):
-        # we are upgrading from ECM 1.X.Y, we must perform the init migration 
+        # we are upgrading from ECM 1.X.Y, we must perform the init migration
         # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
         MigrationHistory.objects.delete()
         log.info('Migrating from ECM 1.x.y   ...')
