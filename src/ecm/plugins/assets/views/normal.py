@@ -150,7 +150,7 @@ def stations_data(request, solarSystemID):
         s = ('%s,' * len(divisions))[:-1]
         where.append('"hangarID" IN (%s)' % s)
 
-    sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items" SUM("volume") AS "volume" '\
+    sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items", SUM("volume") AS "volume" '\
           'FROM "assets_asset"'
     sql += 'WHERE "solarSystemID"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
@@ -200,7 +200,7 @@ def hangars_data(request, solarSystemID, stationID):
         s = ('%s,' * len(divisions))[:-1]
         where.append('"hangarID" IN (%s)' % s)
 
-    sql = 'SELECT "hangarID", COUNT(*) AS "items" SUM("volume") AS "volume" '\
+    sql = 'SELECT "hangarID", COUNT(*) AS "items", SUM("volume") AS "volume" '\
           'FROM "assets_asset"'
     sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)

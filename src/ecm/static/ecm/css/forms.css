@@ -52,7 +52,7 @@
 }
 .content select {
     float:left;
-    margin:5px auto 0 auto;
+    margin:1px auto 0 auto;
     border:1px solid;
 }
 .content form img.captcha {
