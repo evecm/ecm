@@ -150,7 +150,7 @@ def journal_data(request):
             entry.type.refTypeName,
             owner1,
             owner2,
-            print_float(entry.amount),
+            print_float(entry.amount, force_sign=True),
             print_float(entry.balance),
             reason,
         ])

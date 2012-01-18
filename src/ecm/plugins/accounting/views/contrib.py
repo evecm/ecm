@@ -39,7 +39,15 @@ from ecm.plugins.accounting.models import JournalEntry
 from ecm.views import extract_datatable_params, getScanDate
 
 DATE_PATTERN = "%Y-%m-%d"
-OPERATION_TYPES = (16, 17, 33, 34, 85, 99, 103)
+OPERATION_TYPES = (
+    16, # Bounty
+    17, # Bounty Prize
+    33, # Agent Mission Reward
+    34, # Agent Mission Time Bonus Reward
+    85, # Bounty Prizes
+    99, # Corporate Reward Payout
+    103, # Corporate Reward Tax
+)
 
 #------------------------------------------------------------------------------
 @check_user_access()
