@@ -26,6 +26,7 @@ from ecm.plugins.assets.models import Asset, AssetDiff
 from ecm.core.eve import api, db
 from ecm.core.eve import constants as cst
 from ecm.core.parsers import calcDiffs, markUpdated, checkApiVersion
+from ecm.core.eve.classes import Item
 
 LOG = logging.getLogger(__name__)
 
@@ -305,11 +306,14 @@ def fillContents(container, item, items_dic, flag=None):
 
 #------------------------------------------------------------------------------
 def assetFromRow(row):
+    i = Item.new(row.typeID)
+    volume = i.volume * row.quantity
     return Asset(itemID    = row.itemID,
                  typeID    = row.typeID,
                  quantity  = row.quantity,
                  flag      = row.flag,
-                 singleton = row.singleton)
+                 singleton = row.singleton,
+                 volume    = volume)
 
 #------------------------------------------------------------------------------
 def locationIDtoStationID(locationID):

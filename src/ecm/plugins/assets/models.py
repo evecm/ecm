@@ -37,6 +37,7 @@ class Asset(models.Model):
     flag = models.BigIntegerField() # used to determine the state or path of the asset
     singleton = models.BooleanField(default=False) # true if assembled
     hasContents = models.BooleanField(default=False) # true if item container
+    volume = models.FloatField(default=0.0)
 
     def __repr__(self):
         return str(self)

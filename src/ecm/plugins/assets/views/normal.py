@@ -99,7 +99,8 @@ def systems_data(request):
         s = ('%s,' * len(divisions))[:-1]
         where.append('"hangarID" IN (%s)' % s)
 
-    sql = 'SELECT "solarSystemID", COUNT(*) AS "items" FROM "assets_asset"'
+    sql = 'SELECT "solarSystemID", COUNT(*) AS "items", SUM("volume") AS "volume" '\
+          'FROM "assets_asset"'
     if where: sql += ' WHERE ' + ' AND '.join(where)
     sql += ' GROUP BY "solarSystemID";'
     sql = utils.fix_mysql_quotes(sql)
@@ -111,7 +112,7 @@ def systems_data(request):
         cursor.execute(sql, divisions)
 
     jstree_data = []
-    for solarSystemID, items in cursor:
+    for solarSystemID, items, volume in cursor:
         name, security = db.resolveLocationName(solarSystemID)
         if security > 0.5:
             color = "hisec"
@@ -120,7 +121,7 @@ def systems_data(request):
         else:
             color = "nullsec"
         jstree_data.append({
-            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)),
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)) + ' %s m3' % volume,
             "attr" : {
                 "id" : "_%d" % solarSystemID,
                 "rel" : "system",
