@@ -121,7 +121,7 @@ def systems_data(request):
         else:
             color = "nullsec"
         jstree_data.append({
-            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)) + ' %s m3' % volume,
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)) + ' %s m&sup3;' % volume,
             "attr" : {
                 "id" : "_%d" % solarSystemID,
                 "rel" : "system",
@@ -150,7 +150,8 @@ def stations_data(request, solarSystemID):
         s = ('%s,' * len(divisions))[:-1]
         where.append('"hangarID" IN (%s)' % s)
 
-    sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items" FROM "assets_asset" '
+    sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items" SUM("volume") AS "volume" '\
+          'FROM "assets_asset"'
     sql += 'WHERE "solarSystemID"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "stationID";'
@@ -163,7 +164,7 @@ def stations_data(request, solarSystemID):
         cursor.execute(sql, [solarSystemID] + list(divisions))
 
     jstree_data = []
-    for stationID, flag, items in cursor:
+    for stationID, flag, items, volume in cursor:
         if stationID < constants.MAX_STATION_ID:
             # it's a real station
             name = db.resolveLocationName(stationID)[0]
@@ -174,7 +175,7 @@ def stations_data(request, solarSystemID):
             icon = "array"
 
         jstree_data.append({
-            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)),
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)) + ' %s m&sup3;' % volume,
             "attr" : {
                 "id" : "_%d_%d" % (solarSystemID, stationID),
                 "sort_key" : stationID,
@@ -199,7 +200,8 @@ def hangars_data(request, solarSystemID, stationID):
         s = ('%s,' * len(divisions))[:-1]
         where.append('"hangarID" IN (%s)' % s)
 
-    sql = 'SELECT "hangarID", COUNT(*) AS "items" FROM "assets_asset" '
+    sql = 'SELECT "hangarID", COUNT(*) AS "items" SUM("volume") AS "volume" '\
+          'FROM "assets_asset"'
     sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "hangarID";'
@@ -216,9 +218,9 @@ def hangars_data(request, solarSystemID, stationID):
         HANGAR[h.hangarID] = h.name
 
     jstree_data = []
-    for hangarID, items in cursor:
+    for hangarID, items, volume in cursor:
         jstree_data.append({
-            "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items)),
+            "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items)) + ' %s m&sup3;' % volume,
             "attr" : {
                 "id" : "_%d_%d_%d" % (solarSystemID, stationID, hangarID),
                 "sort_key" : hangarID,
