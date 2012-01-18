@@ -37,6 +37,7 @@ YEAR = DAY * 365;
   <label>Period</label>
   <select id="period_selector">
       <option value="all" selected="selected">All Time</option>
+	  <option value="thismonth">This Month</option>
       <option value="week">Last Week</option>
       <option value="month">Last Month</option>
       <option value="year">Last Year</option>
@@ -73,6 +74,11 @@ $("#period_selector").change(function() {
     var period = $("#period_selector option:selected").val();
     if (period == "all") {
         $("#from_date").val(FROM_DATE);
+        $("#to_date").val(TO_DATE);
+    } else if (period == "thismonth") {
+        var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
+        date.setTime(Date.UTC(date.getFullYear(),date.getMonth(),1));
+        $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
         $("#to_date").val(TO_DATE);
     } else if (period == "week") {
         var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
