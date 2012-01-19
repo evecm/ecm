@@ -39,6 +39,7 @@ from ecm.core import utils
 from ecm.plugins.assets.models import Asset
 from ecm.apps.corp.models import Hangar
 from ecm.views import getScanDate
+from ecm.apps.common.models import Setting
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 
 
@@ -111,6 +112,8 @@ def systems_data(request):
     else:
         cursor.execute(sql, divisions)
 
+    exact_volumes = Setting.objects.get(name='assets_show_exact_volumes').getValue()
+
     jstree_data = []
     for solarSystemID, items, volume in cursor:
         name, security = db.resolveLocationName(solarSystemID)
@@ -120,8 +123,14 @@ def systems_data(request):
             color = "lowsec"
         else:
             color = "nullsec"
+
+        if exact_volumes:
+            volume = utils.print_float(volume)
+        else:
+            volume = utils.round_quantity(volume)
+
         jstree_data.append({
-            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)) + ' %s m&sup3;' % volume,
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
             "attr" : {
                 "id" : "_%d" % solarSystemID,
                 "rel" : "system",
@@ -163,6 +172,8 @@ def stations_data(request, solarSystemID):
     else:
         cursor.execute(sql, [solarSystemID] + list(divisions))
 
+    exact_volumes = Setting.objects.get(name='assets_show_exact_volumes').getValue()
+
     jstree_data = []
     for stationID, flag, items, volume in cursor:
         if stationID < constants.MAX_STATION_ID:
@@ -174,8 +185,13 @@ def stations_data(request, solarSystemID):
             name = db.resolveTypeName(flag)[0]
             icon = "array"
 
+        if exact_volumes:
+            volume = utils.print_float(volume)
+        else:
+            volume = utils.round_quantity(volume)
+
         jstree_data.append({
-            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)) + ' %s m&sup3;' % volume,
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
             "attr" : {
                 "id" : "_%d_%d" % (solarSystemID, stationID),
                 "sort_key" : stationID,
@@ -217,10 +233,18 @@ def hangars_data(request, solarSystemID, stationID):
     for h in Hangar.objects.all():
         HANGAR[h.hangarID] = h.name
 
+    exact_volumes = Setting.objects.get(name='assets_show_exact_volumes').getValue()
+
     jstree_data = []
     for hangarID, items, volume in cursor:
+
+        if exact_volumes:
+            volume = utils.print_float(volume)
+        else:
+            volume = utils.round_quantity(volume)
+
         jstree_data.append({
-            "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items)) + ' %s m&sup3;' % volume,
+            "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items), volume),
             "attr" : {
                 "id" : "_%d_%d_%d" % (solarSystemID, stationID, hangarID),
                 "sort_key" : hangarID,
@@ -243,6 +267,7 @@ def hangar_content_data(request, solarSystemID, stationID, hangarID):
     query = Asset.objects.filter(solarSystemID=solarSystemID,
                                  stationID=stationID, hangarID=hangarID,
                                  container1=None, container2=None)
+
     jstree_data = []
     for item in query:
         name, category = db.resolveTypeName(item.typeID)

@@ -22,13 +22,15 @@ import logging
 
 from django.db import transaction
 
-from ecm.plugins.assets.models import Asset, AssetDiff
+from ecm.apps.common.models import Setting
 from ecm.core.eve import api, db
 from ecm.core.eve import constants as cst
-from ecm.core.parsers import calcDiffs, markUpdated, checkApiVersion
 from ecm.core.eve.classes import Item
+from ecm.core.parsers import calcDiffs, markUpdated, checkApiVersion
+from ecm.plugins.assets.models import Asset, AssetDiff
 
 LOG = logging.getLogger(__name__)
+IGNORE_CAN_VOLUMES = True
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -38,6 +40,8 @@ def update():
 
     If there's an error, nothing is written in the database
     """
+    global IGNORE_CAN_VOLUMES
+
     LOG.info("fetching /corp/AssetList.xml.aspx...")
     api_conn = api.connect()
     apiAssets = api_conn.corp.AssetList(characterID=api.get_charID())
@@ -55,6 +59,8 @@ def update():
 
     newItems = {}
     LOG.debug("%d assets fetched", len(oldItems.keys()))
+
+    IGNORE_CAN_VOLUMES = Setting.objects.get(name='assets_ignore_containers_volumes').getValue()
 
     LOG.info("parsing api response...")
     for row in apiAssets.assets:
@@ -307,7 +313,10 @@ def fillContents(container, item, items_dic, flag=None):
 #------------------------------------------------------------------------------
 def assetFromRow(row):
     i = Item.new(row.typeID)
-    volume = i.volume * row.quantity
+    if IGNORE_CAN_VOLUMES and i.categoryID == 2:
+        volume = 0.0
+    else:
+        volume = i.volume * row.quantity
     return Asset(itemID    = row.itemID,
                  typeID    = row.typeID,
                  quantity  = row.quantity,

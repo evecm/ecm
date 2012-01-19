@@ -77,6 +77,31 @@ def print_float(number, thousand_separator=",", decimal_separator=".", force_sig
     return print_integer(int(number), thousand_separator, force_sign) + decimal_separator + decimal_part
 
 #------------------------------------------------------------------------------
+def print_duration(hours):
+    if hours / 24 > 0:
+        days = hours / 24
+        duration = '%dd' % days
+        hours = hours % 24
+        if hours > 0:
+            duration += '&nbsp;%dh' % hours
+        return duration
+    else:
+        return '%dh' % hours
+
+#------------------------------------------------------------------------------
+UNITS = ['K', 'M', 'G', 'T']
+def round_quantity(quantity):
+    if quantity < 1000 and type(quantity) == type(0):
+        return str(quantity)
+    else:
+        units = UNITS[:]
+        unit = ''
+        while quantity >= 1000 and len(units):
+            unit = units.pop(0)
+            quantity = quantity / 1000.0
+        return '%.1f%s' % (quantity, unit)
+
+#------------------------------------------------------------------------------
 def get_access_color(accessLvl, colorThresholds):
     for t in colorThresholds:
         if accessLvl <= t.threshold:

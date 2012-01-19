@@ -39,3 +39,8 @@ TASKS = [
 URL_PERMISSIONS = [
     r'^/assets.*$',
 ]
+
+SETTINGS = {
+    'assets_show_exact_volumes': False,
+    'assets_ignore_containers_volumes': True,
+}
