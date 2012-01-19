@@ -50,6 +50,11 @@
     margin:5px auto 0 auto;
     border:none;
 }
+.content select {
+    float:left;
+    margin:1px auto 0 auto;
+    border:1px solid;
+}
 .content form img.captcha {
     clear:both;
     float:left;
