@@ -23,6 +23,7 @@ import os.path,sys
 
 MISSING = 0
 INSERTED = 0
+LICENSE = ''
 
 #------------------------------------------------------------------------------
 def check_file(file, license, modify):
@@ -43,7 +44,7 @@ def check_file(file, license, modify):
                     else:
                         header = ""
                         
-                    fd.write(header + license + '\n\n' + buffer)
+                    fd.write(header + LICENSE + '\n\n' + buffer)
                     fd.close()
                     print "License inserted in", file
                     INSERTED += 1
@@ -63,13 +64,17 @@ def check_dir((license, modify), dir, files):
                 
 
 def main():
+    global LICENSE 
+    
     dir_path = os.path.abspath(os.path.dirname(__file__))
     fd = open(os.path.join(dir_path, "LICENSE"), "r")
-    license = fd.read()
+    LICENSE = fd.read().strip()
     fd.close()
     
-    # add comments at the beginning of each line
-    license = "\n".join(["# " + line for line in license.splitlines()])
+    # Only first line matters
+    license = LICENSE.splitlines()[0]
+    # we store the license in a global variable to insert it in files if needed
+    LICENSE = '\n'.join([ '# ' + line for line in LICENSE.splitlines() ])
     
     modify = len(sys.argv) > 1 and sys.argv[1] == "--modify"
     

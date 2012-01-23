@@ -39,7 +39,7 @@ DB_ENGINES = {
 #-------------------------------------------------------------------------------
 def parse_args(version, timestamp):
 
-    valid_commands = ['install', 'upgrade', 'package']
+    valid_commands = ['install', 'upgrade', 'package', 'clean']
 
     parser = OptionParser(usage='setup.py {%s} [options] [install_dir]' % '|'.join(valid_commands),
                           version='%s.%s' % (version, timestamp))
@@ -135,7 +135,10 @@ def parse_args(version, timestamp):
         # make sure that command line options override the config file
         if value != parser.defaults[name] and getattr(options, name) == parser.defaults[name]:
             setattr(options, name, value)
-
+    
+    if options.plugins is not None:
+        options.plugins = [ 'ecm.plugins.%s' % p for p in options.plugins.split(',') ]
+    
     if len(args) == 0:
         parser.error('Missing command {%s}' % '|'.join(valid_commands))
     elif args[0] not in valid_commands:
@@ -143,7 +146,7 @@ def parse_args(version, timestamp):
     else:
         cmd = args[0]
 
-    if cmd != 'package':
+    if cmd not in  ['package', 'clean']:
         if len(args) > 1:
             options.install_dir = args[1]
         else:

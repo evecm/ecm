@@ -15,7 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-import sys
 
 
 
@@ -24,8 +23,9 @@ __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
 import shutil
-from distutils import dir_util
 import os
+import sys
+from distutils import dir_util
 from os import path
 import tarfile
 import tempfile
@@ -125,6 +125,7 @@ def package(options):
         print "Inserting timestamp in __init__.py file..."
         init_file = os.path.join(os.path.join(package_src_dir, "ecm/__init__.py"))
         options.timestamp = functions.set_timestamp(init_file)
+        functions.prepare_settings(os.path.join(package_src_dir, "ecm/settings.py"))
         print "Version %s.%s" % (options.version, options.timestamp)
 
         print "Creating archive..."
@@ -143,7 +144,13 @@ def package(options):
     finally:
         print "Deleting package dir..."
         dir_util.remove_tree(package_dir)
-
+        
+#-------------------------------------------------------------------------------
+def clean(options):
+    print 'Deleting "dist" folder...',
+    if os.path.exists(options.dist_dir):
+        dir_util.remove_tree(options.dist_dir)
+    print 'done'
 
 #-------------------------------------------------------------------------------
 if __name__ == '__main__':
@@ -158,6 +165,8 @@ if __name__ == '__main__':
             package(options)
         elif cmd == 'upgrade':
             upgrade(options)
+        elif cmd == 'clean':
+            clean(options)
     except:
         functions.get_logger().exception('')
         sys.exit(1)
