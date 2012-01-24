@@ -100,7 +100,7 @@ APPEND_SLASH = True
 ################
 
 # target dir for the 'collectstatic' command
-STATIC_ROOT = resolvePath('../media/')
+STATIC_ROOT = resolvePath('../static/')
 # value of the {{ STATIC_URL }} variable in templates
 STATIC_URL = '/s/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
@@ -109,6 +109,18 @@ STATICFILES_DIRS = (
     # will look in these directories for static files
     resolvePath('static'),
 )
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # other finders..
+    'compressor.finders.CompressorFinder',
+)
+COMPRESS_OUTPUT_DIR = 'cache'
+COMPRESS_CSS_FILTERS = (
+    'compressor.filters.css_default.CssAbsoluteFilter',
+    #'compressor.filters.csstidy.CSSTidyFilter',
+)
+COMPRESS_ENABLED = True
 
 #############
 # TEMPLATES #
@@ -169,6 +181,7 @@ INSTALLED_APPS = [
 
     'captcha',
     'south',
+    'compressor',
 ]
 
 ECM_CORE_APPS = [

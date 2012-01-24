@@ -25,12 +25,40 @@ __author__ = "diabeteman"
 import shutil
 import os
 import sys
-from distutils import dir_util
-from os import path
 import tarfile
 import tempfile
+import subprocess
+from distutils import dir_util
+from os import path
 from optparse import OptionValueError
 
+#-------------------------------------------------------------------------------
+def which(program):
+    def is_exe(fpath):
+        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+    return None
+
+if which('pip') is None and which('pip.exe') is None:
+    print >>sys.stderr, 'Please install "pip" and put it in $PATH first.'
+    sys.exit(1)
+else:
+    print >>sys.stderr, 'Checking/installing ECM requirements...',
+    ROOT_DIR = path.abspath(path.dirname(__file__))
+    REQUIREMENTS = path.join(ROOT_DIR, 'requirements.txt')
+    subprocess.check_call('pip -q install -r "%s"' % REQUIREMENTS)
+    print >>sys.stderr, 'all requirements OK'
+
+
+#-------------------------------------------------------------------------------
 import functions
 import config
 
@@ -116,12 +144,12 @@ def package(options):
         package_src_dir =  os.path.join(package_dir, "src")
         print "Copying files to package dir..."
         shutil.copytree(src=options.src_dir, dst=package_src_dir, ignore=functions.ignore_func)
-        root_dir = path.abspath(path.dirname(__file__))
-        shutil.copy(path.join(root_dir, 'functions.py'), package_dir)
-        shutil.copy(path.join(root_dir, 'config.py'), package_dir)
-        shutil.copy(path.join(root_dir, 'setup.py'), package_dir)
-        shutil.copy(path.join(root_dir, 'LICENSE'), package_dir)
-        shutil.copy(path.join(root_dir, 'README'), package_dir)
+
+        shutil.copy(path.join(ROOT_DIR, 'functions.py'), package_dir)
+        shutil.copy(path.join(ROOT_DIR, 'config.py'), package_dir)
+        shutil.copy(path.join(ROOT_DIR, 'setup.py'), package_dir)
+        shutil.copy(path.join(ROOT_DIR, 'LICENSE'), package_dir)
+        shutil.copy(path.join(ROOT_DIR, 'README'), package_dir)
         print "Inserting timestamp in __init__.py file..."
         init_file = os.path.join(os.path.join(package_src_dir, "ecm/__init__.py"))
         options.timestamp = functions.set_timestamp(init_file)
@@ -154,8 +182,7 @@ def clean(options):
 
 #-------------------------------------------------------------------------------
 if __name__ == '__main__':
-    root_dir = path.abspath(path.dirname(__file__))
-    version, timestamp = functions.get_timestamp(root_dir)
+    version, timestamp = functions.get_timestamp(ROOT_DIR)
     cmd, options = config.parse_args(version, timestamp)
 
     try:

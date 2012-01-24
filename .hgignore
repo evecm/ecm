@@ -13,3 +13,4 @@ install.log
 .metadata
 .settings
 *.orig
+src/static
