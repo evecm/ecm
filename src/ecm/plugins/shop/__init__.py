@@ -22,7 +22,7 @@ __author__ = "diabeteman"
 NAME = 'shop'
 
 DEPENDS_ON = {
-    'industry' : (1,),
+    'ecm.plugins.industry' : '1.0',
 }
 
 MENUS = [

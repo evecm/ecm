@@ -20,9 +20,10 @@ __author__ = "diabeteman"
 
 
 NAME = 'industry'
+VERSION = '1.0'
 
 DEPENDS_ON = {
-    'ecm' : (2,),
+    'ecm' : '2.0',
 }
 
 MENUS = [

@@ -96,6 +96,9 @@ class ECMApp(object):
             logger.exception("")
             raise
 
+    def __str__(self):
+        return self.package
+
 #------------------------------------------------------------------------------
 # detection of all 'core' apps
 for app in ECM_CORE_APPS:

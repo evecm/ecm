@@ -16,9 +16,10 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 NAME = 'assets'
+VERSION = '2.0'
 
 DEPENDS_ON = {
-    'ecm' : (2,),
+    'ecm' : '2.0',
 }
 
 MENUS = [

@@ -17,12 +17,10 @@
 
 
 NAME = 'accounting'
+VERSION = '2.0'
 
 DEPENDS_ON = {
-    'common' : (2,),
-    'corp' : (2,),
-    'hr' : (2,),
-    'scheduler' : (2,),
+    'ecm' : '2.0',
 }
 
 MENUS = [
