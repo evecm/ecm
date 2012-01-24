@@ -78,6 +78,7 @@ CORP_API_KEY_ACCESS_MASKS = {
     1 << 21: "WalletTransactions",
     1 << 22: "Titles",
     1 << 23: "Contracts",
+    1 << 24: "MemberTrackingExtended",
 }
 
 MANDATORY_CORP_API_ACCESS_MASKS = [
@@ -88,6 +89,7 @@ MANDATORY_CORP_API_ACCESS_MASKS = [
     1 << 14, # OutpostList
     1 << 20, # WalletJournal
     1 << 22, # Titles
+    1 << 24, # MemberTrackingExtended
 ]
 MANDATORY_USER_API_ACCESS_MASKS = [
     1 << 3, # CharacterSheet
