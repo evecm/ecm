@@ -3,22 +3,22 @@
 {% block headtitle %}Member Details - {{ member.name }}{% endblock %}
 
 
-
-{% block other_scripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-
+{% block javascripts %}
 <script type="text/javascript">
 MEMBER_ID = "{{ member.characterID }}";
 </script>
+{% endblock %}
 
+{% block hr_compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
 <script type="text/javascript" src="/s/hr/js/member_access_changes_table.js"></script>
 {% endblock %}
 
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/{{ app_prefix }}/members/">Members</a></li>
-<li><a href="/{{ app_prefix }}/members/{{ member.characterID }}">{{ member.name }}</a></li>
+<li><a href="/hr/members/">Members</a></li>
+<li><a href="/hr/members/{{ member.characterID }}">{{ member.name }}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -51,7 +51,7 @@ MEMBER_ID = "{{ member.characterID }}";
 
 <script type="text/javascript">
 /* Apply a jEditable handler to the "notes" paragraph */
-$('#notes').editable( '/{{ app_prefix }}/members/{{ member.characterID }}/updatenotes/', {
+$('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {
     "callback": function( sValue, y ) {
         $('#notes').html(sValue);
     },

@@ -2,12 +2,13 @@
 
 {% block headtitle %}Titles Modifications History{% endblock %}
 
-
-
-{% block header_scripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
+{% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+{% endblock %}
 
+
+{% block hr_compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
 <script type="text/javascript" src="/s/hr/js/title_changes_table.js"></script>
 
 {% endblock %}
@@ -16,8 +17,8 @@
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/{{ app_prefix }}/titles/">Titles</a></li>
-<li><a href="/{{ app_prefix }}/titles/changes/">Modifications</a></li>
+<li><a href="/hr/titles/">Titles</a></li>
+<li><a href="/hr/titles/changes/">Modifications</a></li>
 {% endblock %}
 
 

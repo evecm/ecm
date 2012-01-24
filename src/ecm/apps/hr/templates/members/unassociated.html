@@ -3,16 +3,7 @@
 {% block headtitle %}Unassociated Members{% endblock %}
 
 
-{% block other_scripts %}
-<script type="text/javascript">
-DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
-COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = '/{{ app_prefix }}/members/unassociated/data/';
-COOKIE_NAME = 'ecm_unassociated_table_';
-</script>
-<script type="text/javascript" src="/s/hr/js/members_table.js"></script>
-
-
+{% block stylesheets %}
 <style type="text/css">
 div.container {
 float:left;
@@ -35,7 +26,19 @@ div.button.hover {
     color:rgb(80,80,80);
 }
 </style>
+{% endblock %}
 
+{% block javascripts %}
+<script type="text/javascript">
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+AJAX_URL = '/hr/members/unassociated/data/';
+COOKIE_NAME = 'ecm_unassociated_table_';
+</script>
+{% endblock %}
+
+{% block hr_compressed_javascripts %}
+<script type="text/javascript" src="/s/hr/js/members_table.js"></script>
 <script type="text/javascript" src="/s/hr/js/lib/ZeroClipboard.js"></script>
 {% endblock %}
 
@@ -43,8 +46,8 @@ div.button.hover {
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/{{ app_prefix }}/members/">Members</a></li>
-<li><a href="/{{ app_prefix }}/members/unassociated/">Unassociated</a></li>
+<li><a href="/hr/members/">Members</a></li>
+<li><a href="/hr/members/unassociated/">Unassociated</a></li>
 {% endblock %}
 
 
@@ -84,7 +87,7 @@ clip.addEventListener('complete', function(client, text) {
 
 clip.addEventListener('mouseUp', function(client) {
     $("#loading_gif").show();
-    $.get("/{{ app_prefix }}/members/unassociated/clip/", callback);
+    $.get("/hr/members/unassociated/clip/", callback);
 });
 
 clip.glue('copy_to_clip' , "clip_container");

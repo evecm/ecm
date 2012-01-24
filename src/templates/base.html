@@ -5,6 +5,8 @@
 <!--  Date:    May 14, 2010       -->
 <!--  Author:  diabeteman         -->
 
+{% load compress %}
+
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <meta http-equiv="cache-control" content="no-cache" />
@@ -13,7 +15,7 @@
   <meta name="author" content="diabeteman" />
 
   <title>ECM - {% block headtitle %}{% endblock %}</title>
-
+{% compress css %}
   <link rel="stylesheet" type="text/css" href="/s/ecm/css/layout.css" />
   <link rel="stylesheet" type="text/css" href="/s/ecm/css/header.css" />
   <link rel="stylesheet" type="text/css" href="/s/ecm/css/footer.css" />
@@ -23,16 +25,17 @@
   <link rel="stylesheet" type="text/css" href="/s/ecm/css/classes.css" />
   <link rel="stylesheet" type="text/css" href="/s/ecm/css/tables.css" />
   <link rel="stylesheet" type="text/css" href="/s/ecm/css/forms.css" />
-
+{% block stylesheets %}{% endblock %}
+{% endcompress %}
   <link rel="icon" type="image/png" href="/s/ecm/img/favicon.png" />
   <link rel="shortcut icon" type="image/png" href="/s/ecm/img/favicon.png" />
-
+{% compress js %}
+{% block javascripts %}{% endblock %}
   <script type="text/javascript" src="/s/ecm/js/lib/jquery.js"></script>
   <script type="text/javascript" src="/s/ecm/js/csrf.js"></script>
   <script type="text/javascript" src="/s/ecm/js/ecm_lib.js"></script>
-
-{% block header_scripts %}{% endblock %}
-{% block other_scripts %}{% endblock %}
+{% block compressed_javascripts %}{% endblock %}
+{% endcompress %}
 </head>
 
 <!-- Global IE fix to avoid layout crash when single word size wider than column width -->

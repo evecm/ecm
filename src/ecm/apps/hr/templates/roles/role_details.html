@@ -3,42 +3,25 @@
 {% block headtitle %}Role Details - {{ role }}{% endblock %}
 
 
-
-{% block other_scripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-
-<script type="text/javascript" src="/s/hr/js/members_table.js"></script>
-
+{% block javascripts %}
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = "/{{ app_prefix }}/roles/{{ role.roleType.typeName }}/{{ role.roleID }}/data/";
+AJAX_URL = "/hr/roles/{{ role.roleType.typeName }}/{{ role.roleID }}/data/";
 COOKIE_NAME = 'ecm_role_members_table_';
-
-$(document).ready(function() {
-    $("#access_level_box").editable( '/{{ app_prefix }}/roles/update/', {
-        "callback": function( sValue, y ) {
-            $("#access_level_box").text(sValue);
-            $("#access_level_box").attr("class", "bold row-" + getAccessColor(parseInt(sValue), COLOR_THRESHOLDS));
-        },
-        "submitdata": function ( value, settings ) {
-            return { "id": {{ role.id }} };
-        }
-    } );
-
-    $("#access_level_box").addClass(
-            "row-" + getAccessColor(parseInt($("#access_level_box").text()), COLOR_THRESHOLDS)
-    );
-});
 </script>
 {% endblock %}
 
+{% block hr_compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript" src="/s/hr/js/members_table.js"></script>
+{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/{{ app_prefix }}/roles/">Roles</a></li>
-<li><a href="/{{ app_prefix }}/roles/{{ role.roleType.typeName }}">{{ role.roleType.dispName }}</a></li>
-<li><a href="/{{ app_prefix }}/roles/{{ role.roleType.typeName }}/{{ role.roleID }}">{{ role.name }}</a></li>
+<li><a href="/hr/roles/">Roles</a></li>
+<li><a href="/hr/roles/{{ role.roleType.typeName }}">{{ role.roleType.dispName }}</a></li>
+<li><a href="/hr/roles/{{ role.roleType.typeName }}/{{ role.roleID }}">{{ role.name }}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -54,7 +37,23 @@ $(document).ready(function() {
   </tr>
 </table>
 
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#access_level_box").editable( '/hr/roles/update/', {
+        "callback": function( sValue, y ) {
+            $("#access_level_box").text(sValue);
+            $("#access_level_box").attr("class", "bold row-" + getAccessColor(parseInt(sValue), COLOR_THRESHOLDS));
+        },
+        "submitdata": function ( value, settings ) {
+            return { "id": {{ role.id }} };
+        }
+    } );
 
+    $("#access_level_box").addClass(
+            "row-" + getAccessColor(parseInt($("#access_level_box").text()), COLOR_THRESHOLDS)
+    );
+});
+</script>
 
 <h1>Members having the role <i>{{ role }}</i></h1>
 

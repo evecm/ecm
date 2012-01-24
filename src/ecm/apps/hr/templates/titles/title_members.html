@@ -2,29 +2,31 @@
 
 {% block headtitle %}Title Members - {{ title.titleName }}{% endblock %}
 
-{% block header_scripts %}
+{% block stylesheets %}
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.cluetip.css" />
+{% endblock %}
 
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
-
-
+{% block javascripts %}
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = "/{{ app_prefix }}/titles/{{ title.titleID }}/members/data/";
+AJAX_URL = "/hr/titles/{{ title.titleID }}/members/data/";
 COOKIE_NAME = 'ecm_title_members_table_';
 </script>
+{% endblock %}
 
+{% block hr_compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
 <script type="text/javascript" src="/s/hr/js/members_table.js"></script>
 {% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/{{ app_prefix }}/titles/">Titles</a></li>
-<li><a href="/{{ app_prefix }}/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
-<li><a href="/{{ app_prefix }}/titles/{{ title.titleID }}/members/">Members</a></li>
+<li><a href="/hr/titles/">Titles</a></li>
+<li><a href="/hr/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
+<li><a href="/hr/titles/{{ title.titleID }}/members/">Members</a></li>
 {% endblock %}
 
 {% block main_content %}

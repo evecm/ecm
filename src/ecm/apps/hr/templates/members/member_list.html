@@ -2,14 +2,16 @@
 
 {% block headtitle %}Members{% endblock %}
 
-
-{% block other_scripts %}
+{% block javascripts %}
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = '/{{ app_prefix }}/members/data/';
+AJAX_URL = '/hr/members/data/';
 COOKIE_NAME = 'ecm_members_table_';
 </script>
+{% endblock %}
+
+{% block hr_compressed_javascripts %}
 <script type="text/javascript" src="/s/hr/js/members_table.js"></script>
 {% endblock %}
 
@@ -17,7 +19,8 @@ COOKIE_NAME = 'ecm_members_table_';
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/{{ app_prefix }}/members/">Members</a></li>
+<li><a href="/hr/">Human Resources</a></li>
+<li><a href="/hr/members/">Members</a></li>
 {% endblock %}
 
 

@@ -27,8 +27,8 @@ except ImportError:
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.template.context import RequestContext as Ctx
 
-from ecm.apps.hr.views import hr_ctx
 from ecm.apps.hr.models import TitleComposition, TitleCompoDiff
 from ecm.views.decorators import check_user_access
 from ecm.views import getScanDate, extract_datatable_params
@@ -43,7 +43,7 @@ def changes(request):
     data = {
         'scan_date' : getScanDate(TitleComposition)
     }
-    return render_to_response("titles/changes.html", data, hr_ctx(request))
+    return render_to_response("titles/changes.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @cache_page(60 * 60) # 1 hour cache

@@ -18,13 +18,7 @@
 from __future__ import with_statement
 
 import sys
-from os import path
-import fnmatch
 import os
-from distutils import dir_util, file_util
-import subprocess
-from django.core import management
-from django.db import transaction
 import logging
 import shlex
 import re
@@ -32,7 +26,11 @@ import tempfile
 import shutil
 import urllib2
 import zipfile
-
+import fnmatch
+import subprocess
+from os import path
+from distutils import dir_util, file_util
+from django.core import management
 
 __date__ = "2011 8 23"
 __author__ = "diabeteman"
@@ -56,7 +54,7 @@ def prepare_settings(settings_file):
 def get_timestamp(root_dir):
     sys.path.append(path.join(root_dir, 'src'))
     import ecm
-    version = ecm.__version_str__
+    version = ecm.VERSION
     timestamp = ecm.TIMESTAMP
     del(sys.modules["ecm"])
     sys.path.remove(path.join(root_dir, 'src'))
@@ -322,7 +320,6 @@ def init_ecm_db(options):
     log.info('Database initialization successful.')
 
 #-------------------------------------------------------------------------------
-@transaction.commit_on_success
 def migrate_ecm_db(options):
     log = get_logger()
     log.info("Migrating database...")

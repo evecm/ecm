@@ -27,8 +27,8 @@ except ImportError:
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
+from django.template.context import RequestContext as Ctx
 
-from ecm.apps.hr.views import hr_ctx
 from ecm.apps.hr.models import TitleComposition, Title, TitleCompoDiff
 from ecm.apps.common.models import ColorThreshold
 from ecm.core import utils
@@ -47,7 +47,7 @@ def titles(request):
         'scan_date' : getScanDate(TitleComposition),
         'colorThresholds' : json.dumps(colorThresholds)
     }
-    return render_to_response("titles/titles.html", data, hr_ctx(request))
+    return render_to_response("titles/titles.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 all_columns = [ "titleName", "accessLvl" ]

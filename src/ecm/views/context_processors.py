@@ -39,7 +39,7 @@ def version(request):
     """
     Adds the variable {{ ecm_version }} to all the templates.
     """
-    return {'ecm_version': ecm.get_version()}
+    return {'ecm_version': ecm.VERSION}
 
 #------------------------------------------------------------------------------
 def menu(request):

@@ -23,7 +23,6 @@ from django.db.models import Q
 from django.conf import settings
 from django.utils.text import truncate_words
 from django.contrib.auth.models import User
-from django.template.context import RequestContext
 
 from ecm.apps.hr import NAME
 from ecm.apps.hr.models import Member
@@ -35,9 +34,6 @@ from ecm.views import template_filters
 import logging
 logger = logging.getLogger(__name__)
 
-#------------------------------------------------------------------------------
-def hr_ctx(request):
-    return RequestContext(request, {'app_prefix': NAME})
 
 
 #------------------------------------------------------------------------------

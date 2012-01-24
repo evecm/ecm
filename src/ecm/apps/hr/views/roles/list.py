@@ -29,8 +29,8 @@ from django.shortcuts import render_to_response, redirect
 from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, Http404
+from django.template.context import RequestContext as Ctx
 
-from ecm.apps.hr.views import hr_ctx
 from ecm.apps.hr import NAME as app_prefix
 from ecm.apps.hr.models import Role, RoleType
 from ecm.apps.common.models import ColorThreshold
@@ -58,7 +58,7 @@ def role_type(request, role_typeName):
         'current_role_type' : role_type.typeName,
         'current_role_type_name' : role_type.dispName,
     }
-    return render_to_response("roles/roles.html", data, hr_ctx(request))
+    return render_to_response("roles/roles.html", data, Ctx(request))
 
 
 

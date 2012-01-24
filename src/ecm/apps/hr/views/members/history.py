@@ -29,8 +29,8 @@ from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.utils.text import truncate_words
+from django.template.context import RequestContext as Ctx
 
-from ecm.apps.hr.views import hr_ctx
 from ecm.views.decorators import check_user_access
 from ecm.views import getScanDate, extract_datatable_params
 from ecm.apps.hr.models import Member, MemberDiff
@@ -43,7 +43,7 @@ def history(request):
     data = {
         'scan_date' : getScanDate(Member)
     }
-    return render_to_response("members/member_history.html", data, hr_ctx(request))
+    return render_to_response("members/member_history.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 COLUMNS = ['change', 'name', 'nickname', 'id']

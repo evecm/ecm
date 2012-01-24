@@ -2,23 +2,22 @@
 
 {% block headtitle %}Roles - {{ current_role_type_name }}{% endblock %}
 
-
-
-{% block other_scripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-
-<script type="text/javascript" src="/s/hr/js/roles_table.js"></script>
+{% block javascripts %}
 <script type="text/javascript">
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 var current_role_type = "{{ current_role_type }}";
 </script>
 {% endblock %}
 
+{% block hr_compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript" src="/s/hr/js/roles_table.js"></script>
+{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/{{ app_prefix }}/roles/">Roles</a></li>
-<li><a href="/{{ app_prefix }}/roles/{{ current_role_type }}">{{ current_role_type_name }}</a></li>
+<li><a href="/hr/roles/">Roles</a></li>
+<li><a href="/hr/roles/{{ current_role_type }}">{{ current_role_type_name }}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -36,7 +35,7 @@ var current_role_type = "{{ current_role_type }}";
 <script type="text/javascript">
 {% for rt in role_types %}
 $("#{{ rt.typeName }}_button").click(function() {
-    window.location = "/{{ app_prefix }}/roles/{{ rt.typeName }}";
+    window.location = "/hr/roles/{{ rt.typeName }}";
 });
 {% endfor %}
 </script>

@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.corp.models import Corp
 
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
@@ -30,14 +29,15 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
+from django.template.context import RequestContext as Ctx
 
 from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
-from ecm.apps.hr.views import hr_ctx
 from ecm.views import getScanDate, extract_datatable_params
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import ColorThreshold
 from ecm.core.utils import print_time_min, get_access_color
 from ecm.core.eve import db
+from ecm.apps.corp.models import Corp
 
 import logging
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ def details(request, characterID):
     corp = Corp.objects.latest()
 
     data = { 'member' : member, 'corp': corp }
-    return render_to_response("members/member_details.html", data, hr_ctx(request))
+    return render_to_response("members/member_details.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

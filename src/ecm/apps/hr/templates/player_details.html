@@ -3,13 +3,17 @@
 {% block headtitle %}Player Details{% endblock %}
 
 
-{% block other_scripts %}
+{% block javascripts %}
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 AJAX_URL = '/hr/players/{{ player.id }}/data/';
 COOKIE_NAME = 'ecm_player_characters_table_';
 </script>
+{% endblock %}
+
+
+{% block hr_compressed_javascripts %}
 <script type="text/javascript" src="/s/hr/js/members_table.js"></script>
 {% endblock %}
 
@@ -17,8 +21,9 @@ COOKIE_NAME = 'ecm_player_characters_table_';
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/players/">Players</a></li>
-<li><a href="/players/{{ player.id }}">{{ player.username }}</a></li>
+<li><a href="/hr/">Human Resources</a></li>
+<li><a href="/hr/players/">Players</a></li>
+<li><a href="/hr/players/{{ player.id }}">{{ player.username }}</a></li>
 {% endblock %}
 
 

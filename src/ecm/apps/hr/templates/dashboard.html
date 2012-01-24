@@ -2,10 +2,8 @@
 
 {% block headtitle %}Dashboard{% endblock %}
 
-{% block header_scripts %}
+{% block javascripts %}
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript" src="/s/ecm/js/ecm_lib.js"></script>
-
 <script type="text/javascript">
 DISTRIBUTION = {{ distribution|safe }};
 POSITIONS = {{ positions|safe }};
@@ -15,7 +13,7 @@ DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/dashboard/">Dashboard</a></li>
+<li><a href="/hr/">Human Resources</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -28,13 +26,13 @@ DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
     <td><div id="positions_chart"></div></td>
   </tr>
 </table>
-
+{% load compress %}
+{% compress js %}
 <script type="text/javascript" src="/s/hr/js/access_distribution_chart.js" ></script>
 <script type="text/javascript" src="/s/hr/js/character_positions_chart.js" ></script>
-
+{% endcompress %}
 <p><a href="/players/">Registered Players:</a> {{playerCount}}</p>
 <p><b>Average number of accounts by player:</b> {{accountsByPlayer|floatformat:2}} account / player</p>
 <p><b>Average number of characters by player:</b> {{chraractersByPlayer|floatformat:2}} character / player</p>
-<p><a href="/{{ app_prefix }}/members/unassociated/">Unassociated Characters:</a> {{unassociatedCharacters}} / {{memberCount}}</p>
-
+<p><a href="/hr/members/unassociated/">Unassociated Characters:</a> {{unassociatedCharacters}} / {{memberCount}}</p>
 {% endblock %}

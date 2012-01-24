@@ -29,13 +29,14 @@ from django.http import HttpResponseBadRequest, HttpResponse, Http404
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models.aggregates import Count
+from django.template.context import RequestContext as Ctx
 
 from ecm.core import utils
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import ColorThreshold
 from ecm.views import extract_datatable_params
-from ecm.apps.hr.views import get_members, hr_ctx
+from ecm.apps.hr.views import get_members
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -43,7 +44,7 @@ def player_list(request):
     data = {
         'colorThresholds' : ColorThreshold.as_json(),
     }
-    return render_to_response("player_list.html", data, hr_ctx(request))
+    return render_to_response("player_list.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 USER_COLUMNS = ["username", "is_superuser", "account_count", "char_count", "group_count", "last_login", "date_joined"]
@@ -124,7 +125,7 @@ def player_details(request, player_id):
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
 
-    return render_to_response('player_details.html', data, hr_ctx(request))
+    return render_to_response('player_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

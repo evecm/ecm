@@ -27,9 +27,9 @@ except ImportError:
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
+from django.template.context import RequestContext as Ctx
 
 from ecm.apps.common.models import ColorThreshold
-from ecm.apps.hr.views import hr_ctx
 from ecm.apps.hr.models import TitleComposition, TitleCompoDiff, Title
 from ecm.core import utils
 from ecm.core.utils import get_access_color
@@ -56,7 +56,7 @@ def details(request, titleID):
         "colorThresholds" : ColorThreshold.as_json()
     }
 
-    return render_to_response("titles/title_details.html", data, hr_ctx(request))
+    return render_to_response("titles/title_details.html", data, Ctx(request))
 
 
 

@@ -28,11 +28,11 @@ from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.template.context import RequestContext as Ctx
 
 from ecm.views import getScanDate, extract_datatable_params
 from ecm.apps.hr.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
 from ecm.views.decorators import check_user_access
-from ecm.apps.hr.views import hr_ctx
 from ecm.core import utils
 
 
@@ -42,7 +42,7 @@ def access_changes(request):
     data = {
         'scan_date' : getScanDate(TitleMembership)
     }
-    return render_to_response("members/access_changes.html", data, hr_ctx(request))
+    return render_to_response("members/access_changes.html", data, Ctx(request))
 
 
 #------------------------------------------------------------------------------

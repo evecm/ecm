@@ -25,8 +25,8 @@ except ImportError:
     import django.utils.simplejson as json
 
 from django.shortcuts import render_to_response
+from django.template.context import RequestContext as Ctx
 
-from ecm.apps.hr.views import hr_ctx
 from ecm.core.eve import db
 from ecm.core.eve import constants
 from ecm.views.decorators import check_user_access
@@ -48,7 +48,7 @@ def dashboard(request):
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL 
     }
     
-    return render_to_response("dashboard.html", data, hr_ctx(request))
+    return render_to_response("dashboard.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 def avg_chraracters_by_player():

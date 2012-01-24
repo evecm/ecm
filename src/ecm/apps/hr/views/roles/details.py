@@ -28,12 +28,13 @@ except ImportError:
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.template.context import RequestContext as Ctx
 
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params
 from ecm.apps.hr.models import Role, RoleType, Member
 from ecm.apps.common.models import ColorThreshold
-from ecm.apps.hr.views import get_members, hr_ctx
+from ecm.apps.hr.views import get_members
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -49,7 +50,7 @@ def role(request, role_typeName, role_id):
         'direct_member_count' : role.members.count(),
         'total_member_count' : role.members_through_titles().count()
     }
-    return render_to_response("roles/role_details.html", data, hr_ctx(request))
+    return render_to_response("roles/role_details.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
