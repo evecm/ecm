@@ -17,6 +17,7 @@ MEMBER_ID = "{{ member.characterID }}";
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
+<li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/members/">Members</a></li>
 <li><a href="/hr/members/{{ member.characterID }}">{{ member.name }}</a></li>
 {% endblock %}
@@ -42,8 +43,9 @@ MEMBER_ID = "{{ member.characterID }}";
     </tr>
 </table>
 
-<a class="kill"
-   href="{{corp.killboardUrl}}?a=search&searchtype=pilot&searchphrase={{member.name}}">Link to killboard</a>
+{% if killboardUrl %}
+<a class="kill" href="{{killboardUrl}}?a=search&searchtype=pilot&searchphrase={{member.name|iriencode}}">Link to killboard</a>
+{%endif%}
 
 <h2>Notes</h2>
 

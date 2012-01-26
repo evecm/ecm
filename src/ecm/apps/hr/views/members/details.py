@@ -34,10 +34,9 @@ from django.template.context import RequestContext as Ctx
 from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
 from ecm.views import getScanDate, extract_datatable_params
 from ecm.views.decorators import check_user_access
-from ecm.apps.common.models import ColorThreshold
+from ecm.apps.common.models import ColorThreshold, Setting
 from ecm.core.utils import print_time_min, get_access_color
 from ecm.core.eve import db
-from ecm.apps.corp.models import Corp
 
 import logging
 logger = logging.getLogger(__name__)
@@ -60,9 +59,12 @@ def details(request, characterID):
     except ObjectDoesNotExist:
         member = Member(characterID=int(characterID), name="???")
 
-    corp = Corp.objects.latest()
+    try:
+        killboardUrl = Setting.objects.get(name='corp_killboard_url').getValue()
+    except Setting.DoesNotExist:
+        killboardUrl = None
 
-    data = { 'member' : member, 'corp': corp }
+    data = { 'member' : member, 'killboardUrl': killboardUrl }
     return render_to_response("members/member_details.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------

@@ -26,3 +26,7 @@ TASKS = [
         'frequency_units' : 3600, # hour
     },
 ]
+
+SETTINGS = {
+    'corp_killboard_url': None,
+}
