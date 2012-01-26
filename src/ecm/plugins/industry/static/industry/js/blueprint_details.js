@@ -25,8 +25,8 @@ $(document).ready(function() {
         fnServerData: function ( sSource, aoData, fnCallback ) {
             /* Add some extra variables to the url */
             aoData.push( {
-                "name": "activityID",
-                "value": ACTIVITY_ID
+                name: "activityID",
+                value: ACTIVITY_ID
             } );
             $.getJSON( sSource, aoData, function (json) {
                 fnCallback(json)

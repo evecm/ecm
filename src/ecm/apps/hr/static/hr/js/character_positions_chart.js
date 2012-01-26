@@ -1,17 +1,17 @@
 var positionsQueryString = '';
 var positionsDataUrl = '';
 
-google.load("visualization", "1", {
-    packages : [ "imagechart" ]
+google.load('visualization', '1', {
+    packages : [ 'imagechart' ]
 });
 
 
 function extractLabels(dist) {
     var labels = new Array(3);
-    labels[0] = POSITIONS["hisec"];
-    labels[1] = POSITIONS["lowsec"];
-    labels[2] = POSITIONS["nullsec"];
-    return labels.join("|");
+    labels[0] = POSITIONS['hisec'];
+    labels[1] = POSITIONS['lowsec'];
+    labels[2] = POSITIONS['nullsec'];
+    return labels.join('|');
 }
 
 function onLoadCallback() {
@@ -23,9 +23,9 @@ function onLoadCallback() {
         var dataTable = new google.visualization.DataTable();
         dataTable.addRows(3);
         dataTable.addColumn('number');
-        dataTable.setValue(0, 0, POSITIONS["hisec"]);
-        dataTable.setValue(1, 0, POSITIONS["lowsec"]);
-        dataTable.setValue(2, 0, POSITIONS["nullsec"]);
+        dataTable.setValue(0, 0, POSITIONS['hisec']);
+        dataTable.setValue(1, 0, POSITIONS['lowsec']);
+        dataTable.setValue(2, 0, POSITIONS['nullsec']);
         draw(dataTable);
     }
 }

@@ -9,25 +9,25 @@
  **/
 $(document).ready(function() {
       var table = $('#players_table').dataTable( {
-        "sPaginationType": "full_numbers",
-        "bProcessing": true,
-        "bServerSide": true,
-        "bAutoWidth": false,
-        "iDisplayLength": 25, /* default display 25 items */
-        "bStateSave": true, /* table state persistance */
-        "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
-        "sAjaxSource": "/hr/players/data/",
-        "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
-        "aoColumns": [
-            { /* Username */        "sWidth": "30%",   "sType": "html"    },
-            { /* admin */           "sWidth": "10%",   "sType": "html"    },
-            { /* EVE accounts */    "sWidth": "10%",   "sType": "string"  },
-            { /* Char count */      "sWidth": "10%",   "sType": "string" },
-            { /* Group count */     "sWidth": "10%",   "sType": "string" },
-            { /* Last login */      "sWidth": "15%",   "sType": "string"  },
-            { /* Joined date */     "sWidth": "15%",   "sType": "string"  }
+        sPaginationType: "full_numbers",
+        bProcessing: true,
+        bServerSide: true,
+        bAutoWidth: false,
+        iDisplayLength: 25, /* default display 25 items */
+        bStateSave: true, /* table state persistance */
+        iCookieDuration: 60 * 60, /* persistance duration 1 hour */
+        sAjaxSource: "/hr/players/data/",
+        sDom: 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
+        aoColumns: [
+            { /* Username */        sWidth: "30%",   sType: "html"    },
+            { /* admin */           sWidth: "10%",   sType: "html"    },
+            { /* EVE accounts */    sWidth: "10%",   sType: "string"  },
+            { /* Char count */      sWidth: "10%",   sType: "string" },
+            { /* Group count */     sWidth: "10%",   sType: "string" },
+            { /* Last login */      sWidth: "15%",   sType: "string"  },
+            { /* Joined date */     sWidth: "15%",   sType: "string"  }
         ],
-        "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             /* if the player has no roles display him/her in red */
             var group_count = aData[4];
             if (group_count == 0) {
@@ -43,13 +43,13 @@ $(document).ready(function() {
         },
         /* the search field being outside the table object, we need to save its status
          * explicitly here in order to restore it with the rest */
-        "fnStateSaveCallback": function (oSettings, sValue) {
+        fnStateSaveCallback: function (oSettings, sValue) {
             var sFilter = $("#search_text").val();
             sValue = sValue.replace( /"sFilter":".*?"/, '"sFilter":"' + sFilter + '"' );
             return sValue;
         },
         /* restore the search field content */
-        "fnStateLoadCallback": function (oSettings, oData) {
+        fnStateLoadCallback: function (oSettings, oData) {
             $("#search_text").val(oData.sFilter);
             return true;
         }

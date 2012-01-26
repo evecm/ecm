@@ -9,41 +9,41 @@
 $(document).ready(function() {
 
     var table = $('#catalog_table').dataTable( {
-        "sPaginationType": "full_numbers",
-        "bProcessing": true,
-        "bServerSide": true,
-        "bAutoWidth": false,
-        "iDisplayLength": 25, 		/* default display 25 items */
-        "bStateSave": true, 		/* table state persistance */
-        "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
-        "sAjaxSource": AJAX_URL,
-        "sDom": 'lprtip', 			/* table layout. see http://www.datatables.net/usage/options */
-        "aoColumns": [
-            { /* 0 Item */         "sWidth": "50%" },
-            { /* 1 Available */    "sWidth": "5%", "sClass": "center"},
-            { /* 2 Price */        "sWidth": "10%"},
-            { /* 3 Blueprints */   "sWidth": "5%" },
-            { /* 4 Ordered */ 	   "sWidth": "5%" },
-            { /* 5 typeID */      "bVisible": false },
+        sPaginationType: "full_numbers",
+        bProcessing: true,
+        bServerSide: true,
+        bAutoWidth: false,
+        iDisplayLength: 25, 		/* default display 25 items */
+        bStateSave: true, 		/* table state persistance */
+        iCookieDuration: 60 * 60, /* persistance duration 1 hour */
+        sAjaxSource: AJAX_URL,
+        sDom: 'lprtip', 			/* table layout. see http://www.datatables.net/usage/options */
+        aoColumns: [
+            { /* 0 Item */         sWidth: "50%" },
+            { /* 1 Available */    sWidth: "5%", sClass: "center"},
+            { /* 2 Price */        sWidth: "10%"},
+            { /* 3 Blueprints */   sWidth: "5%" },
+            { /* 4 Ordered */ 	   sWidth: "5%" },
+            { /* 5 typeID */      bVisible: false },
         ],
-        "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             var available = aData[1];
             var typeID = aData[5];
             var checked = '';
             if (available == 'true') {
-            	checked += 'checked ';
+              checked += 'checked ';
             }
             $('td:eq(1)', nRow).html('<input type="checkbox" ' + checked + '/>');
             $('td:eq(1) input', nRow).click(function () {
-            	var params = {
-            		available: $(this).is(':checked')
-            	};
-            	$.post('/industry/catalog/items/' + typeID + '/availability/', params)
-            	 .error(function () {
-             		alert('Failed to change availability!'); 
-             	});
+              var params = {
+                available: $(this).is(':checked')
+              };
+              $.post('/industry/catalog/items/' + typeID + '/availability/', params)
+               .error(function () {
+                 alert('Failed to change availability!');
+               });
             });
-            
+
             $('td:eq(2)', nRow).addClass('right');
             /* Apply jEditable handlers to the cells each time we redraw the table */
             $('td:eq(2)', nRow).editable( '/industry/catalog/items/' + typeID + '/price/', {
@@ -53,19 +53,19 @@ $(document).ready(function() {
                 },
                 loadurl: '/industry/catalog/items/' + typeID + '/price/',
                 name: 'price',
-                
+
             } );
-            
+
             $('td:eq(5)', nRow).hide();
             return nRow;
         },
 
         /* this function will be called when the table has to query data to be displayed */
-        "fnServerData": function ( sSource, aoData, fnCallback ) {
+        fnServerData: function ( sSource, aoData, fnCallback ) {
             /* Add some extra variables to the url */
             aoData.push( {
-                "name": "showUnavailable",
-                "value": SHOW_UNAVAILABLE
+                name: "showUnavailable",
+                value: SHOW_UNAVAILABLE
             } );
             $.getJSON( sSource, aoData, function (json) {
                 fnCallback(json)
@@ -74,14 +74,14 @@ $(document).ready(function() {
 
         /* the search field being outside the table object, we need to save its status
          * explicitly here in order to restore it with the rest */
-        "fnStateSaveCallback": function (oSettings, sValue) {
+        fnStateSaveCallback: function (oSettings, sValue) {
             var sFilter = $("#search_text").val();
             sValue = sValue.replace( /"sFilter":".*?"/, '"sFilter":"' + sFilter + '"' );
             sValue += ', "showUnavailable": ' + SHOW_UNAVAILABLE;
             return sValue;
         },
         /* restore the search field content */
-        "fnStateLoadCallback": function (oSettings, oData) {
+        fnStateLoadCallback: function (oSettings, oData) {
             $("#search_text").val(oData.sFilter);
             if ('showUnavailable' in oData) {
                 SHOW_UNAVAILABLE = oData.showUnavailable;

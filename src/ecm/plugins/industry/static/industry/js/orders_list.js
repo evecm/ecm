@@ -5,38 +5,37 @@
 
 $(document).ready(function() {
       var table = $('#orders_list').dataTable( {
-        "sPaginationType": "full_numbers",
-        "bProcessing": true,
-        "bServerSide": true,
-        "bAutoWidth": false,
-        "iDisplayLength": 25, /* default display 25 items */
-        "bStateSave": true, /* table state persistance */
-        "iCookieDuration": 60 * 60, /* persistance duration 1 hour */
-        "sAjaxSource": AJAX_URL,
-        "sDom": 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
-        "aoColumns": [
-            { /* # */               "sWidth": "10%" },
-            { /* State */           "sWidth": "10%" },
-            { /* Originator */      "sWidth": "10%" },
-            { /* Client */          "sWidth": "10%" },
-            { /* Delivery Date */   "sWidth": "10%" },
-            { /* Items */           "sWidth": "40%", "bSortable": false },
-            { /* Quote */           "sWidth": "15%" },
+        sPaginationType: "full_numbers",
+        bProcessing: true,
+        bServerSide: true,
+        bAutoWidth: false,
+        iDisplayLength: 25, /* default display 25 items */
+        bStateSave: true, /* table state persistance */
+        iCookieDuration: 60 * 60, /* persistance duration 1 hour */
+        sAjaxSource: AJAX_URL,
+        sDom: 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
+        aoColumns: [
+            { /* # */               sWidth: "10%" },
+            { /* State */           sWidth: "10%" },
+            { /* Originator */      sWidth: "10%" },
+            { /* Client */          sWidth: "10%" },
+            { /* Delivery Date */   sWidth: "10%" },
+            { /* Items */           sWidth: "40%", bSortable: false },
+            { /* Quote */           sWidth: "15%" },
         ],
-        "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             return nRow;
         },
 
         /* the search field being outside the table object, we need to save its status
          * explicitly here in order to restore it with the rest */
-        "fnStateSaveCallback": function (oSettings, sValue) {
+        fnStateSaveCallback: function (oSettings, sValue) {
             var sFilter = $("#search_text").val();
             sValue = sValue.replace( /"sFilter":".*?"/, '"sFilter":"' + sFilter + '"' );
             return sValue;
         },
         /* restore the search field content */
-        "fnStateLoadCallback": function (oSettings, oData) {
+        fnStateLoadCallback: function (oSettings, oData) {
             $("#search_text").val(oData.sFilter);
             return true;
         }
