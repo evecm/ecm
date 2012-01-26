@@ -142,8 +142,10 @@ CREATE TABLE "invTypes" (
   "description" varchar(3000) DEFAULT NULL,
   "volume" double DEFAULT NULL,
   "portionSize" int(11) DEFAULT NULL,
+  "raceID" tinyint(3) DEFAULT NULL,
   "basePrice" double DEFAULT NULL,
   "marketGroupID" smallint(6) DEFAULT NULL,
+  "metaGroupID" smallint(6) DEFAULT NULL,
   "icon" varchar(32) DEFAULT NULL,
   "published" tinyint(1) DEFAULT NULL,
   PRIMARY KEY ("typeID")
@@ -166,14 +168,18 @@ SELECT  t."typeID",
         t."description",
         t."volume",
         t."portionSize",
+        t."raceID",
         t."basePrice",
         t."marketGroupID",
+        IFNULL(m."metaGroupID", 0) AS "metaGroupID",
         IFNULL('icon' || g."iconFile", CAST(t."typeID" AS TEXT)) AS "icon",
         t."published"
 FROM "invTypes_temp" t LEFT OUTER JOIN "eveIcons" g ON t."graphicID" = g."iconID",
-     "invTypes_temp" t2 LEFT OUTER JOIN "invBlueprintTypes" b ON t."typeID" = b."productTypeID",
+     "invTypes_temp" t2 LEFT OUTER JOIN "invBlueprintTypes" b ON t2."typeID" = b."productTypeID",
+     "invTypes_temp" t3 LEFT OUTER JOIN "invMetaTypes" m ON t3."typeID" = m."typeID",
      "invGroups" gg
 WHERE t."typeID" = t2."typeID"
+  AND t."typeID" = t3."typeID"
   AND t."groupID" = gg."groupID"
   AND t."typeID" NOT IN (23693) -- this dummy item has 4 different blueprints,
                                 -- if we do not ignore it, the SQL command fails...
@@ -328,6 +334,7 @@ SET "parentBlueprintTypeID" =
 
 DROP TABLE "agtAgentTypes";
 DROP TABLE "agtAgents";
+DROP TABLE "agtConfig";
 DROP TABLE "agtResearchAgents";
 
 DROP TABLE "chrAncestries";
@@ -409,11 +416,13 @@ DROP TABLE "staOperations";
 DROP TABLE "staServices";
 DROP TABLE "staStationTypes";
 DROP TABLE "staStations";
-DROP TABLE "translationTables";
 
+DROP TABLE "translationLaguages";
+DROP TABLE "translationTables";
 DROP TABLE "trnTranslationColumns";
 DROP TABLE "trnTranslationLanguages";
 DROP TABLE "trnTranslations";
+
 DROP TABLE "warCombatZoneSystems";
 DROP TABLE "warCombatZones";
 

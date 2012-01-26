@@ -1,18 +1,18 @@
-# Copyright (c) 2010-2011 Robin Jarry
-# 
+# Copyright (c) 2010-2012 Robin Jarry
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2010-03-18"
@@ -34,7 +34,7 @@ def resolveTypeName(typeID):
         cursor.execute(QUERY_ONE_TYPENAME, [typeID])
         for typeName, categoryID in cursor:
             cache.setCachedTypeName(typeID, (typeName, categoryID))
-        cursor.close() 
+        cursor.close()
         try:
             return cache.getCachedTypeName(typeID)
         except KeyError:
@@ -48,7 +48,7 @@ def resolveTypeNames(typeIDs):
     names = {}
     for typeID, typeName, categoryID in cursor:
         names[typeID] = (typeName, categoryID)
-        cache.setCachedTypeName(id, (typeName, categoryID))
+        cache.setCachedTypeName(typeID, (typeName, categoryID))
     cursor.close()
     return names
 #------------------------------------------------------------------------------
@@ -57,8 +57,8 @@ def getMatchingIdsFromString(string):
     cursor = EVE_DB.cursor()
     cursor.execute(QUERY_SEARCH_TYPE, [ "%" + string + "%" ])
     ids = []
-    for id, in cursor:
-        ids.append(id)
+    for typeID, in cursor:
+        ids.append(typeID)
     cursor.close()
     return ids
 
@@ -86,17 +86,19 @@ def resolveLocationName(locationID):
     except KeyError:
         cursor = EVE_DB.cursor()
         cursor.execute(QUERY_LOCATION, [locationID])
-        for itemName, security in cursor: 
-            cache.setCachedLocation(id=locationID, name=itemName, security=security)
+        for itemName, security in cursor:
+            cache.setCachedLocation(locID=locationID, name=itemName, security=security)
         cursor.close()
         try:
             return cache.getCachedLocation(locationID)
         except KeyError:
             # locationID was not valid
             return ("???", 0.0)
+
+#------------------------------------------------------------------------------
 SQL_UPDATE_OUTPOST_NAME = 'UPDATE mapCelestialObjects SET itemName=%s WHERE itemID=%s;'
 SQL_NEW_OUTPOST = '''INSERT INTO mapCelestialObjects
-(itemID, typeID, groupID, solarSystemID, regionID, itemName, security) 
+(itemID, typeID, groupID, solarSystemID, regionID, itemName, security)
 VALUES (%s, 0, 0, %s, 0, %s, %s);'''
 def updateLocationName(stationID, solarSystemID, locationName):
     oldName, security = resolveLocationName(stationID)
@@ -114,10 +116,10 @@ def updateLocationName(stationID, solarSystemID, locationName):
     cache.setCachedLocation(stationID, locationName, security)
     cursor.close()
     return created
-    
+
 #------------------------------------------------------------------------------
-SQL_MKTGRP = '''SELECT marketGroupID, marketGroupName, hasTypes 
-FROM invMarketGroups 
+SQL_MKTGRP = '''SELECT marketGroupID, marketGroupName, hasTypes
+FROM invMarketGroups
 WHERE marketGroupID = %s;'''
 def getMarketGroup(marketGroupID):
     try:
@@ -132,7 +134,7 @@ def getMarketGroup(marketGroupID):
 
 #------------------------------------------------------------------------------
 SQL_MKTGRP_BY_PARENT = '''SELECT marketGroupID, marketGroupName, hasTypes
-FROM invMarketGroups 
+FROM invMarketGroups
 WHERE parentGroupID = %s;'''
 def getMarketGroupChildren(marketGroupID):
     try:
@@ -201,9 +203,9 @@ def getBpActivities(blueprintTypeID):
         cache.setCachedBpActivities(blueprintTypeID, rows)
         return rows
 #------------------------------------------------------------------------------
-SQL_ACTIVITY_REQS = '''SELECT requiredTypeID, quantity, damagePerJob, baseMaterial 
-FROM ramBlueprintReqs 
-WHERE blueprintTypeID=%s 
+SQL_ACTIVITY_REQS = '''SELECT requiredTypeID, quantity, damagePerJob, baseMaterial
+FROM ramBlueprintReqs
+WHERE blueprintTypeID=%s
   AND activityID=%s
   AND damagePerJob > 0.0 ORDER BY activityID;'''
 def getActivityReqs(blueprintTypeID, activityID):

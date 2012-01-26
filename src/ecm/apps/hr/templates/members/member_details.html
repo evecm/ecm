@@ -1,0 +1,135 @@
+{% extends "hr_base.html" %}
+
+{% block headtitle %}Member Details - {{ member.name }}{% endblock %}
+
+
+{% block javascripts %}
+<script type="text/javascript">
+MEMBER_ID = "{{ member.characterID }}";
+</script>
+{% endblock %}
+
+{% block hr_compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript" src="/s/hr/js/member_access_changes_table.js"></script>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/hr/">Human Resources</a></li>
+<li><a href="/hr/members/">Members</a></li>
+<li><a href="/hr/members/{{ member.characterID }}">{{ member.name }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle {%if not member.corped %}error{% endif %}">{{ member.name }}{%if not member.corped %} NOT CORPED{% endif %}</h1>
+<p class="italic" >{{ member.nickname }}</p>
+
+<table class="transparent">
+    <tr>
+        <td>
+            <img src="http://image.eveonline.com/Character/{{ member.characterID }}_128.jpg" style="border:none;"></img>
+        </td>
+        <td>
+            <p>
+            <span class="bold">Corp Date:</span> {{ member.corpDate|ecm_datetime }}<br/>
+            <span class="bold">Last Login:</span> {{ member.lastLogin|ecm_datetime }}<br/>
+            <span class="bold">Last Logoff:</span> {{ member.lastLogoff|ecm_datetime }}
+            </p>
+            <p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ member.date|ecm_datetime }}</p>
+            <p><span class="bold">Owned by:</span> {{ member.owner_permalink|safe }}</p>
+        </td>
+    </tr>
+</table>
+
+{% if killboardUrl %}
+<a class="kill" href="{{killboardUrl}}?a=search&searchtype=pilot&searchphrase={{member.name|iriencode}}">Link to killboard</a>
+{%endif%}
+
+<h2>Notes</h2>
+
+<p id="notes" class="italic blue" >{% if member.notes %}{{ member.notes }}{% else %}Click to add notes...{%endif%}</p>
+
+<script type="text/javascript">
+/* Apply a jEditable handler to the "notes" paragraph */
+$('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {
+    "callback": function( sValue, y ) {
+        $('#notes').html(sValue);
+    },
+    tooltip   : 'Click to edit...'
+});
+</script>
+
+<h2>Access Level</h2>
+
+<table class="table" ><tr class="row">
+<td class="row-{{ member.color }}">
+  <b>
+    {% if member.is_director %}
+    DIRECTOR
+    {% else %}
+    {{ member.accessLvl }}
+    {% endif %}
+  </b>
+</td>
+</tr></table>
+
+
+<h2>Base Office</h2>
+{% if member.baseID %}
+{{ member.base }}
+{% else %}
+None
+{% endif %}
+
+<table class="transparent">
+  <tr>
+    <td>
+      <h2>Titles</h2>
+      <ul>
+      {% for title in member.titles.all %}
+        <li>{{ title.permalink|safe }}</li>
+        {% empty %}
+        <p>No titles</p>
+      {% endfor %}
+      </ul>
+    </td>
+    <td>
+      <h2>Extra Roles</h2>
+      <ul>
+      {% for role in member.roles_no_director %}
+        <li>{{ role.permalink|safe }}</li>
+        {% empty %}
+        <p>No extra roles</p>
+      {% endfor %}
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<h2>Security Access Changes</h2>
+
+<table class="table display" id="access_changes_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Change</th>
+      <th class="top" scope="col" >Title/Role</th>
+      <th class="top" scope="col" >Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Change</th>
+      <th>Title/Role</th>
+      <th>Date</th>
+    </tr>
+  </tfoot>
+</table>
+
+{% endblock %}

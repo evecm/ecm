@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block headtitle %}{{item.typeName}}{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+ITEM_ID = {{item.typeID}};
+</script>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript"  src="/s/industry/js/item_details.js" ></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry">Industry</a></li>
+<li><a href="/industry/catalog/items/">Items Catalog</a></li>
+<li><a href="/industry/catalog/items/{{ item.typeID }}/">{{ item.typeName }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">{{item.typeName}}</h1>
+
+<table class="transparent">
+  <tr>
+    <td><img src="http://image.eveonline.com/Type/{{item.typeID}}_64.png" /></td>
+    <td>
+      <table class="transparent">
+        <tr>
+          <td class="bold">Available</td>
+          <td>
+            <input type="checkbox" id="availability_checkbox" {% if item.isAvailable %}checked{% endif %} />
+          </td>
+        </tr>
+        <tr><td class="bold">Fixed Price</td><td id="price">{{item.fixedPrice|ecm_price}}</td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<h2>Owned Blueprints</h2>
+
+<table class="blueprints_table">
+  <thead>
+    <tr>
+      <th></th>
+      <th>ME</th>
+      <th>PE</th>
+      <th>Copy</th>
+      <th>Runs</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="blueprints">
+  {% for bp in item.blueprints.all %}
+    <tr id="{{bp.id}}">
+      <td><a href="{{bp.url}}" title="Blueprint details">
+        <img src="http://image.eveonline.com/Type/{{bp.blueprintTypeID}}_32.png"/>
+      </a></td>
+      <td class="me" id="{{bp.id}}">{{bp.me}}</td>
+      <td class="pe" id="{{bp.id}}">{{bp.pe}}</td>
+      <td><input class="copy" id="{{bp.id}}" type="checkbox" {% if bp.copy %}checked{% endif %}/></td>
+      <td class="runs" id="{{bp.id}}">{{bp.runs}}</td>
+      <td><input class="button" type="button" value="Delete Blueprint" onClick="deleteBlueprint({{bp.id}});"/></td>
+    </tr>
+  {% empty %}
+    <tr id="empty"><td colspan="4" class="center">None</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<input class="button" type="button" value="Add New Blueprint" onClick="addBlueprint({{item.typeID}});"/>
+
+{% endblock %}

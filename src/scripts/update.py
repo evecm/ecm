@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2010-2011 Robin Jarry
+# Copyright (c) 2010-2012 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
 #
@@ -27,30 +27,43 @@ sys.path.append(install_dir)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'ecm.settings'
 
-from ecm.core.parsers import (assets, corp, membersecu, membertrack,
-                              outposts, reftypes, titles, wallets)
-from ecm.core.tasks import users
 
-FUNCTIONS = {
-    "assets" : assets.update,
-    "corp" : corp.update,
-    "member_roles" : membersecu.update,
-    "members" : membertrack.update,
-    "outposts" : outposts.update,
-    "reftypes" : reftypes.update,
-    "titles" : titles.update,
-    "wallets" : wallets.update,
-    "user_access" : users.update_all_users_accesses,
-    "clean_unregistered_users" : users.cleanup_unregistered_users,
-    "update_user_accesses" : users.update_all_users_accesses
-}
+from ecm import apps, plugins
+from ecm.apps.scheduler.validators import extract_function
 
+TASKS = []
+for app in apps.LIST:
+    TASKS += app.tasks
+for plugin in plugins.LIST:
+    TASKS += plugin.tasks
+TASKS.sort(key=lambda t: t['function'])
+
+def main(task):
+    matching_tasks = [ t['function'] for t in TASKS if task in t['function'] ]
+
+    if len(matching_tasks) == 1:
+        print 'Executing task: "%s"...' % matching_tasks[0]
+        function = extract_function(matching_tasks[0])
+        function()
+    elif len(matching_tasks) == 0:
+        print >>sys.stderr, "No matching tasks for '%s'" % task
+        raise IndexError()
+    else:
+        print >>sys.stderr, "Multiple tasks match for '%s'" % task
+        print >>sys.stderr, " ",
+        print >>sys.stderr, "\n  ".join(matching_tasks)
+        sys.exit(1)
+
+def print_help():
+    func_names = [t['function'] for t in TASKS ]
+    print >>sys.stderr, "usage: update.py <task>"
+    print >>sys.stderr, "with <task> in:\n ",
+    print >>sys.stderr, "\n  ".join(func_names)
+    print >>sys.stderr
+    sys.exit(1)
 
 if __name__ == "__main__":
     try:
-        FUNCTIONS[sys.argv[1]]()
-    except (IndexError, KeyError):
-        func_names = FUNCTIONS.keys()
-        func_names.sort()
-        print >>sys.stderr, "usage: update.py {%s}" % "|".join(func_names)
-        sys.exit(1)
+        main(sys.argv[1])
+    except IndexError:
+        print_help()

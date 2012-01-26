@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.cluetip.css" />
+<link rel="stylesheet" type="text/css" href="/s/hr/css/classes.css" />
+{% block hr_stylesheets %}{% endblock %}
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
+{% block hr_compressed_javascripts %}{% endblock %}
+{% endblock %}

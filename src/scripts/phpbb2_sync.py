@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2010-2011 Robin Jarry
+# Copyright (c) 2010-2012 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
 #
@@ -54,8 +54,8 @@ ECM_URL     = 'http://ecm.yourserver.com'
 ECM_USER    = '' # to complete
 ECM_PASSWD  = '' # to complete
 ECM_BINDING = 'forum'
-ECM_GROUPS  = '/api/bindings/%s/groups' % ECM_BINDING
-ECM_USERS   = '/api/bindings/%s/users' % ECM_BINDING
+ECM_GROUPS  = '/api/bindings/%s/groups/' % ECM_BINDING
+ECM_USERS   = '/api/bindings/%s/users/' % ECM_BINDING
 
 #------------------------------------------------------------------------------
 # logging settings
@@ -133,12 +133,12 @@ def update_forum_access(managed_groups, users):
         cursor.execute(SQL_RESET_DEFAULT_GROUPS, (managed_groups,))
         logger.info('Removed all users from groups %s' % str(managed_groups))
         for u in users:
-            id = u['external_id']
+            ext_id = u['external_id']
             name = u['external_name']
             groups = u['groups']
             for g in groups:
-                cursor.execute(SQL_ADD_USER_TO_GROUP, (g, id))
-            logger.info('Updated user %s (%s) with groups %s', name, str(id), str(groups))
+                cursor.execute(SQL_ADD_USER_TO_GROUP, (g, ext_id))
+            logger.info('Updated user %s (%s) with groups %s', name, str(ext_id), str(groups))
 
         logger.debug('Committing modifications to the database...')
         cursor.execute(SQL_COMMIT)

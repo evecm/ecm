@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2010-2011 Robin Jarry
+# Copyright (c) 2010-2012 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
 #
@@ -82,6 +82,6 @@ def main(options):
             log.info('done')
 
 if __name__ == '__main__':
-    options, _ = parser.parse_args()
-    main(options)
+    opts, _ = parser.parse_args()
+    main(opts)
 

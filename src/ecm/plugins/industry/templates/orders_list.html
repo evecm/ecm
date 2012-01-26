@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Order list{% endblock %}
+
+
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript"  >
+AJAX_URL = '/industry/orders/all/data/';
+</script>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript"  src="/s/industry/js/orders_list.js" ></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry/">Industry</a></li>
+<li><a href="/industry/orders/">Orders</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Orders list</h1>
+
+<form id="search_form" class="search_form">
+    <input type="text" id="search_text" value="" />
+    <input type="button" class="button" id="search_button" value="Search" />
+    <input type="button" class="button" id="clear_search" value="Reset" />
+</form>
+
+<table class="table display" id="orders_list">
+  <thead>
+    <tr>
+      {%for col in columns%}
+      <th class="top" scope="col" >{{col}}</th>
+      {%endfor%}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {%for col in columns%}
+      <th>{{col}}</th>
+      {%endfor%}
+    </tr>
+  </tfoot>
+
+</table>
+{% endblock %}

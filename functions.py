@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2011 Robin Jarry
+# Copyright (c) 2010-2012 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
 #
@@ -18,12 +18,7 @@
 from __future__ import with_statement
 
 import sys
-from os import path
-import fnmatch
 import os
-from distutils import dir_util, file_util
-import subprocess
-from django.core import management
 import logging
 import shlex
 import re
@@ -31,7 +26,11 @@ import tempfile
 import shutil
 import urllib2
 import zipfile
-
+import fnmatch
+import subprocess
+from os import path
+from distutils import dir_util, file_util
+from django.core import management
 
 __date__ = "2011 8 23"
 __author__ = "diabeteman"
@@ -43,12 +42,20 @@ def ignore_func(dir, names):
     for pattern in ['*.pyc', '*.pyo', '*/db/*.db', '*/db/*journal', '*/logs']:
         ignored_names.extend(fnmatch.filter(files, pattern))
     return set([ path.basename(name) for name in ignored_names ])
+
+#-------------------------------------------------------------------------------
+def prepare_settings(settings_file):
+    with open(settings_file, 'r') as f:
+        buff = f.read()
+    buff = PLUGINS_RE.sub('ECM_PLUGIN_APPS = []', buff)
+    with open(settings_file, 'w') as f:
+        f.write(buff)
 #-------------------------------------------------------------------------------
 def get_timestamp(root_dir):
     sys.path.append(path.join(root_dir, 'src'))
     import ecm
-    version = ecm.version
-    timestamp = ecm.timestamp
+    version = ecm.VERSION
+    timestamp = ecm.TIMESTAMP
     del(sys.modules["ecm"])
     sys.path.remove(path.join(root_dir, 'src'))
     return version, timestamp
@@ -161,7 +168,7 @@ def install_files(options):
 def configure_apache(options):
     log = get_logger()
     log.info("Applying configuration to Apache virtual host file...")
-    vhost_file = os.path.join(options.install_dir, "ecm.apache.vhost.conf").replace("\\", "/")
+    vhost_file = os.path.join(options.install_dir, "apache.vhost.conf").replace("\\", "/")
     f = open(vhost_file, "r")
     buff = f.read()
     f.close()
@@ -178,6 +185,7 @@ DB_SETTINGS = """'ENGINE': '%(db_engine)s',
         'NAME': '%(db_name)s',
         'USER': '%(db_user)s',
         'PASSWORD': '%(db_pass)s'"""
+PLUGINS_RE = re.compile(r'ECM_PLUGIN_APPS = \[[^\]]*\]', re.DOTALL)
 def configure_ecm(options):
     log = get_logger()
     log.info("Applying configuration to ECM settings.py...")
@@ -215,7 +223,13 @@ def configure_ecm(options):
                         'DEFAULT_FROM_EMAIL = "%(server_email)s"' % options.__dict__)
     buff = buff.replace('SERVER_EMAIL = ""',
                         'SERVER_EMAIL = "%(server_email)s"' % options.__dict__)
-
+    if options.plugins is not None:
+        plugins = 'ECM_PLUGIN_APPS = ['
+        for p in options.plugins:
+            plugins += '\n    %s' % repr(p)
+        plugins += '\n]'
+        buff = buff.replace('ECM_PLUGIN_APPS = []', plugins)
+    
     f = open(settings_file, "w")
     f.write(buff)
     f.close()
@@ -246,16 +260,29 @@ def backup_settings(options, tempdir):
     file_stat = os.stat(os.path.join(options.install_dir, "apache.wsgi"))
     log.info("Stored the owner info of %s", os.path.join(options.install_dir, "apache.wsgi"))
 
-    vhost_file = os.path.join(options.install_dir, "ecm.apache.vhost.conf")
-    with open(vhost_file, 'r') as fd:
-        buff = fd.read()
+    vhost_file = os.path.join(options.install_dir, "apache.vhost.conf")
+    try:
+        with open(vhost_file, 'r') as fd:
+            buff = fd.read()
+    except:
+        # upgrading from ecm 1.x.y
+        vhost_file = os.path.join(options.install_dir, "ecm.apache.vhost.conf")
+        with open(vhost_file, 'r') as fd:
+            buff = fd.read()
+    
     match = VHOST_REGEXP.search(buff)
     if match is not None:
         options.ip_address = match.groupdict()['ip_address']
         options.port = match.groupdict()['port']
 
     sys.path.append(options.install_dir)
+    import ecm
     import ecm.settings
+    try:
+        options.old_version = ecm.__version_str__
+    except AttributeError:
+        # upgrading from ecm 1.x.y
+        options.old_version = ecm.version
     options.db_engine = ecm.settings.DATABASES['default']['ENGINE']
     if not 'sqlite' in options.db_engine:
         options.db_name = ecm.settings.DATABASES['default']['NAME']
@@ -264,9 +291,19 @@ def backup_settings(options, tempdir):
     options.admin_email = ecm.settings.ADMINS[1]
     options.server_email = ecm.settings.DEFAULT_FROM_EMAIL
     options.vhost_name = ecm.settings.ECM_BASE_URL.split(':')[0]
+    try:
+        options.plugins = ecm.settings.ECM_PLUGIN_APPS
+    except AttributeError:
+        # upgrading from ecm 1.x.y we must set default plugins
+        options.plugins = [
+            'ecm.plugins.accounting',
+            'ecm.plugins.assets',
+        ]
     log.info("Stored configuration from %s", ecm.settings.__file__)
     sys.path.remove(options.install_dir)
+    del ecm
     del ecm.settings
+    del(sys.modules["ecm"])
     del(sys.modules["ecm.settings"])
 
     log.info('All previous settings backuped.')
@@ -298,7 +335,13 @@ def migrate_ecm_db(options):
     management.setup_environ(ecm.settings)
     from south.models import MigrationHistory
 
-    if not MigrationHistory.objects.all():
+    if options.old_version.startswith('1.'):
+        # we are upgrading from ECM 1.X.Y, we must perform the init migration
+        # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
+        MigrationHistory.objects.delete()
+        log.info('Migrating from ECM 1.x.y...')
+        run_command('python manage.py migrate 0001 hr --no-initial-data', run_dir)
+    if not MigrationHistory.objects.exclude(app_name='hr'):
         # SOUTH has never been used in that installation.
         # we MUST "fake" the first migration,
         # otherwise the migrate command will fail because DB tables already exist...
@@ -307,8 +350,10 @@ def migrate_ecm_db(options):
 
     run_command('python manage.py migrate --all --no-initial-data', run_dir)
 
-    del(sys.modules["ecm.settings"])
+    del ecm.settings
+    del sys.modules["ecm.settings"]
     sys.path.remove(options.install_dir)
+    
     log.info('Database Migration successful.')
 
 #-------------------------------------------------------------------------------

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Blueprints Catalog{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript"  >
+AJAX_URL = '/industry/catalog/blueprints/data/';
+DISPLAY_MODE = 'all';
+</script>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript"  src="/s/industry/js/blueprints_table.js" ></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry/">Industry</a></li>
+<li><a href="/industry/catalog/blueprints/">Blueprints Catalog</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Blueprints Catalog</h1>
+
+<form id="search_form" class="search_form">
+  <table>
+    <tr>
+      <td><input type="text"  id="search_text"  value="" /></td>
+      <td><input type="button"  class="button"  id="search_button"  value="Search" /></td>
+      <td><input type="button"  class="button"  id="clear_search"  value="Reset" /></td>
+      <td>Display:</td>
+      <td><input type="button"  class="button"  id="display_all"  value="All Blueprints" /></td>
+      <td><input type="button"  class="button"  id="display_originals"  value="Only Originals" /></td>
+      <td><input type="button"  class="button"  id="display_copies"  value="Only Copies" /></td>
+    </tr>
+  </table>
+</form>
+
+<table class="table display" id="blueprints_table">
+  <thead>
+    <tr>
+      {%for col in columns%}
+      <th class="top" scope="col" >{{col}}</th>
+      {%endfor%}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {%for col in columns%}
+      <th>{{col}}</th>
+      {%endfor%}
+    </tr>
+  </tfoot>
+</table>
+{% endblock %}

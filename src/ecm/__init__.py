@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2011 Robin Jarry
+# Copyright (c) 2010-2012 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
 #
@@ -18,8 +18,8 @@ __author__ = "diabeteman"
 
 __date__ = "2011-05-17"
 
-timestamp = "%(timestamp)s"
-version = "1.4.8"
+TIMESTAMP = "%(timestamp)s"
+VERSION = "2.0.alpha.1"
 
 def get_full_version():
-    return version + '.' + timestamp
+    return  VERSION + '.' + TIMESTAMP

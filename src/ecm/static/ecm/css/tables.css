@@ -1,0 +1,29 @@
+
+table.transparent {
+    border-collapse:collapse;
+    empty-cells:show;
+}
+
+table.transparent th {
+    margin:1.0em;
+    border-collapse:collapse;
+    empty-cells:show;
+    text-align:left;
+    font-weight: bold;
+}
+
+table.transparent td {
+    margin:1.0em;
+    padding-right: 10px;
+    border-collapse:collapse;
+    empty-cells:show;
+    text-align:left;
+    vertical-align: top;
+}
+
+table.transparent img {
+    text-align:center;
+    display:inline;
+    border: none;
+}
+

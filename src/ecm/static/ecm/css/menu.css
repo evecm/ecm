@@ -1,0 +1,36 @@
+
+.menu {
+    font-family: sans-serif;
+    font-size: 110%;
+}
+
+.menu a {
+    color:rgb(42,90,138);
+    text-decoration:none;
+}
+
+.menu a:hover {
+    color:rgb(42,90,138);
+    text-decoration:underline;
+}
+
+.menu ul {
+    padding-left: 1em;
+    list-style: none;
+
+}
+
+.menu > ul {
+    margin: 5px 0;
+}
+
+.menu > ul > li > a {
+    font-weight: bold;
+    font-size: 130%;
+}
+
+.menu > ul > li > ul > li > a {
+    font-weight: bold;
+    font-size: 110%;
+}
+

@@ -8,4 +8,9 @@ dist
 package
 *.old
 src/db/EVE*.db
+src/scripts/*.cmd
 install.log
+.metadata
+.settings
+*.orig
+src/static

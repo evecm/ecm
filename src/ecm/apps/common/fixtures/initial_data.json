@@ -1,0 +1,98 @@
+[
+  {
+    "pk": 1,
+    "model": "common.colorthreshold",
+    "fields": {
+      "color": "white",
+      "threshold": 0
+    }
+  },
+  {
+    "pk": 2,
+    "model": "common.colorthreshold",
+    "fields": {
+      "color": "blue",
+      "threshold": 4000
+    }
+  },
+  {
+    "pk": 3,
+    "model": "common.colorthreshold",
+    "fields": {
+      "color": "green",
+      "threshold": 12000
+    }
+  },
+  {
+    "pk": 4,
+    "model": "common.colorthreshold",
+    "fields": {
+      "color": "yellow",
+      "threshold": 30000
+    }
+  },
+  {
+    "pk": 5,
+    "model": "common.colorthreshold",
+    "fields": {
+      "color": "orange",
+      "threshold": 200000
+    }
+  },
+  {
+    "pk": 6,
+    "model": "common.colorthreshold",
+    "fields": {
+      "color": "red",
+      "threshold": 600000
+    }
+  },
+  {
+    "pk": 7,
+    "model": "common.colorthreshold",
+    "fields": {
+      "color": "purple",
+      "threshold": 3000000
+    }
+  },
+  {
+    "pk": 8,
+    "model": "common.colorthreshold",
+    "fields": {
+      "color": "black",
+      "threshold": 999999999999
+    }
+  },
+  {
+    "pk": 4,
+    "model": "common.urlpermission",
+    "fields": {
+      "pattern": "^/assets.*$",
+      "groups": []
+    }
+  },
+  {
+    "pk": 5,
+    "model": "common.urlpermission",
+    "fields": {
+      "pattern": "^/$",
+      "groups": []
+    }
+  },
+  {
+    "pk": 7,
+    "model": "common.urlpermission",
+    "fields": {
+      "pattern": "^/players.*$",
+      "groups": []
+    }
+  },
+  {
+    "pk": 8,
+    "model": "common.urlpermission",
+    "fields": {
+      "pattern": "^/accounting.*$",
+      "groups": []
+    }
+  }
+]
