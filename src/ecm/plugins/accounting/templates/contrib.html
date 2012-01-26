@@ -2,14 +2,11 @@
 
 {% block headtitle %}Contributions to Corp tax{% endblock %}
 
+{% block accounting_stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery-ui-1.8.13.custom.css" />
+{% endblock %}
 
-
-{% block other_scripts %}
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery-ui-1.8.13.custom.css" />
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.ui.js"></script>
-
-<script type="text/javascript" src="/s/accounting/js/contrib_table.js"></script>
-
+{% block javascripts %}
 <script type="text/javascript">
 FROM_DATE = "{{ from_date }}";
 TO_DATE = "{{ to_date }}";
@@ -20,7 +17,69 @@ YEAR = DAY * 365;
 </script>
 {% endblock %}
 
+{% block accounting_compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.ui.js"></script>
+<script type="text/javascript" src="/s/accounting/js/contrib_table.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#refresh_table").click(function() {
+        var params = {
+            from_date: $("#from_date").val(),
+            to_date: $("#to_date").val()
+        };
+        var value = $.get('/accounting/contributions/total/data/', params, function(data) {
+            $("#total_contribs").html(data);
+        });
+    });
 
+    $("#period_selector").change(function() {
+        var period = $("#period_selector option:selected").val();
+        if (period == "all") {
+            $("#from_date").val(FROM_DATE);
+            $("#to_date").val(TO_DATE);
+        } else if (period == "thismonth") {
+            var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
+            date.setTime(Date.UTC(date.getFullYear(),date.getMonth(),1));
+            $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
+            $("#to_date").val(TO_DATE);
+        } else if (period == "week") {
+            var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
+            date.setTime(date.getTime() - WEEK);
+            $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
+            $("#to_date").val(TO_DATE);
+        } else if (period == "month") {
+            var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
+            date.setTime(date.getTime() - MONTH);
+            $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
+            $("#to_date").val(TO_DATE);
+        } else if (period == "year") {
+            var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
+            date.setTime(date.getTime() - YEAR);
+            $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
+            $("#to_date").val(TO_DATE);
+        }
+    });
+
+    $(function() {
+        var dates = $( "#from_date, #to_date" ).datepicker({
+            dateFormat: 'yy-mm-dd',
+            defaultDate: "{{ to_date }}",
+            changeMonth: true,
+            numberOfMonths: 1,
+            onSelect: function( selectedDate ) {
+                var option = this.id == "from_date" ? "minDate" : "maxDate",
+                    instance = $( this ).data( "datepicker" ),
+                    date = $.datepicker.parseDate(
+                        instance.settings.dateFormat ||
+                        $.datepicker._defaults.dateFormat,
+                        selectedDate, instance.settings );
+                dates.not( this ).datepicker( "option", option, date );
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -28,16 +87,14 @@ YEAR = DAY * 365;
 <li><a href="/accounting/contributions/">Contributions</a></li>
 {% endblock %}
 
-
 {% block main_content %}
 <h1 class="pagetitle">Contributions to Corp tax <span class="time">- last update {{ scan_date }}</span></h1>
-
 
 <form id="search_form" class="search_form center">
   <label>Period</label>
   <select id="period_selector">
       <option value="all" selected="selected">All Time</option>
-	  <option value="thismonth">This Month</option>
+    <option value="thismonth">This Month</option>
       <option value="week">Last Week</option>
       <option value="month">Last Month</option>
       <option value="year">Last Year</option>
@@ -50,66 +107,6 @@ YEAR = DAY * 365;
 
   <input type="button" class="button" id="refresh_table" value="Refresh" />
 </form>
-
-<script type="text/javascript">
-$(function() {
-    var dates = $( "#from_date, #to_date" ).datepicker({
-        dateFormat: 'yy-mm-dd',
-        defaultDate: "{{ to_date }}",
-        changeMonth: true,
-        numberOfMonths: 1,
-        onSelect: function( selectedDate ) {
-            var option = this.id == "from_date" ? "minDate" : "maxDate",
-                instance = $( this ).data( "datepicker" ),
-                date = $.datepicker.parseDate(
-                    instance.settings.dateFormat ||
-                    $.datepicker._defaults.dateFormat,
-                    selectedDate, instance.settings );
-            dates.not( this ).datepicker( "option", option, date );
-        }
-    });
-});
-
-$("#period_selector").change(function() {
-    var period = $("#period_selector option:selected").val();
-    if (period == "all") {
-        $("#from_date").val(FROM_DATE);
-        $("#to_date").val(TO_DATE);
-    } else if (period == "thismonth") {
-        var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
-        date.setTime(Date.UTC(date.getFullYear(),date.getMonth(),1));
-        $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
-        $("#to_date").val(TO_DATE);
-    } else if (period == "week") {
-        var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
-        date.setTime(date.getTime() - WEEK);
-        $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
-        $("#to_date").val(TO_DATE);
-    } else if (period == "month") {
-        var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
-        date.setTime(date.getTime() - MONTH);
-        $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
-        $("#to_date").val(TO_DATE);
-    } else if (period == "year") {
-        var date = $.datepicker.parseDate('yy-mm-dd', TO_DATE);
-        date.setTime(date.getTime() - YEAR);
-        $("#from_date").val($.datepicker.formatDate("yy-mm-dd", date));
-        $("#to_date").val(TO_DATE);
-    }
-});
-
-$(document).ready(function() {
-    $("#refresh_table").click(function() {
-        var params = {
-            from_date: $("#from_date").val(),
-            to_date: $("#to_date").val()
-        };
-        var value = $.get('/accounting/contributions/total/data/', params, function(data) {
-            $("#total_contribs").html(data);
-        });
-    });
-});
-</script>
 
 
 <div class="center">

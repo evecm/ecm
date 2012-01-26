@@ -2,23 +2,16 @@
 
 {% block headtitle %}Members History{% endblock %}
 
-
-
 {% block hr_compressed_javascripts %}
 <script type="text/javascript" src="/s/hr/js/access_changes_table.js"></script>
 {% endblock %}
 
-
-
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
+<li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/members/">Members</a></li>
 <li><a href="/hr/members/access_changes/">Security Access Changes</a></li>
 {% endblock %}
-
-
-
-
 
 {% block main_content %}
 <h1 class="pagetitle">Security Access Changes <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
@@ -52,6 +45,4 @@
     </tr>
   </tfoot>
 </table>
-
-
 {% endblock %}

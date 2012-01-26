@@ -2,17 +2,15 @@
 
 {% block headtitle %}Order #{{ order.id }} Items{% endblock %}
 
-
-
-{% block header_scripts %}
+{% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.autocomplete.css" />
 <link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.autocomplete.js"></script>
-
-
-<script type="text/javascript"  src="/s/industry/js/order_items.js" ></script>
 {% endblock %}
 
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.autocomplete.js"></script>
+<script type="text/javascript"  src="/s/industry/js/order_items.js" ></script>
+{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>

@@ -2,8 +2,7 @@
 
 {% block headtitle %}Unassociated Members{% endblock %}
 
-
-{% block stylesheets %}
+{% block hr_stylesheets %}
 <style type="text/css">
 div.container {
 float:left;
@@ -39,18 +38,15 @@ COOKIE_NAME = 'ecm_unassociated_table_';
 
 {% block hr_compressed_javascripts %}
 <script type="text/javascript" src="/s/hr/js/members_table.js"></script>
-<script type="text/javascript" src="/s/hr/js/lib/ZeroClipboard.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/ZeroClipboard.js"></script>
 {% endblock %}
-
-
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
+<li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/members/">Members</a></li>
 <li><a href="/hr/members/unassociated/">Unassociated</a></li>
 {% endblock %}
-
-
 
 {% block main_content %}
 <h1 class="pagetitle">Unassociated Member List <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
@@ -68,18 +64,16 @@ COOKIE_NAME = 'ecm_unassociated_table_';
 
 <script type="text/javascript">
 $("#loading_gif").hide();
-ZeroClipboard.setMoviePath("/s/hr/js/lib/ZeroClipboard.swf");
+ZeroClipboard.setMoviePath("/s/ecm/js/lib/ZeroClipboard.swf");
 var clip = new ZeroClipboard.Client();
 
 clip.setHandCursor( true );
 clip.setCSSEffects( true );
 
-
 function callback(data) {
     $("#loading_gif").hide();
     clip.setText(data);
 }
-
 
 clip.addEventListener('complete', function(client, text) {
     alert("Data has been copied to the clipboard.");
@@ -92,10 +86,6 @@ clip.addEventListener('mouseUp', function(client) {
 
 clip.glue('copy_to_clip' , "clip_container");
 </script>
-
-
-
-
 
 <table class="table display" id="members_table">
   <thead>

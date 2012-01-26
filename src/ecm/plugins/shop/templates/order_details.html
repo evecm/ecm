@@ -2,19 +2,25 @@
 
 {% block headtitle %}Order #{{ order.id }} Details{% endblock %}
 
-
-
-{% block header_scripts %}
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
 {% endblock %}
 
+{% block javascripts %}
+<script type="text/javascript">
+$(document).ready(function () {{% for transition, name in validTransitions %}
+    $("#{{transition}}_button").click(function() {
+        window.location = "/industry/orders/{{order.id}}/{{transition}}/";
+    });
+{% endfor %}});
+</script>
+{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry">Industry</a></li>
 <li><a href="/industry/orders">Orders</a></li>
-<li><a href="/industry/orders/{{ order.id }}">#{{ order.id }}</a></li>
+<li><a href="/industry/orders/{{ order.id }}/">#{{ order.id }}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -63,20 +69,7 @@
   {% endfor %}
 </div>
 
-<script type="text/javascript">
-$(document).ready(function () {
-{% for transition, name in validTransitions %}
-$("#{{transition}}_button").click(function() {
-    window.location = "/industry/orders/{{order.id}}/{{transition}}/";
-});
-{% endfor %}
-});
-</script>
-
-
-
 <h1>Items</h1>
-
 
 <table class="order_table">
     <thead>

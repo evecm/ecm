@@ -2,19 +2,18 @@
 
 {% block headtitle %}Assets{% endblock %}
 
-
-
-{% block header_scripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.js"></script>
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jstree.js"></script>
+{% block javascripts %}
 <script type="text/javascript">
 SHOW_DIVISIONS = "{{ divisions_str }}";
 SHOW_IN_SPACE = {% if show_in_space %}true{% else %}false{% endif %};
 SHOW_IN_STATIONS = {% if show_in_stations %}true{% else %}false{% endif %};
 </script>
-
 {% endblock %}
 
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jstree.js"></script>
+<script type="text/javascript" src="/s/assets/js/assets_tree.js"></script>
+{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -57,6 +56,5 @@ SHOW_IN_STATIONS = {% if show_in_stations %}true{% else %}false{% endif %};
 
 <div id="assets_tree"></div>
 
-<script type="text/javascript" src="/s/assets/js/assets_tree.js"></script>
 
 {% endblock %}

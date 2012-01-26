@@ -2,23 +2,15 @@
 
 {% block headtitle %}Wallets Journal{% endblock %}
 
-
-
-{% block other_scripts %}
+{% block accounting_compressed_javascripts %}
 <script type="text/javascript" src="/s/accounting/js/journal_table.js"></script>
 {% endblock %}
-
-
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/accounting/">Accounting</a></li>
 <li><a href="/accounting/journal/">Journal</a></li>
 {% endblock %}
-
-
-
-
 
 {% block main_content %}
 <h1 class="pagetitle">Wallets Journal <span class="time">- last update {{ scan_date }}</span></h1>
@@ -41,7 +33,6 @@
     <option value="{{ et.refTypeID }}" {% if et.selected %}selected="selected"{% endif %}>{{ et.refTypeName }}</option>
     {% endfor %}
     </select>
-
 </form>
 
 <table class="table display" id="journal_table">
@@ -76,6 +67,4 @@
   </tfoot>
 
 </table>
-
-
 {% endblock %}

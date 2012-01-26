@@ -2,25 +2,22 @@
 
 {% block headtitle %}Scheduled Tasks{% endblock %}
 
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+{% endblock %}
 
-
-{% block header_scripts %}
+{% block compressed_javascripts %}
 <script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
-
 <script type="text/javascript" src="/s/scheduler/js/tasks_table.js"></script>
 {% endblock %}
 
-
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/tasks/">Scheduled Tasks</a></li>
+<li><a href="/scheduler/tasks/">Scheduled Tasks</a></li>
 {% endblock %}
 
 {% block main_content %}
 <h1 class="pagetitle">Scheduled Tasks</h1>
-
-
 
 <table class="table display" id="tasks_table">
   <thead>
@@ -47,6 +44,4 @@
     </tr>
   </tfoot>
 </table>
-
-
 {% endblock %}

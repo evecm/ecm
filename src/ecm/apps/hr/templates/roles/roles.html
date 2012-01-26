@@ -16,6 +16,7 @@ var current_role_type = "{{ current_role_type }}";
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
+<li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/roles/">Roles</a></li>
 <li><a href="/hr/roles/{{ current_role_type }}">{{ current_role_type_name }}</a></li>
 {% endblock %}
@@ -26,7 +27,7 @@ var current_role_type = "{{ current_role_type }}";
 <!-- buttons -->
 <form id="role_categories" class="search_form">
 {% for rt in role_types %}
-    <input type="button" class="button{% if rt.typeName == current_role_type %} selected{% endif %}" 
+    <input type="button" class="button{% if rt.typeName == current_role_type %} selected{% endif %}"
            id="{{ rt.typeName }}_button" value="{{ rt.dispName }}" />
 {% endfor %}
 </form>
@@ -41,7 +42,7 @@ $("#{{ rt.typeName }}_button").click(function() {
 </script>
 
 <table class="table display" id="roles_table">
-  <thead> 
+  <thead>
     <tr>
       <th class="top" scope="col" >Role Name</th>
       <th class="top" scope="col" >Description</th>
@@ -53,12 +54,12 @@ $("#{{ rt.typeName }}_button").click(function() {
       <th class="top" scope="col" style="display:none;"></th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="5" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Role Name</th>
       <th>Description</th>

@@ -1,10 +1,9 @@
-{% extends "base.html" %}
+{% extends "hr_base.html" %}
 
 {% block headtitle %}Title Members - {{ title.titleName }}{% endblock %}
 
-{% block stylesheets %}
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" media="screen,projection,print" href="/s/ecm/css/jquery.cluetip.css" />
+{% block hr_stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.cluetip.css" />
 {% endblock %}
 
 {% block javascripts %}
@@ -24,6 +23,7 @@ COOKIE_NAME = 'ecm_title_members_table_';
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
+<li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/titles/">Titles</a></li>
 <li><a href="/hr/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
 <li><a href="/hr/titles/{{ title.titleID }}/members/">Members</a></li>

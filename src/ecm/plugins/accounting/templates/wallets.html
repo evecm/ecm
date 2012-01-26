@@ -2,19 +2,14 @@
 
 {% block headtitle %}Corporation Wallets{% endblock %}
 
-
-
-{% block other_scripts %}
+{% block accounting_compressed_javascripts %}
 <script type="text/javascript" src="/s/accounting/js/wallets_table.js"></script>
 {% endblock %}
-
-
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/accounting/">Accounting</a></li>
 {% endblock %}
-
 
 {% block main_content %}
 <h1 class="pagetitle">Corporation Wallets <span class="time">- last update {{ scan_date }}</span></h1>
@@ -39,6 +34,4 @@
   </tfoot>
 
 </table>
-
-
 {% endblock %}

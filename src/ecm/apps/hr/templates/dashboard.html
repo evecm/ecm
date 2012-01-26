@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Dashboard{% endblock %}
+{% block headtitle %}Human Resources Dashboard{% endblock %}
 
 {% block javascripts %}
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -11,14 +11,18 @@ DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 </script>
 {% endblock %}
 
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/hr/js/access_distribution_chart.js" ></script>
+<script type="text/javascript" src="/s/hr/js/character_positions_chart.js" ></script>
+{% endblock %}
+
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 {% endblock %}
 
 {% block main_content %}
-
-<h1 class="pagetitle">{{ corp_name }} <span class="time">- EVE Corporation Management</span></h1>
+<h1 class="pagetitle">Human Resources Dashboard</h1>
 
 <table class="transparent">
   <tr>
@@ -26,11 +30,7 @@ DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
     <td><div id="positions_chart"></div></td>
   </tr>
 </table>
-{% load compress %}
-{% compress js %}
-<script type="text/javascript" src="/s/hr/js/access_distribution_chart.js" ></script>
-<script type="text/javascript" src="/s/hr/js/character_positions_chart.js" ></script>
-{% endcompress %}
+
 <p><a href="/players/">Registered Players:</a> {{playerCount}}</p>
 <p><b>Average number of accounts by player:</b> {{accountsByPlayer|floatformat:2}} account / player</p>
 <p><b>Average number of characters by player:</b> {{chraractersByPlayer|floatformat:2}} character / player</p>

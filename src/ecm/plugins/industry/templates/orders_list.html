@@ -4,20 +4,21 @@
 
 
 
-{% block header_scripts %}
+{% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
-
 <link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+{% endblock %}
 
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-
-<script type="text/javascript"  src="/s/industry/js/orders_list.js" ></script>
-
+{% block javascripts %}
 <script type="text/javascript"  >
 AJAX_URL = '/industry/orders/all/data/';
 </script>
 {% endblock %}
 
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript"  src="/s/industry/js/orders_list.js" ></script>
+{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -56,5 +57,4 @@ AJAX_URL = '/industry/orders/all/data/';
   </tfoot>
 
 </table>
-
 {% endblock %}

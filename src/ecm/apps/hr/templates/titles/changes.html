@@ -1,29 +1,17 @@
-{% extends "base.html" %}
+{% extends "hr_base.html" %}
 
 {% block headtitle %}Titles Modifications History{% endblock %}
 
-{% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
-{% endblock %}
-
-
 {% block hr_compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
 <script type="text/javascript" src="/s/hr/js/title_changes_table.js"></script>
-
 {% endblock %}
-
-
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
+<li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/titles/">Titles</a></li>
 <li><a href="/hr/titles/changes/">Modifications</a></li>
 {% endblock %}
-
-
-
-
 
 {% block main_content %}
 <h1 class="pagetitle">Titles Modifications History <span class="time">- last update {{ scan_date }}</span></h1>
@@ -37,12 +25,12 @@
       <th class="top" scope="col" >Date</th>
     </tr>
   </thead>
-  <tbody> 
+  <tbody>
     <tr>
       <td colspan="4" class="dataTables_empty">Loading data from server...</td>
     </tr>
-  </tbody> 
-  <tfoot> 
+  </tbody>
+  <tfoot>
     <tr>
       <th>Change</th>
       <th>Member</th>

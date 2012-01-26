@@ -2,19 +2,23 @@
 
 {% block headtitle %}{{blueprint.typeName}}{% endblock %}
 
-
-{% block header_scripts %}
+{% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript"  src="/s/industry/js/blueprint_details.js" ></script>
+{% endblock %}
+
+{% block javascripts %}
 <script type="text/javascript">
 BLUEPRINT_ID = {{blueprint.id}};
 ACTIVITY_ID = 1; /* manufacturing by default */
 </script>
 {% endblock %}
 
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript"  src="/s/industry/js/blueprint_details.js" ></script>
+{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
