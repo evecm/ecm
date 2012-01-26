@@ -1,10 +1,10 @@
 
 
-NEW_ITEM = '<tr id="%typeID">' + 
+NEW_ITEM = '<tr id="%typeID">' +
              '<td class="center"><img src="http://image.eveonline.com/Type/%typeID_32.png" /></td>' +
              '<td class="bold">%typeName</td>' +
-             '<td class="center"><input type="text" name="%typeID" value="1" /></td>' + 
-             '<td class="center"><img src="/s/industry/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/></td>' + 
+             '<td class="center"><input type="text" name="%typeID" value="1" /></td>' +
+             '<td class="center"><img src="/s/industry/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/></td>' +
            '</tr>';
 EMPTY = '<tr id="empty"><td colspan="4" class="order_cart_empty" >Your shopping cart is empty.</td></tr>';
 
@@ -24,7 +24,13 @@ $().ready(function() {
     $("#add_button").click(function() {
         addItem($("#search_box").val());
     });
-    
+
+    /* avoid submitting empty orders */
+    $("#items_form").submit(function(event) {
+        if ($('#empty').length > 0) {
+            event.preventDefault();
+        }
+    });
 });
 
 function removeItem(img_node) {
@@ -40,10 +46,13 @@ function removeItem(img_node) {
 }
 
 function addItem(name) {
+    if (name == '') {
+        return;
+    }
     $.getJSON("/industry/search/itemid", {q: name}, function(json) {
         var typeID = json[0];
         var typeName = json[1];
-        
+
         $('#empty').remove();
 
         var rows =  $('#items tr');
@@ -55,7 +64,7 @@ function addItem(name) {
                 return;
             }
         }
-        
+
         var row = NEW_ITEM.replace(/%typeID/g, typeID).replace(/%typeName/g, typeName);
         $(row).appendTo("#items")
         $("#search_box").val("");
@@ -63,4 +72,5 @@ function addItem(name) {
         alert('Item "' + name + '" is not available in the shop!');
     });
 }
+
 
