@@ -73,11 +73,11 @@ def update():
             m = parseOneMember(member=member)
             newMembers[m] = m
 
-        diffs, leaved = getDiffs(oldMembers, newMembers, currentTime)
-        # "leaved" is the list of members that leaved (not a list of MemberDiff but real Member objects)
+        diffs, left = getDiffs(oldMembers, newMembers, currentTime)
+        # "left" is the list of members that left (not a list of MemberDiff but real Member objects)
         # If we delete the old members each time, then all the diffs in roles/titles will not match
         # as the foreign keys will be gone from the members table...
-        for L in leaved:
+        for L in left:
             L.corped = False
             newMembers[L] = L
 

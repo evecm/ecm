@@ -65,7 +65,7 @@ CORP_API_KEY_ACCESS_MASKS = {
     1 << 8:  "KillLog",
     1 << 9:  "MemberSecurity",
     1 << 10: "MemberSecurityLog",
-    1 << 11: "MemberTracking",
+    1 << 11: "MemberTrackingLimited",
     1 << 12: "MarketOrders",
     1 << 13: "Medals",
     1 << 14: "OutpostList",
@@ -78,7 +78,8 @@ CORP_API_KEY_ACCESS_MASKS = {
     1 << 21: "WalletTransactions",
     1 << 22: "Titles",
     1 << 23: "Contracts",
-    1 << 24: "MemberTrackingExtended",
+    1 << 24: "Locations",
+    1 << 25: "MemberTrackingExtended",
 }
 
 MANDATORY_CORP_API_ACCESS_MASKS = [
@@ -89,7 +90,7 @@ MANDATORY_CORP_API_ACCESS_MASKS = [
     1 << 14, # OutpostList
     1 << 20, # WalletJournal
     1 << 22, # Titles
-    1 << 24, # MemberTrackingExtended
+    1 << 25, # MemberTrackingExtended
 ]
 MANDATORY_USER_API_ACCESS_MASKS = [
     1 << 3, # CharacterSheet

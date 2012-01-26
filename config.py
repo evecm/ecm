@@ -68,7 +68,7 @@ def parse_args(version, timestamp):
                         help="Database user (default: ecm)")
     db_group.add_option("-p", "--database-password", dest="db_pass", default='ecm',
                         help="Database user password (default: ecm)")
-    db_group.add_option("--eve-db-url", dest="eve_db_url", default='http://eve-corp-management.googlecode.com/files/ECM.EVE.db-1.zip',
+    db_group.add_option("--eve-db-url", dest="eve_db_url", default='http://eve-corp-management.googlecode.com/files/ECM.EVE.db-3.zip',
                         help="URL where to download EVE database archive.")
     db_group.add_option("--eve-db-zip-archive", dest="eve_zip_archive",
                         help="Local path to EVE database archive.")
