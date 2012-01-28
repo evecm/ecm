@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 import logging
 
 from django.db import transaction
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.http import HttpRequest
 from django.contrib.auth.models import User, Group, AnonymousUser
 from django.template.loader import render_to_string
@@ -83,13 +83,13 @@ def update_character_associations(user):
         dummy_request = HttpRequest()
         dummy_request.user = AnonymousUser()
         subject = render_to_string('email/invalid_api_subject.txt', ctx_dict,
-                                   RequestContext(dummy_request))
+                                   Ctx(dummy_request))
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
         txt_content = render_to_string('email/invalid_api.txt', ctx_dict,
-                                       RequestContext(dummy_request))
+                                       Ctx(dummy_request))
         html_content = render_to_string('email/invalid_api.html', ctx_dict,
-                                        RequestContext(dummy_request))
+                                        Ctx(dummy_request))
         msg = EmailMultiAlternatives(subject, body=txt_content, to=[user.email])
         msg.attach_alternative(html_content, "text/html")
         msg.send()

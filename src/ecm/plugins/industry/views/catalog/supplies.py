@@ -26,7 +26,7 @@ except ImportError:
 import logging
 
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response
 
 from ecm.core import utils
@@ -68,7 +68,7 @@ def supplies(request):
         'columns': COLUMNS,
         'filters': FILTERS,
     }
-    return render_to_response('catalog/supplies.html', data, RequestContext(request))
+    return render_to_response('catalog/supplies.html', data, Ctx(request))
 
 
 #------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ def details(request, supply_id):
         'supplySources': SupplySource.objects.all(),
         'columns': DETAILS_COLUMNS,
     }
-    return render_to_response('catalog/supply_details.html', data, RequestContext(request))
+    return render_to_response('catalog/supply_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

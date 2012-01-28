@@ -27,7 +27,7 @@ except ImportError:
     import django.utils.simplejson as json
 
 from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
@@ -55,7 +55,7 @@ CATEGORY_ICONS = { 2 : "can" ,
 def root(request):
     scan_date = getScanDate(Asset)
     if scan_date == "<no data>":
-        return render_to_response("assets_no_data.html", RequestContext(request))
+        return render_to_response("assets_no_data.html", Ctx(request))
 
     all_hangars = Hangar.objects.all().order_by("hangarID")
     try:
@@ -77,7 +77,7 @@ def root(request):
                    'hangars' : all_hangars,
                  'scan_date' : scan_date }
 
-    return render_to_response("assets.html", data, RequestContext(request))
+    return render_to_response("assets.html", data, Ctx(request))
 
 
 

@@ -23,7 +23,7 @@ import re
 import binascii
 import httplib as http
 
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import AnonymousUser
@@ -114,7 +114,7 @@ def check_user_access():
 def forbidden(request):
     response = render(request, 'auth/forbidden.html',
                       {'request_path' : request.get_full_path()},
-                      context_instance=RequestContext(request))
+                      context_instance=Ctx(request))
     response.status_code = http.FORBIDDEN
     return response
 

@@ -27,7 +27,7 @@ except ImportError:
 from datetime import datetime, timedelta
 
 from django.shortcuts import render_to_response, redirect
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
@@ -61,7 +61,7 @@ def last_date(request):
         date_str = datetime.strftime(last_date, DATE_PATTERN)
         return redirect("/assets/changes/%s?since_weeks=%d&to_weeks=%d" % (date_str, since_weeks, to_weeks))
     except IndexError:
-        return render_to_response("assets_no_data.html", context_instance=RequestContext(request))
+        return render_to_response("assets_no_data.html", context_instance=Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -112,9 +112,9 @@ def root(request, date_str):
         date_asked = datetime.strptime(date_str, DATE_PATTERN)
         if AssetDiff.objects.filter(date=date_asked):
             data['date'] = date_asked
-            return render_to_response("assets_diff.html", data, RequestContext(request))
+            return render_to_response("assets_diff.html", data, Ctx(request))
         else:
-            return render_to_response("assets_no_data.html", RequestContext(request))
+            return render_to_response("assets_no_data.html", Ctx(request))
     except:
         return redirect("/assets/changes/")
 

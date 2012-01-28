@@ -27,7 +27,7 @@ except ImportError:
 import logging
 
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, render_to_response
 
@@ -53,7 +53,7 @@ def items(request):
     Serves URL /industry/catalog/items/
     """
     columns = [ col[0] for col in COLUMNS ]
-    return render_to_response('catalog/items.html', {'columns' : columns}, RequestContext(request))
+    return render_to_response('catalog/items.html', {'columns' : columns}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -122,7 +122,7 @@ def details(request, item_id):
     except ValueError:
         raise Http404()
 
-    return render_to_response('catalog/item_details.html', {'item': item}, RequestContext(request))
+    return render_to_response('catalog/item_details.html', {'item': item}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

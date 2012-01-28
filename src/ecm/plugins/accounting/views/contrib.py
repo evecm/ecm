@@ -30,7 +30,7 @@ from django.db.models.aggregates import Min, Max, Sum
 from django.db import connection
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 
 from ecm.core.utils import print_float
 from ecm.views.decorators import check_user_access
@@ -69,7 +69,7 @@ def member_contrib(request):
         'to_date' : datetime.strftime(to_date, DATE_PATTERN),
         'total_contribs' : total_contribs,
     }
-    return render_to_response("contrib.html", data, RequestContext(request))
+    return render_to_response("contrib.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 columns = ['LOWER("name")', '"tax_contrib"']

@@ -27,7 +27,7 @@ except ImportError:
 
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.db.models import Q
 
 from ecm.core.utils import print_time_min, print_float
@@ -66,7 +66,7 @@ def journal(request):
         'entryTypes' : entryTypes,
         'scan_date' : getScanDate(JournalEntry)
     }
-    return render_to_response("wallet_journal.html", data, RequestContext(request))
+    return render_to_response("wallet_journal.html", data, Ctx(request))
 
 
 

@@ -24,7 +24,7 @@ import re
 
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.db import transaction
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -55,7 +55,7 @@ def corp(request):
 
     data = { 'corp' : corp }
 
-    return render_to_response("common/corp.html", data, RequestContext(request))
+    return render_to_response("common/corp.html", data, Ctx(request))
 
 
 #------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ def edit_apikey(request):
             'characterID': characterID
         })
     return render_to_response('common/edit_director_api.html',
-                              {'form': form}, RequestContext(request))
+                              {'form': form}, Ctx(request))
 
 
 

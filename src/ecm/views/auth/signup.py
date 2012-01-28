@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 
 from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.template.loader import render_to_string
 from django.db import transaction
 from django.conf import settings
@@ -68,7 +68,7 @@ def create_account(request):
 
             return render_to_response('auth/account_created.html',
                                       { 'form': form },
-                                      context_instance=RequestContext(request))
+                                      context_instance=Ctx(request))
     else: # request.method == 'GET'
         form = AccountCreationForm()
 
@@ -76,7 +76,7 @@ def create_account(request):
 
     return render_to_response('auth/create_account.html',
                               { 'form': form, 'accessMask': accessMask },
-                              context_instance=RequestContext(request))
+                              context_instance=Ctx(request))
 
 #------------------------------------------------------------------------------
 def activate_account(request, activation_key):
@@ -86,13 +86,13 @@ def activate_account(request, activation_key):
         logger.info('account "%s" activated' % (user.username))
         return render_to_response('auth/account_activated.html',
                                   { 'activated_user' : user },
-                                  context_instance=RequestContext(request))
+                                  context_instance=Ctx(request))
     except (ValueError, UserWarning), err:
         logger.info('could not use activation key "%s": %s' % (activation_key, str(err)))
         return render_to_response('auth/activation_error.html',
                                   { 'activation_key': activation_key,
                                    'error_reason': str(err) },
-                                  context_instance=RequestContext(request))
+                                  context_instance=Ctx(request))
 
 
 
@@ -103,12 +103,12 @@ def send_activation_email(request, user_profile):
                 'activation_key': user_profile.activation_key,
                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS}
     subject = render_to_string('auth/activation_email_subject.txt',
-                               ctx_dict, context_instance=RequestContext(request))
+                               ctx_dict, context_instance=Ctx(request))
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
 
-    txt_content = render_to_string('auth/activation_email.txt', ctx_dict, RequestContext(request))
-    html_content = render_to_string('auth/activation_email.html', ctx_dict, RequestContext(request))
+    txt_content = render_to_string('auth/activation_email.txt', ctx_dict, Ctx(request))
+    html_content = render_to_string('auth/activation_email.html', ctx_dict, Ctx(request))
     msg = EmailMultiAlternatives(subject,
                                  body=txt_content,
                                  to=[user_profile.user.email])

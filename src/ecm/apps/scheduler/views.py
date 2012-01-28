@@ -30,7 +30,7 @@ import logging
 
 from django.conf import settings
 from django.shortcuts import render_to_response, redirect
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
 from ecm import apps, plugins
@@ -58,7 +58,7 @@ def trigger_scheduler(request):
 #------------------------------------------------------------------------------
 @check_user_access()
 def task_list(request):
-    return render_to_response('tasks.html', RequestContext(request))
+    return render_to_response('tasks.html', Ctx(request))
 
 #------------------------------------------------------------------------------
 FUNCTIONS = []

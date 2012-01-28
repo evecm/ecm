@@ -18,7 +18,7 @@
 __date__ = "2011 4 17"
 __author__ = "diabeteman"
 
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.db import transaction
@@ -49,7 +49,7 @@ def account(request):
         'api_keys' :  UserAPIKey.objects.filter(user=request.user),
         'external_apps' : external_apps
     }
-    return render_to_response('auth/account.html', data, RequestContext(request))
+    return render_to_response('auth/account.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -87,7 +87,7 @@ def add_api(request):
         'accessMask': user_access_mask()
     }
 
-    return render_to_response('auth/add_api.html', data, RequestContext(request))
+    return render_to_response('auth/add_api.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -138,7 +138,7 @@ def edit_api(request, keyID):
         'request_path' : request.get_full_path(),
         'accessMask': user_access_mask()
     }
-    return render_to_response('auth/edit_api.html', data, RequestContext(request))
+    return render_to_response('auth/edit_api.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -173,7 +173,7 @@ def add_binding(request, app_id):
         form = AddBindingForm(app=app)
 
     data = {'form': form, 'request_path' : request.get_full_path(), 'app': app}
-    return render_to_response('auth/add_binding.html', data, RequestContext(request))
+    return render_to_response('auth/add_binding.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required

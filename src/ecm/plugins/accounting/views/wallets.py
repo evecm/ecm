@@ -27,7 +27,7 @@ except ImportError:
 
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 
 from ecm.apps.corp.models import Wallet
 from ecm.views.decorators import check_user_access
@@ -40,7 +40,7 @@ def wallets(request):
     data = {
         'scan_date' : getScanDate(JournalEntry)
     }
-    return render_to_response("wallets.html", data, RequestContext(request))
+    return render_to_response("wallets.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

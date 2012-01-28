@@ -27,7 +27,7 @@ except ImportError:
 import logging
 
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response
 
 from ecm.core.eve.classes import BpActivity
@@ -53,7 +53,7 @@ def blueprints(request):
     """
     Serves URL /industry/catalog/blueprints/
     """
-    return render_to_response('catalog/blueprints.html', {'columns' : COLUMNS}, RequestContext(request))
+    return render_to_response('catalog/blueprints.html', {'columns' : COLUMNS}, Ctx(request))
 #------------------------------------------------------------------------------
 @check_user_access()
 def blueprints_data(request):
@@ -123,7 +123,7 @@ def details(request, blueprint_id):
         'copyDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.COPY)),
         'invDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.INVENTION)),
     }
-    return render_to_response('catalog/blueprint_details.html', data, RequestContext(request))
+    return render_to_response('catalog/blueprint_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
