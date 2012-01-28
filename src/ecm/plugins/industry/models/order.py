@@ -83,15 +83,12 @@ class Order(models.Model):
     pricing = models.ForeignKey('Pricing', related_name='orders')
     extraDiscount = models.FloatField(default=0.0)
 
-
-    @property
     def lastModified(self):
         try:
             return self.logs.latest().date
         except OrderLog.DoesNotExist:
             return None
 
-    @property
     def creationDate(self):
         try:
             return self.logs.all()[0].date
@@ -290,14 +287,6 @@ class Order(models.Model):
     deliver.customerAccess = False
     pay.customerAccess = True
 
-    @property
-    def validTransitions(self):
-        return self.getValidTransitions()
-
-    @property
-    def customerTransitions(self):
-        return self.getValidTransitions(customer=True)
-
 
     def getValidTransitions(self, customer=False):
         if customer:
@@ -390,7 +379,7 @@ class Order(models.Model):
             if field in ('originator', 'manufacturer', 'deliveryMan'):
                 player_id = getattr(self, field + '_id')
                 if player_id is not None:
-                    url = '/player/%d' % player_id
+                    url = '/player/%d/' % player_id
                     return '<a href="%s" class="player">%s</a>' % (url, getattr(self, field).username)
                 else:
                     return '(none)'
@@ -406,20 +395,24 @@ class Order(models.Model):
                 output += j.repr_as_tree()
         return output
 
-    @property
     def url(self):
         return '/industry/orders/%d/' % self.id
 
-    @property
-    def permalink(self):
-        return '<a href="%s" class="order">Order &#35;%d</a>' % (self.url, self.id)
+    def shop_url(self):
+        return '/shop/orders/%d/' % self.id
 
-    @property
+    def permalink(self, shop=True):
+        if shop:
+            url = self.shop_url()
+        else:
+            url = self.url()
+        return '<a href="%s" class="order">Order &#35;%d</a>' % (url, self.id)
+
     def stateText(self):
         return Order.STATES[self.state]
 
     def __unicode__(self):
-        return 'Order #%d from %s [%s]' % (self.id, str(self.originator), Order.STATES[self.state])
+        return u'Order #%d from %s [%s]' % (self.id, str(self.originator), Order.STATES[self.state])
 
     def __repr__(self):
         return unicode(self) + '\n  ' + '\n  '.join(map(unicode, list(self.rows.all())))

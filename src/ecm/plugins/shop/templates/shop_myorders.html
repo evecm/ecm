@@ -2,33 +2,30 @@
 
 {% block headtitle %}Order list{% endblock %}
 
-
-
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
-<link rel="stylesheet" type="text/css" href="/s/hr/css/classes.css" />
 {% endblock %}
 
 {% block javascripts %}
 <script type="text/javascript"  >
-AJAX_URL = '/industry/orders/all/data/';
+AJAX_URL = '/shop/orders/data/';
 </script>
 {% endblock %}
 
 {% block compressed_javascripts %}
 <script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript"  src="/s/industry/js/orders_list.js" ></script>
+<script type="text/javascript"  src="/s/shop/js/orders_list.js" ></script>
 {% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/industry/">Industry</a></li>
-<li><a href="/industry/orders/">Orders</a></li>
+<li><a href="/shop/">Shop</a></li>
+<li><a href="/shop/orders/">My Orders</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Orders list</h1>
+<h1 class="pagetitle">My Orders</h1>
 
 <form id="search_form" class="search_form">
     <input type="text" id="search_text" value="" />

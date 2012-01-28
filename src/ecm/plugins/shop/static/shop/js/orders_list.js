@@ -17,11 +17,9 @@ $(document).ready(function() {
         aoColumns: [
             { /* # */               sWidth: "10%" },
             { /* State */           sWidth: "10%" },
-            { /* Originator */      sWidth: "10%" },
-            { /* Client */          sWidth: "10%" },
             { /* Delivery Date */   sWidth: "10%" },
-            { /* Items */           sWidth: "30%", bSortable: false },
-            { /* Quote */           sWidth: "20%", sClass: 'right' },
+            { /* Items */           sWidth: "40%", bSortable: false },
+            { /* Quote */           sWidth: "15%", sClass: 'right'},
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             return nRow;

@@ -26,7 +26,7 @@ except ImportError:
     import django.utils.simplejson as json
 
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
-from django.template.context import RequestContext
+from django.template.context import RequestContext as Ctx
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.text import truncate_words
@@ -48,7 +48,7 @@ COLUMNS = [
 @login_required
 def orders(request):
     columns = [ col[0] for col in COLUMNS ]
-    return render_to_response('orders_list.html', {'columns' : columns}, RequestContext(request))
+    return render_to_response('orders_list.html', {'columns' : columns}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -68,13 +68,13 @@ def orders_data(request):
         else:
             delivDate = '(none)'
         orders.append([
-            order.permalink,
-            order.stateText,
+            order.permalink(shop=False),
+            order.stateText(),
             order.originator_permalink,
             order.client or '(none)',
             delivDate,
             truncate_words(', '.join(items), 6),
-            utils.print_float(order.quote),
+            utils.print_float(order.quote) + ' ISK',
         ])
 
     json_data = {
@@ -100,7 +100,7 @@ def details(request, order_id):
 
     data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions}
 
-    return render_to_response('order_details.html', data, RequestContext(request))
+    return render_to_response('order_details.html', data, Ctx(request))
 
 
 #------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ def modify(request, order):
         if valid_order:
             order.modify(items)
             return redirect('/industry/orders/%d/' % order.id)
-    return render_to_response('order_modify.html', {'order': order}, RequestContext(request))
+    return render_to_response('order_modify.html', {'order': order}, Ctx(request))
 
 #------------------------------------------------------------------------------
 def extract_order_items(request):

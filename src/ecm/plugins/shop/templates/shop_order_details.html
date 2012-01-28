@@ -18,9 +18,9 @@ $(document).ready(function () {{% for transition, name in validTransitions %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/industry">Industry</a></li>
-<li><a href="/industry/orders">Orders</a></li>
-<li><a href="/industry/orders/{{ order.id }}/">#{{ order.id }}</a></li>
+<li><a href="/shop/">Shop</a></li>
+<li><a href="/shop/orders/">My Orders</a></li>
+<li><a href="/shop/orders/{{ order.id }}/">#{{ order.id }}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -28,10 +28,6 @@ $(document).ready(function () {{% for transition, name in validTransitions %}
 
 <table class="transparent">
   <tbody>
-    <tr>
-      <td class="bold">Originator</td>
-      <td class="right">{{order.originator_permalink|safe}}</td>
-    </tr>
     <tr>
       <td class="bold">Manufacturer</td>
       <td class="right">{{order.manufacturer_permalink|safe}}</td>
@@ -84,7 +80,7 @@ $(document).ready(function () {{% for transition, name in validTransitions %}
     {% for row in order.rows.all %}
     <tr>
           <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
-           <td>{{row.catalogEntry.permalink|safe}}</td>
+           <td class="bold">{{row.catalogEntry.typeName}}</td>
            <td class="center">{{row.quantity|ecm_quantity}}</td>
            <td class="right">{%if row.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
          </tr>
@@ -98,7 +94,7 @@ $(document).ready(function () {{% for transition, name in validTransitions %}
 
 <ul>
 {% for log in logs %}
-  <li>{{log.date|ecm_datetime}} [{{log.state_text}}] {{log.user_permalink|safe}} - {{log.text}}</li>
+  <li>{{log.date|ecm_datetime}} [{{log.state_text}}] <b>{{log.user}}</b> - {{log.text}}</li>
 {% endfor %}
 </ul>
 
