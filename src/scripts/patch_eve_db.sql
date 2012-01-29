@@ -334,7 +334,6 @@ SET "parentBlueprintTypeID" =
 
 DROP TABLE "agtAgentTypes";
 DROP TABLE "agtAgents";
-DROP TABLE "agtConfig";
 DROP TABLE "agtResearchAgents";
 
 DROP TABLE "chrAncestries";
@@ -417,7 +416,6 @@ DROP TABLE "staServices";
 DROP TABLE "staStationTypes";
 DROP TABLE "staStations";
 
-DROP TABLE "translationLaguages";
 DROP TABLE "translationTables";
 DROP TABLE "trnTranslationColumns";
 DROP TABLE "trnTranslationLanguages";
