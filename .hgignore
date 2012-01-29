@@ -14,3 +14,4 @@ install.log
 .settings
 *.orig
 src/static
+build

@@ -39,7 +39,7 @@ disable=E1101,W0232,W0614,E1102,W0142,W0212
 
 # Set the output format. Available formats are text, parseable, colorized, msvs
 # (visual studio) and html
-output-format=text
+output-format=parseable
 
 # Include message's id in output
 include-ids=yes
@@ -87,13 +87,13 @@ function-rgx=[a-z_][a-z0-9_]{2,30}$
 method-rgx=[a-z_][A-Za-z0-9_]{2,30}$
 
 # Regular expression which should only match correct instance attribute names
-attr-rgx=[a-z_][A-Za-z0-9_]{2,30}$
+attr-rgx=[a-z_][a-z0-9_]{2,30}$
 
 # Regular expression which should only match correct argument names
-argument-rgx=[a-z_][A-Za-z0-9_]{2,30}$
+argument-rgx=[a-z_][a-z0-9_]{2,30}$
 
 # Regular expression which should only match correct variable names
-variable-rgx=[a-z_][A-Za-z0-9_]{2,30}$
+variable-rgx=[a-z_][a-z0-9_]{2,30}$
 
 # Regular expression which should only match correct list comprehension /
 # generator expression variable names
@@ -228,7 +228,7 @@ import-graph=
 
 # Create a graph of external dependencies in the given file (report RP0402 must
 # not be disabled)
-ext-import-graph=
+ext-import-graph=yes
 
 # Create a graph of internal dependencies in the given file (report RP0402 must
 # not be disabled)

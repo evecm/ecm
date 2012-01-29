@@ -134,7 +134,7 @@ TEMPLATE_LOADERS = (
 TEMPLATE_DIRS = (
     # aside from looking in each django app, the template loaders
     # will look in these directories
-    resolvePath('../templates/'),
+    resolvePath('templates/'),
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",

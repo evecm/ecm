@@ -53,7 +53,7 @@ if which('pip') is None and which('pip.exe') is None:
 else:
     print >>sys.stderr, 'Checking/installing ECM requirements...',
     ROOT_DIR = path.abspath(path.dirname(__file__))
-    REQUIREMENTS = path.join(ROOT_DIR, 'requirements.txt')
+    REQUIREMENTS = path.normpath(path.join(ROOT_DIR, 'dependencies.txt'))
     subprocess.check_call('pip -q install -r "%s"' % REQUIREMENTS)
     print >>sys.stderr, 'all requirements OK'
 
@@ -172,7 +172,7 @@ def package(options):
     finally:
         print "Deleting package dir..."
         dir_util.remove_tree(package_dir)
-        
+
 #-------------------------------------------------------------------------------
 def clean(options):
     print 'Deleting "dist" folder...',
