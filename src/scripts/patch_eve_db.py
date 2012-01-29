@@ -27,7 +27,7 @@ import logging
 
 script_dir = os.path.abspath(os.path.dirname(__file__))
 parser = OptionParser()
-parser.add_option("-u", "--url", dest="url", default="http://eve.no-ip.de/inca10/inca10-sqlite3-v1.db.bz2",
+parser.add_option("-u", "--url", dest="url", default="http://zofu.no-ip.de/cru110/cru110-sqlite3-v1.db.bz2",
                   help="URL from which to download the bz2 compressed database.")
 parser.add_option("-f", "--bz-file", dest="bz_file",
                   help="Location of a bz2 archive containing the database "
