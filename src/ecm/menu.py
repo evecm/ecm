@@ -22,20 +22,20 @@ def compute_menu(plugin):
     menus = []
     for m in plugin.menu:
         m = m.copy()
-        if not m['menu_url'].startswith('/'):
-            m['menu_url'] = '/%s/%s' % (plugin.app_prefix,  m['menu_url'])
-        for i in m['menu_items']:
-            if not i['item_url'].startswith('/'):
-                i['item_url'] = '/%s/%s' % (plugin.app_prefix,  i['item_url'])
-            for ii in i['menu_items']:
-                if not ii['item_url'].startswith('/'):
-                    ii['item_url'] = '/%s/%s' % (plugin.app_prefix,  ii['item_url'])
+        if not m['url'].startswith('/'):
+            m['url'] = '/%s/%s' % (plugin.app_prefix,  m['url'])
+        for i in m['items']:
+            if not i['url'].startswith('/'):
+                i['url'] = '/%s/%s' % (plugin.app_prefix,  i['url'])
+            for ii in i['items']:
+                if not ii['url'].startswith('/'):
+                    ii['url'] = '/%s/%s' % (plugin.app_prefix,  ii['url'])
         menus.append(m)
     return menus
 
 
 ECM_MENUS = [
-    {'menu_title': 'Home',      'menu_url': '/',            'menu_items': []},
+    {'title': 'Home',      'url': '/',            'items': []},
 ]
 import ecm.apps
 for app in ecm.apps.LIST:

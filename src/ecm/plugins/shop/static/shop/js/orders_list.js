@@ -17,7 +17,6 @@ $(document).ready(function() {
         aoColumns: [
             { /* # */               sWidth: "10%" },
             { /* State */           sWidth: "10%" },
-            { /* Delivery Date */   sWidth: "10%" },
             { /* Items */           sWidth: "40%", bSortable: false },
             { /* Quote */           sWidth: "15%", sClass: 'right'},
         ],

@@ -26,7 +26,7 @@ DEPENDS_ON = {
 }
 
 MENUS = [
-    {'menu_title': 'Shop',    'menu_url': '',      'menu_items': []},
+    {'title': 'Shop',    'url': '',      'items': []},
 ]
 
 TASKS = []

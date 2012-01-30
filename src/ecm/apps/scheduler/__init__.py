@@ -18,7 +18,7 @@
 NAME = 'scheduler'
 
 MENUS = [
-    {'menu_title': 'Scheduled Tasks',   'menu_url': 'tasks/',     'menu_items': []},
+    {'title': 'Scheduled Tasks',   'url': 'tasks/',     'items': []},
 ]
 
 URL_PERMISSIONS = [

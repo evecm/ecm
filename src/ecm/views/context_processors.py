@@ -18,6 +18,7 @@
 __date__ = '2011-02-19'
 __author__ = 'diabeteman'
 
+from django.template.loader import render_to_string
 
 import ecm
 from ecm.apps.common.models import user_has_access
@@ -49,36 +50,12 @@ def menu(request):
     The menu is composed with items from each ECM app/plugin (see the menu.py files)
     The items are dynamically displayed according to user accesses.
     """
-    user_menu = ''
+    user_menus = []
     for menu in ECM_MENUS:
-        menu = menu.copy()
-        if request.user.is_superuser or user_has_access(request.user, menu['menu_url']):
-            menu_items = ''
-            for item in menu['menu_items']:
-                item = item.copy()
-                sub_menu = '\n'.join([ _SUBMENU_HTML % i for i in item['menu_items'] ])
-                if sub_menu:
-                    sub_menu = '<ul>%s</ul>' % sub_menu
-                item['sub_menu'] = sub_menu
-                menu_items += _MENU_ITEM_HTML % item
-
-            if menu_items:
-                menu_items = '<ul>%s</ul>' % menu_items
-            menu['sub_menu'] = menu_items
-            user_menu += _MENU_HTML % menu
-
-    return {'user_menu': user_menu}
-
-_MENU_HTML = '''<ul>
-  <li>
-    <a href="%(menu_url)s">%(menu_title)s</a>
-    %(sub_menu)s
-  </li>
-</ul>
-'''
-_MENU_ITEM_HTML = '''    <li>
-      <a href="%(item_url)s">%(item_title)s</a>
-      %(sub_menu)s
-    </li>
-'''
-_SUBMENU_HTML = '      <li><a href="%(item_url)s">%(item_title)s</a></li>'
+        if request.user.is_superuser or user_has_access(request.user, menu['url']):
+            user_menus.append(menu)
+    data = {
+        'menus': user_menus, 
+        'path': str(request.get_full_path())
+    }
+    return {'user_menu': render_to_string('menu.html', data)}

@@ -23,8 +23,8 @@ DEPENDS_ON = {
 }
 
 MENUS = [
-    {'menu_title': 'Assets',    'menu_url': '',      'menu_items': [
-        {'item_title': 'Changes', 'item_url': 'changes/', 'menu_items': []},
+    {'title': 'Assets',    'url': '',      'items': [
+        {'title': 'Changes', 'url': 'changes/', 'items': []},
     ]},
 ]
 

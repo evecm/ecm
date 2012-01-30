@@ -42,7 +42,6 @@ from ecm.plugins.shop import eft
 COLUMNS = [
     ['#', 'id'],
     ['State', 'stateText'],
-    ['Delivery Date', 'deliveryDate'],
     ['Items', None],
     ['Quote', 'quote'],
 ]
@@ -69,14 +68,9 @@ def myorders_data(request):
     orders = []
     for order in query[params.first_id:params.last_id]:
         items = [ row.catalogEntry.typeName for row in order.rows.all() ]
-        if order.deliveryDate is not None:
-            delivDate = utils.print_date(order.deliveryDate)
-        else:
-            delivDate = '(none)'
         orders.append([
             order.permalink(),
             order.stateText(),
-            delivDate,
             truncate_words(', '.join(items), 6),
             utils.print_float(order.quote) + ' ISK',
         ])

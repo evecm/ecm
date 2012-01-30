@@ -19,26 +19,26 @@
 NAME = 'hr'
 
 MENUS = [
-    {'menu_title': 'Human Resources',   'menu_url': '',     'menu_items': [
-        {'item_title': 'Members',   'item_url': 'members/', 'menu_items': [
-            {'item_title': 'History',               'item_url': 'members/history/'},
-            {'item_title': 'Access Changes',        'item_url': 'members/accesschanges/'},
-            {'item_title': 'Unassociated Members',  'item_url': 'members/unassociated/'},
+    {'title': 'Human Resources',   'url': '',     'items': [
+        {'title': 'Members',   'url': 'members/', 'items': [
+            {'title': 'History',               'url': 'members/history/'},
+            {'title': 'Access Changes',        'url': 'members/accesschanges/'},
+            {'title': 'Unassociated Members',  'url': 'members/unassociated/'},
         ]},
-        {'item_title': 'Titles',    'item_url': 'titles/',      'menu_items': [
-            {'item_title': 'Changes',               'item_url': 'titles/changes/'},
+        {'title': 'Titles',    'url': 'titles/',      'items': [
+            {'title': 'Changes',               'url': 'titles/changes/'},
         ]},
-        {'item_title': 'Roles',     'item_url': 'roles/',       'menu_items': [
-            {'item_title': 'General',               'item_url': 'roles/roles/'},
-            {'item_title': 'Grantable General',     'item_url': 'roles/grantableRoles/'},
-            {'item_title': 'At HQ',                 'item_url': 'roles/rolesAtHQ/'},
-            {'item_title': 'Grantable At HQ',       'item_url': 'roles/grantableRolesAtHQ/'},
-            {'item_title': 'At Base',               'item_url': 'roles/rolesAtBase/'},
-            {'item_title': 'Grantable At Base',     'item_url': 'roles/grantableRolesAtBase/'},
-            {'item_title': 'At Other',              'item_url': 'roles/rolesAtOther/'},
-            {'item_title': 'Grantable At Other',    'item_url': 'roles/grantableRolesAtOther/'}
+        {'title': 'Roles',     'url': 'roles/',       'items': [
+            {'title': 'General',               'url': 'roles/roles/'},
+            {'title': 'Grantable General',     'url': 'roles/grantableRoles/'},
+            {'title': 'At HQ',                 'url': 'roles/rolesAtHQ/'},
+            {'title': 'Grantable At HQ',       'url': 'roles/grantableRolesAtHQ/'},
+            {'title': 'At Base',               'url': 'roles/rolesAtBase/'},
+            {'title': 'Grantable At Base',     'url': 'roles/grantableRolesAtBase/'},
+            {'title': 'At Other',              'url': 'roles/rolesAtOther/'},
+            {'title': 'Grantable At Other',    'url': 'roles/grantableRolesAtOther/'}
         ]},
-        {'item_title': 'Players',   'item_url': 'players/',     'menu_items': []},
+        {'title': 'Players',   'url': 'players/',     'items': []},
     ]},
 ]
 
