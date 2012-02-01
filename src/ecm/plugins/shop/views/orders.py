@@ -109,7 +109,8 @@ def details(request, order_id):
         return forbidden(request)
 
     logs = order.logs.all().order_by('-date')
-    validTransitions = [ (trans.id, trans.text) for trans in order.getValidTransitions(customer=True) ]
+    validTransitions = [ (trans.__name__, trans.text) 
+                               for trans in order.getValidTransitions(customer=True) ]
 
     data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions}
 
@@ -121,14 +122,44 @@ def change_state(request, order_id, transition):
     try:
         order = get_object_or_404(Order, id=int(order_id))
         order.checkCanPassTransition(transition)
+        
         if request.user != order.originator:
+            return forbidden(request)
+
+        if transition == order.modify.__name__:
+            return modify(request, order)
+        elif transition == order.confirm.__name__:
+            order.confirm()
+            return redirect('/shop/orders/%d/' % order.id)
+        elif transition == order.cancel.__name__:
+            comment = request.POST.get('comment', None)
+            if not comment:
+                raise IllegalTransition('Please leave a comment.')
+            order.cancel(comment)
+            return redirect('/shop/orders/%d/' % order.id)
+        else:
             return forbidden(request)
     except ValueError:
         raise Http404()
     except IllegalTransition, e:
-        data = {'order':order, 'err': e}
-        return render_to_response('shop_illegaltransition.html', data, Ctx(request))
+        logs = order.logs.all().order_by('-date')
+        validTransitions = [ (trans.__name__, trans.text) 
+                                   for trans in order.getValidTransitions(customer=True) ]
+    
+        data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions, 'error': e}
+    
+        return render_to_response('shop_order_details.html', data, Ctx(request))
+    
 
+#------------------------------------------------------------------------------
+def modify(request, order):
+    if request.method == 'POST':
+        items, valid_order = extract_order_items(request)
+        if valid_order:
+            order.modify(items)
+            return redirect('/shop/orders/%d/' % order.id)
+    return render_to_response('shop_order_modify.html', {'order': order}, Ctx(request))
+    
 #------------------------------------------------------------------------------
 @login_required
 def create_from_eft(request):

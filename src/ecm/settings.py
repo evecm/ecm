@@ -147,7 +147,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # MISC #
 ########
 USE_I18N = False # for optimization
-TIME_ZONE = None
+TIME_ZONE = None # use system default
 SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
 
 MIDDLEWARE_CLASSES = (

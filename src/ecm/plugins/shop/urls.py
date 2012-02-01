@@ -29,5 +29,6 @@ urlpatterns = patterns('ecm.plugins.shop.views',
     (r'^orders/create/$',       'orders.create'),
     (r'^orders/createeft/$',    'orders.create_from_eft'),
     (r'^orders/(\d+)/$',        'orders.details'),
+    (r'^orders/(\d+)/(\w+)/$',  'orders.change_state'),
 )
 

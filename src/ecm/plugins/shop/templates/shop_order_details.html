@@ -6,16 +6,6 @@
 <link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
 {% endblock %}
 
-{% block javascripts %}
-<script type="text/javascript">
-$(document).ready(function () {{% for transition, name in validTransitions %}
-    $("#{{transition}}_button").click(function() {
-        window.location = "/industry/orders/{{order.id}}/{{transition}}/";
-    });
-{% endfor %}});
-</script>
-{% endblock %}
-
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/shop/">Shop</a></li>
@@ -51,11 +41,30 @@ $(document).ready(function () {{% for transition, name in validTransitions %}
   </tbody>
 </table>
 
-<div>
+<ul>
   {% for transition, name in validTransitions %}
-  <input type="button" class="button" id="{{transition}}_button" value="{{name}}"/>
+  <li><a class="button" id="{{transition}}" href="/shop/orders/{{order.id}}/{{transition}}/">{{name}}</a></li>
   {% endfor %}
-</div>
+</ul>
+
+<form id="cancel_form" method="post" action="/shop/orders/{{order.id}}/cancel/" style="display: none;">
+{%csrf_token%}
+    <input name="comment" id="comment" value=""/>
+</form>
+
+<script type="text/javascript">
+$('#cancel').click(function(event) {
+    event.preventDefault();
+    var comment = prompt('Please leave a comment on why to cancel this order:');
+    $('#comment').val(comment);
+    $('#cancel_form').submit();
+});
+{% if error %}
+$(document).ready(function () {
+    alert('{{error|safe}}');
+});
+{% endif %}
+</script>
 
 <h1>Items</h1>
 

@@ -71,7 +71,6 @@ class Order(models.Model):
         REJECTED:          'Rejected by Manufacturer',
     }
 
-
     state = models.PositiveIntegerField(default=DRAFT, choices=STATES.items())
     originator = models.ForeignKey(User, related_name='orders_created')
     manufacturer = models.ForeignKey(User, null=True, blank=True, related_name='orders_manufactured')
@@ -262,18 +261,6 @@ class Order(models.Model):
     endPreparation.text = 'End preparation'
     deliver.text = 'Deliver order'
     pay.text = 'Pay order'
-
-    modify.id = modify.__name__
-    confirm.id = confirm.__name__
-    accept.id = accept.__name__
-    resolve.id = resolve.__name__
-    plan.id = plan.__name__
-    reject.id = reject.__name__
-    cancel.id = cancel.__name__
-    startPreparation.id = startPreparation.__name__
-    endPreparation.id = endPreparation.__name__
-    deliver.id = deliver.__name__
-    pay.id = pay.__name__
 
     modify.customerAccess = True
     confirm.customerAccess = True
