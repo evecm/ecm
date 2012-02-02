@@ -33,10 +33,8 @@ from django.utils.text import truncate_words
 from ecm.views import extract_datatable_params
 from ecm.core import utils
 from ecm.views.decorators import forbidden
-from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.industry.models.order import Order, IllegalTransition
 from ecm.plugins.industry.views.orders import extract_order_items
-from ecm.plugins.shop import eft
 
 #------------------------------------------------------------------------------
 COLUMNS = [
@@ -82,7 +80,7 @@ def myorders_data(request):
         "aaData" : orders
     }
 
-    return HttpResponse(json.dumps(json_data))
+    return HttpResponse(json.dumps(json_data), mimetype='text/json')
 #------------------------------------------------------------------------------
 @login_required
 def create(request):
@@ -95,7 +93,7 @@ def create(request):
     else:
         items = []
 
-    return render_to_response('shop_createorder.html', {'items': items}, Ctx(request))
+    return render_to_response('shop_order.html', {'items': items}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -158,22 +156,5 @@ def modify(request, order):
         if valid_order:
             order.modify(items)
             return redirect('/shop/orders/%d/' % order.id)
-    return render_to_response('shop_order_modify.html', {'order': order}, Ctx(request))
+    return render_to_response('shop_order.html', {'order': order}, Ctx(request))
     
-#------------------------------------------------------------------------------
-@login_required
-def create_from_eft(request):
-    if request.method == 'POST':
-        try:
-            eftBlock = request.POST['eftBlock'].replace('\r\n', '\n')
-            items_dict = eft.parse_export(eftBlock)
-            query = CatalogEntry.objects.filter(typeName__in=items_dict.keys(), isAvailable=True)
-            items = [ (i, items_dict[i.typeName]) for i in query ]
-            return render_to_response('shop_createorder.html', {'items': items}, Ctx(request))
-        except:
-            pass
-    return render_to_response('shop_createorder_eft.html', {}, Ctx(request))
-
-
-
-

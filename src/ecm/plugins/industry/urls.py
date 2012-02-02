@@ -23,8 +23,6 @@ from django.conf.urls.defaults import patterns
 urlpatterns = patterns('ecm.plugins.industry.views',
     ###########################################################################
     # INDUSTRY VIEWS
-    (r'^search/data$',                          'search_item'),
-    (r'^search/itemid$',                        'get_item_id'),
 
     (r'^orders/$',                              'orders.orders'),
     (r'^orders/all/data/$',                     'orders.orders_data'),

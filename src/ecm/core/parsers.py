@@ -30,7 +30,7 @@ def checkApiVersion(version):
                 "Expected '%s', got '%s'." % (settings.EVE_API_VERSION, version))
 
 #------------------------------------------------------------------------------
-def calcDiffs(oldItems, newItems):
+def diff(oldItems, newItems):
     """
     Quick way to compare 2 hashtables.
 

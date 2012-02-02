@@ -25,7 +25,7 @@ from django.db import transaction
 
 from ecm.core.eve import api
 from ecm.core.eve import db
-from ecm.core.parsers import checkApiVersion, calcDiffs, markUpdated
+from ecm.core.parsers import checkApiVersion, diff, markUpdated
 from ecm.apps.hr.models import Member, MemberDiff
 
 LOG = logging.getLogger(__name__)
@@ -130,7 +130,7 @@ def parseOneMember(member):
 
 #------------------------------------------------------------------------------
 def getDiffs(oldMembers, newMembers, date):
-    removed, added = calcDiffs(oldItems=oldMembers, newItems=newMembers)
+    removed, added = diff(oldItems=oldMembers, newItems=newMembers)
 
     diffs  = []
 

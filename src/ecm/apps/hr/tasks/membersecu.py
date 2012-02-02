@@ -23,7 +23,7 @@ import logging
 from django.db import transaction
 
 from ecm.core.eve import api
-from ecm.core.parsers import checkApiVersion, calcDiffs, markUpdated
+from ecm.core.parsers import checkApiVersion, diff, markUpdated
 from ecm.apps.hr.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff, Member, RoleType, Role
 
@@ -138,7 +138,7 @@ def __storeRoleDiffs(removed, added, date):
     return diffs
 
 def getRoleMemberDiffs(oldRoles, newRoles, date):
-    removed, added = calcDiffs(newItems=newRoles, oldItems=oldRoles)
+    removed, added = diff(newItems=newRoles, oldItems=oldRoles)
     return __storeRoleDiffs(removed, added, date)
 #------------------------------------------------------------------------------
 def __storeTitleDiffs(removed, added, date):
@@ -164,7 +164,7 @@ def __storeTitleDiffs(removed, added, date):
     return diffs
 
 def getTitleMemberDiffs(oldTitles, newTitles, date):
-    removed, added = calcDiffs(newItems=newTitles, oldItems=oldTitles)
+    removed, added = diff(newItems=newTitles, oldItems=oldTitles)
     return __storeTitleDiffs(removed, added, date)
 #------------------------------------------------------------------------------
 def storeRoles(oldRoles, newRoles, date):

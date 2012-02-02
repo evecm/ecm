@@ -19,6 +19,7 @@
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
-
+#------------------------------------------------------------------------------
 def home(request):
     return render_to_response('shop.html', {}, Ctx(request))
+

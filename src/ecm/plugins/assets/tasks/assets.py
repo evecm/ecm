@@ -26,7 +26,7 @@ from ecm.apps.common.models import Setting
 from ecm.core.eve import api, db
 from ecm.core.eve import constants as cst
 from ecm.core.eve.classes import Item
-from ecm.core.parsers import calcDiffs, markUpdated, checkApiVersion
+from ecm.core.parsers import diff, markUpdated, checkApiVersion
 from ecm.plugins.assets.models import Asset, AssetDiff
 
 LOG = logging.getLogger(__name__)
@@ -70,16 +70,16 @@ def update():
         if row.locationID >= cst.STATIONS_IDS:
             # this row contains assets in a station
             if row.typeID == cst.OFFICE_TYPEID:
-                rowIsOffice(office=row, items_dic=newItems)
+                row_is_office(office=row, items_dic=newItems)
             else:
-                rowIsInHangar(item=row, items_dic=newItems)
+                row_is_in_hangar(item=row, items_dic=newItems)
         else:
             # this row contains assets in space
             try:
                 if cst.HAS_HANGAR_DIVISIONS[row.typeID]:
-                    rowIsPOSCorporateHangarArray(corpArray=row, items_dic=newItems)
+                    row_is_pos_corporate_hangar_array(corpArray=row, items_dic=newItems)
                 else:
-                    rowIsPOSArray(array=row, items_dic=newItems)
+                    row_is_pos_array(array=row, items_dic=newItems)
             except KeyError:
                 # unhandled typeID, this may be a reactor array or some other crap
                 pass
@@ -89,7 +89,7 @@ def update():
     diffs = []
     if len(oldItems) != 0:
         LOG.debug("computing diffs since last asset scan...")
-        diffs = getAssetDiffs(newItems=newItems, oldItems=oldItems, date=currentTime)
+        diffs = calc_assets_diff(oldItems=oldItems, newItems=newItems, date=currentTime)
         if diffs:
             for assetDiff in diffs:
                 assetDiff.save()
@@ -105,10 +105,10 @@ def update():
     LOG.info("%d changes since last scan", len(diffs))
 
 #------------------------------------------------------------------------------
-def getAssetDiffs(oldItems, newItems, date):
-    removed, added = calcDiffs(oldItems=oldItems, newItems=newItems)
-    __removeDuplicates(removed)
-    __removeDuplicates(added)
+def calc_assets_diff(oldItems, newItems, date):
+    removed, added = diff(oldItems=oldItems, newItems=newItems)
+    merge_duplicates(removed)
+    merge_duplicates(added)
 
     diffs = []
 
@@ -127,28 +127,28 @@ def getAssetDiffs(oldItems, newItems, date):
                 break
         if (added_qty - remasset.quantity):
             # if the added asset doesn't negates the removed one, we create a diff
-            diffs.append(AssetDiff(solarSystemID = remasset.solarSystemID,
-                                       stationID = remasset.stationID,
-                                        hangarID = remasset.hangarID,
-                                          typeID = remasset.typeID,
-                                            flag = remasset.flag,
-                                        quantity = added_qty - remasset.quantity,
-                                            date = date,
-                                             new = False))
+            diffs.append(AssetDiff(solarSystemID=remasset.solarSystemID,
+                                       stationID=remasset.stationID,
+                                        hangarID=remasset.hangarID,
+                                          typeID=remasset.typeID,
+                                            flag=remasset.flag,
+                                        quantity=added_qty - remasset.quantity,
+                                            date=date,
+                                             new=False))
     for addasset in added:
         if not addasset.duplicate:
-            diffs.append(AssetDiff(solarSystemID = addasset.solarSystemID,
-                                       stationID = addasset.stationID,
-                                        hangarID = addasset.hangarID,
-                                          typeID = addasset.typeID,
-                                            flag = addasset.flag,
-                                        quantity = addasset.quantity,
-                                            date = date,
-                                             new = True))
+            diffs.append(AssetDiff(solarSystemID=addasset.solarSystemID,
+                                       stationID=addasset.stationID,
+                                        hangarID=addasset.hangarID,
+                                          typeID=addasset.typeID,
+                                            flag=addasset.flag,
+                                        quantity=addasset.quantity,
+                                            date=date,
+                                             new=True))
     return diffs
 
 #------------------------------------------------------------------------------
-def __removeDuplicates(assetlist):
+def merge_duplicates(assetlist):
     assetlist.sort()
     # we sort assets by locationID, hangarID then typeID in order to merge duplicates
     try:
@@ -166,24 +166,24 @@ def __removeDuplicates(assetlist):
         pass
 
 #------------------------------------------------------------------------------
-def rowIsOffice(office, items_dic):
+def row_is_office(office, items_dic):
     """
     'office' represents an office in a station
     """
     try :
-        stationID = locationIDtoStationID(office.locationID)
+        stationID = locationID_to_stationID(office.locationID)
         solarSystemID = db.getSolarSystemID(stationID)
         for item in office.contents:
             if item.typeID == cst.BOOKMARK_TYPEID :
                 continue # we don't give a flying @#!$ about the bookmarks...
-            rowIsInHangar(item=item, items_dic=items_dic,
+            row_is_in_hangar(item=item, items_dic=items_dic,
                        solarSystemID=solarSystemID, stationID=stationID)
     except AttributeError:
         # skip the office if it has no contents
         pass
 
 #------------------------------------------------------------------------------
-def rowIsPOSCorporateHangarArray(corpArray, items_dic):
+def row_is_pos_corporate_hangar_array(corpArray, items_dic):
     """
     'corpArray' represents an anchorable structure with corporate hangar divisions
     such as a 'Corporate Hangar Array' or a 'Mobile Laboratory'
@@ -198,7 +198,7 @@ def rowIsPOSCorporateHangarArray(corpArray, items_dic):
         for item in corpArray.contents:
             if item.typeID == cst.BOOKMARK_TYPEID :
                 continue # we don't give a flying @#!$ about the bookmarks...
-            rowIsInHangar(item=item,
+            row_is_in_hangar(item=item,
                           items_dic=items_dic,
                           solarSystemID=solarSystemID,
                           stationID=stationID,
@@ -208,7 +208,7 @@ def rowIsPOSCorporateHangarArray(corpArray, items_dic):
         pass
 
 #------------------------------------------------------------------------------
-def rowIsPOSArray(array, items_dic):
+def row_is_pos_array(array, items_dic):
     """
     'array' represents an anchorable structure with no corporate hangar divisions
     such as a 'Ship Maintenance Array' or a 'Silo'
@@ -224,7 +224,7 @@ def rowIsPOSArray(array, items_dic):
         for item in array.contents:
             if item.typeID == cst.BOOKMARK_TYPEID :
                 continue # we don't give a flying @#!$ about the bookmarks...
-            rowIsInHangar(item=item,
+            row_is_in_hangar(item=item,
                           items_dic=items_dic,
                           solarSystemID=solarSystemID,
                           stationID=stationID,
@@ -235,15 +235,15 @@ def rowIsPOSArray(array, items_dic):
         pass
 
 #------------------------------------------------------------------------------
-def rowIsInHangar(item, items_dic, solarSystemID=None, stationID=None, hangarID=None, flag=None):
+def row_is_in_hangar(item, items_dic, solarSystemID=None, stationID=None, hangarID=None, flag=None):
     """
     'item' represents an asset located in a hangar division.
     """
-    asset = assetFromRow(item)
+    asset = make_asset_from_row(item)
 
     if solarSystemID is None and stationID is None:
         # we come from the update() method and the item has a locationID attribute
-        asset.stationID = locationIDtoStationID(item.locationID)
+        asset.stationID = locationID_to_stationID(item.locationID)
         asset.solarSystemID = db.getSolarSystemID(asset.stationID)
     else:
         asset.solarSystemID = solarSystemID
@@ -265,14 +265,14 @@ def rowIsInHangar(item, items_dic, solarSystemID=None, stationID=None, hangarID=
     items_dic[asset] = asset
 
     try:
-        fillContents(container=asset, item=item, items_dic=items_dic, flag=flag)
+        fill_contents(container=asset, item=item, items_dic=items_dic, flag=flag)
         asset.hasContents = True
     except AttributeError:
         # if the item has no attribute 'contents', we're done
         pass
 
 #------------------------------------------------------------------------------
-def fillContents(container, item, items_dic, flag=None):
+def fill_contents(container, item, items_dic, flag=None):
     """
     Try to fill the contents of an item (assembled ship, assembled container)
     If the item has no contents, raise an attribute error.
@@ -280,7 +280,7 @@ def fillContents(container, item, items_dic, flag=None):
     for _item in item.contents:
         if _item.typeID == cst.BOOKMARK_TYPEID:
             continue # we don't give a flying @#!$ about the bookmarks...
-        _asset = assetFromRow(_item)
+        _asset = make_asset_from_row(_item)
         _asset.solarSystemID = container.solarSystemID
         _asset.stationID = container.stationID
         _asset.hangarID = container.hangarID
@@ -293,7 +293,7 @@ def fillContents(container, item, items_dic, flag=None):
             for __item in _item.contents:
                 if __item.typeID == cst.BOOKMARK_TYPEID:
                     continue # we don't give a flying @#!$ about the bookmarks...
-                __asset = assetFromRow(__item)
+                __asset = make_asset_from_row(__item)
                 __asset.solarSystemID = container.solarSystemID
                 __asset.stationID = container.stationID
                 __asset.hangarID = container.hangarID
@@ -311,7 +311,7 @@ def fillContents(container, item, items_dic, flag=None):
 
 
 #------------------------------------------------------------------------------
-def assetFromRow(row):
+def make_asset_from_row(row):
     i = Item.new(row.typeID)
     if IGNORE_CAN_VOLUMES and i.categoryID == 2:
         volume = 0.0
@@ -325,7 +325,7 @@ def assetFromRow(row):
                  volume    = volume)
 
 #------------------------------------------------------------------------------
-def locationIDtoStationID(locationID):
+def locationID_to_stationID(locationID):
     """
     to convert locationIDs starting 66000000 to stationIDs from staStations
                                                     subtract 6000001 from the locationID

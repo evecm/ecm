@@ -63,6 +63,7 @@ def parse_export(export):
     {'Gyrostabilizer II': 2, 'Sensor Booster II': 1, 'Assault Missile Launcher II': 2, 'Tracking Enhancer II': 2, 'Reactor Control Unit II': 1, 'Hurricane': 1, 'Invulnerability Field II': 1, 'Caldari Navy Flameburst Light Missile': 2, 'Medium Anti-Thermal Screen Reinforcer I': 1, 'Y-T8 Overcharged Hydrocarbon I Microwarpdrive': 1, 'Warrior II': 6, 'Republic Fleet Depleted Uranium M': 6, 'Damage Control II': 1, '720mm Howitzer Artillery II': 6, 'Large Shield Extender II': 1, 'Medium Anti-EM Screen Reinforcer I': 2}
     """
     all_items = {}
+    export = export.replace('\r\n', '\n')
     match = HEADER.search(export)
     if match:
         all_items[match.groupdict()['ship']] = 1

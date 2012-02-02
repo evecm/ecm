@@ -14,3 +14,8 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+
+
+JSON = 'text/json'
+XML = 'text/xml'
+HTML = 'text/html'

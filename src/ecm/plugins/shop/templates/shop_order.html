@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Create new Order{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+<style type="text/css">
+#eft-close {float:right;}
+#eft-submit {float:left;}
+.throbber {display:none;}
+#eft-mask {
+    display:none;  
+    position:fixed;  
+    _position:absolute; /* hack for internet explorer 6*/  
+    height:100%;  
+    width:100%;  
+    top:0;  
+    left:0;  
+    background:rgba(0,0,0,0.2);  
+    border:1px solid #cecece;  
+    z-index:10;  
+}
+#eft-dialog {
+    display:none;  
+    position:fixed;  
+    _position:absolute; /* hack for internet explorer 6*/  
+    background:#eee;  
+    border:2px solid #cecece;  
+    z-index:20;  
+    padding:12px;  
+    font-size:13px;  
+}
+</style>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.autocomplete.js"></script>
+<script type="text/javascript"  src="/s/shop/js/order.js" ></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/shop/">Industry</a></li>
+<li><a href="/shop/orders/">Orders</a></li>
+{% if order %}
+<li><a href="/shop/orders/{{ order.id }}/">#{{ order.id }}</a></li>
+<li><a href="/shop/orders/{{ order.id }}/modify/">Modify</a></li>
+{% else %}
+<li><a href="/shop/orders/create/">Create New Order</a></li>
+{% endif %}
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle">Please add items to your basket</h1>
+
+<form id="search_form" class="search_form order_form">
+    <label>Search for an item</label>
+    <input type="text" id="search_box" style="width: 300px;" />
+    <input type="button" class="button" id="add_button" value="Add to my order" />
+</form>
+
+<a id="import-eft" href="#">Import EFT Fitting</a>
+<img id="throbber-eft" class="throbber" src="/s/ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
+
+{% if order %}
+<form method="post" action="/shop/orders/{{order.id}}/modify/" id="items_form" >
+{% else %}
+<form method="post" action="/shop/orders/create/" id="items_form" >
+{% endif %}
+{% csrf_token %}
+    <table class="order_table">
+        <thead>
+        <tr>
+        <th style="width: 10%;">Icon</th>
+        <th style="width: 55%;">Item</th>
+        <th style="width: 20%;">Quantity</th>
+        <th style="width: 15%;">Remove</th>
+        </tr>
+        </thead>
+    <tbody id="items">
+        {% for row in order.rows.all %}
+        <tr id="{{row.catalogEntry.typeID}}">
+            <td class="center">
+                <img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" />
+            </td>
+            <td class="bold">{{row.catalogEntry.typeName}}</td>
+            <td class="center">
+                <input type="text" name="{{row.catalogEntry.typeID}}" value="{{row.quantity}}" />
+            </td>
+            <td class="center">
+                <img src="/s/industry/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/>
+            </td>
+        </tr>
+        {% empty %}
+        <tr id="empty">
+            <td colspan="4" class="order_cart_empty" >Your shopping cart is empty.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <input type="submit" class="button" value="Submit Order" />
+    <img id="throbber-submit" class="throbber" src="/s/ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
+</form>
+
+<div id="eft-modal">
+    <div id="eft-dialog">
+        <h2 id="eft-title">Please paste a fitting export from EFT</h2>
+        <a href="#" id="eft-close">Close</a>
+        <textarea id="eft-block" rows="20" cols="60" ></textarea>
+        <label for="eft-quantity">Quantity</label>
+        <input id="eft-quantity" name="eft-quantity" value="1"/>
+        <a href="#" id="eft-submit">Import EFT Fitting</a>
+    </div>
+    <div id="eft-mask"></div>
+</div>
+{% endblock %}
