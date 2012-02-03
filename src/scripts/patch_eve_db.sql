@@ -102,6 +102,23 @@ INSERT INTO ramBlueprintReqs("blueprintTypeID",
 ----------------------------------------------------------
 UPDATE "ramBlueprintReqs" SET "baseMaterial" = 0 WHERE "baseMaterial" IS NULL;
 
+----------------------------------------------------------
+-- Add noctis blueprint requirements
+INSERT INTO "ramBlueprintReqs"
+    SELECT 2864 AS "blueprintTypeID", 
+              1 AS "activityID", 
+             34 AS "requiredTypeID", 
+        3349410 AS "quantity", 
+            1.0 AS "damagePerJob",
+        3349410 AS "baseMaterial" -- Tritanium
+UNION SELECT 2864, 1, 35, 936043, 1.0, 936043 -- Pyerite
+UNION SELECT 2864, 1, 36, 276936, 1.0, 276936 -- Mexallon
+UNION SELECT 2864, 1, 37,  50713, 1.0,  50713 -- Isogen
+UNION SELECT 2864, 1, 38,  24630, 1.0,  24630 -- Nocxium
+UNION SELECT 2864, 1, 39,   3438, 1.0,   3438 -- Zydrine
+UNION SELECT 2864, 1, 40,   1580, 1.0,   1580 -- Megacyte
+;
+
 --------------------
 -- PATCH invTypes --
 --------------------

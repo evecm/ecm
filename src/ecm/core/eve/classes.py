@@ -127,7 +127,7 @@ class Item(object):
         return '<Item: %s>' % self.typeName
 
     def __eq__(self, other):
-        return isinstance(other, Item) and self.typeID == other.typeID
+        return hash(self) == hash(other)
 
     def __hash__(self):
         return self.typeID
@@ -191,8 +191,12 @@ class Blueprint(Item):
             return Blueprint.new(self.parentBlueprintTypeID)
 
     def getInvolvedBlueprints(self, recurse=False):
+        try:
+            manufacturing_activity = self.activities[BpActivity.MANUFACTURING]
+        except KeyError:
+            raise NoBlueprintException(self.typeID)
         blueprints = set()
-        for mat in self[BpActivity.MANUFACTURING].materials:
+        for mat in manufacturing_activity.materials:
             if mat.blueprintTypeID is not None:
                 blueprints.add(mat.blueprint)
                 if recurse:
@@ -256,12 +260,6 @@ class Blueprint(Item):
             raise KeyError('Blueprint with blueprintTypeID=%s '
                              'has no activity with activityID=%s'
                              % (str(self.blueprintTypeID), str(activityID)))
-
-    def __hash__(self):
-        return self.typeID
-
-    def __eq__(self, other):
-        return isinstance(other, Blueprint) and self.typeID == other.typeID
 
     def __unicode__(self):
         return self.typeName

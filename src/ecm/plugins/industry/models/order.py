@@ -25,7 +25,6 @@ from django.contrib.auth.models import User
 
 from ecm.core import utils
 from ecm.core.utils import fix_mysql_quotes, cached_property
-from ecm.core.eve.classes import NoBlueprintException
 from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.industry.models.inventory import Supply
 from ecm.plugins.industry.models.job import Job
@@ -78,6 +77,7 @@ class Order(models.Model):
     client = models.CharField(max_length=255, null=True, blank=True)
     deliveryLocation = models.CharField(max_length=255, null=True, blank=True)
     deliveryDate = models.DateField(null=True, blank=True)
+    cost = models.FloatField(default=0.0)
     quote = models.FloatField(default=0.0)
     pricing = models.ForeignKey('Pricing', related_name='orders')
     extraDiscount = models.FloatField(default=0.0)
@@ -302,11 +302,8 @@ class Order(models.Model):
         """
         missing_blueprints = set()
         for row in self.rows.all():
-            try:
-                if not row.catalogEntry.blueprints.all():
-                    missing_blueprints.add(row.catalogEntry.blueprint)
-            except NoBlueprintException:
-                pass
+            missing_blueprints.update(row.catalogEntry.missingBlueprints())
+        
         if missing_blueprints:
             raise OrderCannotBeFulfilled(missing_blueprints=missing_blueprints)
 
@@ -321,10 +318,12 @@ class Order(models.Model):
         for sp in Supply.objects.all():
             prices[sp.typeID] = sp.price
         missingPrices = set([])
+        self.cost = 0.0
         self.quote = 0.0
         for row in self.rows.all():
             row.cost, missPrices = row.calculateJobs(prices=prices, dry_run=dry_run)
             missingPrices.update(missPrices)
+            self.cost += row.cost
             self.quote += row.quote
             row.save()
         self.save()

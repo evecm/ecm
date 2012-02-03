@@ -53,6 +53,8 @@ class CatalogEntry(models.Model):
     typeName = models.CharField(max_length=100)
     marketGroupID = models.IntegerField(db_index=True, null=True, blank=True)
     fixedPrice = models.FloatField(null=True, blank=True)
+    productionCost = models.FloatField(null=True, blank=True)
+    lastUpdate = models.DateTimeField(null=True, blank=True)
     isAvailable = models.BooleanField(default=True)
     __item = None
 
@@ -64,6 +66,16 @@ class CatalogEntry(models.Model):
     def permalink(self):
         return '<a href="%s" class="catalog-item">%s</a>' % (self.url, self.typeName)
 
+    def missingBlueprints(self, skip_invented=True):
+        involved_bps = set()
+        for bp in self.blueprint.getInvolvedBlueprints(recurse=True) | set([self.blueprint]):
+            if skip_invented and bp.item.techLevel == 2 and bp.parentBlueprintTypeID is not None:
+                continue
+            else:
+                involved_bps.add(bp)
+        involved_bp_ids = [ bp.typeID for bp in involved_bps ]
+        owned_bps = set(OwnedBlueprint.objects.filter(blueprintTypeID__in=involved_bp_ids)) 
+        return involved_bps - owned_bps
 
     def __getattr__(self, attrName):
         try:
@@ -77,6 +89,9 @@ class CatalogEntry(models.Model):
 
     def __unicode__(self):
         return unicode(self.typeName)
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
 
     def __hash__(self):
         return self.typeID
@@ -125,3 +140,9 @@ class OwnedBlueprint(models.Model):
 
     def __hash__(self):
         return self.blueprintTypeID
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+    
+    def __cmp__(self, other):
+        return cmp(self.blueprintTypeID, other.blueprintTypeID)

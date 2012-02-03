@@ -87,6 +87,7 @@ body {
     overflow:visible !important /*Firefox*/;
     overflow:hidden /*IE6*/;
     font-size:1.0em;
+    vertical-align: top;
     padding: 0 10px 10px 10px;
 }
 

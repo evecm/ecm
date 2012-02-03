@@ -43,6 +43,12 @@ TASKS = [
         'frequency' : 24,
         'frequency_units' : 3600, # hour
     },
+    {
+        'function' : 'ecm.plugins.industry.tasks.industry.update_production_costs',
+        'priority' : 0,
+        'frequency' : 24,
+        'frequency_units' : 3600, # hour
+    },
 ]
 
 URL_PERMISSIONS = [

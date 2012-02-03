@@ -168,6 +168,7 @@ class Job(models.Model):
                 duration = 0
                 runs = quantity
         except NoBlueprintException:
+            # item cannot be manufactured
             bp = None
             activity = Job.SUPPLY
             duration = 0

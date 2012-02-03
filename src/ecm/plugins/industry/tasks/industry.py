@@ -15,16 +15,20 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import with_statement
+
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
 
 import logging
+from datetime import datetime
 
 from django.db import transaction
 
+from ecm.core.eve.classes import NoBlueprintException
 from ecm.core import utils
 from ecm.plugins.industry.tasks import evecentral
-from ecm.plugins.industry.models import Supply, SupplySource
+from ecm.plugins.industry.models import Supply, SupplySource, Order, CatalogEntry
 
 logger = logging.getLogger(__name__)
 
@@ -43,3 +47,25 @@ def update_supply_prices():
                 supPrice.updatePrice(buyPrices[supPrice.typeID])
                 logger.info('New price for "%s" -> %s' % (supPrice.item_admin_display(),
                                                           utils.print_float(buyPrices[supPrice.typeID])))
+
+
+
+#------------------------------------------------------------------------------
+def update_production_costs():
+    now = datetime.now()
+    for entry in CatalogEntry.objects.all():
+        cost = None
+        try:
+            if not entry.missingBlueprints():
+                with transaction.commit_manually():
+                    order = Order.objects.create(originator_id=1, pricing_id=1)
+                    order.modify( [ (entry, 1) ] )
+                    cost = order.cost
+                    transaction.rollback()
+        except NoBlueprintException:
+            # this can happen when blueprint requirements are not found in EVE database.
+            # no way to work arround this issue for the moment, we just keep the price to None
+            pass
+        entry.productionCost = cost
+        entry.lastUpdate = now
+        entry.save()
