@@ -22,18 +22,26 @@ __author__ = "diabeteman"
 from django.conf import settings
 
 
-
 #------------------------------------------------------------------------------
 def print_time(date):
-    return date.strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        return date.strftime("%Y-%m-%d %H:%M:%S")
+    except:
+        return date
 
 #------------------------------------------------------------------------------
 def print_time_min(date):
-    return date.strftime("%Y %b %d - %H:%M")
+    try:
+        return date.strftime("%Y %b %d - %H:%M")
+    except:
+        return date
 
 #------------------------------------------------------------------------------
 def print_date(date):
-    return date.strftime("%Y-%m-%d")
+    try:
+        return date.strftime("%Y-%m-%d")
+    except:
+        return date
 
 #------------------------------------------------------------------------------
 def print_integer(number, thousand_separator=",", force_sign=False):

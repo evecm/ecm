@@ -19,11 +19,11 @@ __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
 from django.db.models import Q
-from django.conf import settings
 from django.utils.text import truncate_words
 from django.contrib.auth.models import User
 
 from ecm import apps, plugins
+from ecm import settings
 from ecm.apps.hr.models import Member
 from ecm.core import utils
 from ecm.apps.common.models import UpdateDate, UrlPermission, Setting
@@ -57,24 +57,6 @@ def extract_datatable_params(request):
     params.asc = REQ["sSortDir_0"] == "asc"
     return params
 
-
-#------------------------------------------------------------------------------
-if not User.objects.filter(username=settings.ADMIN_USERNAME):
-    try:
-        logger.info('superuser "%s" does not exists. Creating...' % settings.ADMIN_USERNAME)
-        User.objects.create_superuser(username=settings.ADMIN_USERNAME, email='', password='adminecm')
-    except:
-        logger.exception("")
-        raise
-
-#------------------------------------------------------------------------------
-if not User.objects.filter(username=settings.CRON_USERNAME):
-    try:
-        logger.info('user "%s" does not exists. Creating...' % settings.CRON_USERNAME)
-        User.objects.create_user(username=settings.CRON_USERNAME, email='', password='cron')
-    except:
-        logger.exception("")
-        raise
 #------------------------------------------------------------------------------
 def create_app_objects(app):
     for task in app.tasks:
@@ -105,3 +87,22 @@ for plugin in plugins.LIST:
 # The first time this module is imported, we reset all the scheduled tasks to
 # is_running = False to avoid this problem.
 ScheduledTask.objects.all().update(is_running=False)
+
+#------------------------------------------------------------------------------
+admin_username = Setting.get('common_admin_username')
+if not User.objects.filter(username=admin_username):
+    try:
+        logger.info('superuser "%s" does not exists. Creating...' % admin_username)
+        User.objects.create_superuser(username=admin_username, email='', password='adminecm')
+    except:
+        logger.exception("")
+        raise
+#------------------------------------------------------------------------------
+cron_username = Setting.get('common_cron_username')
+if not User.objects.filter(username=cron_username):
+    try:
+        logger.info('user "%s" does not exists. Creating...' % cron_username)
+        User.objects.create_user(username=cron_username, email='', password='cron')
+    except:
+        logger.exception("")
+        raise

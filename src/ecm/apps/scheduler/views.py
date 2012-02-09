@@ -28,7 +28,6 @@ import httplib as http
 from datetime import datetime
 import logging
 
-from django.conf import settings
 from django.shortcuts import render_to_response, redirect
 from django.template.context import RequestContext as Ctx
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
@@ -36,6 +35,7 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFou
 from ecm import apps, plugins
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import basic_auth_required, check_user_access
+from ecm.apps.common.models import Setting
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.scheduler.threads import TaskThread
 
@@ -43,7 +43,7 @@ from ecm.apps.scheduler.threads import TaskThread
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@basic_auth_required(username=settings.CRON_USERNAME)
+@basic_auth_required(username=Setting.get('common_cron_username'))
 def trigger_scheduler(request):
     now = datetime.now()
     tasks_to_execute = ScheduledTask.objects.filter(is_active=True,

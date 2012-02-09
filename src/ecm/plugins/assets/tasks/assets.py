@@ -60,7 +60,7 @@ def update():
     newItems = {}
     LOG.debug("%d assets fetched", len(oldItems.keys()))
 
-    IGNORE_CAN_VOLUMES = Setting.objects.get(name='assets_ignore_containers_volumes').getValue()
+    IGNORE_CAN_VOLUMES = Setting.get('assets_ignore_containers_volumes')
 
     LOG.info("parsing api response...")
     for row in apiAssets.assets:

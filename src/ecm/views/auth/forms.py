@@ -21,7 +21,6 @@ __date__ = "2011 4 6"
 __author__ = "diabeteman"
 
 from django import forms
-from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
@@ -140,19 +139,17 @@ class PasswordResetForm(forms.Form):
             raise forms.ValidationError(_("That e-mail address doesn't have an associated user account. Are you sure you've registered?"))
         return email
 
-    def save(self, domain_override=settings.ECM_BASE_URL, email_template_name='registration/password_reset_email.html',
-             use_https=False, token_generator=default_token_generator, from_email=None, request=None):
+    def save(self, email_template_name='registration/password_reset_email.html',
+             use_https=False, token_generator=default_token_generator, from_email=None, 
+             request=None, domain_override=False):
         """
         Generates a one-use only link for resetting password and sends to the user
         """
         from django.core.mail import send_mail
         for user in self.users_cache:
-            if not domain_override:
-                current_site = get_current_site(request)
-                site_name = current_site.name
-                domain = current_site.domain
-            else:
-                site_name = domain = domain_override
+            current_site = get_current_site(request)
+            site_name = current_site.name
+            domain = current_site.domain
             t = loader.get_template(email_template_name)
             c = {
                 'email': user.email,

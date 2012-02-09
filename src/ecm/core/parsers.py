@@ -20,14 +20,14 @@ __author__ = "diabeteman"
 
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-from ecm import settings
+from ecm.core.eve import api
 from ecm.apps.common.models import UpdateDate
 
 #------------------------------------------------------------------------------
 def checkApiVersion(version):
-    if version != settings.EVE_API_VERSION:
+    if version != api.EVE_API_VERSION:
         raise DeprecationWarning("Wrong EVE API version. "
-                "Expected '%s', got '%s'." % (settings.EVE_API_VERSION, version))
+                "Expected '%s', got '%s'." % (api.EVE_API_VERSION, version))
 
 #------------------------------------------------------------------------------
 def diff(oldItems, newItems):

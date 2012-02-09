@@ -24,13 +24,14 @@ from django.db import transaction
 from django.template.context import RequestContext as Ctx
 from django.http import HttpRequest
 from django.contrib.auth.models import User, Group, AnonymousUser
+from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.core.mail.message import EmailMultiAlternatives
 
+from ecm.core import HTML
 from ecm.core.eve import api
 from ecm.lib import eveapi
-from ecm import settings
-from ecm.apps.common.models import UserAPIKey
+from ecm.apps.common.models import UserAPIKey, Setting
 from ecm.apps.hr.models import Title, Member
 from ecm.apps.scheduler.models import ScheduledTask
 
@@ -77,21 +78,18 @@ def update_character_associations(user):
         user_api.save()
     if invalid_apis:
         # we notify the user by email
-        ctx_dict = {'site': settings.ECM_BASE_URL,
+        ctx_dict = {'site': Site.objects.get_current(),
                     'user_name': user.username,
                     'invalid_apis': invalid_apis}
         dummy_request = HttpRequest()
         dummy_request.user = AnonymousUser()
-        subject = render_to_string('email/invalid_api_subject.txt', ctx_dict,
-                                   Ctx(dummy_request))
+        subject = render_to_string('email/invalid_api_subject.txt', ctx_dict, Ctx(dummy_request))
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
-        txt_content = render_to_string('email/invalid_api.txt', ctx_dict,
-                                       Ctx(dummy_request))
-        html_content = render_to_string('email/invalid_api.html', ctx_dict,
-                                        Ctx(dummy_request))
+        txt_content = render_to_string('email/invalid_api.txt', ctx_dict, Ctx(dummy_request))
+        html_content = render_to_string('email/invalid_api.html', ctx_dict, Ctx(dummy_request))
         msg = EmailMultiAlternatives(subject, body=txt_content, to=[user.email])
-        msg.attach_alternative(html_content, "text/html")
+        msg.attach_alternative(html_content, mimetype=HTML)
         msg.send()
         LOG.warning("API credentials for '%s' are invalid. User notified by email." % user.username)
     # we delete all the previous ownerships
@@ -102,26 +100,6 @@ def update_character_associations(user):
         member.save()
 
 #------------------------------------------------------------------------------
-try:
-    DIRECTORS = Group.objects.get(name=settings.DIRECTOR_GROUP_NAME)
-except Group.DoesNotExist:
-    try:
-        LOG.info('Group "%s" does not exists. Creating...' % settings.DIRECTOR_GROUP_NAME)
-        DIRECTORS = Group.objects.create(name=settings.DIRECTOR_GROUP_NAME)
-    except:
-        LOG.exception("")
-        raise
-#------------------------------------------------------------------------------
-try:
-    MEMBERS = Group.objects.get(name=settings.CORP_MEMBERS_GROUP_NAME)
-except Group.DoesNotExist:
-    try:
-        LOG.info('Group "%s" does not exists. Creating...' % settings.DIRECTOR_GROUP_NAME)
-        MEMBERS = Group.objects.create(name=settings.CORP_MEMBERS_GROUP_NAME)
-    except:
-        LOG.exception("")
-        raise
-#------------------------------------------------------------------------------
 @transaction.commit_on_success
 def update_all_users_accesses():
     try:
@@ -131,13 +109,35 @@ def update_all_users_accesses():
                                  "Skipping user access update.")
     except ScheduledTask.DoesNotExist:
         pass
+    
+    directors_group_name = Setting.get('hr_directors_group_name')
+    try:
+        directors_group = Group.objects.get(name=directors_group_name)
+    except Group.DoesNotExist:
+        try:
+            LOG.info('Group "%s" does not exists. Creating...' % directors_group_name)
+            directors_group = Group.objects.create(name=directors_group_name)
+        except:
+            LOG.exception("")
+            raise
+    corp_members_group_name = Setting.get('hr_corp_members_group_name')
+    try:
+        corp_members_group = Group.objects.get(name=corp_members_group_name)
+    except Group.DoesNotExist:
+        try:
+            LOG.info('Group "%s" does not exists. Creating...' % corp_members_group_name)
+            corp_members_group = Group.objects.create(name=corp_members_group_name)
+        except:
+            LOG.exception("")
+            raise
+    
     LOG.info("Updating user accesses from their in-game roles...")
     for user in User.objects.filter(is_active=True):
-        update_user_accesses(user)
+        update_user_accesses(user, corp_members_group, directors_group)
     LOG.info("User accesses updated")
 
 #------------------------------------------------------------------------------
-def update_user_accesses(user):
+def update_user_accesses(user, corp_members_group, directors_group):
     ownedCharacters = user.characters.all()
     titles = Title.objects.none()
     director = False
@@ -147,8 +147,8 @@ def update_user_accesses(user):
     titleIDs = titles.distinct().values_list("titleID", flat=True)
     user.groups.clear()
     if ownedCharacters.filter(corped=True):
-        user.groups.add(MEMBERS)
+        user.groups.add(corp_members_group)
     for titleID in titleIDs:
         user.groups.add(Group.objects.get(id=titleID))
     if director:
-        user.groups.add(DIRECTORS)
+        user.groups.add(directors_group)

@@ -59,8 +59,10 @@ class Setting(models.Model):
 
     def __unicode__(self):
         return u'%s = %s' % (self.name, self.value)
-
-
+    
+    @staticmethod
+    def get(name):
+        return Setting.objects.get(name=name).getValue()
 
 #------------------------------------------------------------------------------
 class UserAPIKey(models.Model):

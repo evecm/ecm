@@ -24,7 +24,6 @@ except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
-from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponse, Http404
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404
@@ -34,7 +33,7 @@ from django.template.context import RequestContext as Ctx
 from ecm.core import utils
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
-from ecm.apps.common.models import ColorThreshold
+from ecm.apps.common.models import ColorThreshold, Setting
 from ecm.views import extract_datatable_params
 from ecm.apps.hr.views import get_members
 
@@ -60,7 +59,8 @@ def player_list_data(request):
     query = query.annotate(char_count=Count("characters"))
     query = query.annotate(group_count=Count("groups"))
     #query = query.filter(char_count__gt=0)
-    query = query.exclude(username__in=[settings.CRON_USERNAME, settings.ADMIN_USERNAME])
+    query = query.exclude(username__in=[Setting.get('common_cron_username'), 
+                                        Setting.get('common_admin_username')])
 
     sort_by = USER_COLUMNS[params.column]
     # SQL hack for making a case insensitive sort

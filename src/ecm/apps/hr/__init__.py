@@ -77,3 +77,9 @@ URL_PERMISSIONS = [
     r'^/hr/roles.*$',
     r'^/hr/titles.*$',
 ]
+
+SETTINGS = {
+    'hr_corp_members_group_name': 'Members',
+    'hr_directors_group_name': 'Directors',
+}
+

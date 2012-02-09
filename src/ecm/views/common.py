@@ -72,9 +72,9 @@ def edit_apikey(request):
             return redirect('/')
     else:
         try:
-            keyID = Setting.objects.get(name='common_api_keyID').getValue()
-            vCode = Setting.objects.get(name='common_api_vCode').getValue()
-            characterID = Setting.objects.get(name='common_api_characterID').getValue()
+            keyID = Setting.get('common_api_keyID')
+            vCode = Setting.get('common_api_vCode')
+            characterID = Setting.get('common_api_characterID')
         except Setting.DoesNotExist:
             keyID = 0
             vCode = ''

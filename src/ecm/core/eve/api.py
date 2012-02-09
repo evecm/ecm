@@ -23,10 +23,12 @@ from ecm.core.eve.validators import check_user_access_mask
 from ecm.apps.common.models import Setting
 from ecm.apps.corp.models import Corp
 
+EVE_API_VERSION = '2'
+
 #------------------------------------------------------------------------------
 def get_api():
-    keyID = Setting.objects.get(name='common_api_keyID').getValue()
-    vCode = Setting.objects.get(name='common_api_vCode').getValue()
+    keyID = Setting.get(name='common_api_keyID')
+    vCode = Setting.get(name='common_api_vCode')
     if not keyID or not vCode:
         raise Setting.DoesNotExist('the settings "common_api_keyID" or "common_api_vCode" are empty')
     else:
@@ -34,7 +36,7 @@ def get_api():
 
 #------------------------------------------------------------------------------
 def get_charID():
-    characterID = Setting.objects.get(name='common_api_characterID').getValue()
+    characterID = Setting.get(name='common_api_characterID')
     if not characterID:
         raise Setting.DoesNotExist('the setting "common_api_characterID" is empty')
     else:

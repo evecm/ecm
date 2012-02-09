@@ -28,18 +28,18 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.db.models.aggregates import Count
 from django.contrib.auth.models import User
-from django.conf import settings
 
 from ecm.views.decorators import basic_auth_required
-from ecm.apps.common.models import ExternalApplication, GroupBinding, UserBinding
+from ecm.apps.common.models import ExternalApplication, GroupBinding, UserBinding, Setting
 
 #------------------------------------------------------------------------------
-@basic_auth_required(username=settings.CRON_USERNAME)
+@basic_auth_required(username=Setting.get('common_cron_username'))
 def players(request):
     query = User.objects.select_related(depth=3).filter(is_active=True)
     query = query.annotate(char_count=Count("characters"))
     query = query.filter(char_count__gt=0)
-    query = query.exclude(username__in=[settings.CRON_USERNAME, settings.ADMIN_USERNAME])
+    query = query.exclude(username__in=[Setting.get('common_cron_username'), 
+                                        Setting.get('common_admin_username')])
     members = []
     for player in query:
         characters = list(player.characters.values('name',
@@ -57,7 +57,7 @@ def players(request):
     return HttpResponse(json.dumps(members))
 
 #------------------------------------------------------------------------------
-@basic_auth_required(username=settings.CRON_USERNAME)
+@basic_auth_required(username=Setting.get('common_cron_username'))
 def user_bindings(request, app_name):
     app = get_object_or_404(ExternalApplication, name=app_name)
     query = app.user_bindings.select_related(depth=3)
@@ -89,7 +89,7 @@ def user_bindings(request, app_name):
     return HttpResponse(json.dumps(members))
 
 #------------------------------------------------------------------------------
-@basic_auth_required(username=settings.CRON_USERNAME)
+@basic_auth_required(username=Setting.get('common_cron_username'))
 def group_bindings(request, app_name):
     app = get_object_or_404(ExternalApplication, name=app_name)
     groups = {}

@@ -60,7 +60,7 @@ def details(request, characterID):
         member = Member(characterID=int(characterID), name="???")
 
     try:
-        killboardUrl = Setting.objects.get(name='corp_killboard_url').getValue()
+        killboardUrl = Setting.get('corp_killboard_url')
     except Setting.DoesNotExist:
         killboardUrl = None
 

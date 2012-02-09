@@ -35,4 +35,6 @@ SETTINGS = {
     'common_api_keyID': 0,
     'common_api_vCode': '',
     'common_api_characterID': 0,
+    'common_admin_username': 'admin',
+    'common_cron_username': 'cron',
 }

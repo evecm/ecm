@@ -36,7 +36,7 @@ def get_buy_prices(itemIDs, systemID):
     params.append(("minQ", 1000))
     if systemID != 1:
         params.append(("usesystem", systemID))
-    evecentralurl = Setting.objects.get(name='industry_evecentral_url').getValue()
+    evecentralurl = Setting.get('industry_evecentral_url')
     url = evecentralurl + '?' + urllib.urlencode(params)
     logger.info('Fetching market info from %s...' % url)
     response = urllib2.urlopen(url)

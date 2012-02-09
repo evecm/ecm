@@ -112,7 +112,7 @@ def systems_data(request):
     else:
         cursor.execute(sql, divisions)
 
-    exact_volumes = Setting.objects.get(name='assets_show_exact_volumes').getValue()
+    exact_volumes = Setting.get('assets_show_exact_volumes')
 
     jstree_data = []
     for solarSystemID, items, volume in cursor:
@@ -172,7 +172,7 @@ def stations_data(request, solarSystemID):
     else:
         cursor.execute(sql, [solarSystemID] + list(divisions))
 
-    exact_volumes = Setting.objects.get(name='assets_show_exact_volumes').getValue()
+    exact_volumes = Setting.get('assets_show_exact_volumes')
 
     jstree_data = []
     for stationID, flag, items, volume in cursor:
@@ -233,7 +233,7 @@ def hangars_data(request, solarSystemID, stationID):
     for h in Hangar.objects.all():
         HANGAR[h.hangarID] = h.name
 
-    exact_volumes = Setting.objects.get(name='assets_show_exact_volumes').getValue()
+    exact_volumes = Setting.get('assets_show_exact_volumes')
 
     jstree_data = []
     for hangarID, items, volume in cursor:

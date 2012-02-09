@@ -175,7 +175,7 @@ def getItem(typeID):
             return row
 
 #------------------------------------------------------------------------------
-SQL_BLUEPRINT = 'SELECT * FROM "invBlueprintTypes" WHERE "blueprintTypeID"=%s;'
+SQL_BLUEPRINT = 'SELECT * FROM invBlueprintTypes WHERE blueprintTypeID=%s;'
 def getBlueprint(blueprintTypeID):
     try:
         return cache.getCachedBlueprint(blueprintTypeID)

@@ -29,15 +29,6 @@ def resolvePath(relativePath):
 # ECM SETTINGS #
 ################
 
-ECM_BASE_URL = "127.0.0.1:8000"
-
-DIRECTOR_GROUP_NAME = "Directors"
-CORP_MEMBERS_GROUP_NAME = "Members"
-CRON_USERNAME = "cron"
-ADMIN_USERNAME = "admin"
-
-EVE_API_VERSION = "2"
-
 ACCOUNT_ACTIVATION_DAYS = 2
 
 PASSWD_MIN_LENGTH = 6
@@ -65,6 +56,8 @@ DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
         'NAME': resolvePath('../db/EVE.db')
     }
 }
+
+SITE_ID = 1
 
 ##########
 # E-MAIL #
@@ -175,8 +168,9 @@ CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.sessions',
     'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
 
     'captcha',

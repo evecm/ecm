@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.contrib.sites.models import Site
 
 __date__ = "2011 4 5"
 __author__ = "diabeteman"
@@ -98,7 +99,7 @@ def activate_account(request, activation_key):
 
 #------------------------------------------------------------------------------
 def send_activation_email(request, user_profile):
-    ctx_dict = {'site': settings.ECM_BASE_URL,
+    ctx_dict = {'site': Site.objects.get_current(),
                 'user_name': user_profile.user.username,
                 'activation_key': user_profile.activation_key,
                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS}
