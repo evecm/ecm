@@ -15,11 +15,13 @@ $(document).ready(function() {
         sAjaxSource: AJAX_URL,
         sDom: 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
         aoColumns: [
-            { /* # */               sWidth: "10%" },
+            { /* # */               sWidth: "5%" },
             { /* State */           sWidth: "10%" },
-            { /* Items */           sWidth: "40%", bSortable: false },
+            { /* Items */           sWidth: "30%", bSortable: false },
             { /* Quote */           sWidth: "15%", sClass: 'right'},
+            { /* Creation date */   sWidth: "15%" },
         ],
+        aaSorting: [[0,'desc']],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             return nRow;
         },

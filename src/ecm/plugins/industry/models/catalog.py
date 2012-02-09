@@ -25,21 +25,6 @@ from django.utils.translation import ugettext_lazy as tr
 from ecm.core.eve.classes import Blueprint, Item
 from ecm.core.eve import db
 
-#------------------------------------------------------------------------------
-class Pricing(models.Model):
-
-    class Meta:
-        app_label = 'industry'
-
-    name = models.CharField(max_length=100)
-    margin = models.FloatField()
-
-    def margin_admin_display(self):
-        return unicode('%d%%}' % (self.margin * 100.0))
-    margin_admin_display.short_description = 'Margin'
-
-    def __unicode__(self):
-        return unicode(self.name)
 
 #------------------------------------------------------------------------------
 class CatalogEntry(models.Model):
@@ -51,11 +36,11 @@ class CatalogEntry(models.Model):
 
     typeID = models.IntegerField(primary_key=True)
     typeName = models.CharField(max_length=100)
-    marketGroupID = models.IntegerField(db_index=True, null=True, blank=True)
-    fixedPrice = models.FloatField(null=True, blank=True)
-    productionCost = models.FloatField(null=True, blank=True)
-    lastUpdate = models.DateTimeField(null=True, blank=True)
-    isAvailable = models.BooleanField(default=True)
+    fixed_price = models.FloatField(null=True, blank=True)
+    production_cost = models.FloatField(null=True, blank=True)
+    public_price = models.FloatField(null=True, blank=True)
+    last_update = models.DateTimeField(null=True, blank=True)
+    is_available = models.BooleanField(default=True)
     __item = None
 
     @property
@@ -66,7 +51,7 @@ class CatalogEntry(models.Model):
     def permalink(self):
         return '<a href="%s" class="catalog-item">%s</a>' % (self.url, self.typeName)
 
-    def missingBlueprints(self, skip_invented=True):
+    def missing_blueprints(self, skip_invented=True):
         involved_bps = set()
         for bp in self.blueprint.getInvolvedBlueprints(recurse=True) | set([self.blueprint]):
             if skip_invented and bp.item.techLevel == 2 and bp.parentBlueprintTypeID is not None:
@@ -109,7 +94,7 @@ class OwnedBlueprint(models.Model):
     pe = models.SmallIntegerField(default=0)
     copy = models.BooleanField(default=False)
     runs = models.SmallIntegerField(default=0)
-    catalogEntry = models.ForeignKey(CatalogEntry, related_name='blueprints', null=True, blank=True)
+    catalog_entry = models.ForeignKey(CatalogEntry, related_name='blueprints', null=True, blank=True)
     __blueprint = None
 
     @property

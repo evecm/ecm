@@ -35,10 +35,10 @@ ITEM_ID = {{item.typeID}};
         <tr>
           <td class="bold">Available</td>
           <td>
-            <input type="checkbox" id="availability_checkbox" {% if item.isAvailable %}checked{% endif %} />
+            <input type="checkbox" id="availability_checkbox" {% if item.is_available %}checked{% endif %} />
           </td>
         </tr>
-        <tr><td class="bold">Fixed Price</td><td id="price">{{item.fixedPrice|ecm_price}}</td></tr>
+        <tr><td class="bold">Fixed Price</td><td id="price">{{item.fixed_price|ecm_price}}</td></tr>
       </table>
     </td>
   </tr>

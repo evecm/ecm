@@ -20,11 +20,12 @@ from __future__ import with_statement
 __date__ = "2011 8 17"
 __author__ = "diabeteman"
 
-from django.db import models, transaction, connection
+from django.db import models, connection
 from django.contrib.auth.models import User
 
 from ecm.core import utils
-from ecm.core.utils import fix_mysql_quotes, cached_property
+from ecm.core.eve import db
+from ecm.core.utils import fix_mysql_quotes
 from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.industry.models.inventory import Supply
 from ecm.plugins.industry.models.job import Job
@@ -73,22 +74,21 @@ class Order(models.Model):
     state = models.PositiveIntegerField(default=DRAFT, choices=STATES.items())
     originator = models.ForeignKey(User, related_name='orders_created')
     manufacturer = models.ForeignKey(User, null=True, blank=True, related_name='orders_manufactured')
-    deliveryMan = models.ForeignKey(User, null=True, blank=True, related_name='orders_delivered')
+    delivery_boy = models.ForeignKey(User, null=True, blank=True, related_name='orders_delivered')
     client = models.CharField(max_length=255, null=True, blank=True)
-    deliveryLocation = models.CharField(max_length=255, null=True, blank=True)
-    deliveryDate = models.DateField(null=True, blank=True)
+    delivery_location = models.CharField(max_length=255, null=True, blank=True)
+    delivery_date = models.DateField(null=True, blank=True)
     cost = models.FloatField(default=0.0)
     quote = models.FloatField(default=0.0)
-    pricing = models.ForeignKey('Pricing', related_name='orders')
-    extraDiscount = models.FloatField(default=0.0)
+    discount = models.FloatField(default=0.0)
 
-    def lastModified(self):
+    def last_modified(self):
         try:
             return self.logs.latest().date
         except OrderLog.DoesNotExist:
             return None
 
-    def creationDate(self):
+    def creation_date(self):
         try:
             return self.logs.all()[0].date
         except IndexError:
@@ -98,18 +98,18 @@ class Order(models.Model):
     #############################
     # TRANSISTIONS
 
-    def addComment(self, user, comment):
+    def add_comment(self, user, comment):
         self.logs.create(state=self.state, user=user, text=unicode(comment))
 
-    def applyTransition(self, function, newState, user, comment):
+    def apply_transition(self, function, state, user, comment):
         """
         Modify the state of an order. Adding a comment in the order logs.
 
         Checks if the new state is allowed in the life cycle. If not, raises an IllegalStateError
         """
-        self.checkCanPassTransition(function.__name__)
-        self.state = newState
-        self.addComment(user, comment)
+        self.check_can_pass_transition(function.__name__)
+        self.state = state
+        self.add_comment(user, comment)
 
     def modify(self, entries):
         """
@@ -123,22 +123,34 @@ class Order(models.Model):
             comment = "Modified by originator."
         else:
             comment = "Created."
-        self.applyTransition(Order.modify, Order.DRAFT, self.originator, comment)
+        self.apply_transition(Order.modify, Order.DRAFT, self.originator, comment)
         self.rows.all().delete()
-        for catalogEntry, quantity in entries:
-            self.rows.create(catalogEntry=catalogEntry, quantity=quantity)
-        self.createJobs(dry_run=True)
+        
+        self.cost = 0.0
+        self.quote = 0.0
+        missingPrice = False
+        for catalog_entry, quantity in entries:
+            self.rows.create(catalog_entry=catalog_entry, quantity=quantity)
+            if catalog_entry.production_cost is not None:
+                if catalog_entry.fixed_price is not None:
+                    self.quote += catalog_entry.fixed_price
+                else:
+                    self.quote += catalog_entry.production_cost * (1 + self.pricing.margin)
+                self.cost += catalog_entry.production_cost
+            else:
+                missingPrice = True
+        if missingPrice:
+            self.cost = 0.0
+            self.quote = 0.0
         self.save()
-
 
     def confirm(self):
         """
         Originator's confirmation of the order. Warns the manufacturing team.
         """
-        self.applyTransition(Order.confirm, Order.PENDING, self.originator, "Confirmed by originator.")
+        self.apply_transition(Order.confirm, Order.PENDING, self.originator, "Confirmed by originator.")
         self.save()
-        # TODO: handle the alerts
-
+        # TODO: handle the alerts to the manufacturing team
 
     def accept(self, manufacturer):
         """
@@ -149,13 +161,15 @@ class Order(models.Model):
         If it can, its states changes to ACCEPTED. If not, the order changes to PROBLEMATIC.
         """
         try:
-            self.checkIfCanBeFulfilled()
-            self.createJobs()
-            self.applyTransition(Order.accept, Order.ACCEPTED, user=manufacturer, comment="Accepted")
+            self.check_feasibility()
+            missingPrices = self.create_jobs()
+            if missingPrices: # FIXME moche moche moche
+                raise OrderCannotBeFulfilled('Missing prices for items %s' % list(missingPrices))
+            self.apply_transition(Order.accept, Order.ACCEPTED, user=manufacturer, comment="Accepted")
             self.save()
             return True
         except OrderCannotBeFulfilled, err:
-            self.applyTransition(Order.accept, Order.PROBLEMATIC, user=manufacturer, comment=str(err))
+            self.apply_transition(Order.accept, Order.PROBLEMATIC, user=manufacturer, comment=str(err))
             self.save()
             return False
 
@@ -166,17 +180,17 @@ class Order(models.Model):
         This is a manual operation and entering a comment is mandatory to explain
         why the order was accepted despite the fact that is was PROBLEMATIC
         """
-        self.createJobs()
-        self.applyTransition(Order.resolve, Order.ACCEPTED, manufacturer, comment)
+        self.create_jobs()
+        self.apply_transition(Order.resolve, Order.ACCEPTED, manufacturer, comment)
         self.save()
 
     def plan(self, manufacturer, date):
         """
         Plan an order for a delivery date
         """
-        self.applyTransition(Order.plan, Order.PLANNED, manufacturer,
+        self.apply_transition(Order.plan, Order.PLANNED, manufacturer,
                              'Order planned for date "%s"' % utils.print_date(date))
-        self.deliveryDate = date
+        self.delivery_date = date
         self.save()
 
     def reject(self, manufacturer, comment):
@@ -186,34 +200,35 @@ class Order(models.Model):
         This is a manual operation and entering a comment is mandatory to explain
         why the order was rejected.
         """
-        self.applyTransition(Order.reject, Order.REJECTED, manufacturer, comment)
+        self.apply_transition(Order.reject, Order.REJECTED, manufacturer, comment)
         self.save()
-        # TODO: handle the alerts
+        # TODO: handle the alerts to the client
 
     def cancel(self, comment):
         """
         Cancellation of the order by its originator.
         """
-        self.applyTransition(Order.cancel, Order.CANCELED, self.originator, comment)
+        self.apply_transition(Order.cancel, Order.CANCELED, self.originator, comment)
         self.save()
+        # TODO: handle the alerts to the manufacturing team
 
-    def startPreparation(self, user=None):
+    def start_preparation(self, user=None):
         """
         Order preparation started (first job is started)
         """
-        self.applyTransition(Order.startPreparation, Order.IN_PREPARATION,
+        self.apply_transition(Order.start_preparation, Order.IN_PREPARATION,
                              user or self.manufacturer, "Preparation started.")
         self.save()
 
-    def endPreparation(self, manufacturer=None, deliveryMan=None):
+    def end_preparation(self, manufacturer=None, delivery_boy=None):
         """
         Order is ready (all jobs are ready)
 
-        Delivery task is assigned to manufacturer by default, unless deliveryMan is not None.
+        Delivery task is assigned to manufacturer by default, unless delivery_boy is not None.
         """
-        self.applyTransition(Order.endPreparation, Order.READY,
+        self.apply_transition(Order.end_preparation, Order.READY,
                              manufacturer, "Order is ready.")
-        self.deliveryMan = deliveryMan or manufacturer or self.manufacturer
+        self.delivery_boy = delivery_boy or manufacturer or self.manufacturer
 
         self.save()
 
@@ -221,18 +236,18 @@ class Order(models.Model):
         """
         Order has been delivered.
         """
-        self.applyTransition(Order.deliver, Order.DELIVERED,
-                             user or self.deliveryMan,
+        self.apply_transition(Order.deliver, Order.DELIVERED,
+                             user or self.delivery_boy,
                              "Order has been delivered to the client.")
         self.save()
-        # TODO: handle the alerts
+        # TODO: handle the alerts to the client
 
     def pay(self, user=None):
         """
         Order has been paid.
         """
-        self.applyTransition(Order.pay, Order.PAID,
-                             user or self.deliveryMan, "Order has been delivered to the client.")
+        self.apply_transition(Order.pay, Order.PAID,
+                             user or self.delivery_boy, "Order has been delivered to the client.")
         self.save()
 
     # allowed transitions between states
@@ -240,9 +255,9 @@ class Order(models.Model):
         DRAFT : (modify, confirm, cancel),
         PENDING : (modify, accept, cancel, reject),
         PROBLEMATIC : (modify, resolve, cancel, reject),
-        ACCEPTED : (plan, startPreparation, cancel),
-        PLANNED : (startPreparation, cancel),
-        IN_PREPARATION : (endPreparation, cancel),
+        ACCEPTED : (plan, start_preparation, cancel),
+        PLANNED : (start_preparation, cancel),
+        IN_PREPARATION : (end_preparation, cancel),
         READY : (deliver, cancel),
         DELIVERED : (pay, cancel),
         PAID : (),
@@ -257,8 +272,8 @@ class Order(models.Model):
     plan.text = 'Plan order'
     reject.text = 'Reject order'
     cancel.text = 'Cancel order'
-    startPreparation.text = 'Start preparation'
-    endPreparation.text = 'End preparation'
+    start_preparation.text = 'Start preparation'
+    end_preparation.text = 'End preparation'
     deliver.text = 'Deliver order'
     pay.text = 'Pay order'
 
@@ -269,19 +284,19 @@ class Order(models.Model):
     plan.customerAccess = False
     reject.customerAccess = False
     cancel.customerAccess = True
-    startPreparation.customerAccess = False
-    endPreparation.customerAccess = False
+    start_preparation.customerAccess = False
+    end_preparation.customerAccess = False
     deliver.customerAccess = False
     pay.customerAccess = True
 
 
-    def getValidTransitions(self, customer=False):
+    def get_valid_transitions(self, customer=False):
         if customer:
             return [ tr for tr in Order.VALID_TRANSITIONS[self.state] if tr.customerAccess ]
         else:
             return Order.VALID_TRANSITIONS[self.state]
 
-    def checkCanPassTransition(self, transitionName):
+    def check_can_pass_transition(self, transitionName):
         validTransitionNames = [ t.__name__ for t in Order.VALID_TRANSITIONS[self.state] ]
         if transitionName not in validTransitionNames:
             raise IllegalTransition('Cannot apply transition "%s" from state "%s".' %
@@ -290,7 +305,7 @@ class Order(models.Model):
     ################################
     # UTILITY FUNCTIONS
 
-    def checkIfCanBeFulfilled(self):
+    def check_feasibility(self):
         """
         Checks if the order can be fulfilled.
 
@@ -302,12 +317,12 @@ class Order(models.Model):
         """
         missing_blueprints = set()
         for row in self.rows.all():
-            missing_blueprints.update(row.catalogEntry.missingBlueprints())
+            missing_blueprints.update(row.catalog_entry.missing_blueprints())
         
         if missing_blueprints:
             raise OrderCannotBeFulfilled(missing_blueprints=missing_blueprints)
 
-    def createJobs(self, dry_run=False):
+    def create_jobs(self):
         """
         Create all jobs needed to complete this order.
         Calculating costs for all the order's rows.
@@ -321,18 +336,17 @@ class Order(models.Model):
         self.cost = 0.0
         self.quote = 0.0
         for row in self.rows.all():
-            row.cost, missPrices = row.calculateJobs(prices=prices, dry_run=dry_run)
+            row.cost, missPrices = row.create_jobs(prices=prices)
             missingPrices.update(missPrices)
             self.cost += row.cost
             self.quote += row.quote
             row.save()
         self.save()
-        with transaction.commit_on_success():
-            for itemID in missingPrices:
-                Supply.objects.create(typeID=itemID, price=0.0)
+        return missingPrices
+            
 
 
-    def getAggregatedJobs(self, activity=None):
+    def get_aggregated_jobs(self, activity=None):
         """
         Retrieve a list of all the jobs related to this order aggregated by itemID.
 
@@ -359,21 +373,6 @@ class Order(models.Model):
 
         return jobs
 
-    def __getattr__(self, attr):
-        if attr.endswith('_permalink'):
-            field = attr[:-len('_permalink')]
-            if field in ('originator', 'manufacturer', 'deliveryMan'):
-                player_id = getattr(self, field + '_id')
-                if player_id is not None:
-                    url = '/player/%d/' % player_id
-                    return '<a href="%s" class="player">%s</a>' % (url, getattr(self, field).username)
-                else:
-                    return '(none)'
-            else:
-                return models.Model.__getattribute__(self, attr)
-        else:
-            return models.Model.__getattribute__(self, attr)
-
     def repr_as_tree(self):
         output = ''
         for r in self.rows.all():
@@ -394,7 +393,28 @@ class Order(models.Model):
             url = self.url()
         return '<a href="%s" class="order">Order &#35;%d</a>' % (url, self.id)
 
-    def stateText(self):
+    def originator_permalink(self):
+        if self.originator is not None:
+            url = '/hr/player/%d/' % self.originator.id
+            return '<a href="%s" class="player">%s</a>' % (url, self.originator.username)
+        else:
+            return '(none)'
+
+    def manufacturer_permalink(self):
+        if self.manufacturer is not None:
+            url = '/hr/player/%d/' % self.manufacturer.id
+            return '<a href="%s" class="player">%s</a>' % (url, self.manufacturer.username)
+        else:
+            return '(none)'
+
+    def delivery_boy_permalink(self):
+        if self.delivery_boy is not None:
+            url = '/hr/player/%d/' % self.delivery_boy.id
+            return '<a href="%s" class="player">%s</a>' % (url, self.delivery_boy.username)
+        else:
+            return '(none)'
+
+    def state_text(self):
         return Order.STATES[self.state]
 
     def __unicode__(self):
@@ -420,15 +440,13 @@ class OrderLog(models.Model):
     user = models.ForeignKey(User, related_name='logs')
     text = models.TextField()
 
-    @cached_property
     def user_permalink(self):
         try:
-            url = '/player/%d' % self.user.id
+            url = '/player/%d/' % self.user.id
             return '<a href="%s" class="player">%s</a>' % (url, self.user.username)
         except:
             return '(None)'
 
-    @property
     def state_text(self):
         try:
             return Order.STATES[self.state]
@@ -447,12 +465,12 @@ class OrderRow(models.Model):
         ordering = ['order']
 
     order = models.ForeignKey(Order, related_name='rows')
-    catalogEntry = models.ForeignKey(CatalogEntry, related_name='order_rows')
+    catalog_entry = models.ForeignKey(CatalogEntry, related_name='order_rows')
     quantity = models.PositiveIntegerField()
     cost = models.FloatField(default=0.0)
 
 
-    def getAggregatedJobs(self, activity=None):
+    def get_aggregated_jobs(self, activity=None):
         """
         Retrieve a list of all the jobs related to this OrderRow aggregated by itemID.
 
@@ -477,54 +495,51 @@ class OrderRow(models.Model):
         return jobs
 
 
-    @transaction.commit_manually
-    def calculateJobs(self, prices=None, dry_run=False):
-        job = Job.create(self.catalogEntry_id, self.quantity, order=self.order, row=self)
-        job.createRequirements()
-        cost, missingPrices = self.calculateCost(prices)
-        if dry_run:
-            transaction.rollback()
-        else:
-            transaction.commit()
+    def create_jobs(self, prices=None):
+        job = Job.create(self.catalog_entry_id, self.quantity, order=self.order, row=self)
+        job.create_requirements()
+        cost, missingPrices = self.calculate_cost(prices)
         return cost, missingPrices
 
-    def calculateCost(self, prices=None):
+
+    def calculate_cost(self, prices=None):
         if prices is None:
             prices = {}
             for sp in Supply.objects.all():
                 prices[sp.typeID] = sp.price
         cost = 0.0
         missingPrices = set([])
-        for job in self.getAggregatedJobs(Job.SUPPLY):
+        for job in self.get_aggregated_jobs(Job.SUPPLY):
             try:
                 cost += prices[job.itemID] * round(job.runs)
             except KeyError:
-                # to avoid the error next time :)
                 missingPrices.add(job.itemID)
         return cost, missingPrices
 
-    @property
-    def quote(self):
-        if self.catalogEntry.fixedPrice is not None:
-            return self.catalogEntry.fixedPrice
-        else:
-            return self.cost * (1 + self.order.pricing.margin)
 
     def __unicode__(self):
-        return '%s x%d : %f' % (self.catalogEntry.typeName, self.quantity, self.cost)
+        return '%s x%d : %f' % (self.catalog_entry.typeName, self.quantity, self.cost)
 
 
 
 #------------------------------------------------------------------------------
 class OrderCannotBeFulfilled(UserWarning):
 
-    def __init__(self, missing_blueprints):
+    def __init__(self, missing_blueprints=None, missing_prices=None):
         self.missing_blueprints = missing_blueprints
+        self.missing_prices = missing_prices
 
     def __str__(self):
-        output = "Missing Blueprints:"  + "\n\n"
-        for bp in self.missing_blueprints:
-            output += "  - %s (%s)\n" % (str(bp.typeName), str(bp.typeID))
+        if self.missing_blueprints:
+            if all([ type(p) == type(0) for p in self.missing_blueprints ]):
+                self.missing_blueprints = [ db.resolveTypeName(p)[0] for p in self.missing_blueprints ]
+            output = 'Missing Blueprints: '
+            output += ', '.join(map(str, self.missing_blueprints))
+        elif self.missing_prices:
+            if all([ type(p) == type(0) for p in self.missing_prices ]):
+                self.missing_prices = [ db.resolveTypeName(p)[0] for p in self.missing_prices ]
+            output = 'Missing SupplyPrices: '
+            output += ', '.join(map(str, self.missing_prices))
         return output
 
 #------------------------------------------------------------------------------

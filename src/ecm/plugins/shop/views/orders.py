@@ -39,18 +39,25 @@ from ecm.plugins.industry.views.orders import extract_order_items
 #------------------------------------------------------------------------------
 COLUMNS = [
     ['#', 'id'],
-    ['State', 'stateText'],
+    ['State', 'state'],
     ['Items', None],
     ['Quote', 'quote'],
+    ['Creation Date', None],
 ]
 @login_required
 def myorders(request):
+    """
+    Serves URL /shop/orders/
+    """
     columns = [ col[0] for col in COLUMNS ]
     return render_to_response('shop_myorders.html', {'columns' : columns}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required
 def myorders_data(request):
+    """
+    Serves URL /shop/orders/data/ (jQuery datatables plugin)
+    """
     try:
         params = extract_datatable_params(request)
     except Exception, e:
@@ -60,17 +67,26 @@ def myorders_data(request):
 
     order_count = query.count()
     if params.search:
-        query = query.filter(rows__catalogEntry__typeName__icontains=params.search)
+        query = query.filter(rows__catalog_entry__typeName__icontains=params.search)
     filtered_count = query.count()
+
+    if params.column not in (0, 1, 3):
+        params.column = 0 # by default, show latest orders first
+    sort_col = COLUMNS[params.column][1]
+    if not params.asc: 
+        sort_col = '-' + sort_col
+    
+    query = query.order_by(sort_col) 
 
     orders = []
     for order in query[params.first_id:params.last_id]:
-        items = [ row.catalogEntry.typeName for row in order.rows.all() ]
+        items = [ row.catalog_entry.typeName for row in order.rows.all() ]
         orders.append([
             order.permalink(),
-            order.stateText(),
+            order.state_text(),
             truncate_words(', '.join(items), 6),
             utils.print_float(order.quote) + ' ISK',
+            utils.print_time_min(order.creation_date()),
         ])
 
     json_data = {
@@ -84,6 +100,9 @@ def myorders_data(request):
 #------------------------------------------------------------------------------
 @login_required
 def create(request):
+    """
+    Serves URL /shop/orders/create/
+    """
     if request.method == 'POST':
         items, valid_order = extract_order_items(request)
         if valid_order:
@@ -98,6 +117,9 @@ def create(request):
 #------------------------------------------------------------------------------
 @login_required
 def details(request, order_id):
+    """
+    Serves URL /shop/orders/<order_id>/
+    """
     try:
         order = get_object_or_404(Order, id=int(order_id))
     except ValueError:
@@ -108,7 +130,7 @@ def details(request, order_id):
 
     logs = order.logs.all().order_by('-date')
     validTransitions = [ (trans.__name__, trans.text) 
-                               for trans in order.getValidTransitions(customer=True) ]
+                               for trans in order.get_valid_transitions(customer=True) ]
 
     data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions}
 
@@ -117,15 +139,19 @@ def details(request, order_id):
 #------------------------------------------------------------------------------
 @login_required
 def change_state(request, order_id, transition):
+    """
+    Serves URL /shop/orders/<order_id>/<transition>/
+    """
     try:
         order = get_object_or_404(Order, id=int(order_id))
-        order.checkCanPassTransition(transition)
         
         if request.user != order.originator:
             return forbidden(request)
 
+        order.check_can_pass_transition(transition)
+
         if transition == order.modify.__name__:
-            return modify(request, order)
+            return _modify(request, order)
         elif transition == order.confirm.__name__:
             order.confirm()
             return redirect('/shop/orders/%d/' % order.id)
@@ -142,7 +168,7 @@ def change_state(request, order_id, transition):
     except IllegalTransition, e:
         logs = order.logs.all().order_by('-date')
         validTransitions = [ (trans.__name__, trans.text) 
-                                   for trans in order.getValidTransitions(customer=True) ]
+                                   for trans in order.get_valid_transitions(customer=True) ]
     
         data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions, 'error': e}
     
@@ -150,7 +176,10 @@ def change_state(request, order_id, transition):
     
 
 #------------------------------------------------------------------------------
-def modify(request, order):
+def _modify(request, order):
+    """
+    This should only be accessible through the change_state() function.
+    """
     if request.method == 'POST':
         items, valid_order = extract_order_items(request)
         if valid_order:

@@ -51,7 +51,7 @@ class Supply(models.Model):
     supplySource = models.ForeignKey('SupplySource', related_name='prices', default=1)
     __item = None
 
-    def updatePrice(self, newPrice):
+    def update_price(self, newPrice):
         self.price = newPrice
         self.save()
         self.price_histories.create(price=self.price)

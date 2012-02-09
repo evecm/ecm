@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.core.utils import cached_property
 
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
@@ -22,6 +21,7 @@ __author__ = "diabeteman"
 from django.db import models
 from django.contrib.auth.models import User
 
+from ecm.core.utils import cached_property
 from ecm.core.eve.classes import Item, NoBlueprintException
 from ecm.plugins.industry.models.research import InventionPolicy
 from ecm.plugins.industry.models.catalog import OwnedBlueprint
@@ -77,7 +77,7 @@ class Job(models.Model):
     startDate = models.DateTimeField(null=True, blank=True)
     endDate = models.DateTimeField(null=True, blank=True)
 
-    def createRequirements(self):
+    def create_requirements(self):
         """
         Recursively create all jobs needed to complete the current one.
 
@@ -128,7 +128,7 @@ class Job(models.Model):
 
         for job in self.childrenJobs.all():
             # recursive call
-            job.createRequirements()
+            job.create_requirements()
 
     @staticmethod
     def create(itemID, quantity, order, row):

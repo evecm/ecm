@@ -24,7 +24,7 @@ $(document).ready(function () {{% for transition, name in validTransitions %}
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Order #{{ order.id }} <span class="date">- {{order.stateText}}</span></h1>
+<h1 class="pagetitle">Order #{{ order.id }} <span class="date">- {{order.state_text}}</span></h1>
 
 <table class="transparent">
   <tbody>
@@ -38,19 +38,19 @@ $(document).ready(function () {{% for transition, name in validTransitions %}
     </tr>
     <tr>
       <td class="bold">Delivery Man</td>
-      <td class="right">{{order.deliveryMan_permalink|safe}}</td>
+      <td class="right">{{order.delivery_boy_permalink|safe}}</td>
     </tr>
     <tr>
       <td class="bold">Creation Date</td>
-      <td class="right">{{order.creationDate|ecm_datetime}}</td>
+      <td class="right">{{order.creation_date|ecm_datetime}}</td>
     </tr>
     <tr>
       <td class="bold">Last Modified</td>
-      <td class="right">{{order.lastModified|ecm_datetime}}</td>
+      <td class="right">{{order.last_modified|ecm_datetime}}</td>
     </tr>
     <tr>
       <td class="bold">Delivery Date</td>
-      <td class="right">{{order.deliveryDate|ecm_datetime}}</td>
+      <td class="right">{{order.delivery_date|ecm_datetime}}</td>
     </tr>
     <tr>
       <td class="bold">Pricing</td>
@@ -83,8 +83,8 @@ $(document).ready(function () {{% for transition, name in validTransitions %}
   <tbody>
     {% for row in order.rows.all %}
     <tr>
-          <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" /></td>
-           <td>{{row.catalogEntry.permalink|safe}}</td>
+          <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
+           <td>{{row.catalog_entry.permalink|safe}}</td>
            <td class="center">{{row.quantity|ecm_quantity}}</td>
            <td class="right">{%if row.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
          </tr>

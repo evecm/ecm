@@ -2,6 +2,7 @@
 NEW_ITEM = '<tr id="%typeID">' +
              '<td class="center"><img src="http://image.eveonline.com/Type/%typeID_32.png" /></td>' +
              '<td class="bold">%typeName</td>' +
+             '<td class="right price" price="%price">%formattedPrice</td>' +
              '<td class="center"><input type="text" name="%typeID" value="%quantity" /></td>' +
              '<td class="center"><img src="/s/industry/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/></td>' +
            '</tr>';
@@ -16,6 +17,7 @@ function removeItem(img_node) {
         if (rows.length == 0) {
             $('#items').html(EMPTY);
         }
+        updateTotal();
     }
 }
 
@@ -26,29 +28,60 @@ function addItem(name) {
     $.getJSON("/shop/utils/itemid/", {q: name}, function(json) {
         var typeID = json[0];
         var typeName = json[1];
-        appendItemToOrder(typeID, typeName, 1);
+        var price = json[2];
+        appendItemToOrder(typeID, typeName, 1, price);
         $("#search_box").val("");
+        updateTotal();
     }).error(function () {
         alert('Item "' + name + '" is not available in the shop!');
     });
 }
 
-function appendItemToOrder(typeID, typeName, quantity) {
+function appendItemToOrder(typeID, typeName, quantity, price) {
     $('#empty').remove();
     var rows =  $('#items tr');
+    var formattedPrice = 'N/A';
+    if (price != null) {
+        formattedPrice = (price).formatMoney();
+    }
     for (var i = 0 ; i < rows.length ; i++) {
         if (parseInt(rows[i].id) == parseInt(typeID)) {
-            var qty = parseInt($('td:eq(2) input', rows[i]).val());
-            $('td:eq(2) input', rows[i]).val(qty + quantity);
+            var qty = parseInt($('td:eq(3) input', rows[i]).val());
+            $('td:eq(2)', rows[i]).text(formattedPrice);
+            $('td:eq(2)', rows[i]).attr('price', price);
+            $('td:eq(3) input', rows[i]).val(qty + quantity);
             return;
         }
     }
     var row = NEW_ITEM.replace(/%typeID/g, typeID)
                       .replace(/%typeName/g, typeName)
-                      .replace(/%quantity/g, quantity);
+                      .replace(/%quantity/g, quantity)
+                      .replace(/%formattedPrice/g, formattedPrice)
+                      .replace(/%price/g, price);
     
-    $(row).appendTo("#items")
+    $(row).appendTo("#items");
+    $('#' + typeID + ' td:eq(3) input').change(updateTotal);
 }
+
+function updateTotal() {
+    var total = 0.0;
+    var rows =  $('#items tr');
+    var price = 0.0;
+    for (var i = 0; i < rows.length; i++) {
+        if (rows[i].id != 'empty') {
+            var price = $('td.price', rows[i]).attr('price');
+            var qty = $('td:eq(3) input', rows[i]).val();
+            if (price == 'null') {
+                $('span#total_price').text('N/A');
+                return;
+            } else {
+                total += parseFloat(price) * parseInt(qty);
+            }
+        }
+    }
+    $('span#total_price').text((total).formatMoney() + ' ISK');
+}
+
 
 $(document).ready(function() {
     $("#search_box").autocomplete("/shop/utils/search/", {
@@ -135,8 +168,12 @@ $(document).ready(function() {
          })
          .success(function (data) {
              for (var i=0; i < data.length; i++) {
-                 appendItemToOrder(data[i].typeID, data[i].typeName, data[i].quantity);
+                 appendItemToOrder(data[i].typeID, 
+                                   data[i].typeName, 
+                                   data[i].quantity, 
+                                   data[i].price);
              }
+             updateTotal();
              $('#eft-block').val('');
              $('#eft-quantity').val('1')
          })

@@ -57,6 +57,8 @@ URL_PERMISSIONS = [
 
 SETTINGS = {
     'industry_group_name': 'Industry Team',
+    'industry_internal_price_margin': 0.02,
+    'industry_external_price_margin': 0.30,
     'industry_evecentral_url': 'http://api.eve-central.com/api/marketstat',
 }
 

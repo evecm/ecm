@@ -72,7 +72,7 @@ def createMissingCatalogEntries():
     for typeID, typeName, marketGroupID in cursor:
         if typeID not in typeIDs:
             CatalogEntry.objects.create(typeID=typeID, typeName=typeName,
-                                        marketGroupID=marketGroupID, isAvailable=False)
+                                        marketGroupID=marketGroupID, is_available=False)
             created += 1
     logger.info('added %d missing catalog entries', created)
 createMissingCatalogEntries()

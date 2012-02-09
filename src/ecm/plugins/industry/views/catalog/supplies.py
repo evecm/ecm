@@ -195,7 +195,7 @@ def update_price(request, supply_id):
         raise Http404()
     buyPrices = evecentral.get_buy_prices([supply.typeID], supply.supplySource_id)
     if buyPrices[supply.typeID] > 0.0 and supply.price != buyPrices[supply.typeID]:
-        supply.updatePrice(buyPrices[supply.typeID])
+        supply.update_price(buyPrices[supply.typeID])
         logger.info('"%s" updated price for supply "%s" (%s -> %s)' % (request.user,
                                                                 supply.typeName,
                                                                 supply.supplySource,
@@ -227,7 +227,7 @@ def info(request, attr):
             value = json.loads(request.POST['value'])
             if type(value) == type(getattr(supply, attr)):
                 if attr == 'price':
-                    supply.updatePrice(value)
+                    supply.update_price(value)
                     displayVal = utils.print_float(value)
                 else:
                     setattr(supply, attr, value)

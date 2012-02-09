@@ -44,7 +44,7 @@ def update_supply_prices():
 
         for supPrice in prices:
             if buyPrices[supPrice.typeID] > 0.0 and supPrice.price != buyPrices[supPrice.typeID]:
-                supPrice.updatePrice(buyPrices[supPrice.typeID])
+                supPrice.update_price(buyPrices[supPrice.typeID])
                 logger.info('New price for "%s" -> %s' % (supPrice.item_admin_display(),
                                                           utils.print_float(buyPrices[supPrice.typeID])))
 
@@ -56,16 +56,18 @@ def update_production_costs():
     for entry in CatalogEntry.objects.all():
         cost = None
         try:
-            if not entry.missingBlueprints():
+            if not entry.missing_blueprints():
                 with transaction.commit_manually():
                     order = Order.objects.create(originator_id=1, pricing_id=1)
                     order.modify( [ (entry, 1) ] )
-                    cost = order.cost
+                    missingPrices = order.create_jobs()
+                    if not missingPrices:
+                        cost = order.cost
                     transaction.rollback()
         except NoBlueprintException:
             # this can happen when blueprint requirements are not found in EVE database.
             # no way to work arround this issue for the moment, we just keep the price to None
             pass
-        entry.productionCost = cost
-        entry.lastUpdate = now
+        entry.production_cost = cost
+        entry.last_update = now
         entry.save()

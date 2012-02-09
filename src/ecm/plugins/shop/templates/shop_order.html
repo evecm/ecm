@@ -73,20 +73,21 @@
         <thead>
         <tr>
         <th style="width: 10%;">Icon</th>
-        <th style="width: 55%;">Item</th>
+        <th style="width: 40%;">Item</th>
+        <th style="width: 20%;">Unit Price</th>
         <th style="width: 20%;">Quantity</th>
-        <th style="width: 15%;">Remove</th>
+        <th style="width: 10%;">Remove</th>
         </tr>
         </thead>
     <tbody id="items">
         {% for row in order.rows.all %}
-        <tr id="{{row.catalogEntry.typeID}}">
+        <tr id="{{row.catalog_entry.typeID}}">
             <td class="center">
-                <img src="http://image.eveonline.com/Type/{{row.catalogEntry.typeID}}_32.png" />
+                <img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" />
             </td>
-            <td class="bold">{{row.catalogEntry.typeName}}</td>
+            <td class="bold">{{row.catalog_entry.typeName}}</td>
             <td class="center">
-                <input type="text" name="{{row.catalogEntry.typeID}}" value="{{row.quantity}}" />
+                <input type="text" name="{{row.catalog_entry.typeID}}" value="{{row.quantity}}" />
             </td>
             <td class="center">
                 <img src="/s/industry/img/trash.png" class="clickable" onClick="javascript:removeItem(this);"/>
@@ -99,6 +100,8 @@
         {% endfor %}
     </tbody>
     </table>
+    <p style="font-size: 150%;"><span class="bold">TOTAL PRICE:</span>  <span id="total_price">0.0 ISK</span></p>
+    
     <input type="submit" class="button" value="Submit Order" />
     <img id="throbber-submit" class="throbber" src="/s/ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
 </form>

@@ -14,7 +14,6 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.contrib.auth.decorators import login_required
 
 __date__ = "2012 2 2"
 __author__ = "diabeteman"
@@ -25,12 +24,14 @@ except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse,\
     HttpResponseNotFound
 
 from ecm.core import JSON
 from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.shop import eft
+from ecm.apps.common.models import Setting
 
 #------------------------------------------------------------------------------
 @login_required
@@ -47,13 +48,24 @@ def parse_eft(request):
         return HttpResponseBadRequest(str(e))
     
     items_dict = eft.parse_export(eft_block)
-    query = CatalogEntry.objects.filter(typeName__in=items_dict.keys(), isAvailable=True)
+    
+    member_group_name = Setting.get('hr_corp_members_group_name')
+    if request.user.groups.filter(name=member_group_name):
+        margin = Setting.get('industry_internal_price_margin')
+    else:
+        margin = Setting.get('industry_external_price_margin')
+    
+    query = CatalogEntry.objects.filter(typeName__in=items_dict.keys(), is_available=True)
     items = []
     for entry in query:
+        price = entry.fixed_price or entry.production_cost
+        if price is not None:
+            price *= 1 + margin
         items.append({
             'typeID': entry.typeID,
             'typeName': entry.typeName,
-            'quantity': items_dict[entry.typeName] * quantity
+            'quantity': items_dict[entry.typeName] * quantity,
+            'price': price
         })
     return HttpResponse(json.dumps(items), mimetype=JSON)
 
@@ -67,7 +79,7 @@ def search_item(request):
         limit = 10
     if querystring is not None:
         query = CatalogEntry.objects.filter(typeName__icontains=querystring)
-        query = query.filter(isAvailable=True).order_by('typeName')
+        query = query.filter(is_available=True).order_by('typeName')
         matches = query[:limit].values_list('typeName', flat=True)
         return HttpResponse( '\n'.join(matches) )
     else:
@@ -79,9 +91,19 @@ def get_item_id(request):
     querystring = request.GET.get('q', None)
     if querystring is not None:
         query = CatalogEntry.objects.filter(typeName__iexact=querystring)
-        if query.filter(isAvailable=True).exists():
+        if query.filter(is_available=True).exists():
             item = query[0]
-            return HttpResponse( json.dumps( [item.typeID, item.typeName] ) )
+            price = item.fixed_price or item.production_cost
+            
+            member_group_name = Setting.get('hr_corp_members_group_name')
+            if request.user.groups.filter(name=member_group_name):
+                margin = Setting.get('industry_internal_price_margin')
+            else:
+                margin = Setting.get('industry_external_price_margin')
+            
+            if price is not None:
+                price *= 1 + margin
+            return HttpResponse( json.dumps( [item.typeID, item.typeName, price] ) )
         else:
             return HttpResponseNotFound()
     else:

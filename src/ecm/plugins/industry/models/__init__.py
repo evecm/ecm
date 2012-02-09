@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 # How to split models in separate python modules
 # http://www.acooke.org/cute/UsingaDire0.html
 
-from ecm.plugins.industry.models.catalog import OwnedBlueprint, Pricing, CatalogEntry
+from ecm.plugins.industry.models.catalog import OwnedBlueprint, CatalogEntry
 from ecm.plugins.industry.models.inventory import PriceHistory, Supply, SupplySource
 from ecm.plugins.industry.models.job import Job
 from ecm.plugins.industry.models.order import Order, OrderLog, OrderRow
@@ -36,7 +36,6 @@ __all__ = (
     'CatalogEntry',
     'OwnedBlueprint',
     'PriceHistory',
-    'Pricing',
     'Supply',
     'SupplySource',
 )

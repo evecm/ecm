@@ -38,10 +38,10 @@ from ecm.plugins.industry.models import Order, CatalogEntry
 #------------------------------------------------------------------------------
 COLUMNS = [
     ['#', 'id'],
-    ['State', 'stateText'],
+    ['State', 'state_text'],
     ['Originator', 'originator'],
     ['Client', 'client'],
-    ['Delivery Date', 'deliveryDate'],
+    ['Delivery Date', 'delivery_date'],
     ['Items', None],
     ['Quote', 'quote'],
 ]
@@ -62,14 +62,14 @@ def orders_data(request):
 
     orders = []
     for order in query:
-        items = [ row.catalogEntry.typeName for row in order.rows.all() ]
-        if order.deliveryDate is not None:
-            delivDate = utils.print_date(order.deliveryDate)
+        items = [ row.catalog_entry.typeName for row in order.rows.all() ]
+        if order.delivery_date is not None:
+            delivDate = utils.print_date(order.delivery_date)
         else:
             delivDate = '(none)'
         orders.append([
             order.permalink(shop=False),
-            order.stateText(),
+            order.state_text(),
             order.originator_permalink,
             order.client or '(none)',
             delivDate,
@@ -134,7 +134,7 @@ def extract_order_items(request):
             typeID = int(key)
             quantity = int(value)
             item = CatalogEntry.objects.get(typeID=typeID)
-            if item.isAvailable:
+            if item.is_available:
                 items.append( (item, quantity) )
             else:
                 valid_order = False

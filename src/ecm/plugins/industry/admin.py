@@ -20,10 +20,16 @@ __author__ = "diabeteman"
 
 from django.contrib import admin
 
-from ecm.plugins.industry.models import InventionPolicy, Job, Order, \
-                                     OrderLog, OrderRow, OwnedBlueprint, PriceHistory, \
-                                     Pricing, SupplySource, \
-                                     Supply, CatalogEntry
+from ecm.plugins.industry.models import (InventionPolicy, 
+                                         Job, 
+                                         Order,
+                                         OrderLog, 
+                                         OrderRow, 
+                                         OwnedBlueprint, 
+                                         PriceHistory,
+                                         SupplySource,
+                                         Supply, 
+                                         CatalogEntry)
 
 #------------------------------------------------------------------------------
 class MileStoneAdmin(admin.ModelAdmin):
@@ -39,10 +45,10 @@ class OrderAdmin(admin.ModelAdmin):
         "id",
         "originator",
         "manufacturer",
-        "deliveryMan",
+        "delivery_boy",
         "client",
-        "deliveryLocation",
-        "deliveryDate",
+        "delivery_location",
+        "delivery_date",
         "state",
         "pricing",
         "extraDiscount",
@@ -55,7 +61,7 @@ class OrderLogAdmin(admin.ModelAdmin):
 
 #------------------------------------------------------------------------------
 class OrderRowAdmin(admin.ModelAdmin):
-    list_display = ["catalogEntry", "quantity", "cost", "order", ]
+    list_display = ["catalog_entry", "quantity", "cost", "order", ]
 
 #------------------------------------------------------------------------------
 class JobAdmin(admin.ModelAdmin):
@@ -91,8 +97,8 @@ class CatalogEntryAdmin(admin.ModelAdmin):
         "typeName",
         "typeID",
         "marketGroupID",
-        "fixedPrice",
-        "isAvailable",
+        "fixed_price",
+        "is_available",
     ]
 
 #------------------------------------------------------------------------------
@@ -118,7 +124,6 @@ admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderLog, OrderLogAdmin)
 admin.site.register(OrderRow, OrderRowAdmin)
 admin.site.register(Job, JobAdmin)
-admin.site.register(Pricing, PricingAdmin)
 admin.site.register(SupplySource, SupplySourceAdmin)
 admin.site.register(Supply, SupplyAdmin)
 admin.site.register(PriceHistory, PriceHistoryAdmin)

@@ -41,8 +41,8 @@ logger = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 COLUMNS = [
     ['Item', 'typeName'],
-    ['Available', 'isAvailable'],
-    ['Fixed Price', 'fixedPrice'],
+    ['Available', 'is_available'],
+    ['Fixed Price', 'fixed_price'],
     ['Blueprints', 'blueprint_count'],
     ['Ordered', 'order_count'],
     [None, None], # hidden
@@ -72,7 +72,7 @@ def items_data(request):
     query = query.annotate(blueprint_count=Count("blueprints"))
     query = query.annotate(order_count=Count("order_rows"))
     if not params.showUnavailable:
-        query = query.filter(isAvailable=True)
+        query = query.filter(is_available=True)
 
     sort_col = COLUMNS[params.column][1]
     # SQL hack for making a case insensitive sort
@@ -96,8 +96,8 @@ def items_data(request):
     for item in query[params.first_id:params.last_id]:
         items.append([
             item.permalink,
-            bool(item.isAvailable),
-            utils.print_float(item.fixedPrice),
+            bool(item.is_available),
+            utils.print_float(item.fixed_price),
             item.blueprint_count,
             item.order_count,
             item.typeID,
@@ -148,15 +148,15 @@ def price(request, item_id):
         except ValueError:
             # price cannot be cast to a float
             price = None
-        item.fixedPrice = price
+        item.fixed_price = price
         item.save()
         displayPrice = utils.print_float(price)
-        logger.info('"%s" changed fixedPrice for item "%s" -> %s' % (request.user, 
+        logger.info('"%s" changed fixed_price for item "%s" -> %s' % (request.user, 
                                                                      item.typeName, 
                                                                      displayPrice))
         return HttpResponse(displayPrice)
     else:
-        return HttpResponse(str(item.fixedPrice))
+        return HttpResponse(str(item.fixed_price))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -179,12 +179,12 @@ def availability(request, item_id):
                 return HttpResponseBadRequest('"available" parameter must be a boolean')
         except (KeyError, ValueError):
             return HttpResponseBadRequest('Missing "available" parameter')
-        item.isAvailable = available
+        item.is_available = available
         item.save()
         logger.info('"%s" changed availability for item "%s" -> %s' % (request.user, 
                                                                        item.typeName, 
                                                                        available))
-    return HttpResponse(json.dumps(item.isAvailable))
+    return HttpResponse(json.dumps(item.is_available))
 
 #------------------------------------------------------------------------------
 @check_user_access()
