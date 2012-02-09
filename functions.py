@@ -194,13 +194,6 @@ def configure_ecm(options):
     buff = f.read()
     f.close()
 
-    if options.port != "80":
-        buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"',
-                            'ECM_BASE_URL = "%(vhost_name)s:%(port)s"' % options.__dict__)
-    else:
-        buff = buff.replace('ECM_BASE_URL = "127.0.0.1:8000"',
-                            'ECM_BASE_URL = "%(vhost_name)s"' % options.__dict__)
-
     if not 'sqlite' in options.db_engine:
         match = DB_SETTING_RE.search(buff)
         db_str = DB_SETTINGS % options.__dict__
@@ -237,6 +230,7 @@ def configure_ecm(options):
 
 #-------------------------------------------------------------------------------
 VHOST_REGEXP = re.compile(r"<VirtualHost (?P<ip_address>[^\s]+):(?P<port>\d+)>")
+SERVERNAME_REGEXP = re.compile(r"ServerName (?P<vhost_name>[\w\.-]+)", re.IGNORECASE)
 def backup_settings(options, tempdir):
     log = get_logger()
 
@@ -275,6 +269,10 @@ def backup_settings(options, tempdir):
         options.ip_address = match.groupdict()['ip_address']
         options.port = match.groupdict()['port']
 
+    match = SERVERNAME_REGEXP.search(buff)
+    if match is not None:
+        options.vhost_name = match.groupdict()['vhost_name']
+
     sys.path.append(options.install_dir)
     import ecm
     import ecm.settings
@@ -290,7 +288,6 @@ def backup_settings(options, tempdir):
         options.db_pass = ecm.settings.DATABASES['default']['PASSWORD']
     options.admin_email = ecm.settings.ADMINS[1]
     options.server_email = ecm.settings.DEFAULT_FROM_EMAIL
-    options.vhost_name = ecm.settings.ECM_BASE_URL.split(':')[0]
     try:
         options.plugins = ecm.settings.ECM_PLUGIN_APPS
     except AttributeError:

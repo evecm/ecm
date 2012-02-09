@@ -17,8 +17,6 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 
-
-
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
@@ -95,6 +93,12 @@ def install(options):
     functions.configure_ecm(options)
     functions.restore_permissions(options)
     functions.init_ecm_db(options)
+    from django.contrib.sites.models import Site
+    site = Site.objects.get_or_create(pk=1)
+    site.name = site.domain = options.vhost_name
+    if options.port not in ('80', '443'):
+        site.domain += ':%s' % options.port
+    site.save()
 
     vhost_file = os.path.join(options.install_dir, "ecm.apache.vhost.conf")
     settings_file = os.path.join(options.install_dir, "ecm/settings.py")
