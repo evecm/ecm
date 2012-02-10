@@ -61,7 +61,7 @@ ITEM_ID = {{item.typeID}};
   {% for bp in item.blueprints.all %}
     <tr id="{{bp.id}}">
       <td><a href="{{bp.url}}" title="Blueprint details">
-        <img src="http://image.eveonline.com/Type/{{bp.blueprintTypeID}}_32.png"/>
+        <img src="http://image.eveonline.com/Type/{{bp.typeID}}_32.png"/>
       </a></td>
       <td class="me" id="{{bp.id}}">{{bp.me}}</td>
       <td class="pe" id="{{bp.id}}">{{bp.pe}}</td>

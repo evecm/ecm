@@ -28,11 +28,11 @@ from ecm.apps.common.models import Setting
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-def get_buy_prices(itemIDs, systemID):
+def get_buy_prices(item_ids, systemID):
 
     params=[]
-    for itemID in itemIDs:
-        params.append(("typeid", itemID))
+    for item_id in item_ids:
+        params.append(("typeid", item_id))
     params.append(("minQ", 1000))
     if systemID != 1:
         params.append(("usesystem", systemID))

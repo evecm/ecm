@@ -1,4 +1,4 @@
-#@PydevCodeAnalysisIgnore
+# encoding: utf-8
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -7,40 +7,34 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-
-        # Adding model 'Pricing'
-        db.create_table('industry_pricing', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('margin', self.gf('django.db.models.fields.FloatField')()),
-        ))
-        db.send_create_signal('industry', ['Pricing'])
-
+        
         # Adding model 'CatalogEntry'
         db.create_table('industry_catalogentry', (
             ('typeID', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
             ('typeName', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('marketGroupID', self.gf('django.db.models.fields.IntegerField')(db_index=True, null=True, blank=True)),
-            ('fixedPrice', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
-            ('isAvailable', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('fixed_price', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('production_cost', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('public_price', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
+            ('last_update', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('is_available', self.gf('django.db.models.fields.BooleanField')(default=True)),
         ))
         db.send_create_signal('industry', ['CatalogEntry'])
 
         # Adding model 'OwnedBlueprint'
         db.create_table('industry_ownedblueprint', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('blueprintTypeID', self.gf('django.db.models.fields.IntegerField')()),
+            ('typeID', self.gf('django.db.models.fields.IntegerField')()),
             ('me', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
             ('pe', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
             ('copy', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('runs', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
-            ('catalogEntry', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='blueprints', null=True, to=orm['industry.CatalogEntry'])),
+            ('catalog_entry', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='blueprints', null=True, to=orm['industry.CatalogEntry'])),
         ))
         db.send_create_signal('industry', ['OwnedBlueprint'])
 
         # Adding model 'SupplySource'
         db.create_table('industry_supplysource', (
-            ('locationID', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True)),
+            ('location_id', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
         ))
         db.send_create_signal('industry', ['SupplySource'])
@@ -49,8 +43,8 @@ class Migration(SchemaMigration):
         db.create_table('industry_supply', (
             ('typeID', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True)),
             ('price', self.gf('django.db.models.fields.FloatField')(default=0.0)),
-            ('autoUpdate', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('supplySource', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='prices', to=orm['industry.SupplySource'])),
+            ('auto_update', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('supply_source', self.gf('django.db.models.fields.related.ForeignKey')(default=1, related_name='prices', to=orm['industry.SupplySource'])),
         ))
         db.send_create_signal('industry', ['Supply'])
 
@@ -65,10 +59,10 @@ class Migration(SchemaMigration):
 
         # Adding model 'InventionPolicy'
         db.create_table('industry_inventionpolicy', (
-            ('itemGroupID', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
-            ('itemGroupName', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('inventionChance', self.gf('django.db.models.fields.FloatField')()),
-            ('targetME', self.gf('django.db.models.fields.IntegerField')()),
+            ('item_group_id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('item_group', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('invention_chance', self.gf('django.db.models.fields.FloatField')()),
+            ('target_me', self.gf('django.db.models.fields.IntegerField')()),
         ))
         db.send_create_signal('industry', ['InventionPolicy'])
 
@@ -77,17 +71,17 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('order', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='jobs', null=True, to=orm['industry.Order'])),
             ('row', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='jobs', null=True, to=orm['industry.OrderRow'])),
-            ('parentJob', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='childrenJobs', null=True, to=orm['industry.Job'])),
+            ('parent_job', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='childrenJobs', null=True, to=orm['industry.Job'])),
             ('state', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
             ('owner', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='jobs', null=True, to=orm['auth.User'])),
-            ('itemID', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('item_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('runs', self.gf('django.db.models.fields.FloatField')()),
             ('blueprint', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='jobs', null=True, to=orm['industry.OwnedBlueprint'])),
             ('activity', self.gf('django.db.models.fields.SmallIntegerField')(default=1)),
-            ('dueDate', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('due_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('duration', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
-            ('startDate', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('endDate', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('start_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('end_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
         ))
         db.send_create_signal('industry', ['Job'])
 
@@ -97,13 +91,13 @@ class Migration(SchemaMigration):
             ('state', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
             ('originator', self.gf('django.db.models.fields.related.ForeignKey')(related_name='orders_created', to=orm['auth.User'])),
             ('manufacturer', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='orders_manufactured', null=True, to=orm['auth.User'])),
-            ('deliveryMan', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='orders_delivered', null=True, to=orm['auth.User'])),
+            ('delivery_boy', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='orders_delivered', null=True, to=orm['auth.User'])),
             ('client', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('deliveryLocation', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('deliveryDate', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('delivery_location', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('delivery_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
+            ('cost', self.gf('django.db.models.fields.FloatField')(default=0.0)),
             ('quote', self.gf('django.db.models.fields.FloatField')(default=0.0)),
-            ('pricing', self.gf('django.db.models.fields.related.ForeignKey')(related_name='orders', to=orm['industry.Pricing'])),
-            ('extraDiscount', self.gf('django.db.models.fields.FloatField')(default=0.0)),
+            ('discount', self.gf('django.db.models.fields.FloatField')(default=0.0)),
         ))
         db.send_create_signal('industry', ['Order'])
 
@@ -122,7 +116,7 @@ class Migration(SchemaMigration):
         db.create_table('industry_orderrow', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('order', self.gf('django.db.models.fields.related.ForeignKey')(related_name='rows', to=orm['industry.Order'])),
-            ('catalogEntry', self.gf('django.db.models.fields.related.ForeignKey')(related_name='order_rows', to=orm['industry.CatalogEntry'])),
+            ('catalog_entry', self.gf('django.db.models.fields.related.ForeignKey')(related_name='order_rows', to=orm['industry.CatalogEntry'])),
             ('quantity', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('cost', self.gf('django.db.models.fields.FloatField')(default=0.0)),
         ))
@@ -130,10 +124,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-
-        # Deleting model 'Pricing'
-        db.delete_table('industry_pricing')
-
+        
         # Deleting model 'CatalogEntry'
         db.delete_table('industry_catalogentry')
 
@@ -204,47 +195,49 @@ class Migration(SchemaMigration):
         },
         'industry.catalogentry': {
             'Meta': {'object_name': 'CatalogEntry'},
-            'fixedPrice': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'isAvailable': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'marketGroupID': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
+            'fixed_price': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'last_update': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'production_cost': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
+            'public_price': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'typeID': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
             'typeName': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'industry.inventionpolicy': {
-            'Meta': {'ordering': "['targetME', 'itemGroupID']", 'object_name': 'InventionPolicy'},
-            'inventionChance': ('django.db.models.fields.FloatField', [], {}),
-            'itemGroupID': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
-            'itemGroupName': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'targetME': ('django.db.models.fields.IntegerField', [], {})
+            'Meta': {'ordering': "['target_me', 'item_group_id']", 'object_name': 'InventionPolicy'},
+            'invention_chance': ('django.db.models.fields.FloatField', [], {}),
+            'item_group': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'item_group_id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'target_me': ('django.db.models.fields.IntegerField', [], {})
         },
         'industry.job': {
             'Meta': {'ordering': "['order', 'id']", 'object_name': 'Job'},
             'activity': ('django.db.models.fields.SmallIntegerField', [], {'default': '1'}),
             'blueprint': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'jobs'", 'null': 'True', 'to': "orm['industry.OwnedBlueprint']"}),
-            'dueDate': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'due_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'duration': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
-            'endDate': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'end_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'itemID': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'item_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'order': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'jobs'", 'null': 'True', 'to': "orm['industry.Order']"}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'jobs'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'parentJob': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'childrenJobs'", 'null': 'True', 'to': "orm['industry.Job']"}),
+            'parent_job': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'childrenJobs'", 'null': 'True', 'to': "orm['industry.Job']"}),
             'row': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'jobs'", 'null': 'True', 'to': "orm['industry.OrderRow']"}),
             'runs': ('django.db.models.fields.FloatField', [], {}),
-            'startDate': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'start_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'state': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'})
         },
         'industry.order': {
             'Meta': {'ordering': "['id']", 'object_name': 'Order'},
             'client': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'deliveryDate': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'deliveryLocation': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'deliveryMan': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'orders_delivered'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'extraDiscount': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
+            'cost': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
+            'delivery_boy': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'orders_delivered'", 'null': 'True', 'to': "orm['auth.User']"}),
+            'delivery_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
+            'delivery_location': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'discount': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'manufacturer': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'orders_manufactured'", 'null': 'True', 'to': "orm['auth.User']"}),
             'originator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'orders_created'", 'to': "orm['auth.User']"}),
-            'pricing': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'orders'", 'to': "orm['industry.Pricing']"}),
             'quote': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
             'state': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'})
         },
@@ -259,21 +252,21 @@ class Migration(SchemaMigration):
         },
         'industry.orderrow': {
             'Meta': {'ordering': "['order']", 'object_name': 'OrderRow'},
-            'catalogEntry': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'order_rows'", 'to': "orm['industry.CatalogEntry']"}),
+            'catalog_entry': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'order_rows'", 'to': "orm['industry.CatalogEntry']"}),
             'cost': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'order': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'rows'", 'to': "orm['industry.Order']"}),
             'quantity': ('django.db.models.fields.PositiveIntegerField', [], {})
         },
         'industry.ownedblueprint': {
-            'Meta': {'ordering': "['blueprintTypeID', '-me']", 'object_name': 'OwnedBlueprint'},
-            'blueprintTypeID': ('django.db.models.fields.IntegerField', [], {}),
-            'catalogEntry': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'blueprints'", 'null': 'True', 'to': "orm['industry.CatalogEntry']"}),
+            'Meta': {'ordering': "['typeID', '-me']", 'object_name': 'OwnedBlueprint'},
+            'catalog_entry': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'blueprints'", 'null': 'True', 'to': "orm['industry.CatalogEntry']"}),
             'copy': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'me': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
             'pe': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
-            'runs': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'})
+            'runs': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
+            'typeID': ('django.db.models.fields.IntegerField', [], {})
         },
         'industry.pricehistory': {
             'Meta': {'ordering': "['supply', '-date']", 'object_name': 'PriceHistory'},
@@ -282,22 +275,16 @@ class Migration(SchemaMigration):
             'price': ('django.db.models.fields.FloatField', [], {}),
             'supply': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'price_histories'", 'to': "orm['industry.Supply']"})
         },
-        'industry.pricing': {
-            'Meta': {'object_name': 'Pricing'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'margin': ('django.db.models.fields.FloatField', [], {}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
         'industry.supply': {
             'Meta': {'ordering': "['typeID']", 'object_name': 'Supply'},
-            'autoUpdate': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'auto_update': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'price': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
-            'supplySource': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'related_name': "'prices'", 'to': "orm['industry.SupplySource']"}),
+            'supply_source': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'related_name': "'prices'", 'to': "orm['industry.SupplySource']"}),
             'typeID': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'})
         },
         'industry.supplysource': {
             'Meta': {'ordering': "['name']", 'object_name': 'SupplySource'},
-            'locationID': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'}),
+            'location_id': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         }
     }

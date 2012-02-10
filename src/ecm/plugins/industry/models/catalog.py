@@ -59,7 +59,7 @@ class CatalogEntry(models.Model):
             else:
                 involved_bps.add(bp)
         involved_bp_ids = [ bp.typeID for bp in involved_bps ]
-        owned_bps = set(OwnedBlueprint.objects.filter(blueprintTypeID__in=involved_bp_ids)) 
+        owned_bps = set(OwnedBlueprint.objects.filter(typeID__in=involved_bp_ids)) 
         return involved_bps - owned_bps
 
     def __getattr__(self, attrName):
@@ -87,9 +87,9 @@ class OwnedBlueprint(models.Model):
 
     class Meta:
         app_label = 'industry'
-        ordering = ['blueprintTypeID', '-me']
+        ordering = ['typeID', '-me']
 
-    blueprintTypeID = models.IntegerField()
+    typeID = models.IntegerField()
     me = models.SmallIntegerField(default=0)
     pe = models.SmallIntegerField(default=0)
     copy = models.BooleanField(default=False)
@@ -106,7 +106,7 @@ class OwnedBlueprint(models.Model):
         return '<a href="%s" class="catalog-blueprint">%s</a>' % (self.url, self.typeName)
 
     def item_name_admin_display(self):
-        name, _ = db.resolveTypeName(self.blueprintTypeID)
+        name, _ = db.get_name(self.typeID)
         return name
     item_name_admin_display.short_description = 'Blueprint'
 
@@ -115,7 +115,7 @@ class OwnedBlueprint(models.Model):
             if self.__blueprint is not None:
                 return Blueprint.__getattr__(self.__blueprint, attrName)
             else:
-                self.__blueprint = Blueprint.new(self.blueprintTypeID)
+                self.__blueprint = Blueprint.new(self.typeID)
                 return Blueprint.__getattr__(self.__blueprint, attrName)
         except AttributeError:
             return models.Model.__getattribute__(self, attrName)
@@ -124,10 +124,10 @@ class OwnedBlueprint(models.Model):
         return unicode(self.typeName)
 
     def __hash__(self):
-        return self.blueprintTypeID
+        return self.typeID
 
     def __eq__(self, other):
         return hash(self) == hash(other)
     
     def __cmp__(self, other):
-        return cmp(self.blueprintTypeID, other.blueprintTypeID)
+        return cmp(self.typeID, other.typeID)

@@ -42,16 +42,16 @@ SUPPLY_ID = {{supply.typeID}};
         <tr>
           <td class="bold">Auto-Update</td>
           <td>
-            <input type="checkbox" id="update_checkbox" {% if supply.autoUpdate %}checked{% endif %} />
+            <input type="checkbox" id="update_checkbox" {% if supply.auto_update %}checked{% endif %} />
           </td>
         </tr>
         <tr>
           <td class="bold">Supply Source</td>
           <td>
           <select id="supply_source">
-          {% for source in supplySources %}
-            <option value="{{source.locationID}}"
-                    {%if supply.supplySource == source%}selected{%endif%}>{{source.name}}</option>
+          {% for source in supply_sources %}
+            <option value="{{source.location_id}}"
+                    {%if supply.supply_source == source%}selected{%endif%}>{{source.name}}</option>
           {% endfor %}
           </select>
           </td>

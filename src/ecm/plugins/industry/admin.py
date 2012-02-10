@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 6 9"
-__author__ = "diabeteman"
+__date__ = '2011 6 9'
+__author__ = 'diabeteman'
 
 from django.contrib import admin
 
@@ -42,82 +42,84 @@ class PricingAdmin(admin.ModelAdmin):
 #------------------------------------------------------------------------------
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
-        "id",
-        "originator",
-        "manufacturer",
-        "delivery_boy",
-        "client",
-        "delivery_location",
-        "delivery_date",
-        "state",
-        "pricing",
-        "extraDiscount",
-        "quote",
+        'id',
+        'originator',
+        'manufacturer',
+        'delivery_boy',
+        'client',
+        'delivery_location',
+        'delivery_date',
+        'state',
+        'cost',
+        'discount',
+        'quote',
     ]
 
 #------------------------------------------------------------------------------
 class OrderLogAdmin(admin.ModelAdmin):
-    list_display = ["order", "state", "date", "user", "text" ]
+    list_display = ['order', 'state', 'date', 'user', 'text' ]
 
 #------------------------------------------------------------------------------
 class OrderRowAdmin(admin.ModelAdmin):
-    list_display = ["catalog_entry", "quantity", "cost", "order", ]
+    list_display = ['catalog_entry', 'quantity', 'cost', 'order', ]
 
 #------------------------------------------------------------------------------
 class JobAdmin(admin.ModelAdmin):
     list_display = [
-        "order",
-        "row",
-        "parentJob",
-        "state",
-        "owner",
-        "itemID",
-        "runs",
-        "blueprint",
-        "activity",
-        "duration",
-        "startDate",
-        "endDate",
+        'order',
+        'row',
+        'parent_job',
+        'state',
+        'owner',
+        'item_id',
+        'runs',
+        'blueprint',
+        'activity',
+        'duration',
+        'start_date',
+        'end_date',
     ]
 #------------------------------------------------------------------------------
 class SupplySourceAdmin(admin.ModelAdmin):
-    list_display = ["name", "locationID"]
+    list_display = ['name', 'location_id']
 
 #------------------------------------------------------------------------------
 class SupplyAdmin(admin.ModelAdmin):
-    list_display = ["item_admin_display", "price", "autoUpdate", "supplySource"]
+    list_display = ['item_admin_display', 'price', 'auto_update', 'supply_source']
 
 #------------------------------------------------------------------------------
 class PriceHistoryAdmin(admin.ModelAdmin):
-    list_display = ["item_admin_display", "price", "date"]
+    list_display = ['item_admin_display', 'price', 'date']
 
 #------------------------------------------------------------------------------
 class CatalogEntryAdmin(admin.ModelAdmin):
     list_display = [
-        "typeName",
-        "typeID",
-        "marketGroupID",
-        "fixed_price",
-        "is_available",
+        'typeName',
+        'typeID',
+        'production_cost',
+        'public_price',
+        'last_update',
+        'fixed_price',
+        'is_available',
     ]
 
 #------------------------------------------------------------------------------
 class OwnedBlueprintAdmin(admin.ModelAdmin):
     list_display = [
-        "item_name_admin_display",
-        "blueprintTypeID",
-        "me",
-        "pe",
-        "copy",
-        "runs",
+        'item_name_admin_display',
+        'typeID',
+        'me',
+        'pe',
+        'copy',
+        'runs',
     ]
 #------------------------------------------------------------------------------
 class InventionPolicyAdmin(admin.ModelAdmin):
     list_display = [
-        "itemGroupName",
-        "itemGroupID",
-        "invention_chance_admin_display",
-        "targetME",
+        'item_group',
+        'item_group_id',
+        'invention_chance_admin_display',
+        'target_me',
     ]
 
 admin.site.register(Order, OrderAdmin)

@@ -199,15 +199,15 @@ def blueprint_add(request, item_id):
         item = get_object_or_404(CatalogEntry, typeID=int(item_id))
     except ValueError:
         raise Http404()
-    bp = item.blueprints.create(blueprintTypeID=item.blueprintTypeID)
+    bp = item.blueprints.create(typeID=item.blueprintTypeID)
     logger.info('"%s" created "%s" #%s' % (request.user, bp.typeName, bp.id))
     bp_dict = {
-                     'id': bp.id, 
-        'blueprintTypeID': item.blueprintTypeID, 
-                     'me': bp.me, 
-                     'pe': bp.pe, 
-                   'copy': bp.copy, 
-                   'runs': bp.runs, 
-                    'url': bp.url,
+        'id': bp.id, 
+        'typeID': bp.typeID, 
+        'me': bp.me, 
+        'pe': bp.pe, 
+        'copy': bp.copy, 
+        'runs': bp.runs, 
+        'url': bp.url,
     }
     return HttpResponse(json.dumps(bp_dict))

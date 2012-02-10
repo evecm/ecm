@@ -129,7 +129,7 @@ def details(request, order_id):
         return forbidden(request)
 
     logs = order.logs.all().order_by('-date')
-    validTransitions = [ (trans.__name__, trans.text) 
+    validTransitions = [ (trans.__name__, utils.verbose_name(trans)) 
                                for trans in order.get_valid_transitions(customer=True) ]
 
     data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions}

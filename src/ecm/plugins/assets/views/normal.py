@@ -182,7 +182,7 @@ def stations_data(request, solarSystemID):
             icon = "station"
         else:
             # it is an inspace anchorable array
-            name = db.resolveTypeName(flag)[0]
+            name = db.get_name(flag)[0]
             icon = "array"
 
         if exact_volumes:
@@ -270,7 +270,7 @@ def hangar_content_data(request, solarSystemID, stationID, hangarID):
 
     jstree_data = []
     for item in query:
-        name, category = db.resolveTypeName(item.typeID)
+        name, category = db.get_name(item.typeID)
 
         try:
             icon = CATEGORY_ICONS[category]
@@ -317,7 +317,7 @@ def can1_content_data(request, solarSystemID, stationID, hangarID, container1):
     json_data = []
     for i in item_list:
         item = {}
-        name, category = db.resolveTypeName(i.typeID)
+        name, category = db.get_name(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
         except: icon = "item"
 
@@ -352,7 +352,7 @@ def can2_content_data(request, solarSystemID, stationID, hangarID, container1, c
     json_data = []
     for i in item_list:
         item = {}
-        name, category = db.resolveTypeName(i.typeID)
+        name, category = db.get_name(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
         except: icon = "item"
         if i.singleton:

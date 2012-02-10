@@ -128,7 +128,7 @@ class Order(models.Model):
         
         self.cost = 0.0
         self.quote = 0.0
-        missingPrice = False
+        missing_price = False
         for catalog_entry, quantity in entries:
             self.rows.create(catalog_entry=catalog_entry, quantity=quantity)
             if catalog_entry.production_cost is not None:
@@ -138,8 +138,8 @@ class Order(models.Model):
                     self.quote += catalog_entry.production_cost * (1 + self.pricing.margin)
                 self.cost += catalog_entry.production_cost
             else:
-                missingPrice = True
-        if missingPrice:
+                missing_price = True
+        if missing_price:
             self.cost = 0.0
             self.quote = 0.0
         self.save()
@@ -162,9 +162,9 @@ class Order(models.Model):
         """
         try:
             self.check_feasibility()
-            missingPrices = self.create_jobs()
-            if missingPrices: # FIXME moche moche moche
-                raise OrderCannotBeFulfilled('Missing prices for items %s' % list(missingPrices))
+            missing_prices = self.create_jobs()
+            if missing_prices: # FIXME moche moche moche
+                raise OrderCannotBeFulfilled('Missing prices for items %s' % list(missing_prices))
             self.apply_transition(Order.accept, Order.ACCEPTED, user=manufacturer, comment="Accepted")
             self.save()
             return True
@@ -217,7 +217,7 @@ class Order(models.Model):
         Order preparation started (first job is started)
         """
         self.apply_transition(Order.start_preparation, Order.IN_PREPARATION,
-                             user or self.manufacturer, "Preparation started.")
+                              user or self.manufacturer, 'Preparation started.')
         self.save()
 
     def end_preparation(self, manufacturer=None, delivery_boy=None):
@@ -227,7 +227,7 @@ class Order(models.Model):
         Delivery task is assigned to manufacturer by default, unless delivery_boy is not None.
         """
         self.apply_transition(Order.end_preparation, Order.READY,
-                             manufacturer, "Order is ready.")
+                              manufacturer, "Order is ready.")
         self.delivery_boy = delivery_boy or manufacturer or self.manufacturer
 
         self.save()
@@ -237,8 +237,8 @@ class Order(models.Model):
         Order has been delivered.
         """
         self.apply_transition(Order.deliver, Order.DELIVERED,
-                             user or self.delivery_boy,
-                             "Order has been delivered to the client.")
+                              user or self.delivery_boy,
+                              'Order has been delivered to the client.')
         self.save()
         # TODO: handle the alerts to the client
 
@@ -247,7 +247,7 @@ class Order(models.Model):
         Order has been paid.
         """
         self.apply_transition(Order.pay, Order.PAID,
-                             user or self.delivery_boy, "Order has been delivered to the client.")
+                             user or self.delivery_boy, 'Order has been delivered to the client.')
         self.save()
 
     # allowed transitions between states
@@ -265,42 +265,30 @@ class Order(models.Model):
         REJECTED : (),
     }
 
-    modify.text = 'Modify order'
-    confirm.text = 'Confirm order'
-    accept.text = 'Accept order'
-    resolve.text = 'Resolve order'
-    plan.text = 'Plan order'
-    reject.text = 'Reject order'
-    cancel.text = 'Cancel order'
-    start_preparation.text = 'Start preparation'
-    end_preparation.text = 'End preparation'
-    deliver.text = 'Deliver order'
-    pay.text = 'Pay order'
-
-    modify.customerAccess = True
-    confirm.customerAccess = True
-    accept.customerAccess = False
-    resolve.customerAccess = False
-    plan.customerAccess = False
-    reject.customerAccess = False
-    cancel.customerAccess = True
-    start_preparation.customerAccess = False
-    end_preparation.customerAccess = False
-    deliver.customerAccess = False
-    pay.customerAccess = True
+    modify.customer_access = True
+    confirm.customer_access = True
+    accept.customer_access = False
+    resolve.customer_access = False
+    plan.customer_access = False
+    reject.customer_access = False
+    cancel.customer_access = True
+    start_preparation.customer_access = False
+    end_preparation.customer_access = False
+    deliver.customer_access = False
+    pay.customer_access = True
 
 
     def get_valid_transitions(self, customer=False):
         if customer:
-            return [ tr for tr in Order.VALID_TRANSITIONS[self.state] if tr.customerAccess ]
+            return [ tr for tr in Order.VALID_TRANSITIONS[self.state] if tr.customer_access ]
         else:
             return Order.VALID_TRANSITIONS[self.state]
 
-    def check_can_pass_transition(self, transitionName):
-        validTransitionNames = [ t.__name__ for t in Order.VALID_TRANSITIONS[self.state] ]
-        if transitionName not in validTransitionNames:
+    def check_can_pass_transition(self, function_name):
+        valid_functions_names = [ t.__name__ for t in Order.VALID_TRANSITIONS[self.state] ]
+        if function_name not in valid_functions_names:
             raise IllegalTransition('Cannot apply transition "%s" from state "%s".' %
-                                    (transitionName, Order.STATES[self.state]))
+                                    (function_name, Order.STATES[self.state]))
 
     ################################
     # UTILITY FUNCTIONS
@@ -348,16 +336,16 @@ class Order(models.Model):
 
     def get_aggregated_jobs(self, activity=None):
         """
-        Retrieve a list of all the jobs related to this order aggregated by itemID.
+        Retrieve a list of all the jobs related to this order aggregated by item_id.
 
         The job activity can be filtered to display only SUPPLY jobs
         """
         where = [ '"order_id" = %s' ]
         if activity is not None:
             where.append('"activity" = %s')
-        sql = 'SELECT "itemID", SUM("runs"), "activity" FROM "industry_job"'
+        sql = 'SELECT "item_id", SUM("runs"), "activity" FROM "industry_job"'
         sql += ' WHERE ' + ' AND '.join(where)
-        sql += ' GROUP BY "itemID", "activity" ORDER BY "activity", "itemID";'
+        sql += ' GROUP BY "item_id", "activity" ORDER BY "activity", "item_id";'
         sql = fix_mysql_quotes(sql)
 
         cursor = connection.cursor() #@UndefinedVariable
@@ -368,7 +356,7 @@ class Order(models.Model):
 
         jobs = []
         for i, r, a in cursor:
-            jobs.append(Job(itemID=i, runs=r, activity=a))
+            jobs.append(Job(item_id=i, runs=r, activity=a))
         cursor.close()
 
         return jobs
@@ -376,7 +364,7 @@ class Order(models.Model):
     def repr_as_tree(self):
         output = ''
         for r in self.rows.all():
-            for j in r.jobs.filter(parentJob=None):
+            for j in r.jobs.filter(parent_job=None):
                 output += j.repr_as_tree()
         return output
 
@@ -472,16 +460,16 @@ class OrderRow(models.Model):
 
     def get_aggregated_jobs(self, activity=None):
         """
-        Retrieve a list of all the jobs related to this OrderRow aggregated by itemID.
+        Retrieve a list of all the jobs related to this OrderRow aggregated by item_id.
 
         The job activity can be filtered to display only SUPPLY jobs
         """
         where = [ '"row_id" = %s' ]
         if activity is not None:
             where.append('"activity" = %d' % activity)
-        sql = 'SELECT "itemID", SUM("runs"), "activity" FROM "industry_job"'
+        sql = 'SELECT "item_id", SUM("runs"), "activity" FROM "industry_job"'
         sql += ' WHERE ' + ' AND '.join(where)
-        sql += ' GROUP BY "itemID", "activity" ORDER BY "activity", "itemID";'
+        sql += ' GROUP BY "item_id", "activity" ORDER BY "activity", "item_id";'
         sql = fix_mysql_quotes(sql)
 
         cursor = connection.cursor() #@UndefinedVariable
@@ -489,7 +477,7 @@ class OrderRow(models.Model):
 
         jobs = []
         for i, r, a in cursor:
-            jobs.append(Job(itemID=i, runs=r, activity=a))
+            jobs.append(Job(item_id=i, runs=r, activity=a))
         cursor.close()
 
         return jobs
@@ -498,8 +486,8 @@ class OrderRow(models.Model):
     def create_jobs(self, prices=None):
         job = Job.create(self.catalog_entry_id, self.quantity, order=self.order, row=self)
         job.create_requirements()
-        cost, missingPrices = self.calculate_cost(prices)
-        return cost, missingPrices
+        cost, missing_prices = self.calculate_cost(prices)
+        return cost, missing_prices
 
 
     def calculate_cost(self, prices=None):
@@ -508,13 +496,13 @@ class OrderRow(models.Model):
             for sp in Supply.objects.all():
                 prices[sp.typeID] = sp.price
         cost = 0.0
-        missingPrices = set([])
+        missing_prices = set([])
         for job in self.get_aggregated_jobs(Job.SUPPLY):
             try:
-                cost += prices[job.itemID] * round(job.runs)
+                cost += prices[job.item_id] * round(job.runs)
             except KeyError:
-                missingPrices.add(job.itemID)
-        return cost, missingPrices
+                missing_prices.add(job.item_id)
+        return cost, missing_prices
 
 
     def __unicode__(self):
@@ -532,12 +520,12 @@ class OrderCannotBeFulfilled(UserWarning):
     def __str__(self):
         if self.missing_blueprints:
             if all([ type(p) == type(0) for p in self.missing_blueprints ]):
-                self.missing_blueprints = [ db.resolveTypeName(p)[0] for p in self.missing_blueprints ]
+                self.missing_blueprints = [ db.get_name(p)[0] for p in self.missing_blueprints ]
             output = 'Missing Blueprints: '
             output += ', '.join(map(str, self.missing_blueprints))
         elif self.missing_prices:
             if all([ type(p) == type(0) for p in self.missing_prices ]):
-                self.missing_prices = [ db.resolveTypeName(p)[0] for p in self.missing_prices ]
+                self.missing_prices = [ db.get_name(p)[0] for p in self.missing_prices ]
             output = 'Missing SupplyPrices: '
             output += ', '.join(map(str, self.missing_prices))
         return output

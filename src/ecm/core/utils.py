@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+import re
 
 __date__ = "2010-05-16"
 __author__ = "diabeteman"
@@ -115,6 +116,23 @@ def get_access_color(accessLvl, colorThresholds):
         if accessLvl <= t.threshold:
             return t.color
     return ""
+
+#------------------------------------------------------------------------------
+CAMEL_CASE_RE = re.compile(r'(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))')
+MULTI_SPACE_RE = re.compile(r'\s+')
+def verbose_name(class_or_function, cap_first=True):
+    try:
+        name = class_or_function.__name__
+        name = CAMEL_CASE_RE.sub(r' \1', name)
+        name = name.replace('_', ' ')
+        name = MULTI_SPACE_RE.sub(' ', name)
+        name = name.lower().strip()
+        if cap_first:
+            return name[0].upper() + name[1:]
+        else:
+            return name 
+    except AttributeError:
+        return str(class_or_function)
 
 #------------------------------------------------------------------------------
 def fix_mysql_quotes(query):

@@ -44,7 +44,7 @@ class Asset(models.Model):
 
     def __unicode__(self):
         try:
-            item, _ = db.resolveTypeName(self.typeID)
+            item, _ = db.get_name(self.typeID)
             return u"<%s x%d>" % (item, self.quantity)
         except:
             return u"<Asset instance at %x>" % id(self)

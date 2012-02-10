@@ -32,7 +32,7 @@ class SupplySource(models.Model):
         app_label = 'industry'
         ordering = ['name']
 
-    locationID = models.PositiveIntegerField(primary_key=True)
+    location_id = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(max_length=50)
 
     def __unicode__(self):
@@ -47,8 +47,8 @@ class Supply(models.Model):
 
     typeID = models.PositiveIntegerField(primary_key=True)
     price = models.FloatField(default=0.0)
-    autoUpdate = models.BooleanField(default=True)
-    supplySource = models.ForeignKey('SupplySource', related_name='prices', default=1)
+    auto_update = models.BooleanField(default=True)
+    supply_source = models.ForeignKey('SupplySource', related_name='prices', default=1)
     __item = None
 
     def update_price(self, newPrice):
@@ -98,6 +98,6 @@ class PriceHistory(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def item_admin_display(self):
-        name, _ = db.resolveTypeName(self.supply_id)
+        name, _ = db.get_name(self.supply_id)
         return name
     item_admin_display.short_description = 'Item'

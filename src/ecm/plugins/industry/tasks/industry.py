@@ -35,12 +35,12 @@ logger = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def update_supply_prices():
-    supplyPrices = Supply.objects.filter(autoUpdate=True)
-    for supplySource in SupplySource.objects.all():
-        logger.debug('Updating supply prices for %s...' % supplySource.name)
-        prices = supplyPrices.filter(supplySource=supplySource)
-        itemIDs = prices.values_list('typeID', flat=True)
-        buyPrices = evecentral.get_buy_prices(itemIDs, supplySource.locationID)
+    supplyPrices = Supply.objects.filter(auto_update=True)
+    for supply_source in SupplySource.objects.all():
+        logger.debug('Updating supply prices for %s...' % supply_source.name)
+        prices = supplyPrices.filter(supply_source=supply_source)
+        item_ids = prices.values_list('typeID', flat=True)
+        buyPrices = evecentral.get_buy_prices(item_ids, supply_source.location_id)
 
         for supPrice in prices:
             if buyPrices[supPrice.typeID] > 0.0 and supPrice.price != buyPrices[supPrice.typeID]:

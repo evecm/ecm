@@ -1,12 +1,12 @@
 $(document).ready(function() {
     $('#availability_checkbox').click(function () {
-    	var params = {
-    		available: $(this).is(':checked')
-    	};
-    	$.post('/industry/catalog/items/' + ITEM_ID + '/availability/', params)
-    	 .error(function () {
-    		alert('Failed to change availability!'); 
-    	});
+      var params = {
+        available: $(this).is(':checked')
+      };
+      $.post('/industry/catalog/items/' + ITEM_ID + '/availability/', params)
+       .error(function () {
+        alert('Failed to change availability!'); 
+      });
     });
     
     $('#price').editable('/industry/catalog/items/' + ITEM_ID + '/price/', {
@@ -53,32 +53,32 @@ function deleteBlueprint(blueprintID) {
     }
 }
 NEW_BP = '<tr id="%id">' +
-           '<td><a href="%url" title="Blueprint details">' +
-             '<img src="http://image.eveonline.com/Type/%blueprintTypeID_32.png" />' +
-           '</a></td>' +
-           '<td class="me" id="%id">%me</td>' +
-           '<td class="pe" id="%id">%pe</td>' +
-           '<td><input class="copy" id="%id" type="checkbox" %checked/></td>' +
-           '<td class="runs" id="%id">%runs</td>' +
-           '<td><input class="button" type="button" value="Delete Blueprint" onClick="deleteBlueprint(%id);"/></td>' +
-         '</tr>';
+   '<td><a href="%url" title="Blueprint details">' +
+     '<img src="http://image.eveonline.com/Type/%typeID_32.png" />' +
+   '</a></td>' +
+   '<td class="me" id="%id">%me</td>' +
+   '<td class="pe" id="%id">%pe</td>' +
+   '<td><input class="copy" id="%id" type="checkbox" %checked/></td>' +
+   '<td class="runs" id="%id">%runs</td>' +
+   '<td><input class="button" type="button" value="Delete Blueprint" onClick="deleteBlueprint(%id);"/></td>' +
+ '</tr>';
 function addBlueprint(itemID) {
     $.getJSON('/industry/catalog/items/' + itemID + '/addblueprint/')
         .success(function(json) {
             $('#empty').remove();
             var checked;
-            if (json['copy']) {
+            if (json.copy) {
                 checked = 'checked';
             } else {
                 checked = '';
             }
-            var row = NEW_BP.replace(/%id/g, json['id'])
-                            .replace(/%url/g, json['url'])
-                            .replace(/%blueprintTypeID/g, json['blueprintTypeID'])
-                            .replace(/%me/g, json['me'])
-                            .replace(/%pe/g, json['pe'])
+            var row = NEW_BP.replace(/%id/g, json.id)
+                            .replace(/%url/g, json.url)
+                            .replace(/%typeID/g, json.typeID)
+                            .replace(/%me/g, json.me)
+                            .replace(/%pe/g, json.pe)
                             .replace(/%checked/g, checked)
-                            .replace(/%runs/g, json['runs']);
+                            .replace(/%runs/g, json.runs);
             $(row).appendTo("#blueprints")
             setEditableHandlers();
         }).error(function () {

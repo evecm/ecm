@@ -56,7 +56,7 @@ def print_duration(seconds):
     return duration.strip()
 
 #------------------------------------------------------------------------------
-SQL_MISSING_ITEMS = '''SELECT "typeID", "typeName", "marketGroupID"
+SQL_MISSING_ITEMS = '''SELECT "typeID", "typeName"
 FROM "invTypes"
 WHERE "blueprintTypeID" IS NOT NULL
   AND "published" = 1
@@ -69,10 +69,9 @@ def createMissingCatalogEntries():
     cursor = connections['eve'].cursor()
     cursor.execute(SQL_MISSING_ITEMS)
     created = 0
-    for typeID, typeName, marketGroupID in cursor:
+    for typeID, typeName in cursor:
         if typeID not in typeIDs:
-            CatalogEntry.objects.create(typeID=typeID, typeName=typeName,
-                                        marketGroupID=marketGroupID, is_available=False)
+            CatalogEntry.objects.create(typeID=typeID, typeName=typeName, is_available=False)
             created += 1
     logger.info('added %d missing catalog entries', created)
 createMissingCatalogEntries()

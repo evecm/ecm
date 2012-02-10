@@ -42,15 +42,15 @@ class InventionPolicy(models.Model):
         app_label = 'industry'
         verbose_name = _("Invention Policy")
         verbose_name_plural = _("Invention Policies")
-        ordering = ['targetME', 'itemGroupID']
+        ordering = ['target_me', 'item_group_id']
 
-    itemGroupID = models.IntegerField(primary_key=True)
-    itemGroupName = models.CharField(max_length=255)
-    inventionChance = models.FloatField()
-    targetME = models.IntegerField()
+    item_group_id = models.IntegerField(primary_key=True)
+    item_group = models.CharField(max_length=255)
+    invention_chance = models.FloatField()
+    target_me = models.IntegerField()
 
     def invention_chance_admin_display(self):
-        return '%d%' % (self.inventionChance * 100.0)
+        return '%d%' % (self.invention_chance * 100.0)
     invention_chance_admin_display.short_description = "InventionChance"
 
 
@@ -62,7 +62,7 @@ class InventionPolicy(models.Model):
     @staticmethod
     def blueprint(blueprint):
         runsPerBp, me, pe, _, _ = InventionPolicy.resolve(blueprint)
-        return OwnedBlueprint(blueprintTypeID=blueprint.typeID,
+        return OwnedBlueprint(typeID=blueprint.typeID,
                               runs=runsPerBp,
                               copy=True,
                               me=me,
@@ -85,19 +85,19 @@ class InventionPolicy(models.Model):
         decryptorGroup = constants.INTERFACES_DECRYPTOR_MAPPING[blueprint.parentBlueprint.dataInterfaceID]
 
         try:
-            policy = InventionPolicy.objects.get(itemGroupID=blueprint.item.groupID)
+            policy = InventionPolicy.objects.get(item_group_id=blueprint.item.groupID)
         except InventionPolicy.DoesNotExist:
             # no specific policy defined for this blueprint,
             # fallback to the default policy (modules)
-            policy = InventionPolicy.objects.get(itemGroupID=0)
+            policy = InventionPolicy.objects.get(item_group_id=0)
 
         decriptorTypeID = None
-        chance = policy.inventionChance
+        chance = policy.invention_chance
         runsPerBp = 1
         me = -4 # base ME for invented BPCs without decryptor
         pe = -4 # base PE for invented BPCs without decryptor
         for typeID, chanceMod, meMod, peMod, runsMod, _ in constants.DECRYPTOR_INFO[decryptorGroup]:
-            if policy.targetME == (me + meMod):
+            if policy.target_me == (me + meMod):
                 decriptorTypeID = typeID
                 chance *= chanceMod
                 me += meMod

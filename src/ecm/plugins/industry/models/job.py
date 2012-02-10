@@ -59,23 +59,23 @@ class Job(models.Model):
     order = models.ForeignKey('Order', related_name='jobs', null=True, blank=True)
     # self.row is not None only if this is a root job
     row = models.ForeignKey('OrderRow', related_name='jobs', null=True, blank=True)
-    # self.parentJob is None if this job is directly issued from an OrderRow
-    parentJob = models.ForeignKey('self', related_name='childrenJobs', null=True, blank=True)
-    # when a job is aggregated by another one, it goes to the AGGREGATED state...
+    # self.parent_job is None if this job is directly issued from an OrderRow
+    parent_job = models.ForeignKey('self', related_name='childrenJobs', null=True, blank=True)
+
     state = models.PositiveSmallIntegerField(default=PENDING, choices=STATES.items())
 
     owner = models.ForeignKey(User, related_name='jobs', null=True, blank=True)
 
-    itemID = models.PositiveIntegerField()
+    item_id = models.PositiveIntegerField()
     # runs must be a float number, else when jobs are aggregated there may be rounding errors
     runs = models.FloatField()
     blueprint = models.ForeignKey('OwnedBlueprint', related_name='jobs', null=True, blank=True)
     activity = models.SmallIntegerField(default=MANUFACTURING, choices=ACTIVITIES.items())
 
-    dueDate = models.DateField(null=True, blank=True)
+    due_date = models.DateField(null=True, blank=True)
     duration = models.BigIntegerField(default=0)
-    startDate = models.DateTimeField(null=True, blank=True)
-    endDate = models.DateTimeField(null=True, blank=True)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
 
     def create_requirements(self):
         """
@@ -91,19 +91,19 @@ class Job(models.Model):
                                                       activity=self.activity)
 
         for mat in materials:
-            self.childrenJobs.add(Job.create(itemID=mat.requiredTypeID,
+            self.childrenJobs.add(Job.create(item_id=mat.requiredTypeID,
                                              quantity=mat.quantity,
                                              order=self.order,
                                              row=self.row))
 
-        parentBpID = self.blueprint.parentBlueprintTypeID
-        if parentBpID is not None and self.blueprint.runs == -1:
+        parent_bp_id = self.blueprint.parentBlueprintTypeID
+        if parent_bp_id is not None and self.blueprint.runs == -1:
             # only create invention jobs if we don't own a BPO/BPC (runs == -1)
             attempts  = InventionPolicy.attempts(self.blueprint)
             # create a temp OwnedBlueprint that will be used to run the invention
-            bpc = OwnedBlueprint.objects.create(blueprintTypeID=parentBpID, copy=True)
+            bpc = OwnedBlueprint.objects.create(typeID=parent_bp_id, copy=True)
             # add an INVENTION job
-            self.childrenJobs.create(itemID=parentBpID,
+            self.childrenJobs.create(item_id=parent_bp_id,
                                      blueprint=bpc,
                                      runs=round(self.runs) * attempts,
                                      order=self.order,
@@ -112,26 +112,27 @@ class Job(models.Model):
 
         if self.activity == Job.INVENTION:
             # add a SUPPLY job for T1 BPCs
-            self.childrenJobs.create(itemID=self.blueprint.typeID,
+            self.childrenJobs.create(item_id=self.blueprint.typeID,
                                      runs=round(self.runs),
                                      order=self.order,
                                      row=self.row,
                                      activity=Job.SUPPLY)
-            decriptorTypeID  = InventionPolicy.decryptor(self.parentJob.blueprint)
+            decriptorTypeID  = InventionPolicy.decryptor(self.parent_job.blueprint)
             if decriptorTypeID is not None:
-                # add a SUPPLY job for a decryptorif needed
-                self.childrenJobs.create(itemID=decriptorTypeID,
+                # add a SUPPLY job for a decryptor if needed
+                self.childrenJobs.create(item_id=decriptorTypeID,
                                          runs=round(self.runs),
                                          order=self.order,
                                          row=self.row,
                                          activity=Job.SUPPLY)
-
+                
         for job in self.childrenJobs.all():
             # recursive call
             job.create_requirements()
 
+
     @staticmethod
-    def create(itemID, quantity, order, row):
+    def create(item_id, quantity, order, row):
         """
         Create a job (MANUFACTURING by default).
 
@@ -140,11 +141,11 @@ class Job(models.Model):
 
         The number of runs is calculated from the needed quantity
         """
-        item = Item.new(itemID)
+        item = Item.new(item_id)
         try:
-            bpID = item.blueprint.typeID
+            bpid = item.blueprint.typeID
             activity = Job.MANUFACTURING
-            bp = OwnedBlueprint.objects.filter(blueprintTypeID=bpID, copy=False).order_by('-me')[0]
+            bp = OwnedBlueprint.objects.filter(typeID=bpid, copy=False).order_by('-me')[0]
             runs = quantity / item.portionSize
             if quantity % item.portionSize:
                 runs += 1
@@ -176,7 +177,7 @@ class Job(models.Model):
 
         return Job.objects.create(order=order,
                                   row=row,
-                                  itemID=itemID,
+                                  item_id=item_id,
                                   blueprint=bp,
                                   runs=runs,
                                   activity=activity,
@@ -190,7 +191,7 @@ class Job(models.Model):
 
     @cached_property
     def item(self):
-        return Item.new(self.itemID)
+        return Item.new(self.item_id)
 
     def __unicode__(self):
         return u"[%s] %s x%d" % (Job.ACTIVITIES[self.activity], self.item.typeName, int(round(self.runs)))

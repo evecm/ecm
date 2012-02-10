@@ -62,9 +62,9 @@ def supplies(request):
     """
     Serves URL /industry/catalog/supplies/
     """
-    supplySources = [ [source.locationID, source.name] for source in SupplySource.objects.all() ]
+    supply_sources = [ [source.location_id, source.name] for source in SupplySource.objects.all() ]
     data = {
-        'supplySources': json.dumps(supplySources),
+        'supply_sources': json.dumps(supply_sources),
         'columns': COLUMNS,
         'filters': FILTERS,
     }
@@ -94,9 +94,9 @@ def supplies_data(request):
 
     query = Supply.objects.all().order_by('typeID')
     if params.displayMode == 'auto':
-        query = query.filter(autoUpdate=True)
+        query = query.filter(auto_update=True)
     elif params.displayMode == 'manual':
-        query = query.filter(autoUpdate=False)
+        query = query.filter(auto_update=False)
 
     if params.filter == 'misc':
         query = query.exclude(typeID__in=MISC_ITEMS)
@@ -123,8 +123,8 @@ def supplies_data(request):
         items.append([
             i.permalink,
             utils.print_float(i.price),
-            bool(i.autoUpdate),
-            i.supplySource.locationID,
+            bool(i.auto_update),
+            i.supply_source.location_id,
             i.typeID,
         ])
 
@@ -149,7 +149,7 @@ def details(request, supply_id):
         raise Http404()
     data = {
         'supply': supply,
-        'supplySources': SupplySource.objects.all(),
+        'supply_sources': SupplySource.objects.all(),
         'columns': DETAILS_COLUMNS,
     }
     return render_to_response('catalog/supply_details.html', data, Ctx(request))
@@ -193,12 +193,12 @@ def update_price(request, supply_id):
         supply = get_object_or_404(Supply, typeID=int(supply_id))
     except ValueError:
         raise Http404()
-    buyPrices = evecentral.get_buy_prices([supply.typeID], supply.supplySource_id)
+    buyPrices = evecentral.get_buy_prices([supply.typeID], supply.supply_source_id)
     if buyPrices[supply.typeID] > 0.0 and supply.price != buyPrices[supply.typeID]:
         supply.update_price(buyPrices[supply.typeID])
         logger.info('"%s" updated price for supply "%s" (%s -> %s)' % (request.user,
                                                                 supply.typeName,
-                                                                supply.supplySource,
+                                                                supply.supply_source,
                                                                 utils.print_float(supply.price)))
     return HttpResponse(utils.print_float(supply.price))
 
