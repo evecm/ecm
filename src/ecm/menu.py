@@ -34,9 +34,7 @@ def compute_menu(plugin):
     return menus
 
 
-ECM_MENUS = [
-    {'title': 'Home',      'url': '/',            'items': []},
-]
+ECM_MENUS = []
 import ecm.apps
 for app in ecm.apps.LIST:
     ECM_MENUS += compute_menu(app)

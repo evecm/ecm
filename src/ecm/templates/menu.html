@@ -1,25 +1,25 @@
-<ul id="main-menu">
+<ul class="nav nav-list">
 {% for menu in menus %}
-	<li class="{% if menu.url == path %}active{% endif %}{% if menu.url in path and menu.url != '/' %} child-active{% endif %}">
-		<a href="{{menu.url}}">{{menu.title}}</a>
-		{% if menu.items %}
-		<ul>
-			{% for item in menu.items %}
-			<li class="{% if item.url == path %}active{% endif %}{% if item.url in path %} child-active{% endif %}">
-				<a href="{{item.url}}">{{item.title}}</a>
-				{% if item.items %}
-				<ul>
-					{% for subitem in item.items %}
-					<li {% if subitem.url == path %}class="active"{% endif %}>
-						<a href="{{subitem.url}}">{{subitem.title}}</a>
-					</li>
-					{% endfor %}
-				</ul>
-				{% endif %}
-			</li>
-			{% endfor %}
-		</ul>
-		{% endif %}
-	</li>
+  <li class="{%if menu.url in path%}child-active{%if menu.url == path%} active{%endif%}{%endif%}">
+    <a href="{{menu.url}}">{{menu.title}}</a>
+    {% if menu.items %}
+    <ul class="nav nav-list">
+      {% for item in menu.items %}
+      <li class="{%if item.url in path%}child-active{%if item.url == path%} active{%endif%}{%endif%}">
+        <a href="{{item.url}}">{{item.title}}</a>
+        {% if item.items %}
+        <ul class="nav nav-list">
+          {% for subitem in item.items %}
+          <li {% if subitem.url == path %}class="active"{% endif %}>
+            <a href="{{subitem.url}}">{{subitem.title}}</a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </li>
 {% endfor %}
 </ul>
