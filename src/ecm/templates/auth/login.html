@@ -1,30 +1,32 @@
 {% extends "base.html" %}
 
-
 {% block headtitle %}Login{% endblock %}
-
-{% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/account/">Account</a></li>
-<li><a href="/account/login/">Login</a></li>
-{% endblock %}
 
 {% block main_content %}
 
-<div class="loginform">
+<div class="row">
+  <div class="span4 offset4">
+  <h1>Please login</h1>
 
-  <form method="post" action="/account/login/">
-  {% csrf_token %}
-  <fieldset>
-    {{form.as_p}}
-    <p><label for="rememberme">Remember Me</label>
-       <input type="checkbox" id="rememberme" name="rememberme" value="0" /></p>
-    <p><input type="submit" name="cmdweblogin" class="button" value="login" /></p>
-  </fieldset>
-  <input type="hidden" name="next" value="{{ next }}" />
+  <form method="post" action="/account/login/" class="well">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}" />
+    {% if form.errors %}<span class="error">{{ form.non_field_errors }}</span>{% endif %}
+  
+    <input type="text" name="username" {%if form.username.value%}value="{{form.username.value}}"{%endif%}
+           placeholder="username" />
+    <input type="password" name="password" placeholder="password" />
+    <label class="checkbox">
+       <input type="checkbox" id="rememberme" name="rememberme" value="0" />
+       Remember Me
+    </label>
+    <input type="submit" name="cmdweblogin" class="btn btn-primary" value="Login" />
+  
   </form>
   <p class="center">Not a member yet, you can <a href="/account/create/">create an acount</a>.</p>
   <p class="center">Forgot your password? Click <a href="/account/passwordreset/">here to reset it</a>.</p>
+  
+  </div>
 </div>
 
 {% endblock %}

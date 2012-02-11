@@ -1,0 +1,92 @@
+
+div.dataTables_length label {
+  float: left;
+  text-align: left;
+}
+
+div.dataTables_length select {
+  width: 75px;
+}
+
+div.dataTables_filter label {
+  float: right;
+}
+
+div.dataTables_info {
+  padding-left: 5px;
+  font-size: 80%;
+}
+
+div.dataTables_paginate {
+  float: right;
+  margin: 0 0 10px 0;
+}
+
+.pagination {
+    height: 20px;
+}
+
+.pagination a {
+    padding: 0.5em 0.5em;
+    line-height: 1em;
+}
+
+
+div.dataTables_processing {
+      position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 250px;
+  height: 30px;
+  margin-left: -125px;
+  margin-top: -15px;
+  padding: 14px 0 2px 0;
+  border: 1px solid #ddd;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+  background-color: white;
+}
+
+table.table {
+  clear: both;
+  margin-bottom: 6px !important;
+}
+
+table.table thead *{
+    vertical-align : middle; 
+}
+
+table.table thead .sorting,
+table.table thead .sorting_asc,
+table.table thead .sorting_desc,
+table.table thead .sorting_asc_disabled,
+table.table thead .sorting_desc_disabled {
+  cursor: pointer;
+  *cursor: hand;
+    padding-right: 10px;
+
+}
+
+table.table thead .sorting { 
+    background: url('../img/datatables/sort_both.png') no-repeat center right; 
+}
+table.table thead .sorting_asc { 
+    background: url('../img/datatables/sort_asc.png') no-repeat center right;
+    background-color: #eee;
+}
+table.table thead .sorting_desc { 
+    background: url('../img/datatables/sort_desc.png') no-repeat center right; 
+    background-color: #eee;
+}
+
+table.table thead .sorting_asc_disabled { 
+    background: url('../img/datatables/sort_asc_disabled.png') no-repeat center right;
+}
+table.table thead .sorting_desc_disabled { 
+    background: url('../img/datatables/sort_desc_disabled.png') no-repeat center right;
+}
+
+table.dataTable th:active {
+  outline: none;
+}

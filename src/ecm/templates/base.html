@@ -25,9 +25,16 @@
   .child-active > a, .child-active > a:hover {
     background-color:#ceefff;
   }
+  .search-query {
+  vertical-align:top;
+  }
+
   </style>
   <link rel="stylesheet" href="/s/ecm/css/bootstrap-responsive.css" />
 {% block stylesheets %}{% endblock %}
+  <link rel="stylesheet" type="text/css" href="/s/ecm/css/dataTables.bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.cluetip.css" />
+  <link rel="stylesheet" type="text/css" href="/s/ecm/css/bootstrap-ecm.css" />
 {% endcompress %}
   <link rel="icon" type="image/png" href="/s/ecm/img/favicon.png" />
   <link rel="shortcut icon" type="image/png" href="/s/ecm/img/favicon.png" />
@@ -72,13 +79,9 @@
   <!-- CONTAINER -->
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span3">
-        <div  class="well sidebar-nav">
-          <!-- MENU -->
-          {{ user_menu|safe }}
-        </div>
-      </div>
-      <div class="span9">
+      <!-- MENU -->
+      {{ user_menu|safe }}
+      <div class="{%if user_menu%}span9{%else%}span12{%endif%}">
       <!-- PAGE CONTENT -->
         {% block main_content %}
         {# main page content here #}
@@ -112,6 +115,10 @@
   <script type="text/javascript" src="/s/ecm/js/bootstrap.js"></script>
   <script type="text/javascript" src="/s/ecm/js/csrf.js"></script>
   <script type="text/javascript" src="/s/ecm/js/ecm_lib.js"></script>
+  <script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+  <script type="text/javascript" src="/s/ecm/js/dataTables.bootstrap.js"></script>
+  <script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
 {% block compressed_javascripts %}{% endblock %}{% endcompress %}
 </body>
 </html>

@@ -113,7 +113,7 @@ COMPRESS_CSS_FILTERS = (
     'compressor.filters.css_default.CssAbsoluteFilter',
     #'compressor.filters.csstidy.CSSTidyFilter',
 )
-#COMPRESS_ENABLED = True
+#COMPRESS_ENABLED = False
 
 #############
 # TEMPLATES #

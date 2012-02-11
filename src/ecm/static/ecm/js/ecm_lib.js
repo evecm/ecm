@@ -63,3 +63,31 @@ Number.prototype.formatMoney = function(c, d, t){
     + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 
+var DATATABLE_DEFAULTS = {
+    sPaginationType: 'bootstrap',
+    bProcessing: true,
+    bServerSide: true,
+    bAutoWidth: false,
+    iDisplayLength: 25,         /* default display 25 items */
+    bStateSave: true,       /* table state persistance */
+    iCookieDuration: 60 * 60, /* persistance duration 1 hour */
+    sDom: "<'row-fluid'<'span4'l><'span8'p>>rt<'row-fluid'<'span4'i><'span8'p>>",
+
+    /* the search field being outside the table object, we need to save its status
+     * explicitly here in order to restore it with the rest */
+    fnStateSaveParams: function (oSettings, oData) {
+        oData.sFilter = $("#search_text").val()
+    },
+    /* restore the search field content */
+    fnStateLoadParams: function (oSettings, oData) {
+        $("#search_text").val(oData.sFilter);
+        return true;
+    },
+    oLanguage: {
+        sLengthMenu: "_MENU_ lines per page",
+        sZeroRecords: "Nothing found - sorry",
+        sInfo: "Showing _START_ to _END_ of _TOTAL_ records",
+        sInfoEmpty: "Showing 0 to 0 of 0 records",
+        sInfoFiltered: "(filtered from _MAX_ total records)"
+    }
+};

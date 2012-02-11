@@ -3,22 +3,10 @@
 {% block headtitle %}Items Catalog{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
 {% endblock %}
 
-{% block javascripts %}
-<script type="text/javascript"  >
-AJAX_URL = '/industry/catalog/items/data/';
-SHOW_UNAVAILABLE = true;
-</script>
-{% endblock %}
 
-{% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript"  src="/s/industry/js/items_table.js" ></script>
-{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -27,22 +15,23 @@ SHOW_UNAVAILABLE = true;
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Items Catalog</h1>
+<h1>Items Catalog</h1>
 
-<form id="search_form" class="search_form">
-  <table>
-    <tr>
-      <td><input type="text"  id="search_text"  value="" /></td>
-      <td><input type="button"  class="button"  id="search_button"  value="Search" /></td>
-      <td><input type="button"  class="button"  id="clear_search"  value="Reset" /></td>
-      <td>Display: </td>
-      <td><input type="button" class="button" id="show_unavailable_button" value="Show Unavailable Items"/></td>
-      <td><input type="button" class="button" id="hide_unavailable_button" value="Hide Unavailable Items"/></td>
-    </tr>
-  </table>
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+    <div class="btn-group" data-toggle="buttons-radio">
+      <button class="btn btn-small" id="show_unavailable_button">Show Unavailable Items</button>
+      <button class="btn btn-small" id="hide_unavailable_button">Hide Unavailable Items</button>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="catalog_table">
+<table id="catalog_table" class="table table-striped table-bordered table-condensed">
   <thead>
     <tr>
       {%for col in columns%}
@@ -63,4 +52,126 @@ SHOW_UNAVAILABLE = true;
     </tr>
   </tfoot>
 </table>
+{% endblock %}
+
+
+{% block compressed_javascripts %}
+<script>
+SHOW_UNAVAILABLE = true;
+$(document).ready(function() {
+
+    var table = $('#catalog_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: '/industry/catalog/items/data/',
+        aoColumns: [
+            { /* 0 Item */         sWidth: "50%" },
+            { /* 1 Available */    sWidth: "5%", sClass: "center"},
+            { /* 2 Price */        sWidth: "10%"},
+            { /* 3 Blueprints */   sWidth: "5%" },
+            { /* 4 Ordered */      sWidth: "5%" },
+            { /* 5 typeID */      bVisible: false },
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            var available = aData[1];
+            var typeID = aData[5];
+            var checked = '';
+            if (available == 'true') {
+              checked += 'checked ';
+            }
+            $('td:eq(1)', nRow).html('<input type="checkbox" ' + checked + '/>');
+            $('td:eq(1) input', nRow).click(function () {
+              var params = {
+                available: $(this).is(':checked')
+              };
+              $.post('/industry/catalog/items/' + typeID + '/availability/', params)
+               .error(function () {
+                 alert('Failed to change availability!');
+               });
+            });
+
+            $('td:eq(2)', nRow).addClass('right');
+            /* Apply jEditable handlers to the cells each time we redraw the table */
+            $('td:eq(2)', nRow).editable( '/industry/catalog/items/' + typeID + '/price/', {
+                callback: function( sValue, y ) {
+                    var aPos = oTable.fnGetPosition( this );
+                    oTable.fnUpdate( sValue, aPos[0], aPos[1] );
+                },
+                loadurl: '/industry/catalog/items/' + typeID + '/price/',
+                name: 'price',
+            } );
+
+            $('td:eq(5)', nRow).hide();
+            return nRow;
+        },
+
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: "showUnavailable",
+                value: SHOW_UNAVAILABLE
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        fnStateSaveParams: function (oSettings, oData) {
+            oData.sFilter = $("#search_text").val()
+            oData.showUnavailable = SHOW_UNAVAILABLE;
+        },
+        /* restore the search field content */
+        fnStateLoadParams: function (oSettings, oData) {
+            $("#search_text").val(oData.sFilter);
+            if ('showUnavailable' in oData) {
+                SHOW_UNAVAILABLE = oData.showUnavailable;
+                if (SHOW_UNAVAILABLE) {
+                    $("#show_unavailable_button").button('toggle');
+                } else {
+                    $("#hide_unavailable_button").button('toggle');
+                }
+            }
+            return true;
+        }
+    }));
+
+    /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
+    });
+    /* disable multi column sorting */
+    $('#catalog_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+    /* Button to select quatities values */
+    $("#show_unavailable_button").click(function() {
+        if (!SHOW_UNAVAILABLE) {
+            SHOW_UNAVAILABLE = true;
+            table.fnDraw();
+        }
+    });
+    $("#hide_unavailable_button").click(function() {
+        if (SHOW_UNAVAILABLE) {
+            SHOW_UNAVAILABLE = false;
+            table.fnDraw();
+        }
+    });
+});
+</script>
 {% endblock %}
