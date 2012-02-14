@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block headtitle %}POS - {{ posViewMode }}{% endblock %}
+
+{% block header_scripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="/s/pos/css/classes.css" />
+<script type="text/javascript">
+POS_CSS_STATUS = {{posCSSStatus|safe}};
+POS_TEXT_STATUS = {{posTextStatus|safe}};
+AJAX_URL = '/pos/data/'; /* for jquery callbacks */
+DISPLAY_MODE = 'quantities'; /* default */
+</script>
+<script type="text/javascript" src="/s/pos/js/pos_table.js"></script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/pos/">POS</a></li>
+<li><a href="/pos/{{ posViewMode }}/">{{ posViewMode }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+
+<h1 class="pagetitle">POS <span class="time">- <span id="posViewMode">{{ posViewMode }}</span></span></h1>
+
+
+<form id="search_form"  class="search_form">
+  <table>
+    <tr>
+      <td><input type="text"  id="search_text"  value="" /></td>
+      <td><input type="button"  class="button"  id="search_button"  value="Search" /></td>
+      <td><input type="button"  class="button"  id="clear_search"  value="Reset" /></td>
+      <td>Display mode: </td>
+      <td><input type="button" class="button" id="quantities_button"
+                 value="Quantities" title="Show remaining fuel quantities"/></td>
+      <td><input type="button" class="button" id="days_button"
+                 value="Days" title="Show remaining fuel time (in days)"/></td>
+      <td><input type="button" class="button" id="hours_button"
+                 value="Hours" title="Show remaining fuel time (in hours)"/></td>
+    </tr>
+  </table>
+</form>
+
+<table class="table display" id="pos_table">
+  <thead>
+    <tr>
+      {% for col, title in columns %}
+      <th class="top" scope="col" title="{{title}}">{{col|safe}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {% for col, title in columns %}
+      <th title="{{title}}">{{col|safe}}</th>
+      {% endfor %}
+    </tr>
+  </tfoot>
+</table>
+
+
+{% endblock %}

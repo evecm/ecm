@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block headtitle %}POS Details - {{ pos }}{% endblock %}
+
+{% block header_scripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="/s/hr/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="/s/pos/css/classes.css" />
+<script type="text/javascript">
+AJAX_URL = "/pos/{{ pos.itemID }}/data/";
+</script>
+
+<script type="text/javascript" src="/s/pos/js/fuel_table.js"></script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/pos">POS</a></li>
+<li><a href="/pos/{{ pos.itemID }}/">{{ pos.moon }}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1 class="pagetitle{%if pos.state != 4%} error{%endif%}">{{ pos.moon }}{%if pos.state != 4%} - {{pos.stateText}}{% endif %}</h1>
+
+<table class="transparent">
+  <tr>
+    <td>
+      <img src="http://image.eveonline.com/Render/{{pos.typeID}}_128.png" title="{{pos.typeName}}"/>
+    </td>
+    <td>
+      <h2>General Info</h2>
+      <ul>
+        <li{%if pos.state == 3%} class="error"{%endif%}><b>State:</b> {{pos.stateText}}{%if pos.state == 3%} until {{pos.stateTimestamp|ecm_datetime}}{%endif%}</li>
+        <li><b>Online since:</b> {{pos.onlineTimestamp|ecm_datetime}}</li>
+        <li><b>POS type:</b> {{pos.typeName}}</li>
+      </ul>
+    </td>
+    <td>
+      <h2><span class="dotlan">dotlan &copy;</span> Links</h2>
+      <ul>
+        <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}" target="_blank">{{pos.location}}</a></li>
+        <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}/{{dotlanPOSLocation}}" target="_blank">{{pos.moon}}</a></li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<table class="transparent">
+  <tr>
+    <td>
+      <h2>Access Control</h2>
+      <ul>
+        <li><b>Allow corp members in force field:</b> {{pos.allowCorporationMembers}}</li>
+        <li><b>Allow ally members in force field:</b> {{pos.allowAllianceMembers}}</li>
+        <li><b>Can view fuel bay:</b> {{pos.fuelBayViewAccess|safe}}</li>
+        <li><b>Can take in fuel bay:</b> {{pos.fuelBayTakeAccess|safe}}</li>
+        <li><b>Can anchor modules:</b> {{pos.anchorAccess|safe}}</li>
+        <li><b>Can unanchor modules:</b> {{pos.unanchorAccess|safe}}</li>
+        <li><b>Can online modules:</b> {{pos.onlineAccess|safe}}</li>
+        <li><b>Can offline modules:</b> {{pos.offlineAccess|safe}}</li>
+      </ul>
+    </td>
+    <td>
+      <h2>Combat Settings</h2>
+      <ul>
+        {%if pos.standingThreshold != 0.0%}
+        <li><b>Attack when standing is bellow:</b> {{pos.standingThreshold}} (use standings from {{useStandingsFrom}})</li>
+        {%else%}
+        <li><b>Attack on bad standing:</b> False</li>
+        {%endif%}
+        {%if pos.securityStatusThreshold != 0.0%}
+        <li><b>Attack when security status is bellow:</b> {{pos.securityStatusThreshold}}</li>
+        {%else%}
+        <li><b>Attack when security status is bad:</b> False</li>
+        {%endif%}
+        <li><b>Attack on concord flag:</b> {{pos.attackOnConcordFlag}}</li>
+        <li><b>Attack on aggression:</b> {{pos.attackOnAggression}}</li>
+        <li><b>Attack war targets:</b> {{pos.attackOnCorpWar}}</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+
+
+<h2>Fuel Levels</h2>
+
+<table class="table display" id="fuel_table">
+  <thead>
+    <tr>
+      {% for col in columns %}
+      <th class="top" scope="col" >{{col}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {% for col in columns %}
+      <th>{{col}}</th>
+      {% endfor %}
+    </tr>
+  </tfoot>
+</table>
+{% endblock %}
