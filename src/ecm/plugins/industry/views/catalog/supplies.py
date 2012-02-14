@@ -62,9 +62,8 @@ def supplies(request):
     """
     Serves URL /industry/catalog/supplies/
     """
-    supply_sources = [ [source.location_id, source.name] for source in SupplySource.objects.all() ]
     data = {
-        'supply_sources': json.dumps(supply_sources),
+        'supply_sources': SupplySource.objects.all(),
         'columns': COLUMNS,
         'filters': FILTERS,
     }

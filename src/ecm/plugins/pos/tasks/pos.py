@@ -61,7 +61,7 @@ def update():
         else:
             oldPOSesIDs.remove(row.itemID)
             updatedPOSes += 1
-        fillFieldsFromListInfo(pos, row)
+        get_basic_info(pos, row)
 
         logger.info("fetching /corp/StarbaseDetail.xml.aspx?itemID=%d..." % row.itemID)
         apiCurPOS = conn.corp.StarbaseDetail(characterID=charID,
@@ -70,7 +70,7 @@ def update():
 
         if cached_until != pos.cached_until:
             pos.cached_until = cached_until
-            fillFieldsFromDetailInfo(pos, apiCurPOS)
+            get_details(pos, apiCurPOS)
         else:
             localCachedUntil = datetime.fromtimestamp(calendar.timegm(cached_until.timetuple()))
             logger.info("POS %s is cached until %s: no update required",
@@ -84,7 +84,7 @@ def update():
     logger.info("%d POS updated, %d new, %d removed", updatedPOSes, newPOSes, len(oldPOSesIDs))
 
 #------------------------------------------------------------------------------
-def fillFieldsFromListInfo(pos, apiRow):
+def get_basic_info(pos, api_row):
     """
     The XML API result of StarbaseList is
 
@@ -107,10 +107,10 @@ def fillFieldsFromListInfo(pos, apiRow):
         <cachedUntil>2011-04-24 06:21:31</cachedUntil>
     </eveapi>
     """
-    pos.item_id = apiRow.itemID
-    pos.location_id = apiRow.locationID
-    pos.moon_id = apiRow.moonID
-    pos.type_id = apiRow.typeID
+    pos.item_id = api_row.itemID
+    pos.location_id = api_row.locationID
+    pos.moon_id = api_row.moonID
+    pos.type_id = api_row.typeID
 
     pos.location, _   = db.resolveLocationName(pos.location_id)
     pos.moon, _  = db.resolveLocationName(pos.moon_id)
@@ -120,7 +120,7 @@ def fillFieldsFromListInfo(pos, apiRow):
     pos.fuel_type_id = constants.RACE_TO_FUEL[i.raceID]
 
 #------------------------------------------------------------------------------
-def fillFieldsFromDetailInfo(pos, api):
+def get_details(pos, api):
     """
     The XML API result of StarbaseDetail is
 
@@ -184,15 +184,15 @@ def fillFieldsFromDetailInfo(pos, api):
             previous_level = None
 
         current_level = FuelLevel.objects.create(pos=pos,
-                                                type_id=fuel.typeID,
-                                                quantity=fuel.quantity,
-                                                date=api._meta.currentTime)
+                                                 type_id=fuel.typeID,
+                                                 quantity=fuel.quantity,
+                                                 date=api._meta.currentTime)
         if previous_level is not None:
             # cannot estimate consumption without a previous level
-            updateFuelConsumption(pos, current_level, previous_level)
+            get_fuel_consumption(pos, current_level, previous_level)
 
 #------------------------------------------------------------------------------
-def updateFuelConsumption(pos, currentLevel, previousLevel):
+def get_fuel_consumption(pos, current_level, previous_level):
     """
     This function estimates the fuel consumption based on previous and current fuel levels.
 
@@ -206,15 +206,15 @@ def updateFuelConsumption(pos, currentLevel, previousLevel):
             if the consumption does not change for 24 hours
         probable_stability
     """
-    fuel_cons, _ = pos.fuel_consumptions.get_or_create(typeID=currentLevel.typeID)
+    fuel_cons, _ = pos.fuel_consumptions.get_or_create(type_id=current_level.type_id)
 
-    level_delta = previousLevel.quantity - currentLevel.quantity
+    level_delta = previous_level.quantity - current_level.quantity
     if level_delta < 0:
         # particular case : refuel ... cannot estimate consumption
         return
 
     # time since previous level (must be in hours)
-    time_delta = (currentLevel.date - previousLevel.date).total_seconds() / 3600
+    time_delta = (current_level.date - previous_level.date).total_seconds() / 3600
     if time_delta < 0:
         # if time_delta is negative (time travel?) cannot estimate consumption
         return
