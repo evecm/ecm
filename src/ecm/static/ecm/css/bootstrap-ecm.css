@@ -15,3 +15,21 @@
 .row-red { background-color:#ffa1a1; }
 .row-purple { background-color:#c8aaf6; }
 .row-black { background-color: #1e1e1e; color: #fff; }
+
+
+
+body {
+    padding-top: 60px; 
+    padding-bottom: 40px;
+}
+.sidebar-nav {
+    padding: 9px 0;
+}
+.child-active > a, .child-active > a:hover {
+    background-color:#ceefff;
+}
+
+.btn-toolbar * {
+    vertical-align: middle;
+}
+

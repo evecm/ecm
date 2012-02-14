@@ -18,19 +18,8 @@
   <![endif]-->
   <title>ECM - {% block headtitle %}{% endblock %}</title>
 {% compress css %}
-  <link rel="stylesheet" href="/s/ecm/css/bootstrap.css" />
-  <style type="text/css">
-  body {padding-top: 60px; padding-bottom: 40px;}
-  .sidebar-nav {padding: 9px 0;}
-  .child-active > a, .child-active > a:hover {
-    background-color:#ceefff;
-  }
-  .search-query {
-  vertical-align:top;
-  }
-
-  </style>
-  <link rel="stylesheet" href="/s/ecm/css/bootstrap-responsive.css" />
+  <link rel="stylesheet" type="text/css" href="/s/ecm/css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="/s/ecm/css/bootstrap-responsive.css" />
 {% block stylesheets %}{% endblock %}
   <link rel="stylesheet" type="text/css" href="/s/ecm/css/dataTables.bootstrap.css" />
   <link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.cluetip.css" />
@@ -39,9 +28,7 @@
   <link rel="icon" type="image/png" href="/s/ecm/img/favicon.png" />
   <link rel="shortcut icon" type="image/png" href="/s/ecm/img/favicon.png" />
 </head>
-
 <body>
-
   <!-- NAVBAR -->
   <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
