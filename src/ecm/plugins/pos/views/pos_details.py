@@ -32,7 +32,7 @@ from django.template.context import RequestContext
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 
 from ecm.plugins.pos.views import print_fuel_quantity, print_duration
-from ecm.plugins.pos.models import POS, FuelLevel
+from ecm.plugins.pos.models import POS, FuelLevel, FuelConsumption
 from ecm.core.eve import db
 from ecm.views.decorators import check_user_access
 from ecm.plugins.pos import constants
@@ -93,13 +93,6 @@ def fuel_data(request, pos_id):
     pos = get_object_or_404(POS, item_id=pos_id)
 
     fuelTypeIDs = (
-        constants.ENRICHED_URANIUM_TYPEID,
-        constants.OXYGEN_TYPEID,
-        constants.MECHANICAL_PARTS_TYPEID,
-        constants.COOLANT_TYPEID,
-        constants.ROBOTICS_TYPEID,
-        constants.LIQUID_OZONE_TYPEID,
-        constants.HEAVY_WATER_TYPEID,
         pos.fuel_type_id,
         constants.STRONTIUM_CLATHRATES_TYPEID,
     )
@@ -112,11 +105,11 @@ def fuel_data(request, pos_id):
             quantity = 0
         try:
             fuelCons = pos.fuel_consumptions.get(type_id=type_id)
-            if fuelCons.probableConsumption == 0:
+            if fuelCons.probable_consumption == 0:
                 # if "probableConsumption" is 0, we fallback to "consumption"
                 consumption = fuelCons.consumption
             else:
-                consumption = fuelCons.probableConsumption
+                consumption = fuelCons.probable_consumption
         except FuelConsumption.DoesNotExist:
             consumption = sys.maxint
 
@@ -128,7 +121,7 @@ def fuel_data(request, pos_id):
 
         fuelTable.append([
             type_id,
-            db.resolve_type_name(type_id)[0],
+            db.get_type_name(type_id)[0],
             print_fuel_quantity(quantity),
             '%d / hour' % consumption,
             '%d / day' % (consumption * 24),

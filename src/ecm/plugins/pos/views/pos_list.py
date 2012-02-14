@@ -30,7 +30,7 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.plugins.pos.views import print_fuel_quantity, print_duration, print_time
-from ecm.plugins.pos.models import POS, FuelLevel
+from ecm.plugins.pos.models import POS, FuelLevel, FuelConsumption
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
 from ecm.core import utils
@@ -53,15 +53,8 @@ COLUMNS = [
     ['Type',            'Type',                 'type_id'],
     ['Status',          'Status',               'state'],
     ['Cycle',           'Cycle Time',           'online_timestamp'],
-    ['EU',              'Enriched Uranium',     None],
-    ['O<sub>2</sub>',   'Oxygen',               None],
-    ['MP',              'Mechanical Parts',     None],
-    ['Cool',            'Coolant',              None],
-    ['Robo.',           'Robotics',             None],
-    ['LO',              'Liquid Ozone',         None],
-    ['HW',              'Heavy Water',          None],
-    ['Iso.',            'Isotopes',             None],
-    ['Sr',              'Strontium Clathrates', None],
+    ['Fuel Blocks',     'Fuel Blocks',          None],
+    ['Strontium',       'Strontium Clathrates', None],
     ['Name',            None,                   None],
 ]
 @check_user_access()
@@ -123,13 +116,6 @@ def all_data(request):
             pos.type_id,
             pos.state,
             print_time(pos.online_timestamp),
-            getFuelValue(pos, C.ENRICHED_URANIUM_TYPEID, params.displayMode),
-            getFuelValue(pos, C.OXYGEN_TYPEID, params.displayMode),
-            getFuelValue(pos, C.MECHANICAL_PARTS_TYPEID, params.displayMode),
-            getFuelValue(pos, C.COOLANT_TYPEID, params.displayMode),
-            getFuelValue(pos, C.ROBOTICS_TYPEID, params.displayMode),
-            getFuelValue(pos, C.LIQUID_OZONE_TYPEID, params.displayMode),
-            getFuelValue(pos, C.HEAVY_WATER_TYPEID, params.displayMode),
             getFuelValue(pos, pos.fuel_type_id, params.displayMode),
             getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode),
             pos.type_name,
@@ -156,11 +142,11 @@ def getFuelValue(pos, fuelTypeID, displayMode):
     else:
         try:
             fuelCons = pos.fuel_consumptions.get(type_id=fuelTypeID)
-            if fuelCons.probableConsumption == 0:
+            if fuelCons.probable_consumption == 0:
                 # if "probableConsumption" is 0, we fallback to "consumption"
                 consumption = fuelCons.consumption
             else:
-                consumption = fuelCons.probableConsumption
+                consumption = fuelCons.probable_consumption
         except FuelConsumption.DoesNotExist:
             consumption = sys.maxint
 

@@ -178,7 +178,77 @@ def fillFieldsFromDetailInfo(pos, api):
     pos.attack_on_corp_war = cs.onCorporationWar.enabled == 1
 
     for fuel in api.fuel:
-        FuelLevel.objects.create(pos=pos,
-                                 type_id=fuel.typeID,
-                                 quantity=fuel.quantity,
-                                 date=api._meta.currentTime)
+        try:
+            previous_level = pos.fuel_levels.filter(type_id=fuel.typeID).latest()
+        except FuelLevel.DoesNotExist:
+            previous_level = None
+
+        current_level = FuelLevel.objects.create(pos=pos,
+                                                type_id=fuel.typeID,
+                                                quantity=fuel.quantity,
+                                                date=api._meta.currentTime)
+        if previous_level is not None:
+            # cannot estimate consumption without a previous level
+            updateFuelConsumption(pos, current_level, previous_level)
+
+#------------------------------------------------------------------------------
+def updateFuelConsumption(pos, currentLevel, previousLevel):
+    """
+    This function estimates the fuel consumption based on previous and current fuel levels.
+
+    The estimation involves 4 variables:
+        consumption
+            the quantity of fuel burned per hour
+        stability
+            the number of hours since when the consumption did not change
+            it is resetted to 0 whenever the consumption changes
+        probable_consumption
+            if the consumption does not change for 24 hours
+        probable_stability
+    """
+    fuel_cons, _ = pos.fuel_consumptions.get_or_create(typeID=currentLevel.typeID)
+
+    level_delta = previousLevel.quantity - currentLevel.quantity
+    if level_delta < 0:
+        # particular case : refuel ... cannot estimate consumption
+        return
+
+    # time since previous level (must be in hours)
+    time_delta = (currentLevel.date - previousLevel.date).total_seconds() / 3600
+    if time_delta < 0:
+        # if time_delta is negative (time travel?) cannot estimate consumption
+        return
+    elif time_delta < 1.0:
+        # if time_delta is less than 1 hour, make it 1 hour
+        time_delta = 1.0
+
+    # quantity of fuel consumed per hour
+    consumption = int(round(level_delta / time_delta))
+
+    if fuel_cons.consumption == consumption:
+        # consumption didn't change since last scan,
+        # we increase the "stability" of the consumption
+        fuel_cons.stability += time_delta
+
+        if fuel_cons.stability >= fuel_cons.probable_stability or fuel_cons.stability >= 24:
+            # 24 hours with the same value we consider it stable.
+            fuel_cons.probable_stability = fuel_cons.stability
+            fuel_cons.probable_consumption = fuel_cons.consumption
+    else:
+        # consumption changed since last scan
+        if fuel_cons.consumption == 0 and fuel_cons.stability == 0:
+            # initialization: no previous info about stability and stuff
+            fuel_cons.consumption = consumption
+        else:
+            if fuel_cons.stability > 0:
+                # consumption was stable until now, we do not take the new value into account.
+                # instead we reset the stability to 0.
+                # on next scan, if the consumption has not gone back to what it was before,
+                # we will take it into account.
+                fuel_cons.stability = 0
+            else:
+                # stability was set to 0 at last scan because it had changed
+                # we take the new consumption into account now as it is still different
+                fuel_cons.consumption = consumption
+
+    fuel_cons.save()
