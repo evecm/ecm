@@ -106,7 +106,7 @@ class OwnedBlueprint(models.Model):
         return '<a href="%s" class="catalog-blueprint">%s</a>' % (self.url, self.typeName)
 
     def item_name_admin_display(self):
-        name, _ = db.get_name(self.typeID)
+        name, _ = db.get_type_name(self.typeID)
         return name
     item_name_admin_display.short_description = 'Blueprint'
 

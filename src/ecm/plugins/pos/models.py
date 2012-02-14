@@ -27,19 +27,19 @@ from ecm.core.eve import db
 #------------------------------------------------------------------------------
 class POS(models.Model):
     """
-    usageFlags
+    usage_flags
         access restrictions to the POS fuel bay are encoded in this 4 bit field.
 
-        example: if usageFlags == 9 == 0b1001   -->   10    01
-                                                     view  take
+        example: if usage_flags == 9 == 0b1001   -->   10    01
+                                                      view  take
             0b10 == 2 --> 'Corporation Members' can view
             0b01 == 1 --> 'Starbase Fuel Tech' can take
 
-    deployFlags
+    deploy_flags
         access restrictions to who is able to operate this POS are encoded in this 8 bit field.
 
-        example: if usageFlags == 68 == 0b01000100  -->   01       00       01      00
-                                                        anchor  unanchor  online  offline
+        example: if usage_flags == 68 == 0b01000100  -->   01       00       01      00
+                                                         anchor  unanchor  online  offline
             0b01 == 1 --> 'Starbase Fuel Tech' can anchor
             0b00 == 0 --> 'Starbase Config' can unanchor
             0b01 == 1 --> 'Starbase Fuel Tech' can online
@@ -58,11 +58,11 @@ class POS(models.Model):
         4: 'Online',
     }
 
-    ISOTOPES = {
-        constants.OXYGEN_ISOTOPES_TYPEID: 'Oxygen Isotopes',
-        constants.HYDROGEN_ISOTOPES_TYPEID: 'Hydrogen Isotopes',
-        constants.NITROGEN_ISOTOPES_TYPEID: 'Nitrogen Isotopes',
-        constants.HELIUM_ISOTOPES_TYPEID: 'Helium Isotopes',
+    FUEL_BLOCKS = {
+        constants.CALDARI_FUEL_BLOCK_TYPEID: 'Caldari Fuel Block',
+        constants.MINMATAR_FUEL_BLOCK_TYPEID: 'Minmatar Fuel Block',
+        constants.AMARR_FUEL_BLOCK_TYPEID: 'Amarr Fuel Block',
+        constants.GALLENTE_FUEL_BLOCK_TYPEID: 'Gallente Fuel Block',
     }
 
     # access restrictions are encoded on 2 bits
@@ -75,37 +75,36 @@ class POS(models.Model):
 
     ACCESS_MASK = 3
 
-    itemID = models.BigIntegerField(primary_key=True)
+    item_id = models.BigIntegerField(primary_key=True)
 
-    locationID = models.BigIntegerField(default=0)
+    location_id = models.BigIntegerField(default=0)
     location = models.CharField(max_length=255, default="")
-    moonID = models.BigIntegerField(default=0)
+    moon_id = models.BigIntegerField(default=0)
     moon = models.CharField(max_length=255, default="")
-    typeID = models.IntegerField(default=0)
-    typeName = models.CharField(max_length=255, default="")
+    type_id = models.IntegerField(default=0)
+    type_name = models.CharField(max_length=255, default="")
 
     state = models.SmallIntegerField(choices=STATES.items(), default=0)
-    stateTimestamp = models.DateTimeField(auto_now_add=True) # used when pos is reinforced
-    onlineTimestamp = models.DateTimeField(auto_now_add=True) # online date (only minutes matter here)
-    cachedUntil = models.DateTimeField(auto_now_add=True)
+    state_timestamp = models.DateTimeField(auto_now_add=True) # used when pos is reinforced
+    online_timestamp = models.DateTimeField(auto_now_add=True) # online date (only minutes matter here)
+    cached_until = models.DateTimeField(auto_now_add=True)
 
     # general settings
-    usageFlags = models.SmallIntegerField(default=0) # see docstring
-    deployFlags = models.SmallIntegerField(default=0) # see docstring
-    allowCorporationMembers = models.BooleanField(default=False)
-    allowAllianceMembers = models.BooleanField(default=False)
+    usage_flags = models.SmallIntegerField(default=0) # see docstring
+    deploy_flags = models.SmallIntegerField(default=0) # see docstring
+    allow_corporation_members = models.BooleanField(default=False)
+    allow_alliance_members = models.BooleanField(default=False)
 
     # combat settings
-    useStandingsFrom = models.BigIntegerField(default=0)
-    standingThreshold = models.FloatField(default=0.0)
-    securityStatusThreshold = models.FloatField(default=0.0)
-    attackOnConcordFlag = models.BooleanField(default=False)
-    attackOnAggression = models.BooleanField(default=False)
-    attackOnCorpWar = models.BooleanField(default=False)
+    use_standings_from = models.BigIntegerField(default=0)
+    standings_threshold = models.FloatField(default=0.0)
+    security_status_threshold = models.FloatField(default=0.0)
+    attack_on_concord_flag = models.BooleanField(default=False)
+    attack_on_aggression = models.BooleanField(default=False)
+    attack_on_corp_war = models.BooleanField(default=False)
 
-    lastUpdate = models.DateTimeField(auto_now_add=True)
-    isotopeTypeID = models.BigIntegerField(choices=ISOTOPES.items(), default=0)
-    customName = models.CharField(max_length=255, null=True, blank=True)
+    fuel_type_id = models.IntegerField(choices=FUEL_BLOCKS.items(), default=0)
+    custom_name = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     operators = models.ManyToManyField(User, related_name="operated_poses")
 
@@ -115,43 +114,43 @@ class POS(models.Model):
 
     @property
     def url(self):
-        return '/pos/%d/' % self.itemID
+        return '/pos/%d/' % self.item_id
 
     @property
     def permalink(self):
-        moon, _ = db.resolveLocationName(self.moonID)
+        moon, _ = db.resolveLocationName(self.moon_id)
         return '<a href="%s" class="pos">%s</a>' % (self.url, moon)
 
     @property
-    def fuelBayViewAccess(self):
-        return POS.ACCESS_RESTRICTIONS[(self.usageFlags >> 2) & POS.ACCESS_MASK]
+    def fuel_bay_view_access(self):
+        return POS.ACCESS_RESTRICTIONS[(self.usage_flags >> 2) & POS.ACCESS_MASK]
 
     @property
-    def fuelBayTakeAccess(self):
-        return POS.ACCESS_RESTRICTIONS[self.usageFlags & POS.ACCESS_MASK]
+    def fuel_bay_take_access(self):
+        return POS.ACCESS_RESTRICTIONS[self.usage_flags & POS.ACCESS_MASK]
 
     @property
-    def anchorAccess(self):
-        return POS.ACCESS_RESTRICTIONS[(self.deployFlags >> 6) & POS.ACCESS_MASK]
+    def anchor_access(self):
+        return POS.ACCESS_RESTRICTIONS[(self.deploy_flags >> 6) & POS.ACCESS_MASK]
 
     @property
-    def unanchorAccess(self):
-        return POS.ACCESS_RESTRICTIONS[(self.deployFlags >> 4) & POS.ACCESS_MASK]
+    def unanchor_access(self):
+        return POS.ACCESS_RESTRICTIONS[(self.deploy_flags >> 4) & POS.ACCESS_MASK]
 
     @property
-    def onlineAccess(self):
-        return POS.ACCESS_RESTRICTIONS[(self.deployFlags >> 2) & POS.ACCESS_MASK]
+    def online_access(self):
+        return POS.ACCESS_RESTRICTIONS[(self.deploy_flags >> 2) & POS.ACCESS_MASK]
 
     @property
-    def offlineAccess(self):
-        return POS.ACCESS_RESTRICTIONS[self.deployFlags & POS.ACCESS_MASK]
+    def offline_access(self):
+        return POS.ACCESS_RESTRICTIONS[self.deploy_flags & POS.ACCESS_MASK]
 
     def state_admin_display(self):
         return self.get_state_display()
     state_admin_display.short_description = "State"
 
     def isotopes_admin_display(self):
-        return self.get_isotopeTypeID_display()
+        return self.get_fuel_type_id_display()
     isotopes_admin_display.short_description = "Isotopes"
 
     def __unicode__(self):
@@ -163,40 +162,18 @@ class FuelLevel(models.Model):
 
     class Meta:
         get_latest_by = 'date'
-        ordering = ['pos', 'date', 'typeID']
+        ordering = ['pos', 'date', 'type_id']
 
     pos = models.ForeignKey(POS, related_name='fuel_levels')
     date = models.DateTimeField(db_index=True, auto_now_add=True)
-    typeID = models.IntegerField(db_index=True)
+    type_id = models.IntegerField(db_index=True)
     quantity = models.IntegerField()
 
     def fuel_admin_display(self):
-        fuelName, _ = db.resolveTypeName(self.typeID)
-        return unicode(fuelName)
+        fuel_name, _ = db.get_type_name(self.type_id)
+        return unicode(fuel_name)
     fuel_admin_display.short_description = "Fuel"
 
     def __unicode__(self):
-        fuelName, _ = db.resolveTypeName(self.typeID)
-        return u'%s: %d x %s' % (unicode(self.pos), self.quantity, fuelName)
-
-#------------------------------------------------------------------------------
-class FuelConsumption(models.Model):
-
-    class Meta:
-        ordering = ['pos', 'typeID']
-
-    pos = models.ForeignKey(POS, related_name='fuel_consumptions')
-    typeID = models.IntegerField() # id of fuel type
-    consumption = models.IntegerField(default=0) # consumption of this fuel type
-    stability = models.IntegerField(default=0) # stability of the estimation.
-    probableConsumption = models.IntegerField(default=0) # Most often this consumption
-    probableStability = models.IntegerField(default=0) # nb point to reach to change stability
-
-    def fuel_admin_display(self):
-        fuelName, _ = db.resolveTypeName(self.typeID)
-        return unicode(fuelName)
-    fuel_admin_display.short_description = "Fuel"
-
-    def __unicode__(self):
-        fuelName, _ = db.resolveTypeName(self.typeID)
-        return u'%s: %s = %d / hour' % (unicode(self.pos), fuelName, self.consumption)
+        fuel_name, _ = db.get_type_name(self.type_id)
+        return u'%s: %d x %s' % (unicode(self.pos), self.quantity, fuel_name)

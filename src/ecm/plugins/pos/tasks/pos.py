@@ -44,49 +44,44 @@ def update():
     If there's an error, nothing is written in the database
     If the cache date didnot change ...ignore...
     """
-    try:
-        conn = api.connect()
-        charID = api.get_api().characterID
+    conn = api.connect()
+    charID = api.get_charID()
 
-        logger.info("fetching /corp/StarbaseList.xml.aspx...")
-        apiPOSList = conn.corp.StarbaseList(characterID=charID)
-        checkApiVersion(apiPOSList._meta.version)
+    logger.info("fetching /corp/StarbaseList.xml.aspx...")
+    apiPOSList = conn.corp.StarbaseList(characterID=charID)
+    checkApiVersion(apiPOSList._meta.version)
 
-        newPOSes = 0
-        updatedPOSes = 0
-        oldPOSesIDs = list(POS.objects.all().values_list('itemID', flat=True))
-        for row in apiPOSList.starbases:
-            pos, created = POS.objects.get_or_create(itemID=row.itemID)
-            if created:
-                newPOSes += 1
-            else:
-                oldPOSesIDs.remove(row.itemID)
-                updatedPOSes += 1
-            fillFieldsFromListInfo(pos, row)
+    newPOSes = 0
+    updatedPOSes = 0
+    oldPOSesIDs = list(POS.objects.all().values_list('item_id', flat=True))
+    for row in apiPOSList.starbases:
+        pos, created = POS.objects.get_or_create(item_id=row.itemID)
+        if created:
+            newPOSes += 1
+        else:
+            oldPOSesIDs.remove(row.itemID)
+            updatedPOSes += 1
+        fillFieldsFromListInfo(pos, row)
 
-            logger.info("fetching /corp/StarbaseDetail.xml.aspx?itemID=%d..." % row.itemID)
-            apiCurPOS = conn.corp.StarbaseDetail(characterID=charID,
-                                                 itemID=row.itemID)
-            cachedUntil = apiCurPOS._meta.cachedUntil
+        logger.info("fetching /corp/StarbaseDetail.xml.aspx?itemID=%d..." % row.itemID)
+        apiCurPOS = conn.corp.StarbaseDetail(characterID=charID,
+                                             itemID=row.itemID)
+        cached_until = apiCurPOS._meta.cachedUntil
 
-            if cachedUntil != pos.cachedUntil:
-                pos.cachedUntil = cachedUntil
-                fillFieldsFromDetailInfo(pos, apiCurPOS)
-            else:
-                localCachedUntil = datetime.fromtimestamp(calendar.timegm(cachedUntil.timetuple()))
-                logger.info("POS %s is cached until %s: no update required",
-                            row.itemID, localCachedUntil)
-            pos.save()
+        if cached_until != pos.cached_until:
+            pos.cached_until = cached_until
+            fillFieldsFromDetailInfo(pos, apiCurPOS)
+        else:
+            localCachedUntil = datetime.fromtimestamp(calendar.timegm(cached_until.timetuple()))
+            logger.info("POS %s is cached until %s: no update required",
+                        row.itemID, localCachedUntil)
+        pos.save()
 
-        # if this list is not empty, it means that some POSes have disapeared since last scan.
-        if len(oldPOSesIDs) > 0:
-            POS.objects.filter(itemID__in=oldPOSesIDs).delete()
+    # if this list is not empty, it means that some POSes have disapeared since last scan.
+    if len(oldPOSesIDs) > 0:
+        POS.objects.filter(item_id__in=oldPOSesIDs).delete()
 
-        logger.info("%d POS updated, %d new, %d removed", updatedPOSes, newPOSes, len(oldPOSesIDs))
-    except:
-        # error catched, rollback changes
-        logger.exception("update failed")
-        raise
+    logger.info("%d POS updated, %d new, %d removed", updatedPOSes, newPOSes, len(oldPOSesIDs))
 
 #------------------------------------------------------------------------------
 def fillFieldsFromListInfo(pos, apiRow):
@@ -112,17 +107,17 @@ def fillFieldsFromListInfo(pos, apiRow):
         <cachedUntil>2011-04-24 06:21:31</cachedUntil>
     </eveapi>
     """
-    pos.itemID = apiRow.itemID
-    pos.locationID = apiRow.locationID
-    pos.moonID = apiRow.moonID
-    pos.typeID = apiRow.typeID
+    pos.item_id = apiRow.itemID
+    pos.location_id = apiRow.locationID
+    pos.moon_id = apiRow.moonID
+    pos.type_id = apiRow.typeID
 
-    pos.location, _   = db.resolveLocationName(pos.locationID)
+    pos.location, _   = db.resolveLocationName(pos.location_id)
     pos.moon, _  = db.resolveLocationName(pos.moonID)
 
-    i = Item.get(pos.typeID)
-    pos.typeName = i.typeName
-    pos.isotopeTypeID = constants.RACE_TO_ISOTOPE[i.raceID]
+    i = Item.new(pos.type_id)
+    pos.type_name = i.typeName
+    pos.fuel_type_id = constants.RACE_TO_FUEL[i.raceID]
 
 #------------------------------------------------------------------------------
 def fillFieldsFromDetailInfo(pos, api):
@@ -164,97 +159,26 @@ def fillFieldsFromDetailInfo(pos, api):
     </eveapi>
     """
     pos.state = api.state
-    pos.stateTimestamp = api.stateTimestamp
-    pos.onlineTimestamp = api.onlineTimestamp
+    pos.state_timestamp = api.stateTimestamp
+    pos.online_timestamp = api.onlineTimestamp
     pos.lastUpdate = api._meta.currentTime
 
     gs = api.generalSettings
-    pos.usageFlags = gs.usageFlags
-    pos.deployFlags = gs.deployFlags
-    pos.allowCorporationMembers = gs.allowCorporationMembers == 1
-    pos.allowAllianceMembers = gs.allowAllianceMembers == 1
+    pos.usage_flags = gs.usageFlags
+    pos.deploy_flags = gs.deployFlags
+    pos.allow_corporation_members = gs.allowCorporationMembers == 1
+    pos.allow_alliance_members = gs.allowAllianceMembers == 1
 
     cs = api.combatSettings
-    pos.useStandingsFrom = cs.useStandingsFrom.ownerID
-    pos.standingThreshold = cs.onStandingDrop.standing / 100.0
-    pos.attackOnConcordFlag = cs.onStatusDrop.enabled == 1
-    pos.securityStatusThreshold = cs.onStatusDrop.standing / 100.0
-    pos.attackOnAggression = cs.onAggression.enabled == 1
-    pos.attackOnCorpWar = cs.onCorporationWar.enabled == 1
+    pos.use_standings_from = cs.useStandingsFrom.ownerID
+    pos.standings_threshold = cs.onStandingDrop.standing / 100.0
+    pos.attack_on_concord_flag = cs.onStatusDrop.enabled == 1
+    pos.security_status_threshold = cs.onStatusDrop.standing / 100.0
+    pos.attack_on_aggression = cs.onAggression.enabled == 1
+    pos.attack_on_corp_war = cs.onCorporationWar.enabled == 1
 
     for fuel in api.fuel:
-        try:
-            previousLevel = pos.fuel_levels.filter(typeID=fuel.typeID).latest()
-        except FuelLevel.DoesNotExist:
-            previousLevel = None
-
-        currentLevel = FuelLevel.objects.create(pos=pos,
-                                                typeID=fuel.typeID,
-                                                quantity=fuel.quantity,
-                                                date=api._meta.currentTime)
-        if previousLevel is not None:
-            # cannot estimate consumption without a previous level
-            updateFuelConsumption(pos, currentLevel, previousLevel)
-
-#------------------------------------------------------------------------------
-def updateFuelConsumption(pos, currentLevel, previousLevel):
-    """
-    This function estimates the fuel consumption based on previous and current fuel levels.
-
-    The estimation involves 4 variables:
-        consumption
-            the quantity of fuel burned per hour
-        stability
-            the number of hours since when the consumption did not change
-            it is resetted to 0 whenever the consumption changes
-        probableConsumption
-            if the consumption does not change for 24 hours
-        probableStability
-    """
-    fuelCons, _ = pos.fuel_consumptions.get_or_create(typeID=currentLevel.typeID)
-
-    levelDelta = previousLevel.quantity - currentLevel.quantity
-    if levelDelta < 0:
-        # particular case : refuel ... cannot estimate consumption
-        return
-
-    # time since previous level (must be in hours)
-    timeDelta = (currentLevel.date - previousLevel.date).total_seconds() / 3600
-    if timeDelta < 0:
-        # if timeDelta is negative (time travel?) cannot estimate consumption
-        return
-    elif timeDelta < 1.0:
-        # if timeDelta is less than 1 hour, make it 1 hour
-        timeDelta = 1.0
-
-    # quantity of fuel consumed per hour
-    consumption = int(round(levelDelta / timeDelta))
-
-    if fuelCons.consumption == consumption:
-        # consumption didn't change since last scan,
-        # we increase the "stability" of the consumption
-        fuelCons.stability += timeDelta
-
-        if fuelCons.stability >= fuelCons.probableStability or fuelCons.stability >= 24:
-            # 24 hours with the same value we consider it stable.
-            fuelCons.probableStability = fuelCons.stability
-            fuelCons.probableConsumption = fuelCons.consumption
-    else:
-        # consumption changed since last scan
-        if fuelCons.consumption == 0 and fuelCons.stability == 0:
-            # initialization: no previous info about stability and stuff
-            fuelCons.consumption = consumption
-        else:
-            if fuelCons.stability > 0:
-                # consumption was stable until now, we do not take the new value into account.
-                # instead we reset the stability to 0.
-                # on next scan, if the consumption has not gone back to what it was before,
-                # we will take it into account.
-                fuelCons.stability = 0
-            else:
-                # stability was set to 0 at last scan because it had changed
-                # we take the new consumption into account now as it is still different
-                fuelCons.consumption = consumption
-
-    fuelCons.save()
-
+        FuelLevel.objects.create(pos=pos,
+                                 type_id=fuel.typeID,
+                                 quantity=fuel.quantity,
+                                 date=api._meta.currentTime)

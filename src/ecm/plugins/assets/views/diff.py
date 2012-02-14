@@ -210,7 +210,7 @@ def stations_data(request, date_str, solarSystemID):
             icon = "station"
         else:
             # it is an inspace anchorable array
-            name = db.get_name(flag)[0]
+            name = db.get_type_name(flag)[0]
             icon = "array"
 
         jstree_data.append({
@@ -287,7 +287,7 @@ def hangar_contents_data(request, date_str, solarSystemID, stationID, hangarID):
                                      date=date)
     jstree_data = []
     for item in query:
-        name = db.get_name(item.typeID)[0]
+        name = db.get_type_name(item.typeID)[0]
 
         if item.quantity < 0:
             icon = "removed"

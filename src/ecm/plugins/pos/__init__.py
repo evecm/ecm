@@ -19,14 +19,11 @@
 NAME = 'pos'
 
 DEPENDS_ON = {
-    'common' : (2,),
-    'corp' : (2,),
-    'hr' : (2,),
-    'scheduler' : (2,),
+    'ecm' : '2.0',
 }
 
 MENUS = [
-     {'menu_title': 'POS',    'menu_url': '',      'menu_items': []},
+     {'title': 'POS',    'url': '',      'items': []},
 ]
 
 TASKS = [

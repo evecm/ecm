@@ -2,19 +2,10 @@
 
 {% block headtitle %}POS - {{ posViewMode }}{% endblock %}
 
-{% block header_scripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+{% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="/s/pos/css/classes.css" />
-<script type="text/javascript">
-POS_CSS_STATUS = {{posCSSStatus|safe}};
-POS_TEXT_STATUS = {{posTextStatus|safe}};
-AJAX_URL = '/pos/data/'; /* for jquery callbacks */
-DISPLAY_MODE = 'quantities'; /* default */
-</script>
-<script type="text/javascript" src="/s/pos/js/pos_table.js"></script>
-
 {% endblock %}
+
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -23,28 +14,28 @@ DISPLAY_MODE = 'quantities'; /* default */
 {% endblock %}
 
 {% block main_content %}
+<h1>POS <small>{{ posViewMode }}</small></h1>
 
-<h1 class="pagetitle">POS <span class="time">- <span id="posViewMode">{{ posViewMode }}</span></span></h1>
-
-
-<form id="search_form"  class="search_form">
-  <table>
-    <tr>
-      <td><input type="text"  id="search_text"  value="" /></td>
-      <td><input type="button"  class="button"  id="search_button"  value="Search" /></td>
-      <td><input type="button"  class="button"  id="clear_search"  value="Reset" /></td>
-      <td>Display mode: </td>
-      <td><input type="button" class="button" id="quantities_button"
-                 value="Quantities" title="Show remaining fuel quantities"/></td>
-      <td><input type="button" class="button" id="days_button"
-                 value="Days" title="Show remaining fuel time (in days)"/></td>
-      <td><input type="button" class="button" id="hours_button"
-                 value="Hours" title="Show remaining fuel time (in hours)"/></td>
-    </tr>
-  </table>
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+    <span class="label label-info">Display mode</span>
+    <div class="btn-group" data-toggle="buttons-radio">
+      <button class="btn btn-small btn-info" id="quantities_button"
+              title="Show remaining fuel quantities">Quantities</button>
+      <button class="btn btn-small btn-info" id="days_button"
+              title="Show remaining fuel time (in days)">Days</button>
+      <button class="btn btn-small btn-info" id="hours_button"
+              title="Show remaining fuel time (in hours)">Hours</button>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="pos_table">
+<table class="table table-striped table-bordered table-condensed" id="pos_table">
   <thead>
     <tr>
       {% for col, title in columns %}
@@ -65,6 +56,133 @@ DISPLAY_MODE = 'quantities'; /* default */
     </tr>
   </tfoot>
 </table>
+{% endblock %}
 
 
+
+{% block compressed_javascripts %}
+<script>
+POS_CSS_STATUS = {{posCSSStatus|safe}};
+POS_TEXT_STATUS = {{posTextStatus|safe}};
+DISPLAY_MODE = 'quantities'; /* default */
+$(document).ready(function() {
+    var table = $('#pos_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: '/pos/data/',
+        aoColumns: [
+            { /* 0 Location */ sWidth: '12%', sType: 'html' },
+            { /* 1 Type */     sWidth: '1%',  sType: 'html', sClass: 'center' },
+            { /* 2 status */   sWidth: '1%',  sType: 'html' },
+            { /* 3 Time */ 	   sWidth: '2%',  sType: 'string' },
+            { /* 4 EU */       sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 5 O2 */       sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 6 MP */       sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 7 Coo */      sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 8 Rob */      sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 9 LO */       sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 10 HW */      sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 11 Isot */    sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 12 Stront */  sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 13 Name HIDDEN */  bVisible: false, bSortable: false }
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            posTypeID = aData[1];
+            posImgUrl = 'http://image.eveonline.com/Type/' + posTypeID + '_32.png';
+            $('td:eq(1)', nRow).html('<img src="' + posImgUrl + '" title="' + aData[13] + '"/>');
+
+            posState = aData[2];
+            $('td:eq(2)', nRow).addClass(POS_CSS_STATUS[posState]);
+            $('td:eq(2)', nRow).attr('title', POS_TEXT_STATUS[posState]);
+            $('td:eq(2)', nRow).html('');
+
+            for (var i=4; i<13; i++) {
+                $('td:eq(' + i + ')', nRow).addClass('right');
+                if (aData[i] == '0' || aData[i] == '0h') {
+                    $('td:eq(' + i + ')', nRow).addClass('fuel-warning');
+                }
+            }
+
+            $('td:eq(13)', nRow).hide();
+            return nRow;
+        },
+
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: 'displayMode',
+                value: DISPLAY_MODE
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        fnStateSaveParams: function (oSettings, oData) {
+            oData.sFilter = $('#search_text').val()
+            oData.displayMode = DISPLAY_MODE;
+        },
+        /* restore the search field content */
+        fnStateLoadParams: function (oSettings, oData) {
+            $('#search_text').val(oData.sFilter);
+            if ('displayMode' in oData) {
+                DISPLAY_MODE = oData.displayMode;
+                if (DISPLAY_MODE == 'quantities') {
+                    $('#quantities_button').button('toggle');
+                } else if (DISPLAY_MODE == 'days') {
+                    $('#days_button').button('toggle');
+                } else if (DISPLAY_MODE == 'hours') {
+                    $('#hours_button').button('toggle');
+                }
+            }
+            return true;
+        }
+
+    }));
+
+    /* trigger the search when pressing return in the text field */
+    $('#search_form').submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($('#search_text').val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $('#search_button').click(function() {
+        table.fnFilter($('#search_text').val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $('#clear_search').click(function() {
+        $('#search_text').val('');
+        table.fnFilter('');
+    });
+    /* disable multi column sorting */
+    $('#pos_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+    /* Button to select quatities values */
+    $('#quantities_button').click(function() {
+        if (DISPLAY_MODE != 'quantities') {
+            DISPLAY_MODE = 'quantities';
+            table.fnDraw();
+        }
+    });
+    $('#days_button').click(function() {
+        if (DISPLAY_MODE != 'days') {
+            DISPLAY_MODE = 'days';
+            table.fnDraw();
+        }
+    });
+    $('#hours_button').click(function() {
+        if (DISPLAY_MODE != 'hours') {
+            DISPLAY_MODE = 'hours';
+            table.fnDraw();
+        }
+    });
+});
+</script>
 {% endblock %}

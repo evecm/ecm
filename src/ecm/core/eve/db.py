@@ -26,7 +26,7 @@ EVE_DB = connections['eve']
 
 #------------------------------------------------------------------------------
 QUERY_ONE_TYPENAME = 'SELECT "typeName", "categoryID" FROM "invTypes" WHERE "typeID" = %s;'
-def get_name(typeID):
+def get_type_name(typeID):
     try:
         return cache.getCachedTypeName(typeID)
     except KeyError:
@@ -42,7 +42,7 @@ def get_name(typeID):
 
 #------------------------------------------------------------------------------
 QUERY_TYPENAMES = 'SELECT "typeID", "typeName", "categoryID" FROM "invTypes" WHERE "typeID" IN %s;'
-def get_names(typeIDs):
+def get_type_names(typeIDs):
     cursor = EVE_DB.cursor()
     cursor.execute(QUERY_TYPENAMES, [typeIDs])
     names = {}

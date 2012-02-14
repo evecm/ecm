@@ -8,7 +8,7 @@
 <link rel="stylesheet" type="text/css" href="/s/hr/css/classes.css" />
 <link rel="stylesheet" type="text/css" href="/s/pos/css/classes.css" />
 <script type="text/javascript">
-AJAX_URL = "/pos/{{ pos.itemID }}/data/";
+AJAX_URL = "/pos/{{ pos.item_id }}/data/";
 </script>
 
 <script type="text/javascript" src="/s/pos/js/fuel_table.js"></script>
@@ -18,7 +18,7 @@ AJAX_URL = "/pos/{{ pos.itemID }}/data/";
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/pos">POS</a></li>
-<li><a href="/pos/{{ pos.itemID }}/">{{ pos.moon }}</a></li>
+<li><a href="/pos/{{ pos.item_id }}/">{{ pos.moon }}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -27,14 +27,14 @@ AJAX_URL = "/pos/{{ pos.itemID }}/data/";
 <table class="transparent">
   <tr>
     <td>
-      <img src="http://image.eveonline.com/Render/{{pos.typeID}}_128.png" title="{{pos.typeName}}"/>
+      <img src="http://image.eveonline.com/Render/{{pos.type_id}}_128.png" title="{{pos.type_name}}"/>
     </td>
     <td>
       <h2>General Info</h2>
       <ul>
-        <li{%if pos.state == 3%} class="error"{%endif%}><b>State:</b> {{pos.stateText}}{%if pos.state == 3%} until {{pos.stateTimestamp|ecm_datetime}}{%endif%}</li>
-        <li><b>Online since:</b> {{pos.onlineTimestamp|ecm_datetime}}</li>
-        <li><b>POS type:</b> {{pos.typeName}}</li>
+        <li{%if pos.state == 3%} class="error"{%endif%}><b>State:</b> {{pos.stateText}}{%if pos.state == 3%} until {{pos.state_timestamp|ecm_datetime}}{%endif%}</li>
+        <li><b>Online since:</b> {{pos.online_timestamp|ecm_datetime}}</li>
+        <li><b>POS type:</b> {{pos.type_name}}</li>
       </ul>
     </td>
     <td>
@@ -52,32 +52,32 @@ AJAX_URL = "/pos/{{ pos.itemID }}/data/";
     <td>
       <h2>Access Control</h2>
       <ul>
-        <li><b>Allow corp members in force field:</b> {{pos.allowCorporationMembers}}</li>
-        <li><b>Allow ally members in force field:</b> {{pos.allowAllianceMembers}}</li>
-        <li><b>Can view fuel bay:</b> {{pos.fuelBayViewAccess|safe}}</li>
-        <li><b>Can take in fuel bay:</b> {{pos.fuelBayTakeAccess|safe}}</li>
-        <li><b>Can anchor modules:</b> {{pos.anchorAccess|safe}}</li>
-        <li><b>Can unanchor modules:</b> {{pos.unanchorAccess|safe}}</li>
-        <li><b>Can online modules:</b> {{pos.onlineAccess|safe}}</li>
-        <li><b>Can offline modules:</b> {{pos.offlineAccess|safe}}</li>
+        <li><b>Allow corp members in force field:</b> {{pos.allow_corporation_members}}</li>
+        <li><b>Allow ally members in force field:</b> {{pos.allow_alliance_members}}</li>
+        <li><b>Can view fuel bay:</b> {{pos.fuel_bay_view_access|safe}}</li>
+        <li><b>Can take in fuel bay:</b> {{pos.fuel_bay_take_access|safe}}</li>
+        <li><b>Can anchor modules:</b> {{pos.anchor_access|safe}}</li>
+        <li><b>Can unanchor modules:</b> {{pos.unanchor_access|safe}}</li>
+        <li><b>Can online modules:</b> {{pos.online_access|safe}}</li>
+        <li><b>Can offline modules:</b> {{pos.offline_access|safe}}</li>
       </ul>
     </td>
     <td>
       <h2>Combat Settings</h2>
       <ul>
-        {%if pos.standingThreshold != 0.0%}
-        <li><b>Attack when standing is bellow:</b> {{pos.standingThreshold}} (use standings from {{useStandingsFrom}})</li>
+        {%if pos.standings_threshold != 0.0%}
+        <li><b>Attack when standing is bellow:</b> {{pos.standings_threshold}} (use standings from {{use_standings_from}})</li>
         {%else%}
         <li><b>Attack on bad standing:</b> False</li>
         {%endif%}
-        {%if pos.securityStatusThreshold != 0.0%}
-        <li><b>Attack when security status is bellow:</b> {{pos.securityStatusThreshold}}</li>
+        {%if pos.security_status_threshold != 0.0%}
+        <li><b>Attack when security status is bellow:</b> {{pos.security_status_threshold}}</li>
         {%else%}
         <li><b>Attack when security status is bad:</b> False</li>
         {%endif%}
-        <li><b>Attack on concord flag:</b> {{pos.attackOnConcordFlag}}</li>
-        <li><b>Attack on aggression:</b> {{pos.attackOnAggression}}</li>
-        <li><b>Attack war targets:</b> {{pos.attackOnCorpWar}}</li>
+        <li><b>Attack on concord flag:</b> {{pos.attack_on_concord_flag}}</li>
+        <li><b>Attack on aggression:</b> {{pos.attack_on_aggression}}</li>
+        <li><b>Attack war targets:</b> {{pos.attack_on_corp_war}}</li>
       </ul>
     </td>
   </tr>

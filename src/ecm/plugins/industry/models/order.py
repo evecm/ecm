@@ -518,12 +518,12 @@ class OrderCannotBeFulfilled(UserWarning):
     def __str__(self):
         if self.missing_blueprints:
             if all([ type(p) == type(0) for p in self.missing_blueprints ]):
-                self.missing_blueprints = [ db.get_name(p)[0] for p in self.missing_blueprints ]
+                self.missing_blueprints = [ db.get_type_name(p)[0] for p in self.missing_blueprints ]
             output = 'Missing Blueprints: '
             output += ', '.join(map(str, self.missing_blueprints))
         elif self.missing_prices:
             if all([ type(p) == type(0) for p in self.missing_prices ]):
-                self.missing_prices = [ db.get_name(p)[0] for p in self.missing_prices ]
+                self.missing_prices = [ db.get_type_name(p)[0] for p in self.missing_prices ]
             output = 'Missing SupplyPrices: '
             output += ', '.join(map(str, self.missing_prices))
         return output

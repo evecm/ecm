@@ -38,8 +38,8 @@ from ecm.views.decorators import check_user_access
 from ecm.plugins.pos import constants
 
 COLUMNS = [
-    ['Icon', 'typeID'],
-    ['Name', 'typeID'],
+    ['Icon', 'type_id'],
+    ['Name', 'type_id'],
     ['Quantity', 'quantity'],
     ['Burned Per Hour', None],
     ['Burned Per Day', None],
@@ -55,7 +55,7 @@ def onePos(request, pos_id):
         pos_id = int(pos_id)
     except ValueError:
         raise Http404()
-    pos = get_object_or_404(POS, itemID=pos_id)
+    pos = get_object_or_404(POS, item_id=pos_id)
 
     match = MOON_REGEX.match(pos.moon)
     if match:
@@ -65,19 +65,19 @@ def onePos(request, pos_id):
 
     try:
         corp = Corp.objects.latest()
-        if pos.useStandingsFrom == corp.corporationID:
-            useStandingsFrom = 'Corporation'
-        elif pos.useStandingsFrom == corp.allianceID:
-            useStandingsFrom = 'Alliance'
+        if pos.use_standings_from == corp.corporationID:
+            use_standings_from = 'Corporation'
+        elif pos.use_standings_from == corp.allianceID:
+            use_standings_from = 'Alliance'
     except Corp.DoesNotExist:
-        useStandingsFrom = "???"
+        use_standings_from = "???"
 
 
     data = {
         'pos' : pos,
         'dotlanPOSLocation' : dotlanPOSLocation,
         'columns': [ col for col, _ in COLUMNS ],
-        'useStandingsFrom': useStandingsFrom,
+        'use_standings_from': use_standings_from,
     }
     return render_to_response("pos_details.html", data, RequestContext(request))
 
@@ -90,7 +90,7 @@ def fuel_data(request, pos_id):
     except:
         return HttpResponseBadRequest()
 
-    pos = get_object_or_404(POS, itemID=pos_id)
+    pos = get_object_or_404(POS, item_id=pos_id)
 
     fuelTypeIDs = (
         constants.ENRICHED_URANIUM_TYPEID,
@@ -100,18 +100,18 @@ def fuel_data(request, pos_id):
         constants.ROBOTICS_TYPEID,
         constants.LIQUID_OZONE_TYPEID,
         constants.HEAVY_WATER_TYPEID,
-        pos.isotopeTypeID,
+        pos.fuel_type_id,
         constants.STRONTIUM_CLATHRATES_TYPEID,
     )
 
     fuelTable = []
-    for typeID in fuelTypeIDs:
+    for type_id in fuelTypeIDs:
         try:
-            quantity = pos.fuel_levels.filter(typeID=typeID).latest().quantity
+            quantity = pos.fuel_levels.filter(type_id=type_id).latest().quantity
         except FuelLevel.DoesNotExist:
             quantity = 0
         try:
-            fuelCons = pos.fuel_consumptions.get(typeID=typeID)
+            fuelCons = pos.fuel_consumptions.get(type_id=type_id)
             if fuelCons.probableConsumption == 0:
                 # if "probableConsumption" is 0, we fallback to "consumption"
                 consumption = fuelCons.consumption
@@ -127,8 +127,8 @@ def fuel_data(request, pos_id):
             timeLeft = print_duration(hoursLeft)
 
         fuelTable.append([
-            typeID,
-            db.resolveTypeName(typeID)[0],
+            type_id,
+            db.resolve_type_name(type_id)[0],
             print_fuel_quantity(quantity),
             '%d / hour' % consumption,
             '%d / day' % (consumption * 24),

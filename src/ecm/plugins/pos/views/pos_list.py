@@ -46,20 +46,13 @@ POS_CSS_STATUS = {
     4: 'pos-online',
 }
 
-# not finished : idea to give a color to the risk of updating in the current hour.
-posColorChange = {
-    '1':'Green',
-    '2':'Yellow',
-    '3':'RedLight'
-}
-
 #------------------------------------------------------------------------------
 COLUMNS = [
     # Name              Tooltip                 db_field
     ['Location',        'Location',             'moon'],
-    ['Type',            'Type',                 'typeID'],
+    ['Type',            'Type',                 'type_id'],
     ['Status',          'Status',               'state'],
-    ['Cycle',           'Cycle Time',           'onlineTimestamp'],
+    ['Cycle',           'Cycle Time',           'online_timestamp'],
     ['EU',              'Enriched Uranium',     None],
     ['O<sub>2</sub>',   'Oxygen',               None],
     ['MP',              'Mechanical Parts',     None],
@@ -127,9 +120,9 @@ def all_data(request):
         # Query into Fuel table to get last values. for the current POS
         row = [
             pos.permalink,
-            pos.typeID,
+            pos.type_id,
             pos.state,
-            print_time(pos.onlineTimestamp),
+            print_time(pos.online_timestamp),
             getFuelValue(pos, C.ENRICHED_URANIUM_TYPEID, params.displayMode),
             getFuelValue(pos, C.OXYGEN_TYPEID, params.displayMode),
             getFuelValue(pos, C.MECHANICAL_PARTS_TYPEID, params.displayMode),
@@ -137,9 +130,9 @@ def all_data(request):
             getFuelValue(pos, C.ROBOTICS_TYPEID, params.displayMode),
             getFuelValue(pos, C.LIQUID_OZONE_TYPEID, params.displayMode),
             getFuelValue(pos, C.HEAVY_WATER_TYPEID, params.displayMode),
-            getFuelValue(pos, pos.isotopeTypeID, params.displayMode),
+            getFuelValue(pos, pos.fuel_type_id, params.displayMode),
             getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode),
-            pos.typeName,
+            pos.type_name,
         ]
         pos_table.append(row)
 
@@ -154,7 +147,7 @@ def all_data(request):
 #------------------------------------------------------------------------------
 def getFuelValue(pos, fuelTypeID, displayMode):
     try:
-        quantity = pos.fuel_levels.filter(typeID=fuelTypeID).latest().quantity
+        quantity = pos.fuel_levels.filter(type_id=fuelTypeID).latest().quantity
     except FuelLevel.DoesNotExist:
         quantity = 0
 
@@ -162,7 +155,7 @@ def getFuelValue(pos, fuelTypeID, displayMode):
         value = print_fuel_quantity(quantity)
     else:
         try:
-            fuelCons = pos.fuel_consumptions.get(typeID=fuelTypeID)
+            fuelCons = pos.fuel_consumptions.get(type_id=fuelTypeID)
             if fuelCons.probableConsumption == 0:
                 # if "probableConsumption" is 0, we fallback to "consumption"
                 consumption = fuelCons.consumption

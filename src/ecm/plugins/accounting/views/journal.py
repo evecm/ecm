@@ -124,7 +124,7 @@ def journal_data(request):
             rats = [ s.split(':') for s in entry.reason.split(',') if ':' in s ]
             rat_list = []
             for rat_id, rat_count in rats:
-                rat_list.append('%s x%s' % (db.get_name(int(rat_id))[0], rat_count))
+                rat_list.append('%s x%s' % (db.get_type_name(int(rat_id))[0], rat_count))
             reason = '|'.join(rat_list)
             if reason:
                 reason = (u'Killed Rats in %s|' % entry.argName1) + reason

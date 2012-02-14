@@ -25,11 +25,11 @@ from ecm.plugins.pos.models import POS, FuelLevel, FuelConsumption
 #------------------------------------------------------------------------------
 class POSAdmin(admin.ModelAdmin):
     list_display = ['moon',
-                    'typeName',
+                    'type_name',
                     'state',
-                    'onlineTimestamp',
+                    'online_timestamp',
                     'lastUpdate',
-                    'cachedUntil',
+                    'cached_until',
                     'isotopes_admin_display']
 
 #------------------------------------------------------------------------------

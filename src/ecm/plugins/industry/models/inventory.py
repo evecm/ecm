@@ -98,6 +98,6 @@ class PriceHistory(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def item_admin_display(self):
-        name, _ = db.get_name(self.supply_id)
+        name, _ = db.get_type_name(self.supply_id)
         return name
     item_admin_display.short_description = 'Item'
