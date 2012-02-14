@@ -113,7 +113,7 @@ def fillFieldsFromListInfo(pos, apiRow):
     pos.type_id = apiRow.typeID
 
     pos.location, _   = db.resolveLocationName(pos.location_id)
-    pos.moon, _  = db.resolveLocationName(pos.moonID)
+    pos.moon, _  = db.resolveLocationName(pos.moon_id)
 
     i = Item.new(pos.type_id)
     pos.type_name = i.typeName

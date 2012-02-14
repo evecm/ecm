@@ -32,7 +32,7 @@ from django.template.context import RequestContext
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 
 from ecm.plugins.pos.views import print_fuel_quantity, print_duration
-from ecm.plugins.pos.models import POS, FuelConsumption, FuelLevel
+from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.core.eve import db
 from ecm.views.decorators import check_user_access
 from ecm.plugins.pos import constants

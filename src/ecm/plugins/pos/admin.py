@@ -20,7 +20,7 @@ __author__ = "JerryKhan"
 
 from django.contrib import admin
 
-from ecm.plugins.pos.models import POS, FuelLevel, FuelConsumption
+from ecm.plugins.pos.models import POS, FuelLevel
 
 #------------------------------------------------------------------------------
 class POSAdmin(admin.ModelAdmin):
@@ -28,7 +28,6 @@ class POSAdmin(admin.ModelAdmin):
                     'type_name',
                     'state',
                     'online_timestamp',
-                    'lastUpdate',
                     'cached_until',
                     'isotopes_admin_display']
 
@@ -39,18 +38,9 @@ class FuelLevelAdmin(admin.ModelAdmin):
                     'fuel_admin_display',
                     'quantity']
 
-#------------------------------------------------------------------------------
-class FuelConsumptionAdmin(admin.ModelAdmin):
-    list_display = ['pos',
-                    'fuel_admin_display',
-                    'consumption',
-                    'stability',
-                    'probableConsumption',
-                    'probableStability']
 
 #------------------------------------------------------------------------------
 admin.site.register(POS, POSAdmin)
 admin.site.register(FuelLevel, FuelLevelAdmin)
-admin.site.register(FuelConsumption, FuelConsumptionAdmin)
 
 

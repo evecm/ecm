@@ -30,7 +30,7 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.plugins.pos.views import print_fuel_quantity, print_duration, print_time
-from ecm.plugins.pos.models import POS, FuelLevel, FuelConsumption
+from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
 from ecm.core import utils
