@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-
+        
         # Adding model 'POS'
         db.create_table('pos_pos', (
             ('item_id', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
@@ -31,8 +31,7 @@ class Migration(SchemaMigration):
             ('attack_on_concord_flag', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('attack_on_aggression', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('attack_on_corp_war', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('lastUpdate', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('fuel_type_id', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
+            ('fuel_type_id', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('custom_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('notes', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
         ))
@@ -56,21 +55,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('pos', ['FuelLevel'])
 
-        # Adding model 'FuelConsumption'
-        db.create_table('pos_fuelconsumption', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('pos', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fuel_consumptions', to=orm['pos.POS'])),
-            ('type_id', self.gf('django.db.models.fields.IntegerField')()),
-            ('consumption', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('stability', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('probableConsumption', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('probableStability', self.gf('django.db.models.fields.IntegerField')(default=0)),
-        ))
-        db.send_create_signal('pos', ['FuelConsumption'])
-
 
     def backwards(self, orm):
-
+        
         # Deleting model 'POS'
         db.delete_table('pos_pos')
 
@@ -79,9 +66,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'FuelLevel'
         db.delete_table('pos_fuellevel')
-
-        # Deleting model 'FuelConsumption'
-        db.delete_table('pos_fuelconsumption')
 
 
     models = {
@@ -121,16 +105,6 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'pos.fuelconsumption': {
-            'Meta': {'ordering': "['pos', 'type_id']", 'object_name': 'FuelConsumption'},
-            'consumption': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'pos': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'fuel_consumptions'", 'to': "orm['pos.POS']"}),
-            'probableConsumption': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'probableStability': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'stability': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'type_id': ('django.db.models.fields.IntegerField', [], {})
-        },
         'pos.fuellevel': {
             'Meta': {'ordering': "['pos', 'date', 'type_id']", 'object_name': 'FuelLevel'},
             'date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
@@ -149,9 +123,8 @@ class Migration(SchemaMigration):
             'cached_until': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'custom_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'deploy_flags': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
-            'fuel_type_id': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
+            'fuel_type_id': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'item_id': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
-            'lastUpdate': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'location': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
             'location_id': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
             'moon': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
