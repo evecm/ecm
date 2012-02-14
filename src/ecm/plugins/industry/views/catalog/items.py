@@ -43,6 +43,8 @@ COLUMNS = [
     ['Item', 'typeName'],
     ['Available', 'is_available'],
     ['Fixed Price', 'fixed_price'],
+    ['Production Cost', 'production_cost'],
+    ['Public Price', 'public_price'],
     ['Blueprints', 'blueprint_count'],
     ['Ordered', 'order_count'],
     [None, None], # hidden
@@ -98,6 +100,8 @@ def items_data(request):
             item.permalink,
             bool(item.is_available),
             utils.print_float(item.fixed_price),
+            utils.print_float(item.production_cost),
+            utils.print_float(item.public_price),
             item.blueprint_count,
             item.order_count,
             item.typeID,

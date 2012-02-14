@@ -68,14 +68,16 @@ $(document).ready(function() {
         aoColumns: [
             { /* 0 Item */         sWidth: "50%" },
             { /* 1 Available */    sWidth: "5%", sClass: "center"},
-            { /* 2 Price */        sWidth: "10%"},
-            { /* 3 Blueprints */   sWidth: "5%" },
-            { /* 4 Ordered */      sWidth: "5%" },
-            { /* 5 typeID */      bVisible: false },
+            { /* 2 Fixed Price */  sWidth: "10%"},
+            { /* 3 Prod Cost */    sWidth: "10%"},
+            { /* 4 Public Price */ sWidth: "10%"},
+            { /* 5 Blueprints */   sWidth: "5%" },
+            { /* 6 Ordered */      sWidth: "5%" },
+            { /* 7 typeID */      bVisible: false },
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             var available = aData[1];
-            var typeID = aData[5];
+            var item_id = aData[7];
             var checked = '';
             if (available) {
               checked += 'checked ';
@@ -85,7 +87,7 @@ $(document).ready(function() {
               var params = {
                 available: $(this).is(':checked')
               };
-              $.post('/industry/catalog/items/' + typeID + '/availability/', params)
+              $.post('/industry/catalog/items/' + item_id + '/availability/', params)
                .error(function () {
                  alert('Failed to change availability!');
                });
@@ -93,16 +95,44 @@ $(document).ready(function() {
 
             $('td:eq(2)', nRow).addClass('right');
             /* Apply jEditable handlers to the cells each time we redraw the table */
-            $('td:eq(2)', nRow).editable( '/industry/catalog/items/' + typeID + '/price/', {
+            $('td:eq(2)', nRow).editable( '/industry/catalog/items/' + item_id + '/price/', {
                 callback: function( sValue, y ) {
                     var aPos = oTable.fnGetPosition( this );
                     oTable.fnUpdate( sValue, aPos[0], aPos[1] );
                 },
-                loadurl: '/industry/catalog/items/' + typeID + '/price/',
+                loadurl: '/industry/catalog/items/' + item_id + '/price/',
                 name: 'price',
             } );
 
-            $('td:eq(5)', nRow).hide();
+            $('td:eq(3)', nRow).addClass('right');
+            $('td:eq(3)', nRow).attr('id', item_id + '.prod');
+            $('td:eq(3)', nRow).click(function () {
+                var id = $(this).attr('id').substr(0,$(this).attr('id').search(/\.prod/));
+                var oldPrice = $('#' + id + '.prod').html();
+                $.get('/industry/catalog/items/' + id + '/updateprodcost/')
+                 .success(function (data) {
+                    $('#' + id + '.prod').html(data);
+                 })
+                 .error(function (data) {
+                    $('#' + id + '.prod').html(oldPrice);
+                 });
+            });
+
+            $('td:eq(4)', nRow).addClass('right');
+            $('td:eq(4)', nRow).attr('id', item_id + '.public');
+            $('td:eq(4)', nRow).click(function () {
+                var id = $(this).attr('id').substr(0,$(this).attr('id').search(/\.prod/));
+                var oldPrice = $('#' + id + '.public').html();
+                $.get('/industry/catalog/items/' + id + '/updatepubprice/')
+                 .success(function (data) {
+                    $('#' + id + '.public').html(data);
+                 })
+                 .error(function (data) {
+                    $('#' + id + '.public').html(oldPrice);
+                 });
+            });
+
+            $('td:eq(7)', nRow).hide();
             return nRow;
         },
 
