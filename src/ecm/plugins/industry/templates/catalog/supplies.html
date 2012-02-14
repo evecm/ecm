@@ -106,7 +106,7 @@ $(document).ready(function() {
 
             var autoUpdate = aData[2];
             var checked = '';
-            if (autoUpdate == 'true') {
+            if (autoUpdate) {
                 checked += 'checked ';
             }
             $('td:eq(2)', nRow).html('<input id="' + item_id + '" type="checkbox" ' + checked + '/>');
@@ -129,10 +129,12 @@ $(document).ready(function() {
                 $.post('/industry/catalog/supplies/supply_source_id/', params);
             });
 
-            $('td:eq(4)', nRow).html('<input type="button" class="button" value="Update"/>');
-            $('td:eq(4) input', nRow).attr('id', item_id);
-            $('td:eq(4) input', nRow).click(function () {
-                var id = $(this).attr('id');
+            $('td:eq(4)', nRow).html('<button class="btn btn-small btn-primary" autocomplete="off" data-loading-text="updating...">Update</a>');
+            $('td:eq(4) button', nRow).attr('id', item_id);
+            $('td:eq(4) button', nRow).click(function () {
+                var _this = $(this);
+                _this.button('loading');
+                var id = _this.attr('id');
                 var oldPrice = $('#' + id + '.price').html();
                 $('#' + id + '.price').html('<img src="/s/ecm/img/throbber.gif"/>');
                 $.get('/industry/catalog/supplies/' + id + '/updateprice/')
@@ -141,6 +143,9 @@ $(document).ready(function() {
                  })
                  .error(function (data) {
                     $('#' + id + '.price').html(oldPrice);
+                 })
+                 .complete(function () {
+                     _this.button('reset');
                  });
             });
             return nRow;
@@ -210,7 +215,7 @@ $(document).ready(function() {
 
 
     /* Display mode buttons */
-    var dispButtons = $('#search_form input.disp');
+    var dispButtons = $('#display_buttons button');
     for (var i = 0; i < dispButtons.length; i++) {
         $(dispButtons[i]).click(function () {
             var mode = $(this).attr('id').substr('display_'.length);

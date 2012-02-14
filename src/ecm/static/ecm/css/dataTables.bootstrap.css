@@ -54,11 +54,13 @@ table.table {
   margin-bottom: 6px !important;
 }
 
-table.table thead *, table.table tbody * {
+table.table thead *, table.table tbody *, table.table td {
     vertical-align : middle; 
     margin-top: auto;
     margin-bottom: auto;
 }
+
+
 
 table.table thead .sorting,
 table.table thead .sorting_asc,

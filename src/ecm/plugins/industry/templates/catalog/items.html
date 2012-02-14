@@ -77,7 +77,7 @@ $(document).ready(function() {
             var available = aData[1];
             var typeID = aData[5];
             var checked = '';
-            if (available == 'true') {
+            if (available) {
               checked += 'checked ';
             }
             $('td:eq(1)', nRow).html('<input type="checkbox" ' + checked + '/>');
