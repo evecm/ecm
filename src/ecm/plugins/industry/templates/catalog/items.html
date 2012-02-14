@@ -172,6 +172,13 @@ $(document).ready(function() {
             table.fnDraw();
         }
     });
+
+    if (SHOW_UNAVAILABLE) {
+        $("#show_unavailable_button").button('toggle');
+    } else {
+        $("#hide_unavailable_button").button('toggle');
+    }
+
 });
 </script>
 {% endblock %}

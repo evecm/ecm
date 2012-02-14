@@ -6,16 +6,7 @@
 <link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
 {% endblock %}
 
-{% block javascripts %}
-<script type="text/javascript">
-ITEM_ID = {{item.typeID}};
-</script>
-{% endblock %}
 
-{% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript"  src="/s/industry/js/item_details.js" ></script>
-{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -25,24 +16,27 @@ ITEM_ID = {{item.typeID}};
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">{{item.typeName}}</h1>
+<h1>{{item.typeName}}</h1>
 
-<table class="transparent">
-  <tr>
-    <td><img src="http://image.eveonline.com/Type/{{item.typeID}}_64.png" /></td>
-    <td>
-      <table class="transparent">
-        <tr>
-          <td class="bold">Available</td>
-          <td>
-            <input type="checkbox" id="availability_checkbox" {% if item.is_available %}checked{% endif %} />
-          </td>
-        </tr>
-        <tr><td class="bold">Fixed Price</td><td id="price">{{item.fixed_price|ecm_price}}</td></tr>
-      </table>
-    </td>
-  </tr>
-</table>
+<div class="row-fluid">
+  <div class="span1">
+    <img src="http://image.eveonline.com/Type/{{item.typeID}}_64.png" />
+  </div>
+  <div class="span11">
+    <table>
+      <tr>
+        <td><strong>Available in catalog</strong></td>
+        <td class="right">
+          <input type="checkbox" id="availability_checkbox" {% if item.is_available %}checked{% endif %}/>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Fixed Price</strong></td>
+        <td id="price">{{item.fixed_price|ecm_price}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
 
 <h2>Owned Blueprints</h2>
 
@@ -67,7 +61,12 @@ ITEM_ID = {{item.typeID}};
       <td class="pe" id="{{bp.id}}">{{bp.pe}}</td>
       <td><input class="copy" id="{{bp.id}}" type="checkbox" {% if bp.copy %}checked{% endif %}/></td>
       <td class="runs" id="{{bp.id}}">{{bp.runs}}</td>
-      <td><input class="button" type="button" value="Delete Blueprint" onClick="deleteBlueprint({{bp.id}});"/></td>
+      <td>
+        <a class="btn btn-danger btn-small" 
+          onClick="deleteBlueprint({{bp.id}});"><i class="icon-minus icon-white"></i>
+          Delete Blueprint
+        </a>
+      </td>
     </tr>
   {% empty %}
     <tr id="empty"><td colspan="4" class="center">None</td></tr>
@@ -75,6 +74,19 @@ ITEM_ID = {{item.typeID}};
   </tbody>
 </table>
 
-<input class="button" type="button" value="Add New Blueprint" onClick="addBlueprint({{item.typeID}});"/>
+<a class="btn btn-success" 
+   onClick="addBlueprint({{item.typeID}});"><i class="icon-plus icon-white"></i> 
+   Add New Blueprint
+</a>
+{% endblock %}
 
+{% block javascripts %}
+<script type="text/javascript">
+ITEM_ID = {{item.typeID}};
+</script>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript"  src="/s/industry/js/item_details.js" ></script>
 {% endblock %}

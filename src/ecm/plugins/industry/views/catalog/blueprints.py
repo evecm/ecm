@@ -33,7 +33,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from ecm.core.eve.classes import BpActivity
 from ecm.plugins.industry.views import print_duration
 from ecm.core import utils
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.models.catalog import OwnedBlueprint
 
@@ -93,13 +93,9 @@ def blueprints_data(request):
             bp.id,
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_items,
-        "iTotalDisplayRecords" : filtered_items,
-        "aaData" : blueprints
-    }
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(data=blueprints, echo=params.sEcho, 
+                               total=total_items, filtered=filtered_items)
+    
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -161,14 +157,8 @@ def materials(request, blueprint_id):
             '%d%%' % (mat.damagePerJob * 100),
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : len(mat_table),
-        "iTotalDisplayRecords" : len(mat_table),
-        "aaData" : mat_table
-    }
-    return HttpResponse(json.dumps(json_data))
-
+    return datatable_ajax_data(data=mat_table, echo=params.sEcho)
+    
 #------------------------------------------------------------------------------
 @check_user_access()
 def manufacturing_time(request, blueprint_id):

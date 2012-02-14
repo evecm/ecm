@@ -46,6 +46,7 @@ div.dataTables_processing {
   color: #999;
   font-size: 14px;
   background-color: white;
+  z-index: 99;
 }
 
 table.table {
@@ -53,8 +54,10 @@ table.table {
   margin-bottom: 6px !important;
 }
 
-table.table thead *{
+table.table thead *, table.table tbody * {
     vertical-align : middle; 
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 table.table thead .sorting,

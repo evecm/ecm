@@ -14,11 +14,11 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-import re
 
 __date__ = "2010-05-16"
 __author__ = "diabeteman"
 
+import re
 
 from django.conf import settings
 

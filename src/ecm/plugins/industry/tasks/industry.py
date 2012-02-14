@@ -57,13 +57,11 @@ def update_production_costs():
         cost = None
         try:
             if not entry.missing_blueprints():
-                with transaction.commit_manually():
-                    order = Order.objects.create(originator_id=1, pricing_id=1)
-                    order.modify( [ (entry, 1) ] )
-                    missingPrices = order.create_jobs()
-                    if not missingPrices:
-                        cost = order.cost
-                    transaction.rollback()
+                order = Order.objects.create(originator_id=1)
+                order.modify( [ (entry, 1) ] )
+                missingPrices = order.create_jobs()
+                if not missingPrices:
+                    cost = order.cost
         except NoBlueprintException:
             # this can happen when blueprint requirements are not found in EVE database.
             # no way to work arround this issue for the moment, we just keep the price to None

@@ -32,7 +32,7 @@ from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, render_to_response
 
 from ecm.core import utils
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.models.catalog import CatalogEntry
 
@@ -103,13 +103,8 @@ def items_data(request):
             item.typeID,
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_items,
-        "iTotalDisplayRecords" : filtered_items,
-        "aaData" : items
-    }
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(data=items, echo=params.sEcho, 
+                               total=total_items, filtered=filtered_items)
 
 #------------------------------------------------------------------------------
 @check_user_access()

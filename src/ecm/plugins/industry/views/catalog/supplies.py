@@ -30,7 +30,7 @@ from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response
 
 from ecm.core import utils
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.tasks import evecentral
 from ecm.plugins.industry.models import SupplySource, Supply, PriceHistory
@@ -128,13 +128,8 @@ def supplies_data(request):
             i.typeID,
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_items,
-        "iTotalDisplayRecords" : filtered_items,
-        "aaData" : items
-    }
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(data=items, echo=params.sEcho, 
+                               total=total_items, filtered=filtered_items)
 
 #------------------------------------------------------------------------------
 DETAILS_COLUMNS = ['Date', 'Price']
@@ -175,14 +170,8 @@ def details_data(request, supply_id):
             utils.print_float(history.price),
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : len(histories),
-        "iTotalDisplayRecords" : len(histories),
-        "aaData" : histories
-    }
-    return HttpResponse(json.dumps(json_data))
-
+    return datatable_ajax_data(data=histories, echo=params.sEcho)
+    
 #------------------------------------------------------------------------------
 @check_user_access()
 def update_price(request, supply_id):

@@ -322,12 +322,10 @@ class Order(models.Model):
             prices[sp.typeID] = sp.price
         missingPrices = set([])
         self.cost = 0.0
-        self.quote = 0.0
         for row in self.rows.all():
             row.cost, missPrices = row.create_jobs(prices=prices)
             missingPrices.update(missPrices)
             self.cost += row.cost
-            self.quote += row.quote
             row.save()
         self.save()
         return missingPrices

@@ -19,19 +19,13 @@ __date__ = "2011 8 19"
 __author__ = "diabeteman"
 
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
-from django.http import Http404, HttpResponseBadRequest, HttpResponse
+from django.http import Http404, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.text import truncate_words
 
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.core import utils
 from ecm.plugins.industry.models import Order, CatalogEntry
 
@@ -70,21 +64,14 @@ def orders_data(request):
         orders.append([
             order.permalink(shop=False),
             order.state_text(),
-            order.originator_permalink,
+            order.originator_permalink(),
             order.client or '(none)',
             delivDate,
             truncate_words(', '.join(items), 6),
             utils.print_float(order.quote) + ' ISK',
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : len(orders),
-        "iTotalDisplayRecords" : len(orders),
-        "aaData" : orders
-    }
-
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(data=orders, echo=params.sEcho)
 
 #------------------------------------------------------------------------------
 @login_required
@@ -95,7 +82,8 @@ def details(request, order_id):
         raise Http404()
 
     logs = order.logs.all().order_by('-date')
-    validTransitions = [ (trans.id, trans.text) for trans in order.validTransitions ]
+    validTransitions = [ (trans.__name__, utils.verbose_name(trans)) 
+                               for trans in order.get_valid_transitions() ]
 
 
     data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions}

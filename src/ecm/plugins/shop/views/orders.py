@@ -18,19 +18,13 @@
 __date__ = "2011 11 12"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.template.context import RequestContext as Ctx
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponseBadRequest, HttpResponse
+from django.http import Http404, HttpResponseBadRequest
 from django.utils.text import truncate_words
 
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.core import utils
 from ecm.views.decorators import forbidden
 from ecm.plugins.industry.models.order import Order, IllegalTransition
@@ -89,14 +83,9 @@ def myorders_data(request):
             utils.print_time_min(order.creation_date()),
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : order_count,
-        "iTotalDisplayRecords" : filtered_count,
-        "aaData" : orders
-    }
+    return datatable_ajax_data(data=orders, echo=params.sEcho, 
+                               total=order_count, filtered=filtered_count)
 
-    return HttpResponse(json.dumps(json_data), mimetype='text/json')
 #------------------------------------------------------------------------------
 @login_required
 def create(request):
@@ -106,7 +95,7 @@ def create(request):
     if request.method == 'POST':
         items, valid_order = extract_order_items(request)
         if valid_order:
-            order = Order.objects.create(originator=request.user, pricing_id=1)
+            order = Order.objects.create(originator=request.user)
             order.modify(items)
             return redirect('/shop/orders/%d/' % order.id)
     else:

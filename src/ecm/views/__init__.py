@@ -18,6 +18,13 @@
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
+
+from django.http import HttpResponse
 from django.db.models import Q
 from django.utils.text import truncate_words
 from django.contrib.auth.models import User
@@ -25,7 +32,7 @@ from django.contrib.auth.models import User
 from ecm import apps, plugins
 from ecm import settings
 from ecm.apps.hr.models import Member
-from ecm.core import utils
+from ecm.core import utils, JSON
 from ecm.apps.common.models import UpdateDate, UrlPermission, Setting
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.views import template_filters
@@ -56,6 +63,20 @@ def extract_datatable_params(request):
     params.column = int(REQ["iSortCol_0"])
     params.asc = REQ["sSortDir_0"] == "asc"
     return params
+
+#------------------------------------------------------------------------------
+def datatable_ajax_data(data, echo, total=None, filtered=None):
+    if total is None:
+        total = len(data)
+    if filtered is None:
+        filtered = total
+    json_data = {
+        'sEcho' : echo,
+        'iTotalRecords' : total,
+        'iTotalDisplayRecords' : filtered,
+        'aaData' : data,
+    }
+    return HttpResponse(json.dumps(json_data), mimetype=JSON)
 
 #------------------------------------------------------------------------------
 def create_app_objects(app):
