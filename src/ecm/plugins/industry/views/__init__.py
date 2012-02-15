@@ -76,8 +76,6 @@ def createMissingCatalogEntries():
     logger.info('added %d missing catalog entries', created)
 createMissingCatalogEntries()
 #------------------------------------------------------------------------------
-#TODO: Fasten up. Takes AGES!
-#Solution: CREATE INDEX "ramBlueprintReqs_IX_requiredTypeID" on "ramBlueprintReqs" ("requiredTypeID");
 SQL_MISSING_SUPPLIES = '''SELECT DISTINCT "requiredTypeID"
 FROM "ramBlueprintReqs" AS r JOIN "invTypes" AS i ON r."requiredTypeID" = i."typeID"
 WHERE i."blueprintTypeID" IS NULL

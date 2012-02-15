@@ -36,7 +36,6 @@ logger = logging.getLogger(__name__)
 @transaction.commit_on_success
 def update_supply_prices():
     supplyPrices = Supply.objects.filter(auto_update=True)
-    #TODO: Supply-Source-ID 1 for "all"? sure? Errors atm.
     for supply_source in SupplySource.objects.all():
         logger.debug('Updating supply prices for %s (%d)...' % (supply_source.name,supply_source.location_id))
         prices = supplyPrices.filter(supply_source=supply_source)

@@ -30,21 +30,22 @@ logger = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 def get_buy_prices(item_ids, systemID):
 
-    params=[]
-    for item_id in item_ids:
-        params.append(("typeid", item_id))
-    params.append(("minQ", 1000))
-    if systemID != 1:
-        params.append(("usesystem", systemID))
-    evecentralurl = Setting.get('industry_evecentral_url')
-    url = evecentralurl + '?' + urllib.urlencode(params)
-    logger.info('Fetching market info from %s...' % url)
-    response = urllib2.urlopen(url)
-    element = ElementTree.parse(source=response)
     prices = {}
-    for typ in element.findall('.//type'):
-        typeID = int(typ.attrib['id'])
-        buyMax = typ.find('buy/max')
-        if buyMax is not None:
-            prices[typeID] = round(float(buyMax.text), 2)
+    for i in range(len(item_ids)//50+1):
+        params=[]
+        for item_id in item_ids[i*50:(i+1)*50]:
+            params.append(("typeid", item_id))
+        params.append(("minQ", 1000))
+        if systemID != 1:
+            params.append(("usesystem", systemID))
+        evecentralurl = Setting.get('industry_evecentral_url')
+        url = evecentralurl + '?' + urllib.urlencode(params)
+        logger.info('Fetching market info from %s...' % url)
+        response = urllib2.urlopen(url)
+        element = ElementTree.parse(source=response)
+        for typ in element.findall('.//type'):
+            typeID = int(typ.attrib['id'])
+            buyMax = typ.find('buy/max')
+            if buyMax is not None:
+                prices[typeID] = round(float(buyMax.text), 2)
     return prices

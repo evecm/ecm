@@ -34,6 +34,7 @@ CREATE TABLE "ramBlueprintReqs" (
 
 CREATE INDEX "ramBlueprintReqs_IX_blueprintTypeID" ON "ramBlueprintReqs" ("blueprintTypeID");
 CREATE INDEX "ramBlueprintReqs_IX_activityID" ON "ramBlueprintReqs" ("activityID");
+CREATE INDEX "ramBlueprintReqs_IX_requiredTypeID" on "ramBlueprintReqs" ("requiredTypeID");
 
 -- The following queries take invTypeMaterials and ramTypeRequirements and combine them
 -- into a single table showing all the materials a blueprint requires, and how much of each
