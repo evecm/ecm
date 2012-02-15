@@ -24,6 +24,7 @@ import logging
 from datetime import datetime
 
 from django.db import transaction
+from django.db.models.aggregates import Count
 
 from ecm.core.eve.classes import NoBlueprintException
 from ecm.core import utils
@@ -56,15 +57,19 @@ def update_supply_prices():
 #------------------------------------------------------------------------------
 def update_production_costs():
     now = datetime.now()
-    for entry in CatalogEntry.objects.all():
+    for entry in CatalogEntry.objects.all().annotate(bp_count=Count('blueprints')).filter(bp_count__gt=0):
         cost = None
         try:
             if not entry.missing_blueprints():
-                order = Order.objects.create(originator_id=1)
-                order.modify( [ (entry, 1) ] )
-                missingPrices = order.create_jobs()
-                if not missingPrices:
-                    cost = order.cost
+                with transaction.commit_manually():
+                    try: 
+                        order = Order.objects.create(originator_id=1)
+                        order.modify( [ (entry, 1) ] )
+                        missingPrices = order.create_jobs()
+                        if not missingPrices:
+                            cost = order.cost
+                    finally:
+                        transaction.rollback()
         except NoBlueprintException:
             # this can happen when blueprint requirements are not found in EVE database.
             # no way to work arround this issue for the moment, we just keep the price to None

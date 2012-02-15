@@ -81,6 +81,7 @@ class Order(models.Model):
     cost = models.FloatField(default=0.0)
     quote = models.FloatField(default=0.0)
     discount = models.FloatField(default=0.0)
+    margin = models.FloatField(default=0.0)
 
     def last_modified(self):
         try:
@@ -135,7 +136,7 @@ class Order(models.Model):
                 if catalog_entry.fixed_price is not None:
                     self.quote += catalog_entry.fixed_price
                 else:
-                    self.quote += catalog_entry.production_cost * (1 + self.pricing.margin)
+                    self.quote += catalog_entry.production_cost * (1 + self.margin)
                 self.cost += catalog_entry.production_cost
             else:
                 missing_price = True
