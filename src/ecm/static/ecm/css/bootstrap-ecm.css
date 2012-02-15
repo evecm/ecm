@@ -1,20 +1,20 @@
 
 
 
-.error{color: #f00;}
-.center {text-align:center;}
+.error {color: #f00;}
+.center {text-align: center !important;}
+.right {text-align: right !important;}
 
 
 
-
-.row-white { background-color: #E5ECF9; }
-.row-blue { background-color: #aff4f1; }
-.row-green { background-color: #aff2c1; }
-.row-yellow { background-color:#f5f583; }
-.row-orange { background-color:#ffd69a; }
-.row-red { background-color:#ffa1a1; }
-.row-purple { background-color:#c8aaf6; }
-.row-black { background-color: #1e1e1e; color: #fff; }
+.row-white { }
+.row-blue { background-color: #aff4f1 !important; }
+.row-green { background-color: #aff2c1 !important; }
+.row-yellow { background-color:#f5f583 !important; }
+.row-orange { background-color:#ffd69a !important; }
+.row-red { background-color:#ffa1a1 !important; }
+.row-purple { background-color:#c8aaf6 !important; }
+.row-black { background-color: #1e1e1e !important; color: #fff !important; }
 
 
 
@@ -26,10 +26,10 @@ body {
     padding: 9px 0;
 }
 .child-active > a, .child-active > a:hover {
-    background-color:#ceefff;
+    background-color:#ceefff !important;
 }
 
 .btn-toolbar * {
-    vertical-align: middle;
+    vertical-align: middle !important;
 }
 

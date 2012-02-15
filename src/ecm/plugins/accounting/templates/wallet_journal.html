@@ -1,10 +1,12 @@
-{% extends "accounting_base.html" %}
+{% extends "base.html" %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="/s/accounting/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="/s/hr/css/classes.css" />
+{% endblock %}
 
 {% block headtitle %}Wallets Journal{% endblock %}
 
-{% block accounting_compressed_javascripts %}
-<script type="text/javascript" src="/s/accounting/js/journal_table.js"></script>
-{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -13,29 +15,31 @@
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Wallets Journal <span class="time">- last update {{ scan_date }}</span></h1>
+<h1>Wallets Journal <small>last update {{ scan_date|ecm_datetime }}</small></h1>
 
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
-
-    <label>Wallet:</label>
-    <select id="wallet_selector">
-    {% for w in wallets %}
-    <option value="{{ w.walletID }}" {% if w.selected %}selected="selected"{% endif %}>{{ w.name }}</option>
-    {% endfor %}
-    </select>
-
-    <label>Operation:</label>
-    <select id="type_selector">
-    {% for et in entryTypes %}
-    <option value="{{ et.refTypeID }}" {% if et.selected %}selected="selected"{% endif %}>{{ et.refTypeName }}</option>
-    {% endfor %}
-    </select>
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+    <div class="control-group success" style="display: inline;">
+      <span class="label label-success">Wallet</span>
+      <select id="wallet_selector">{% for w in wallets %}
+        <option value="{{ w.walletID }}"{% if w.selected %} selected{% endif %}>{{ w.name }}</option>
+      {% endfor %}</select>
+    </div>
+    <div class="control-group error" style="display: inline;">
+      <span class="label label-important">Operation</span>
+      <select id="type_selector">{% for et in entryTypes %}
+        <option value="{{ et.refTypeID }}"{% if et.selected %} selected{% endif %}>{{ et.refTypeName }}</option>
+      {% endfor %}</select>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="journal_table">
+<table class="table table-bordered table-condensed" id="journal_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Date</th>
@@ -68,3 +72,102 @@
 
 </table>
 {% endblock %}
+
+
+
+
+
+{% block compressed_javascripts %}
+<script>
+$(document).ready(function() {
+    var table = $('#journal_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: "/accounting/journal/data/",
+        aoColumns: [
+            { /* Date */       sWidth: "14%",   sType: "string" },
+            { /* Wallet */     sWidth: "15%",   sType: "html"    },
+            { /* Operation */  sWidth: "10%",   sType: "string",    bSortable: false },
+            { /* From */       sWidth: "15%",    sType: "html",  bSortable: false },
+            { /* To */         sWidth: "15%",   sType: "html",  bSortable: false  },
+            { /* Amount */     sWidth: "15%",   sType: "string" , sClass : "right" },
+            { /* Balance */    sWidth: "15%",   sType: "string",  bSortable: false,  sClass : "right" },
+            { /* reason -> HIDDEN */ bVisible: false }
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            if (aData[5].charAt(0) == '+') {
+                $('td:eq(5)', nRow).addClass('credit');
+            } else {
+                $('td:eq(5)', nRow).addClass('debit');
+            }
+            /* hide reason column */
+            $('td:eq(7)', nRow).hide()
+
+            /* set titles tooltip on each row */
+            reason = aData[7]
+            if (reason != "") {
+                $('td:eq(5)', nRow).attr("title", reason)
+                $('td:eq(5)', nRow).cluetip({
+                    splitTitle: '|',
+                    dropShadow: false,
+                    cluetipClass: 'jtip',
+                    positionBy: 'mouse',
+                    tracking: true
+                });
+            }
+
+            return nRow;
+        },
+
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: "walletID",
+                value: $("#wallet_selector option:selected").val()
+            },{
+                name: "entryTypeID",
+                value: $("#type_selector option:selected").val()
+            } );
+
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+    }));
+
+  /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
+    });
+
+    $("#wallet_selector").change(function () {
+        table.fnDraw();
+    });
+
+    $("#type_selector").change(function () {
+        table.fnDraw();
+    });
+
+    /* disable multi column sorting */
+    $('#journal_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+} );
+</script>
+{% endblock %}
+
+

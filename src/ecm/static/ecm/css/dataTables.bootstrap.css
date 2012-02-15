@@ -54,6 +54,11 @@ table.table {
   margin-bottom: 6px !important;
 }
 
+
+table.table tbody tr.odd {background-color: #f9f9f9;}
+table.table tbody tr.even {background-color: #fff;}
+table.table tbody tr:hover {background-color: #f0f0f0;}
+
 table.table thead *, table.table tbody *, table.table td {
     vertical-align : middle; 
     margin-top: auto;
@@ -69,9 +74,11 @@ table.table thead .sorting_asc_disabled,
 table.table thead .sorting_desc_disabled {
   cursor: pointer;
   *cursor: hand;
-    padding-right: 10px;
+    padding-right: 20px;
 
 }
+
+
 
 table.table thead .sorting { 
     background: url('../img/datatables/sort_both.png') no-repeat center right; 
