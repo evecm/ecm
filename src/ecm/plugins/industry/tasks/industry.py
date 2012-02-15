@@ -36,17 +36,21 @@ logger = logging.getLogger(__name__)
 @transaction.commit_on_success
 def update_supply_prices():
     supplyPrices = Supply.objects.filter(auto_update=True)
+    #TODO: Supply-Source-ID 1 for "all"? sure? Errors atm.
     for supply_source in SupplySource.objects.all():
-        logger.debug('Updating supply prices for %s...' % supply_source.name)
+        logger.debug('Updating supply prices for %s (%d)...' % (supply_source.name,supply_source.location_id))
         prices = supplyPrices.filter(supply_source=supply_source)
         item_ids = prices.values_list('typeID', flat=True)
         buyPrices = evecentral.get_buy_prices(item_ids, supply_source.location_id)
 
         for supPrice in prices:
-            if buyPrices[supPrice.typeID] > 0.0 and supPrice.price != buyPrices[supPrice.typeID]:
-                supPrice.update_price(buyPrices[supPrice.typeID])
-                logger.info('New price for "%s" -> %s' % (supPrice.item_admin_display(),
+            try:
+                if buyPrices[supPrice.typeID] > 0.0 and supPrice.price != buyPrices[supPrice.typeID]:
+                    supPrice.update_price(buyPrices[supPrice.typeID])
+                    logger.info('New price for "%s" -> %s' % (supPrice.item_admin_display(),
                                                           utils.print_float(buyPrices[supPrice.typeID])))
+            except KeyError:
+                logger.info('Could not find buy-price for item: %d - skipping' % (supPrice.typeID))
 
 
 

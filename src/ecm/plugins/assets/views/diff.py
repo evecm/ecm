@@ -159,7 +159,7 @@ def systems_data(request, date_str):
         else:
             color = "nullsec"
         jstree_data.append({
-            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)),
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items), 'todo'),
             "attr" : {
                 "id" : "_%d" % solarSystemID,
                 "rel" : "system",
@@ -214,7 +214,7 @@ def stations_data(request, date_str, solarSystemID):
             icon = "array"
 
         jstree_data.append({
-            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items)),
+            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items), 'todo'),
             "attr" : {
                 "id" : "_%d_%d" % (solarSystemID, stationID),
                 "sort_key" : stationID,
@@ -261,7 +261,7 @@ def hangars_data(request, date_str, solarSystemID, stationID):
     jstree_data = []
     for hangarID, items in cursor.fetchall():
         jstree_data.append({
-            "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items)),
+            "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items), 'todo'),
             "attr" : {
                 "id" : "_%d_%d_%d" % (solarSystemID, stationID, hangarID),
                 "sort_key" : hangarID,
