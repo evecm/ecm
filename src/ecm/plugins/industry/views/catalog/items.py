@@ -188,17 +188,17 @@ def updatepublicprice(request, item_id):
     """
     #TODO: magic constant 1 for "all"
     try:
-        id = int(item_id)
-        buyPrices = evecentral.get_buy_prices([id], 1)
-        item = get_object_or_404(CatalogEntry, typeID=id)
+        i_id = int(item_id)
+        buyPrices = evecentral.get_buy_prices([i_id], 1)
+        item = get_object_or_404(CatalogEntry, typeID=i_id)
         try:
-            if buyPrices[id] > 0.0 and item.public_price != buyPrices[id]:
-                item.public_price = buyPrices[id]
+            if buyPrices[i_id] > 0.0 and item.public_price != buyPrices[i_id]:
+                item.public_price = buyPrices[i_id]
                 logger.info('New price for "%s" -> %s' % (item.typeName,
-                                                      utils.print_float(buyPrices[id])))
+                                                      utils.print_float(buyPrices[i_id])))
                 item.save()
         except KeyError:
-            logger.info('Could not find buy-price for item: %s - skipping' % (id))
+            logger.info('Could not find buy-price for item: %s - skipping' % (i_id))
     except ValueError:
         raise Http404()
     return HttpResponse(utils.print_float(item.public_price))
