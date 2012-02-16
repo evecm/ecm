@@ -30,7 +30,7 @@
       <button class="btn btn-small btn-info" id="display_manual">Only Manual-Update</button>
       <button class="btn btn-small btn-info" id="display_auto">Only Auto-Update</button>
     </div>
-    <div class="control-group error" style="display: inline;">
+    <div class="control-group error inline" style="display: inline;">
       <span class="label label-important">Filter</span>
       <select id="filter_selector">
         {% for name, key, _ in filters %}
@@ -41,7 +41,7 @@
   </div>
 </form>
 
-<table class="table table-striped table-bordered table-condensed" id="supplies_table">
+<table class="table table-bordered table-condensed" id="supplies_table">
   <thead>
     <tr>
       {%for col in columns%}
@@ -68,11 +68,12 @@
 
 {% block javascripts %}
 <script type="text/javascript">
-SUPPLY_SOURCES = '<select>'{%for source in supply_sources%}
+SUPPLY_SOURCES = '<select class="span8">'{%for source in supply_sources%}
   + '<option value="{{source.location_id}}">{{source.name}}</option>'{%endfor%}
   + '</select>';
 CURRENT_FILTER = 'minerals';
 DISPLAY_MODE = 'all';
+REFRESH_BUTTON = '<button class="btn btn-small pull-right" title="Update price"><i class="icon-refresh"></i></button>';
 var SELECT_SOURCE;
 </script>
 {% endblock %}
@@ -83,21 +84,23 @@ $(document).ready(function() {
     var table = $('#supplies_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: '/industry/catalog/supplies/data/',
         aoColumns: [
-            { /* 0 Item */          sWidth: "50%", bSortable: false },
+            { /* 0 Item */          sWidth: "40%", bSortable: false },
             { /* 1 Price */         sWidth: "15%", bSortable: false  },
             { /* 2 Auto-Update */   sWidth: "10%", bSortable: false, sClass: 'center' },
-            { /* 3 Source */        sWidth: "20%", bSortable: false, sClass: 'center'},
-            { /* 4 Update */        sWidth: "5%", bSortable: false  },
+            { /* 3 Source */        sWidth: "35%", bSortable: false, sClass: 'center'},
+            { /* 4 typeID hidden */  bVisible: false},
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             var item_id = aData[4];
-
-            $('td:eq(1)', nRow).addClass('right');
-            $('td:eq(1)', nRow).addClass('price');
+            
             $('td:eq(1)', nRow).attr('id', item_id);
+            $('td:eq(1)', nRow).addClass('price editable right');
             /* Apply jEditable handlers to the cells each time we redraw the table */
             $('td:eq(1)', nRow).editable( '/industry/catalog/supplies/price/', {
+                cssclass: 'edited',
+                style: 'inherit',
                 tooltip: 'Click to edit...',
+                loadurl: '/industry/catalog/supplies/price/',
                 callback: function( sValue, y ) {
                     var aPos = oTable.fnGetPosition( this );
                     oTable.fnUpdate( sValue, aPos[0], aPos[1] );
@@ -118,7 +121,7 @@ $(document).ready(function() {
                 $.post('/industry/catalog/supplies/auto_update/', params);
             });
 
-            $('td:eq(3)', nRow).html(SUPPLY_SOURCES);
+            $('td:eq(3)', nRow).html(SUPPLY_SOURCES + REFRESH_BUTTON);
             $('td:eq(3) select', nRow).val(aData[3]);
             $('td:eq(3) select', nRow).attr('id', item_id);
             $('td:eq(3) select', nRow).change(function () {
@@ -129,11 +132,10 @@ $(document).ready(function() {
                 $.post('/industry/catalog/supplies/supply_source_id/', params);
             });
 
-            $('td:eq(4)', nRow).html('<button class="btn btn-small btn-primary" autocomplete="off" data-loading-text="updating...">Update</a>');
-            $('td:eq(4) button', nRow).attr('id', item_id);
-            $('td:eq(4) button', nRow).click(function () {
+            $('td:eq(3) button', nRow).attr('id', item_id);
+            $('td:eq(3) button', nRow).click(function () {
                 var _this = $(this);
-                _this.button('loading');
+                _this.attr('disabled', 'disabled');
                 var id = _this.attr('id');
                 var oldPrice = $('#' + id + '.price').html();
                 $('#' + id + '.price').html('<img src="/s/ecm/img/throbber.gif"/>');
@@ -145,9 +147,11 @@ $(document).ready(function() {
                     $('#' + id + '.price').html(oldPrice);
                  })
                  .complete(function () {
-                     _this.button('reset');
+                     _this.removeAttr('disabled');
                  });
             });
+            
+            $('td:eq(4)', nRow).hide();
             return nRow;
         },
 
@@ -183,7 +187,7 @@ $(document).ready(function() {
             }
             if ('filter' in oData) {
                 CURRENT_FILTER = oData.filter;
-                updateFilterButtons();
+                updateFilterSelector();
             }
             return true;
         }
@@ -234,9 +238,10 @@ $(document).ready(function() {
         }
     });
 
-    updateDisplayModeButtons();
-    updateFilterButtons();
 });
+
+
+
 
 function updateDisplayModeButtons() {
     var buttons = $('#display_buttons button');
@@ -247,15 +252,18 @@ function updateDisplayModeButtons() {
     }
 }
 
-function updateFilterButtons() {
-    var buttons = $('#search_form input.filter');
-    for (var i = 0; i < buttons.length; i++) {
-        if (endsWith(buttons[i].id, CURRENT_FILTER)) {
-            $(buttons[i]).addClass('selected');
+function updateFilterSelector() {
+    $('#filter_selector').freezeEvents();
+    var options = $('#filter_selector option');
+    for (var i = 0; i < options.length; i++) {
+        if (endsWith(options[i].value, CURRENT_FILTER)) {
+            $(options[i]).attr('selected', 'selected');
+            break;
         } else {
-            $(buttons[i]).removeClass('selected');
+            $(options[i]).removeAttr('selected');
         }
     }
+    $('#filter_selector').unFreezeEvents();
 }
 
 function endsWith(str, suffix) {

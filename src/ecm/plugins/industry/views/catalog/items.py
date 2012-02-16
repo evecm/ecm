@@ -141,9 +141,9 @@ def price(request, item_id):
         raise Http404()
     if request.method == 'POST':
         try:
-            price = float(request.POST['price'])
+            price = float(request.POST['value'])
         except KeyError:
-            return HttpResponseBadRequest('Missing "price" parameter')
+            return HttpResponseBadRequest('Missing "value" parameter')
         except ValueError:
             # price cannot be cast to a float
             price = None
@@ -155,7 +155,7 @@ def price(request, item_id):
                                                                      displayPrice))
         return HttpResponse(displayPrice)
     else:
-        return HttpResponse(str(item.fixed_price))
+        return HttpResponse(str(item.fixed_price or ''))
 
 #------------------------------------------------------------------------------
 @check_user_access()

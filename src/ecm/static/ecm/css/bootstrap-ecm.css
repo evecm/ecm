@@ -33,3 +33,19 @@ body {
     vertical-align: middle !important;
 }
 
+.middle {
+    vertical-align: middle !important;
+}
+
+.editable {
+    padding: 5px;
+}
+
+.edited input {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.editable:hover {
+    background-color: #FFB !important;
+}

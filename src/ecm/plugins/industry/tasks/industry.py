@@ -16,6 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+from ecm.plugins.industry.models.order import OrderCannotBeFulfilled
 
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
@@ -57,12 +58,14 @@ def update_supply_prices():
 #------------------------------------------------------------------------------
 def update_production_costs():
     now = datetime.now()
-    for entry in CatalogEntry.objects.all().annotate(bp_count=Count('blueprints')).filter(bp_count__gt=0):
+    query = CatalogEntry.objects.all().annotate(bp_count=Count('blueprints'))
+    for entry in query.filter(bp_count__gt=0):
         cost = None
         try:
-            if not entry.missing_blueprints():
+            missing_bps = entry.missing_blueprints()
+            if not missing_bps:
                 with transaction.commit_manually():
-                    try: 
+                    try:
                         order = Order.objects.create(originator_id=1)
                         order.modify( [ (entry, 1) ] )
                         missingPrices = order.create_jobs()
@@ -70,10 +73,14 @@ def update_production_costs():
                             cost = order.cost
                     finally:
                         transaction.rollback()
+            else:
+                raise OrderCannotBeFulfilled(missing_blueprints=list(missing_bps))
         except NoBlueprintException:
             # this can happen when blueprint requirements are not found in EVE database.
             # no way to work arround this issue for the moment, we just keep the price to None
             pass
+        except OrderCannotBeFulfilled, err:
+            logger.warning('Cannot calculate production cost for "%s": %s', entry.typeName, err)
         entry.production_cost = cost
         entry.last_update = now
         entry.save()

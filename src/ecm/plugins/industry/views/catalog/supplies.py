@@ -44,7 +44,6 @@ COLUMNS = [
     'Price',
     'Auto Update',
     'Supply Source',
-    'Update Price',
 ]
 FILTERS = [
     ('All', 'all', None),
