@@ -134,7 +134,8 @@ def calc_assets_diff(oldItems, newItems, date):
                                             flag=remasset.flag,
                                         quantity=added_qty - remasset.quantity,
                                             date=date,
-                                             new=False))
+                                             new=False,
+                                          volume=remasset.volume))
     for addasset in added:
         if not addasset.duplicate:
             diffs.append(AssetDiff(solarSystemID=addasset.solarSystemID,
@@ -144,7 +145,8 @@ def calc_assets_diff(oldItems, newItems, date):
                                             flag=addasset.flag,
                                         quantity=addasset.quantity,
                                             date=date,
-                                             new=True))
+                                             new=True,
+                                          volume=addasset.volume))
     return diffs
 
 #------------------------------------------------------------------------------
