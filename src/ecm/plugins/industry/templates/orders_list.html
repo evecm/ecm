@@ -5,20 +5,14 @@
 
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
 <link rel="stylesheet" type="text/css" href="/s/hr/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
 {% endblock %}
 
 {% block javascripts %}
 <script type="text/javascript"  >
 AJAX_URL = '/industry/orders/all/data/';
 </script>
-{% endblock %}
-
-{% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript"  src="/s/industry/js/orders_list.js" ></script>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -36,7 +30,7 @@ AJAX_URL = '/industry/orders/all/data/';
     <input type="button" class="button" id="clear_search" value="Reset" />
 </form>
 
-<table class="table display" id="orders_list">
+<table class="table table-bordered table-condensed" id="orders_list">
   <thead>
     <tr>
       {%for col in columns%}
@@ -58,4 +52,9 @@ AJAX_URL = '/industry/orders/all/data/';
   </tfoot>
 
 </table>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript"  src="/s/industry/js/orders_list.js" ></script>
 {% endblock %}

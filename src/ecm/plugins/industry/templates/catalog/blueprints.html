@@ -14,12 +14,6 @@ DISPLAY_MODE = 'all';
 </script>
 {% endblock %}
 
-{% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript"  src="/s/industry/js/blueprints_table.js" ></script>
-{% endblock %}
-
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry/">Industry</a></li>
@@ -43,7 +37,7 @@ DISPLAY_MODE = 'all';
   </table>
 </form>
 
-<table class="table display" id="blueprints_table">
+<table class="table table-bordered table-condensed" id="blueprints_table">
   <thead>
     <tr>
       {%for col in columns%}
@@ -65,3 +59,10 @@ DISPLAY_MODE = 'all';
   </tfoot>
 </table>
 {% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript"  src="/s/industry/js/blueprints_table.js" ></script>
+{% endblock %}
+
