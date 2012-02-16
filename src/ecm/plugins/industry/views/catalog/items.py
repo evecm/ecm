@@ -35,6 +35,8 @@ from ecm.core import utils
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.models.catalog import CatalogEntry
+from ecm.plugins.industry.tasks.industry import update_production_costs
+from ecm.plugins.industry.tasks import evecentral
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +158,50 @@ def price(request, item_id):
         return HttpResponse(displayPrice)
     else:
         return HttpResponse(str(item.fixed_price or ''))
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def updateprodcost(request, item_id):
+    """
+    Serves URL /industry/catalog/items/<item_id>/updateprodcost/
+    
+    If request is GET: 
+        update the price of the item
+        return the price formatted as a string
+    """
+    try:
+        update_production_costs(int(item_id))
+        item = get_object_or_404(CatalogEntry, typeID=int(item_id))
+    except ValueError:
+        raise Http404()
+    return HttpResponse(utils.print_float(item.production_cost))
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def updatepublicprice(request, item_id):
+    """
+    Serves URL /industry/catalog/items/<item_id>/updatepubprice/
+    
+    If request is GET: 
+        update the public price of the item
+        return the price formatted as a string
+    """
+    #TODO: magic constant 1 for "all"
+    try:
+        id = int(item_id)
+        buyPrices = evecentral.get_buy_prices([id], 1)
+        item = get_object_or_404(CatalogEntry, typeID=id)
+        try:
+            if buyPrices[id] > 0.0 and item.public_price != buyPrices[id]:
+                item.public_price = buyPrices[id]
+                logger.info('New price for "%s" -> %s' % (item.typeName,
+                                                      utils.print_float(buyPrices[id])))
+                item.save()
+        except KeyError:
+            logger.info('Could not find buy-price for item: %s - skipping' % (id))
+    except ValueError:
+        raise Http404()
+    return HttpResponse(utils.print_float(item.public_price))
 
 #------------------------------------------------------------------------------
 @check_user_access()

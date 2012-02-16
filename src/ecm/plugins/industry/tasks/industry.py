@@ -56,10 +56,14 @@ def update_supply_prices():
 
 
 #------------------------------------------------------------------------------
-def update_production_costs():
+def update_production_costs(item_id=None):
     now = datetime.now()
-    query = CatalogEntry.objects.all().annotate(bp_count=Count('blueprints'))
-    for entry in query.filter(bp_count__gt=0):
+    if item_id is None:
+        query = CatalogEntry.objects.all().annotate(bp_count=Count('blueprints'))
+        entries = query.filter(bp_count__gt=0)
+    else:
+        entries = [CatalogEntry.objects.get(typeID=item_id)]
+    for entry in entries:
         cost = None
         try:
             missing_bps = entry.missing_blueprints()
@@ -84,3 +88,4 @@ def update_production_costs():
         entry.production_cost = cost
         entry.last_update = now
         entry.save()
+

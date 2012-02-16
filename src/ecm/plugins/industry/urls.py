@@ -33,6 +33,8 @@ urlpatterns = patterns('ecm.plugins.industry.views',
     (r'^catalog/items/data/$',                  'catalog.items.items_data'),
     (r'^catalog/items/(\d+)/$',                 'catalog.items.details'),
     (r'^catalog/items/(\d+)/price/$',           'catalog.items.price'),
+    (r'^catalog/items/(\d+)/updateprodcost/$',  'catalog.items.updateprodcost'),
+    (r'^catalog/items/(\d+)/updatepubprice/$',  'catalog.items.updatepublicprice'),
     (r'^catalog/items/(\d+)/availability/$',    'catalog.items.availability'),
     (r'^catalog/items/(\d+)/addblueprint/$',    'catalog.items.blueprint_add'),
 

@@ -117,7 +117,10 @@ $(document).ready(function() {
                 _this.html('<img src="/s/ecm/img/throbber.gif"/>');
                 $.get('/industry/catalog/items/' + id + '/updateprodcost/')
                  .success(function (data) {
-                     _this.html(data);
+                	 if (data != 'None')
+                     	_this.html(data);
+                	 else
+                		_this.html("");
                  })
                  .error(function (data) {
                      _this.html(oldPrice);
