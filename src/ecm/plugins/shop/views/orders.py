@@ -121,7 +121,8 @@ def details(request, order_id):
     validTransitions = [ (trans.__name__, utils.verbose_name(trans)) 
                                for trans in order.get_valid_transitions(customer=True) ]
 
-    data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions}
+    data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions, 
+            'states': Order.STATES.items()}
 
     return render_to_response('shop_order_details.html', data, Ctx(request))
 

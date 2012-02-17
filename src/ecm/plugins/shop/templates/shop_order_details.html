@@ -3,7 +3,7 @@
 {% block headtitle %}Order #{{ order.id }} Details{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -14,7 +14,11 @@
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Order #{{ order.id }} <span class="date">- {{order.state_text}}</span></h1>
+<h1>Order #{{ order.id }} <small>{{order.state_text}}</small></h1>
+
+<ul class="order-states">{%for state, text in states%}
+<li{%if state == order.state%} class="active"{%endif%}>{{text}}</li>
+{%endfor%}</ul>
 
 <table class="transparent">
   <tbody>

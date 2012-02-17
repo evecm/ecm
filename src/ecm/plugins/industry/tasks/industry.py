@@ -25,7 +25,6 @@ import logging
 from datetime import datetime
 
 from django.db import transaction
-from django.db.models.aggregates import Count
 
 from ecm.core.eve.classes import NoBlueprintException
 from ecm.core import utils
@@ -59,10 +58,9 @@ def update_supply_prices():
 def update_production_costs(item_id=None):
     now = datetime.now()
     if item_id is None:
-        query = CatalogEntry.objects.all().annotate(bp_count=Count('blueprints'))
-        entries = query.filter(bp_count__gt=0)
+        entries = CatalogEntry.objects.filter(is_available=True)
     else:
-        entries = [CatalogEntry.objects.get(typeID=item_id)]
+        entries = CatalogEntry.objects.filter(typeID=item_id)
     for entry in entries:
         cost = None
         try:
@@ -88,4 +86,3 @@ def update_production_costs(item_id=None):
         entry.production_cost = cost
         entry.last_update = now
         entry.save()
-

@@ -32,7 +32,7 @@
       </tr>
       <tr>
         <td><strong>Fixed Price</strong></td>
-        <td id="price">{{item.fixed_price|ecm_price}}</td>
+        <td id="price" class="editable">{{item.fixed_price|ecm_price}}</td>
       </tr>
     </table>
   </div>
@@ -43,12 +43,12 @@
 <table class="blueprints_table">
   <thead>
     <tr>
-      <th></th>
-      <th>ME</th>
-      <th>PE</th>
-      <th>Copy</th>
-      <th>Runs</th>
-      <th></th>
+      <th class="center"></th>
+      <th class="center">ME</th>
+      <th class="center">PE</th>
+      <th class="center">Copy</th>
+      <th class="center">Runs</th>
+      <th class="center"></th>
     </tr>
   </thead>
   <tbody id="blueprints">
@@ -57,15 +57,13 @@
       <td><a href="{{bp.url}}" title="Blueprint details">
         <img src="http://image.eveonline.com/Type/{{bp.typeID}}_32.png"/>
       </a></td>
-      <td class="me" id="{{bp.id}}">{{bp.me}}</td>
-      <td class="pe" id="{{bp.id}}">{{bp.pe}}</td>
-      <td><input class="copy" id="{{bp.id}}" type="checkbox" {% if bp.copy %}checked{% endif %}/></td>
-      <td class="runs" id="{{bp.id}}">{{bp.runs}}</td>
+      <td class="me editable center" id="{{bp.id}}">{{bp.me}}</td>
+      <td class="pe editable center" id="{{bp.id}}">{{bp.pe}}</td>
+      <td class="center"><input class="copy" id="{{bp.id}}" type="checkbox" {% if bp.copy %}checked{% endif %}/></td>
+      <td class="runs editable center" id="{{bp.id}}">{{bp.runs}}</td>
       <td>
-        <a class="btn btn-danger btn-small" 
-          onClick="deleteBlueprint({{bp.id}});"><i class="icon-minus icon-white"></i>
-          Delete Blueprint
-        </a>
+        <a class="btn btn-danger btn-small" title="Delete blueprint"
+          onClick="deleteBlueprint({{bp.id}});"><i class="icon-trash icon-white"></i></a>
       </td>
     </tr>
   {% empty %}
@@ -83,10 +81,116 @@
 {% block javascripts %}
 <script type="text/javascript">
 ITEM_ID = {{item.typeID}};
+NEW_BP = '<tr id="%id">' +
+'<td><a href="%url" title="Blueprint details">' +
+  '<img src="http://image.eveonline.com/Type/%typeID_32.png" />' +
+'</a></td>' +
+'<td class="me editable center" id="%id">%me</td>' +
+'<td class="pe editable center" id="%id">%pe</td>' +
+'<td class="center"><input class="copy" id="%id" type="checkbox" %checked/></td>' +
+'<td class="runs editable center" id="%id">%runs</td>' +
+'<td><a class="btn btn-danger btn-small" title="Delete blueprint" ' +
+       'onClick="deleteBlueprint(%id);"><i class="icon-trash icon-white"></i></a></td>' +
+'</tr>';
 </script>
 {% endblock %}
 
 {% block compressed_javascripts %}
 <script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript"  src="/s/industry/js/item_details.js" ></script>
+<script>
+$(document).ready(function() {
+    $('#availability_checkbox').click(function () {
+      var params = {
+        available: $(this).is(':checked')
+      };
+      $.post('/industry/catalog/items/' + ITEM_ID + '/availability/', params)
+       .error(function () {
+        alert('Failed to change availability!'); 
+      });
+    });
+    
+    $('#price').editable('/industry/catalog/items/' + ITEM_ID + '/price/', {
+        loadurl: '/industry/catalog/items/' + ITEM_ID + '/price/',
+        cssclass: 'edited',
+        style: 'inherit',
+        tooltip: 'Click to edit',
+        placeholder: '',
+    });
+    
+    setEditableHandlers();
+});
+
+function setEditableHandlers() {
+    $('td.me').editable('/industry/catalog/blueprints/me/', {
+        cssclass: 'edited',
+        style: 'inherit',
+        tooltip: 'Click to edit',
+        placeholder: '',
+    });
+    $('td.pe').editable('/industry/catalog/blueprints/pe/', {
+        cssclass: 'edited',
+        style: 'inherit',
+        tooltip: 'Click to edit',
+        placeholder: '',
+    });
+    $('input.copy').click(function () {
+        var thisId = $(this).attr('id');
+        var checked = $(this).is(':checked');
+        $.post('/industry/catalog/blueprints/copy/', {id: thisId, value: checked})
+        .error(function () {
+            alert('Failed to change copy!');
+        });
+    });
+    $('td.runs').editable('/industry/catalog/blueprints/runs/', {
+        cssclass: 'edited',
+        style: 'inherit',
+        tooltip: 'Click to edit',
+        placeholder: '',
+    });
+}
+
+
+EMPTY = '<tr id="empty"><td colspan="4" class="center">None</td></tr>';
+
+function deleteBlueprint(blueprintID) {
+    var row = $('#blueprints tr#' + blueprintID);
+    if (confirm('Are you sure you want to delete this blueprint?')) {
+        $.get('/industry/catalog/blueprints/' + blueprintID + '/delete/')
+            .success(function () {
+                $(row).remove();
+                var rows =  $('#blueprints tr');
+                if (rows.length == 0) {
+                    $('#blueprints').html(EMPTY);
+                }
+            })
+            .error(function () {
+                alert('Failed to delete blueprint.');
+            });
+    }
+}
+
+function addBlueprint(itemID) {
+    $.getJSON('/industry/catalog/items/' + itemID + '/addblueprint/')
+        .success(function(json) {
+            $('#empty').remove();
+            var checked;
+            if (json.copy) {
+                checked = 'checked';
+            } else {
+                checked = '';
+            }
+            var row = NEW_BP.replace(/%id/g, json.id)
+                            .replace(/%url/g, json.url)
+                            .replace(/%typeID/g, json.typeID)
+                            .replace(/%me/g, json.me)
+                            .replace(/%pe/g, json.pe)
+                            .replace(/%checked/g, checked)
+                            .replace(/%runs/g, json.runs);
+            $(row).appendTo("#blueprints")
+            setEditableHandlers();
+        }).error(function () {
+            alert('Failed to add blueprint.');
+        });
+}
+</script>
 {% endblock %}
