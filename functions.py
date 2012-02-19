@@ -36,10 +36,10 @@ __date__ = "2011 8 23"
 __author__ = "diabeteman"
 
 #-------------------------------------------------------------------------------
-def ignore_func(dir, names):
+def ignore_func(folder, names):
     ignored_names = []
-    files = [ path.join(dir, name) for name in names ]
-    for pattern in ['*.pyc', '*.pyo', '*/db/*.db', '*/db/*journal', '*/logs']:
+    files = [ path.join(folder, name) for name in names ]
+    for pattern in ['*.pyc', '*.pyo', '*/src/db/*', '*/src/logs', '*/src/static']:
         ignored_names.extend(fnmatch.filter(files, pattern))
     return set([ path.basename(name) for name in ignored_names ])
 
@@ -60,14 +60,14 @@ def get_timestamp(root_dir):
     sys.path.remove(path.join(root_dir, 'src'))
     return version, timestamp
 #-------------------------------------------------------------------------------
-def set_timestamp(file):
+def set_timestamp(init_file):
     from datetime import datetime
     timestamp = datetime.now().strftime("%Y%m%d%H%M")
-    f = open(file, "r")
+    f = open(init_file, "r")
     buff = f.read()
     f.close()
     buff %= {'timestamp':timestamp}
-    f = open(file, "w")
+    f = open(init_file, "w")
     f.write(buff)
     f.close()
     return timestamp
@@ -163,22 +163,6 @@ def install_files(options):
     dir_util.copy_tree(options.src_dir, options.install_dir)
     log.info("Files installation successful.")
 
-
-#-------------------------------------------------------------------------------
-def configure_apache(options):
-    log = get_logger()
-    log.info("Applying configuration to Apache virtual host file...")
-    vhost_file = os.path.join(options.install_dir, "apache.vhost.conf").replace("\\", "/")
-    f = open(vhost_file, "r")
-    buff = f.read()
-    f.close()
-    buff %= options.__dict__
-    f = open(vhost_file, "w")
-    f.write(buff)
-    f.close()
-    log.info("Apache virtual host file successfully configured.")
-
-
 #-------------------------------------------------------------------------------
 DB_SETTING_RE = re.compile(r"DATABASES.*?'default'\s*:\s*\{[\s\r\n]*(.+?)[\s\r\n]*\},", re.DOTALL)
 DB_SETTINGS = """'ENGINE': '%(db_engine)s',
@@ -219,7 +203,7 @@ def configure_ecm(options):
     if options.plugins is not None:
         plugins = 'ECM_PLUGIN_APPS = ['
         for p in options.plugins:
-            plugins += '\n    %s' % repr(p)
+            plugins += '\n    %s,' % repr(p)
         plugins += '\n]'
         buff = buff.replace('ECM_PLUGIN_APPS = []', plugins)
     
@@ -229,8 +213,6 @@ def configure_ecm(options):
     log.info("settings.py successfully configured.")
 
 #-------------------------------------------------------------------------------
-VHOST_REGEXP = re.compile(r"<VirtualHost (?P<ip_address>[^\s]+):(?P<port>\d+)>")
-SERVERNAME_REGEXP = re.compile(r"ServerName (?P<vhost_name>[\w\.-]+)", re.IGNORECASE)
 def backup_settings(options, tempdir):
     log = get_logger()
 
@@ -250,34 +232,15 @@ def backup_settings(options, tempdir):
         log.info("Copying %s to %s...", settings_file, os.path.join(tempdir, 'ecm'))
         file_util.copy_file(settings_file, os.path.join(tempdir, 'ecm/settings.py.old'))
 
-    # backup the owner of apache.wsgi
-    file_stat = os.stat(os.path.join(options.install_dir, "apache.wsgi"))
-    log.info("Stored the owner info of %s", os.path.join(options.install_dir, "apache.wsgi"))
+    # backup the owner of settings.py
+    file_stat = os.stat(settings_file)
+    log.info("Stored the owner info of %s", settings_file)
 
-    vhost_file = os.path.join(options.install_dir, "apache.vhost.conf")
-    try:
-        with open(vhost_file, 'r') as fd:
-            buff = fd.read()
-    except:
-        # upgrading from ecm 1.x.y
-        vhost_file = os.path.join(options.install_dir, "ecm.apache.vhost.conf")
-        with open(vhost_file, 'r') as fd:
-            buff = fd.read()
-    
-    match = VHOST_REGEXP.search(buff)
-    if match is not None:
-        options.ip_address = match.groupdict()['ip_address']
-        options.port = match.groupdict()['port']
-
-    match = SERVERNAME_REGEXP.search(buff)
-    if match is not None:
-        options.vhost_name = match.groupdict()['vhost_name']
-
-    sys.path.append(options.install_dir)
+    sys.path.insert(0, options.install_dir)
     import ecm
     import ecm.settings
     try:
-        options.old_version = ecm.__version_str__
+        options.old_version = ecm.VERSION
     except AttributeError:
         # upgrading from ecm 1.x.y
         options.old_version = ecm.version
@@ -353,6 +316,13 @@ def migrate_ecm_db(options):
     
     log.info('Database Migration successful.')
 
+#-------------------------------------------------------------------------------
+def collect_static_files(options):
+    log = get_logger()
+    log.info("Gathering static files...")
+    run_dir = os.path.join(options.install_dir, 'ecm')
+    run_command('python manage.py collectstatic --noinput', run_dir)
+    
 #-------------------------------------------------------------------------------
 def run_command(command_line, run_dir):
     log = get_logger()

@@ -50,7 +50,7 @@ COLUMNS = [
 MOON_REGEX = re.compile(".*\s+([^\s]+)\s+-\s+Moon\s+(\d+)")
 #------------------------------------------------------------------------------
 @check_user_access()
-def onePos(request, pos_id):
+def one_pos(request, pos_id):
     try:
         pos_id = int(pos_id)
     except ValueError:

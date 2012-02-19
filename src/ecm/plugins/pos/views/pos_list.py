@@ -58,7 +58,7 @@ COLUMNS = [
     ['Name',            None,                   None],
 ]
 @check_user_access()
-def all(request):
+def poses(request):
     data = {
         'posViewMode' : 'List',
         'columns' : [ (col, title) for col, title, _ in COLUMNS ],
@@ -70,7 +70,7 @@ def all(request):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
-def all_data(request):
+def poses_data(request):
     '''
     Read data when table request by Ajax.
     This method takes into account search filter and segmentation table

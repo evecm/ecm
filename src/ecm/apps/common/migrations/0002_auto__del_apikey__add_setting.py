@@ -3,6 +3,7 @@ import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
+from ecm.core import utils
 
 class Migration(SchemaMigration):
 
@@ -11,8 +12,8 @@ class Migration(SchemaMigration):
         keyID = 0
         vCode = ''
         characterID = 0
-
-        rows = db.execute('SELECT keyID, vCode, characterID FROM common_apikey;')
+        sql = 'SELECT "keyID", "vCode", "characterID" FROM "common_apikey";'
+        rows = db.execute(utils.fix_mysql_quotes(sql))
         if rows:
             keyID, vCode, characterID = map(eval, rows[0])
 
@@ -36,7 +37,8 @@ class Migration(SchemaMigration):
         vCode = ''
         characterID = 0
         settings = ['common_api_keyID', 'common_api_vCode', 'common_api_characterID']
-        rows = db.execute('SELECT name, value FROM common_setting WHERE name IN %s;', [settings])
+        sql = 'SELECT "name", "value" FROM "common_setting" WHERE "name" IN %s;'
+        rows = db.execute(utils.fix_mysql_quotes(sql), [settings])
         for name, value in rows:
             if name == 'common_api_keyID':
                 keyID = eval(value)

@@ -18,7 +18,6 @@
 __date__ = '2011 8 23'
 __author__ = 'diabeteman'
 
-import django
 from os import path
 from functions import prompt
 from optparse import OptionParser, OptionGroup
@@ -35,6 +34,31 @@ DB_ENGINES = {
     'postgresql_psycopg2': 'django.db.backends.postgresql_psycopg2'
 }
 
+DEFAULT_OPTIONS = {
+    'quiet': False,
+    'plugins': '',
+    'src_dir': path.join(ROOT_DIR, 'src'),
+    'dist_dir': path.join(ROOT_DIR, 'dist'),
+    
+    'db_engine': None,
+    'db_name': 'ecm',
+    'db_user': 'ecm',
+    'db_pass': 'ecm',
+    'eve_db_url': 'http://eve-corp-management.googlecode.com/files/ECM.EVE.db-3.zip',
+    'eve_zip_archive': None,
+    'eve_db_dir': None,
+    'skip_eve_db_download': False,
+    
+    'host_name': None,
+    'port': 80,
+    'admin_email': None,
+    'server_email': None,
+    'smtp_host': 'localhost',
+    'smtp_port': 25,
+    'smtp_tls': False,
+    'smtp_user': '',
+    'smtp_password': '',
+}
 
 #-------------------------------------------------------------------------------
 def parse_args(version, timestamp):
@@ -44,81 +68,70 @@ def parse_args(version, timestamp):
     parser = OptionParser(usage='setup.py {%s} [options] [install_dir]' % '|'.join(valid_commands),
                           version='%s.%s' % (version, timestamp))
 
-    parser.add_option('-q', '--quiet', dest='quiet', default=False, action='store_true',
+    parser.add_option('-q', '--quiet', dest='quiet', action='store_true',
                        help='Do not prompt the user for confirmations (assume "yes").')
-    parser.add_option('-p', '--plugins', dest='plugins', default=[],
+    parser.add_option('-p', '--plugins', dest='plugins', 
                       help='Install or upgrade these plugins. Give the plugins separated '
                            'by commas: "assets,industry,accounting"')
 
     f_group = OptionGroup(parser, 'Folders options')
-    f_group.add_option('--src-dir', dest='src_dir', default=path.join(ROOT_DIR, 'src'),
+    f_group.add_option('--src-dir', dest='src_dir', 
                        help='Source directory where to find the installation files.')
-    f_group.add_option('--dist-dir', dest='dist_dir', default=path.join(ROOT_DIR, 'dist'),
+    f_group.add_option('--dist-dir', dest='dist_dir', 
                        help='Target directory where to generate the package.')
-    f_group.add_option('--django-dir', dest='django_dir',
-                       default=path.abspath(path.dirname(django.__file__)),
-                       help='Django installation directory. Default is resolved '
-                       'from the interpreter used to run the installation.')
     parser.add_option_group(f_group)
 
     db_group = OptionGroup(parser, 'Database options')
     db_group.add_option('--database-engine', dest='db_engine',
                         help='DB engine %s' % DB_ENGINES.keys())
-    db_group.add_option('--database-name', dest='db_name', default='ecm',
+    db_group.add_option('--database-name', dest='db_name',
                         help='Database name (default: ecm)')
-    db_group.add_option('--database-user', dest='db_user', default='ecm',
+    db_group.add_option('--database-user', dest='db_user',
                         help='Database user (default: ecm)')
-    db_group.add_option('--database-password', dest='db_pass', default='ecm',
+    db_group.add_option('--database-password', dest='db_pass',
                         help='Database user password (default: ecm)')
-    db_group.add_option('--eve-db-url', dest='eve_db_url', default='http://eve-corp-management.googlecode.com/files/ECM.EVE.db-3.zip',
+    db_group.add_option('--eve-db-url', dest='eve_db_url',
                         help='URL where to download EVE database archive.')
     db_group.add_option('--eve-db-zip-archive', dest='eve_zip_archive',
                         help='Local path to EVE database archive.')
     db_group.add_option('--eve-db-file', dest='eve_db_dir',
                         help='Local folder where to extract EVE database file.')
-    db_group.add_option('--skip-eve-db-download', dest='skip_eve_db_download', default=False,
+    db_group.add_option('--skip-eve-db-download', dest='skip_eve_db_download',
                         action='store_true', help='Do NOT download EVE db (use with care).')
     parser.add_option_group(db_group)
 
     w_group = OptionGroup(parser, 'Web & Mail options')
-    w_group.add_option('--virtual-host-name', dest='vhost_name',
-                       help='The name of the Apache virtual host.')
-    w_group.add_option('--listening-ip-address', dest='ip_address', default='*',
-                       help='The IP address the virtual host is binded to (default is *).')
-    w_group.add_option('--listening-tcp-port', dest='port', default='80',
+    w_group.add_option('--host-name', dest='host_name',
+                       help='The name of ECM host computer.')
+    w_group.add_option('--listening-tcp-port', dest='port', type='int', 
                        help='The TCP port the virtual host is binded to (default is 80).')
     w_group.add_option('--admin-email', dest='admin_email',
                        help='Email of the server administrator (for error notifications)')
     w_group.add_option('--server-email', dest='server_email',
                        help='"FROM" email address that will be used to send mail to users.')
-    w_group.add_option('--smtp-host', dest='smtp_host', default='localhost',
+    w_group.add_option('--smtp-host', dest='smtp_host',
                        help='Name of the SMTP server that will be used to send mail (default: "localhost").')
-    w_group.add_option('--smtp-port', dest='smtp_port', default='25',
+    w_group.add_option('--smtp-port', dest='smtp_port', type='int', 
                        help='Port of the SMTP server (default: 25).')
-    w_group.add_option('--smtp-tls', dest='smtp_tls', default=False, action='store_true',
+    w_group.add_option('--smtp-tls', dest='smtp_tls', action='store_true',
                        help='Use a secure connection with the SMTP server (default: False).')
-    w_group.add_option('--smtp-user', dest='smtp_user', default='',
+    w_group.add_option('--smtp-user', dest='smtp_user',
                        help='User to connect to the SMTP server.')
-    w_group.add_option('--smtp-password', dest='smtp_password', default='',
+    w_group.add_option('--smtp-password', dest='smtp_password',
                        help='Password for the SMTP user.')
-
-    m_group = OptionGroup(parser, 'Misc options')
-    m_group.add_option('--apache-user', dest='apache_user', default='www-data',
-                      help='The user which is running the Apache HTTP deamon. Default is "www-data".')
-    parser.add_option_group(m_group)
-
-
     parser.add_option_group(w_group)
 
-    options, args = parser.parse_args()
+    cmd_line_options, args = parser.parse_args()
 
-    options.version = version
-    options.timestamp = timestamp
+    cmd_line_options.version = version
+    cmd_line_options.timestamp = timestamp
 
 
-    # try to read options from "setup.cfg"
+    # First, try to read options from "setup.cfg"
     cfgparser = ConfigParser()
     cfgparser.read(path.join(ROOT_DIR, 'setup.cfg'))
+    
+    default_options = DEFAULT_OPTIONS.copy()
     options_from_file = {}
     for section in cfgparser.sections():
         options_from_file.update(cfgparser.items(section))
@@ -127,17 +140,22 @@ def parse_args(version, timestamp):
             if value == '':
                 # change empty options to None
                 value = None
-            elif type(eval(value)) == type(True):
-                # cast to boolean when possible
+            elif type(eval(value)) in (type(True), type(0), type(None)):
+                # cast when possible
                 value = eval(value)
         except:
             pass
-        # make sure that command line options override the config file
-        if value != parser.defaults[name] and getattr(options, name) == parser.defaults[name]:
-            setattr(options, name, value)
+        
+        if value is not None:
+            default_options[name] = value
     
-    if options.plugins is not None:
-        options.plugins = [ 'ecm.plugins.%s' % p for p in options.plugins.split(',') ]
+    # make sure that command line options override the config file
+    for name, value in default_options.items():
+        if getattr(cmd_line_options, name) is None:
+            setattr(cmd_line_options, name, default_options.get(name, None))
+    
+    if cmd_line_options.plugins is not None:
+        cmd_line_options.plugins = [ 'ecm.plugins.%s' % p for p in cmd_line_options.plugins.split(',') ]
     
     if len(args) == 0:
         parser.error('Missing command {%s}' % '|'.join(valid_commands))
@@ -148,14 +166,13 @@ def parse_args(version, timestamp):
 
     if cmd not in  ['package', 'clean']:
         if len(args) > 1:
-            options.install_dir = args[1]
+            cmd_line_options.install_dir = args[1]
         else:
-            options.install_dir = prompt('ECM installation directory?')
-        options.install_dir = path.normpath(options.install_dir)
+            cmd_line_options.install_dir = prompt('ECM installation directory?')
+        cmd_line_options.install_dir = path.normpath(cmd_line_options.install_dir)
 
-    options.src_dir = path.normpath(options.src_dir)
-    options.dist_dir = path.normpath(options.dist_dir)
-    options.django_dir = path.normpath(options.django_dir)
+    cmd_line_options.src_dir = path.normpath(cmd_line_options.src_dir)
+    cmd_line_options.dist_dir = path.normpath(cmd_line_options.dist_dir)
 
-    return cmd, options
+    return cmd, cmd_line_options
 

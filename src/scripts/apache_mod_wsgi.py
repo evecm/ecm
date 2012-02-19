@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+"""
+This script allows to run ECM with Apache mod_wsgi 
+"""
+
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
@@ -25,7 +29,7 @@ __author__ = "diabeteman"
 import sys
 from os import path
 
-install_dir = path.abspath(path.dirname(__file__))
+install_dir = path.abspath(path.join(path.abspath(path.dirname(__file__)), '..'))
 sys.path.insert(0, path.join(install_dir, 'ecm'))
 
 # this import should be marked as not found when analysing this module 

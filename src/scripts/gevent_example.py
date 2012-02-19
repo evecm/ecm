@@ -25,6 +25,8 @@ for more information.
 __date__ = "2012-02-18"
 __author__ = "diabeteman"
 
+#@PydevCodeAnalysisIgnore
+
 import sys
 from os import path
 
@@ -35,7 +37,7 @@ sys.path.insert(0, path.join(install_dir, 'ecm'))
 # with the eclipse python editor.
 # This is normal, as the 'ecm' folder is not in sys.path when performing
 # a static analysis.
-import settings #@UnresolvedImport
+import settings 
 
 from django.core import management
 
@@ -51,7 +53,6 @@ translation.activate(django_settings.LANGUAGE_CODE)
 import django.core.handlers.wsgi
 
 from gevent.pywsgi import WSGIServer
-
 
 if __name__ == '__main__':
     bind_address = '127.0.0.1', 8000
