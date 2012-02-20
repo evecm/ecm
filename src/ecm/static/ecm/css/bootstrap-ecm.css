@@ -29,12 +29,20 @@ body {
     background-color:#ceefff !important;
 }
 
+.page-header {
+    margin-top: 0px;
+}
+
 .btn-toolbar * {
     vertical-align: middle !important;
 }
 
-.middle {
+.middle * {
     vertical-align: middle !important;
+}
+
+.no-margin {
+    margin: 0;
 }
 
 .editable {
@@ -48,4 +56,12 @@ body {
 
 .editable:hover {
     background-color: #FFB !important;
+}
+
+.well-tight {
+    padding: 5px;
+}
+
+.well-tight * {
+    margin-top: 0px;
 }

@@ -22,7 +22,7 @@
 <form id="search_form" class="form-search form-inline btn-toolbar center">
   <div class="control-group info" style="display: inline;">
     <span class="label label-info">Period</span>
-    <select id="period_selector">
+    <select id="period_selector" class="input-small">
       <option value="all" selected="selected">All Time</option>
       <option value="thismonth">This Month</option>
       <option value="week">Last Week</option>
@@ -30,10 +30,10 @@
       <option value="year">Last Year</option>
     </select>
     <span class="label label-info">From</span>
-    <input type="text" id="from_date" name="from_date" value="{{ from_date }}"/>
+    <input type="text" id="from_date" name="from_date" value="{{ from_date }}" class="input-small"/>
     <span class="label label-info">To</span>
-    <input type="text" id="to_date" name="to_date" value="{{ to_date }}"/>
-    <a class="btn btn-info" id="refresh_table">Refresh</a>
+    <input type="text" id="to_date" name="to_date" value="{{ to_date }}" class="input-small"/>
+    <a class="btn btn-info btn-small" id="refresh_table"><i class="icon-refresh icon-white"></i> Refresh</a>
   </div>
 </form>
 

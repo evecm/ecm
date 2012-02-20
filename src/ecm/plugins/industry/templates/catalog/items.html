@@ -26,7 +26,7 @@
     <div class="btn-group" data-toggle="buttons-radio">
       <button class="btn btn-small btn-info" id="show_unavailable_button" 
               title="Show all items">All Items</button>
-      <button class="btn btn-small btn-info" id="hide_unavailable_button" t
+      <button class="btn btn-small btn-info" id="hide_unavailable_button"
               title="Show only available items">Available Items</button>
     </div>
   </div>
@@ -115,10 +115,10 @@ $(document).ready(function() {
                 _this.html('<img src="/s/ecm/img/throbber.gif"/>');
                 $.get('/industry/catalog/items/' + id + '/updateprodcost/')
                  .success(function (data) {
-                	 if (data != 'None')
-                     	_this.html(data);
-                	 else
-                		_this.html("");
+                   if (data != 'None')
+                       _this.html(data);
+                   else
+                    _this.html("");
                  })
                  .error(function (data) {
                      _this.html(oldPrice);

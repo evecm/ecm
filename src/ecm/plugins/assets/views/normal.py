@@ -132,7 +132,7 @@ def systems_data(request):
         jstree_data.append({
             "data" : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
             "attr" : {
-                "id" : "_%d" % solarSystemID,
+                "id" : "%d_" % solarSystemID,
                 "rel" : "system",
                 "sort_key" : name.lower(),
                 "class" : "system-%s-row" % color
@@ -193,7 +193,7 @@ def stations_data(request, solarSystemID):
         jstree_data.append({
             "data" : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
             "attr" : {
-                "id" : "_%d_%d" % (solarSystemID, stationID),
+                "id" : "%d_%d_" % (solarSystemID, stationID),
                 "sort_key" : stationID,
                 "rel" : icon,
                 "class" : "%s-row" % icon
@@ -246,7 +246,7 @@ def hangars_data(request, solarSystemID, stationID):
         jstree_data.append({
             "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items), volume),
             "attr" : {
-                "id" : "_%d_%d_%d" % (solarSystemID, stationID, hangarID),
+                "id" : "%d_%d_%d_" % (solarSystemID, stationID, hangarID),
                 "sort_key" : hangarID,
                 "rel" : "hangar",
                 "class" : "hangar-row"
@@ -279,7 +279,7 @@ def hangar_content_data(request, solarSystemID, stationID, hangarID):
 
         if item.hasContents:
             data = name
-            ID = "_%d_%d_%d_%d" % (solarSystemID, stationID, hangarID, item.itemID)
+            ID = "%d_%d_%d_%d_" % (solarSystemID, stationID, hangarID, item.itemID)
             state = "closed"
         elif item.singleton:
             data = name
@@ -323,7 +323,7 @@ def can1_content_data(request, solarSystemID, stationID, hangarID, container1):
 
         if i.hasContents:
             item["data"] = name
-            ID = "_%d_%d_%d_%d_%d" % (solarSystemID, stationID, hangarID, container1, i.itemID)
+            ID = "%d_%d_%d_%d_%d_" % (solarSystemID, stationID, hangarID, container1, i.itemID)
             item["attr"] = { "id" : ID , "rel" : icon , "href" : "", "class" : "%s-row" % icon  }
             item["state"] = "closed"
         elif i.singleton:
@@ -389,17 +389,17 @@ def search_items(request):
     json_data = []
 
     for item in query:
-        nodeid = "#_%d" % item.solarSystemID
+        nodeid = "#%d_" % item.solarSystemID
         json_data.append(nodeid)
-        nodeid = nodeid + "_%d" % item.stationID
+        nodeid = nodeid + "%d_" % item.stationID
         json_data.append(nodeid)
-        nodeid = nodeid + "_%d" % item.hangarID
+        nodeid = nodeid + "%d_" % item.hangarID
         json_data.append(nodeid)
         if item.container1:
-            nodeid = nodeid + "_%d" % item.container1
+            nodeid = nodeid + "%d_" % item.container1
             json_data.append(nodeid)
             if item.container2:
-                nodeid = nodeid + "_%d" % item.container2
+                nodeid = nodeid + "%d_" % item.container2
                 json_data.append(nodeid)
 
     return HttpResponse(json.dumps(json_data))

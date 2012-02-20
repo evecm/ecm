@@ -71,7 +71,7 @@ var DATATABLE_DEFAULTS = {
     iDisplayLength: 25,         /* default display 25 items */
     bStateSave: true,       /* table state persistance */
     iCookieDuration: 60 * 60, /* persistance duration 1 hour */
-    sDom: "<'row-fluid'<'span4'l><'span8'p>>rt<'row-fluid'<'span4'i><'span8'p>>",
+    sDom: "<'row-fluid'<'span5'l><'span7'p>>rt<'row-fluid'<'span5'i><'span7'p>>",
 
     /* the search field being outside the table object, we need to save its status
      * explicitly here in order to restore it with the rest */

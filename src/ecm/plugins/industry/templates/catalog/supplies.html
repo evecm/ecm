@@ -68,7 +68,7 @@
 
 {% block javascripts %}
 <script type="text/javascript">
-SUPPLY_SOURCES = '<select class="span8">'{%for source in supply_sources%}
+SUPPLY_SOURCES = '<select>'{%for source in supply_sources%}
   + '<option value="{{source.location_id}}">{{source.name}}</option>'{%endfor%}
   + '</select>';
 CURRENT_FILTER = 'minerals';
