@@ -9,7 +9,7 @@
 
 {% block main_content %}
 <div class="page-header">
-<h1>Corporation Assets <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+{% block title %}<h1>Corporation Assets <small>last update {{ scan_date|ecm_datetime }}</small></h1>{% endblock %}
 </div>
 
 <form id="search_form" class="form-search form-inline">
@@ -30,16 +30,16 @@
 <div class="well well-tight">
   <div class="btn-toolbar" >
     <span class="label label-info">Divisions</span>
-    <div title="Press CTRL + Click to select only one" class="btn-group" data-toggle="buttons-checkbox">
+    <div title="Press CTRL + Click to select only one" class="btn-group" data-toggle="buttons-checkbox" id="division_buttons">
     {% for h in hangars %}
-      <button class="btn btn-mini btn-info" id="{{ h.hangarID }}" >{{ h.name }}</button>
+      <button class="btn btn-mini btn-info active" id="{{ h.hangarID }}" >{{ h.name }}</button>
     {% endfor %}</div>
   </div>
   <div class="btn-toolbar" >
     <span class="label label-success">Locations</span>
-    <div title="Press CTRL + Click to select only one" class="btn-group" data-toggle="buttons-checkbox">
-      <button class="btn btn-mini btn-success" id="show_stations" >In Station</button>
-      <button class="btn btn-mini btn-success" id="show_space" >In Space</button>
+    <div title="Press CTRL + Click to select only one" class="btn-group" data-toggle="buttons-checkbox" id="space_buttons">
+      <button class="btn btn-mini btn-success active" id="show_stations" >In Station</button>
+      <button class="btn btn-mini btn-success active" id="show_space" >In Space</button>
     </div>
   </div>
   <div class="btn-group">
@@ -54,10 +54,12 @@
 
 {% block javascripts %}
 <script type="text/javascript">
-SHOW_DIVISIONS = "{{ divisions_str }}";
-SHOW_IN_SPACE = {% if show_in_space %}true{% else %}false{% endif %};
-SHOW_IN_STATIONS = {% if show_in_stations %}true{% else %}false{% endif %};
 BASE_URL = '/assets/';
+PARAMS = {
+    stations: true,
+    space: true,
+    divisions: '{%for h in hangars%}{{h.hangarID}}{%if not forloop.last%},{%endif%}{%endfor%}',
+};
 </script>
 {% endblock %}
 
@@ -65,7 +67,7 @@ BASE_URL = '/assets/';
 {% block compressed_javascripts %}
 <script type="text/javascript" src="/s/ecm/js/lib/jquery.jstree.js"></script>
 <script>
-$(function () {
+$(document).ready(function () {
 
     $('#assets_tree').jstree({
         plugins : [ 'themes' , 'json_data' , 'search' , 'adv_search' , 'ui',  'types' , 'sort' ],
@@ -84,14 +86,7 @@ $(function () {
             case_insensitive : true,
             ajax : {
                 url : function() {
-                    var params = {
-                        stations : SHOW_IN_STATIONS,
-                        space : SHOW_IN_SPACE
-                    };
-                    if (SHOW_DIVISIONS != 'None') {
-                        params['divisions'] = SHOW_DIVISIONS;
-                    }
-                    return BASE_URL + 'search/?' + decodeURIComponent(jQuery.param(params));
+                    return BASE_URL + 'search/?' + decodeURIComponent(jQuery.param(PARAMS));
                 }
             }
         },
@@ -217,6 +212,30 @@ $(function () {
                     close_node  : true,
                     create_node : false,
                     delete_node : false
+                },
+                added : {
+                    icon : {
+                        image : '/s/assets/img/plus-tree-icon.png'
+                    },
+                    valid_children : 'none',
+                    max_depth : 0,
+                    select_node : true,
+                    open_node   : true,
+                    close_node  : true,
+                    create_node : false,
+                    delete_node : false
+                },
+                removed : {
+                    icon : {
+                        image : '/s/assets/img/minus-tree-icon.png'
+                    },
+                    valid_children : 'none',
+                    max_depth : 0,
+                    select_node : true,
+                    open_node   : true,
+                    close_node  : true,
+                    create_node : false,
+                    delete_node : false
                 }
             }
         },
@@ -226,14 +245,7 @@ $(function () {
                     var url = BASE_URL;
                     url += node.attr ? node.attr('id').replace(/_/g, '/') : '';
                     url += 'data/'
-                    var params = {
-                        'stations' : SHOW_IN_STATIONS,
-                        'space' : SHOW_IN_SPACE
-                    };
-                    if (SHOW_DIVISIONS != 'None') {
-                        params.divisions = SHOW_DIVISIONS;
-                    }
-                    return url + '?' +  decodeURIComponent(jQuery.param(params));
+                    return url + '?' +  decodeURIComponent(jQuery.param(PARAMS));
                 }
             }
         },
@@ -257,80 +269,91 @@ $(function () {
             }
         }
     });
-});
+    
+    $('#search_form').submit(function(event) {
+        event.preventDefault();
+        $('#assets_tree').jstree('search', $('#search_text').val());
+    });
 
-$('#search_form').submit(function(event) {
-    event.preventDefault();
-    $('#assets_tree').jstree('search', $('#search_text').val());
-});
+    $('#clear_search').click(function() {
+        $('#search_text').val('');
+        $('#assets_tree').jstree('clear_search');
+    });
 
-$('#clear_search').click(function() {
-    $('#search_text').val('');
-    $('#assets_tree').jstree('clear_search');
-});
+    $('#expand_all').click(function() {
+        $('#assets_tree').jstree('open_all');
+    });
 
-$('#expand_all').click(function() {
-    $('#assets_tree').jstree('open_all');
-});
+    $('#close_all').click(function() {
+        $('#assets_tree').jstree('close_all');
+    });
 
-$('#close_all').click(function() {
-    $('#assets_tree').jstree('close_all');
-});
 
-$('#apply_filter').click(function() {
-    var params = {
-        stations : $('#show_stations').attr('checked'),
-        space : $('#show_space').attr('checked')
-    };
-    var checkboxes = $('.hangar-checkbox');
-    var divisions = '';
-    for (var i=0 ; i < checkboxes.length ; i++) {
-        if (checkboxes[i].checked) {
-            divisions += ',' + checkboxes[i].id;
+
+    $('#division_buttons button').click(function (event) {
+        if (event.ctrlKey) {
+            /* if ctrl + click, deselect all divisions before selecting */
+            $('#division_buttons button').removeClass('active');
         }
-    }
-    if (divisions.length != 0) {
-        divisions = divisions.substring(1);
-        params['divisions'] = divisions;
-    }
+    });
 
-    window.location = BASE_URL + '?' + decodeURIComponent(jQuery.param(params));
-});
-
-$('#reset_filter').click(function() {
-    window.location = BASE_URL;
-});
-
-$('.hangar-checkbox').click(function (event) {
-    if (event.ctrlKey) {
-        /* if ctrl + click, deselect all divisions and select only this one */
-        var checkboxes = $('.hangar-checkbox');
-        for (var i=0 ; i < checkboxes.length ; i++) {
-            checkboxes[i].checked = false;
+    $('#space_buttons button').click(function (event) {
+        if (event.ctrlKey) {
+            /* if ctrl + click, deselect all divisions before selecting */
+            $('#space_buttons button').removeClass('active');
         }
-        this.checked = true;
-    }
-});
+    });
 
-$('.space-checkbox').click(function (event) {
-    if (event.ctrlKey) {
-        /* if ctrl + click, deselect all divisions and select only this one */
-        var checkboxes = $('.space-checkbox');
-        for (var i=0 ; i < checkboxes.length ; i++) {
-            checkboxes[i].checked = false;
-        }
-        this.checked = true;
-    }
-});
+    $('#assets_tree').delegate('a', 'click', function (event, data) { 
+        event.preventDefault(); 
+    });
 
-$('#assets_tree').delegate('a', 'click', function (event, data) { 
-    event.preventDefault(); 
-});
+    $('#assets_tree').delegate('a', 'dblclick', function(e) {
+        $('#assets_tree').jstree('open_node', $(this).parent());
+    });
 
-$('#assets_tree').delegate('a', 'dblclick', function(e) {
-    $('#assets_tree').jstree('open_node', $(this).parent());
 });
-
 </script>
+{% block assets_compressed_javascripts %}
+<script>
+$(document).ready(function () {
+    $('#apply_filter').click(function() {
+        PARAMS.stations = $('button#show_stations').hasClass('active');
+        PARAMS.space = $('button#show_space').hasClass('active');
+        
+        var divisionsBtns = $('#division_buttons button.active');
+        var divisions = '';
+        for (var i=0 ; i < divisionsBtns.length ; i++) {
+            divisions += ',' + divisionsBtns[i].id;
+        }
+        if (divisions.length != 0) {
+            divisions = divisions.substring(1);
+        }
+        PARAMS.divisions = divisions;
+        $('#assets_tree').jstree('close_all');
+        $('#assets_tree').jstree('refresh');
+    });
+    
+    $('#reset_filter').click(function() {
+        $('#space_buttons button').addClass('active');
+        $('#division_buttons button').addClass('active');
+        PARAMS.stations = true;
+        PARAMS.space = true;
+        PARAMS.stations = true;
+        var divisionsBtns = $('#division_buttons button');
+        var divisions = '';
+        for (var i=0 ; i < divisionsBtns.length ; i++) {
+            divisions += ',' + divisionsBtns[i].id;
+        }
+        if (divisions.length != 0) {
+            divisions = divisions.substring(1);
+        }
+        PARAMS.divisions = divisions;
+        $('#assets_tree').jstree('close_all');
+        $('#assets_tree').jstree('refresh');
+    });
+});
+</script>
+{% endblock %}
 {% endblock %}
 

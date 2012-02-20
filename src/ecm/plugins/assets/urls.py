@@ -39,6 +39,7 @@ urlpatterns += patterns('ecm.plugins.assets.views.diff',
     ###########################################################################
     # ASSET DIFF VIEWS
     (r'^changes/$',                                      'last_date'),
+    (r'^changes/dates/$',                                'get_dates'),
     (r'^changes/' + DATE + r'/$',                        'root'),
     (r'^changes/' + DATE + r'/data/$',                   'systems_data'),
     (r'^changes/' + DATE + r'/(\d+)/data/$',             'stations_data'),

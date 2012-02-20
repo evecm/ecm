@@ -1,22 +1,6 @@
-{% extends "base.html" %}
+{% extends "assets.html" %}
 
 {% block headtitle %}Asset Changes on {{ date }}{% endblock %}
-
-{% block javascripts %}
-<script type="text/javascript">
-SHOW_DIVISIONS = "{{ divisions_str }}";
-SHOW_IN_SPACE = {% if show_in_space %}true{% else %}false{% endif %};
-SHOW_IN_STATIONS = {% if show_in_stations %}true{% else %}false{% endif %};
-SINCE_WEEKS = {{since_weeks}};
-TO_WEEKS = {{to_weeks}};
-DATE = "{{ date_str }}";
-</script>
-{% endblock %}
-
-{% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jstree.js"></script>
-<script type="text/javascript" src="/s/assets/js/asset_changes_tree.js"></script>
-{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -25,47 +9,95 @@ DATE = "{{ date_str }}";
 <li><a href="/assets/changes/{{ date_str }}" >{{ date|ecm_datetime }}</a></li>
 {% endblock %}
 
-{% block main_content %}
+{% block title %}
 <div>
-    <h1 class="pagetitle">Asset Changes on <select id="date_selector" class="date_selector">
-        {% for d in dates %}
+  <h1 class="pagetitle">Asset Changes on
+    <small>
+      <select id="date_selector" class="date_selector">{% for d in dates %}
         <option value="{{ d.value }}" {% if d.value == date_str %}selected="selected"{% endif %}>{{ d.show|ecm_datetime }}</option>
-        {% endfor %}
-    </select>
-</h1>
+      {% endfor %}</select>
+    </small>
+  </h1>
 </div>
-
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="submit" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset Search" />
-    <input type="button" class="button" id="expand_all"   value="Expand All" />
-    <input type="button" class="button" id="close_all"   value="Collapse All" />
-</form>
-
-<form id="filter_form" class="filter_form" >
-    {% for h in hangars %}
-    <div title="Press ctrl + click to select only one" >
-        <input type="checkbox" id="{{ h.hangarID }}" value="{{ h.hangarID }}" class="hangar-checkbox"
-        {% if h.checked %}checked="true"{% endif %} />
-        <span class="checkbox-name">{{ h.name }}</span>
-    </div>
-    {% endfor %}
-    <br>
-    <div title="Press ctrl + click to select only one" >
-        <input type="checkbox" id="show_stations" value="show_stations" class="space-checkbox"
-        {% if show_in_stations %}checked="true"{% endif %} />
-        <span class="checkbox-name">In Station</span>
-    </div>
-    <div title="Press ctrl + click to select only one" >
-        <input type="checkbox" id="show_space" value="show_space" class="space-checkbox"
-        {% if show_in_space %}checked="true"{% endif %} />
-        <span class="checkbox-name">In Space</span>
-    </div>
-    <div><input type="button" class="button" id="apply_filter" value="Apply Filter" /></div>
-    <div><input type="button" class="button" id="reset_filter" value="Reset Filter" /></div>
-</form>
-
-<div id="assets_tree"></div>
-
 {% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+BASE_URL = '/assets/changes/{{ date_str }}/';
+DATE = '{{ date_str }}';
+PARAMS = {
+    stations: true,
+    space: true,
+    since_weeks: {{since_weeks}},
+    to_weeks: {{to_weeks}},
+    divisions: '{%for h in hangars%}{{h.hangarID}}{%if not forloop.last%},{%endif%}{%endfor%}',
+};
+</script>
+{% endblock %}
+
+
+{% block assets_compressed_javascripts %}
+<script type="text/javascript">
+function updateDateSelector() {
+    $.getJSON('/assets/changes/dates/', PARAMS)
+     .success(function (data) {
+         var options = '';
+         var selected = '';
+         for (var i=0; i < data.length; i++) {
+             selected = data[i].value == DATE ? 'selected' : '';
+             options += '<option value="' + data[i].value + '" ' + selected + '>' + data[i].show + '</option>';
+         }
+         $('#date_selector').html(options);         
+     });
+}
+$(document).ready(function () {
+    $('#date_selector').change(function () {
+        DATE = $('#date_selector option:selected').val();
+        BASE_URL = '/assets/changes/' + DATE + '/';
+        $('#assets_tree').jstree('close_all');
+        $('#assets_tree').jstree('refresh');
+    });
+
+    $('#apply_filter').click(function() {
+        PARAMS.stations = $('button#show_stations').hasClass('active');
+        PARAMS.space = $('button#show_space').hasClass('active');
+        
+        var divisionsBtns = $('#division_buttons button.active');
+        var divisions = '';
+        for (var i=0 ; i < divisionsBtns.length ; i++) {
+            divisions += ',' + divisionsBtns[i].id;
+        }
+        if (divisions.length != 0) {
+            divisions = divisions.substring(1);
+        }
+        PARAMS.divisions = divisions;
+        updateDateSelector();
+        $('#assets_tree').jstree('close_all');
+        $('#assets_tree').jstree('refresh');
+    });
+
+    $('#reset_filter').click(function() {
+        $('#space_buttons button').addClass('active');
+        $('#division_buttons button').addClass('active');
+        PARAMS.stations = true;
+        PARAMS.space = true;
+        PARAMS.stations = true;
+        var divisionsBtns = $('#division_buttons button');
+        var divisions = '';
+        for (var i=0 ; i < divisionsBtns.length ; i++) {
+            divisions += ',' + divisionsBtns[i].id;
+        }
+        if (divisions.length != 0) {
+            divisions = divisions.substring(1);
+        }
+        PARAMS.divisions = divisions;
+        updateDateSelector();
+        $('#assets_tree').jstree('close_all');
+        $('#assets_tree').jstree('refresh');
+    });
+});
+</script>
+{% endblock %}
+
+
+
