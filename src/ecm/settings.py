@@ -15,14 +15,14 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2010-01-24"
-__author__ = "diabeteman"
+__date__ = '2010-01-24'
+__author__ = 'diabeteman'
 
 import os.path
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 def resolvePath(relativePath):
-    return os.path.abspath(os.path.join(ROOT, relativePath)).replace("\\", "/")
+    return os.path.abspath(os.path.join(ROOT, relativePath)).replace('\\', '/')
 
 ###############################################################################
 ################
@@ -66,15 +66,15 @@ SITE_ID = 1
 ADMINS = ()
 # for development, you can use python dummy smtp server, run this command:
 # >>> python -m smtpd -n -c DebuggingServer localhost:25
-EMAIL_HOST = "localhost"
+EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 EMAIL_USE_TLS = False
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 # put a real email address here, if not, emails sent by the server
 # will be discarded by the relay servers
-DEFAULT_FROM_EMAIL = ""
-SERVER_EMAIL = ""
+DEFAULT_FROM_EMAIL = ''
+SERVER_EMAIL = ''
 
 
 ##################
@@ -95,7 +95,7 @@ APPEND_SLASH = True
 # target dir for the 'collectstatic' command
 STATIC_ROOT = resolvePath('../static/')
 # value of the {{ STATIC_URL }} variable in templates
-STATIC_URL = '/s/'
+STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 STATICFILES_DIRS = (
     # aside from looking in each django app, the 'collectstatic' command
@@ -130,10 +130,12 @@ TEMPLATE_DIRS = (
     resolvePath('templates/'),
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "ecm.views.context_processors.corporation_name",
-    "ecm.views.context_processors.menu",
-    "ecm.views.context_processors.version",
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.static',
+    
+    'ecm.views.context_processors.corporation_name',
+    'ecm.views.context_processors.menu',
+    'ecm.views.context_processors.version',
 )
 
 ########

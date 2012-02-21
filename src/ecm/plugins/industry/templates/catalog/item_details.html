@@ -3,7 +3,7 @@
 {% block headtitle %}{{item.typeName}}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 {% endblock %}
 
 
@@ -96,7 +96,7 @@ NEW_BP = '<tr id="%id">' +
 {% endblock %}
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
 <script>
 $(document).ready(function() {
     $('#availability_checkbox').click(function () {

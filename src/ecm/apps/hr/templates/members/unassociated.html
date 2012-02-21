@@ -37,8 +37,8 @@ COOKIE_NAME = 'ecm_unassociated_table_';
 {% endblock %}
 
 {% block hr_compressed_javascripts %}
-<script type="text/javascript" src="/s/hr/js/members_table.js"></script>
-<script type="text/javascript" src="/s/ecm/js/lib/ZeroClipboard.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/ZeroClipboard.js"></script>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -60,7 +60,7 @@ COOKIE_NAME = 'ecm_unassociated_table_';
 <div id="clip_container" class="container" style="position:relative">
     <div id="copy_to_clip" class="button"  >Copy to Clipboard...</div>
 </div>
-<img id="loading_gif" alt="loading..." src="/s/ecm/img/throbber.gif" />
+<img id="loading_gif" alt="loading..." src="{{ STATIC_URL }}ecm/img/throbber.gif" />
 
 <script type="text/javascript">
 $("#loading_gif").hide();

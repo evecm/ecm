@@ -5,8 +5,8 @@
 
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/hr/css/classes.css" />
-<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 {% endblock %}
 
 {% block javascripts %}
@@ -55,6 +55,6 @@ AJAX_URL = '/industry/orders/all/data/';
 {% endblock %}
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript"  src="/s/industry/js/orders_list.js" ></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript"  src="{{ STATIC_URL }}industry/js/orders_list.js" ></script>
 {% endblock %}

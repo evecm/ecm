@@ -35,9 +35,9 @@ $(document).ready(function() {
             }
             var admin = aData[1];
             if (admin == 'true') {
-                $('td:eq(1)', nRow).html('<img src="/s/admin/img/admin/icon-yes.gif" alt="True">');
+                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-yes.gif" alt="True">');
             } else {
-                $('td:eq(1)', nRow).html('<img src="/s/admin/img/admin/icon-no.gif" alt="False">');
+                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-no.gif" alt="False">');
             }
             return nRow;
         },

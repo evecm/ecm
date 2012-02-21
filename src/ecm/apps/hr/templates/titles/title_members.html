@@ -3,7 +3,7 @@
 {% block headtitle %}Title Members - {{ title.titleName }}{% endblock %}
 
 {% block hr_stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.cluetip.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.cluetip.css" />
 {% endblock %}
 
 {% block javascripts %}
@@ -16,9 +16,9 @@ COOKIE_NAME = 'ecm_title_members_table_';
 {% endblock %}
 
 {% block hr_compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
-<script type="text/javascript" src="/s/hr/js/members_table.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.cluetip.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
 {% endblock %}
 
 {% block breadcrumbs %}

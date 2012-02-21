@@ -58,9 +58,9 @@ $(document).ready(function() {
          ],
         fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
             if (aData[0] == "true") {
-                $('td:eq(0)', nRow).html('<img src="/s/ecm/img/plus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="/static/ecm/img/plus.png"></img>');
             } else {
-                $('td:eq(0)', nRow).html('<img src="/s/ecm/img/minus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="/static/ecm/img/minus.png"></img>');
             }
             return nRow;
         }

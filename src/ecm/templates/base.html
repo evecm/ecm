@@ -18,15 +18,15 @@
   <![endif]-->
   <title>ECM - {% block headtitle %}{% endblock %}</title>
 {% compress css %}
-  <link rel="stylesheet" type="text/css" href="/s/ecm/css/bootstrap.css" />
-  <link rel="stylesheet" type="text/css" href="/s/ecm/css/bootstrap-responsive.css" />
-  <link rel="stylesheet" type="text/css" href="/s/ecm/css/dataTables.bootstrap.css" />
-  <link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.cluetip.css" />
-  <link rel="stylesheet" type="text/css" href="/s/ecm/css/bootstrap-ecm.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/bootstrap-responsive.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/dataTables.bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.cluetip.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/bootstrap-ecm.css" />
 {% block stylesheets %}{% endblock %}
 {% endcompress %}
-  <link rel="icon" type="image/png" href="/s/ecm/img/favicon.png" />
-  <link rel="shortcut icon" type="image/png" href="/s/ecm/img/favicon.png" />
+  <link rel="icon" type="image/png" href="{{ STATIC_URL }}ecm/img/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="{{ STATIC_URL }}ecm/img/favicon.png" />
 </head>
 <body>
   <!-- NAVBAR -->
@@ -98,14 +98,14 @@
 
 <!-- all javascript at the end to load pages faster -->
 {% block javascripts %}{% endblock %}
-{% compress js %}<script type="text/javascript" src="/s/ecm/js/lib/jquery.js"></script>
-  <script type="text/javascript" src="/s/ecm/js/bootstrap.js"></script>
-  <script type="text/javascript" src="/s/ecm/js/csrf.js"></script>
-  <script type="text/javascript" src="/s/ecm/js/ecm_lib.js"></script>
-  <script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-  <script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-  <script type="text/javascript" src="/s/ecm/js/dataTables.bootstrap.js"></script>
-  <script type="text/javascript" src="/s/ecm/js/lib/jquery.cluetip.js"></script>
+{% compress js %}<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/bootstrap.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/csrf.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/ecm_lib.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/dataTables.bootstrap.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.cluetip.js"></script>
 {% block compressed_javascripts %}{% endblock %}{% endcompress %}
 </body>
 </html>

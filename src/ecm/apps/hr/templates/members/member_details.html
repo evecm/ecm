@@ -10,8 +10,8 @@ MEMBER_ID = "{{ member.characterID }}";
 {% endblock %}
 
 {% block hr_compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript" src="/s/hr/js/member_access_changes_table.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/member_access_changes_table.js"></script>
 {% endblock %}
 
 

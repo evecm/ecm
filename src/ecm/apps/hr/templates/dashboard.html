@@ -12,8 +12,8 @@ DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 {% endblock %}
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="/s/hr/js/access_distribution_chart.js" ></script>
-<script type="text/javascript" src="/s/hr/js/character_positions_chart.js" ></script>
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/access_distribution_chart.js" ></script>
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/character_positions_chart.js" ></script>
 {% endblock %}
 
 {% block breadcrumbs %}

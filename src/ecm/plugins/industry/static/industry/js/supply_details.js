@@ -50,7 +50,7 @@ $(document).ready(function() {
     });
     $('#update_button').click(function () {
         var oldPrice = $('input#price').html();
-        $('td#price').html('<img src="/s/ecm/img/throbber.gif"/>');
+        $('td#price').html('<img src="/static/ecm/img/throbber.gif"/>');
         $.get('/industry/catalog/supplies/' + SUPPLY_ID + '/updateprice/')
          .success(function (data) {
             $('td#price').html(data);

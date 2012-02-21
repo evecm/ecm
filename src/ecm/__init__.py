@@ -14,12 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-__author__ = "diabeteman"
 
-__date__ = "2011-05-17"
+__author__ = 'diabeteman'
+__date__ = '2011-05-17'
 
-TIMESTAMP = "%(timestamp)s"
-VERSION = "2.0.alpha.2"
+TIMESTAMP = '%(timestamp)s'
+VERSION = '2.0.alpha.3'
 
 def get_full_version():
     return  VERSION + '.' + TIMESTAMP

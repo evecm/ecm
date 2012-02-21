@@ -3,8 +3,8 @@
 {% block headtitle %}Create new Order{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.autocomplete.css" />
-<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 <style type="text/css">
 #eft-modal {display: none;}
 .throbber {display:none;}
@@ -34,7 +34,7 @@
     <a class="btn btn-primary" data-toggle="modal" data-target="#eft-modal" ><i class="icon-plane icon-white"></i> Import EFT Fitting</a>
 </form>
 
-<img id="throbber-eft" class="throbber" src="/s/ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
+<img id="throbber-eft" class="throbber" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
 
 {% if order %}
 <form method="post" action="/shop/orders/{{order.id}}/modify/" id="items_form" >{% else %}
@@ -75,7 +75,7 @@
   <p style="font-size: 150%;"><span class="bold">TOTAL PRICE:</span>  <span id="total_price">0.0 ISK</span></p>
 
   <button class="btn btn-success" type="submit"><i class="icon-shopping-cart icon-white"></i> Submit Order</button>
-  <img id="throbber-submit" class="throbber" src="/s/ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
+  <img id="throbber-submit" class="throbber" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
 </form>
 
 <div class="modal" id="eft-modal">
@@ -97,7 +97,7 @@
 
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.autocomplete.js"></script>
 <script>
 NEW_ITEM =
 '<tr id="%typeID">' +

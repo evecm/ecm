@@ -3,9 +3,9 @@
 {% block headtitle %}Contributions to Corp tax{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery-ui-1.8.13.custom.css" />
-<link rel="stylesheet" type="text/css" href="/s/accounting/css/classes.css" />
-<link rel="stylesheet" type="text/css" href="/s/hr/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery-ui-1.8.13.custom.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
 {% endblock %}
 
 
@@ -90,7 +90,7 @@
 
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.ui.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.ui.js"></script>
 <script type="text/javascript">
 FROM_DATE = "{{ from_date }}";
 TO_DATE = "{{ to_date }}";

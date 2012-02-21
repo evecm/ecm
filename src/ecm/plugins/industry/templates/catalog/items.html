@@ -3,7 +3,7 @@
 {% block headtitle %}Items Catalog{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -112,7 +112,7 @@ $(document).ready(function() {
                 var _this = $(this);
                 var id = _this.attr('id');
                 var oldPrice = _this.html();
-                _this.html('<img src="/s/ecm/img/throbber.gif"/>');
+                _this.html('<img src="{{ STATIC_URL }}ecm/img/throbber.gif"/>');
                 $.get('/industry/catalog/items/' + id + '/updateprodcost/')
                  .success(function (data) {
                    if (data != 'None')
@@ -132,7 +132,7 @@ $(document).ready(function() {
                 var _this = $(this);
                 var id = _this.attr('id');
                 var oldPrice = _this.html();
-                _this.html('<img src="/s/ecm/img/throbber.gif"/>');
+                _this.html('<img src="{{ STATIC_URL }}ecm/img/throbber.gif"/>');
                 $.get('/industry/catalog/items/' + id + '/updatepubprice/')
                  .success(function (data) {
                      _this.html(data);

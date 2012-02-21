@@ -5,10 +5,13 @@
     DocumentRoot /srv/eve-corp-management
     ServerName ecm.yourdomain.com
 
-    WSGIScriptAlias / /srv/eve-corp-management/scripts/apache_mod_wsgi.py
-    WSGIDaemonProcess mod_wsgi_ecm processes=1 threads=25
-    WSGIProcessGroup mod_wsgi_ecm
-    WSGIPassAuthorization On
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+
+    ProxyPass /static/ !
+    ProxyPass / http://localhost:8000/
 
     <Directory /srv/eve-corp-management>
         Order deny,allow

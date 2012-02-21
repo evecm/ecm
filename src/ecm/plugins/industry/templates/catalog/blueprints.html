@@ -3,8 +3,8 @@
 {% block headtitle %}Blueprints Catalog{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="/s/ecm/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="/s/industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 {% endblock %}
 
 {% block javascripts %}
@@ -61,8 +61,8 @@ DISPLAY_MODE = 'all';
 {% endblock %}
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/s/ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript"  src="/s/industry/js/blueprints_table.js" ></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
+<script type="text/javascript"  src="{{ STATIC_URL }}industry/js/blueprints_table.js" ></script>
 {% endblock %}
 
