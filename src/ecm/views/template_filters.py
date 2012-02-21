@@ -19,6 +19,7 @@ __date__ = "2011 9 10"
 __author__ = "diabeteman"
 
 from django.template.defaultfilters import register
+from datetime import timedelta
 from ecm.core import utils
 
 @register.filter(name='ecm_date')
@@ -32,6 +33,16 @@ def format_date(value):
 def format_datetime(value):
     try:
         return unicode(utils.print_time_min(value))
+    except:
+        return unicode(value)
+
+@register.filter(name='ecm_time')
+def format_time(value):
+    try:
+        if isinstance(value, timedelta):
+            return unicode(utils.print_date(value))
+        else:
+            return unicode(utils.print_date(timedelta(seconds=value)))
     except:
         return unicode(value)
 

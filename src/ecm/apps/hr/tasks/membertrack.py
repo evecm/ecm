@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.hr.models.member import MemberSession
 
 __date__ = "2010-02-09"
 __author__ = "diabeteman"
@@ -69,6 +70,14 @@ def update():
 
     for member in membersApi.members:
         m = parseOneMember(member=member)
+        session = MemberSession(character_id = m.characterID,
+                                session_begin = m.lastLogin,
+                                session_end = m.lastLogoff,
+                                session_seconds = (m.lastLogoff-m.lastLogin).seconds)
+        dbsession = MemberSession.objects.filter(character_id = m.characterID,
+                                                 session_begin = m.lastLogin)
+        if len(dbsession) == 0:
+            session.save()
         newMembers[m] = m
 
     diffs, leaved = getDiffs(oldMembers, newMembers, currentTime)

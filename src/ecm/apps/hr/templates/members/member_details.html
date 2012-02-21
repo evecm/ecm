@@ -35,7 +35,10 @@ MEMBER_ID = "{{ member.characterID }}";
             <p>
             <span class="bold">Corp Date:</span> {{ member.corpDate|ecm_datetime }}<br/>
             <span class="bold">Last Login:</span> {{ member.lastLogin|ecm_datetime }}<br/>
-            <span class="bold">Last Logoff:</span> {{ member.lastLogoff|ecm_datetime }}
+            <span class="bold">Last Logoff:</span> {{ member.lastLogoff|ecm_datetime }}<br />
+            <span class="bold">Avg. Session Duration (30 Days):</span> {{ sessiondata.sessionlength|ecm_time }}<br />
+            <span class="bold">Logged in (last 30 Days):</span> {{ sessiondata.30days|ecm_time }}<br />
+            <span class="bold">Logged in (last 7 Days):</span> {{ sessiondata.7days|ecm_time }}
             </p>
             <p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ member.date|ecm_datetime }}</p>
             <p><span class="bold">Owned by:</span> {{ member.owner_permalink|safe }}</p>
@@ -107,6 +110,26 @@ None
     </td>
   </tr>
 </table>
+
+<h2>Login-History</h2>
+
+<table class="table display">
+  <tr>
+    <th class="top" scope="col">Login</th>
+    <th class="top" scope="col">Logout</th>
+    <th class="top" scope="col">Duration</th>
+  </tr>
+  {% for login in logins %}
+  	<tr>
+	    <td>{{ login.session_begin|ecm_datetime }}</td>
+	    <td>{{ login.session_end|ecm_datetime }}</td>
+	    <td>{{ login.session_seconds|ecm_time }}</td>
+	</tr>
+    {% empty %}
+    <tr><td colspan="3">No Data.</td></tr>
+  {% endfor %}
+</table>
+
 
 <h2>Security Access Changes</h2>
 

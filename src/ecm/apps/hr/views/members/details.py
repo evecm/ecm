@@ -14,6 +14,10 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.hr.models.member import MemberSession
+from datetime import timedelta
+from django.utils.datetime_safe import datetime
+from django.db.models.aggregates import Avg, Sum
 
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
@@ -44,13 +48,32 @@ logger = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 @check_user_access()
 def details(request, characterID):
+    avg_session = {}
+    avg_session['sessionlength'] = 0
+    avg_session['30days'] = 0
+    avg_session['7days'] = 0
     try:
         colorThresholds = ColorThreshold.objects.all().order_by("threshold")
         member = Member.objects.get(characterID=int(characterID))
         member.base = db.resolveLocationName(member.baseID)[0]
         member.color = get_access_color(member.accessLvl, colorThresholds)
         member.roles_no_director = member.roles.exclude(roleID=1) # exclude 'director'
-
+        avg_session['sessionlength'] = timedelta(seconds=
+                MemberSession.objects.filter(character_id = member.characterID,
+                                             session_begin__gt = (datetime.now() - timedelta(30))
+                                            )
+                                    .aggregate(sessionlength=Avg('session_seconds'))['sessionlength'])
+        avg_session['30days'] = timedelta(seconds=
+                MemberSession.objects.filter(character_id = member.characterID,
+                                             session_begin__gt = (datetime.now() - timedelta(30))
+                                            )
+                                          .aggregate(length=Sum('session_seconds'))['length'])
+        avg_session['7days'] = timedelta(seconds=
+                MemberSession.objects.filter(character_id = member.characterID,
+                                             session_begin__gt = (datetime.now() - timedelta(7))
+                                            )
+                                          .aggregate(length=Sum('session_seconds'))['length'])
+        loginhistory = MemberSession.objects.filter(character_id=member.characterID).order_by('-session_begin')[:10]
         if member.corped:
             member.date = getScanDate(Member)
         else:
@@ -64,7 +87,8 @@ def details(request, characterID):
     except Setting.DoesNotExist:
         killboardUrl = None
 
-    data = { 'member' : member, 'killboardUrl': killboardUrl }
+    data = { 'member' : member, 'killboardUrl': killboardUrl,
+            'sessiondata': avg_session, 'logins': loginhistory}
     return render_to_response("members/member_details.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------

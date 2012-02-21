@@ -159,3 +159,37 @@ class MemberDiff(models.Model):
         else:
             return '%s leaved' % self.name
 
+#------------------------------------------------------------------------------
+class MemberSession(models.Model):
+    """
+    Represents the arrival or departure of a member of the corporation
+    """
+    class Meta:
+        app_label = 'hr'
+        ordering = ['session_begin']
+
+    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
+    #TODO: somehow use FK's
+    #member = models.ForeignKey(Member, related_name="diffs")
+    #no defaults! forcing valid entries!
+    character_id = models.BigIntegerField(db_index=True)
+    session_begin = models.DateTimeField(db_index=True)
+    session_end = models.DateTimeField()
+    session_seconds = models.BigIntegerField(default=0)
+    
+    """
+    @property
+    def url(self):
+        return '/%s/members/%d/' % (app_prefix, self.member_id)
+
+    @property
+    def permalink(self):
+        return '<a href="%s" class="member">%s</a>' % (self.url, self.name)
+
+    """
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __hash__(self):
+        return self.id
+
