@@ -66,7 +66,9 @@ PARAMS = {
 
 {% block compressed_javascripts %}
 <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jstree.js"></script>
-<script>
+{% endblock %}
+{% block post_javascripts %}
+<script type="text/javascript">
 $(document).ready(function () {
 
     $('#assets_tree').jstree({
@@ -79,7 +81,7 @@ $(document).ready(function () {
             select_limit : 1
         },
         themes : {
-            url : '/s/assets/css/jstree.css',
+            url : '{{ STATIC_URL }}assets/css/jstree.css',
             dots : false
         },
         search : {
@@ -98,7 +100,7 @@ $(document).ready(function () {
                 system : {
                     class : 'system-row',
                     icon : {
-                        image : '/s/assets/img/system.png'
+                        image : '{{ STATIC_URL }}assets/img/system.png'
                     },
                     valid_children : [ 'array', 'station' ],
                     max_depth : 5,
@@ -108,7 +110,7 @@ $(document).ready(function () {
                 array : {
                     class : 'hangar-row',
                     icon : {
-                        image : '/s/assets/img/array.png'
+                        image : '{{ STATIC_URL }}assets/img/array.png'
                     },
                     valid_children : [ 'hangar' ],
                     max_depth : 4,
@@ -118,7 +120,7 @@ $(document).ready(function () {
                 station : {
                     class : 'station-row',
                     icon : {
-                        image : '/s/assets/img/station.png'
+                        image : '{{ STATIC_URL }}assets/img/station.png'
                     },
                     valid_children : [ 'hangar' ],
                     max_depth : 4,
@@ -128,7 +130,7 @@ $(document).ready(function () {
                 hangar : {
                     class : 'hangar-row',
                     icon : {
-                        image : '/s/assets/img/hangar.png'
+                        image : '{{ STATIC_URL }}assets/img/hangar.png'
                     },
                     valid_children : [ 'can', 'mineral', 'ship',  'ammo', 'blueprint', 'item' ],
                     max_depth : 3,
@@ -137,7 +139,7 @@ $(document).ready(function () {
                 },
                 ship : {
                     icon : {
-                        image : '/s/assets/img/ship.png'
+                        image : '{{ STATIC_URL }}assets/img/ship.png'
                     },
                     valid_children : [ 'can', 'mineral', 'ship',  'ammo', 'blueprint', 'item' ],
                     max_depth : 2,
@@ -146,7 +148,7 @@ $(document).ready(function () {
                 },
                 can : {
                     icon : {
-                        image : '/s/assets/img/can.png'
+                        image : '{{ STATIC_URL }}assets/img/can.png'
                     },
                     valid_children : [ 'can', 'mineral', 'ship',  'ammo', 'blueprint', 'item' ],
                     max_depth : 1,
@@ -155,7 +157,7 @@ $(document).ready(function () {
                 },
                 item : {
                     icon : {
-                        image : '/s/assets/img/item.png'
+                        image : '{{ STATIC_URL }}assets/img/item.png'
                     },
                     valid_children : 'none',
                     max_depth : 0,
@@ -167,7 +169,7 @@ $(document).ready(function () {
                 },
                 mineral : {
                     icon : {
-                        image : '/s/assets/img/mineral.png'
+                        image : '{{ STATIC_URL }}assets/img/mineral.png'
                     },
                     valid_children : 'none',
                     max_depth : 0,
@@ -179,7 +181,7 @@ $(document).ready(function () {
                 },
                 blueprint : {
                     icon : {
-                        image : '/s/assets/img/blueprint.png'
+                        image : '{{ STATIC_URL }}assets/img/blueprint.png'
                     },
                     valid_children : 'none',
                     max_depth : 0,
@@ -191,7 +193,7 @@ $(document).ready(function () {
                 },
                 ammo : {
                     icon : {
-                        image : '/s/assets/img/ammo.png'
+                        image : '{{ STATIC_URL }}assets/img/ammo.png'
                     },
                     valid_children : 'none',
                     max_depth : 0,
@@ -203,7 +205,7 @@ $(document).ready(function () {
                 },
                 skill : {
                     icon : {
-                        image : '/s/assets/img/skill.png'
+                        image : '{{ STATIC_URL }}assets/img/skill.png'
                     },
                     valid_children : 'none',
                     max_depth : 0,
@@ -215,7 +217,7 @@ $(document).ready(function () {
                 },
                 added : {
                     icon : {
-                        image : '/s/assets/img/plus-tree-icon.png'
+                        image : '{{ STATIC_URL }}assets/img/plus-tree-icon.png'
                     },
                     valid_children : 'none',
                     max_depth : 0,
@@ -227,7 +229,7 @@ $(document).ready(function () {
                 },
                 removed : {
                     icon : {
-                        image : '/s/assets/img/minus-tree-icon.png'
+                        image : '{{ STATIC_URL }}assets/img/minus-tree-icon.png'
                     },
                     valid_children : 'none',
                     max_depth : 0,
@@ -314,8 +316,8 @@ $(document).ready(function () {
 
 });
 </script>
-{% block assets_compressed_javascripts %}
-<script>
+{% block assets_javascripts %}
+<script type="text/javascript" >
 $(document).ready(function () {
     $('#apply_filter').click(function() {
         PARAMS.stations = $('button#show_stations').hasClass('active');

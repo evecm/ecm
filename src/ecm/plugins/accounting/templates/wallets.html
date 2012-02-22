@@ -1,10 +1,11 @@
-{% extends "accounting_base.html" %}
+{% extends "base.html" %}
 
 {% block headtitle %}Corporation Wallets{% endblock %}
 
-{% block accounting_compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}accounting/js/wallets_table.js"></script>
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />
 {% endblock %}
+
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
@@ -12,9 +13,11 @@
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Corporation Wallets <span class="time">- last update {{ scan_date }}</span></h1>
+<div class="page-header">
+  <h1>Corporation Wallets <small>last update {{ scan_date }}</small></h1>
+</div>
 
-<table class="table display" id="wallets_table" style="width: 50%;">
+<table class="table table-bordered" id="wallets_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Wallet</th>
@@ -35,3 +38,32 @@
 
 </table>
 {% endblock %}
+
+
+{% block post_javascripts %}
+<script type="text/javascript">
+//disable multi column sorting
+$('#history_table thead th').click(function(event) {
+    if (!$(event.target).hasClass('sorthandle')) {
+        event.shiftKey = false;
+    }
+});
+
+// dataTable setup
+$(document).ready(function() {
+    table = $('#wallets_table').dataTable( {
+        bProcessing: true,
+        bServerSide: true,
+        iDisplayLength: 25,
+        sAjaxSource: "/accounting/wallets/data/",
+        sDom: 'rt',
+        aoColumns: [
+            { /* Wallet */    sType: "html"    },
+            { /* Balance */   sType: "string",  sClass : "right" },
+        ]
+    });
+});
+</script>
+{% endblock %}
+
+

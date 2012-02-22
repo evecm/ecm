@@ -2,45 +2,6 @@
 
 {% block headtitle %}Unassociated Members{% endblock %}
 
-{% block hr_stylesheets %}
-<style type="text/css">
-div.container {
-float:left;
-}
-
-div.button {
-    float:left;
-    margin:10px auto 5px auto;
-    padding:3px 5px;
-    background:rgb(230,230,230);
-    border:solid 1px rgb(150,150,150);
-    text-align:center;
-    font-family:verdana,arial,sans-serif;
-    color:rgb(150,150,150); font-size:110%;
-}
-div.button.hover {
-    cursor:pointer;
-    border:solid 1px rgb(80,80,80);
-    background:rgb(220,220,220);
-    color:rgb(80,80,80);
-}
-</style>
-{% endblock %}
-
-{% block javascripts %}
-<script type="text/javascript">
-DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
-COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = '/hr/members/unassociated/data/';
-COOKIE_NAME = 'ecm_unassociated_table_';
-</script>
-{% endblock %}
-
-{% block hr_compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/ZeroClipboard.js"></script>
-{% endblock %}
-
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
@@ -49,43 +10,20 @@ COOKIE_NAME = 'ecm_unassociated_table_';
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Unassociated Member List <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
-
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
-</form>
-
-<div id="clip_container" class="container" style="position:relative">
-    <div id="copy_to_clip" class="button"  >Copy to Clipboard...</div>
+<div class="page-header">
+  <h1>Unassociated Member List <small>last update {{ scan_date|ecm_datetime }}</small></h1>
 </div>
-<img id="loading_gif" alt="loading..." src="{{ STATIC_URL }}ecm/img/throbber.gif" />
 
-<script type="text/javascript">
-$("#loading_gif").hide();
-ZeroClipboard.setMoviePath("/s/ecm/js/lib/ZeroClipboard.swf");
-var clip = new ZeroClipboard.Client();
-
-clip.setHandCursor( true );
-clip.setCSSEffects( true );
-
-function callback(data) {
-    $("#loading_gif").hide();
-    clip.setText(data);
-}
-
-clip.addEventListener('complete', function(client, text) {
-    alert("Data has been copied to the clipboard.");
-});
-
-clip.addEventListener('mouseUp', function(client) {
-    $("#loading_gif").show();
-    $.get("/hr/members/unassociated/clip/", callback);
-});
-
-clip.glue('copy_to_clip' , "clip_container");
-</script>
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+    <button class="btn btn-small btn-primary" id="copy_to_clip">Copy to clipboard</button>
+  </div>
+</form>
 
 <table class="table display" id="members_table">
   <thead>
@@ -119,5 +57,32 @@ clip.glue('copy_to_clip' , "clip_container");
   </tfoot>
 
 </table>
+{% endblock %}
 
+
+{% block javascripts %}
+<script type="text/javascript">
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+AJAX_URL = '/hr/members/unassociated/data/';
+COOKIE_NAME = 'ecm_unassociated_table_';
+</script>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
+{% endblock %}
+
+{% block post_javascripts %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#copy_to_clip').click(function (event) {
+        event.preventDefault();
+        $.get('/hr/members/unassociated/clip/')
+         .success(function (data) {
+             window.prompt ('Copy to clipboard: Ctrl+C, Enter', data);
+         });
+    });
+});
+</script>
 {% endblock %}

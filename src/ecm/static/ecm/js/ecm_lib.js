@@ -41,7 +41,9 @@ function getCssBgColor(cssSelector) {
 
 
 function colorToHex(color) {
-    if (color.substr(0, 1) === '#') {
+    if (color === '') {
+        return 'transparent';
+    } else if (color.substr(0, 1) === '#') {
         return color;
     }
     var digits = /(.*?)rgb\((\d+), (\d+), (\d+)\)/.exec(color);
