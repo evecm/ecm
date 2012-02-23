@@ -2,40 +2,27 @@
 
 {% block headtitle %}Title Details - {{ title.titleName }}{% endblock %}
 
-{% block javascripts %}
-<script type="text/javascript">
-COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-TITLE_ID = "{{ title.titleID }}";
-</script>
-{% endblock %}
-
-{% block hr_compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/title_details_table.js"></script>
-{% endblock %}
-
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/titles/">Titles</a></li>
-<li><a href="/hr/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
+<li class="active"><a href="/hr/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">{{ title.titleName }}{% if title.lastModified %}<span class="time"> - last modification {{ title.lastModified|ecm_datetime }}</span>{% endif %}</h1>
+<div class="page-header">
+  <h1>{{ title.titleName }}
+  {% if title.lastModified %}<small>last modification {{ title.lastModified|ecm_datetime }}</small>{% endif %}
+  </h1>
+</div>
 
-<a href="/hr/titles/{{ title.titleID }}/members/" style="font-size:110%;" >Show all {{ member_count }} members having this title</a>
+<a href="/hr/titles/{{ title.titleID }}/members/">Show all {{ member_count }} members having this title</a>
 
 <h2>Access Level</h2>
-
-<table class="table" >
-  <tr class="row">
-    <td class="row-{{ title.color }}"><b>{{ title.accessLvl }}</b></td>
-  </tr>
-</table>
+<div class="row-fluid row-{{ title.color }}"><strong>{{ title.accessLvl }}</strong></div>
 
 <h2>Roles</h2>
-
-<table class="table display" id="title_composition_table">
+<table class="table table-bordered table-condensed" id="title_composition_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Role</th>
@@ -60,7 +47,7 @@ TITLE_ID = "{{ title.titleID }}";
 <h2>Modifications</h2>
 
 {% if title.lastModified %}
-<table class="table display" id="title_compo_diff_table">
+<table class="table table-bordered table-condensed" id="title_compo_diff_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Change</th>
@@ -86,5 +73,66 @@ TITLE_ID = "{{ title.titleID }}";
 {% else %}
 <p>No changes</p>
 {% endif %}
+{% endblock %}
 
+{% block post_javascripts %}
+<script type="text/javascript">
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+
+// title_composition_table dataTable setup
+$(document).ready(function() {
+    $('#title_composition_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        iDisplayLength : 10,
+        sAjaxSource : "/hr/titles/{{ title.titleID }}/composition/data/",
+        aoColumns: [
+            {sTitle: "Role",         sWidth: "50%", sType: "html" ,   bSortable : false},
+            {sTitle: "Category",     sWidth: "30%", sType: "html" ,   bSortable : false},
+            {sTitle: "Access Level", sWidth: "20%", sType: "numeric", bSortable : false}
+        ],
+        fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            // apply color to all access level cells
+            accessLvl = aData[2];
+            $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
+            return nRow;
+        }
+    }));
+    
+  //disable multi column sorting
+    $('#title_composition_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+});
+
+{% if title.lastModified %}
+// title_compo_diff_table dataTable setup
+$(document).ready(function() {
+    $('#title_compo_diff_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        iDisplayLength : 10,
+        sAjaxSource : "/hr/titles/{{ title.titleID }}/compodiff/data/",
+        aoColumns: [
+            {sTitle: "Change",            sWidth: "10%", sType: "html",    bSortable : false},
+            {sTitle: "Role",              sWidth: "40%", sType: "html",    bSortable : false},
+            {sTitle: "Category",          sWidth: "25%", sType: "html",    bSortable : false},
+            {sTitle: "Modification Date", sWidth: "25%", sType: "numeric", bSortable : false}
+         ],
+        fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            if (aData[0]) {
+                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/plus.png"></img>');
+            } else {
+                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"></img>');
+            }
+            return nRow;
+        }
+    }));
+    
+    $('#title_compo_diff_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+});
+{% endif %}
+</script>
 {% endblock %}

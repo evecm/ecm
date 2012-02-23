@@ -18,11 +18,6 @@
 __date__ = "2011-03-02"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 import httplib as http
 
 from django.shortcuts import render_to_response, redirect
@@ -31,6 +26,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, Http404
 from django.template.context import RequestContext as Ctx
 
+from ecm.views import datatable_ajax_data
 from ecm.apps.hr import NAME as app_prefix
 from ecm.apps.hr.models import Role, RoleType
 from ecm.apps.common.models import ColorThreshold
@@ -99,14 +95,7 @@ def role_type_data(request, role_typeName):
             "|".join(titles)
         ])
 
-    json_data = {
-        "sEcho" : sEcho,
-        "iTotalRecords" : len(roles),
-        "iTotalDisplayRecords" : len(roles),
-        "aaData" : roles
-    }
-
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(roles, sEcho)
 
 #------------------------------------------------------------------------------
 @check_user_access()

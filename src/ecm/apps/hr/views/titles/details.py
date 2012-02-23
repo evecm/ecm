@@ -18,14 +18,8 @@
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext as Ctx
 
@@ -34,7 +28,7 @@ from ecm.apps.hr.models import TitleComposition, TitleCompoDiff, Title
 from ecm.core import utils
 from ecm.core.utils import get_access_color
 from ecm.views.decorators import check_user_access
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, datatable_ajax_data
 
 
 
@@ -90,14 +84,7 @@ def composition_data(request, titleID):
             compo.role.get_access_lvl()
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_compos,
-        "iTotalDisplayRecords" : total_compos,
-        "aaData" : compo_list
-    }
-
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(compo_list, params.sEcho, total_compos)
 
 
 #------------------------------------------------------------------------------
@@ -124,11 +111,4 @@ def compo_diff_data(request, titleID):
             utils.print_time_min(diff.date)
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_diffs,
-        "iTotalDisplayRecords" : total_diffs,
-        "aaData" : diff_list
-    }
-
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(diff_list, params.sEcho, total_diffs)

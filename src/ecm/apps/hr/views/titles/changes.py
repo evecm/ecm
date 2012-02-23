@@ -18,23 +18,15 @@
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
 from ecm.apps.hr.models import TitleComposition, TitleCompoDiff
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params
+from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
 from ecm.core.utils import print_time_min
-
-
 
 
 #------------------------------------------------------------------------------
@@ -69,11 +61,4 @@ def changes_data(request):
             print_time_min(c.date)
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : count,
-        "iTotalDisplayRecords" : count,
-        "aaData" : change_list
-    }
-
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(change_list, params.sEcho, total=count)

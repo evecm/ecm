@@ -2,11 +2,18 @@
 
 {% block headtitle %}Unassociated Members{% endblock %}
 
+
+{% block hr_stylesheets %}
+<style type="text/css">
+#copy-modal {display: none;}
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/members/">Members</a></li>
-<li><a href="/hr/members/unassociated/">Unassociated</a></li>
+<li class="active"><a href="/hr/members/unassociated/">Unassociated</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -21,11 +28,11 @@
       <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
       <a class="btn btn-small" id="clear_search">Reset</a>
     </div>
-    <button class="btn btn-small btn-primary" id="copy_to_clip">Copy to clipboard</button>
+    <a class="btn btn-small btn-primary" data-toggle="modal" data-target="#copy-modal" id="copy_to_clip">Copy to clipboard</a>
   </div>
 </form>
 
-<table class="table display" id="members_table">
+<table class="table table-bordered table-condensed" id="members_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Name</th>
@@ -55,8 +62,17 @@
       <th style="display:none;">Titles</th>
     </tr>
   </tfoot>
-
 </table>
+
+<div class="modal" id="copy-modal">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">&times;</a>
+    <h3>Copy to clipboard: Ctrl+C, Escape</h3>
+  </div>
+  <div class="modal-body">
+    <textarea id="text-block" style="width:100%;" rows="10"></textarea>
+  </div>
+</div>
 {% endblock %}
 
 
@@ -77,11 +93,16 @@ COOKIE_NAME = 'ecm_unassociated_table_';
 <script type="text/javascript">
 $(document).ready(function() {
     $('#copy_to_clip').click(function (event) {
-        event.preventDefault();
         $.get('/hr/members/unassociated/clip/')
          .success(function (data) {
-             window.prompt ('Copy to clipboard: Ctrl+C, Enter', data);
+             $('#text-block').val(data);
+             $('#text-block').focus();
+             $('#text-block').select();
          });
+    });
+    
+    $('#copy-modal').on('hidden', function () {
+        $('#text-block').val('');
     });
 });
 </script>

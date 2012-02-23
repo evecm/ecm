@@ -2,28 +2,32 @@
 
 {% block headtitle %}Members History{% endblock %}
 
-{% block hr_compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/history_table.js"></script>
-{% endblock %}
+
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/members/">Members</a></li>
-<li><a href="/hr/members/history/">History</a></li>
+<li class="active"><a href="/hr/members/history/">History</a></li>
 {% endblock %}
 
 
 {% block main_content %}
-<h1 class="pagetitle">Members History <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
+<div class="page-header">
+  <h1>Members History <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+</div>
 
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="history_table">
+<table class="table table-bordered table-condensed" id="history_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Corped/Leaved</th>
@@ -45,6 +49,54 @@
       <th>Date</th>
     </tr>
   </tfoot>
-
 </table>
+{% endblock %}
+
+
+{% block compressed_javascripts %}
+<script type="text/javascript">
+// dataTable setup
+$(document).ready(function() {
+  var table = $('#history_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sCookiePrefix: "ecm_history_table_",
+        sAjaxSource: "/hr/members/history/data/",
+        aoColumns: [
+            { sTitle: "Corped/Leaved",sWidth: "15%", sType: "html" ,  bSortable: false },
+            { sTitle: "Name",         sWidth: "30%", sType: "html" },
+            { sTitle: "Nickname",     sWidth: "30%", sType: "string" },
+            { sTitle: "Corp/Leave Date",    sWidth: "25%", sType: "string" }
+        ],
+        aaSorting: [[3, 'desc']],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            if (aData[0]) {
+                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/plus.png"/>');
+            } else {
+                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"/>');
+            }
+            return nRow;
+        }
+    }));
+
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
+    });
+
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
+    });
+
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
+    });
+
+    $('#history_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+    
+} );
+</script>
 {% endblock %}

@@ -3,137 +3,97 @@
 {% block headtitle %}Member Details - {{ member.name }}{% endblock %}
 
 
-{% block javascripts %}
-<script type="text/javascript">
-MEMBER_ID = "{{ member.characterID }}";
-</script>
-{% endblock %}
-
-{% block hr_compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/member_access_changes_table.js"></script>
-{% endblock %}
-
-
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/members/">Members</a></li>
-<li><a href="/hr/members/{{ member.characterID }}">{{ member.name }}</a></li>
+<li class="active"><a href="/hr/members/{{ member.characterID }}">{{ member.name }}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle {%if not member.corped %}error{% endif %}">{{ member.name }}{%if not member.corped %} NOT CORPED{% endif %}</h1>
-<p class="italic" >{{ member.nickname }}</p>
+<div class="page-header">
+  <h1 {%if not member.corped %}class="error"{% endif %}>{{ member.name }}{%if not member.corped %} NOT CORPED{% endif %}
+  <small>{{ member.nickname }}</small>
+  </h1>
+</div>
 
-<table class="transparent">
-    <tr>
-        <td>
-            <img src="http://image.eveonline.com/Character/{{ member.characterID }}_128.jpg" style="border:none;"></img>
-        </td>
-        <td>
-            <p>
-            <span class="bold">Corp Date:</span> {{ member.corpDate|ecm_datetime }}<br/>
-            <span class="bold">Last Login:</span> {{ member.lastLogin|ecm_datetime }}<br/>
-            <span class="bold">Last Logoff:</span> {{ member.lastLogoff|ecm_datetime }}<br />
-            <span class="bold">Avg. Session Duration (30 Days):</span> {{ sessiondata.sessionlength|ecm_time }}<br />
-            <span class="bold">Logged in (last 30 Days):</span> {{ sessiondata.30days|ecm_time }}<br />
-            <span class="bold">Logged in (last 7 Days):</span> {{ sessiondata.7days|ecm_time }}
-            </p>
-            <p>Last seen in <b>{{ member.location }}</b> in a <b>{{ member.ship }}</b> on {{ member.date|ecm_datetime }}</p>
-            <p><span class="bold">Owned by:</span> {{ member.owner_permalink|safe }}</p>
-        </td>
-    </tr>
-</table>
+<div class="row-fluid">
+  <div class="span4">
+    <img src="http://image.eveonline.com/Character/{{ member.characterID }}_256.jpg"></img>
+    {% if killboardUrl %}
+    <a class="kill" href="{{killboardUrl}}?a=search&searchtype=pilot&searchphrase={{member.name|iriencode}}">Link to killboard</a>
+    {%endif%}
+  </div>
+  <div class="span8">
+    <dl>
+      <dt>Corp Date</dt><dd>{{ member.corpDate|ecm_datetime }}</dd>
+      <dt>Last Login</dt><dd>{{ member.lastLogin|ecm_datetime }}</dd>
+      <dt>Last Logoff</dt><dd>{{ member.lastLogoff|ecm_datetime }}</dd>
+      <dt>Avg. Session Duration (30 Days)</dt><dd>{{ sessiondata.sessionlength|ecm_time }}</dd>
+      <dt>Logged in (last 30 Days)</dt><dd>{{ sessiondata.30days|ecm_time }}</dd>
+      <dt>Logged in (last 7 Days)</dt><dd>{{ sessiondata.7days|ecm_time }}</dd>
+      <dt>Base Office</dt><dd>{% if member.baseID %}{{ member.base }}{% else %}None{% endif %}</dd>
+      <dt>Owned by</dt><dd>{{ member.owner_permalink|safe }}</dd>
+      <dt>Latest location</dt><dd>{{ member.location }} <em>({{ member.ship }})</em> on {{ member.date|ecm_datetime }}</dd>
+    </dl>
+  </div>
+</div>
 
-{% if killboardUrl %}
-<a class="kill" href="{{killboardUrl}}?a=search&searchtype=pilot&searchphrase={{member.name|iriencode}}">Link to killboard</a>
-{%endif%}
+<h3>Notes</h3>
+<p id="notes" class="editable" >{{ member.notes|default_if_none:"" }}</p>
 
-<h2>Notes</h2>
-
-<p id="notes" class="italic blue" >{% if member.notes %}{{ member.notes }}{% else %}Click to add notes...{%endif%}</p>
-
-<script type="text/javascript">
-/* Apply a jEditable handler to the "notes" paragraph */
-$('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {
-    "callback": function( sValue, y ) {
-        $('#notes').html(sValue);
-    },
-    tooltip   : 'Click to edit...'
-});
-</script>
-
-<h2>Access Level</h2>
-
-<table class="table" ><tr class="row">
-<td class="row-{{ member.color }}">
-  <b>
+<h3>Access Level</h3>
+<div class="row-fluid row-{{ member.color }}">
+  <strong>
     {% if member.is_director %}
     DIRECTOR
     {% else %}
     {{ member.accessLvl }}
     {% endif %}
-  </b>
-</td>
-</tr></table>
+  </strong>
+</div>
 
+<div class="row-fluid">
+  <div class="span6">
+    <h3>Titles</h3>
+    <ul>{% for title in member.titles.all %}
+      <li>{{ title.permalink|safe }}</li>
+      {% empty %}
+      <p>No titles</p>
+    {% endfor %}</ul>
+  </div>
+  <div class="span6">
+    <h3>Extra Roles</h3>
+    <ul>{% for role in member.roles_no_director %}
+      <li>{{ role.permalink|safe }}</li>
+      {% empty %}
+      <p>No extra roles</p>
+    {% endfor %}</ul>
+  </div>
+</div>
+      
 
-<h2>Base Office</h2>
-{% if member.baseID %}
-{{ member.base }}
-{% else %}
-None
-{% endif %}
-
-<table class="transparent">
-  <tr>
-    <td>
-      <h2>Titles</h2>
-      <ul>
-      {% for title in member.titles.all %}
-        <li>{{ title.permalink|safe }}</li>
-        {% empty %}
-        <p>No titles</p>
-      {% endfor %}
-      </ul>
-    </td>
-    <td>
-      <h2>Extra Roles</h2>
-      <ul>
-      {% for role in member.roles_no_director %}
-        <li>{{ role.permalink|safe }}</li>
-        {% empty %}
-        <p>No extra roles</p>
-      {% endfor %}
-      </ul>
-    </td>
-  </tr>
-</table>
-
-<h2>Login-History</h2>
-
-<table class="table display">
+<h3>Login-History</h3>
+<table class="table table-bordered table-condensed">
   <tr>
     <th class="top" scope="col">Login</th>
     <th class="top" scope="col">Logout</th>
     <th class="top" scope="col">Duration</th>
   </tr>
   {% for login in logins %}
-  	<tr>
-	    <td>{{ login.session_begin|ecm_datetime }}</td>
-	    <td>{{ login.session_end|ecm_datetime }}</td>
-	    <td>{{ login.session_seconds|ecm_time }}</td>
-	</tr>
+    <tr>
+      <td>{{ login.session_begin|ecm_datetime }}</td>
+      <td>{{ login.session_end|ecm_datetime }}</td>
+      <td>{{ login.session_seconds|ecm_time }}</td>
+  </tr>
     {% empty %}
     <tr><td colspan="3">No Data.</td></tr>
   {% endfor %}
 </table>
 
 
-<h2>Security Access Changes</h2>
-
-<table class="table display" id="access_changes_table">
+<h3>Security Access Changes</h3>
+<table class="table table-bordered table-condensed" id="access_changes_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Change</th>
@@ -154,5 +114,45 @@ None
     </tr>
   </tfoot>
 </table>
+{% endblock %}
 
+
+{% block javascripts %}
+<script type="text/javascript">
+MEMBER_ID = "{{ member.characterID }}";
+</script>
+{% endblock %}
+
+
+{% block post_javascripts %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#access_changes_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource : "/hr/members/" + MEMBER_ID + "/accesschanges/data/",
+        aoColumns: [
+            { sTitle: "Change",     sWidth: "15%", sType: "html" ,  bSortable: false },
+            { sTitle: "Title/Role", sWidth: "60%", sType: "html" ,  bSortable: false },
+            { sTitle: "Date",       sWidth: "25%", sType: "string", bSortable: false }
+        ],
+        fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            if (aData[0]) {
+                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/plus.png"></img>');
+            } else {
+                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"></img>');
+            }
+            return nRow;
+        }
+    }));
+});
+/* Apply a jEditable handler to the "notes" paragraph */
+$('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {
+    placeholder: 'Click to add notes...',
+    style: 'inherit',
+    cssClass: 'edited',
+    callback: function( sValue, y ) {
+        $('#notes').html(sValue);
+    },
+    tooltip   : 'Click to edit...'
+});
+</script>
 {% endblock %}

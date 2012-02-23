@@ -2,43 +2,31 @@
 
 {% block headtitle %}Title Members - {{ title.titleName }}{% endblock %}
 
-{% block hr_stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.cluetip.css" />
-{% endblock %}
-
-{% block javascripts %}
-<script type="text/javascript">
-DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
-COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = "/hr/titles/{{ title.titleID }}/members/data/";
-COOKIE_NAME = 'ecm_title_members_table_';
-</script>
-{% endblock %}
-
-{% block hr_compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.cluetip.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
-{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/titles/">Titles</a></li>
-<li><a href="/hr/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
-<li><a href="/hr/titles/{{ title.titleID }}/members/">Members</a></li>
+<li><a href="/hr/titles/{{ title.titleID }}/">{{ title.titleName }}</a></li>
+<li class="active"><a href="/hr/titles/{{ title.titleID }}/members/">Members</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Members having the title <i>{{ title.titleName }}</i></h1>
+<div class="page-header">
+  <h1>Members <small>having the title <em>{{ title.titleName }}</em></small></h1>
+</div>
 
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="members_table">
+<table class="table table-bordered table-condensed" id="members_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Name</th>
@@ -68,7 +56,18 @@ COOKIE_NAME = 'ecm_title_members_table_';
       <th style="display:none;">Titles</th>
     </tr>
   </tfoot>
-
 </table>
+{% endblock %}
 
+
+{% block javascripts %}
+<script type="text/javascript">
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+AJAX_URL = "/hr/titles/{{ title.titleID }}/members/data/";
+COOKIE_NAME = 'ecm_title_members_table_';
+</script>
+{% endblock %}
+{% block compressed_javascripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
 {% endblock %}

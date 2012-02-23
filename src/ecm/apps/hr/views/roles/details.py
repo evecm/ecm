@@ -19,19 +19,13 @@ __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
 from ecm.views.decorators import check_user_access
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.models import Role, RoleType, Member
 from ecm.apps.common.models import ColorThreshold
 from ecm.apps.hr.views import get_members
@@ -72,11 +66,5 @@ def role_data(request, role_typeName, role_id):
                           search_str=params.search,
                           sort_by=params.column,
                           asc=params.asc)
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_members,
-        "iTotalDisplayRecords" : filtered_members,
-        "aaData" : members
-    }
 
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(members, params.sEcho, total_members, filtered_members)

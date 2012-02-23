@@ -26,14 +26,14 @@ except ImportError:
 
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
 from ecm.apps.hr.models import TitleComposition, Title, TitleCompoDiff
 from ecm.apps.common.models import ColorThreshold
 from ecm.core import utils
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate
+from ecm.views import getScanDate, datatable_ajax_data, extract_datatable_params
 from ecm.apps.hr import NAME as app_prefix
 
 #------------------------------------------------------------------------------
@@ -54,21 +54,14 @@ all_columns = [ "titleName", "accessLvl" ]
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def titles_data(request):
-    sEcho = int(request.GET["sEcho"])
-    column = int(request.GET["iSortCol_0"])
-    ascending = (request.GET["sSortDir_0"] == "asc")
+    try:
+        params = extract_datatable_params(request)
+    except KeyError:
+        return HttpResponseBadRequest()
 
-    titles = getTitles(sort_by=all_columns[column], asc=ascending)
-    json_data = {
-        "sEcho" : sEcho,
-        "iTotalRecords" : len(titles),
-        "iTotalDisplayRecords" : len(titles),
-        "aaData" : titles
-    }
+    titles = getTitles(sort_by=all_columns[params.column], asc=params.asc)
 
-    return HttpResponse(json.dumps(json_data))
-
-
+    return datatable_ajax_data(titles, params.sEcho)
 
 #------------------------------------------------------------------------------
 SQL_TITLE_MEMBERS = '''SELECT COUNT(*)

@@ -3,61 +3,26 @@
 {% block headtitle %}Role Details - {{ role }}{% endblock %}
 
 
-{% block javascripts %}
-<script type="text/javascript">
-DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
-COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = "/hr/roles/{{ role.roleType.typeName }}/{{ role.roleID }}/data/";
-COOKIE_NAME = 'ecm_role_members_table_';
-</script>
-{% endblock %}
-
-{% block hr_compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
-{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/roles/">Roles</a></li>
 <li><a href="/hr/roles/{{ role.roleType.typeName }}">{{ role.roleType.dispName }}</a></li>
-<li><a href="/hr/roles/{{ role.roleType.typeName }}/{{ role.roleID }}">{{ role.name }}</a></li>
+<li class="active"><a href="/hr/roles/{{ role.roleType.typeName }}/{{ role.roleID }}">{{ role.name }}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">{{ role }}</h1>
+<div class="page-header">
+<h1>{{ role.name }} <small>{{ role.roleType.dispName }}</small></h1>
+</div>
+<p>{{ role.description }}</p>
 
-<p class="italic">{{ role.description }}</p>
+<h2>Access Level</h2>
+<div class="row-fluid editable bold" id="access_level_box">{{ role.accessLvl }}</div>
 
-<h1>Access Level</h1>
 
-<table class="table" >
-  <tr class="row">
-    <td class="bold" id="access_level_box" title="Click to edit...">{{ role.accessLvl }}</td>
-  </tr>
-</table>
-
-<script type="text/javascript">
-$(document).ready(function() {
-    $("#access_level_box").editable( '/hr/roles/update/', {
-        "callback": function( sValue, y ) {
-            $("#access_level_box").text(sValue);
-            $("#access_level_box").attr("class", "bold row-" + getAccessColor(parseInt(sValue), COLOR_THRESHOLDS));
-        },
-        "submitdata": function ( value, settings ) {
-            return { "id": {{ role.id }} };
-        }
-    } );
-
-    $("#access_level_box").addClass(
-            "row-" + getAccessColor(parseInt($("#access_level_box").text()), COLOR_THRESHOLDS)
-    );
-});
-</script>
-
-<h1>Members having the role <i>{{ role }}</i></h1>
-
+<h2>Members having the role <small>{{ role.name }} <em>{{ role.roleType.dispName }}</em></small></h2>
 <ul>
   <li>
     <b>Assigned directly:</b>
@@ -77,13 +42,17 @@ $(document).ready(function() {
   </li>
 </ul>
 
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="members_table">
+<table class="table table-bordered table-condensed" id="members_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Name</th>
@@ -117,3 +86,38 @@ $(document).ready(function() {
 </table>
 
 {% endblock %}
+
+
+
+{% block javascripts %}
+<script type="text/javascript">
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+AJAX_URL = "/hr/roles/{{ role.roleType.typeName }}/{{ role.roleID }}/data/";
+COOKIE_NAME = 'ecm_role_members_table_';
+</script>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#access_level_box").editable( '/hr/roles/update/', {
+        callback: function( sValue, y ) {
+            $("#access_level_box").text(sValue);
+            $("#access_level_box").attr("class", "row-fluid editable bold row-" + getAccessColor(parseInt(sValue), COLOR_THRESHOLDS));
+        },
+        submitdata: function ( value, settings ) {
+            return { id: {{ role.id }} };
+        },
+        tooltip: 'Click to edit...'
+    } );
+
+    $("#access_level_box").addClass(
+            "row-" + getAccessColor(parseInt($("#access_level_box").text()), COLOR_THRESHOLDS)
+    );
+});
+</script>
+{% endblock %}
+
+

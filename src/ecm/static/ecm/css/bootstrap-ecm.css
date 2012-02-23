@@ -65,3 +65,12 @@ body {
 .well-tight * {
     margin-top: 0px;
 }
+
+div#main-menu {
+    font-size: 90%;
+}
+ul.breadcrumb li:before {
+    content:'\002F';
+    color: gray;
+    padding-right: 0.5em;
+}

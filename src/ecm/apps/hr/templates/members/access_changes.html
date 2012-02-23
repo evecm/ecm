@@ -2,27 +2,29 @@
 
 {% block headtitle %}Members History{% endblock %}
 
-{% block hr_compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/access_changes_table.js"></script>
-{% endblock %}
-
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/members/">Members</a></li>
-<li><a href="/hr/members/access_changes/">Security Access Changes</a></li>
+<li class="active"><a href="/hr/members/access_changes/">Security Access Changes</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Security Access Changes <span class="time">- last update {{ scan_date|ecm_datetime }}</span></h1>
+<div class="page-header">
+  <h1>Security Access Changes <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+</div>
 
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="access_changes_table">
+<table class="table table-bordered table-condensed" id="access_changes_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Change</th>
@@ -45,4 +47,53 @@
     </tr>
   </tfoot>
 </table>
+{% endblock %}
+
+
+{% block post_javascripts %}
+<script type="text/javascript">
+$(document).ready(function() {
+    var table = $('#access_changes_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sCookiePrefix: 'ecm_access_changes_table_',
+        sAjaxSource : '/hr/members/accesschanges/data/',
+        aoColumns : [
+            { sTitle: 'Change',     sWidth: '10%', sType: 'html' ,  bSortable: false },
+            { sTitle: 'Member',     sWidth: '30%', sType: 'html'  },
+            { sTitle: 'Title/Role', sWidth: '40%', sType: 'html' ,  bSortable: false },
+            { sTitle: 'Date',       sWidth: '20%', sType: 'string' }
+        ],
+        aaSorting: [[3, 'desc']],
+        fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            if (aData[0]) {
+                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/plus.png"></img>');
+            } else {
+                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"></img>');
+            }
+            return nRow;
+        }
+    }));
+
+    $('#search_form').submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($('#search_text').val());
+    });
+
+    $('#search_button').click(function() {
+        table.fnFilter($('#search_text').val());
+    });
+
+    $('#clear_search').click(function() {
+        $('#search_text').val('');
+        table.fnFilter('');
+    });
+    
+    // disable multi column sorting
+    $('#history_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+});
+</script>
 {% endblock %}

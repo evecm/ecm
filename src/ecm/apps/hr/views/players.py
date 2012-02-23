@@ -43,7 +43,7 @@ def player_list(request):
     data = {
         'colorThresholds' : ColorThreshold.as_json(),
     }
-    return render_to_response("player_list.html", data, Ctx(request))
+    return render_to_response("players/player_list.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 USER_COLUMNS = ["username", "is_superuser", "account_count", "char_count", "group_count", "last_login", "date_joined"]
@@ -125,7 +125,7 @@ def player_details(request, player_id):
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
 
-    return render_to_response('player_details.html', data, Ctx(request))
+    return render_to_response('players/player_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

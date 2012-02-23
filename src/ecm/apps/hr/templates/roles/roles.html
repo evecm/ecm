@@ -8,20 +8,24 @@
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/roles/">Roles</a></li>
-<li><a href="/hr/roles/{{ current_role_type }}">{{ current_role_type_name }}</a></li>
+<li class="active"><a href="/hr/roles/{{ current_role_type }}/">{{ current_role_type_name }}</a></li>
 {% endblock %}
 
 {% block main_content %}
+<div class="page-header">
 <h1>Roles <small>{{ current_role_type_name }}</small></h1>
-
-<!-- buttons -->
-<div class="btn-group" data-toggle="buttons-radio" id="buttons">
-{% for rt in role_types %}
-  <button class="btn btn-small" value="{{ rt.typeName }}">{{ rt.dispName }}</button>
-{% endfor %}
 </div>
 
-<table class="table table-striped table-bordered table-condensed" id="roles_table">
+<div class="btn-toolbar form-search form-inline" >
+  <span class="label label-info">Role Category</span>
+  <div class="btn-group" data-toggle="buttons-radio" id="buttons">
+  {% for rt in role_types %}
+    <button class="btn btn-small btn-info" value="{{ rt.typeName }}">{{ rt.dispName }}</button>
+  {% endfor %}
+  </div>
+</div>
+
+<table class="table table-bordered table-condensed" id="roles_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Role Name</th>
@@ -55,18 +59,9 @@
 {% endblock %}
 
 
-
-
-{% block javascripts %}
-<script type="text/javascript">
-COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-var current_role_type = "{{ current_role_type }}";
-</script>
-{% endblock %}
-
 {% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
 <script>
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 $(document).ready(function() {
 
     oTable = $('#roles_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
