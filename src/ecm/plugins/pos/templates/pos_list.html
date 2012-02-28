@@ -69,32 +69,33 @@ $(document).ready(function() {
     var table = $('#pos_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: '/pos/data/',
         aoColumns: [
-            { /* 0 Location */ sWidth: '12%', sType: 'html' },
-            { /* 1 Type */     sWidth: '1%',  sType: 'html', sClass: 'center' },
-            { /* 2 status */   sWidth: '1%',  sType: 'html' },
-            { /* 3 Time */ 	   sWidth: '2%',  sType: 'string' },
-            { /* 4 Blocks */   sWidth: '4%',  sType: 'string', bSortable: false },
-            { /* 5 Stront */   sWidth: '4%',  sType: 'string', bSortable: false },
-            { /* 6 Name HIDDEN */  bVisible: false, bSortable: false }
+            { /* 0 Location */ sWidth: '6%',  sType: 'html' },
+            { /* 1 Name */     sWidth: '6%',  sType: 'html', bSortable: false },
+            { /* 2 Type */     sWidth: '1%',  sType: 'html', sClass: 'center' },
+            { /* 3 status */   sWidth: '1%',  sType: 'html' },
+            { /* 4 Time */ 	   sWidth: '2%',  sType: 'string' },
+            { /* 5 Blocks */   sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 6 Stront */   sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 7 Name HIDDEN */  bVisible: false, bSortable: false }
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            posTypeID = aData[1];
+            posTypeID = aData[2];
             posImgUrl = 'http://image.eveonline.com/Type/' + posTypeID + '_32.png';
-            $('td:eq(1)', nRow).html('<img src="' + posImgUrl + '" title="' + aData[13] + '"/>');
+            $('td:eq(2)', nRow).html('<img src="' + posImgUrl + '" title="' + aData[14] + '"/>');
 
-            posState = aData[2];
-            $('td:eq(2)', nRow).addClass(POS_CSS_STATUS[posState]);
-            $('td:eq(2)', nRow).attr('title', POS_TEXT_STATUS[posState]);
-            $('td:eq(2)', nRow).html('');
+            posState = aData[3];
+            $('td:eq(3)', nRow).addClass(POS_CSS_STATUS[posState]);
+            $('td:eq(3)', nRow).attr('title', POS_TEXT_STATUS[posState]);
+            $('td:eq(3)', nRow).html('');
 
-            for (var i=4; i<13; i++) {
+            for (var i=5; i<14; i++) {
                 $('td:eq(' + i + ')', nRow).addClass('right');
                 if (aData[i] == '0' || aData[i] == '0h') {
                     $('td:eq(' + i + ')', nRow).addClass('fuel-warning');
                 }
             }
 
-            $('td:eq(13)', nRow).hide();
+            $('td:eq(14)', nRow).hide();
             return nRow;
         },
 

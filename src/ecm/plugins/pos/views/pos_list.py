@@ -50,6 +50,7 @@ POS_CSS_STATUS = {
 COLUMNS = [
     # Name              Tooltip                 db_field
     ['Location',        'Location',             'moon'],
+    ['Name',            'Name',                 'custom_name'],
     ['Type',            'Type',                 'type_id'],
     ['Status',          'Status',               'state'],
     ['Cycle',           'Cycle Time',           'online_timestamp'],
@@ -113,6 +114,7 @@ def poses_data(request):
         # Query into Fuel table to get last values. for the current POS
         row = [
             pos.permalink,
+            pos.custom_name,
             pos.type_id,
             pos.state,
             print_time(pos.online_timestamp),
