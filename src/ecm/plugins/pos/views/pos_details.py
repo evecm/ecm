@@ -137,3 +137,16 @@ def fuel_data(request, pos_id):
         "aaData" : fuelTable
     }
     return HttpResponse(json.dumps(json_data))
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def update_pos_name(request, pos_id):
+    try:
+        new_name = request.POST["value"]
+        pos = get_object_or_404(POS, item_id=int(pos_id))
+        pos.custom_name = new_name
+        pos.save()
+
+        return HttpResponse(new_name)
+    except:
+        return HttpResponseBadRequest()

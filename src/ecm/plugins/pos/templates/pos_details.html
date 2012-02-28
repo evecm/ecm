@@ -21,19 +21,31 @@
       <img src="http://image.eveonline.com/Render/{{pos.type_id}}_128.png" title="{{pos.type_name}}"/>
     </td>
     <td>
-      <h2>General Info</h2>
-      <ul>
-        <li{%if pos.state == 3%} class="error"{%endif%}><b>State:</b> {{pos.stateText}}{%if pos.state == 3%} until {{pos.state_timestamp|ecm_datetime}}{%endif%}</li>
-        <li><b>Online since:</b> {{pos.online_timestamp|ecm_datetime}}</li>
-        <li><b>POS type:</b> {{pos.type_name}}</li>
-      </ul>
-    </td>
-    <td>
-      <h2><span class="dotlan">dotlan &copy;</span> Links</h2>
-      <ul>
-        <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}" target="_blank">{{pos.location}}</a></li>
-        <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}/{{dotlanPOSLocation}}" target="_blank">{{pos.moon}}</a></li>
-      </ul>
+      <table>
+        <tr>
+          <td>
+            <h2>Name</h2>
+            <h3><div id="custom_name" class="editable" >{{ pos.custom_name|default_if_none:"" }}</div></h3>
+          </td>
+        </tr>
+      <tr>
+        <td>
+          <h2>General Info</h2>
+          <ul>
+            <li{%if pos.state == 3%} class="error"{%endif%}><b>State:</b> {{pos.stateText}}{%if pos.state == 3%} until {{pos.state_timestamp|ecm_datetime}}{%endif%}</li>
+            <li><b>Online since:</b> {{pos.online_timestamp|ecm_datetime}}</li>
+            <li><b>POS type:</b> {{pos.type_name}}</li>
+          </ul>
+        </td>
+        <td>
+          <h2><span class="dotlan">dotlan &copy;</span> Links</h2>
+          <ul>
+            <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}" target="_blank">{{pos.location}}</a></li>
+            <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}/{{dotlanPOSLocation}}" target="_blank">{{pos.moon}}</a></li>
+          </ul>
+        </td>
+      </tr>
+      </table>
     </td>
   </tr>
 </table>
@@ -153,6 +165,17 @@ $(document).ready(function() {
     });
 
 });
+/* Apply a jEditable handler to the "Name" section */
+$('#custom_name').editable( '/pos/{{ pos.item_id }}/updatename/', {
+    placeholder: 'Click to Change Name...',
+    style: 'inherit',
+    cssClass: 'edited',
+    callback: function( sValue, y ) {
+        $('#custom_name').html(sValue);
+    },
+    tooltip   : 'Click to edit...'
+});
+
 </script>
 {% endblock %}
 
