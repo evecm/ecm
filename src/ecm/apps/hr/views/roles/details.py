@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, Http404
 from django.template.context import RequestContext as Ctx
 
 from ecm.views.decorators import check_user_access
@@ -32,9 +32,11 @@ from ecm.apps.hr.views import get_members
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def role(request, role_typeName, role_id):
-    roleType = get_object_or_404(RoleType, typeName=role_typeName)
-    role = get_object_or_404(Role, roleType=roleType, roleID=int(role_id))
+def role(request, role_id):
+    try:
+        role = get_object_or_404(Role, pk=int(role_id))
+    except ValueError:
+        raise Http404() 
     role.accessLvl = role.get_access_lvl()
     data = {
         'colorThresholds' : ColorThreshold.as_json(),
@@ -49,14 +51,12 @@ def role(request, role_typeName, role_id):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def role_data(request, role_typeName, role_id):
+def role_data(request, role_id):
     try:
         params = extract_datatable_params(request)
-    except:
-        return HttpResponseBadRequest()
-
-    roleType = get_object_or_404(RoleType, typeName=role_typeName)
-    role = get_object_or_404(Role, roleType=roleType, roleID=int(role_id))
+        role = get_object_or_404(Role, pk=int(role_id))
+    except (KeyError, ValueError), e:
+        return HttpResponseBadRequest(str(e))
 
     total_members,\
     filtered_members,\

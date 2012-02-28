@@ -25,7 +25,6 @@ from django.db import models
 from ecm.lib import bigintpatch
 from ecm.apps.corp.models import Hangar, Wallet
 from ecm.apps.hr.models.member import Member
-from ecm.apps.hr import NAME as app_prefix
 
 #------------------------------------------------------------------------------
 class RoleType(models.Model):
@@ -42,7 +41,7 @@ class RoleType(models.Model):
 
     @property
     def url(self):
-        return '/%s/roles/%s/' % (app_prefix, self.typeName)
+        return '/hr/roles/?role_type=%d' % self.id
 
     @property
     def permalink(self):
@@ -129,7 +128,7 @@ class Role(models.Model):
 
     @property
     def url(self):
-        return '/%s/roles/%s/%d/' % (app_prefix, self.roleType.typeName, self.roleID)
+        return '/hr/roles/%d/' % self.id
 
     @property
     def permalink(self):
@@ -220,7 +219,7 @@ class RoleMemberDiff(models.Model):
             # this could fail if the RoleMemberDiff has been recorded from
             # /corp/MemberSecurity.xml.aspx but that the member has not been
             # parsed from /corp/MemberTracking.xml.aspx yet
-            return '<a href="/%s/members/%d/" class="member">???</a>' % (app_prefix, self.member_id)
+            return '<a href="/hr/members/%d/" class="member">???</a>' % self.member_id
 
     def __eq__(self, other):
         return self.id == other.id

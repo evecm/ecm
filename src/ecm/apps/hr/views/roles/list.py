@@ -20,14 +20,12 @@ __author__ = "diabeteman"
 
 import httplib as http
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.cache import cache_page
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest, Http404
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
-from ecm.views import datatable_ajax_data
-from ecm.apps.hr import NAME as app_prefix
+from ecm.views import datatable_ajax_data, extract_datatable_params
 from ecm.apps.hr.models import Role, RoleType
 from ecm.apps.common.models import ColorThreshold
 from ecm.views.decorators import check_user_access
@@ -37,22 +35,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-def root(request):
-    return redirect("/%s/roles/roles/" % app_prefix)
-
-#------------------------------------------------------------------------------
 @check_user_access()
-def role_type(request, role_typeName):
-    try:
-        role_type = RoleType.objects.get(typeName=role_typeName)
-    except ObjectDoesNotExist:
-        raise Http404()
-
+def roles(request):
     data = {
-        'colorThresholds' : ColorThreshold.as_json(),
-        'role_types' : RoleType.objects.all().order_by('id'),
-        'current_role_type' : role_type.typeName,
-        'current_role_type_name' : role_type.dispName,
+        'colorThresholds': ColorThreshold.as_json(),
+        'role_types': RoleType.objects.all().order_by('id'),
+        'role_type': request.GET.get('role_type', 1),
     }
     return render_to_response("roles/roles.html", data, Ctx(request))
 
@@ -61,14 +49,13 @@ def role_type(request, role_typeName):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def role_type_data(request, role_typeName):
+def roles_data(request):
     try:
-        role_type = RoleType.objects.get(typeName=role_typeName)
-        sEcho = int(request.REQUEST["sEcho"])
-    except ObjectDoesNotExist:
-        return HttpResponseNotFound()
-    except KeyError:
-        return HttpResponseBadRequest()
+        params = extract_datatable_params(request)
+        role_type_id = int(request.GET['role_type'])
+        role_type = get_object_or_404(RoleType, pk=role_type_id)
+    except (KeyError, ValueError), e:
+        return HttpResponseBadRequest(e)
 
     roles = []
     for role in Role.objects.filter(roleType=role_type).order_by("roleID"):
@@ -95,7 +82,7 @@ def role_type_data(request, role_typeName):
             "|".join(titles)
         ])
 
-    return datatable_ajax_data(roles, sEcho)
+    return datatable_ajax_data(roles, params.sEcho)
 
 #------------------------------------------------------------------------------
 @check_user_access()

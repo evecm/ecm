@@ -28,16 +28,7 @@ MENUS = [
         {'title': 'Titles',    'url': 'titles/',      'items': [
             {'title': 'Changes',               'url': 'titles/changes/'},
         ]},
-        {'title': 'Roles',     'url': 'roles/',       'items': [
-            {'title': 'General',               'url': 'roles/roles/'},
-            {'title': 'Grantable General',     'url': 'roles/grantableRoles/'},
-            {'title': 'At HQ',                 'url': 'roles/rolesAtHQ/'},
-            {'title': 'Grantable At HQ',       'url': 'roles/grantableRolesAtHQ/'},
-            {'title': 'At Base',               'url': 'roles/rolesAtBase/'},
-            {'title': 'Grantable At Base',     'url': 'roles/grantableRolesAtBase/'},
-            {'title': 'At Other',              'url': 'roles/rolesAtOther/'},
-            {'title': 'Grantable At Other',    'url': 'roles/grantableRolesAtOther/'}
-        ]},
+        {'title': 'Roles',     'url': 'roles/',       'items': []},
         {'title': 'Players',   'url': 'players/',     'items': []},
     ]},
 ]

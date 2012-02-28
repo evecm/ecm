@@ -8,8 +8,7 @@
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/roles/">Roles</a></li>
-<li><a href="/hr/roles/{{ role.roleType.typeName }}">{{ role.roleType.dispName }}</a></li>
-<li class="active"><a href="/hr/roles/{{ role.roleType.typeName }}/{{ role.roleID }}">{{ role.name }}</a></li>
+<li class="active"><a href="/hr/roles/{{ role.id }}/">{{ role.name }} <em>({{ role.roleType.dispName }})</em></a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -19,7 +18,7 @@
 <p>{{ role.description }}</p>
 
 <h2>Access Level</h2>
-<div class="row-fluid editable bold" id="access_level_box">{{ role.accessLvl }}</div>
+<div class="row-fluid editable bold" id="{{ role.id }}">{{ role.accessLvl }}</div>
 
 
 <h2>Members having the role <small>{{ role.name }} <em>{{ role.roleType.dispName }}</em></small></h2>
@@ -93,29 +92,26 @@
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = "/hr/roles/{{ role.roleType.typeName }}/{{ role.roleID }}/data/";
+AJAX_URL = "/hr/roles/{{ role.id }}/data/";
 COOKIE_NAME = 'ecm_role_members_table_';
 </script>
 {% endblock %}
 
-{% block compressed_javascripts %}
+{% block post_javascripts %}
 <script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    $("#access_level_box").editable( '/hr/roles/update/', {
+    $('div#{{role.id}}').editable( '/hr/roles/update/', {
         callback: function( sValue, y ) {
-            $("#access_level_box").text(sValue);
-            $("#access_level_box").attr("class", "row-fluid editable bold row-" + getAccessColor(parseInt(sValue), COLOR_THRESHOLDS));
-        },
-        submitdata: function ( value, settings ) {
-            return { id: {{ role.id }} };
+            $('div#{{role.id}}').text(sValue);
+            var color = getAccessColor(parseInt(sValue), COLOR_THRESHOLDS);
+            $('div#{{role.id}}').attr('class', 'row-fluid editable bold row-' + color);
         },
         tooltip: 'Click to edit...'
     } );
 
-    $("#access_level_box").addClass(
-            "row-" + getAccessColor(parseInt($("#access_level_box").text()), COLOR_THRESHOLDS)
-    );
+    var color = getAccessColor(parseInt($('div#{{role.id}}').text()), COLOR_THRESHOLDS);
+    $('div#{{role.id}}').addClass('row-' + color);
 });
 </script>
 {% endblock %}

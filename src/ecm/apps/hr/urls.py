@@ -64,10 +64,9 @@ urlpatterns += patterns('ecm.apps.hr.views.titles',
 urlpatterns += patterns('ecm.apps.hr.views.roles',
     ###########################################################################
     # ROLES VIEWS
-    (r'^roles/$',                               'list.root'),
+    (r'^roles/$',                               'list.roles'),
+    (r'^roles/data/$',                          'list.roles_data'),
     (r'^roles/update/$',                        'list.update_access_level'),
-    (r'^roles/([a-zA-Z_]+)/$',                  'list.role_type'),
-    (r'^roles/([a-zA-Z_]+)/data/$',             'list.role_type_data'),
-    (r'^roles/([a-zA-Z_]+)/(\d+)/$',            'details.role'),
-    (r'^roles/([a-zA-Z_]+)/(\d+)/data/$',       'details.role_data'),
+    (r'^roles/(\d+)/$',                         'details.role'),
+    (r'^roles/(\d+)/data/$',                    'details.role_data'),
 )

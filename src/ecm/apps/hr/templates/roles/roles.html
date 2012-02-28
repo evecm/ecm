@@ -1,26 +1,25 @@
 {% extends "hr_base.html" %}
 
-{% block headtitle %}Roles - {{ current_role_type_name }}{% endblock %}
+{% block headtitle %}Roles{% endblock %}
 
 
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
-<li><a href="/hr/roles/">Roles</a></li>
-<li class="active"><a href="/hr/roles/{{ current_role_type }}/">{{ current_role_type_name }}</a></li>
+<li class="active"><a href="/hr/roles/">Roles</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-<h1>Roles <small>{{ current_role_type_name }}</small></h1>
+    <h1>Roles</h1>
 </div>
 
 <div class="btn-toolbar form-search form-inline" >
   <span class="label label-info">Role Category</span>
   <div class="btn-group" data-toggle="buttons-radio" id="buttons">
   {% for rt in role_types %}
-    <button class="btn btn-small btn-info" value="{{ rt.typeName }}">{{ rt.dispName }}</button>
+    <button class="btn btn-small btn-info" value="{{ rt.id }}">{{ rt.dispName }}</button>
   {% endfor %}
   </div>
 </div>
@@ -59,14 +58,16 @@
 {% endblock %}
 
 
-{% block compressed_javascripts %}
+{% block post_javascripts %}
 <script>
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+ROLE_TYPE = '{{ role_type }}';
+
 $(document).ready(function() {
 
     oTable = $('#roles_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         iDisplayLength: 50,
-        sAjaxSource: "/hr/roles/{{ current_role_type }}/data/",
+        sAjaxSource: '/hr/roles/data/',
         sDom: 'rt',
         aoColumns: [
             { sTitle: "Role Name",    sWidth: "30%", sType: "html",    bSortable: false },
@@ -132,13 +133,35 @@ $(document).ready(function() {
             } );
 
             return nRow;
-        }
+        },
+        
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: 'role_type',
+                value: ROLE_TYPE
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+
     } ));
-    $('#buttons button[value="{{ current_role_type }}"]').button('toggle');
     $('#buttons button').click(function () {
-        window.location = '/hr/roles/' + this.value + '/';
+        ROLE_TYPE = this.value;
+        oTable.fnDraw();
     });
+    
+    updateButtons();
 } );
+
+
+function updateButtons() {
+    $('#buttons button').removeClass('active');
+    $('#buttons button[value="' + ROLE_TYPE + '"]').addClass('active');
+}
+
 
 </script>
 
