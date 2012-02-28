@@ -117,7 +117,7 @@ COMPRESS_JS_FILTERS = (
     #'compressor.filters.jsmin.JSMinFilter',
 )
 
-COMPRESS_ENABLED = True
+COMPRESS_ENABLED = False
 
 #############
 # TEMPLATES #

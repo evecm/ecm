@@ -1,6 +1,3 @@
-
-
-
 .error {color: #f00;}
 .center {text-align: center !important;}
 .right {text-align: right !important;}
@@ -22,11 +19,9 @@ body {
     padding-top: 60px; 
     padding-bottom: 40px;
 }
+
 .sidebar-nav {
     padding: 9px 0;
-}
-.child-active > a, .child-active > a:hover {
-    background-color:#ceefff !important;
 }
 
 .page-header {
@@ -69,8 +64,34 @@ body {
 div#main-menu {
     font-size: 90%;
 }
+
 ul.breadcrumb li:before {
     content:'\002F';
     color: gray;
     padding-right: 0.5em;
 }
+
+/* Menu */
+
+#main-menu li > ul{display: none;}
+#main-menu li.child-active > ul{display: block;}
+
+#main-menu ul{padding: 0;}
+
+.nav-list > li > a, .nav-list .nav-header{margin: 0;}
+
+
+
+#main-menu li.step-1 > a{padding: 1px 15px;}
+#main-menu li.step-2 > a{padding: 1px 30px;}
+#main-menu li.step-3 > a{padding: 1px 45px;}
+
+
+#main-menu ul.nav-list a{
+    -webkit-transition:  0.2s ;    
+    -o-transition:  0.2s ;  
+    transition:  0.2s ;
+}
+
+#main-menu ul.nav-list a:hover{background-color: #ddd;}
+#main-menu ul.nav-list li.active > a:hover{background-color: #0088cc;}
