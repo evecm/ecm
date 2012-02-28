@@ -78,8 +78,8 @@
 </a>
 {% endblock %}
 
-{% block javascripts %}
-<script type="text/javascript">
+{% block post_javascripts %}
+<script>
 ITEM_ID = {{item.typeID}};
 NEW_BP = '<tr id="%id">' +
 '<td><a href="%url" title="Blueprint details">' +
@@ -92,12 +92,7 @@ NEW_BP = '<tr id="%id">' +
 '<td><a class="btn btn-danger btn-small" title="Delete blueprint" ' +
        'onClick="deleteBlueprint(%id);"><i class="icon-trash icon-white"></i></a></td>' +
 '</tr>';
-</script>
-{% endblock %}
 
-{% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
-<script>
 $(document).ready(function() {
     $('#availability_checkbox').click(function () {
       var params = {

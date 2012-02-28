@@ -3,38 +3,32 @@
 {% block headtitle %}Blueprints Catalog{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
-{% endblock %}
-
-{% block javascripts %}
-<script type="text/javascript"  >
-AJAX_URL = '/industry/catalog/blueprints/data/';
-DISPLAY_MODE = 'all';
-</script>
 {% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry/">Industry</a></li>
-<li><a href="/industry/catalog/blueprints/">Blueprints Catalog</a></li>
+<li class="active"><a href="/industry/catalog/blueprints/">Blueprints Catalog</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Blueprints Catalog</h1>
+<div class="page-header"><h1>Blueprints Catalog</h1></div>
 
-<form id="search_form" class="search_form">
-  <table>
-    <tr>
-      <td><input type="text"  id="search_text"  value="" /></td>
-      <td><input type="button"  class="button"  id="search_button"  value="Search" /></td>
-      <td><input type="button"  class="button"  id="clear_search"  value="Reset" /></td>
-      <td>Display:</td>
-      <td><input type="button"  class="button"  id="display_all"  value="All Blueprints" /></td>
-      <td><input type="button"  class="button"  id="display_originals"  value="Only Originals" /></td>
-      <td><input type="button"  class="button"  id="display_copies"  value="Only Copies" /></td>
-    </tr>
-  </table>
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+    <span class="label label-info">Display</span>
+    <div class="btn-group" data-toggle="buttons-radio" id="display_buttons">
+      <button class="btn btn-small btn-info" id="display_all">All Blueprints</button>
+      <button class="btn btn-small btn-info" id="display_originals">Only Originals</button>
+      <button class="btn btn-small btn-info" id="display_copies">Only Copies</button>
+    </div>
+  </div>
 </form>
 
 <table class="table table-bordered table-condensed" id="blueprints_table">
@@ -60,9 +54,159 @@ DISPLAY_MODE = 'all';
 </table>
 {% endblock %}
 
-{% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript"  src="{{ STATIC_URL }}industry/js/blueprints_table.js" ></script>
+{% block post_javascripts %}
+<script type="text/javascript" >
+DISPLAY_MODE = 'all';
+
+$(document).ready(function() {
+
+    var table = $('#blueprints_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: '/industry/catalog/blueprints/data/',
+        aoColumns: [
+            { /* 0 Blueprint */ sWidth: "80%", bSortable: false },
+            { /* 1 ME */        sWidth: "5%", bSortable: false  },
+            { /* 2 PE */        sWidth: "5%", bSortable: false  },
+            { /* 3 Copy */      sWidth: "5%", bSortable: false, sClass: 'center'},
+            { /* 4 Runs */      sWidth: "5%", bSortable: false  },
+            { /* 5 blueprint_id */    bVisible: false, bSortable: false  },
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            var bp_id = aData[5];
+
+            $('td:eq(1)', nRow).addClass('right');
+            $('td:eq(1)', nRow).attr('id', bp_id);
+            /* Apply jEditable handlers to the cells each time we redraw the table */
+            $('td:eq(1)', nRow).editable( '/industry/catalog/blueprints/me/', {
+                tooltip: 'Click to edit...',
+                callback: function( sValue, y ) {
+                    var aPos = oTable.fnGetPosition( this );
+                    oTable.fnUpdate( sValue, aPos[0], aPos[1] );
+                },
+            } );
+
+            $('td:eq(2)', nRow).addClass('right');
+            $('td:eq(2)', nRow).attr('id', bp_id);
+            /* Apply jEditable handlers to the cells each time we redraw the table */
+            $('td:eq(2)', nRow).editable( '/industry/catalog/blueprints/pe/', {
+                tooltip: 'Click to edit...',
+                callback: function( sValue, y ) {
+                    var aPos = oTable.fnGetPosition( this );
+                    oTable.fnUpdate( sValue, aPos[0], aPos[1] );
+                },
+            } );
+
+            var copy = aData[3];
+            var checked = '';
+            if (copy) {
+                checked += 'checked ';
+            }
+            $('td:eq(3)', nRow).html('<input id="' + bp_id + '" type="checkbox" ' + checked + '/>');
+            $('td:eq(3) input', nRow).click(function () {
+                var params = {
+                    id: $(this).attr('id'),
+                    value: $(this).is(':checked')
+                };
+                $.post('/industry/catalog/blueprints/copy/', params);
+            });
+
+            $('td:eq(4)', nRow).addClass('right');
+            $('td:eq(4)', nRow).attr('id', bp_id);
+            /* Apply jEditable handlers to the cells each time we redraw the table */
+            $('td:eq(4)', nRow).editable( '/industry/catalog/blueprints/runs/', {
+                tooltip: 'Click to edit...',
+                callback: function( sValue, y ) {
+                    var aPos = oTable.fnGetPosition( this );
+                    oTable.fnUpdate( sValue, aPos[0], aPos[1] );
+                },
+            } );
+
+            $('td:eq(5)', nRow).hide();
+            return nRow;
+        },
+
+       /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: 'displayMode',
+                value: DISPLAY_MODE
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        fnStateSaveParams: function (oSettings, oData) {
+            oData.sFilter = $("#search_text").val()
+            oData.displayMode = DISPLAY_MODE;
+        },
+       
+        /* restore the search field content */
+        fnStateLoadParams: function (oSettings, oData) {
+            $("#search_text").val(oData.sFilter);
+            if ('displayMode' in oData) {
+                DISPLAY_MODE = oData.displayMode;
+                updateDisplayModeButtons();
+            }
+            return true;
+        }
+
+    }));
+
+    /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
+    });
+    /* disable multi column sorting */
+    $('#blueprints_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+
+    /* Display mode buttons */
+    var dispButtons = $('#display_buttons button');
+    for (var i = 0; i < dispButtons.length; i++) {
+        $(dispButtons[i]).click(function () {
+            var mode = $(this).attr('id').substr('display_'.length);
+            if (DISPLAY_MODE != mode) {
+                DISPLAY_MODE = mode;
+                table.fnDraw();
+            }
+        });
+    }
+});
+
+function updateDisplayModeButtons() {
+    var buttons = $('#display_buttons button');
+    for (var i = 0; i < buttons.length; i++) {
+        if (endsWith(buttons[i].id, DISPLAY_MODE)) {
+            $(buttons[i]).addClass('active');
+        } else {
+            $(buttons[i]).removeClass('active');
+        }
+    }
+}
+
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+</script>
 {% endblock %}
 

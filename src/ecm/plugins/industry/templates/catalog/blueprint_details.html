@@ -3,90 +3,71 @@
 {% block headtitle %}{{blueprint.typeName}}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
-{% endblock %}
-
-{% block javascripts %}
-<script type="text/javascript">
-BLUEPRINT_ID = {{blueprint.id}};
-ACTIVITY_ID = 1; /* manufacturing by default */
-</script>
-{% endblock %}
-
-{% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript"  src="{{ STATIC_URL }}industry/js/blueprint_details.js" ></script>
 {% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry">Industry</a></li>
 <li><a href="/industry/catalog/blueprints/">Blueprints Catalog</a></li>
-<li><a href="/industry/catalog/blueprints/{{ blueprint.typeID }}/">{{ blueprint.typeName }}</a></li>
+<li class="active"><a href="/industry/catalog/blueprints/{{ blueprint.typeID }}/">{{ blueprint.typeName }}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">{{blueprint.typeName}} <span class="time">&#35;{{blueprint.id}}</span></h1>
+<div class="page-header"">
+  <h1>{{blueprint.typeName}} <small>&#35;{{blueprint.id}}</small></h1>
+</div>
 
-<table class="transparent">
-  <tr>
-    <td><img src="http://image.eveonline.com/Type/{{blueprint.typeID}}_64.png" /></td>
-    <td>
-      <table class="transparent">
-        <tr>
-          <td class="bold">Material Efficiency</td>
-          <td id="{{blueprint.id}}" class="me right">{{blueprint.me}}</td>
-        </tr>
-        <tr>
-          <td class="bold">Production Efficiency</td>
-          <td id="{{blueprint.id}}" class="pe right" >{{blueprint.pe}}</td>
-        </tr>
-        <tr>
-          <td class="bold">Copy</td>
-          <td>
-            <input type="checkbox" id="{{blueprint.id}}" class="copy" {% if blueprint.copy %}checked{% endif %} />
-          </td>
-        </tr>
-        <tr>
-          <td class="bold">Runs</td>
-          <td id="{{blueprint.runs}}" class="runs right" >{{blueprint.runs}}</td>
-        </tr>
-      </table>
-    </td>
-    <td>
-      <table class="transparent">
-        <tr><td class="bold">Manufacturing Time</td><td id="time">{{prodDuration}}</td></tr>
-        <tr><td class="bold">Material Research Time</td><td>{{meDuration}}</td></tr>
-        <tr><td class="bold">Productivity Research Time</td><td>{{peDuration}}</td></tr>
-        <tr><td class="bold">Copy Time</td><td>{{copyDuration}}</td></tr>
-        <tr><td class="bold">Invention Time</td><td>{{invDuration}}</td></tr>
-      </table>
-    </td>
-  </tr>
-</table>
+<div class="row-fluid">
+  <div class="span2">
+    <img src="http://image.eveonline.com/Type/{{blueprint.typeID}}_64.png" />
+  </div>
+  <div class="span3">
+    <dl>
+      <dt>Produces Item</dt>
+        <dd>{{blueprint.catalog_entry.permalink|safe}}</dd>
+      <dt>Material Efficiency</dt>
+        <dd id="{{blueprint.id}}" class="me editable">{{blueprint.me}}</dd>
+      <dt>Production Efficiency</dt>
+        <dd id="{{blueprint.id}}" class="pe editable">{{blueprint.pe}}</dd>
+      <dt>Copy</dt>
+        <dd><input type="checkbox" id="{{blueprint.id}}" class="copy" {% if blueprint.copy %}checked{% endif %} /></dd>
+      <dt>Runs</dt>
+        <dd id="{{blueprint.runs}}" class="runs editable">{{blueprint.runs}}</dd>
+    </dl>
+  </div>
+  <div class="span7">
+    <dl>
+      <dt>Manufacturing Time</dt><dd id="time">{{prodDuration}}</dd>
+      <dt>Material Research Time</dt><dd>{{meDuration}}</dd>
+      <dt>Productivity Research Time</dt><dd>{{peDuration}}</dd>
+      <dt>Copy Time</dt><dd>{{copyDuration}}</dd>
+      <dt>Invention Time</dt><dd>{{invDuration}}</dd>
+    </dl>
+  </div>
+</div>
 
-<p><b>Produces item:</b> {{blueprint.catalog_entry.permalink|safe}}</p>
+{% with blueprint.item.portionSize as batch %}
+<h2>Needed Materials for {{ batch }} unit{{ batch|pluralize }}
+{% if batch > 1 %}<small>produced in 1 run</small>{% endif %}</h2>
+{% endwith %}
 
-<h2>Needed Materials for {{blueprint.portionSize}} units (1 run)</h2>
-<form>
-<table>
-  <tr>
+<div class="btn-toolbar" >
+  <span class="label label-info">Activity</span>
+  <div class="btn-group" data-toggle="buttons-radio" id="activity_buttons">
   {% for act in activities %}
-    <td><input type="button" class="button activity_button" value="{{act.name}}"
-               id="{{act.activityID}}" onClick="setActivity({{act.activityID}});"/></td>
+    <button class="btn btn-small btn-info" id="{{act.activityID}}">{{act.name}}</button>
   {% endfor %}
-  </tr>
-</table>
-</form>
-<table id="materials_table" style="width: 60%;">
+  </div>
+</div>
+
+<table id="materials_table" class="table table-bordered table-condensed" style="width: 60%;">
   <thead>
     <tr>
-      <th class="top" scope="col" >Icon</th>
-      <th class="top" scope="col" >Item</th>
-      <th class="top" scope="col" >Quantity</th>
-      <th class="top" scope="col" >Damage Per Job</th>
+      <th>Icon</th>
+      <th>Item</th>
+      <th>Quantity</th>
+      <th>Damage Per Job</th>
     </tr>
   </thead>
   <tbody>
@@ -96,4 +77,111 @@ ACTIVITY_ID = 1; /* manufacturing by default */
   </tbody>
 </table>
 
+{% endblock %}
+
+
+
+{% block post_javascripts %}
+<script type="text/javascript">
+ACTIVITY_ID = "1"; /* manufacturing by default */
+
+$(document).ready(function() {
+
+    var table = $('#materials_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        iDisplayLength: 50, /* default display 50 items */
+        sAjaxSource: '/industry/catalog/blueprints/{{blueprint.id}}/materials/',
+        sDom: 'rt', /* table layout. see http://www.datatables.net/usage/options */
+        aoColumns: [
+            { /* 0 Icon */        sWidth: "10%", bSortable: false, sClass: 'center'},
+            { /* 1 Item */        sWidth: "50%", bSortable: false},
+            { /* 2 Quantity */    sWidth: "10%", bSortable: false},
+            { /* 3 Waste */       sWidth: "10%", bSortable: false},
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            $('td:eq(0)', nRow).html('<img src="http://image.eveonline.com/Type/'+aData[0]+'_32.png"/>');
+            $('td:eq(2)', nRow).addClass('right');
+            $('td:eq(3)', nRow).addClass('right');
+            return nRow;
+        },
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: "activityID",
+                value: ACTIVITY_ID
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+        
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        fnStateSaveParams: function (oSettings, oData) {
+            oData.sFilter = $("#search_text").val()
+            oData.activityID = ACTIVITY_ID;
+        },
+       
+        /* restore the search field content */
+        fnStateLoadParams: function (oSettings, oData) {
+            $("#search_text").val(oData.sFilter);
+            if ('activityID' in oData) {
+                ACTIVITY_ID = oData.activityID;
+                updateButtons();
+            }
+            return true;
+        }
+    }));
+
+    /* Set jEditable handlers */
+    $('dd.me').editable('/industry/catalog/blueprints/me/', {
+            cssclass: 'edited',
+            style: 'inherit',
+            tooltip: 'Click to edit...',
+            callback: function () {
+                table.fnDraw();
+            }
+    });
+    $('dd.pe').editable('/industry/catalog/blueprints/pe/', {
+            cssclass: 'edited',
+            style: 'inherit',
+            tooltip: 'Click to edit...',
+            callback: function () {
+                $('#time').load('/industry/catalog/blueprints/{{blueprint.id}}/time/');
+            }
+    });
+    $('input.copy').click(function () {
+        var thisId = $(this).attr('id');
+        var checked = $(this).is(':checked');
+        $.post('/industry/catalog/blueprints/copy/', {id: thisId, value: checked})
+        .error(function () {
+            alert('Failed to change copy!');
+        });
+    });
+    $('dd.runs').editable('/industry/catalog/blueprints/runs/', {
+            cssclass: 'edited',
+            style: 'inherit',
+            tooltip: 'Click to edit...',
+    });
+    
+    $('#activity_buttons button').on('click', function() {
+        ACTIVITY_ID = $(this).attr('id');
+        table.fnDraw();
+    });
+    
+    updateButtons();
+});
+
+function updateButtons() {
+    var buttons = $('#activity_buttons button');
+    for (var i = 0; i < buttons.length; i++) {
+        if (buttons[i].id == ACTIVITY_ID) {
+            $(buttons[i]).addClass('active');
+        } else {
+            $(buttons[i]).removeClass('active');
+        }
+    }
+}
+
+</script>
 {% endblock %}

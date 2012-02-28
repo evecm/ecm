@@ -33,8 +33,8 @@ from django.template.context import RequestContext as Ctx
 from ecm.core import utils
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
-from ecm.apps.common.models import ColorThreshold, Setting
-from ecm.views import extract_datatable_params
+from ecm.apps.common.models import ColorThreshold
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.views import get_members
 
 #------------------------------------------------------------------------------
@@ -58,9 +58,7 @@ def player_list_data(request):
     query = query.annotate(account_count=Count("eve_accounts"))
     query = query.annotate(char_count=Count("characters"))
     query = query.annotate(group_count=Count("groups"))
-    #query = query.filter(char_count__gt=0)
-    query = query.exclude(username__in=[Setting.get('common_cron_username'), 
-                                        Setting.get('common_admin_username')])
+    query = query.filter(eve_accounts__gt=0)
 
     sort_by = USER_COLUMNS[params.column]
     # SQL hack for making a case insensitive sort
@@ -80,9 +78,8 @@ def player_list_data(request):
     else:
         total_count = filtered_count = query.count()
 
-    query = query[params.first_id:params.last_id]
     player_list = []
-    for player in query:
+    for player in query[params.first_id:params.last_id]:
         player_list.append([
             '<a href="/hr/players/%d/" class="player">%s</a>' % (player.id, player.username),
             player.is_staff and player.is_superuser,
@@ -93,15 +90,8 @@ def player_list_data(request):
             utils.print_time_min(player.date_joined)
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_count,
-        "iTotalDisplayRecords" : filtered_count,
-        "aaData" : player_list
-    }
-
-    return HttpResponse(json.dumps(json_data))
-
+    return datatable_ajax_data(player_list, params.sEcho, total_count, filtered_count)
+    
 #------------------------------------------------------------------------------
 @check_user_access()
 def player_details(request, player_id):

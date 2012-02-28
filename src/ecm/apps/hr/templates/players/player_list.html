@@ -1,40 +1,38 @@
 {% extends "hr_base.html" %}
 
-
 {% block headtitle %}Player List{% endblock %}
-
-{% block hr_compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/players_table.js"></script>
-{% endblock %}
-
-
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
-<li><a href="/hr/players/">Player List</a></li>
+<li class="active"><a href="/hr/players/">Player List</a></li>
 {% endblock %}
 
 {% block main_content %}
+<div class="page-header">
+<h1>Player List</h1>
+</div>
 
-<h1 class="pagetitle">Player List</h1>
-
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" placeholder="Search"/>
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="players_table">
+<table class="table table-bordered table-condensed" id="players_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Username</th>
-      <th class="top" scope="col" >Admin</th>
-      <th class="top" scope="col" >EVE Accounts</th>
-      <th class="top" scope="col" >Characters</th>
-      <th class="top" scope="col" >Groups</th>
-      <th class="top" scope="col" >Last Login</th>
-      <th class="top" scope="col" >Joined Date</th>
+      <th>Username</th>
+      <th>Admin</th>
+      <th>EVE Accounts</th>
+      <th>Characters</th>
+      <th>Groups</th>
+      <th>Last Login</th>
+      <th>Joined Date</th>
     </tr>
   </thead>
   <tbody>
@@ -55,4 +53,63 @@
   </tfoot>
 </table>
 
+{% endblock %}
+
+
+{% block post_javascripts %}
+<script type="text/javascript">
+$(document).ready(function() {
+      var table = $('#players_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: "/hr/players/data/",
+        aoColumns: [
+            { /* Username */        sWidth: "30%",   sType: "html"    },
+            { /* admin */           sWidth: "10%",   sType: "html"    },
+            { /* EVE accounts */    sWidth: "10%",   sType: "string"  },
+            { /* Char count */      sWidth: "10%",   sType: "string" },
+            { /* Group count */     sWidth: "10%",   sType: "string" },
+            { /* Last login */      sWidth: "15%",   sType: "string"  },
+            { /* Joined date */     sWidth: "15%",   sType: "string"  }
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            /* if the player has no roles, display him/her in red */
+            var group_count = aData[4];
+            if (group_count == 0) {
+                $(nRow).addClass("row-red");
+            }
+            var admin = aData[1];
+            if (admin) {
+                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-yes.gif" alt="True">');
+            } else {
+                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-no.gif" alt="False">');
+            }
+            return nRow;
+        }
+    }));
+
+    /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
+    });
+
+    /* disable multi column sorting */
+    $('#players_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+} );
+</script>
 {% endblock %}

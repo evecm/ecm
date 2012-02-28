@@ -247,7 +247,9 @@ function updateDisplayModeButtons() {
     var buttons = $('#display_buttons button');
     for (var i = 0; i < buttons.length; i++) {
         if (endsWith(buttons[i].id, DISPLAY_MODE)) {
-            $(buttons[i]).button('toggle');
+            $(buttons[i]).addClass('active');
+        } else {
+            $(buttons[i]).removeClass('active');
         }
     }
 }
