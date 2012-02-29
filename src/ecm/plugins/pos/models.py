@@ -107,6 +107,7 @@ class POS(models.Model):
     custom_name = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     operators = models.ManyToManyField(User, related_name="operated_poses")
+    has_sov = models.BooleanField(default=False)
 
     @property
     def stateText(self):
@@ -179,23 +180,23 @@ class FuelLevel(models.Model):
         return u'%s: %d x %s' % (unicode(self.pos), self.quantity, fuel_name)
 
 #------------------------------------------------------------------------------
-class FuelConsumption(models.Model):
-
-    class Meta:
-        ordering = ['pos', 'type_id']
-
-    pos = models.ForeignKey(POS, related_name='fuel_consumptions')
-    type_id = models.IntegerField() # id of fuel type
-    consumption = models.IntegerField(default=0) # consumption of this fuel type
-    stability = models.IntegerField(default=0) # stability of the estimation.
-    probable_consumption = models.IntegerField(default=0) # Most often this consumption
-    probable_stability = models.IntegerField(default=0) # nb point to reach to change stability
-
-    def fuel_admin_display(self):
-        fuelName, _ = db.get_type_name(self.typeID)
-        return unicode(fuelName)
-    fuel_admin_display.short_description = "Fuel"
-
-    def __unicode__(self):
-        fuelName, _ = db.get_type_name(self.typeID)
-        return u'%s: %s = %d / hour' % (unicode(self.pos), fuelName, self.consumption)
+#class FuelConsumption(models.Model):
+#
+#    class Meta:
+#        ordering = ['pos', 'type_id']
+#
+#    pos = models.ForeignKey(POS, related_name='fuel_consumptions')
+#    type_id = models.IntegerField() # id of fuel type
+#    consumption = models.IntegerField(default=0) # consumption of this fuel type
+#    stability = models.IntegerField(default=0) # stability of the estimation.
+#    probable_consumption = models.IntegerField(default=0) # Most often this consumption
+#    probable_stability = models.IntegerField(default=0) # nb point to reach to change stability
+#
+#    def fuel_admin_display(self):
+#        fuelName, _ = db.get_type_name(self.typeID)
+#        return unicode(fuelName)
+#    fuel_admin_display.short_description = "Fuel"
+#
+#    def __unicode__(self):
+#        fuelName, _ = db.get_type_name(self.typeID)
+#        return u'%s: %s = %d / hour' % (unicode(self.pos), fuelName, self.consumption)
