@@ -9,11 +9,15 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/pos">POS</a></li>
-<li><a href="/pos/{{ pos.item_id }}/">{{ pos.moon }}</a></li>
+<li class="active"><a href="/pos/{{ pos.item_id }}/">{{ pos.moon }}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle{%if pos.state != 4%} error{%endif%}">{{ pos.moon }}{%if pos.state != 4%} - {{pos.stateText}}{% endif %}</h1>
+<div class="page-header{%if pos.state != 4%} error{%endif%}">
+  <h1>{{ pos.moon }}{%if pos.state != 4%} - {{pos.stateText}}{% endif %} <small id="custom_name" class="editable">{{ pos.custom_name|default_if_none:"" }}</small>
+  </h1>
+</div>
+
 
 <table class="transparent">
   <tr>
@@ -24,27 +28,21 @@
       <table>
         <tr>
           <td>
-            <h2>Name</h2>
-            <h3><div id="custom_name" class="editable" >{{ pos.custom_name|default_if_none:"" }}</div></h3>
+            <h2>General Info</h2>
+            <ul>
+              <li{%if pos.state == 3%} class="error"{%endif%}><b>State:</b> {{pos.stateText}}{%if pos.state == 3%} until {{pos.state_timestamp|ecm_datetime}}{%endif%}</li>
+              <li><b>Online since:</b> {{pos.online_timestamp|ecm_datetime}}</li>
+              <li><b>POS type:</b> {{pos.type_name}}</li>
+            </ul>
+          </td>
+          <td>
+            <h2><span class="dotlan">dotlan &copy;</span> Links</h2>
+            <ul>
+              <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}" target="_blank">{{pos.location}}</a></li>
+              <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}/{{dotlanPOSLocation}}" target="_blank">{{pos.moon}}</a></li>
+            </ul>
           </td>
         </tr>
-      <tr>
-        <td>
-          <h2>General Info</h2>
-          <ul>
-            <li{%if pos.state == 3%} class="error"{%endif%}><b>State:</b> {{pos.stateText}}{%if pos.state == 3%} until {{pos.state_timestamp|ecm_datetime}}{%endif%}</li>
-            <li><b>Online since:</b> {{pos.online_timestamp|ecm_datetime}}</li>
-            <li><b>POS type:</b> {{pos.type_name}}</li>
-          </ul>
-        </td>
-        <td>
-          <h2><span class="dotlan">dotlan &copy;</span> Links</h2>
-          <ul>
-            <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}" target="_blank">{{pos.location}}</a></li>
-            <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}/{{dotlanPOSLocation}}" target="_blank">{{pos.moon}}</a></li>
-          </ul>
-        </td>
-      </tr>
       </table>
     </td>
   </tr>
@@ -164,16 +162,16 @@ $(document).ready(function() {
         }
     });
 
-});
-/* Apply a jEditable handler to the "Name" section */
-$('#custom_name').editable( '/pos/{{ pos.item_id }}/updatename/', {
-    placeholder: 'Click to Change Name...',
-    style: 'inherit',
-    cssClass: 'edited',
-    callback: function( sValue, y ) {
-        $('#custom_name').html(sValue);
-    },
-    tooltip   : 'Click to edit...'
+    /* Apply a jEditable handler to the "Name" section */
+    $('#custom_name').editable( '/pos/{{ pos.item_id }}/updatename/', {
+        placeholder: 'Click to Change Name...',
+        style: 'inherit',
+        cssClass: 'edited',
+        callback: function( sValue, y ) {
+            $('#custom_name').html(sValue);
+        },
+        tooltip   : 'Click to edit...'
+    });
 });
 
 </script>

@@ -61,9 +61,7 @@ body {
     margin-top: 0px;
 }
 
-div#main-menu {
-    font-size: 90%;
-}
+
 
 ul.breadcrumb li:before {
     content:'\002F';
@@ -73,6 +71,10 @@ ul.breadcrumb li:before {
 
 /* Menu */
 
+#main-menu {
+    font-size: 90%;
+}
+
 #main-menu li > ul{display: none;}
 #main-menu li.child-active > ul{display: block;}
 
@@ -80,12 +82,9 @@ ul.breadcrumb li:before {
 
 .nav-list > li > a, .nav-list .nav-header{margin: 0;}
 
-
-
 #main-menu li.step-1 > a{padding: 1px 15px;}
 #main-menu li.step-2 > a{padding: 1px 30px;}
 #main-menu li.step-3 > a{padding: 1px 45px;}
-
 
 #main-menu ul.nav-list a{
     -webkit-transition:  0.2s ;    

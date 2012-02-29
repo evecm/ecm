@@ -9,8 +9,7 @@
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/pos/">POS</a></li>
-<li><a href="/pos/{{ posViewMode }}/">{{ posViewMode }}</a></li>
+<li class="active"><a href="/pos/">POS</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -81,7 +80,7 @@ $(document).ready(function() {
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             posTypeID = aData[2];
             posImgUrl = 'http://image.eveonline.com/Type/' + posTypeID + '_32.png';
-            $('td:eq(2)', nRow).html('<img src="' + posImgUrl + '" title="' + aData[14] + '"/>');
+            $('td:eq(2)', nRow).html('<img src="' + posImgUrl + '" title="' + aData[7] + '"/>');
 
             posState = aData[3];
             $('td:eq(3)', nRow).addClass(POS_CSS_STATUS[posState]);

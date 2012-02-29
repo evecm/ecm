@@ -79,23 +79,22 @@
   </div> <!-- /CONTAINER -->
   
   <!-- FOOTER -->
-  <div class="navbar navbar-fixed-bottom">
-    <div class="navbar-inner">
-      <div class="container-fluid">
-        <span class="navbar-text pull-left">
-          version <strong>{{ecm_version}}</strong> &bull;
-          <em>Copyright &copy; 2010-2012 
-              <a href="http://www.myspace.com/therealdiabeteman/videos">diabeteman</a></em>
-        </span>
-        <span class="navbar-text pull-right">
-          <a href="http://code.google.com/p/eve-corp-management/">Project on google code</a>
-          &bull;
-          Powered by <a href="http://www.python.org/">Python</a> and 
-          <a href="http://www.djangoproject.com/">Django</a>
-        </span>
-      </div>
+  <footer>
+    <div class="container-fluid">
+      <hr>
+      <span class="pull-left">
+        version <strong>{{ecm_version}}</strong> &bull;
+        <em>Copyright &copy; 2010-2012 
+            <a href="http://www.myspace.com/therealdiabeteman/videos">diabeteman</a></em>
+      </span>
+      <span class="pull-right">
+        <a href="http://code.google.com/p/eve-corp-management/">Project on google code</a>
+        &bull;
+        Powered by <a href="http://www.python.org/">Python</a> and 
+        <a href="http://www.djangoproject.com/">Django</a>
+      </span>
     </div>
-  </div><!-- /FOOTER -->
+  </footer><!-- /FOOTER -->
 
 <!-- all javascript at the end to load pages faster -->
 {% block javascripts %}{% endblock %}

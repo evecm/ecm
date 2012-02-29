@@ -116,19 +116,11 @@
 </table>
 {% endblock %}
 
-
-{% block javascripts %}
-<script type="text/javascript">
-MEMBER_ID = "{{ member.characterID }}";
-</script>
-{% endblock %}
-
-
 {% block post_javascripts %}
 <script type="text/javascript">
 $(document).ready(function() {
     $('#access_changes_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource : "/hr/members/" + MEMBER_ID + "/accesschanges/data/",
+        sAjaxSource : "/hr/members/{{ member.characterID }}/accesschanges/data/",
         aoColumns: [
             { sTitle: "Change",     sWidth: "15%", sType: "html" ,  bSortable: false },
             { sTitle: "Title/Role", sWidth: "60%", sType: "html" ,  bSortable: false },

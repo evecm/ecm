@@ -3,69 +3,42 @@
 {% block headtitle %}{{supply.typeName}}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
-{% endblock %}
-
-{% block javascripts %}
-<script type="text/javascript">
-AJAX_URL = '/industry/catalog/supplies/{{supply.typeID}}/data/';
-SUPPLY_ID = {{supply.typeID}};
-</script>
-{% endblock %}
-
-{% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
-<script type="text/javascript"  src="{{ STATIC_URL }}industry/js/supply_details.js" ></script>
 {% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry">Industry</a></li>
 <li><a href="/industry/catalog/supplies/">Supplies</a></li>
-<li><a href="/industry/catalog/supplies/{{ supply.typeID }}/">{{ supply.typeName }}</a></li>
+<li class="active"><a href="/industry/catalog/supplies/{{ supply.typeID }}/">{{ supply.typeName }}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">{{supply.typeName}}</h1>
+<div class="page-header"><h1>{{supply.typeName}}</h1></div>
 
-<table class="transparent">
-  <tr>
-    <td><img src="http://image.eveonline.com/Type/{{supply.typeID}}_64.png" /></td>
-    <td>
-      <table class="transparent">
-        <tr>
-          <td class="bold">Price</td>
-          <td id="price">{{supply.price|ecm_price}}</td>
-        </tr>
-        <tr>
-          <td class="bold">Auto-Update</td>
-          <td>
-            <input type="checkbox" id="update_checkbox" {% if supply.auto_update %}checked{% endif %} />
-          </td>
-        </tr>
-        <tr>
-          <td class="bold">Supply Source</td>
-          <td>
-          <select id="supply_source">
-          {% for source in supply_sources %}
-            <option value="{{source.location_id}}"
-                    {%if supply.supply_source == source%}selected{%endif%}>{{source.name}}</option>
-          {% endfor %}
-          </select>
-          </td>
-        </tr>
-        <tr><td><input type="button" class="button" id="update_button" value="Update Price"/></td></tr>
-      </table>
-    </td>
-  </tr>
-</table>
+<div class="row-fluid">
+  <div class="span1"><img src="http://image.eveonline.com/Type/{{supply.typeID}}_64.png" /></div>
+  <div class="span11">
+    <dl>
+      <dt>Price</dt>
+        <dd id="price">{{supply.price|ecm_price}}</dd>
+      <dt>Auto-Update</dt>
+        <dd><input type="checkbox" id="update_checkbox" {% if supply.auto_update %}checked{% endif %}/></dd>
+      <dt>Supply Source</dt>
+        <dd>
+          <select id="supply_source" class="input-medium">{% for source in supply_sources %}
+            <option value="{{source.location_id}}" {%if supply.supply_source == source%}selected{%endif%}>{{source.name}}</option>
+          {% endfor %}</select>
+          <button class="btn btn-small" id="update_button" title="Update Price"><i class="icon-refresh"></i></button>
+        </dd>
+    </dl>
+  </div>
+</div>
+  
+<h3>Price History</h3>
 
-<h2>Price History</h2>
-
-<div  style="width: 50%;">
-<table class="display table" id="pricehistory_table">
+<div class="span6">
+<table class="table table-bordered table-condensed" id="pricehistory_table">
   <thead>
     <tr>
       {%for col in columns%}
@@ -81,3 +54,68 @@ SUPPLY_ID = {{supply.typeID}};
 </table>
 </div>
 {% endblock %}
+
+
+
+
+
+{% block post_javascripts %}
+<script type="text/javascript">
+$(document).ready(function() {
+
+    var table = $('#pricehistory_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        iDisplayLength: 10,         /* default display 25 items */
+        sAjaxSource: '/industry/catalog/supplies/{{supply.typeID}}/data/',
+        aoColumns: [
+            { /* 0 Date */  bSortable: false },
+            { /* 1 Price */ bSortable: false  },
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            $('td:eq(1)', nRow).addClass('right');
+            return nRow;
+        }
+    }));
+    
+    
+    $('dd#price').editable( '/industry/catalog/supplies/price/', {
+        submitdata : {id: {{supply.typeID}}},
+        tooltip: 'Click to edit...',
+        callback: function( sValue, y ) {
+            table.fnDraw();
+        },
+    });
+    $('#update_checkbox').click(function () {
+        var params = {
+            id: {{supply.typeID}},
+            value: $(this).is(':checked')
+        };
+        $.post('/industry/catalog/supplies/autoUpdate/', params);
+    });
+    $('#supply_source').change(function () {
+        var params = {
+            id: {{supply.typeID}},
+            value: $(this).val()
+        };
+        $.post('/industry/catalog/supplies/supplySource_id/', params);
+    });
+    $('#update_button').click(function () {
+        var oldPrice = $('dd#price').html();
+        $('dd#price').html('<img src="/static/ecm/img/throbber.gif"/>');
+        $.get('/industry/catalog/supplies/{{supply.typeID}}/updateprice/')
+         .success(function (data) {
+            $('dd#price').html(data);
+            table.fnDraw();
+         })
+         .error(function (data) {
+            $('dd#price').html(oldPrice);
+         });
+    });
+});
+
+
+
+
+</script>
+{% endblock %}
+
+
