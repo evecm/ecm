@@ -32,7 +32,7 @@ from django.template.context import RequestContext
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 
 from ecm.plugins.pos.views import print_fuel_quantity, print_duration
-from ecm.plugins.pos.models import POS, FuelLevel, FuelConsumption
+from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.core.eve import db
 from ecm.views.decorators import check_user_access
 from ecm.plugins.pos import constants
@@ -103,15 +103,8 @@ def fuel_data(request, pos_id):
             quantity = pos.fuel_levels.filter(type_id=type_id).latest().quantity
         except FuelLevel.DoesNotExist:
             quantity = 0
-        try:
-            fuelCons = pos.fuel_consumptions.get(type_id=type_id)
-            if fuelCons.probable_consumption == 0:
-                # if "probableConsumption" is 0, we fallback to "consumption"
-                consumption = fuelCons.consumption
-            else:
-                consumption = fuelCons.probable_consumption
-        except FuelConsumption.DoesNotExist:
-            consumption = sys.maxint
+        # put new consumption calculator here
+        consumption = 40
 
         if consumption == 0:
             timeLeft = '-'

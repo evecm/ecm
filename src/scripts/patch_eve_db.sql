@@ -387,7 +387,7 @@ DROP TABLE "eveUnits";
 -- DROP TABLE "invCategories";
 DROP TABLE "invContrabandTypes";
 DROP TABLE "invControlTowerResourcePurposes";
-DROP TABLE "invControlTowerResources";
+-- DROP TABLE "invControlTowerResources";
 DROP TABLE "invFlags";
 -- DROP TABLE "invGroups";
 DROP TABLE "invItems";

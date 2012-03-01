@@ -30,7 +30,7 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.plugins.pos.views import print_fuel_quantity, print_duration, print_time
-from ecm.plugins.pos.models import POS, FuelLevel, FuelConsumption
+from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
 from ecm.core import utils
@@ -142,16 +142,8 @@ def getFuelValue(pos, fuelTypeID, displayMode):
     if displayMode == 'quantities':
         value = print_fuel_quantity(quantity)
     else:
-        try:
-            fuelCons = pos.fuel_consumptions.get(type_id=fuelTypeID)
-            if fuelCons.probable_consumption == 0:
-                # if "probableConsumption" is 0, we fallback to "consumption"
-                consumption = fuelCons.consumption
-            else:
-                consumption = fuelCons.probable_consumption
-        except FuelConsumption.DoesNotExist:
-            consumption = sys.maxint
-
+        #put fuel consumption calcaltor here
+        consumption = 40
         if consumption == 0:
             value = '-'
         else:
