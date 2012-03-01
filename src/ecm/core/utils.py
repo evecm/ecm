@@ -135,6 +135,11 @@ def verbose_name(class_or_function, cap_first=True):
         return str(class_or_function)
 
 #------------------------------------------------------------------------------
+def sublists(big_list, sub_length):
+    for i in xrange(0, len(big_list), sub_length):
+        yield big_list[i:i + sub_length]
+
+#------------------------------------------------------------------------------
 def fix_mysql_quotes(query):
     """
     MySQL doesn't like double quotes. We replace them by backticks.

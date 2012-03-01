@@ -78,6 +78,50 @@ HAS_HANGAR_DIVISIONS = {
      3467: False, # Small Secure Container
     11488: False, # Huge Secure Container
     11489: False, # Giant Secure Container
+
+    # CONTROL TOWERS
+    12235: False, # Amarr Control Tower
+    12236: False, # Gallente Control Tower
+    16213: False, # Caldari Control Tower
+    16214: False, # Minmatar Control Tower
+    20059: False, # Amarr Control Tower Medium
+    20060: False, # Amarr Control Tower Small
+    20061: False, # Caldari Control Tower Medium
+    20062: False, # Caldari Control Tower Small
+    20063: False, # Gallente Control Tower Medium
+    20064: False, # Gallente Control Tower Small
+    20065: False, # Minmatar Control Tower Medium
+    20066: False, # Minmatar Control Tower Small
+    27530: False, # Blood Control Tower
+    27532: False, # Dark Blood Control Tower
+    27533: False, # Guristas Control Tower
+    27535: False, # Dread Guristas Control Tower
+    27536: False, # Serpentis Control Tower
+    27538: False, # Shadow Control Tower
+    27539: False, # Angel Control Tower
+    27540: False, # Domination Control Tower
+    27589: False, # Blood Control Tower Medium
+    27591: False, # Dark Blood Control Tower Medium
+    27592: False, # Blood Control Tower Small
+    27594: False, # Dark Blood Control Tower Small
+    27595: False, # Guristas Control Tower Medium
+    27597: False, # Dread Guristas Control Tower Medium
+    27598: False, # Guristas Control Tower Small
+    27600: False, # Dread Guristas Control Tower Small
+    27601: False, # Serpentis Control Tower Medium
+    27603: False, # Shadow Control Tower Medium
+    27604: False, # Serpentis Control Tower Small
+    27606: False, # Shadow Control Tower Small
+    27607: False, # Angel Control Tower Medium
+    27609: False, # Domination Control Tower Medium
+    27610: False, # Angel Control Tower Small
+    27612: False, # Domination Control Tower Small
+    27780: False, # Sansha Control Tower
+    27782: False, # Sansha Control Tower Medium
+    27784: False, # Sansha Control Tower Small
+    27786: False, # True Sansha Control Tower
+    27788: False, # True Sansha Control Tower Medium
+    27790: False, # True Sansha Control Tower Small
 }
 
 HANGAR_FLAG = {62:1, 4:1000, 116:1001, 117:1002, 118:1003, 119:1004, 120:1005, 121:1006}

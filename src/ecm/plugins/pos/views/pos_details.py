@@ -14,13 +14,10 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.views import extract_datatable_params
-from ecm.apps.corp.models import Corp
 
 __date__ = "2011-04-25"
 __author__ = "JerryKhan"
 
-import sys
 import re
 try:
     import json
@@ -36,6 +33,8 @@ from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.core.eve import db
 from ecm.views.decorators import check_user_access
 from ecm.plugins.pos import constants
+from ecm.views import extract_datatable_params
+from ecm.apps.corp.models import Corp
 
 COLUMNS = [
     ['Icon', 'type_id'],

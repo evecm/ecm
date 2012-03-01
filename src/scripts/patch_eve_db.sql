@@ -217,6 +217,9 @@ CREATE TABLE "mapCelestialObjects" (
   "regionID" int(11) DEFAULT NULL,
   "itemName" varchar(100) DEFAULT NULL,
   "security" double DEFAULT NULL,
+  "x" double DEFAULT NULL,
+  "y" double DEFAULT NULL,
+  "z" double DEFAULT NULL,
   PRIMARY KEY ("itemID")
 );
 
@@ -230,7 +233,10 @@ SELECT  "itemID",
         "solarSystemID",
         "regionID",
         "itemName",
-        "security"
+        "security",
+        "x",
+        "y",
+        "z"
 FROM "mapDenormalize"
 WHERE "groupID" IN (5 /*Solar System*/, 7 /*Planet*/, 8 /*Moon*/, 15 /*Station*/)
 ;

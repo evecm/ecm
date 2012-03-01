@@ -51,6 +51,34 @@ def get_type_names(typeIDs):
         cache.setCachedTypeName(typeID, (typeName, categoryID))
     cursor.close()
     return names
+
+#------------------------------------------------------------------------------
+SQL_CELESTIAL_OBJECTS = '''SELECT "itemID", "x", "y", "z" 
+FROM "mapCelestialObjects" 
+WHERE "solarSystemID" = %s
+  AND "groupID" IN (7, 8);''' # only planets & moons
+def get_celestial_objects(solarSystemID):
+    try:
+        return cache.get_cached_celestial_objects(solarSystemID)
+    except KeyError:
+        cursor = EVE_DB.cursor()
+        cursor.execute(SQL_CELESTIAL_OBJECTS, [solarSystemID])
+        objects = cursor.fetchall()
+        cursor.close()
+        cache.set_cached_celestial_objects(solarSystemID, objects)
+        return objects
+
+#------------------------------------------------------------------------------
+SQL_CELESTIAL_OBJ = '''SELECT "solarSystemID", "x", "y", "z" 
+FROM "mapCelestialObjects" 
+WHERE "itemID" = %s;'''
+def get_celestial_object(itemID):
+    cursor = EVE_DB.cursor()
+    cursor.execute(SQL_CELESTIAL_OBJ, [itemID])
+    solarSystemID, x, y, z = cursor.fetchone()
+    cursor.close()
+    return solarSystemID, x, y, z
+
 #------------------------------------------------------------------------------
 QUERY_SEARCH_TYPE = 'SELECT "typeID" FROM "invTypes" WHERE "typeName" LIKE %s;'
 def getMatchingIdsFromString(string):
@@ -75,7 +103,7 @@ def getSolarSystemID(stationID):
         cursor.close()
         try:
             return cache.getCachedSolarSystemID(stationID)
-        except:
+        except KeyError:
             return 0
 
 #------------------------------------------------------------------------------

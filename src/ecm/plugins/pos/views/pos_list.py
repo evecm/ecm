@@ -18,7 +18,6 @@
 __date__ = "2011-04-25"
 __author__ = "JerryKhan"
 
-import sys
 try:
     import json
 except ImportError:

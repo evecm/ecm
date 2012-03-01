@@ -39,6 +39,13 @@ class Asset(models.Model):
     hasContents = models.BooleanField(default=False) # true if item container
     volume = models.FloatField(default=0.0)
 
+    # added for locating items in solar system
+    closest_object_id = models.BigIntegerField(default=0)
+    name = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        get_latest_by = 'itemID'
+
     def __repr__(self):
         return str(self)
 

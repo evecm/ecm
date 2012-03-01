@@ -23,6 +23,7 @@ import logging
 from django.db import transaction
 
 from ecm.apps.common.models import Setting
+from ecm.core import utils
 from ecm.core.eve import api, db
 from ecm.core.eve import constants as cst
 from ecm.core.eve.classes import Item
@@ -62,6 +63,10 @@ def update():
 
     IGNORE_CAN_VOLUMES = Setting.get('assets_ignore_containers_volumes')
 
+    # we store the itemIDs of all the assets we want to locate 
+    # then query /corp/Locations.xml with the list
+    assets_to_locate = []
+
     LOG.info("parsing api response...")
     for row in apiAssets.assets:
         if row.typeID == cst.BOOKMARK_TYPEID:
@@ -80,6 +85,7 @@ def update():
                     row_is_pos_corporate_hangar_array(corpArray=row, items_dic=newItems)
                 else:
                     row_is_pos_array(array=row, items_dic=newItems)
+                assets_to_locate.append(row.itemID)
             except KeyError:
                 # unhandled typeID, this may be a reactor array or some other crap
                 pass
@@ -98,6 +104,9 @@ def update():
         Asset.objects.all().delete()
     for asset in newItems.values():
         asset.save()
+
+    update_assets_locations(assets_to_locate)
+    update_assets_names()
 
     # we store the update time of the table
     markUpdated(model=Asset, date=currentTime)
@@ -343,3 +352,78 @@ def locationID_to_stationID(locationID):
     else:
         return locationID - 6000000
 
+#------------------------------------------------------------------------------
+def update_assets_locations(assets_to_locate):
+    LOG.debug('Locating assets to their closest celestial object...')
+
+    api_conn = api.connect()
+    located_assets = []
+    # Fetch all the x,y,z positions of the assets from the API
+    for sub_list in utils.sublists(assets_to_locate, sub_length=50): # max 50 items per request
+        LOG.debug('fetching /corp/Locations.xml.aspx...')
+        ids = ','.join(map(str, sub_list))
+        locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
+        for loc in locations_api.locations:
+            located_assets.append( (loc.itemID, loc.itemName, loc.x, loc.y, loc.z) )
+    
+    LOG.debug('Computing positions...')
+    for itemID, itemName, X, Y, Z in located_assets:
+        # filter out all assets that are into the "in space" asset
+        contained_assets = Asset.objects.filter(stationID=itemID)
+        if contained_assets:
+            solarSystemID = contained_assets.latest().solarSystemID
+            distances = []
+            for object_id, x, y, z in db.get_celestial_objects(solarSystemID):
+                # Distances between celestial objects are huge. The error margin
+                # that comes with manatthan distance is totally acceptable.
+                # See http://en.wikipedia.org/wiki/Taxicab_geometry for culture.
+                manatthan_distance = abs(X - x) + abs(Y - y) + abs(Z - z)
+                distances.append((object_id, manatthan_distance))
+            
+            # Sort objects by increasing distance (we only want minimum)
+            distances.sort(key=lambda obj:obj[1])
+            # Finally, update all the items contained into the "in space" asset
+            Asset.objects.filter(stationID=itemID).update(closest_object_id=distances[0][0],
+                                                          name=itemName)
+
+
+#------------------------------------------------------------------------------
+def update_assets_names():
+    LOG.debug('Updating player defined names...')
+    
+    assets_to_name = Asset.objects.filter(name=None, 
+                                          container1=None, 
+                                          container2=None, 
+                                          singleton=True,
+                                          hasContents=True,
+                                          quantity=1).values_list('itemID', flat=True)
+    api_conn = api.connect()
+    named_assets = []
+    # Fetch all the x,y,z positions of the assets from the API
+    for sub_list in utils.sublists(assets_to_name, sub_length=50): # max 50 items per request
+        LOG.debug('fetching /corp/Locations.xml.aspx...')
+        ids = ','.join(map(str, sub_list))
+        locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
+        for loc in locations_api.locations:
+            named_assets.append( (loc.itemID, loc.itemName) )
+    
+    LOG.debug('Writing to DB...')
+    for itemID, itemName in named_assets:
+        Asset.objects.filter(itemID=itemID).update(name=itemName)
+
+#------------------------------------------------------------------------------
+def update_missing_closest_objects():
+    query = Asset.objects.filter(closest_object_id=None)
+    for stationID in query.values_list('stationID', flat=True).distinct():
+        solarSystemID, X, Y, Z = db.get_celestial_object(stationID)
+        distances = []
+        for object_id, x, y, z in db.get_celestial_objects(solarSystemID):
+            # Distances between celestial objects are huge. The error margin
+            # that comes with manatthan distance is totally acceptable.
+            # See http://en.wikipedia.org/wiki/Taxicab_geometry for culture.
+            manatthan_distance = abs(X - x) + abs(Y - y) + abs(Z - z)
+            distances.append((object_id, manatthan_distance))
+        # Sort objects by increasing distance (we only want minimum)
+        distances.sort(key=lambda obj:obj[1])
+        # Finally, update the closest object
+        Asset.objects.filter(stationID=stationID).update(closest_object_id=distances[0][0])

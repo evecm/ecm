@@ -51,6 +51,16 @@ def setCachedItem(typeID, item):
         CACHE_ITEMS[typeID] = item
 
 #------------------------------------------------------------------------------
+CACHE_CELESTIAL_OBJECTS = {}
+LOCK_CELESTIAL_OBJECTS = threading.RLock()
+def get_cached_celestial_objects(solarSystemID):
+    with LOCK_CELESTIAL_OBJECTS:
+        return CACHE_CELESTIAL_OBJECTS[solarSystemID]
+def set_cached_celestial_objects(solarSystemID, objs):
+    with LOCK_CELESTIAL_OBJECTS:
+        CACHE_CELESTIAL_OBJECTS[solarSystemID] = objs
+
+#------------------------------------------------------------------------------
 CACHE_BLUEPRINTS = {}
 LOCK_BLUEPRINTS = threading.RLock()
 def getCachedBlueprint(typeID):
