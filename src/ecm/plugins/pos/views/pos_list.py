@@ -135,7 +135,7 @@ def poses_data(request):
 def getFuelValue(pos, fuelTypeID, displayMode):
     try:
         fuel = pos.fuel_levels.filter(type_id=fuelTypeID).latest()
-        quantity = fuel.quantity
+        quantity = fuel.current_fuel()
         consumption = fuel.consumption
     except FuelLevel.DoesNotExist:
         quantity = 0

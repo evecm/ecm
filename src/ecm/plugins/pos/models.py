@@ -20,6 +20,7 @@ __author__ = "JerryKhan"
 
 from django.db import models
 from django.contrib.auth.models import User
+import datetime
 
 from ecm.plugins.pos import constants
 from ecm.core.eve import db
@@ -171,6 +172,17 @@ class FuelLevel(models.Model):
     quantity = models.IntegerField()
     consumption = models.IntegerField(default=0)
 
+    def current_fuel(self):
+        'return the current fuel based on hours since the last update.'
+        date_delta = datetime.datetime.now() - self.date
+        hours = int(date_delta.seconds / 3600)
+        consumed_fuel = hours * self.consumption
+        remaining_fuel = self.quantity - consumed_fuel
+        if remaining_fuel < 0:
+            return 0
+        else:
+            return int(remaining_fuel)
+        
     def fuel_admin_display(self):
         fuel_name, _ = db.get_type_name(self.type_id)
         return unicode(fuel_name)

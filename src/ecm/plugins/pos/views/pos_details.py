@@ -102,7 +102,7 @@ def fuel_data(request, pos_id):
     for type_id in fuelTypeIDs:
         try:
             fuel = pos.fuel_levels.filter(type_id=type_id).latest()
-            quantity = fuel.quantity
+            quantity = fuel.current_fuel()
             consumption = fuel.consumption
         except FuelLevel.DoesNotExist:
             quantity = 0
