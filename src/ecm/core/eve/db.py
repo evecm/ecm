@@ -246,4 +246,21 @@ def getActivityReqs(blueprintTypeID, activityID):
         cursor.close()
         cache.setCachedActivityReqs(blueprintTypeID, activityID, rows)
         return rows
+#------------------------------------------------------------------------------
+SQL_FUEL_CONSUMPTION = 'SELECT quantity FROM invControlTowerResources WHERE controlTowerTypeID = %s AND resourceTypeID = %s'
+def getFuelConsumption(posItemID, fuelTypeID):
+    cursor = EVE_DB.cursor()
+    cursor.execute(SQL_FUEL_CONSUMPTION, [posItemID, fuelTypeID])
+    row, = cursor.fetchone()
+    cursor.close()
+    return row
+#------------------------------------------------------------------------------
+SQL_SECURITY_STATUS = 'SELECT security FROM mapCelestialObjects WHERE itemID = %s'
+def getSecurityStatus(systemID):
+    cursor = EVE_DB.cursor()
+    cursor.execute(SQL_SECURITY_STATUS, [systemID])
+    row, = cursor.fetchone()
+    cursor.close()
+    return row
 
+    

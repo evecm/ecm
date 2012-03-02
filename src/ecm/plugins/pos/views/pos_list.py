@@ -134,15 +134,15 @@ def poses_data(request):
 #------------------------------------------------------------------------------
 def getFuelValue(pos, fuelTypeID, displayMode):
     try:
-        quantity = pos.fuel_levels.filter(type_id=fuelTypeID).latest().quantity
+        fuel = pos.fuel_levels.filter(type_id=fuelTypeID).latest()
+        quantity = fuel.quantity
+        consumption = fuel.consumption
     except FuelLevel.DoesNotExist:
         quantity = 0
-
+        consumption = 0
     if displayMode == 'quantities':
         value = print_fuel_quantity(quantity)
     else:
-        #put fuel consumption calcaltor here
-        consumption = 40
         if consumption == 0:
             value = '-'
         else:

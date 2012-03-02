@@ -68,6 +68,8 @@ def one_pos(request, pos_id):
             use_standings_from = 'Corporation'
         elif pos.use_standings_from == corp.allianceID:
             use_standings_from = 'Alliance'
+        else:
+            use_standings_from = pos.use_standings_from
     except Corp.DoesNotExist:
         use_standings_from = "???"
 
@@ -99,12 +101,12 @@ def fuel_data(request, pos_id):
     fuelTable = []
     for type_id in fuelTypeIDs:
         try:
-            quantity = pos.fuel_levels.filter(type_id=type_id).latest().quantity
+            fuel = pos.fuel_levels.filter(type_id=type_id).latest()
+            quantity = fuel.quantity
+            consumption = fuel.consumption
         except FuelLevel.DoesNotExist:
             quantity = 0
-        # put new consumption calculator here
-        consumption = 40
-
+            consumption = 0
         if consumption == 0:
             timeLeft = '-'
         else:

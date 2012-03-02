@@ -169,6 +169,7 @@ class FuelLevel(models.Model):
     date = models.DateTimeField(db_index=True, auto_now_add=True)
     type_id = models.IntegerField(db_index=True)
     quantity = models.IntegerField()
+    consumption = models.IntegerField(default=0)
 
     def fuel_admin_display(self):
         fuel_name, _ = db.get_type_name(self.type_id)
