@@ -161,7 +161,7 @@ def root(request, date_str):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def systems_data(request, date_str):
+def get_systems_data(request, date_str):
     date = datetime.strptime(date_str, DATE_PATTERN)
     divisions = extract_divisions(request)
     show_in_space = json.loads(request.GET.get('space', 'true'))
@@ -214,7 +214,7 @@ def systems_data(request, date_str):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def stations_data(request, date_str, solarSystemID):
+def get_stations_data(request, date_str, solarSystemID):
     date = datetime.strptime(date_str, DATE_PATTERN)
     solarSystemID = int(solarSystemID)
     divisions = extract_divisions(request)
@@ -271,7 +271,7 @@ def stations_data(request, date_str, solarSystemID):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def hangars_data(request, date_str, solarSystemID, stationID):
+def get_hangars_data(request, date_str, solarSystemID, stationID):
 
     date = datetime.strptime(date_str, DATE_PATTERN)
     solarSystemID = int(solarSystemID)

@@ -161,7 +161,7 @@ def package(options):
         
         print 'Inserting timestamp in __init__.py file...'
         init_file = os.path.join(os.path.join(package_src_dir, 'ecm/__init__.py'))
-        options.timestamp = functions.set_timestamp(init_file)
+        functions.set_timestamp(init_file, options.timestamp)
         functions.prepare_settings(os.path.join(package_src_dir, 'ecm/settings.py'))
         print 'Version %s.%s' % (options.version, options.timestamp)
 
@@ -169,7 +169,11 @@ def package(options):
         if os.path.exists(options.dist_dir):
             dir_util.remove_tree(options.dist_dir)
         dir_util.mkpath(options.dist_dir)
-        archive_name = os.path.normpath('ECM-%s.tar.gz' % options.version)
+        version_str = options.version
+        if options.timestamp_archive_name:
+            version_str += '.' + options.timestamp
+        
+        archive_name = os.path.normpath('ECM-%s.tar.gz' % version_str)
 
         curdir = os.getcwd()
         os.chdir(options.dist_dir)
@@ -186,7 +190,7 @@ def package(options):
                 else:
                     tarinfo.mode = 00644
             return tarinfo
-        tar.add(package_dir, arcname='ECM-%s' % options.version, filter=tar_filter)
+        tar.add(package_dir, arcname='ECM-%s' % version_str, filter=tar_filter)
         tar.close()
         os.chdir(curdir)
         print 'Archive generated: %s' % path.join(options.dist_dir, archive_name)
@@ -203,8 +207,8 @@ def clean(options):
 
 #-------------------------------------------------------------------------------
 if __name__ == '__main__':
-    version, timestamp = functions.get_timestamp(ROOT_DIR)
-    cmd, options = config.parse_args(version, timestamp)
+    version = functions.get_version(ROOT_DIR)
+    cmd, options = config.parse_args(version)
 
     try:
         if cmd == 'install':

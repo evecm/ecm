@@ -23,14 +23,15 @@ from django.conf.urls.defaults import patterns
 urlpatterns = patterns('ecm.plugins.assets.views.normal',
     ###########################################################################
     # ASSETS VIEWS
-    (r'^$',                                     'root'),
-    (r'^data/$',                                 'systems_data'),
-    (r'^(\d+)/data/$',                           'stations_data'),
-    (r'^(\d+)/(\d+)/data/$',                     'hangars_data'),
-    (r'^(\d+)/(\d+)/(\d+)/data/$',               'hangar_content_data'),
-    (r'^(\d+)/(\d+)/(\d+)/(\d+)/data/$',         'can1_content_data'),
-    (r'^(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/data/$',   'can2_content_data'),
-    (r'^search/$',                               'search_items'),
+    (r'^$',                                             'root'),
+    (r'^data/$',                                        'get_systems_data'),
+    (r'^(\d+)/data/$',                                  'get_celestial_objects_data'),
+    (r'^(\d+)/(\d+)/data/$',                            'get_stations_data'),
+    (r'^(\d+)/(\d+)/(\d+)/data/$',                      'get_hangars_data'),
+    (r'^(\d+)/(\d+)/(\d+)/(\d+)/data/$',                'hangar_content_data'),
+    (r'^(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/data/$',          'can1_content_data'),
+    (r'^(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/data/$',    'can2_content_data'),
+    (r'^search/$',                                      'search_items'),
 )
 
 DATE = r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})"
@@ -41,9 +42,9 @@ urlpatterns += patterns('ecm.plugins.assets.views.diff',
     (r'^changes/$',                                      'last_date'),
     (r'^changes/dates/$',                                'get_dates'),
     (r'^changes/' + DATE + r'/$',                        'root'),
-    (r'^changes/' + DATE + r'/data/$',                   'systems_data'),
-    (r'^changes/' + DATE + r'/(\d+)/data/$',             'stations_data'),
-    (r'^changes/' + DATE + r'/(\d+)/(\d+)/data/$',       'hangars_data'),
+    (r'^changes/' + DATE + r'/data/$',                   'get_systems_data'),
+    (r'^changes/' + DATE + r'/(\d+)/data/$',             'get_stations_data'),
+    (r'^changes/' + DATE + r'/(\d+)/(\d+)/data/$',       'get_hangars_data'),
     (r'^changes/' + DATE + r'/(\d+)/(\d+)/(\d+)/data/$', 'hangar_contents_data'),
     (r'^changes/' + DATE + r'/search/$',                 'search_items'),
 )

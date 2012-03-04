@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011-05-21"
-__author__ = "diabeteman"
+__date__ = '2011-05-21'
+__author__ = 'diabeteman'
 
 
 
@@ -32,6 +32,7 @@ from django.template.defaultfilters import pluralize
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 from django.db import connection
+from django.db.models.query_utils import Q
 
 from ecm.views.decorators import check_user_access
 from ecm.core.eve import constants, db
@@ -43,24 +44,24 @@ from ecm.apps.common.models import Setting
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 
 
-CATEGORY_ICONS = { 2 : "can" ,
-                   4 : "mineral" ,
-                   6 : "ship" ,
-                   8 : "ammo" ,
-                   9 : "blueprint",
-                  16 : "skill" }
+CATEGORY_ICONS = { 2 : 'can' ,
+                   4 : 'mineral' ,
+                   6 : 'ship' ,
+                   8 : 'ammo' ,
+                   9 : 'blueprint',
+                  16 : 'skill' }
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def root(request):
     scan_date = getScanDate(Asset)
-    if scan_date == "<no data>":
-        return render_to_response("assets_no_data.html", Ctx(request))
+    if scan_date == '<no data>':
+        return render_to_response('assets_no_data.html', Ctx(request))
 
-    all_hangars = Hangar.objects.all().order_by("hangarID")
+    all_hangars = Hangar.objects.all().order_by('hangarID')
     try:
-        divisions_str = request.GET["divisions"]
-        divisions = [ int(div) for div in divisions_str.split(",") ]
+        divisions_str = request.GET['divisions']
+        divisions = [ int(div) for div in divisions_str.split(',') ]
         for h in all_hangars:
             h.checked = h.hangarID in divisions
     except:
@@ -68,8 +69,8 @@ def root(request):
         for h in all_hangars:
             h.checked = True
 
-    show_in_space = json.loads(request.GET.get("space", "true"))
-    show_in_stations = json.loads(request.GET.get("stations", "true"))
+    show_in_space = json.loads(request.GET.get('space', 'true'))
+    show_in_stations = json.loads(request.GET.get('stations', 'true'))
 
     data = { 'show_in_space' : show_in_space,
           'show_in_stations' : show_in_stations,
@@ -77,7 +78,7 @@ def root(request):
                    'hangars' : all_hangars,
                  'scan_date' : scan_date }
 
-    return render_to_response("assets.html", data, Ctx(request))
+    return render_to_response('assets.html', data, Ctx(request))
 
 
 
@@ -85,11 +86,11 @@ def root(request):
 #------------------------------------------------------------------------------
 
 @check_user_access()
-def systems_data(request):
+def get_systems_data(request):
 
     divisions = extract_divisions(request)
-    show_in_space = json.loads(request.GET.get("space", "true"))
-    show_in_stations = json.loads(request.GET.get("stations", "true"))
+    show_in_space = json.loads(request.GET.get('space', 'true'))
+    show_in_stations = json.loads(request.GET.get('stations', 'true'))
 
     where = []
     if not show_in_space:
@@ -97,11 +98,10 @@ def systems_data(request):
     if not show_in_stations:
         where.append('"stationID" > %d' % constants.MAX_STATION_ID)
     if divisions is not None:
-        s = ('%s,' * len(divisions))[:-1]
-        where.append('"hangarID" IN (%s)' % s)
+        where.append('"hangarID" IN (%s)' % ', '.join(['%s'] * len(divisions)))
 
     sql = 'SELECT "solarSystemID", COUNT(*) AS "items", SUM("volume") AS "volume" '\
-          'FROM "assets_asset"'
+          'FROM "assets_asset" '
     if where: sql += ' WHERE ' + ' AND '.join(where)
     sql += ' GROUP BY "solarSystemID";'
     sql = utils.fix_mysql_quotes(sql)
@@ -118,11 +118,11 @@ def systems_data(request):
     for solarSystemID, items, volume in cursor:
         name, security = db.resolveLocationName(solarSystemID)
         if security > 0.5:
-            color = "hisec"
+            color = 'hisec'
         elif security > 0:
-            color = "lowsec"
+            color = 'lowsec'
         else:
-            color = "nullsec"
+            color = 'nullsec'
 
         if exact_volumes:
             volume = utils.print_float(volume)
@@ -130,25 +130,26 @@ def systems_data(request):
             volume = utils.round_quantity(volume)
 
         jstree_data.append({
-            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
-            "attr" : {
-                "id" : "%d_" % solarSystemID,
-                "rel" : "system",
-                "sort_key" : name.lower(),
-                "class" : "system-%s-row" % color
+            'data' : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
+            'attr' : {
+                'id' : '%d_' % solarSystemID,
+                'rel' : 'system',
+                'sort_key' : name.lower(),
+                'class' : 'system-%s-row' % color
             },
-            "state" : "closed"
+            'state' : 'closed'
         })
     cursor.close()
     return HttpResponse(json.dumps(jstree_data))
 
+
 #------------------------------------------------------------------------------
 @check_user_access()
-def stations_data(request, solarSystemID):
+def get_celestial_objects_data(request, solarSystemID):
     solarSystemID = int(solarSystemID)
     divisions = extract_divisions(request)
-    show_in_space = json.loads(request.GET.get("space", "true"))
-    show_in_stations = json.loads(request.GET.get("stations", "true"))
+    show_in_space = json.loads(request.GET.get('space', 'true'))
+    show_in_stations = json.loads(request.GET.get('stations', 'true'))
 
     where = []
     if not show_in_space:
@@ -156,14 +157,14 @@ def stations_data(request, solarSystemID):
     if not show_in_stations:
         where.append('"stationID" > %d' % constants.MAX_STATION_ID)
     if divisions is not None:
-        s = ('%s,' * len(divisions))[:-1]
-        where.append('"hangarID" IN (%s)' % s)
+        where.append('"hangarID" IN (%s)' % ', '.join(['%s'] * len(divisions)))
 
-    sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items", SUM("volume") AS "volume" '\
-          'FROM "assets_asset"'
-    sql += 'WHERE "solarSystemID"=%s '
-    if where: sql += ' AND ' + ' AND '.join(where)
-    sql += ' GROUP BY "stationID";'
+    sql = 'SELECT "closest_object_id", COUNT(*), SUM("volume") '\
+          'FROM "assets_asset" '\
+          'WHERE "solarSystemID"=%s '
+    if where: 
+        sql += ' AND ' + ' AND '.join(where)
+    sql += ' GROUP BY "closest_object_id";'
     sql = utils.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
@@ -175,15 +176,78 @@ def stations_data(request, solarSystemID):
     exact_volumes = Setting.get('assets_show_exact_volumes')
 
     jstree_data = []
-    for stationID, flag, items, volume in cursor:
+    for closest_object_id, items, volume in cursor:
+        
+        name = db.resolveLocationName(closest_object_id)[0]
+        
+        if exact_volumes:
+            volume = utils.print_float(volume)
+        else:
+            volume = utils.round_quantity(volume)
+
+        jstree_data.append({
+            'data' : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
+            'attr' : {
+                'id' : '%d_%d_' % (solarSystemID, closest_object_id),
+                'sort_key' : closest_object_id,
+                'rel' : 'celestial',
+                'class' : 'celestial-row',
+            },
+            'state' : 'closed'
+        })
+    cursor.close()
+    return HttpResponse(json.dumps(jstree_data))
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def get_stations_data(request, solarSystemID, closest_obj_id):
+    solarSystemID = int(solarSystemID)
+    closest_obj_id = int(closest_obj_id)
+    divisions = extract_divisions(request)
+    show_in_space = json.loads(request.GET.get('space', 'true'))
+    show_in_stations = json.loads(request.GET.get('stations', 'true'))
+
+    where = []
+    if not show_in_space:
+        where.append('"stationID" < %d' % constants.MAX_STATION_ID)
+    if not show_in_stations:
+        where.append('"stationID" > %d' % constants.MAX_STATION_ID)
+    if divisions is not None:
+        where.append('"hangarID" IN (%s)' % ', '.join(['%s'] * len(divisions)))
+
+    sql = 'SELECT "stationID", MAX("name"), MAX("flag"), COUNT(*), SUM("volume") '\
+          'FROM "assets_asset" '\
+          'WHERE "solarSystemID"=%s AND "closest_object_id"=%s '
+    if where: sql += ' AND ' + ' AND '.join(where)
+    sql += ' GROUP BY "stationID";'
+    sql = utils.fix_mysql_quotes(sql)
+
+    cursor = connection.cursor() #@UndefinedVariable
+    if divisions is None:
+        cursor.execute(sql, [solarSystemID, closest_obj_id])
+    else:
+        cursor.execute(sql, [solarSystemID, closest_obj_id] + list(divisions))
+
+    exact_volumes = Setting.get('assets_show_exact_volumes')
+
+    jstree_data = []
+    for stationID, item_name, flag, items, volume in cursor:
         if stationID < constants.MAX_STATION_ID:
             # it's a real station
             name = db.resolveLocationName(stationID)[0]
-            icon = "station"
+            icon = 'station'
         else:
             # it is an inspace anchorable array
-            name = db.get_type_name(flag)[0]
-            icon = "array"
+            type_name, _ = db.get_type_name(flag)
+            
+            name = type_name
+            if item_name and type_name != item_name:
+                name += ' "%s"' % item_name
+            
+            if constants.CONTROL_TOWERS.has_key(flag):
+                icon = 'pos'
+            else:
+                icon = 'array'
 
         if exact_volumes:
             volume = utils.print_float(volume)
@@ -191,14 +255,14 @@ def stations_data(request, solarSystemID):
             volume = utils.round_quantity(volume)
 
         jstree_data.append({
-            "data" : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
-            "attr" : {
-                "id" : "%d_%d_" % (solarSystemID, stationID),
-                "sort_key" : stationID,
-                "rel" : icon,
-                "class" : "%s-row" % icon
+            'data' : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
+            'attr' : {
+                'id' : '%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID),
+                'sort_key' : stationID,
+                'rel' : icon,
+                'class' : '%s-row' % icon
             },
-            "state" : "closed"
+            'state' : 'closed'
         })
     cursor.close()
     return HttpResponse(json.dumps(jstree_data))
@@ -206,28 +270,28 @@ def stations_data(request, solarSystemID):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def hangars_data(request, solarSystemID, stationID):
+def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
     solarSystemID = int(solarSystemID)
+    closest_obj_id = int(closest_obj_id)
     stationID = int(stationID)
     divisions = extract_divisions(request)
 
     where = []
     if divisions is not None:
-        s = ('%s,' * len(divisions))[:-1]
-        where.append('"hangarID" IN (%s)' % s)
+        where.append('"hangarID" IN (%s)' % ', '.join(['%s'] * len(divisions)))
 
     sql = 'SELECT "hangarID", COUNT(*) AS "items", SUM("volume") AS "volume" '\
-          'FROM "assets_asset"'
-    sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s '
+          'FROM "assets_asset" '\
+          'WHERE "solarSystemID"=%s AND "closest_object_id"=%s AND "stationID"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "hangarID";'
     sql = utils.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
-        cursor.execute(sql, [solarSystemID, stationID])
+        cursor.execute(sql, [solarSystemID, closest_obj_id, stationID])
     else:
-        cursor.execute(sql, [solarSystemID, stationID] + list(divisions))
+        cursor.execute(sql, [solarSystemID, closest_obj_id, stationID] + list(divisions))
 
     HANGAR = {}
     for h in Hangar.objects.all():
@@ -244,14 +308,14 @@ def hangars_data(request, solarSystemID, stationID):
             volume = utils.round_quantity(volume)
 
         jstree_data.append({
-            "data": HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items), volume),
-            "attr" : {
-                "id" : "%d_%d_%d_" % (solarSystemID, stationID, hangarID),
-                "sort_key" : hangarID,
-                "rel" : "hangar",
-                "class" : "hangar-row"
+            'data': HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items), volume),
+            'attr' : {
+                'id' : '%d_%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID, hangarID),
+                'sort_key' : hangarID,
+                'rel' : 'hangar',
+                'class' : 'hangar-row'
             },
-            "state" : "closed"
+            'state' : 'closed'
         })
 
     return HttpResponse(json.dumps(jstree_data))
@@ -259,8 +323,9 @@ def hangars_data(request, solarSystemID, stationID):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def hangar_content_data(request, solarSystemID, stationID, hangarID):
+def hangar_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID):
     solarSystemID = int(solarSystemID)
+    closest_obj_id = int(closest_obj_id)
     stationID = int(stationID)
     hangarID = int(hangarID)
 
@@ -270,34 +335,36 @@ def hangar_content_data(request, solarSystemID, stationID, hangarID):
 
     jstree_data = []
     for item in query:
-        name, category = db.get_type_name(item.typeID)
+        type_name, category = db.get_type_name(item.typeID)
 
         try:
             icon = CATEGORY_ICONS[category]
         except KeyError:
-            icon = "item"
+            icon = 'item'
 
         if item.hasContents:
-            data = name
-            ID = "%d_%d_%d_%d_" % (solarSystemID, stationID, hangarID, item.itemID)
-            state = "closed"
+            data = type_name
+            if item.name and item.name != type_name:
+                data += ' "%s"' % item.name
+            ID = '%d_%d_%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID, hangarID, item.itemID)
+            state = 'closed'
         elif item.singleton:
-            data = name
-            ID = ""
-            state = ""
+            data = type_name
+            ID = ''
+            state = ''
         else:
-            data = "%s <i>- (x %s)</i>" % (name, utils.print_integer(item.quantity))
-            ID = ""
-            state = ""
-
+            data = '%s <i>- (x %s)</i>' % (type_name, utils.print_integer(item.quantity))
+            ID = ''
+            state = ''
+        
         jstree_data.append({
-            "data": data,
-            "attr" : {
-                "id" : ID,
-                "sort_key" : name.lower(),
-                "rel" : icon
+            'data': data,
+            'attr' : {
+                'id' : ID,
+                'sort_key' : type_name.lower(),
+                'rel' : icon
             },
-            "state" : state
+            'state' : state
         })
 
     return HttpResponse(json.dumps(jstree_data))
@@ -305,8 +372,9 @@ def hangar_content_data(request, solarSystemID, stationID, hangarID):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def can1_content_data(request, solarSystemID, stationID, hangarID, container1):
+def can1_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID, container1):
     solarSystemID = int(solarSystemID)
+    closest_obj_id = int(closest_obj_id)
     stationID = int(stationID)
     hangarID = int(hangarID)
     container1 = int(container1)
@@ -319,19 +387,19 @@ def can1_content_data(request, solarSystemID, stationID, hangarID, container1):
         item = {}
         name, category = db.get_type_name(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
-        except: icon = "item"
+        except: icon = 'item'
 
         if i.hasContents:
-            item["data"] = name
-            ID = "%d_%d_%d_%d_%d_" % (solarSystemID, stationID, hangarID, container1, i.itemID)
-            item["attr"] = { "id" : ID , "rel" : icon , "href" : "", "class" : "%s-row" % icon  }
-            item["state"] = "closed"
+            item['data'] = name
+            ID = '%d_%d_%d_%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID, hangarID, container1, i.itemID)
+            item['attr'] = { 'id' : ID , 'rel' : icon , 'href' : '', 'class' : '%s-row' % icon  }
+            item['state'] = 'closed'
         elif i.singleton:
-            item["data"] = name
-            item["attr"] = { "rel" : icon , "href" : ""  }
+            item['data'] = name
+            item['attr'] = { 'rel' : icon , 'href' : ''  }
         else:
-            item["data"] = "%s <i>- (x %s)</i>" % (name, utils.print_integer(i.quantity))
-            item["attr"] = { "rel" : icon , "href" : ""  }
+            item['data'] = '%s <i>- (x %s)</i>' % (name, utils.print_integer(i.quantity))
+            item['attr'] = { 'rel' : icon , 'href' : ''  }
 
         json_data.append(item)
 
@@ -340,8 +408,9 @@ def can1_content_data(request, solarSystemID, stationID, hangarID, container1):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def can2_content_data(request, solarSystemID, stationID, hangarID, container1, container2):
+def can2_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID, container1, container2):
     solarSystemID = int(solarSystemID)
+    closest_obj_id = int(closest_obj_id)
     stationID = int(stationID)
     hangarID = int(hangarID)
     container1 = int(container1)
@@ -354,12 +423,12 @@ def can2_content_data(request, solarSystemID, stationID, hangarID, container1, c
         item = {}
         name, category = db.get_type_name(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
-        except: icon = "item"
+        except: icon = 'item'
         if i.singleton:
-            item["data"] = name
+            item['data'] = name
         else:
-            item["data"] = "%s <i>- (x %s)</i>" % (name, utils.print_integer(i.quantity))
-        item["attr"] = { "rel" : icon , "href" : ""  }
+            item['data'] = '%s <i>- (x %s)</i>' % (name, utils.print_integer(i.quantity))
+        item['attr'] = { 'rel' : icon , 'href' : ''  }
         json_data.append(item)
 
     return HttpResponse(json.dumps(json_data))
@@ -370,13 +439,13 @@ def can2_content_data(request, solarSystemID, stationID, hangarID, container1, c
 def search_items(request):
 
     divisions = extract_divisions(request)
-    show_in_space = json.loads(request.GET.get("space", "true"))
-    show_in_stations = json.loads(request.GET.get("stations", "true"))
-    search_string = request.GET.get("search_string", "no-item")
+    show_in_space = json.loads(request.GET.get('space', 'true'))
+    show_in_stations = json.loads(request.GET.get('stations', 'true'))
+    search_string = request.GET.get('search_string', 'no-item')
 
     matchingIDs = db.getMatchingIdsFromString(search_string)
-
-    query = Asset.objects.filter(typeID__in=matchingIDs)
+    
+    query = Asset.objects.filter(Q(typeID__in=matchingIDs) | Q(name__icontains=search_string))
 
     if divisions is not None:
         query = query.filter(hangarID__in=divisions)
@@ -385,21 +454,22 @@ def search_items(request):
     if not show_in_stations:
         query = query.filter(stationID__gt=constants.MAX_STATION_ID)
 
-
     json_data = []
 
     for item in query:
-        nodeid = "#%d_" % item.solarSystemID
+        nodeid = '#%d_' % item.solarSystemID
         json_data.append(nodeid)
-        nodeid = nodeid + "%d_" % item.stationID
+        nodeid = nodeid + '%d_' % item.closest_object_id
         json_data.append(nodeid)
-        nodeid = nodeid + "%d_" % item.hangarID
+        nodeid = nodeid + '%d_' % item.stationID
+        json_data.append(nodeid)
+        nodeid = nodeid + '%d_' % item.hangarID
         json_data.append(nodeid)
         if item.container1:
-            nodeid = nodeid + "%d_" % item.container1
+            nodeid = nodeid + '%d_' % item.container1
             json_data.append(nodeid)
             if item.container2:
-                nodeid = nodeid + "%d_" % item.container2
+                nodeid = nodeid + '%d_' % item.container2
                 json_data.append(nodeid)
 
     return HttpResponse(json.dumps(json_data))

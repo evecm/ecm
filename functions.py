@@ -51,18 +51,15 @@ def prepare_settings(settings_file):
     with open(settings_file, 'w') as f:
         f.write(buff)
 #-------------------------------------------------------------------------------
-def get_timestamp(root_dir):
+def get_version(root_dir):
     sys.path.append(path.join(root_dir, 'src'))
     import ecm
     version = ecm.VERSION
-    timestamp = ecm.TIMESTAMP
     del(sys.modules["ecm"])
     sys.path.remove(path.join(root_dir, 'src'))
-    return version, timestamp
+    return version
 #-------------------------------------------------------------------------------
-def set_timestamp(init_file):
-    from datetime import datetime
-    timestamp = datetime.now().strftime("%Y%m%d%H%M")
+def set_timestamp(init_file, timestamp):
     f = open(init_file, "r")
     buff = f.read()
     f.close()
@@ -70,7 +67,6 @@ def set_timestamp(init_file):
     f = open(init_file, "w")
     f.write(buff)
     f.close()
-    return timestamp
 #-------------------------------------------------------------------------------
 def restore_permissions(options, f_stat=None):
     # change owner to backuped owner on installation folder recursively

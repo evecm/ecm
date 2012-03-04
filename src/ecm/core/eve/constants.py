@@ -78,8 +78,9 @@ HAS_HANGAR_DIVISIONS = {
      3467: False, # Small Secure Container
     11488: False, # Huge Secure Container
     11489: False, # Giant Secure Container
+}
 
-    # CONTROL TOWERS
+CONTROL_TOWERS = {
     12235: False, # Amarr Control Tower
     12236: False, # Gallente Control Tower
     16213: False, # Caldari Control Tower
@@ -123,6 +124,7 @@ HAS_HANGAR_DIVISIONS = {
     27788: False, # True Sansha Control Tower Medium
     27790: False, # True Sansha Control Tower Small
 }
+HAS_HANGAR_DIVISIONS.update(CONTROL_TOWERS)
 
 HANGAR_FLAG = {62:1, 4:1000, 116:1001, 117:1002, 118:1003, 119:1004, 120:1005, 121:1006}
 CARGO_FLAG = [5].extend(range(133, 145))

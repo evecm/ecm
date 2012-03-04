@@ -18,7 +18,9 @@
 __date__ = '2011 8 23'
 __author__ = 'diabeteman'
 
+import os
 from os import path
+from datetime import datetime
 from functions import prompt
 from optparse import OptionParser, OptionGroup
 from ConfigParser import ConfigParser
@@ -39,6 +41,7 @@ DEFAULT_OPTIONS = {
     'plugins': '',
     'src_dir': path.join(ROOT_DIR, 'src'),
     'dist_dir': path.join(ROOT_DIR, 'dist'),
+    'timestamp_archive_name': False,
     
     'db_engine': None,
     'db_name': 'ecm',
@@ -61,25 +64,18 @@ DEFAULT_OPTIONS = {
 }
 
 #-------------------------------------------------------------------------------
-def parse_args(version, timestamp):
+def parse_args(version):
 
     valid_commands = ['install', 'upgrade', 'package', 'clean']
 
     parser = OptionParser(usage='setup.py {%s} [options] [install_dir]' % '|'.join(valid_commands),
-                          version='%s.%s' % (version, timestamp))
+                          version='%s' % version)
 
     parser.add_option('-q', '--quiet', dest='quiet', action='store_true',
                        help='Do not prompt the user for confirmations (assume "yes").')
     parser.add_option('-p', '--plugins', dest='plugins', 
                       help='Install or upgrade these plugins. Give the plugins separated '
                            'by commas: "assets,industry,accounting"')
-
-    f_group = OptionGroup(parser, 'Folders options')
-    f_group.add_option('--src-dir', dest='src_dir', 
-                       help='Source directory where to find the installation files.')
-    f_group.add_option('--dist-dir', dest='dist_dir', 
-                       help='Target directory where to generate the package.')
-    parser.add_option_group(f_group)
 
     db_group = OptionGroup(parser, 'Database options')
     db_group.add_option('--database-engine', dest='db_engine',
@@ -121,12 +117,27 @@ def parse_args(version, timestamp):
                        help='Password for the SMTP user.')
     parser.add_option_group(w_group)
 
+    f_group = OptionGroup(parser, 'Packaging options')
+    f_group.add_option('--src-dir', dest='src_dir', 
+                       help='Source directory where to find the installation files.')
+    f_group.add_option('--dist-dir', dest='dist_dir', 
+                       help='Target directory where to generate the package.')
+    f_group.add_option('--timestamp', dest='timestamp', 
+                       help='Identifier of the generated package.')
+    f_group.add_option('--timestamp-archive-name', dest='timestamp_archive_name', 
+                       action='store_true', help='Append timestamp to the archive name.')
+    parser.add_option_group(f_group)
+
     cmd_line_options, args = parser.parse_args()
-
+    
     cmd_line_options.version = version
-    cmd_line_options.timestamp = timestamp
-
-
+    
+    if not cmd_line_options.timestamp:
+        if os.environ.has_key('TIMESTAMP') and os.environ.get('TIMESTAMP'):
+            cmd_line_options.timestamp = os.environ.get('TIMESTAMP')
+        else:
+            cmd_line_options.timestamp = datetime.now().strftime('%Y%m%d.%H%M')
+    
     # First, try to read options from "setup.cfg"
     cfgparser = ConfigParser()
     cfgparser.read(path.join(ROOT_DIR, 'setup.cfg'))

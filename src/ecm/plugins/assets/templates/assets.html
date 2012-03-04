@@ -102,7 +102,17 @@ $(document).ready(function () {
                     icon : {
                         image : '{{ STATIC_URL }}assets/img/system.png'
                     },
-                    valid_children : [ 'array', 'station' ],
+                    valid_children : [ 'celestial' ],
+                    max_depth : 6,
+                    open_node   : true,
+                    close_node  : true
+                },
+                celestial : {
+                    class : 'celestial-row',
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/celestial.png'
+                    },
+                    valid_children : [ 'array', 'pos', 'station' ],
                     max_depth : 5,
                     open_node   : true,
                     close_node  : true
@@ -111,6 +121,16 @@ $(document).ready(function () {
                     class : 'hangar-row',
                     icon : {
                         image : '{{ STATIC_URL }}assets/img/array.png'
+                    },
+                    valid_children : [ 'hangar' ],
+                    max_depth : 4,
+                    open_node   : true,
+                    close_node  : true
+                },
+                pos : {
+                    class : 'hangar-row',
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/pos.png'
                     },
                     valid_children : [ 'hangar' ],
                     max_depth : 4,
