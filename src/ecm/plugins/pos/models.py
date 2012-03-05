@@ -68,8 +68,8 @@ class POS(models.Model):
 
     # access restrictions are encoded on 2 bits
     ACCESS_RESTRICTIONS = {
-        0: '<a href="/hr/roles/roles/9007199254740992/" class="role">Starbase Config</a>',
-        1: '<a href="/hr/roles/roles/288230376151711744/" class="role">Starbase Fuel Tech</a>',
+        0: '<a href="/hr/roles/20/" class="role">Starbase Config</a>',
+        1: '<a href="/hr/roles/25/" class="role">Starbase Fuel Tech</a>',
         2: 'Corporation Members',
         3: 'Alliance Members',
     }

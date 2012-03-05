@@ -34,30 +34,43 @@ class Command(BaseCommand):
             dest='reset',
             default=False,
             help='Force reset "running" tasks before execution.'),
-        )
+        make_option('--all',
+            action='store_true',
+            dest='all',
+            default=False,
+            help='Run all tasks ordered by decreasing priority.'),
+    )
     def handle(self, *args, **options):
 
         all_tasks = ScheduledTask.objects.filter(is_active=True).order_by('function')
         all_tasks_txt = "\n  ".join([ t.function for t in all_tasks ])
 
-        if len(args) == 0:
+        if options.get('all'):
+            for task in all_tasks.order_by('-priority'):
+                if options.get('reset'):
+                    task.is_running = False
+                if task.is_running:
+                    raise CommandError('ScheduledTask "%s" is already running.' % task.function)
+                task.run()
+        elif len(args) == 0:
             raise CommandError('No ScheduledTask name provided. \n\n' +
                                'Please choose one of: \n  %s\n' % all_tasks_txt)
-        for task_name in args:
-            tasks = all_tasks.filter(function__contains=task_name)
-
-            if len(tasks) > 1:
-                tasks_txt = "\n  ".join([ t.function for t in tasks ])
-                raise CommandError('Multiple ScheduledTasks found with "%s" in their name. \n  %s\n'
-                                   % (task_name, tasks_txt))
-            elif len(tasks) == 0:
-                raise CommandError('No ScheduledTask found with "%s" in their name. \n\n'
-                                   'Please choose one of: \n  %s\n' % (task_name, all_tasks_txt))
-            task = tasks[0]
-            if options.get('reset'):
-                task.is_running = False
-            if task.is_running:
-                raise CommandError('ScheduledTask "%s" is already running.' % task.function)
-
-            task.run()
-            self.stdout.write('Successfully executed "%s"\n' % task.function)
+        else:
+            for task_name in args:
+                tasks = all_tasks.filter(function__contains=task_name)
+    
+                if len(tasks) > 1:
+                    tasks_txt = "\n  ".join([ t.function for t in tasks ])
+                    raise CommandError('Multiple ScheduledTasks found with "%s" in their name. \n  %s\n'
+                                       % (task_name, tasks_txt))
+                elif len(tasks) == 0:
+                    raise CommandError('No ScheduledTask found with "%s" in their name. \n\n'
+                                       'Please choose one of: \n  %s\n' % (task_name, all_tasks_txt))
+                task = tasks[0]
+                if options.get('reset'):
+                    task.is_running = False
+                if task.is_running:
+                    raise CommandError('ScheduledTask "%s" is already running.' % task.function)
+    
+                task.run()
+                self.stdout.write('Successfully executed "%s"\n' % task.function)

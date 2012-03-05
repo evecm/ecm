@@ -126,8 +126,8 @@ def resolveLocationName(locationID):
 #------------------------------------------------------------------------------
 SQL_UPDATE_OUTPOST_NAME = 'UPDATE mapCelestialObjects SET itemName=%s WHERE itemID=%s;'
 SQL_NEW_OUTPOST = '''INSERT INTO mapCelestialObjects
-(itemID, typeID, groupID, solarSystemID, regionID, itemName, security)
-VALUES (%s, 0, 0, %s, 0, %s, %s);'''
+(itemID, typeID, groupID, solarSystemID, regionID, itemName, security, x, y, z)
+VALUES (%s, 0, 0, %s, 0, %s, %s, %s, %s, %s);'''
 def updateLocationName(stationID, solarSystemID, locationName):
     oldName, security = resolveLocationName(stationID)
     cursor = EVE_DB.cursor()

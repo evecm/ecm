@@ -6,19 +6,19 @@ a.pos {
 }
 
 .pos-unanchored {
-    background: #cccccc url(../img/unanchored.png) center no-repeat;
+    background: #cccccc url(../img/unanchored.png) center no-repeat !important;
 }
 .pos-offline {
-    background: #bbd0ff url(../img/offline.png) center no-repeat;
+    background: #bbd0ff url(../img/offline.png) center no-repeat !important;
 }
 .pos-onlining {
-    background: #fffbbb url(../img/onlining.png) center no-repeat;
+    background: #fffbbb url(../img/onlining.png) center no-repeat !important;
 }
 .pos-reinforced {
-    background: #ffbbbb url(../img/reinforced.png) center no-repeat;
+    background: #ffbbbb url(../img/reinforced.png) center no-repeat !important;
 }
 .pos-online {
-    background: #c9ffbb url(../img/online.png) center no-repeat;
+    background: #c9ffbb url(../img/online.png) center no-repeat !important;
 }
 .dotlan {
     color: #ADAA38;

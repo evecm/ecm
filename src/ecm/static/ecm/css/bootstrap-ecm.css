@@ -69,6 +69,20 @@ ul.breadcrumb li:before {
     padding-right: 0.5em;
 }
 
+
+dl.table {
+    width: 100%;
+}
+
+dl.table dt {
+    clear: both;
+    float: left;
+}
+dl.table dd {
+    float: right;
+}
+
+
 /* Menu */
 
 #main-menu {

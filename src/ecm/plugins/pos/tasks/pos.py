@@ -200,7 +200,6 @@ def get_details(pos, api, sov):
                                      quantity = fuel.quantity,
                                      date = api._meta.currentTime)
         base_fuel_cons = db.getFuelConsumption(pos.type_id, fuel.typeID)
-        print base_fuel_cons
         corp = Corp.objects.latest()
         if sov[pos.location_id]['alliance'] == corp.allianceID and base_fuel_cons > 1:
             base_fuel_cons = int(round(base_fuel_cons * .75))

@@ -43,7 +43,7 @@ def update():
 
     created = 0
     updated = 0
-    for outpost in apiOutposts.outposts :
+    for outpost in apiOutposts.outposts:
         if db.updateLocationName(stationID=outpost.stationID,
                                  solarSystemID=outpost.solarSystemID,
                                  locationName=outpost.stationName):

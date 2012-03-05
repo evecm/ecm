@@ -85,7 +85,8 @@ $(document).ready(function () {
             dots : false
         },
         search : {
-            case_insensitive : true,
+            case_insensitive: true,
+            show_only_matches: true,
             ajax : {
                 url : function() {
                     return BASE_URL + 'search/?' + decodeURIComponent(jQuery.param(PARAMS));
