@@ -63,7 +63,7 @@
 <script>
 POS_CSS_STATUS = {{posCSSStatus|safe}};
 POS_TEXT_STATUS = {{posTextStatus|safe}};
-DISPLAY_MODE = 'quantities'; /* default */
+DISPLAY_MODE = 'days'; /* default */
 $(document).ready(function() {
     var table = $('#pos_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: '/pos/data/',
@@ -72,9 +72,9 @@ $(document).ready(function() {
             { /* 1 Name */     sWidth: '6%',  sType: 'html', bSortable: false },
             { /* 2 Type */     sWidth: '1%',  sType: 'html', sClass: 'center' },
             { /* 3 status */   sWidth: '1%',  sType: 'html' },
-            { /* 4 Time */ 	   sWidth: '2%',  sType: 'string' },
-            { /* 5 Blocks */   sWidth: '4%',  sType: 'string', bSortable: false },
-            { /* 6 Stront */   sWidth: '4%',  sType: 'string', bSortable: false },
+            { /* 4 Time */ 	   sWidth: '2%',  sType: 'string', bSortable: false },
+            { /* 5 Blocks */   sWidth: '4%',  sType: 'string' },
+            { /* 6 Stront */   sWidth: '4%',  sType: 'string' },
             { /* 7 Name HIDDEN */  bVisible: false, bSortable: false }
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
