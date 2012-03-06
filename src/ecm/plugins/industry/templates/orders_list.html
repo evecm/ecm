@@ -30,6 +30,20 @@ AJAX_URL = '/industry/orders/all/data/';
     <input type="button" class="button" id="clear_search" value="Reset" />
 </form>
 
+<div class="well well-tight">
+  <div class="btn-toolbar" >
+    <span class="label label-info">States</span>
+    <div title="Press CTRL + Click to select only one" class="btn-group" data-toggle="buttons-checkbox" id="state_buttons">
+    {% for id, name in states.items %}
+      <button class="btn btn-mini btn-info active" id="{{ id }}" >{{ name }}</button>
+    {% endfor %}</div>
+  </div>
+  <div class="btn-group">
+    <a class="btn btn-mini" id="apply_filter"><i class="icon-ok"></i> Apply Filter</a>
+    <a class="btn btn-mini" id="reset_filter"><i class="icon-remove"></i> Reset</a>
+  </div>
+</div>
+
 <table class="table table-bordered table-condensed" id="orders_list">
   <thead>
     <tr>

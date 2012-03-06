@@ -42,7 +42,10 @@ COLUMNS = [
 @login_required
 def orders(request):
     columns = [ col[0] for col in COLUMNS ]
-    return render_to_response('orders_list.html', {'columns' : columns}, Ctx(request))
+    return render_to_response('orders_list.html', 
+                              {'columns' : columns,
+                               'states': Order.STATES}, 
+                              Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required

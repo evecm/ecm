@@ -2,7 +2,9 @@
  * "Orders List" table setup *
  ************************************/
 
-
+PARAMS = {
+    states: '{%for id, name in states.items%}{{id}}{%if not forloop.last%},{%endif%}{%endfor%}',
+};
 $(document).ready(function() {
       var table = $('#orders_list').dataTable( {
         sPaginationType: "full_numbers",
@@ -64,5 +66,36 @@ $(document).ready(function() {
             event.shiftKey = false;
         }
     });
-
+    /* enable control click on state buttons */
+    $('#state_buttons button').click(function (event) {
+        if (event.ctrlKey) {
+            /* if ctrl + click, deselect all divisions before selecting */
+            $('#state_buttons button').removeClass('active');
+        }
+    });
+    $('#apply_filter').click(function() {
+        
+        var stateBtns = $('#state_buttons button.active');
+        var states = '';
+        for (var i=0 ; i < stateBtns.length ; i++) {
+            states += ',' + stateBtns[i].id;
+        }
+        if (states.length != 0) {
+            states = states.substring(1);
+        }
+        PARAMS.states = states;
+        table.fnDraw();
+    });
+    $('#reset_filter').click(function() {
+        var stateBtns = $('#state_buttons button');
+        var states = '';
+        for (var i=0 ; i < stateBtns.length ; i++) {
+            states += ',' + stateBtns[i].id;
+        }
+        if (states.length != 0) {
+            states = states.substring(1);
+        }
+        PARAMS.states = states;
+        table.fnDraw();
+    });
 } );
