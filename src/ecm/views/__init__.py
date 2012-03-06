@@ -57,7 +57,7 @@ def extract_datatable_params(request):
     params = DatatableParams()
     params.first_id = int(REQ["iDisplayStart"])
     params.length = int(REQ["iDisplayLength"])
-    params.last_id = params.first_id + params.length - 1
+    params.last_id = params.first_id + params.length
     params.search = REQ["sSearch"]
     params.sEcho = int(REQ["sEcho"])
     params.column = int(REQ["iSortCol_0"])

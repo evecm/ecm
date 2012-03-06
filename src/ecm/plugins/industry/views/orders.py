@@ -54,11 +54,16 @@ def orders_data(request):
         params = extract_datatable_params(request)
     except Exception, e:
         return HttpResponseBadRequest(str(e))
-
-    query = Order.objects.all()
-
+    try:
+        states = [int(x) for x in request.GET.get('states').split(',')]
+    except ValueError:
+        states = []
+    print params.first_id, params.last_id
+    
+    query = Order.objects.filter(state__in= states)
+    
     orders = []
-    for order in query:
+    for order in query[params.first_id:params.last_id]:
         items = [ row.catalog_entry.typeName for row in order.rows.all() ]
         if order.delivery_date is not None:
             delivDate = utils.print_date(order.delivery_date)

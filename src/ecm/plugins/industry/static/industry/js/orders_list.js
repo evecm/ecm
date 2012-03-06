@@ -40,7 +40,18 @@ $(document).ready(function() {
         fnStateLoadCallback: function (oSettings, oData) {
             $("#search_text").val(oData.sFilter);
             return true;
-        }
+        },
+	    /* this function will be called when the table has to query data to be displayed */
+	    fnServerData: function ( sSource, aoData, fnCallback ) {
+	        /* Add some extra variables to the url */
+	        aoData.push( {
+	            name: 'states',
+	            value: PARAMS
+	        } );
+	        $.getJSON( sSource, aoData, function (json) {
+	            fnCallback(json)
+	        } );
+	    }
     });
 
     /* trigger the search when pressing return in the text field */
@@ -98,4 +109,5 @@ $(document).ready(function() {
         PARAMS.states = states;
         table.fnDraw();
     });
+
 } );
