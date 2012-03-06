@@ -67,7 +67,7 @@ def update():
     # then query /corp/Locations.xml with the list
     assets_to_locate = []
 
-    LOG.info("parsing api response...")
+    LOG.debug("parsing api response...")
     for row in apiAssets.assets:
         if row.typeID == cst.BOOKMARK_TYPEID:
             continue # we don't give a flying @#!$ about the bookmarks...
@@ -411,19 +411,3 @@ def update_assets_names():
     for itemID, itemName in named_assets:
         Asset.objects.filter(itemID=itemID).update(name=itemName)
 
-#------------------------------------------------------------------------------
-def update_missing_closest_objects():
-    query = Asset.objects.filter(closest_object_id=None)
-    for stationID in query.values_list('stationID', flat=True).distinct():
-        solarSystemID, X, Y, Z = db.get_celestial_object(stationID)
-        distances = []
-        for object_id, x, y, z in db.get_celestial_objects(solarSystemID):
-            # Distances between celestial objects are huge. The error margin
-            # that comes with manatthan distance is totally acceptable.
-            # See http://en.wikipedia.org/wiki/Taxicab_geometry for culture.
-            manatthan_distance = abs(X - x) + abs(Y - y) + abs(Z - z)
-            distances.append((object_id, manatthan_distance))
-        # Sort objects by increasing distance (we only want minimum)
-        distances.sort(key=lambda obj:obj[1])
-        # Finally, update the closest object
-        Asset.objects.filter(stationID=stationID).update(closest_object_id=distances[0][0])

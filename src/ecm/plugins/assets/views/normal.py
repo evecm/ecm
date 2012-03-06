@@ -178,7 +178,10 @@ def get_celestial_objects_data(request, solarSystemID):
     jstree_data = []
     for closest_object_id, items, volume in cursor:
         
-        name = db.resolveLocationName(closest_object_id)[0]
+        if closest_object_id != 0:
+            name = db.resolveLocationName(closest_object_id)[0]
+        else:
+            name = 'Stations'
         
         if exact_volumes:
             volume = utils.print_float(volume)
@@ -323,7 +326,7 @@ def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def hangar_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID):
+def get_hangar_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID):
     solarSystemID = int(solarSystemID)
     closest_obj_id = int(closest_obj_id)
     stationID = int(stationID)
@@ -372,7 +375,7 @@ def hangar_content_data(request, solarSystemID, closest_obj_id, stationID, hanga
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def can1_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID, container1):
+def get_can1_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID, container1):
     solarSystemID = int(solarSystemID)
     closest_obj_id = int(closest_obj_id)
     stationID = int(stationID)
@@ -408,7 +411,7 @@ def can1_content_data(request, solarSystemID, closest_obj_id, stationID, hangarI
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def can2_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID, container1, container2):
+def get_can2_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID, container1, container2):
     solarSystemID = int(solarSystemID)
     closest_obj_id = int(closest_obj_id)
     stationID = int(stationID)

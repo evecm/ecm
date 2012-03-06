@@ -318,7 +318,7 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def hangar_contents_data(request, date_str, solarSystemID, stationID, hangarID):
+def get_hangar_content_data(request, date_str, solarSystemID, stationID, hangarID):
     date = datetime.strptime(date_str, DATE_PATTERN)
     solarSystemID = int(solarSystemID)
     stationID = int(stationID)
