@@ -69,6 +69,7 @@ DISPLAY_MODE = 'days'; /* default */
 $(document).ready(function() {
     var table = $('#pos_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: '/pos/data/',
+        aaSorting: [[5, 'asc']],/* sort ascending using column 5 */
         aoColumns: [
             { /* 0 Location */ sWidth: '6%',  sType: 'html' },
             { /* 1 Name */     sWidth: '6%',  sType: 'html', bSortable: false },
