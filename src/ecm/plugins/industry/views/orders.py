@@ -32,7 +32,7 @@ from ecm.plugins.industry.models import Order, CatalogEntry
 #------------------------------------------------------------------------------
 COLUMNS = [
     ['#', 'id'],
-    ['State', 'state_text'],
+    ['State', 'state'],
     ['Originator', 'originator'],
     ['Client', 'client'],
     ['Delivery Date', 'delivery_date'],
@@ -58,9 +58,15 @@ def orders_data(request):
         states = [int(x) for x in request.GET.get('states').split(',')]
     except ValueError:
         states = []
-    print params.first_id, params.last_id
     
     query = Order.objects.filter(state__in= states)
+    
+    sort_by = COLUMNS[params.column][1]
+    
+    if not params.asc:
+        sort_by = '-' + sort_by
+
+    query = query.order_by(sort_by)
     
     orders = []
     for order in query[params.first_id:params.last_id]:
