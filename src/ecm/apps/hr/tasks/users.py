@@ -60,7 +60,7 @@ def update_character_sheet(user):
                 member = Member.objects.filter( characterID = id )
                 sheet = api.char.CharacterSheet( characterID = id )
                 set_extended_char_attributes( member, sheet )
-                set_skills( member, sheet)
+                set_character_skills( member, sheet)
         except eveapi.Error, e:
             if e.code == 0 or 200 <= e.code < 300:
                 # authentication failure error codes.
@@ -80,7 +80,7 @@ def update_character_sheet(user):
                 raise
 
 #-----------------------------------------------------------------------------
-def set_skills( member, sheet):
+def set_character_skills( member, sheet):
     for skill in sheet.skills:
         try:
             sk = Skill.objects.get(character=member, typeID=skill.typeID)
