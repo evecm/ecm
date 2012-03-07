@@ -110,15 +110,17 @@ def update():
             # we leave it to the default value '0'
             continue
 
+    # to be sure to store the nicknames change, etc.
+    # even if there are no diff, we always overwrite the members
+    for m in newMembers.values():
+        m.save()
+
     if len(oldMembers) > 0 and len(diffs) > 0 :
         for d in diffs:
             d.save()
         # we store the update time of the table
         markUpdated(model=MemberDiff, date=currentTime)
-    # to be sure to store the nicknames change, etc.
-    # even if there are no diff, we always overwrite the members
-    for m in newMembers.values():
-        m.save()
+
     # we store the update time of the table
     markUpdated(model=Member, date=currentTime)
 
