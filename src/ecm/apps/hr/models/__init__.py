@@ -29,6 +29,7 @@ from ecm.apps.hr.models.titles import Title, TitleComposition, TitleMembership, 
 __all__ = (
     'Member',
     'MemberDiff',
+    'Skill',
     
     'RoleType',
     'Role',

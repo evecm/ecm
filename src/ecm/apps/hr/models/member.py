@@ -24,6 +24,8 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 
+from ecm.core.eve.db import get_type_name
+
 from ecm.lib import bigintpatch
 from ecm.apps.hr import NAME as app_prefix
 
@@ -56,6 +58,35 @@ class Member(models.Model):
     owner = models.ForeignKey(User, related_name='characters', null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
 
+    #Character Sheet
+    DoB = models.CharField(max_length=128, null=True, blank=True)
+    race = models.CharField(max_length=128, null=True, blank=True)
+    bloodLine = models.CharField(max_length=128, null=True, blank=True)
+    ancestry = models.CharField(max_length=128, null=True, blank=True)
+    gender = models.CharField(max_length=128, null=True, blank=True)
+    corporationName = models.CharField(max_length=128, null=True, blank=True)
+    corporationID = models.IntegerField(null=True, blank=True)
+    allianceName = models.CharField(max_length=128, null=True, blank=True)
+    allianceID = models.IntegerField(blank=True, null=True)
+    cloneName = models.CharField(max_length=128, null=True, blank=True)
+    CloneSkillPoints = models.IntegerField(null=True, blank=True)
+    balance = models.FloatField(default=0.0)
+    memoryBonusName = models.CharField(max_length=128, blank=True, null=True)
+    memoryBonusValue = models.IntegerField(blank=True, null=True)
+    intelligenceBonusName = models.CharField(max_length=128, blank=True, null=True)
+    intelligenceBonusValue = models.IntegerField(blank=True, null=True)
+    charismaBonusName = models.CharField(max_length=128, blank=True, null=True)
+    charismaBonusValue = models.IntegerField(blank=True, null=True)
+    willpowerBonusName = models.CharField(max_length=128, blank=True, null=True)
+    willpowerBonusValue = models.IntegerField(blank=True, null=True)
+    perceptionBonusName = models.CharField(max_length=128, blank=True, null=True)
+    perceptionBonusValue = models.IntegerField(blank=True, null=True)
+    intelligence = models.IntegerField(default=0)
+    memory = models.IntegerField(default=0)
+    charisma = models.IntegerField(default=0)
+    perception = models.IntegerField(default=0)
+    willpower = models.IntegerField(default=0)
+    
     def get_implied_roles(self):
         """
         Retrieve all Roles assigned to one Member directly or through Titles
@@ -193,3 +224,14 @@ class MemberSession(models.Model):
     def __hash__(self):
         return self.id
 
+#------------------------------------------------------------------------------
+class Skill(models.Model):
+    character = models.ForeignKey(Member, related_name = 'skills')
+    typeID = models.IntegerField(default=0)
+    skillpoints = models.IntegerField(default=0)
+    level = models.IntegerField(default=0)
+    def __unicode__(self):
+        return self.name()
+    def name(self):
+        name = get_type_name(self.typeID)
+        return unicode(name[0])
