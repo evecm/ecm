@@ -32,7 +32,7 @@ from ecm.core import HTML
 from ecm.core.eve import api
 from ecm.lib import eveapi
 from ecm.apps.common.models import UserAPIKey, Setting
-from ecm.apps.hr.models import Title, Member
+from ecm.apps.hr.models import Title, Member, Skill
 from ecm.apps.scheduler.models import ScheduledTask
 
 LOG = logging.getLogger(__name__)
@@ -44,9 +44,88 @@ def update_all_character_associations():
     LOG.info("Updating character associations with players...")
     for user in User.objects.filter(is_active=True):
         update_character_associations(user)
+        if user.is_active:
+            update_character_sheet(user)
     LOG.info("Character associations updated")
 
 #------------------------------------------------------------------------------
+def update_character_sheet(user):
+    user_apis = UserAPIKey.objects.filter(user=user)
+    for user_api in user_apis:
+        try:
+            ids = [ char.characterID for char in api.get_account_characters( user_api ) if char.is_corped ]
+            conn = eveapi.EVEAPIConnection()
+            api = conn.auth( keyID=user_api.keyID, vCode=user_api.vCode )
+            for id in ids:
+                member = Member.objects.filter( characterID = id )
+                sheet = api.char.CharacterSheet( characterID = id )
+                set_extended_char_attributes( member, sheet )
+                set_skills( member, sheet)
+        except eveapi.Error, e:
+            if e.code == 0 or 200 <= e.code < 300:
+                # authentication failure error codes.
+                # This happens if the vCode does not match the keyID
+                # or if the account is disabled
+                # or if the key does not allow to list characters from an account
+                LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, user_api.keyID))
+                user_api.is_valid = False
+                user_api.error = str(e)
+                #invalid_apis.append(user_api)
+                user_api.save()
+            else:
+                # for all other errors, we abort the operation so that
+                # character associations are not deleted by mistake and
+                # therefore, that users find themselves with no access :)
+                LOG.error("%d: %s (user: '%s' keyID: %d)" % (e.code, str(e), user.username, user_api.keyID))
+                raise
+
+#-----------------------------------------------------------------------------
+def set_skills( member, sheet):
+    for skill in sheet.skills:
+        try:
+            sk = Skill.objects.get(character=member, typeID=skill.typeID)
+            sk.skillpoints = skill.skillpoints
+            sk.level = skill.level
+            sk.save()
+        except Skill.DoesNotExist:
+            sk = Skill(character=member,
+                       typeID=skill.typeID,
+                       skillpoints=skill.skillpoints,
+                       level = skill.level)
+            sk.save()
+
+#-----------------------------------------------------------------------------
+def set_extended_char_attributes(member, sheet):
+    member.DoB = sheet.DoB
+    member.race = sheet.race
+    member.bloodLine = sheet.bloodline
+    member.ancestry = sheet.ancestry
+    member.gender = sheet.gender
+    member.corporationName = sheet.corporationName
+    member.corporationID = sheet.corporationID
+    member.allianceName = sheet.allianceName
+    member.allianceID = sheet.allianceID
+    member.cloneName = sheet.cloneName
+    member.CloneSkillPoints = sheet.CloneSkillPoints
+    member.balance = sheet.balance
+    member.memoryBonusName = sheet.memoryBonusName
+    member.memoryBonusValue = sheet.memoryBonusValue
+    member.intelligenceBonusName = sheet.intelligenceBonusName
+    member.intelligenceBonusValue = sheet.intelligenceBonusValue
+    member.charismaBonusName = sheet.charismaBonusName
+    member.charismaBonusValue = sheet.charismaBonusValue
+    member.willpowerBonusName = sheet.willpowerBonusName
+    member.willpowerBonusValue = sheet.willpowerBonusValue
+    member.perceptionBonusName = sheet.perceptionBonusName
+    member.perceptionBonusValue = sheet.perceptionBonusValue
+    member.intelligence = sheet.intelligence
+    member.memory = sheet.memory
+    member.charisma = sheet.charisma
+    member.perception = sheet.perception
+    member.willpower = sheet.willpower
+    member.save()
+
+#-----------------------------------------------------------------------------
 def update_character_associations(user):
     LOG.debug("Updating character ownerships for '%s'..." % user.username)
     # get all the user's registered api credentials
