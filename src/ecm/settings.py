@@ -57,6 +57,10 @@ DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     }
 }
 
+DATABASE_ROUTERS = (
+    'ecm.db_routers.ECMDatabaseRouter',
+)
+
 SITE_ID = 1
 
 ##########
@@ -117,7 +121,7 @@ COMPRESS_JS_FILTERS = (
     #'compressor.filters.jsmin.JSMinFilter',
 )
 
-COMPRESS_ENABLED = False
+#COMPRESS_ENABLED = True
 
 #############
 # TEMPLATES #
@@ -187,6 +191,7 @@ INSTALLED_APPS = [
 ECM_CORE_APPS = [
     'ecm.apps.common',
     'ecm.apps.corp',
+    'ecm.apps.eve',
     'ecm.apps.hr',
     'ecm.apps.scheduler',
 ]
