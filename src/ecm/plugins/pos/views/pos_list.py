@@ -56,6 +56,7 @@ COLUMNS = [
     ['Fuel Blocks',     'Fuel Blocks',          None],
     ['Strontium',       'Strontium Clathrates', None],
     ['Name',            None,                   None],
+    ['hours_int',            None,                   None],
 ]
 @check_user_access()
 def poses(request):
@@ -144,6 +145,7 @@ def poses_data(request):
                 getFuelValue(pos, pos.fuel_type_id, params.displayMode),
                 getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode),
                 pos.type_name,
+                getFuelValue(pos, pos.fuel_type_id, 'hours_int'),
             ]
             pos_table.append(row)
     elif params.column == 5 or params.column == 6:
@@ -159,6 +161,7 @@ def poses_data(request):
                 getFuelValue(pos, pos.fuel_type_id, params.displayMode),
                 getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode),
                 pos.type_name,
+                getFuelValue(pos, pos.fuel_type_id, 'hours_int'),
             ]
             pos_table.append(row)
 

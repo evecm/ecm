@@ -30,4 +30,8 @@ a.pos {
     font-weight: bold;
     background-color: red;
 }
-
+.fuel-alert {
+    color: black;
+    font-weight: bold;
+    background-color: yellow;
+}
