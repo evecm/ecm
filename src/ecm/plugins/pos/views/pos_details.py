@@ -30,7 +30,7 @@ from django.http import HttpResponse, Http404, HttpResponseBadRequest
 
 from ecm.plugins.pos.views import print_fuel_quantity, print_duration
 from ecm.plugins.pos.models import POS, FuelLevel
-from ecm.core.eve import db
+from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access
 from ecm.plugins.pos import constants
 from ecm.views import extract_datatable_params
@@ -112,10 +112,10 @@ def fuel_data(request, pos_id):
         else:
             hoursLeft = int(quantity / consumption)
             timeLeft = print_duration(hoursLeft)
-
+        
         fuelTable.append([
             type_id,
-            db.get_type_name(type_id)[0],
+            Type.objects.get(typeID=type_id).typeName,
             print_fuel_quantity(quantity),
             '%d / hour' % consumption,
             '%d / day' % (consumption * 24),

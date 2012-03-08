@@ -26,8 +26,9 @@ from django.db import transaction
 
 from ecm.core.eve.classes import Item
 from ecm.plugins.pos.models import POS, FuelLevel
+from ecm.apps.eve.models import CelestialObject, ControlTowerResource
 from ecm.plugins.pos import constants
-from ecm.core.eve import api, db
+from ecm.core.eve import api#, db
 from ecm.core.parsers import checkApiVersion
 from ecm.apps.corp.models import Corp
 
@@ -129,8 +130,10 @@ def get_basic_info(pos, api_row):
     pos.moon_id = api_row.moonID
     pos.type_id = api_row.typeID
 
-    pos.location, _   = db.resolveLocationName(pos.location_id)
-    pos.moon, _  = db.resolveLocationName(pos.moon_id)
+    pos.location = CelestialObject.objects.get(itemID=pos.location_id).itemName
+    pos.moon = CelestialObject.objects.get(itemID=pos.moon_id).itemName
+    #pos.location, _   = db.resolveLocationName(pos.location_id) 
+    #pos.moon, _  = db.resolveLocationName(pos.moon_id)
 
     i = Item.new(pos.type_id)
     pos.type_name = i.typeName
@@ -199,13 +202,16 @@ def get_details(pos, api, sov):
                                      type_id = fuel.typeID,
                                      quantity = fuel.quantity,
                                      date = api._meta.currentTime)
-        base_fuel_cons = db.getFuelConsumption(pos.type_id, fuel.typeID)
+        base_fuel_cons = ControlTowerResource.objects.get(control_tower=pos.type_id, resource=fuel.typeID).quantity
+        #base_fuel_cons = db.getFuelConsumption(pos.type_id, fuel.typeID)
         corp = Corp.objects.latest()
         if sov[pos.location_id]['alliance'] == corp.allianceID and base_fuel_cons > 1:
             base_fuel_cons = int(round(base_fuel_cons * .75))
         fuel_level.consumption = base_fuel_cons
         fuel_level.save()
-    if db.getSecurityStatus(pos.location_id) > constants.CHARTER_MIN_SEC_STATUS:
+    
+    #if db.getSecurityStatus(pos.location_id) > constants.CHARTER_MIN_SEC_STATUS:
+    if CelestialObject.objects.get(itemID=pos.location_id).security > constants.CHARTER_MIN_SEC_STATUS:
         charters = constants.RACEID_TO_CHARTERID[sov[pos.location_id]['faction']]
         try:
             pos.fuel_levels.filter(type_id=charters).latest()
