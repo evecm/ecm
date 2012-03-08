@@ -35,7 +35,8 @@ from django.db import connection
 
 from ecm.views.decorators import check_user_access
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
-from ecm.core.eve import constants, db
+from ecm.apps.eve.models import CelestialObject, Type
+from ecm.core.eve import constants#, db
 from ecm.core import utils
 from ecm.plugins.assets.models import Asset, AssetDiff
 from ecm.apps.corp.models import Hangar
@@ -175,7 +176,7 @@ def get_systems_data(request, date_str):
     if divisions is not None:
         s = ('%s,' * len(divisions))[:-1]
         where.append('"hangarID" IN (%s)' % s)
-
+    # TODO: fix this sql into an object
     sql = 'SELECT "solarSystemID", COUNT(*) AS "items", SUM("volume") AS "volume" '
     sql += 'FROM "assets_assetdiff" '
     sql += 'WHERE date=%s'
@@ -191,19 +192,19 @@ def get_systems_data(request, date_str):
 
     jstree_data = []
     for solarSystemID, items, volume in cursor:
-        name, security = db.resolveLocationName(solarSystemID)
-        if security > 0.5:
+        system = CelestialObject.objects.get(itemID=solarSystemID)
+        if system.security > 0.5:
             color = 'hisec'
-        elif security > 0:
+        elif system.security > 0:
             color = 'lowsec'
         else:
             color = 'nullsec'
         jstree_data.append({
-            'data' : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
+            'data' : HTML_ITEM_SPAN % (system.itemName, items, pluralize(items), volume),
             'attr' : {
                 'id' : '%d_' % solarSystemID,
                 'rel' : 'system',
-                'sort_key' : name.lower(),
+                'sort_key' : system.itemName.lower(),
                 'class' : 'system-%s-row' % color
             },
             'state' : 'closed'
@@ -247,11 +248,11 @@ def get_stations_data(request, date_str, solarSystemID):
     for stationID, flag, items, volume in cursor:
         if stationID < constants.MAX_STATION_ID:
             # it's a real station
-            name = db.resolveLocationName(stationID)[0]
+            name = CelestialObject.objects.get(itemID=stationID).itemName
             icon = 'station'
         else:
             # it is an inspace anchorable array
-            name = db.get_type_name(flag)[0]
+            name = Type.objects.get(typeID=flag).typeName
             icon = 'array'
 
         jstree_data.append({
@@ -329,7 +330,7 @@ def get_hangar_content_data(request, date_str, solarSystemID, stationID, hangarI
                                      date=date)
     jstree_data = []
     for item in query:
-        name = db.get_type_name(item.typeID)[0]
+        name = Type.objects.get(typeID = item.typeID).typeName
 
         if item.quantity < 0:
             icon = 'removed'
@@ -356,8 +357,8 @@ def search_items(request, date_str):
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
     search_string = request.GET.get('search_string', 'no-item')
-
-    matchingIDs = db.getMatchingIdsFromString(search_string)
+    
+    matchingIDs = [x.itemID for x in Type.objects.filter(typeName__contains = search_string)]
 
     query = AssetDiff.objects.filter(typeID__in=matchingIDs, date=date)
 

@@ -24,7 +24,8 @@ from django.db import transaction
 
 from ecm.apps.common.models import Setting
 from ecm.core import utils
-from ecm.core.eve import api, db
+from ecm.core.eve import api#, db
+from ecm.apps.eve.models import CelestialObject
 from ecm.core.eve import constants as cst
 from ecm.core.eve.classes import Item
 from ecm.core.parsers import diff, markUpdated, checkApiVersion
@@ -183,7 +184,8 @@ def row_is_office(office, items_dic):
     """
     try :
         stationID = locationID_to_stationID(office.locationID)
-        solarSystemID = db.getSolarSystemID(stationID)
+        solarSystemID = CelestialObject.objects.get(itemID=stationID).solarSystemID
+        #solarSystemID = db.getSolarSystemID(stationID)
         for item in office.contents:
             if item.typeID == cst.BOOKMARK_TYPEID :
                 continue # we don't give a flying @#!$ about the bookmarks...
@@ -255,7 +257,8 @@ def row_is_in_hangar(item, items_dic, solarSystemID=None, stationID=None, hangar
     if solarSystemID is None and stationID is None:
         # we come from the update() method and the item has a locationID attribute
         asset.stationID = locationID_to_stationID(item.locationID)
-        asset.solarSystemID = db.getSolarSystemID(asset.stationID)
+        asset.solarSystemID = CelestialObject.objects.get(itemID=stationID).solarSystemID
+        #asset.solarSystemID = db.getSolarSystemID(asset.stationID)
     else:
         asset.solarSystemID = solarSystemID
         asset.stationID = stationID
@@ -373,12 +376,15 @@ def update_assets_locations(assets_to_locate):
         if contained_assets:
             solarSystemID = contained_assets.latest().solarSystemID
             distances = []
-            for object_id, x, y, z in db.get_celestial_objects(solarSystemID):
+            
+            #for object_id, x, y, z in db.get_celestial_objects(solarSystemID):
+            for obj in CelestialObject.objects.filter(solarSystemID=solarSystemID):
                 # Distances between celestial objects are huge. The error margin
                 # that comes with manatthan distance is totally acceptable.
                 # See http://en.wikipedia.org/wiki/Taxicab_geometry for culture.
-                manatthan_distance = abs(X - x) + abs(Y - y) + abs(Z - z)
-                distances.append((object_id, manatthan_distance))
+                # manatthan_distance = abs(X - x) + abs(Y - y) + abs(Z - z)
+                manatthan_distance = abs(X - obj.x) + abs(Y - obj.y) + abs(Z - obj.z)
+                distances.append(( obj.itemID, manatthan_distance ))
             
             # Sort objects by increasing distance (we only want minimum)
             distances.sort(key=lambda obj:obj[1])
