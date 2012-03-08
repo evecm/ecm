@@ -22,7 +22,8 @@ __author__ = "diabeteman"
 from django.db import models
 
 from ecm.core.eve.classes import Item
-from ecm.core.eve import db
+from ecm.apps.eve.models import Type
+#from ecm.core.eve import db
 
 
 #------------------------------------------------------------------------------
@@ -98,6 +99,6 @@ class PriceHistory(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def item_admin_display(self):
-        name, _ = db.get_type_name(self.supply_id)
+        name = Type.objects.get(typeID = self.supply_id).typeName
         return name
     item_admin_display.short_description = 'Item'

@@ -23,7 +23,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as tr
 
 from ecm.core.eve.classes import Blueprint, Item
-from ecm.core.eve import db
+from ecm.apps.eve.models import Type
+#from ecm.core.eve import db
 
 
 #------------------------------------------------------------------------------
@@ -106,7 +107,7 @@ class OwnedBlueprint(models.Model):
         return '<a href="%s" class="catalog-blueprint">%s</a>' % (self.url, self.typeName)
 
     def item_name_admin_display(self):
-        name, _ = db.get_type_name(self.typeID)
+        name = Type.objects.get(typeID = self.typeID).typeName
         return name
     item_name_admin_display.short_description = 'Blueprint'
 

@@ -22,6 +22,8 @@ import logging
 
 from django.db import connections, transaction
 
+from ecm.apps.eve.models import Type, BlueprintReq
+
 from ecm.plugins.industry.models import CatalogEntry, Supply
 
 logger = logging.getLogger(__name__)
@@ -94,3 +96,35 @@ def createMissingSupplies():
     logger.info('added %d missing supplies', created)
 createMissingSupplies()
 
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def createMissingCatalogEntries_new():
+    entries = Type.objects.filter(blueprint__isnull = False,
+                                  published = 1,
+                                  metaGroupID__in = [0,2,14],
+                                  market_group__isnull = False,
+                                  ).exclude(typeID__in=[2836, 17922, 29266, 17928, 17932, 3532, 32207, 32209])
+    typeIDs = CatalogEntry.objects.values_list('typeID', flat=True)
+    created = 0
+    for typeID, typeName in [(i.typeID, i.typeName) for i in entries]:
+        if typeID not in typeIDs:
+            CatalogEntry.objects.create(typeID=typeID, typeName=typeName, is_available=False)
+            created += 1
+    logger.info('added %d missing catalog entries', created)
+#createMissingCatalogEntries_new()
+
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def createMissingSupplies_new():
+    supplies= BlueprintReq.objects.filter(required_type__blueprint__isnull=True, 
+                                          required_type__published=1, 
+                                          damagePerJob__gt=0.0).values_list('requiredTypeID', 
+                                                                            flat=True).distinct()
+    typeIDs = Supply.objects.values_list('typeID', flat=True)
+    created = 0
+    for typeID in [x.typeID for x in supplies]:
+        if typeID not in typeIDs:
+            Supply.objects.create(typeID=typeID)
+            created += 1
+    logger.info('added %d missing supplies', created)
+#createMissingSupplies_new()

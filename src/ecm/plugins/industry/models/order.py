@@ -24,7 +24,8 @@ from django.db import models, connection
 from django.contrib.auth.models import User
 
 from ecm.core import utils
-from ecm.core.eve import db
+from ecm.apps.eve.models import Type
+#from ecm.core.eve import db
 from ecm.core.utils import fix_mysql_quotes
 from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.industry.models.inventory import Supply
@@ -519,12 +520,14 @@ class OrderCannotBeFulfilled(UserWarning):
     def __str__(self):
         if self.missing_blueprints:
             if all([ type(p) == type(0) for p in self.missing_blueprints ]):
-                self.missing_blueprints = [ db.get_type_name(p)[0] for p in self.missing_blueprints ]
+                self.missing_blueprints = [ Type.objects.get(typeID=p).typeName for p in self.missing_blueprints ]
+                #self.missing_blueprints = [ db.get_type_name(p)[0] for p in self.missing_blueprints ]
             output = 'Missing Blueprints: '
             output += ', '.join(map(str, self.missing_blueprints))
         elif self.missing_prices:
             if all([ type(p) == type(0) for p in self.missing_prices ]):
-                self.missing_prices = [ db.get_type_name(p)[0] for p in self.missing_prices ]
+                self.missing_prices = [ Type.objects.get(typeID=p).typeName for p in self.missing_prices ]
+                #self.missing_prices = [ db.get_type_name(p)[0] for p in self.missing_prices ]
             output = 'Missing SupplyPrices: '
             output += ', '.join(map(str, self.missing_prices))
         return output
