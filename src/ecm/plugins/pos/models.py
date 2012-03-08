@@ -23,7 +23,7 @@ from django.contrib.auth.models import User
 import datetime
 
 from ecm.plugins.pos import constants
-from ecm.core.eve import db
+from ecm.apps.eve.models import CelestialObject, Type
 
 #------------------------------------------------------------------------------
 class POS(models.Model):
@@ -120,8 +120,8 @@ class POS(models.Model):
 
     @property
     def permalink(self):
-        moon, _ = db.resolveLocationName(self.moon_id)
-        return '<a href="%s" class="pos">%s</a>' % (self.url, moon)
+        moon = CelestialObject.objects.get(itemID=self.moon_id)
+        return '<a href="%s" class="pos">%s</a>' % (self.url, moon.itemName)
 
     @property
     def fuel_bay_view_access(self):
@@ -184,13 +184,13 @@ class FuelLevel(models.Model):
             return int(remaining_fuel)
         
     def fuel_admin_display(self):
-        fuel_name, _ = db.get_type_name(self.type_id)
-        return unicode(fuel_name)
+        fuel_name = Type.objects.get(typeID=self.type_id)
+        return unicode(fuel_name.typeName)
     fuel_admin_display.short_description = "Fuel"
 
     def __unicode__(self):
-        fuel_name, _ = db.get_type_name(self.type_id)
-        return u'%s: %d x %s' % (unicode(self.pos), self.quantity, fuel_name)
+        fuel_name = Type.objects.get(typeID=self.type_id)
+        return u'%s: %d x %s' % (unicode(self.pos), self.quantity, fuel_name.typeName)
 
 #------------------------------------------------------------------------------
 #class FuelConsumption(models.Model):
