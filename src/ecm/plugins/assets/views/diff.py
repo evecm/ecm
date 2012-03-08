@@ -358,7 +358,7 @@ def search_items(request, date_str):
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
     search_string = request.GET.get('search_string', 'no-item')
     
-    matchingIDs = [x.itemID for x in Type.objects.filter(typeName__contains = search_string)]
+    matchingIDs = [x.typeID for x in Type.objects.filter(typeName__contains = search_string)]
 
     query = AssetDiff.objects.filter(typeID__in=matchingIDs, date=date)
 

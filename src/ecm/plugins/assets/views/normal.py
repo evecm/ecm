@@ -35,7 +35,8 @@ from django.db import connection
 from django.db.models.query_utils import Q
 
 from ecm.views.decorators import check_user_access
-from ecm.core.eve import constants, db
+from ecm.apps.eve.models import CelestialObject, Type
+from ecm.core.eve import constants#, db
 from ecm.core import utils
 from ecm.plugins.assets.models import Asset
 from ecm.apps.corp.models import Hangar
@@ -116,10 +117,10 @@ def get_systems_data(request):
 
     jstree_data = []
     for solarSystemID, items, volume in cursor:
-        name, security = db.resolveLocationName(solarSystemID)
-        if security > 0.5:
+        system = CelestialObject.objects.get(itemID=solarSystemID)
+        if system.security > 0.5:
             color = 'hisec'
-        elif security > 0:
+        elif system.security > 0:
             color = 'lowsec'
         else:
             color = 'nullsec'
@@ -130,11 +131,11 @@ def get_systems_data(request):
             volume = utils.round_quantity(volume)
 
         jstree_data.append({
-            'data' : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
+            'data' : HTML_ITEM_SPAN % (system.itemName, items, pluralize(items), volume),
             'attr' : {
                 'id' : '%d_' % solarSystemID,
                 'rel' : 'system',
-                'sort_key' : name.lower(),
+                'sort_key' : system.itemName.lower(),
                 'class' : 'system-%s-row' % color
             },
             'state' : 'closed'
@@ -179,7 +180,7 @@ def get_celestial_objects_data(request, solarSystemID):
     for closest_object_id, items, volume in cursor:
         
         if closest_object_id != 0:
-            name = db.resolveLocationName(closest_object_id)[0]
+            name = CelestialObject.objects.get(itemID = closest_object_id).itemName
         else:
             name = 'Stations'
         
@@ -237,11 +238,11 @@ def get_stations_data(request, solarSystemID, closest_obj_id):
     for stationID, item_name, flag, items, volume in cursor:
         if stationID < constants.MAX_STATION_ID:
             # it's a real station
-            name = db.resolveLocationName(stationID)[0]
+            name = CelestialObject.objects.get(itemID=stationID).itemName
             icon = 'station'
         else:
             # it is an inspace anchorable array
-            type_name, _ = db.get_type_name(flag)
+            type_name = Type.objects.get(typeID = flag).typeName
             
             name = type_name
             if item_name and type_name != item_name:
@@ -338,7 +339,9 @@ def get_hangar_content_data(request, solarSystemID, closest_obj_id, stationID, h
 
     jstree_data = []
     for item in query:
-        type_name, category = db.get_type_name(item.typeID)
+        i = Type.objects.get(typeID=item.typeID)
+        type_name = i.typeName
+        category = i.category
 
         try:
             icon = CATEGORY_ICONS[category]
@@ -388,7 +391,10 @@ def get_can1_content_data(request, solarSystemID, closest_obj_id, stationID, han
     json_data = []
     for i in item_list:
         item = {}
-        name, category = db.get_type_name(i.typeID)
+        x = Type.objects.get(typeID=i.typeID)
+        name = x.typeName
+        category = x.category
+        #name, category = db.get_type_name(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
         except: icon = 'item'
 
@@ -424,7 +430,10 @@ def get_can2_content_data(request, solarSystemID, closest_obj_id, stationID, han
     json_data = []
     for i in item_list:
         item = {}
-        name, category = db.get_type_name(i.typeID)
+        x = Type.objects.get(typeID=i.typeID)
+        name = x.typeName
+        category = x.category
+        #name, category = db.get_type_name(i.typeID)
         try:    icon = CATEGORY_ICONS[category]
         except: icon = 'item'
         if i.singleton:
@@ -445,8 +454,9 @@ def search_items(request):
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
     search_string = request.GET.get('search_string', 'no-item')
-
-    matchingIDs = db.getMatchingIdsFromString(search_string)
+    
+    matchingIDs = [x.typeID for x in Type.objects.filter(typeName__contains = search_string)]
+    #matchingIDs = db.getMatchingIdsFromString(search_string)
     
     query = Asset.objects.filter(Q(typeID__in=matchingIDs) | Q(name__icontains=search_string))
 
