@@ -19,7 +19,7 @@ __date__ = "2011 6 7"
 __author__ = "diabeteman"
 
 
-from ecm.core.eve import db
+#from ecm.apps.eve import db
 from ecm.core.utils import cached_property
 
 #------------------------------------------------------------------------------

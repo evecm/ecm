@@ -14,12 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.contrib.sites.models import Site
 
 __date__ = "2011 4 5"
 __author__ = "diabeteman"
 
 
+from django.contrib.sites.models import Site
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.template.loader import render_to_string
@@ -31,7 +31,7 @@ from ecm.apps.hr.tasks.users import update_user_accesses
 from ecm.apps.common.models import UserAPIKey, RegistrationProfile
 from ecm.apps.hr.models import Member
 from ecm.views.auth.forms import AccountCreationForm
-from ecm.core.eve.validators import user_access_mask
+from ecm.apps.eve.validators import user_access_mask
 
 import logging
 logger = logging.getLogger(__name__)

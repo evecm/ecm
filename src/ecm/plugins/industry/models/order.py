@@ -25,7 +25,6 @@ from django.contrib.auth.models import User
 
 from ecm.core import utils
 from ecm.apps.eve.models import Type
-#from ecm.core.eve import db
 from ecm.core.utils import fix_mysql_quotes
 from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.industry.models.inventory import Supply

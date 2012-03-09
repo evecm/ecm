@@ -19,7 +19,7 @@ __date__ = "2010-03-23"
 __author__ = "diabeteman"
 
 from ecm.lib import eveapi
-from ecm.core.eve.validators import check_user_access_mask
+from ecm.apps.eve.validators import check_user_access_mask
 from ecm.apps.common.models import Setting
 from ecm.apps.corp.models import Corp
 

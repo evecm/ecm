@@ -24,7 +24,7 @@ from datetime import datetime
 
 from django.db import transaction
 
-from ecm.core.eve import api
+from ecm.apps.eve import api
 
 from ecm.apps.corp.models import Wallet
 from ecm.core.parsers import markUpdated, checkApiVersion

@@ -28,7 +28,7 @@ from ecm.apps.hr.tasks.users import update_user_accesses
 from ecm.views.auth.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import UserAPIKey, ExternalApplication, UserBinding
-from ecm.core.eve.validators import user_access_mask
+from ecm.apps.eve.validators import user_access_mask
 
 import logging
 logger = logging.getLogger(__name__)

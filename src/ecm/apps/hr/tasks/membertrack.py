@@ -24,9 +24,9 @@ import logging
 
 from django.db import transaction
 
-from ecm.core.eve import api
+from ecm.apps.eve import api
 from ecm.apps.eve.models import CelestialObject
-#from ecm.core.eve import db
+#from ecm.apps.eve import db
 from ecm.core.parsers import checkApiVersion, diff, markUpdated
 from ecm.apps.hr.models import Member, MemberDiff
 

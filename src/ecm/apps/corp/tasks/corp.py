@@ -26,7 +26,7 @@ from django.db import transaction
 
 from ecm.lib import eveapi
 from ecm.apps.corp.models import Corp, Hangar, Wallet
-from ecm.core.eve import api
+from ecm.apps.eve import api
 from ecm.core.parsers import checkApiVersion, markUpdated
 
 import logging

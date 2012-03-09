@@ -24,7 +24,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 from ecm.apps.hr.models import TitleComposition, Title, Role, TitleCompoDiff, RoleType
-from ecm.core.eve import api
+from ecm.apps.eve import api
 from ecm.core.parsers import checkApiVersion, markUpdated
 
 import logging

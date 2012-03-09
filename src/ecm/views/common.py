@@ -14,10 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.common.models import Setting
 
-__date__ = "2010-05-16"
-__author__ = "diabeteman"
+__date__ = '2010-05-16'
+__author__ = 'diabeteman'
 
 
 import re
@@ -29,13 +28,14 @@ from django.db import transaction
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from ecm.core.eve.validators import validate_director_api_key
-from ecm.core.eve import api
+from ecm.apps.common.models import Setting
+from ecm.apps.eve.validators import validate_director_api_key
+from ecm.apps.eve import api
 from ecm.apps.hr.models import Member
 from ecm.apps.corp.models import Corp
 
 #------------------------------------------------------------------------------
-SHOWINFO_PATTERN = re.compile(r"showinfo:13\d\d//(\d+)", re.IGNORECASE + re.DOTALL)
+SHOWINFO_PATTERN = re.compile(r'showinfo:13\d\d//(\d+)')
 @login_required
 def corp(request):
 
@@ -48,14 +48,14 @@ def corp(request):
 
     try:
         corp = Corp.objects.get(id=1)
-        corp.description = SHOWINFO_PATTERN.subn(r"/hr/members/\1/", corp.description)[0]
+        corp.description = SHOWINFO_PATTERN.sub(r'/hr/members/\1/', corp.description)
         corp.memberCount = Member.objects.filter(corped=True).count()
     except Corp.DoesNotExist:
-        corp = Corp(corporationName="No Corporation info")
+        corp = Corp(corporationName='No Corporation info')
 
     data = { 'corp' : corp }
 
-    return render_to_response("common/corp.html", data, Ctx(request))
+    return render_to_response('common/corp.html', data, Ctx(request))
 
 
 #------------------------------------------------------------------------------
@@ -92,17 +92,17 @@ def edit_apikey(request):
 
 #------------------------------------------------------------------------------
 class DirectorApiKeyForm(forms.Form):
-    keyID = forms.IntegerField(label=_("API Key ID"))
+    keyID = forms.IntegerField(label=_('API Key ID'))
     characterID = forms.IntegerField(label=_('Character ID'))
-    vCode = forms.CharField(label=_("Verification Code"),
+    vCode = forms.CharField(label=_('Verification Code'),
                             widget=forms.TextInput(attrs={'size':'100'}))
 
     def clean(self):
         cleaned_data = self.cleaned_data
 
-        keyID = cleaned_data.get("keyID")
-        vCode = cleaned_data.get("vCode")
-        characterID = cleaned_data.get("characterID")
+        keyID = cleaned_data.get('keyID')
+        vCode = cleaned_data.get('vCode')
+        characterID = cleaned_data.get('characterID')
 
         validate_director_api_key(keyID, vCode, characterID)
 

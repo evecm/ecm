@@ -36,7 +36,7 @@ from django.db.models.query_utils import Q
 
 from ecm.views.decorators import check_user_access
 from ecm.apps.eve.models import CelestialObject, Type
-from ecm.core.eve import constants#, db
+from ecm.apps.eve import constants
 from ecm.core import utils
 from ecm.plugins.assets.models import Asset
 from ecm.apps.corp.models import Hangar

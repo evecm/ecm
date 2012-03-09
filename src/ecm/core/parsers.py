@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-from ecm.core.eve import api
+from ecm.apps.eve import api
 from ecm.apps.common.models import UpdateDate
 
 #------------------------------------------------------------------------------

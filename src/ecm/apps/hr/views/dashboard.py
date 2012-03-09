@@ -28,8 +28,8 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
 from ecm.apps.eve.models import CelestialObject
-#from ecm.core.eve import db
-from ecm.core.eve import constants
+#from ecm.apps.eve import db
+from ecm.apps.eve import constants
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import ColorThreshold, UserAPIKey

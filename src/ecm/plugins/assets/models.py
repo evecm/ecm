@@ -21,8 +21,8 @@ __author__ = "diabeteman"
 from django.db import models
 from datetime import datetime
 
-from ecm.core.eve import db
 from ecm.lib import bigintpatch
+from ecm.apps.eve.models import Type
 
 #------------------------------------------------------------------------------
 class Asset(models.Model):
@@ -51,9 +51,8 @@ class Asset(models.Model):
 
     def __unicode__(self):
         try:
-            item, _ = db.get_type_name(self.typeID)
-            return u"<%s x%d>" % (item, self.quantity)
-        except:
+            return u"<%s x%d>" % (Type.objects.get(pk=self.typeID).typeName, self.quantity)
+        except Type.DoesNotExist:
             return u"<Asset instance at %x>" % id(self)
 
     def __hash__(self):

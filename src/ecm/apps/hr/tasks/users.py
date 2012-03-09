@@ -29,7 +29,7 @@ from django.template.loader import render_to_string
 from django.core.mail.message import EmailMultiAlternatives
 
 from ecm.core import HTML
-from ecm.core.eve import api
+from ecm.apps.eve import api
 from ecm.lib import eveapi
 from ecm.apps.common.models import UserAPIKey, Setting
 from ecm.apps.hr.models import Title, Member, Skill

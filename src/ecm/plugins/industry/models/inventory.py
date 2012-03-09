@@ -23,7 +23,6 @@ from django.db import models
 
 from ecm.core.eve.classes import Item
 from ecm.apps.eve.models import Type
-#from ecm.core.eve import db
 
 
 #------------------------------------------------------------------------------

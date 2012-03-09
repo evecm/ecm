@@ -32,7 +32,7 @@ from django.db.models import Q
 
 from ecm.core.utils import print_time_min, print_float
 from ecm.apps.eve.models import Type
-#from ecm.core.eve import db
+#from ecm.apps.eve import db
 from ecm.apps.corp.models import Wallet, Corp
 from ecm.apps.hr.models import Member
 from ecm.views.decorators import check_user_access

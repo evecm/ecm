@@ -24,9 +24,9 @@ from django.db import transaction
 
 from ecm.apps.common.models import Setting
 from ecm.core import utils
-from ecm.core.eve import api#, db
+from ecm.apps.eve import api
 from ecm.apps.eve.models import CelestialObject
-from ecm.core.eve import constants as cst
+from ecm.apps.eve import constants as cst
 from ecm.core.eve.classes import Item
 from ecm.core.parsers import diff, markUpdated, checkApiVersion
 from ecm.plugins.assets.models import Asset, AssetDiff

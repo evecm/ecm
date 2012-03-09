@@ -24,7 +24,6 @@ from django.utils.translation import ugettext_lazy as tr
 
 from ecm.core.eve.classes import Blueprint, Item
 from ecm.apps.eve.models import Type
-#from ecm.core.eve import db
 
 
 #------------------------------------------------------------------------------

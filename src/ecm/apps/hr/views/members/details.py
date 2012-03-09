@@ -35,7 +35,6 @@ from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import ColorThreshold, Setting
 from ecm.core.utils import print_time_min, get_access_color
 from ecm.apps.eve.models import CelestialObject
-#from ecm.core.eve import db
 
 import logging
 logger = logging.getLogger(__name__)

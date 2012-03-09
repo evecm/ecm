@@ -28,7 +28,7 @@ from ecm.core.eve.classes import Item
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import CelestialObject, ControlTowerResource
 from ecm.plugins.pos import constants
-from ecm.core.eve import api#, db
+from ecm.apps.eve import api
 from ecm.core.parsers import checkApiVersion
 from ecm.apps.corp.models import Corp
 

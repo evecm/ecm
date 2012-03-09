@@ -36,7 +36,7 @@ from django.db import connection
 from ecm.views.decorators import check_user_access
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 from ecm.apps.eve.models import CelestialObject, Type
-from ecm.core.eve import constants#, db
+from ecm.apps.eve import constants
 from ecm.core import utils
 from ecm.plugins.assets.models import Asset, AssetDiff
 from ecm.apps.corp.models import Hangar
