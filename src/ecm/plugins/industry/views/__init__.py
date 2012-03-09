@@ -19,112 +19,52 @@ __date__ = "2011 8 19"
 __author__ = "diabeteman"
 
 import logging
+import time
 
 from django.db import connections, transaction
 
+from ecm.core import utils
 from ecm.apps.eve.models import Type, BlueprintReq
-
+from ecm.apps.eve import constants
 from ecm.plugins.industry.models import CatalogEntry, Supply
 
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-MINUTE = 60
-HOUR = 60 * MINUTE
-DAY = 24 * HOUR
-def print_duration(seconds):
-    seconds = int(seconds)
-    if not seconds > 0:
-        return '0 sec.'
-    duration = ''
-    days = seconds / DAY
-    if days > 0:
-        duration += '%d day' % days
-        if days > 1:
-            duration += 's'
-    rest = seconds % DAY
-    hours = rest / HOUR
-    if hours > 0:
-        duration += ' %d hour' % hours
-        if hours > 1:
-            duration += 's'
-    rest = rest % HOUR
-    minutes = rest / MINUTE
-    if minutes > 0:
-        duration += ' %d min.' % minutes
-    rest = rest % MINUTE
-    if rest > 0:
-        duration += ' %d sec.' % rest
-    return duration.strip()
-
-#------------------------------------------------------------------------------
-SQL_MISSING_ITEMS = '''SELECT "typeID", "typeName"
-FROM "invTypes"
-WHERE "blueprintTypeID" IS NOT NULL
-  AND "published" = 1
-  AND "metaGroupID" IN (0,2,14)
-  AND "marketGroupID" IS NOT NULL
-  AND "typeID" NOT IN (2836, 17922, 29266, 17928, 17932, 3532, 32207, 32209);'''
 @transaction.commit_on_success
-def createMissingCatalogEntries():
-    typeIDs = CatalogEntry.objects.values_list('typeID', flat=True)
-    cursor = connections['eve'].cursor()
-    cursor.execute(SQL_MISSING_ITEMS)
-    created = 0
-    for typeID, typeName in cursor:
-        if typeID not in typeIDs:
-            CatalogEntry.objects.create(typeID=typeID, typeName=typeName, is_available=False)
-            created += 1
-    logger.info('added %d missing catalog entries', created)
-createMissingCatalogEntries()
-#------------------------------------------------------------------------------
-SQL_MISSING_SUPPLIES = '''SELECT DISTINCT "requiredTypeID"
-FROM "ramBlueprintReqs" AS r JOIN "invTypes" AS i ON r."requiredTypeID" = i."typeID"
-WHERE i."blueprintTypeID" IS NULL
-AND i."published" = 1
-AND r."damagePerJob" > 0.0;'''
-@transaction.commit_on_success
-def createMissingSupplies():
-    typeIDs = Supply.objects.values_list('typeID', flat=True)
-    cursor = connections['eve'].cursor()
-    cursor.execute(SQL_MISSING_SUPPLIES)
-    created = 0
-    for typeID, in cursor:
-        if typeID not in typeIDs:
-            Supply.objects.create(typeID=typeID)
-            created += 1
-    logger.info('added %d missing supplies', created)
-createMissingSupplies()
+def create_missing_catalog_entries():
+    start = time.time()
+    manufacturable_types = Type.objects.filter(blueprint__isnull=False,
+                                               published=1,
+                                               metaGroupID__in=constants.MANUFACTURABLE_ITEMS,
+                                               market_group__isnull=False)
+    manufacturable_types = manufacturable_types.exclude(typeID__in=constants.FACTION_FRIGATES_TYPEIDS)
+    eve_typeIDs = set(manufacturable_types.values_list('typeID', flat=True))
+    ecm_typeIDs = set(CatalogEntry.objects.values_list('typeID', flat=True))
+    
+    missing_ids = list(eve_typeIDs - ecm_typeIDs)
+    
+    for sublist in utils.sublists(missing_ids, 50):
+        for obj in Type.objects.filter(typeID__in=sublist):
+            CatalogEntry.objects.create(typeID=obj.typeID, typeName=obj.typeName, is_available=False)
+    duration = time.time() - start
+    logger.info('added %d missing catalog entries (took %.2f sec.)', len(missing_ids), duration)
+create_missing_catalog_entries()
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
-def createMissingCatalogEntries_new():
-    entries = Type.objects.filter(blueprint__isnull = False,
-                                  published = 1,
-                                  metaGroupID__in = [0,2,14],
-                                  market_group__isnull = False,
-                                  ).exclude(typeID__in=[2836, 17922, 29266, 17928, 17932, 3532, 32207, 32209])
-    typeIDs = CatalogEntry.objects.values_list('typeID', flat=True)
-    created = 0
-    for typeID, typeName in [(i.typeID, i.typeName) for i in entries]:
-        if typeID not in typeIDs:
-            CatalogEntry.objects.create(typeID=typeID, typeName=typeName, is_available=False)
-            created += 1
-    logger.info('added %d missing catalog entries', created)
-#createMissingCatalogEntries_new()
-
-#------------------------------------------------------------------------------
-@transaction.commit_on_success
-def createMissingSupplies_new():
-    supplies= BlueprintReq.objects.filter(required_type__blueprint__isnull=True, 
-                                          required_type__published=1, 
-                                          damagePerJob__gt=0.0).values_list('requiredTypeID', 
-                                                                            flat=True).distinct()
-    typeIDs = Supply.objects.values_list('typeID', flat=True)
-    created = 0
-    for typeID in [x.typeID for x in supplies]:
-        if typeID not in typeIDs:
-            Supply.objects.create(typeID=typeID)
-            created += 1
-    logger.info('added %d missing supplies', created)
-#createMissingSupplies_new()
+def create_missing_supplies():
+    start = time.time()
+    eve_supplies = BlueprintReq.objects.filter(required_type__blueprint__isnull=True, 
+                                               required_type__published=1, 
+                                               damagePerJob__gt=0.0)
+    eve_typeIDs = set(eve_supplies.values_list('required_type', flat=True).distinct())
+    ecm_typeIDs = set(Supply.objects.values_list('typeID', flat=True))
+    
+    missing_ids = eve_typeIDs - ecm_typeIDs
+    
+    for typeID in missing_ids:
+        Supply.objects.create(typeID=typeID)
+    duration = time.time() - start
+    logger.info('added %d missing supplies (took %.2f sec.)', len(missing_ids), duration)
+create_missing_supplies()

@@ -28,7 +28,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 
-from ecm.plugins.pos.views import print_fuel_quantity, print_duration
+from ecm.core import utils
+from ecm.plugins.pos.views import print_fuel_quantity
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access
@@ -111,7 +112,7 @@ def fuel_data(request, pos_id):
             timeLeft = '-'
         else:
             hoursLeft = int(quantity / consumption)
-            timeLeft = print_duration(hoursLeft)
+            timeLeft = utils.print_duration_short(hoursLeft)
         
         fuelTable.append([
             type_id,

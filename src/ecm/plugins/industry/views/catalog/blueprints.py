@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 11 13"
-__author__ = "diabeteman"
+__date__ = '2011 11 13'
+__author__ = 'diabeteman'
 
 
 try:
@@ -31,7 +31,6 @@ from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response
 
 from ecm.core.eve.classes import BpActivity
-from ecm.plugins.industry.views import print_duration
 from ecm.core import utils
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
@@ -113,11 +112,11 @@ def details(request, blueprint_id):
     data = {
         'blueprint': bp,
         'activities': activities,
-        'prodDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.MANUFACTURING)),
-        'meDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.RESEARCH_ME)),
-        'peDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.RESEARCH_PE)),
-        'copyDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.COPY)),
-        'invDuration': print_duration(bp.getDuration(1, bp.pe, BpActivity.INVENTION)),
+        'prodDuration': utils.print_duration_long(bp.getDuration(1, bp.pe, BpActivity.MANUFACTURING)),
+        'meDuration': utils.print_duration_long(bp.getDuration(1, bp.pe, BpActivity.RESEARCH_ME)),
+        'peDuration': utils.print_duration_long(bp.getDuration(1, bp.pe, BpActivity.RESEARCH_PE)),
+        'copyDuration': utils.print_duration_long(bp.getDuration(1, bp.pe, BpActivity.COPY)),
+        'invDuration': utils.print_duration_long(bp.getDuration(1, bp.pe, BpActivity.INVENTION)),
     }
     return render_to_response('catalog/blueprint_details.html', data, Ctx(request))
 
@@ -169,7 +168,7 @@ def manufacturing_time(request, blueprint_id):
         bp = get_object_or_404(OwnedBlueprint, id=int(blueprint_id))
     except (KeyError, ValueError), e:
         raise HttpResponseBadRequest(str(e))
-    duration = print_duration(bp.getDuration(1, bp.pe, BpActivity.MANUFACTURING))
+    duration = utils.print_duration_long(bp.getDuration(1, bp.pe, BpActivity.MANUFACTURING))
     return HttpResponse(duration)
 
 

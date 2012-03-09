@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2010-05-16"
-__author__ = "diabeteman"
+__date__ = '2010-05-16'
+__author__ = 'diabeteman'
 
 import re
 
@@ -26,26 +26,26 @@ from django.conf import settings
 #------------------------------------------------------------------------------
 def print_time(date):
     try:
-        return date.strftime("%Y-%m-%d %H:%M:%S")
+        return date.strftime('%H:%M')
     except:
         return date
 
 #------------------------------------------------------------------------------
 def print_time_min(date):
     try:
-        return date.strftime("%Y %b %d - %H:%M")
+        return date.strftime('%Y %b %d - %H:%M')
     except:
         return date
 
 #------------------------------------------------------------------------------
 def print_date(date):
     try:
-        return date.strftime("%Y-%m-%d")
+        return date.strftime('%Y-%m-%d')
     except:
         return date
 
 #------------------------------------------------------------------------------
-def print_integer(number, thousand_separator=",", force_sign=False):
+def print_integer(number, thousand_separator=',', force_sign=False):
     if type(number) not in [type(0), type(0L)]:
         return number
 
@@ -55,38 +55,38 @@ def print_integer(number, thousand_separator=",", force_sign=False):
     result = ''
     while number >= 1000:
         number, r = divmod(number, 1000)
-        result = "%s%03d%s" % (thousand_separator, r, result)
+        result = '%s%03d%s' % (thousand_separator, r, result)
 
     if negative:
-        return "- %d%s" % (number, result)
+        return '- %d%s' % (number, result)
     else:
-        return "%s%d%s" % ("+ " if force_sign else "", number, result)
+        return '%s%d%s' % ('+ ' if force_sign else '', number, result)
 
 #------------------------------------------------------------------------------
 def print_delta(delta):
-    string = ""
+    string = ''
 
     hours, remainder = divmod(delta.seconds, 3600)
     minutes = divmod(remainder, 60)[0]
 
     if delta.days:
-        string += "%d day" % delta.days
+        string += '%d day' % delta.days
         if delta.days > 1:
-            string += "s"
-        string += " "
-    string += "%dh %dm" % (hours, minutes)
+            string += 's'
+        string += ' '
+    string += '%dh %dm' % (hours, minutes)
 
     return string
 
 #------------------------------------------------------------------------------
-def print_float(number, thousand_separator=",", decimal_separator=".", force_sign=False):
+def print_float(number, thousand_separator=',', decimal_separator='.', force_sign=False):
     if type(number) != type(0.0):
         return number
-    decimal_part = ("%.2f" % abs(number - int(number)))[2:]
+    decimal_part = ('%.2f' % abs(number - int(number)))[2:]
     return print_integer(int(number), thousand_separator, force_sign) + decimal_separator + decimal_part
 
 #------------------------------------------------------------------------------
-def print_duration(hours):
+def print_duration_short(hours):
     if hours / 24 > 0:
         days = hours / 24
         duration = '%dd' % days
@@ -96,6 +96,35 @@ def print_duration(hours):
         return duration
     else:
         return '%dh' % hours
+
+#------------------------------------------------------------------------------
+MINUTE = 60
+HOUR = 60 * MINUTE
+DAY = 24 * HOUR
+def print_duration_long(seconds):
+    seconds = int(seconds)
+    if not seconds > 0:
+        return '0 sec.'
+    duration = ''
+    days = seconds / DAY
+    if days > 0:
+        duration += '%d day' % days
+        if days > 1:
+            duration += 's'
+    rest = seconds % DAY
+    hours = rest / HOUR
+    if hours > 0:
+        duration += ' %d hour' % hours
+        if hours > 1:
+            duration += 's'
+    rest = rest % HOUR
+    minutes = rest / MINUTE
+    if minutes > 0:
+        duration += ' %d min.' % minutes
+    rest = rest % MINUTE
+    if rest > 0:
+        duration += ' %d sec.' % rest
+    return duration.strip()
 
 #------------------------------------------------------------------------------
 UNITS = ['K', 'M', 'G', 'T']
@@ -115,7 +144,7 @@ def get_access_color(accessLvl, colorThresholds):
     for t in colorThresholds:
         if accessLvl <= t.threshold:
             return t.color
-    return ""
+    return ''
 
 #------------------------------------------------------------------------------
 CAMEL_CASE_RE = re.compile(r'(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))')
@@ -144,7 +173,7 @@ def fix_mysql_quotes(query):
     """
     MySQL doesn't like double quotes. We replace them by backticks.
     """
-    if settings.DATABASES["default"]["ENGINE"] == 'django.db.backends.mysql':
+    if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.mysql':
         return query.replace('"', '`')
     else:
         return query
