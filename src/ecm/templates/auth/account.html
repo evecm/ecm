@@ -6,68 +6,56 @@
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/account/">Account</a></li>
+<li class="active"><a href="/account/">User Profile</a></li>
 {% endblock %}
 
 {% block main_content %}
+<div class="page-header">
+  <h1>User Profile</h1>
+</div>
 
-<h1 class="pagetitle">User Profile</h1>
-
-<p>Hello {{ user.username }}</p>
+<p>Hello <strong>{{ user.username }}</strong></p>
 
 <p>Click <a href="/account/passwordchange/">here</a> to change your password.</p>
 
-<h1>Owned Characters</h1>
-<table class="transparent" style="width:50%;">
-{% for owned in characters %}
-<tr>
-  <td>{{ owned.permalink|safe }}</td>
-  <td><input type="button" class="del_character" id="{{ owned.characterID }}" name="{{ owned.name }}" value="Delete"/></td>
-</tr>
-{% endfor %}
-</table>
+<div class="row-fluid">
+  <div class="span6">
+    <h2>EVE API Keys</h2>
+    <table class="transparent" style="width:50%;">
+    {% for key in api_keys %}
+    <tr>
+      <td class="bold">{{ key.keyID }}</td>
+      <td>{{ key.is_valid_html|safe }}</td>
+      <td><input type="button" class="edit_api" id="{{ key.keyID }}" value="Edit"/></td>
+      <td><input type="button" class="del_api" id="{{ key.keyID }}" value="Delete"/></td>
+    </tr>
+    {% endfor %}
+    </table>
+    
+    <button class="btn btn-small btn-success" id="add_api">Add new API Key</button>
+  </div>
+  <div class="span6">
+    <h2>Owned Characters</h2>
+    <table class="transparent" style="width:50%;" id="owned_characters">
+    {% for owned in characters %}
+    <tr>
+      <td>{{ owned.permalink|safe }}</td>
+      <td><button class="btn btn-small btn-danger" id="{{ owned.characterID }}" name="{{ owned.name }}"><i class="icon-trash icon-white"></i></button></td>
+    </tr>
+    {% endfor %}
+    </table>
+  </div>
+</div>
 
-<script type="text/javascript">
-$(".del_character").click(function () {
-    var alert_text = "Are you sure you want to get rid of " + this.name + "?\n\n";
-    alert_text += "If this character is still attached to one of your registered API Keys, it will be associated with your profile again at next scan.";
-    if (confirm(alert_text)) {
-        window.location = "/account/deletecharacter/" + this.id;
-    }
-});
-</script>
 
 
-<h1>EVE API Keys</h1>
-<table class="transparent" style="width:50%;">
-{% for key in api_keys %}
-<tr>
-  <td class="bold">{{ key.keyID }}</td>
-  <td>{{ key.is_valid_html|safe }}</td>
-  <td><input type="button" class="edit_api" id="{{ key.keyID }}" value="Edit"/></td>
-  <td><input type="button" class="del_api" id="{{ key.keyID }}" value="Delete"/></td>
-</tr>
-{% endfor %}
-</table>
 
-<input type="button" id="add_api" value="Add new API Key"/>
 
-<script type="text/javascript">
-$(".del_api").click(function () {
-    var alert_text = "Are you sure you want to delete API Key #" + this.id + "?";
-    if (confirm(alert_text)) {
-        window.location = "/account/deleteapi/" + this.id;
-    }
-});
-$(".edit_api").click(function () {
-    window.location = "/account/editapi/" + this.id;
-});
-$("#add_api").click(function () {
-    window.location = "/account/addapi/";
-});
-</script>
 
-<h1>External Application Bindings</h1>
+
+
+{% if external_apps %}
+<h2>External Application Bindings</h2>
 <table class="transparent" style="width:50%;">
 {% for app in external_apps %}
 <tr>
@@ -78,16 +66,41 @@ $("#add_api").click(function () {
 </tr>
 {% endfor %}
 </table>
+{% endif %}
+{% endblock %}
+
+{% block post_javascripts %}
 <script type="text/javascript">
-$(".del_binding").click(function () {
-    var alert_text = "Are you sure you want to delete the binding with external application '" + this.name + "'?";
-    if (confirm(alert_text)) {
-        window.location = "/account/binding/delete/" + this.id;
-    }
-});
-$(".add_binding").click(function () {
-    window.location = "/account/binding/add/" + this.id;
+$(document).ready(function () {
+    $("#owned_characters button").click(function () {
+        var alert_text = "Are you sure you want to get rid of " + this.name + "?\n\n";
+        alert_text += "If this character is still attached to one of your registered API Keys, it will be associated with your profile again at next scan.";
+        if (confirm(alert_text)) {
+            window.location = "/account/deletecharacter/" + this.id + "/";
+        }
+    });
+    $(".del_api").click(function () {
+        var alert_text = "Are you sure you want to delete API Key #" + this.id + "?";
+        if (confirm(alert_text)) {
+            window.location = "/account/deleteapi/" + this.id;
+        }
+    });
+    $(".edit_api").click(function () {
+        window.location = "/account/editapi/" + this.id;
+    });
+    $("#add_api").click(function () {
+        window.location = "/account/addapi/";
+    });
+    $(".del_binding").click(function () {
+        var alert_text = "Are you sure you want to delete the binding with external application '" + this.name + "'?";
+        if (confirm(alert_text)) {
+            window.location = "/account/binding/delete/" + this.id;
+        }
+    });
+    $(".add_binding").click(function () {
+        window.location = "/account/binding/add/" + this.id;
+    });
 });
 </script>
-
 {% endblock %}
+
