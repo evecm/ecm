@@ -379,7 +379,7 @@ def update_assets_locations(assets_to_locate):
             
             #for object_id, x, y, z in db.get_celestial_objects(solarSystemID):
             for obj in CelestialObject.objects.filter(solarSystemID=solarSystemID,
-                                                      groupID__in = [7, 8]):
+                                                      group__in = [7, 8]):
                 # Distances between celestial objects are huge. The error margin
                 # that comes with manatthan distance is totally acceptable.
                 # See http://en.wikipedia.org/wiki/Taxicab_geometry for culture.
