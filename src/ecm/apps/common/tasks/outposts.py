@@ -22,14 +22,48 @@ import logging
 
 from django.db import transaction
 
+from ecm.apps.eve.models import CelestialObject
 from ecm.core.eve import api, db
 from ecm.core.parsers import checkApiVersion
 
 LOG = logging.getLogger(__name__)
+#------------------------------------------------------------------------------
+@transaction.commit_on_success()
+def update():
+    """
+    Retrieve all corp owned stations and update their name in the EVE database.
+    Creating new entries if needed.
+
+    If there's an error, nothing is written in the database
+    """
+    LOG.info("fetching /eve/ConquerableStationList.xml.aspx...")
+    api_conn = api.connect()
+    apiOutposts = api_conn.eve.ConquerableStationList()
+    checkApiVersion(apiOutposts._meta.version)
+    created = 0
+    updated = 0
+    for outpost in apiOutposts.outposts:
+        try:
+            station = CelestialObject.objects.get(itemID=outpost.stationID)
+            if station.itemName != outpost.stationName:
+                station.itemName = outpost.stationName
+            updated += 1
+        except CelestialObject.DoesNotExist:
+            system = CelestialObject.objects.get(itemID = outpost.solarSystemID)
+            station = CelestialObject(itemID = outpost.stationID,
+                                      typeID = outpost.stationTypeID,
+                                      groupID = 15,
+                                      solarSystemID = outpost.solarSystemID,
+                                      regionID = system.regionID,
+                                      itemName = outpost.stationName,
+                                      security = system.security)
+            created += 1
+        station.save()
+    LOG.info("%d new outposts, %d updated", created, updated)
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success(using='eve')
-def update():
+def update_old():
     """
     Retrieve all corp owned stations and update their name in the EVE database.
     Creating new entries if needed.

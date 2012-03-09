@@ -24,7 +24,8 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 
-from ecm.core.eve.db import get_type_name
+from ecm.apps.eve.models import Type
+#from ecm.core.eve.db import get_type_name
 
 from ecm.lib import bigintpatch
 from ecm.apps.hr import NAME as app_prefix
@@ -233,5 +234,6 @@ class Skill(models.Model):
     def __unicode__(self):
         return self.name()
     def name(self):
-        name = get_type_name(self.typeID)
+        name = Type.objects.get(typeID=self.typeID).typeName
+        #name = get_type_name(self.typeID)
         return unicode(name[0])

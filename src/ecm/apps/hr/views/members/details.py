@@ -34,7 +34,8 @@ from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import ColorThreshold, Setting
 from ecm.core.utils import print_time_min, get_access_color
-from ecm.core.eve import db
+from ecm.apps.eve.models import CelestialObject
+#from ecm.core.eve import db
 
 import logging
 logger = logging.getLogger(__name__)
@@ -51,7 +52,11 @@ def details(request, characterID):
     try:
         colorThresholds = ColorThreshold.objects.all().order_by("threshold")
         member = Member.objects.get(characterID=int(characterID))
-        member.base = db.resolveLocationName(member.baseID)[0]
+        try:
+            member.base = CelestialObject.objects.get(itemID = member.baseID).itemName
+        except CelestialObject.DoesNotExist:
+            member.base = '???'
+        #member.base = db.resolveLocationName(member.baseID)[0]
         member.color = get_access_color(member.accessLvl, colorThresholds)
         member.roles_no_director = member.roles.exclude(roleID=1) # exclude 'director'
         

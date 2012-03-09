@@ -25,7 +25,8 @@ import logging
 from django.db import transaction
 
 from ecm.core.eve import api
-from ecm.core.eve import db
+from ecm.apps.eve.models import CelestialObject
+#from ecm.core.eve import db
 from ecm.core.parsers import checkApiVersion, diff, markUpdated
 from ecm.apps.hr.models import Member, MemberDiff
 
@@ -135,7 +136,8 @@ def parseOneMember(member):
                   corpDate      = member.startDateTime,
                   lastLogin     = member.logonDateTime,
                   lastLogoff    = member.logoffDateTime,
-                  location      = db.resolveLocationName(member.locationID)[0],
+                  location      = CelestialObject.objects.get(itemID = member.locationID).itemName,
+                  #location      = db.resolveLocationName(member.locationID)[0],
                   locationID    = member.locationID,
                   ship          = member.shipType)
 

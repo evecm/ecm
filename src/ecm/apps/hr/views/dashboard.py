@@ -27,7 +27,8 @@ except ImportError:
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
-from ecm.core.eve import db
+from ecm.apps.eve.models import CelestialObject
+#from ecm.core.eve import db
 from ecm.core.eve import constants
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
@@ -74,8 +75,10 @@ def positions_of_members():
     for m in Member.objects.filter(corped=True):
         solarSystemID = m.locationID
         if solarSystemID > constants.STATIONS_IDS:
-            solarSystemID = db.getSolarSystemID(m.locationID)
-        security = db.resolveLocationName(solarSystemID)[1]
+            solarSystemID = CelestialObject.objects.get(itemID = m.locationID).solarSystemID
+            #solarSystemID = db.getSolarSystemID(m.locationID)
+        security = CelestialObject.objects.get(itemID = solarSystemID).security
+        #security = db.resolveLocationName(solarSystemID)[1]
         if security > 0.5:
             positions["hisec"] += 1
         elif security > 0:
