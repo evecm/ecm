@@ -28,7 +28,7 @@ from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 
-from ecm.plugins.pos.views import print_fuel_quantity, print_duration, print_time
+from ecm.plugins.pos.views import print_fuel_quantity
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
@@ -56,7 +56,7 @@ COLUMNS = [
     ['Fuel Blocks',     'Fuel Blocks',          None],
     ['Strontium',       'Strontium Clathrates', None],
     ['Name',            None,                   None],
-    ['hours_int',            None,                   None],
+    ['hours_int',       None,                   None],
 ]
 @check_user_access()
 def poses(request):
@@ -103,67 +103,67 @@ def poses_data(request):
         sort_col = sort_col + "_nocase"
         sort_val = utils.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column][2])
         query = query.extra(select={ sort_col : sort_val })
-    elif params.column == 5 or params.column == 6:
+    elif params.column in (5, 6):
         # if sorting by fuel or stront. make a sorted list of (hoursleft|quantity,pos)
         # so that we can easily present and sort the data.
         pos_by_timeleft = []
         if params.displayMode == 'quantities':
             for pos in query:
                 if params.column == 5:
-                    pos_by_timeleft.append((FuelLevel.objects.filter(pos=pos, type_id=pos.fuel_type_id).latest().quantity, pos))
+                    quantity = pos.fuel_levels.filter(type_id=pos.fuel_type_id).latest().quantity
                 else:
-                    pos_by_timeleft.append((FuelLevel.objects.filter(pos=pos, type_id=C.STRONTIUM_CLATHRATES_TYPEID).latest().quantity, pos))
+                    quantity = pos.fuel_levels.filter(type_id=C.STRONTIUM_CLATHRATES_TYPEID).latest().quantity
+                pos_by_timeleft.append( (quantity, pos) )
         else:
-            pos_by_timeleft = []
             for pos in query:
                 if params.column == 5:
-                    pos_by_timeleft.append((getFuelValue(pos, pos.fuel_type_id, 'hours_int'), pos))
+                    time_left = getFuelValue(pos, pos.fuel_type_id, 'hours_int')
                 else:
-                    pos_by_timeleft.append((getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, 'hours_int'), pos))
+                    time_left = getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, 'hours_int')
+                pos_by_timeleft.append( (time_left, pos) )
+        
         if not params.asc:
             pos_by_timeleft.sort(reverse=True)
         else:
             pos_by_timeleft.sort()
     try:
         # This will fail if sorting by fuel.
-        if not params.asc: sort_col = "-" + sort_col
+        if not params.asc: 
+            sort_col = "-" + sort_col
     except TypeError:
         pass
     query = query.extra(order_by=([sort_col]))
 
 
+    pos_table = []
     if params.column < 5:
-        pos_table = []
         for pos in query[params.first_id:params.last_id]:
             # Query into Fuel table to get last values. for the current POS
-            row = [
+            pos_table.append([
                 pos.permalink,
                 pos.custom_name,
                 pos.type_id,
                 pos.state,
-                print_time(pos.online_timestamp),
+                utils.print_time(pos.online_timestamp),
                 getFuelValue(pos, pos.fuel_type_id, params.displayMode),
                 getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode),
                 pos.type_name,
                 getFuelValue(pos, pos.fuel_type_id, 'hours_int'),
-            ]
-            pos_table.append(row)
-    elif params.column == 5 or params.column == 6:
-        pos_table = []
+            ])
+    else:
         # Since its a sorted list of tuples now it needs slightly different handling
-        for time, pos in pos_by_timeleft[params.first_id:params.last_id]: #@UnusedVariable
-            row = [
+        for _, pos in pos_by_timeleft[params.first_id:params.last_id]:
+            pos_table.append([
                 pos.permalink,
                 pos.custom_name,
                 pos.type_id,
                 pos.state,
-                print_time(pos.online_timestamp),
+                utils.print_time(pos.online_timestamp),
                 getFuelValue(pos, pos.fuel_type_id, params.displayMode),
                 getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode),
                 pos.type_name,
                 getFuelValue(pos, pos.fuel_type_id, 'hours_int'),
-            ]
-            pos_table.append(row)
+            ])
 
     json_data = {
         "sEcho" : params.sEcho,
@@ -195,6 +195,6 @@ def getFuelValue(pos, fuelTypeID, displayMode):
             elif displayMode == 'hours_int':
                 value = hoursLeft
             else:
-                value = print_duration(hoursLeft)
+                value = utils.print_duration_short(hoursLeft)
     return value
 
