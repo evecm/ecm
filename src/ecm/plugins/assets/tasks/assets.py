@@ -257,7 +257,7 @@ def row_is_in_hangar(item, items_dic, solarSystemID=None, stationID=None, hangar
     if solarSystemID is None and stationID is None:
         # we come from the update() method and the item has a locationID attribute
         asset.stationID = locationID_to_stationID(item.locationID)
-        asset.solarSystemID = CelestialObject.objects.get(itemID=stationID).solarSystemID
+        asset.solarSystemID = CelestialObject.objects.get(itemID=asset.stationID).solarSystemID
         #asset.solarSystemID = db.getSolarSystemID(asset.stationID)
     else:
         asset.solarSystemID = solarSystemID
@@ -378,7 +378,8 @@ def update_assets_locations(assets_to_locate):
             distances = []
             
             #for object_id, x, y, z in db.get_celestial_objects(solarSystemID):
-            for obj in CelestialObject.objects.filter(solarSystemID=solarSystemID):
+            for obj in CelestialObject.objects.filter(solarSystemID=solarSystemID,
+                                                      groupID__in = [7, 8]):
                 # Distances between celestial objects are huge. The error margin
                 # that comes with manatthan distance is totally acceptable.
                 # See http://en.wikipedia.org/wiki/Taxicab_geometry for culture.
