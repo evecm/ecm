@@ -15,3 +15,4 @@ install.log
 *.orig
 src/static
 build
+*.swp
