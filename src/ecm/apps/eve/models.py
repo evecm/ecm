@@ -241,7 +241,7 @@ class BlueprintType(models.Model):
     def materials(self, activityID):
         return self.requirements.select_related(depth=2).filter(activityID=activityID)
     
-    def get_duration(self, runs, pe_level, activity):
+    def get_duration(self, activity, runs=1, pe_level=0):
         """
         Calculate the duration (in seconds) needed to perform the specified activity.
         """
@@ -268,7 +268,7 @@ class BlueprintType(models.Model):
                     blueprints.update(mat.blueprint.get_involved_blueprints(recurse=True))
         return blueprints
     
-    def get_bill_of_materials(self, runs, me_level, activity, round_result=False):
+    def get_bill_of_materials(self, activity, runs, me_level, round_result=False):
         """
         Resolve the materials needed for the specified activity.
         Quantities are given as floats (to be rounded).

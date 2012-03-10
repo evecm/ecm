@@ -23,7 +23,6 @@ from django.contrib.auth.models import User
 
 from ecm.core.utils import cached_property
 from ecm.apps.eve.models import Type
-from ecm.apps.eve.classes import NoBlueprintException
 from ecm.plugins.industry.models.research import InventionPolicy
 from ecm.plugins.industry.models.catalog import OwnedBlueprint
 
@@ -145,7 +144,7 @@ class Job(models.Model):
         item = Type.objects.select_related(depth=2).get(pk=item_id)
         try:
             if item.blueprint is None:
-                raise NoBlueprintException()
+                raise Type.NoBlueprintException()
             bpid = item.blueprint.typeID
             activity = Job.MANUFACTURING
             bp = OwnedBlueprint.objects.filter(typeID=bpid, copy=False).order_by('-me')[0]
@@ -171,7 +170,7 @@ class Job(models.Model):
                 activity = Job.SUPPLY
                 duration = 0
                 runs = quantity
-        except NoBlueprintException:
+        except Type.NoBlueprintException:
             # item cannot be manufactured
             bp = None
             activity = Job.SUPPLY

@@ -22,7 +22,7 @@ __author__ = "diabeteman"
 from django.db import models
 from django.utils.translation import ugettext_lazy as tr
 
-from ecm.apps.eve.models import Type, BlueprintType
+from ecm.apps.eve.models import Type, BlueprintType, BlueprintReq
 
 
 #------------------------------------------------------------------------------
@@ -61,15 +61,13 @@ class CatalogEntry(models.Model):
         owned_bps = set(OwnedBlueprint.objects.filter(typeID__in=involved_bp_ids)) 
         return involved_bps - owned_bps
 
-    def __getattr__(self, attrName):
+    def __getattr__(self, attr):
         try:
-            if self.__item is not None:
-                return getattr(self.__item, attrName)
-            else:
+            if self.__item is None:
                 self.__item = Type.objects.get(pk=self.typeID)
-                return getattr(self.__item, attrName)
+            return getattr(self.__item, attr)
         except AttributeError:
-            return models.Model.__getattribute__(self, attrName)
+            return models.Model.__getattribute__(self, attr)
 
     def __unicode__(self):
         return unicode(self.typeName)
@@ -104,9 +102,26 @@ class OwnedBlueprint(models.Model):
     def permalink(self):
         return '<a href="%s" class="catalog-blueprint">%s</a>' % (self.url, self.typeName)
 
+    def bill_of_materials(self, activity, runs=1, me_level=0, round_result=False):
+        return self.get_bill_of_materials(runs, me_level, activity, round_result)
+
+    def manufacturing_time(self, runs=1):
+        return self.get_duration(runs=runs, pe_level=self.pe, activity=BlueprintReq.MANUFACTURING)
+
+    def pe_research_time(self, runs=1):
+        return self.get_duration(runs=runs, activity=BlueprintReq.RESEARCH_PE)
+
+    def me_research_time(self, runs=1):
+        return self.get_duration(runs=runs, activity=BlueprintReq.RESEARCH_ME)
+
+    def copy_time(self, runs=1):
+        return self.get_duration(runs=runs, activity=BlueprintReq.COPY)
+    
+    def invention_time(self, runs=1):
+        return self.get_duration(runs=runs, activity=BlueprintReq.INVENTION)
+
     def item_name_admin_display(self):
-        name = Type.objects.get(typeID = self.typeID).typeName
-        return name
+        return self.typeName
     item_name_admin_display.short_description = 'Blueprint'
 
     def __getattr__(self, attrName):

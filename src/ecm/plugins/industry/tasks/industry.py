@@ -16,7 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-from ecm.plugins.industry.models.order import OrderCannotBeFulfilled
+from ecm.apps.eve.models import Type
 
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
@@ -26,8 +26,8 @@ from datetime import datetime
 
 from django.db import transaction
 
-from ecm.core.eve.classes import NoBlueprintException
 from ecm.core import utils
+from ecm.plugins.industry.models.order import OrderCannotBeFulfilled
 from ecm.plugins.industry.tasks import evecentral
 from ecm.plugins.industry.models import Supply, SupplySource, Order, CatalogEntry
 
@@ -77,7 +77,7 @@ def update_production_costs(item_id=None):
                         transaction.rollback()
             else:
                 raise OrderCannotBeFulfilled(missing_blueprints=list(missing_bps))
-        except NoBlueprintException:
+        except Type.NoBlueprintException:
             # this can happen when blueprint requirements are not found in EVE database.
             # no way to work arround this issue for the moment, we just keep the price to None
             pass
