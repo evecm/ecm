@@ -145,15 +145,15 @@ class Job(models.Model):
         try:
             if item.blueprint is None:
                 raise Type.NoBlueprintException()
-            bpid = item.blueprint.typeID
+            bpid = item.blueprintTypeID
             activity = Job.MANUFACTURING
             bp = OwnedBlueprint.objects.filter(typeID=bpid, copy=False).order_by('-me')[0]
             runs = quantity / item.portionSize
             if quantity % item.portionSize:
                 runs += 1
-            duration = item.blueprint.getDuration(runs, bp.pe, activity)
+            duration = bp.manufacturing_time(runs)
         except IndexError:
-            if item.techLevel == 2 and item.blueprint.parentBlueprintTypeID is not None:
+            if item.techLevel == 2 and item.blueprint.parent_blueprint is not None:
                 # we're trying to manufacture a T2 item without owning its BPO
                 # we must create an OwnedBlueprint for this job only (that will
                 # be consumed with it)

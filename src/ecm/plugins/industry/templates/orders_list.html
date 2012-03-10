@@ -3,31 +3,31 @@
 {% block headtitle %}Order list{% endblock %}
 
 
-
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 {% endblock %}
 
-{% block javascripts %}
-<script type="text/javascript"  >
-AJAX_URL = '/industry/orders/all/data/';
-</script>
-{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry/">Industry</a></li>
-<li><a href="/industry/orders/">Orders</a></li>
+<li class="active"><a href="/industry/orders/">Orders</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Orders list</h1>
+<div class="page-header">
+    <h1>Orders list</h1>
+</div>
 
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+  </div>
 </form>
 
 <div class="well well-tight">
@@ -68,28 +68,18 @@ AJAX_URL = '/industry/orders/all/data/';
 </table>
 {% endblock %}
 
-{% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
-{% endblock %}
+
 {% block post_javascripts %}
 <script>
-	/************************************
+  /************************************
  * "Orders List" table setup *
  ************************************/
 
 PARAMS = '{%for id, name in states.items%}{{id}}{%if not forloop.last%},{%endif%}{%endfor%}';
 
 $(document).ready(function() {
-      var table = $('#orders_list').dataTable( {
-        sPaginationType: "full_numbers",
-        bProcessing: true,
-        bServerSide: true,
-        bAutoWidth: false,
-        iDisplayLength: 25, /* default display 25 items */
-        bStateSave: true, /* table state persistance */
-        iCookieDuration: 60 * 60, /* persistance duration 1 hour */
-        sAjaxSource: AJAX_URL,
-        sDom: 'lprtip', /* table layout. see http://www.datatables.net/usage/options */
+      var table = $('#orders_list').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: '/industry/orders/all/data/',
         aoColumns: [
             { /* # */               sWidth: "10%" },
             { /* State */           sWidth: "10%" },
@@ -103,30 +93,18 @@ $(document).ready(function() {
             return nRow;
         },
 
-        /* the search field being outside the table object, we need to save its status
-         * explicitly here in order to restore it with the rest */
-        fnStateSaveCallback: function (oSettings, sValue) {
-            var sFilter = $("#search_text").val();
-            sValue = sValue.replace( /"sFilter":".*?"/, '"sFilter":"' + sFilter + '"' );
-            return sValue;
-        },
-        /* restore the search field content */
-        fnStateLoadCallback: function (oSettings, oData) {
-            $("#search_text").val(oData.sFilter);
-            return true;
-        },
-	    /* this function will be called when the table has to query data to be displayed */
-	    fnServerData: function ( sSource, aoData, fnCallback ) {
-	        /* Add some extra variables to the url */
-	        aoData.push( {
-	            name: 'states',
-	            value: PARAMS
-	        } );
-	        $.getJSON( sSource, aoData, function (json) {
-	            fnCallback(json)
-	        } );
-	    }
-    });
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: 'states',
+                value: PARAMS
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        }
+    }));
 
     /* trigger the search when pressing return in the text field */
     $("#search_form").submit(function(event) {

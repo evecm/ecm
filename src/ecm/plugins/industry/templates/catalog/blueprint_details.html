@@ -19,11 +19,11 @@
 </div>
 
 <div class="row-fluid">
-  <div class="span2">
+  <div class="span1">
     <img src="http://image.eveonline.com/Type/{{blueprint.typeID}}_64.png" />
   </div>
   <div class="span3">
-    <dl>
+    <dl class="table">
       <dt>Produces Item</dt>
         <dd>{{blueprint.catalog_entry.permalink|safe}}</dd>
       <dt>Material Efficiency</dt>
@@ -37,17 +37,22 @@
     </dl>
   </div>
   <div class="span7">
-    <dl>
-      <dt>Manufacturing Time</dt><dd id="time">{{prodDuration}}</dd>
-      <dt>Material Research Time</dt><dd>{{meDuration}}</dd>
-      <dt>Productivity Research Time</dt><dd>{{peDuration}}</dd>
-      <dt>Copy Time</dt><dd>{{copyDuration}}</dd>
-      <dt>Invention Time</dt><dd>{{invDuration}}</dd>
+    <dl class="table">
+      <dt>Manufacturing Time</dt>
+        <dd id="time">{{blueprint.manufacturing_time|ecm_duration_long}}</dd>
+      <dt>Material Research Time</dt>
+        <dd>{{blueprint.me_research_time|ecm_duration_long}}</dd>
+      <dt>Productivity Research Time</dt>
+        <dd>{{blueprint.pe_research_time|ecm_duration_long}}</dd>
+      <dt>Copy Time</dt>
+        <dd>{{blueprint.copy_time|ecm_duration_long}}</dd>
+      <dt>Invention Time</dt>
+        <dd>{{blueprint.invention_time|ecm_duration_long}}</dd>
     </dl>
   </div>
 </div>
 
-{% with blueprint.item.portionSize as batch %}
+{% with blueprint.product.portionSize as batch %}
 <h2>Needed Materials for {{ batch }} unit{{ batch|pluralize }}
 {% if batch > 1 %}<small>produced in 1 run</small>{% endif %}</h2>
 {% endwith %}
@@ -55,7 +60,7 @@
 <div class="btn-toolbar" >
   <span class="label label-info">Activity</span>
   <div class="btn-group" data-toggle="buttons-radio" id="activity_buttons">
-  {% for act in activities %}
+  {% for act in blueprint.activities %}
     <button class="btn btn-small btn-info" id="{{act.activityID}}">{{act.name}}</button>
   {% endfor %}
   </div>

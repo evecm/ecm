@@ -106,18 +106,7 @@ def details(request, blueprint_id):
     except ValueError:
         raise Http404()
 
-    activities = bp.activities.values()
-    activities.sort(key=lambda a: a.activityID)
-    data = {
-        'blueprint': bp,
-        'activities': activities,
-        'prodDuration': utils.print_duration_long(bp.manufacturing_time()),
-        'meDuration': utils.print_duration_long(bp.me_research_time()),
-        'peDuration': utils.print_duration_long(bp.pe_research_time()),
-        'copyDuration': utils.print_duration_long(bp.copy_time()),
-        'invDuration': utils.print_duration_long(bp.invention_time()),
-    }
-    return render_to_response('catalog/blueprint_details.html', data, Ctx(request))
+    return render_to_response('catalog/blueprint_details.html', {'blueprint': bp}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -134,23 +123,21 @@ def materials(request, blueprint_id):
     except (KeyError, ValueError), e:
         raise HttpResponseBadRequest(str(e))
 
-    materials = bp.getBillOfMaterials(runs=1,
-                                      meLevel=bp.me,
-                                      activity=params.activityID,
-                                      round_result=True)
-    materials.sort(key=lambda m: m.typeID)
-
+    materials = bp.bill_of_materials(activity=params.activityID, runs=1, round_result=True)
+    
+    materials.sort(key=lambda x: x.requiredTypeID)
+    
     mat_table = []
     for mat in materials:
-        if mat.blueprintTypeID is not None:
-            url = '/industry/catalog/items/%d/' % mat.typeID
+        if mat.required_type.blueprint is not None:
+            url = '/industry/catalog/items/%d/' % mat.requiredTypeID
             css = 'catalog-item'
         else:
-            url = '/industry/catalog/supplies/%d/' % mat.typeID
+            url = '/industry/catalog/supplies/%d/' % mat.requiredTypeID
             css = 'catalog-supply'
         mat_table.append([
-            mat.typeID,
-            '<a href="%s" class="%s">%s</a>' % (url, css, mat.typeName),
+            mat.requiredTypeID,
+            '<a href="%s" class="%s">%s</a>' % (url, css, mat.required_type.typeName),
             utils.print_integer(mat.quantity),
             '%d%%' % (mat.damagePerJob * 100),
         ])

@@ -22,7 +22,7 @@ __author__ = "diabeteman"
 from django.db import models
 from django.utils.translation import ugettext_lazy as tr
 
-from ecm.apps.eve.models import Type, BlueprintType, BlueprintReq
+from ecm.apps.eve.models import Type, BlueprintType
 
 
 #------------------------------------------------------------------------------
@@ -102,37 +102,35 @@ class OwnedBlueprint(models.Model):
     def permalink(self):
         return '<a href="%s" class="catalog-blueprint">%s</a>' % (self.url, self.typeName)
 
-    def bill_of_materials(self, activity, runs=1, me_level=0, round_result=False):
-        return self.get_bill_of_materials(runs, me_level, activity, round_result)
+    def bill_of_materials(self, activity, runs=1, round_result=False):
+        return self.get_bill_of_materials(activity, runs, self.me, round_result)
 
     def manufacturing_time(self, runs=1):
-        return self.get_duration(runs=runs, pe_level=self.pe, activity=BlueprintReq.MANUFACTURING)
+        return self.get_duration(runs=runs, pe_level=self.pe, activity=BlueprintType.Activity.MANUFACTURING)
 
     def pe_research_time(self, runs=1):
-        return self.get_duration(runs=runs, activity=BlueprintReq.RESEARCH_PE)
+        return self.get_duration(runs=runs, activity=BlueprintType.Activity.RESEARCH_PE)
 
     def me_research_time(self, runs=1):
-        return self.get_duration(runs=runs, activity=BlueprintReq.RESEARCH_ME)
+        return self.get_duration(runs=runs, activity=BlueprintType.Activity.RESEARCH_ME)
 
     def copy_time(self, runs=1):
-        return self.get_duration(runs=runs, activity=BlueprintReq.COPY)
+        return self.get_duration(runs=runs, activity=BlueprintType.Activity.COPY)
     
     def invention_time(self, runs=1):
-        return self.get_duration(runs=runs, activity=BlueprintReq.INVENTION)
+        return self.get_duration(runs=runs, activity=BlueprintType.Activity.INVENTION)
 
     def item_name_admin_display(self):
         return self.typeName
     item_name_admin_display.short_description = 'Blueprint'
 
-    def __getattr__(self, attrName):
+    def __getattr__(self, attr):
         try:
-            if self.__blueprint is not None:
-                return getattr(self.__blueprint, attrName)
-            else:
+            if self.__blueprint is None:
                 self.__blueprint = BlueprintType.objects.get(pk=self.typeID)
-                return getattr(self.__blueprint, attrName)
+            return getattr(self.__blueprint, attr)
         except AttributeError:
-            return models.Model.__getattribute__(self, attrName)
+            return models.Model.__getattribute__(self, attr)
 
     def __unicode__(self):
         return unicode(self.typeName)

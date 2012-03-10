@@ -70,6 +70,10 @@ class Group(models.Model):
     fittableNonSingleton =  models.SmallIntegerField(null=True, blank=True)
     published =  models.SmallIntegerField(null=True, blank=True)
 
+    @property
+    def categoryID(self):
+        return self.category_id
+
     def __unicode__(self):
         return self.groupName
     
@@ -135,66 +139,7 @@ class MarketGroup(models.Model):
     def __hash__(self):
         return self.marketGroupID
     
-#------------------------------------------------------------------------------
-class BlueprintReq(models.Model):
-    """
-    A material involved in the "execution" of a BpActivity.
-    Can be a raw material, manufactured item, skill, datacore, etc.
-    """
-    
-    class Meta:
-        db_table = 'ramBlueprintReqs'
-        managed = False
-        ordering = ['blueprint', 'activityID', 'required_type']
-        unique_together = ('blueprint', 'activityID', 'required_type')
-    
-    MANUFACTURING = 1
-    RESEARCH_PE = 3
-    RESEARCH_ME = 4
-    COPY = 5
-    DUPLICATING = 6
-    REVERSE_ENGINEERING = 7
-    INVENTION = 8
-
-    NAMES = {
-        MANUFACTURING : "Manufacturing",
-        RESEARCH_PE : "Time Efficiency Research",
-        RESEARCH_ME : "Material Efficiency Research",
-        COPY : "Copying",
-        DUPLICATING : "Duplicating",
-        REVERSE_ENGINEERING : "Reverse Engineering",
-        INVENTION : "Invention"
-    }
-    
-    blueprint = models.ForeignKey('BlueprintType', db_column='blueprintTypeID', 
-                                  related_name='requirements', primary_key=True)
-    activityID = models.SmallIntegerField(default=MANUFACTURING, choices=NAMES.items())
-    required_type = models.ForeignKey('Type', db_column='requiredTypeID')
-    quantity = models.IntegerField(default=0)
-    damagePerJob = models.FloatField(default=1.0)
-    baseMaterial = models.IntegerField(default=0)
-    __item = None
-    
-    def __getattr__(self, attr):
-        try:
-            getattr(self.required_type, attr)
-        except AttributeError:
-            return models.Model.__getattribute__(self, attr)
-    
-    
-    def __unicode__(self):
-        return '%s x%d' % (self.required_type, self.quantity)
-    
-    def __eq__(self, other):
-        return (isinstance(other, BlueprintReq) 
-                and other.blueprintTypeID == self.blueprintTypeID
-                and other.activityID == self.activityID
-                and other.requiredTypeID == self.requiredTypeID)
-    
-    def __hash__(self):
-        return self.blueprintTypeID * 100000000 + self.requiredTypeID * 10 + self.activityID
-    
-    
+ 
 #------------------------------------------------------------------------------
 class BlueprintType(models.Model):
     
@@ -234,9 +179,25 @@ class BlueprintType(models.Model):
         except AttributeError:
             return models.Model.__getattribute__(self, attr)
     
+    @property
+    def parentBlueprintTypeID(self):
+        return self.parent_blueprint_id
+    
+    @property
+    def productTypeID(self):
+        return self.product_id
+    
+    @property
+    def dataInterfaceID(self):
+        return self.data_interface_id
+    
     @cached_property
     def activities(self):
-        return self.requirements.values_list('activityID', flat=True).distinct()
+        acts = []
+        for act_id in set(self.requirements.values_list('activityID', flat=True)):
+            acts.append(BlueprintType.Activity(activityID=act_id))
+        acts.sort()
+        return acts
     
     def materials(self, activityID):
         return self.requirements.select_related(depth=2).filter(activityID=activityID)
@@ -245,16 +206,16 @@ class BlueprintType(models.Model):
         """
         Calculate the duration (in seconds) needed to perform the specified activity.
         """
-        if activity == BlueprintReq.MANUFACTURING:
+        if activity == BlueprintType.Activity.MANUFACTURING:
             return apply_production_level(runs * self.productionTime, pe_level,
                                           self.productivityModifier)
-        elif activity == BlueprintReq.INVENTION:
+        elif activity == BlueprintType.Activity.INVENTION:
             return runs * self.researchTechTime
-        elif activity == BlueprintReq.RESEARCH_ME:
+        elif activity == BlueprintType.Activity.RESEARCH_ME:
             return runs * self.researchMaterialTime
-        elif activity == BlueprintReq.RESEARCH_PE:
+        elif activity == BlueprintType.Activity.RESEARCH_PE:
             return runs * self.researchProductivityTime
-        elif activity == BlueprintReq.COPY:
+        elif activity == BlueprintType.Activity.COPY:
             return runs * self.researchCopyTime
         else:
             return 0
@@ -273,26 +234,111 @@ class BlueprintType(models.Model):
         Resolve the materials needed for the specified activity.
         Quantities are given as floats (to be rounded).
         """
-        bill = []
         rounded_runs = int(round(runs))
-        materials = self.materials(activity)
-        for mat in materials:
-            if mat.damagePerJob > 0:
-                mat.quantity *= rounded_runs
-                if mat.baseMaterial > 0:
-                    mat.quantity = apply_material_level(mat.quantity, me_level, 
-                                                        self.wasteFactor, round_result)
-                bill.append(mat)
-        return bill
+        materials = []
+        
+        for mat in self.materials(activity).filter(damagePerJob__gt=0):
+            mat.quantity *= rounded_runs
+            if mat.baseMaterial > 0:
+                mat.quantity = apply_material_level(mat.quantity, me_level, 
+                                                    self.wasteFactor, round_result)
+            materials.append(mat)
+        return materials
     
     def __unicode__(self):
-        return self.item.typeName
+        return self.typeName
     
     def __eq__(self, other):
         return isinstance(other, BlueprintType) and other.blueprintTypeID == self.blueprintTypeID
     
     def __hash__(self):
         return self.blueprintTypeID
+
+    class Activity(object):
+        
+        MANUFACTURING = 1
+        RESEARCH_PE = 3
+        RESEARCH_ME = 4
+        COPY = 5
+        DUPLICATING = 6
+        REVERSE_ENGINEERING = 7
+        INVENTION = 8
+    
+        NAMES = {
+            MANUFACTURING : 'Manufacturing',
+            RESEARCH_PE : 'Time Efficiency Research',
+            RESEARCH_ME : 'Material Efficiency Research',
+            COPY : 'Copying',
+            DUPLICATING : 'Duplicating',
+            REVERSE_ENGINEERING : 'Reverse Engineering',
+            INVENTION : 'Invention'
+        }
+        
+        def __init__(self, activityID):
+            self.activityID = activityID
+        
+        @property
+        def name(self):
+            return self.NAMES[self.activityID]
+        
+        def __unicode__(self):
+            return unicode(self.name)
+        
+        def __cmp__(self, other):
+            return cmp(self.activityID, other.activityID)
+
+#------------------------------------------------------------------------------
+class BlueprintReq(models.Model):
+    """
+    A material involved in the "execution" of a BpActivity.
+    Can be a raw material, manufactured item, skill, datacore, etc.
+    """
+    
+    class Meta:
+        db_table = 'ramBlueprintReqs'
+        managed = False
+        ordering = ['blueprint', 'activityID', 'required_type']
+        unique_together = ('blueprint', 'activityID', 'required_type')
+    
+    blueprint = models.ForeignKey('BlueprintType', db_column='blueprintTypeID', 
+                                  related_name='requirements', primary_key=True)
+    activityID = models.SmallIntegerField(default=BlueprintType.Activity.MANUFACTURING, 
+                                          choices=BlueprintType.Activity.NAMES.items())
+    required_type = models.ForeignKey('Type', db_column='requiredTypeID')
+    quantity = models.IntegerField(default=0)
+    damagePerJob = models.FloatField(default=1.0)
+    baseMaterial = models.IntegerField(default=0)
+    __item = None
+    
+    @property
+    def blueprintTypeID(self):
+        return self.blueprint_id
+    
+    @property
+    def requiredTypeID(self):
+        return self.required_type_id
+
+    def __getattr__(self, attr):
+        try:
+            getattr(self.required_type, attr)
+        except AttributeError:
+            return models.Model.__getattribute__(self, attr)
+    
+    
+    def __unicode__(self):
+        return '%s x%d' % (self.required_type, self.quantity)
+    
+    def __eq__(self, other):
+        return (isinstance(other, BlueprintReq) 
+                and other.blueprintTypeID == self.blueprintTypeID
+                and other.activityID == self.activityID
+                and other.requiredTypeID == self.requiredTypeID)
+    
+    def __hash__(self):
+        return self.blueprintTypeID * 100000000 + self.requiredTypeID * 10 + self.activityID
+    
+   
+
 
 #------------------------------------------------------------------------------
 class Type(models.Model):
@@ -323,6 +369,18 @@ class Type(models.Model):
     metaGroupID = models.SmallIntegerField(null=True, blank=True)
     icon = models.CharField(max_length=32, null=True, blank=True)
     published = models.SmallIntegerField(null=True, blank=True, db_index=True)
+    
+    @property
+    def blueprintTypeID(self):
+        return self.blueprint_id
+
+    @property
+    def groupID(self):
+        return self.group_id
+    
+    @property
+    def categoryID(self):
+        return self.category_id
     
     def __unicode__(self):
         return self.typeName
@@ -365,6 +423,14 @@ class CelestialObject(models.Model):
     x = models.FloatField(null=True, blank=True)
     y = models.FloatField(null=True, blank=True)
     z = models.FloatField(null=True, blank=True)
+    
+    @property
+    def typeID(self):
+        return self.type_id
+    
+    @property
+    def groupID(self):
+        return self.group_id
     
     def __unicode__(self):
         return self.itemName

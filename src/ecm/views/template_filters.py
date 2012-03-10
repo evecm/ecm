@@ -22,6 +22,7 @@ from django.template.defaultfilters import register
 from datetime import timedelta
 from ecm.core import utils
 
+#------------------------------------------------------------------------------
 @register.filter(name='ecm_date')
 def ecm_date(value):
     try:
@@ -29,6 +30,7 @@ def ecm_date(value):
     except:
         return unicode(value)
 
+#------------------------------------------------------------------------------
 @register.filter(name='ecm_datetime')
 def ecm_datetime(value):
     try:
@@ -36,6 +38,7 @@ def ecm_datetime(value):
     except:
         return unicode(value)
 
+#------------------------------------------------------------------------------
 @register.filter(name='ecm_time')
 def ecm_time(value):
     try:
@@ -45,6 +48,15 @@ def ecm_time(value):
             return unicode(utils.print_date(timedelta(seconds=value)))
     except:
         return unicode(value)
+
+#------------------------------------------------------------------------------
+@register.filter(name='ecm_duration_long')
+def ecm_duration_long(value):
+    try:
+        return unicode(utils.print_duration_long(value))
+    except:
+        return unicode(value)
+
 
 #------------------------------------------------------------------------------
 @register.filter(name='ecm_qty_diff')

@@ -3,36 +3,35 @@
 {% block headtitle %}Order list{% endblock %}
 
 {% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 {% endblock %}
 
-{% block javascripts %}
-<script type="text/javascript"  >
-AJAX_URL = '/shop/orders/data/';
-</script>
-{% endblock %}
 
-{% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript"  src="{{ STATIC_URL }}shop/js/orders_list.js" ></script>
-{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/shop/">Shop</a></li>
-<li><a href="/shop/orders/">My Orders</a></li>
+<li class="active"><a href="/shop/orders/">My Orders</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">My Orders</h1>
+<div class="page-header">
+    <h1>My Orders</h1>
+</div>
 
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="orders_list">
+<table class="table table-bordered table-condensed" id="orders_list">
   <thead>
     <tr>
       {%for col in columns%}
@@ -54,4 +53,53 @@ AJAX_URL = '/shop/orders/data/';
   </tfoot>
 
 </table>
+{% endblock %}
+
+
+{% block post_javascripts %}
+<script>
+$(document).ready(function() {
+    var table = $('#orders_list').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+      sAjaxSource: '/shop/orders/data/',
+      aoColumns: [
+          { /* # */               sWidth: "5%" },
+          { /* State */           sWidth: "10%" },
+          { /* Items */           sWidth: "30%", bSortable: false },
+          { /* Quote */           sWidth: "15%", sClass: 'right'},
+          { /* Creation date */   sWidth: "15%" },
+      ],
+      aaSorting: [[0,'desc']],
+      fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+          return nRow;
+      },
+
+  }));
+
+  /* trigger the search when pressing return in the text field */
+  $("#search_form").submit(function(event) {
+      event.preventDefault();
+      table.fnFilter($("#search_text").val());
+  });
+
+  /* trigger the search when clicking the "search" button */
+  $("#search_button").click(function() {
+      table.fnFilter($("#search_text").val());
+  });
+
+  /* reset the search when clicking the "reset" button */
+  $("#clear_search").click(function() {
+      $("#search_text").val("");
+      table.fnFilter("");
+  });
+
+  /* disable multi column sorting */
+  $('#orders_list thead th').click(function(event) {
+      if (!$(event.target).hasClass('sorthandle')) {
+          event.shiftKey = false;
+      }
+  });
+
+} );
+
+</script>
 {% endblock %}
