@@ -21,7 +21,6 @@ __author__ = "diabeteman"
 
 from django.db import models
 
-from ecm.core.eve.classes import Item
 from ecm.apps.eve.models import Type
 
 
@@ -79,7 +78,7 @@ class Supply(models.Model):
             if self.__item is not None:
                 return getattr(self.__item, attrName)
             else:
-                self.__item = Item.new(self.typeID)
+                self.__item = Type.objects.get(pk=self.typeID)
                 return getattr(self.__item, attrName)
         except AttributeError:
             return models.Model.__getattribute__(self, attrName)

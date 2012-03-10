@@ -24,9 +24,8 @@ from datetime import datetime
 
 from django.db import transaction
 
-from ecm.core.eve.classes import Item
 from ecm.plugins.pos.models import POS, FuelLevel
-from ecm.apps.eve.models import CelestialObject, ControlTowerResource
+from ecm.apps.eve.models import CelestialObject, ControlTowerResource, Type
 from ecm.plugins.pos import constants
 from ecm.apps.eve import api
 from ecm.core.parsers import checkApiVersion
@@ -135,9 +134,9 @@ def get_basic_info(pos, api_row):
     #pos.location, _   = db.resolveLocationName(pos.location_id) 
     #pos.moon, _  = db.resolveLocationName(pos.moon_id)
 
-    i = Item.new(pos.type_id)
-    pos.type_name = i.typeName
-    pos.fuel_type_id = constants.RACE_TO_FUEL[i.raceID]
+    item = Type.objects.get(pk=pos.type_id)
+    pos.type_name = item.typeName
+    pos.fuel_type_id = constants.RACE_TO_FUEL[item.raceID]
 
 #------------------------------------------------------------------------------
 def get_details(pos, api, sov):

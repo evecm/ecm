@@ -62,7 +62,7 @@ class InventionPolicy(models.Model):
     @staticmethod
     def blueprint(blueprint):
         runsPerBp, me, pe, _, _ = InventionPolicy.resolve(blueprint)
-        return OwnedBlueprint(typeID=blueprint.typeID,
+        return OwnedBlueprint(typeID=blueprint.blueprintTypeID,
                               runs=runsPerBp,
                               copy=True,
                               me=me,
@@ -82,7 +82,7 @@ class InventionPolicy(models.Model):
 
         If no decryptor is required, return None as the decryptor typeID
         """
-        decryptorGroup = constants.INTERFACES_DECRYPTOR_MAPPING[blueprint.parentBlueprint.dataInterfaceID]
+        decryptorGroup = constants.INTERFACES_DECRYPTOR_MAPPING[blueprint.parent_blueprint.dataInterfaceID]
 
         try:
             policy = InventionPolicy.objects.get(item_group_id=blueprint.item.groupID)

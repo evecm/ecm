@@ -22,7 +22,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from ecm.core.utils import cached_property
-from ecm.core.eve.classes import Item, NoBlueprintException
+from ecm.apps.eve.models import Type
+from ecm.apps.eve.classes import NoBlueprintException
 from ecm.plugins.industry.models.research import InventionPolicy
 from ecm.plugins.industry.models.catalog import OwnedBlueprint
 
@@ -141,8 +142,10 @@ class Job(models.Model):
 
         The number of runs is calculated from the needed quantity
         """
-        item = Item.new(item_id)
+        item = Type.objects.select_related(depth=2).get(pk=item_id)
         try:
+            if item.blueprint is None:
+                raise NoBlueprintException()
             bpid = item.blueprint.typeID
             activity = Job.MANUFACTURING
             bp = OwnedBlueprint.objects.filter(typeID=bpid, copy=False).order_by('-me')[0]
@@ -191,7 +194,7 @@ class Job(models.Model):
 
     @cached_property
     def item(self):
-        return Item.new(self.item_id)
+        return Type.objects.get(pk=self.item_id)
 
     def __unicode__(self):
         return u"[%s] %s x%d" % (Job.ACTIVITIES[self.activity], self.item.typeName, int(round(self.runs)))

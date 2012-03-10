@@ -25,9 +25,8 @@ from django.db import transaction
 from ecm.apps.common.models import Setting
 from ecm.core import utils
 from ecm.apps.eve import api
-from ecm.apps.eve.models import CelestialObject
+from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants as cst
-from ecm.core.eve.classes import Item
 from ecm.core.parsers import diff, markUpdated, checkApiVersion
 from ecm.plugins.assets.models import Asset, AssetDiff
 
@@ -326,11 +325,11 @@ def fill_contents(container, item, items_dic, flag=None):
 
 #------------------------------------------------------------------------------
 def make_asset_from_row(row):
-    i = Item.new(row.typeID)
-    if IGNORE_CAN_VOLUMES and i.categoryID == 2:
+    item = Type.objects.get(pk=row.typeID)
+    if IGNORE_CAN_VOLUMES and item.categoryID == 2:
         volume = 0.0
     else:
-        volume = i.volume * row.quantity
+        volume = item.volume * row.quantity
     return Asset(itemID    = row.itemID,
                  typeID    = row.typeID,
                  quantity  = row.quantity,

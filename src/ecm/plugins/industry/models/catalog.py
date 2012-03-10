@@ -22,8 +22,7 @@ __author__ = "diabeteman"
 from django.db import models
 from django.utils.translation import ugettext_lazy as tr
 
-from ecm.core.eve.classes import Blueprint, Item
-from ecm.apps.eve.models import Type
+from ecm.apps.eve.models import Type, BlueprintType
 
 
 #------------------------------------------------------------------------------
@@ -67,7 +66,7 @@ class CatalogEntry(models.Model):
             if self.__item is not None:
                 return getattr(self.__item, attrName)
             else:
-                self.__item = Item.new(self.typeID)
+                self.__item = Type.objects.get(pk=self.typeID)
                 return getattr(self.__item, attrName)
         except AttributeError:
             return models.Model.__getattribute__(self, attrName)
@@ -113,10 +112,10 @@ class OwnedBlueprint(models.Model):
     def __getattr__(self, attrName):
         try:
             if self.__blueprint is not None:
-                return Blueprint.__getattr__(self.__blueprint, attrName)
+                return getattr(self.__blueprint, attrName)
             else:
-                self.__blueprint = Blueprint.new(self.typeID)
-                return Blueprint.__getattr__(self.__blueprint, attrName)
+                self.__blueprint = BlueprintType.objects.get(pk=self.typeID)
+                return getattr(self.__blueprint, attrName)
         except AttributeError:
             return models.Model.__getattribute__(self, attrName)
 
