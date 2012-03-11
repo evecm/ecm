@@ -326,7 +326,7 @@ def fill_contents(container, item, items_dic, flag=None):
 #------------------------------------------------------------------------------
 def make_asset_from_row(row):
     item = Type.objects.get(pk=row.typeID)
-    if IGNORE_CAN_VOLUMES and item.categoryID == 2:
+    if IGNORE_CAN_VOLUMES and item.category == 2:
         volume = 0.0
     else:
         volume = item.volume * row.quantity
