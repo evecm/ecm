@@ -102,3 +102,12 @@ table.table thead .sorting_desc_disabled {
 table.dataTable th:active {
   outline: none;
 }
+
+table.table-centered thead tr th {
+    text-align: center;
+}
+table.table-centered tbody tr td {
+    text-align: center;
+}
+
+

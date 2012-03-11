@@ -41,13 +41,13 @@ def parse_eft(request):
     
     eft_block = request.POST.get('eft_block', None)
     if not eft_block:
-        return HttpResponseBadRequest('Empty eft_block')
+        return HttpResponseBadRequest('Empty EFT block')
     try:
         quantity = int(request.POST.get('quantity', 1))
     except ValueError, e:
         return HttpResponseBadRequest(str(e))
     
-    items_dict = eft.parse_export(eft_block)
+    eft_items = eft.parse_export(eft_block)
     
     member_group_name = Setting.get('hr_corp_members_group_name')
     if request.user.groups.filter(name=member_group_name):
@@ -55,17 +55,28 @@ def parse_eft(request):
     else:
         margin = Setting.get('industry_external_price_margin')
     
-    query = CatalogEntry.objects.filter(typeName__in=items_dict.keys(), is_available=True)
+    query = CatalogEntry.objects.filter(typeName__in=eft_items.keys(), is_available=True)
     items = []
     for entry in query:
-        price = entry.fixed_price or entry.production_cost
-        if price is not None:
-            price *= 1 + margin
+        if entry.fixed_price:
+            price = entry.fixed_price
+        else:
+            price = entry.production_cost * (1 + margin)
         items.append({
             'typeID': entry.typeID,
             'typeName': entry.typeName,
-            'quantity': items_dict[entry.typeName] * quantity,
+            'quantity': eft_items[entry.typeName] * quantity,
             'price': price
+        })
+        eft_items.pop(entry.typeName) # we remove the item from the list
+    
+    for typeName, _ in eft_items.items():
+        # we add the missing items so that the page can display them
+        items.append({
+            'typeID': 0,
+            'typeName': typeName,
+            'quantity': 0,
+            'price': None
         })
     return HttpResponse(json.dumps(items), mimetype=JSON)
 
@@ -83,7 +94,7 @@ def search_item(request):
         matches = query[:limit].values_list('typeName', flat=True)
         return HttpResponse( '\n'.join(matches) )
     else:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Missing "querystring" parameter.')
 
 #------------------------------------------------------------------------------
 @login_required
@@ -103,8 +114,8 @@ def get_item_id(request):
             
             if price is not None:
                 price *= 1 + margin
-            return HttpResponse( json.dumps( [item.typeID, item.typeName, price] ) )
+            return HttpResponse(json.dumps([item.typeID, item.typeName, price]), mimetype=JSON)
         else:
-            return HttpResponseNotFound()
+            return HttpResponseNotFound('Item <em>%s</em> not available in the shop.' % querystring)
     else:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Missing "querystring" parameter.')

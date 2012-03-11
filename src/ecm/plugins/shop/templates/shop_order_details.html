@@ -5,12 +5,8 @@
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 <style>
-#cancel-form {
-    display: none;
-}
-#cancel-form form {
-    margin: 0;
-}
+#cancel-form {display: none;}
+#cancel-form form {margin: 0;}
 </style>
 {% endblock %}
 
@@ -48,7 +44,7 @@
 <div class="alert alert-error" id="cancel-form" >
   <form method="post" action="/shop/orders/{{order.id}}/cancel/" class="form-inline">{%csrf_token%}
       <input class="span8" name="comment" id="cancel-comment" value="" placeholder="Please explain why you are cancelling..."/>
-      <button type="submit" class="btn btn-danger btn-small"><i class="icon-exclamation-sign icon-white"></i> Cancel Order</button>
+      <button type="submit" class="btn btn-danger btn-small" disabled="disabled"><i class="icon-exclamation-sign icon-white"></i> Cancel Order</button>
       <button id="abort-cancel" class="btn btn-small"><i class="icon-remove"></i> Abort</button>
   </form>
 </div>
@@ -70,21 +66,21 @@
   </div>
   <div class="span8">
     <h2>Ordered items</h2>
-    <table class="table table-striped table-bordered table-condensed">
+    <table class="table table-striped table-bordered table-condensed table-centered">
       <thead>
         <tr>
-        <th style="width: 10%;">Icon</th>
-        <th style="width: 30%;">Item</th>
-        <th style="width: 20%;">Quantity</th>
-        <th style="width: 40%;">Price</th>
+          <th>Icon</th>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Price</th>
         </tr>
       </thead>
       <tbody>{% for row in order.rows.all %}
         <tr>
-          <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
+          <td><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
           <td><strong>{{row.catalog_entry.typeName}}</strong></td>
-          <td class="center">{{row.quantity|ecm_quantity}}</td>
-          <td class="right">{%if row.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
+          <td>{{row.quantity|ecm_quantity}}</td>
+          <td {%if row.quote %}class="right"{%endif%}>{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>
         </tr>{% empty %}<tr id="empty">
           <td colspan="4" class="order_cart_empty" >No items in order.</td>
         </tr>{% endfor %}
@@ -100,15 +96,16 @@
 <form method="post" action="/shop/orders/{{order.id}}/comment/" class="form-inline" id="add-comment-form">
 {%csrf_token%}
     <input class="span8" name="comment" id="new-comment" value="" placeholder="Please type some text..."/>
-    <button type="submit" class="btn btn-small"><i class="icon-plus"></i> Add comment</button>
+    <button type="submit" class="btn btn-small" disabled="disabled"><i class="icon-comment"></i> Add comment</button>
 </form>
 
 <table class="table table-striped table-bordered table-condensed">
   <thead>
-    <th style="width: 15%;">Date</th>
-    <th style="width: 15%;">Order Status</th>
-    <th style="width: 15%;">User</th>
-    <th style="width: 55%;">Comment</th>
+    <tr>
+      <th style="width: 15%;">Date</th>
+      <th style="width: 15%;">Order Status</th>
+      <th style="width: 15%;">User</th>
+      <th style="width: 55%;">Comment</th>
     </tr>
   </thead>
   <tbody>{% for log in logs %}
@@ -144,7 +141,23 @@ $(document).ready(function () {
         if ($('#new-comment').val().length == 0) {
             event.preventDefault();
         }
-    }); 
+    });
+    
+    $('#new-comment').on('keyup', function () {
+        if ($(this).val().length > 0) {
+            $('#add-comment-form button').removeAttr('disabled');
+        } else {
+            $('#add-comment-form button').attr('disabled', 'disabled');
+        }
+    });
+    
+    $('#cancel-comment').on('keyup', function () {
+        if ($(this).val().length > 0) {
+            $('#cancel-form form button:eq(0)').removeAttr('disabled');
+        } else {
+            $('#cancel-form form button:eq(0)').attr('disabled', 'disabled');
+        }
+    });
 });
 </script>
 {% endblock %}
