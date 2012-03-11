@@ -30,7 +30,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponse
 from django.conf import settings
 
-from ecm.apps.common.models import user_has_access
+from ecm.apps.common.models import UrlPermission
 from ecm.apps.hr.models import Member
 
 #------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ def check_user_access():
     def decorator(view_function):
         def _wrapped_view(request, *args, **kwargs):
             if request.user.is_authenticated():
-                access_ok = user_has_access(request.user, request.get_full_path())
+                access_ok = UrlPermission.user_has_access(request.user, request.get_full_path())
                 if not access_ok:
                     try:
                         url_re = re.compile("^/members/\d+.*$")

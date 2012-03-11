@@ -21,7 +21,7 @@ __author__ = 'diabeteman'
 from django.template.loader import render_to_string
 
 import ecm
-from ecm.apps.common.models import user_has_access
+from ecm.apps.common.models import UrlPermission
 from ecm.menu import ECM_MENUS
 from ecm.apps.corp.models import Corp
 
@@ -52,10 +52,10 @@ def menu(request):
     """
     user_menus = []
     for menu in ECM_MENUS:
-        if request.user.is_superuser or user_has_access(request.user, menu['url']):
+        if request.user.is_superuser or UrlPermission.user_has_access(request.user, menu['url']):
             user_menus.append(menu)
     data = {
         'menus': user_menus, 
         'path': str(request.get_full_path())
     }
-    return {'user_menu': render_to_string('menu.html', data)}
+    return {'user_menu': render_to_string('menu.html', data), 'request_path': data['path']}

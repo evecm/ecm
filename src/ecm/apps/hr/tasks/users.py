@@ -181,6 +181,20 @@ def update_character_associations(user):
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def update_all_users_accesses():
+    """
+    This function will update django users' accesses (that is which groups they are in).
+    
+    It must be executed *AFTER* ecm.apps.hr.tasks.titles.update() which creates all Group 
+    objects synchronized with in-game Titles. This function also adds 2 more Groups: 
+    "Members" and "Directors" which are not in-game titles but can be usefull for handling 
+    accesses to some parts of the application.
+    
+    After the execution, all django users will have been put into the Groups that match
+    their owned characters' in-game titles.
+    
+    @see: ecm.apps.common.models.UrlPermission (django model)
+    @see: ecm.views.decorators.check_user_access (decorator)
+    """
     try:
         t = ScheduledTask.objects.get(function__contains='update_all_character_associations')
         if not t.is_last_exec_success:
@@ -217,17 +231,20 @@ def update_all_users_accesses():
 
 #------------------------------------------------------------------------------
 def update_user_accesses(user, corp_members_group, directors_group):
-    ownedCharacters = user.characters.all()
-    titles = Title.objects.none()
+    """
+    Synchronizes a user's groups with his/hers owned characters' in-game titles.
+    """
+    owned_characters = user.characters.all()
+    titles = Title.objects.none() # we start with an empty QuerySet
     director = False
-    for char in ownedCharacters:
+    for char in owned_characters:
         director = char.is_director or director
-        titles |= char.titles.all()
-    titleIDs = titles.distinct().values_list("titleID", flat=True)
+        titles |= char.titles.all() # the "|" operator concatenates django QuerySets
+    all_titles = titles.distinct() # to remove duplicates if the same title is assigned to multiple characters
     user.groups.clear()
-    if ownedCharacters.filter(corped=True):
+    if owned_characters.filter(corped=True):
         user.groups.add(corp_members_group)
-    for titleID in titleIDs:
+    for titleID in all_titles.values_list("titleID", flat=True):
         user.groups.add(Group.objects.get(id=titleID))
     if director:
         user.groups.add(directors_group)

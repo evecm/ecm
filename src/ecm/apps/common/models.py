@@ -209,6 +209,13 @@ class ColorThreshold(models.Model):
 class UrlPermission(models.Model):
     """
     Utility class for authorization management in ECM.
+    
+    "pattern" 
+        a perl like regular expression that should describe a group of URLs
+    "groups" 
+        a list of django users' groups that have access to the URLs described by the pattern.
+    
+    @see: UrlPermission.user_has_access()
     """
     pattern = models.CharField(max_length=256)
     groups = models.ManyToManyField(Group, related_name='allowed_urls')
@@ -226,21 +233,19 @@ class UrlPermission(models.Model):
     def __hash__(self):
         return hash(self.pattern)
 
-def user_has_access(user, target_url):
-    """
-    Checks if a User has access to the specified target_url.
-    """
-    for url in UrlPermission.objects.all():
-        url_re = re.compile(url.pattern)
-        if url_re.match(target_url):
-            if set(url.groups.all()).intersection(set(user.groups.all())):
-                return True
-            else:
-                return False
-    return False
-
-
-
+    @staticmethod
+    def user_has_access(user, target_url):
+        """
+        Checks if a User has access to the specified target_url.
+        """
+        for url in UrlPermission.objects.all():
+            url_re = re.compile(url.pattern)
+            if url_re.match(target_url): # we stop on first match.
+                if set(url.groups.all()).intersection(set(user.groups.all())):
+                    return True
+                else:
+                    return False
+        return False
 
 #------------------------------------------------------------------------------
 
