@@ -58,6 +58,7 @@
           <img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" />
       </td>
       <td class="center"><strong>{{row.catalog_entry.typeName}}</strong></td>
+      <td class="right price" price="{{row.quote}}">{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>
       <td class="center">
           <input class="span2" type="text" name="{{row.catalog_entry.typeID}}" value="{{row.quantity}}" />
       </td>

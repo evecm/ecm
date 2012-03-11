@@ -55,7 +55,7 @@ import django.core.handlers.wsgi
 from gevent.pywsgi import WSGIServer
 
 if __name__ == '__main__':
-    bind_address = '127.0.0.1', 8000
+    bind_address = '0.0.0.0', 8000
     application = django.core.handlers.wsgi.WSGIHandler()
     server = WSGIServer(bind_address, application)
     try:

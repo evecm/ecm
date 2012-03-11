@@ -4,21 +4,34 @@
 
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}shop/css/shop.css" />
 {% endblock %}
 
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/shop/">Shop</a></li>
+<li class="active"><a href="/shop/">Shop</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Welcome to our EVE-Online shop</h1>
+<div class="page-header">
+  <h1>Welcome to our EVE-Online shop</h1>
+</div>
 
-<ul>
-  <li><a href="/shop/orders/create/">Create a new order</a></li>
-  <li><a href="/shop/orders/">See/follow my orders</a></li>
-</ul>
+<div class="row-fluid">
+  <div class="span6">
+    <a href="/shop/orders/create/" class="btn btn-large">
+      <img src="{{ STATIC_URL }}shop/img/retail-shop-icon.png">
+      <strong>Create a new order</strong>
+    </a>
+  </div>
+  <div class="span6">
+    <a href="/shop/orders/" class="btn btn-large">
+      <img src="{{ STATIC_URL }}shop/img/data-management-icon.png">
+      <strong>See/follow my orders</strong>
+    </a>
+  </div>
+</div>
+
 
 {% endblock %}

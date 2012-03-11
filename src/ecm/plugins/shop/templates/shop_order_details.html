@@ -4,107 +4,150 @@
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+<style>
+#cancel-form {
+    display: none;
+}
+#cancel-form form {
+    margin: 0;
+}
+</style>
 {% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/shop/">Shop</a></li>
 <li><a href="/shop/orders/">My Orders</a></li>
-<li><a href="/shop/orders/{{ order.id }}/">#{{ order.id }}</a></li>
+<li class="active"><a href="/shop/orders/{{ order.id }}/">#{{ order.id }}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1>Order #{{ order.id }} <small>{{order.state_text}}</small></h1>
+<div class="page-header">
+  <h1>Order #{{ order.id }} <small>{{order.state_text}}</small></h1>
+</div>
 
 <ul class="order-states">{%for state, text in states%}
 <li{%if state == order.state%} class="active"{%endif%}>{{text}}</li>
 {%endfor%}</ul>
 
-<table class="transparent">
-  <tbody>
-    <tr>
-      <td class="bold">Manufactured by</td>
-      <td class="right">{{order.manufacturer_permalink|safe}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Delivered by</td>
-      <td class="right">{{order.delivery_boy_permalink|safe}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Creation Date</td>
-      <td class="right">{{order.creation_date|ecm_datetime}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Last Modified</td>
-      <td class="right">{{order.last_modified|ecm_datetime}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Delivery Date</td>
-      <td class="right">{{order.delivery_date|ecm_datetime}}</td>
-    </tr>
-  </tbody>
-</table>
+{% if error %}
+<div class="alert alert-error">
+  <a class="close" data-dismiss="alert">&times;</a>
+  <strong>Error!</strong> {{error|safe}}
+</div>
+{% endif %}
 
-<ul>
-  {% for transition, name in validTransitions %}
-  <li><a class="button" id="{{transition}}" href="/shop/orders/{{order.id}}/{{transition}}/">{{name}}</a></li>
-  {% endfor %}
-</ul>
+{%if valid_transitions%}
+<div class="btn-toolbar">
+  <span class="label label-important">Actions</span>
+  {% for transition, name in valid_transitions %}
+  <a class="btn btn-danger" id="{{transition}}" href="/shop/orders/{{order.id}}/{{transition}}/">{{name}}</a>
+{% endfor %}
+</div>
 
-<form id="cancel_form" method="post" action="/shop/orders/{{order.id}}/cancel/" style="display: none;">
+<div class="alert alert-error" id="cancel-form" >
+  <form method="post" action="/shop/orders/{{order.id}}/cancel/" class="form-inline">{%csrf_token%}
+      <input class="span8" name="comment" id="cancel-comment" value="" placeholder="Please explain why you are cancelling..."/>
+      <button type="submit" class="btn btn-danger btn-small"><i class="icon-exclamation-sign icon-white"></i> Cancel Order</button>
+      <button id="abort-cancel" class="btn btn-small"><i class="icon-remove"></i> Abort</button>
+  </form>
+</div>
+{%endif%}
+
+<hr>
+
+<div class="row-fluid">
+  <div class="span4">
+    <h2>Order details</h2>
+    <dl class="table">
+      <dt>Total Quote</dt><dd><h4>{%if order.quote == 0.0%}N/A{%else%}{{order.quote|ecm_price}} ISK{%endif%}</h4></dd>
+      <dt>Creation Date</dt><dd>{{order.creation_date|ecm_datetime}}</dd>
+      <dt>Last Modified</dt><dd>{{order.last_modified|ecm_datetime}}</dd>
+      <dt>Manufactured by</dt><dd>{{order.manufacturer_permalink|safe}}</dd>
+      <dt>Delivered by</dt><dd>{{order.delivery_boy_permalink|safe}}</dd>
+      <dt>Delivery Date</dt><dd>{{order.delivery_date|ecm_datetime}}</dd>
+    </dl>
+  </div>
+  <div class="span8">
+    <h2>Ordered items</h2>
+    <table class="table table-striped table-bordered table-condensed">
+      <thead>
+        <tr>
+        <th style="width: 10%;">Icon</th>
+        <th style="width: 30%;">Item</th>
+        <th style="width: 20%;">Quantity</th>
+        <th style="width: 40%;">Price</th>
+        </tr>
+      </thead>
+      <tbody>{% for row in order.rows.all %}
+        <tr>
+          <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
+          <td><strong>{{row.catalog_entry.typeName}}</strong></td>
+          <td class="center">{{row.quantity|ecm_quantity}}</td>
+          <td class="right">{%if row.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
+        </tr>{% empty %}<tr id="empty">
+          <td colspan="4" class="order_cart_empty" >No items in order.</td>
+        </tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr>
+
+<h2>History</h2>
+
+<form method="post" action="/shop/orders/{{order.id}}/comment/" class="form-inline" id="add-comment-form">
 {%csrf_token%}
-    <input name="comment" id="comment" value=""/>
+    <input class="span8" name="comment" id="new-comment" value="" placeholder="Please type some text..."/>
+    <button type="submit" class="btn btn-small"><i class="icon-plus"></i> Add comment</button>
 </form>
 
-<script type="text/javascript">
-$('#cancel').click(function(event) {
-    event.preventDefault();
-    var comment = prompt('Please leave a comment on why to cancel this order:');
-    $('#comment').val(comment);
-    $('#cancel_form').submit();
-});
-{% if error %}
-$(document).ready(function () {
-    alert('{{error|safe}}');
-});
-{% endif %}
-</script>
-
-<h1>Items</h1>
-
-<table class="order_table">
-    <thead>
-      <tr>
-      <th style="width: 10%;">Icon</th>
-      <th style="width: 30%;">Item</th>
-      <th style="width: 20%;">Quantity</th>
-      <th style="width: 40%;">Price</th>
-      </tr>
-    </thead>
-  <tbody>
-    {% for row in order.rows.all %}
-    <tr>
-          <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
-           <td class="bold">{{row.catalog_entry.typeName}}</td>
-           <td class="center">{{row.quantity|ecm_quantity}}</td>
-           <td class="right">{%if row.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
-         </tr>
-         {% empty %}
-         <tr id="empty">
-           <td colspan="4" class="order_cart_empty" >No items in order.</td>
-         </tr>
-         {% endfor %}
-    <tr>
-      <td colspan="3" class="bold right" >Quote</td>
-      <td class="bold right" >{%if order.quote == 0.0%}N/A{%else%}{{order.quote|ecm_price}} ISK{%endif%}</td>
+<table class="table table-striped table-bordered table-condensed">
+  <thead>
+    <th style="width: 15%;">Date</th>
+    <th style="width: 15%;">Order Status</th>
+    <th style="width: 15%;">User</th>
+    <th style="width: 55%;">Comment</th>
     </tr>
+  </thead>
+  <tbody>{% for log in logs %}
+    <tr>
+      <td>{{log.date|ecm_datetime}}</td>
+      <td>{{log.state_text}}</td>
+      <td>{{log.user}}</td>
+      <td>{{log.text}}</td>
+    </tr>{% empty %}<tr>
+      <td colspan="4" >None.</td>
+    </tr>{% endfor %}
   </tbody>
 </table>
-
-<ul>
-{% for log in logs %}
-  <li>{{log.date|ecm_datetime}} [{{log.state_text}}] <b>{{log.user}}</b> - {{log.text}}</li>
-{% endfor %}
-</ul>
-
 {% endblock %}
+
+{% block post_javascripts %}
+<script type="text/javascript">
+$(document).ready(function () {
+    $('a#cancel').on('click', function(event) {
+        event.preventDefault();
+        $('#cancel-form').show();
+    });
+    $('#cancel-form').on('submit', function(event) {
+        if ($('#cancel-comment').val().length == 0) {
+            event.preventDefault();
+        }
+    });
+    $('#abort-cancel').on('click', function(event) {
+        event.preventDefault();
+        $('#cancel-form').hide();
+    });
+    $('#add-comment-form').on('submit', function (event) {
+        if ($('#new-comment').val().length == 0) {
+            event.preventDefault();
+        }
+    }); 
+});
+</script>
+{% endblock %}
+
+
+

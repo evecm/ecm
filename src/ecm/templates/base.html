@@ -43,7 +43,7 @@
         <div class="nav-collapse">
           <ul class="nav pull-right">
             {% if user.is_authenticated %}
-            <li><a href="/account/" >User Profile</a></li>
+            <li {%if request_path == '/account/'%}class="active"{%endif%} ><a href="/account/" >User Profile</a></li>
             <li><a href="/account/logout/" title="Log out from ECM">Logout</a></li>
             {% else %}
             <li><a href="/account/login/?next=/account/" >Login</a></li>

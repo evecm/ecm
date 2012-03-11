@@ -18,6 +18,8 @@
 __date__ = "2011 11 12"
 __author__ = "diabeteman"
 
+import logging
+
 from django.template.context import RequestContext as Ctx
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -29,6 +31,8 @@ from ecm.core import utils
 from ecm.views.decorators import forbidden
 from ecm.plugins.industry.models.order import Order, IllegalTransition
 from ecm.plugins.industry.views.orders import extract_order_items
+
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 COLUMNS = [
@@ -114,17 +118,43 @@ def details(request, order_id):
     except ValueError:
         raise Http404()
 
-    if order.originator != request.user and not request.user.is_superuser:
+    if order.originator != request.user:
         return forbidden(request)
 
     logs = order.logs.all().order_by('-date')
-    validTransitions = [ (trans.__name__, utils.verbose_name(trans)) 
+    valid_transitions = [ (trans.__name__, utils.verbose_name(trans)) 
                                for trans in order.get_valid_transitions(customer=True) ]
 
-    data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions, 
-            'states': Order.STATES.items()}
+    data = {
+        'order': order, 
+        'logs': logs, 
+        'valid_transitions': valid_transitions, 
+        'states': Order.STATES.items(),
+    }
 
     return render_to_response('shop_order_details.html', data, Ctx(request))
+
+
+#------------------------------------------------------------------------------
+@login_required
+def add_comment(request, order_id):
+    """
+    Serves URL /shop/orders/<order_id>/comment/
+    """
+    try:
+        order = get_object_or_404(Order, id=int(order_id))
+    except ValueError:
+        raise Http404()
+
+    if order.originator != request.user:
+        return forbidden(request)
+    
+    if request.method == 'POST':
+        comment = request.POST.get('comment', '')
+        order.add_comment(request.user, comment)
+        LOG.info('"%s" added a comment on order #%d', request.user, order.id)
+    
+    return redirect('/shop/orders/%d/' % order.id)
 
 #------------------------------------------------------------------------------
 @login_required
@@ -157,10 +187,16 @@ def change_state(request, order_id, transition):
         raise Http404()
     except IllegalTransition, e:
         logs = order.logs.all().order_by('-date')
-        validTransitions = [ (trans.__name__, trans.text) 
-                                   for trans in order.get_valid_transitions(customer=True) ]
+        valid_transitions = [ (trans.__name__, trans.text) 
+                               for trans in order.get_valid_transitions(customer=True) ]
     
-        data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions, 'error': e}
+        data = {
+            'order': order, 
+            'logs': logs, 
+            'valid_transitions': valid_transitions, 
+            'error': e,
+            'states': Order.STATES.items(),
+        }
     
         return render_to_response('shop_order_details.html', data, Ctx(request))
     

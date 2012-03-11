@@ -33,6 +33,7 @@ urlpatterns = patterns('ecm.plugins.shop.views',
     (r'^orders/data/$',         'orders.myorders_data'),
     (r'^orders/create/$',       'orders.create'),
     (r'^orders/(\d+)/$',        'orders.details'),
+    (r'^orders/(\d+)/comment/$','orders.add_comment'),
     (r'^orders/(\d+)/(\w+)/$',  'orders.change_state'),
 )
 
