@@ -2,46 +2,93 @@
 
 {% block headtitle %}Scheduled Tasks{% endblock %}
 
-{% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.dataTables.css" />
-{% endblock %}
-
-{% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}scheduler/js/tasks_table.js"></script>
-{% endblock %}
-
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/scheduler/tasks/">Scheduled Tasks</a></li>
+<li class="active"><a href="/scheduler/">Scheduled Tasks</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Scheduled Tasks</h1>
+<div class="page-header">
+  <h1>Scheduled Tasks</h1>
+</div>
 
-<table class="table display" id="tasks_table">
+<table class="table table-bordered table-condensed" id="tasks_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Task description</th>
-      <th class="top" scope="col" >Next execution</th>
-      <th class="top" scope="col" >Frequency</th>
-      <th class="top" scope="col" >Is running</th>
-      <th class="top" scope="col" >Force Execution</th>
+      <th>Task description</th>
+      <th>Next auto execution</th>
+      <th>Frequency</th>
+      <th>Last Execution</th>
+      <th>Last Result</th>
+      <th>Is running</th>
+      <th>Force Execution</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="5" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="7" class="dataTables_empty">Loading data from server...</td>
     </tr>
   </tbody>
-  <tfoot>
-    <tr>
-      <th>Task description</th>
-      <th>Next execution</th>
-      <th>Frequency</th>
-      <th>Is running</th>
-      <th>Force Execution</th>
-    </tr>
-  </tfoot>
 </table>
+{% endblock %}
+
+
+{% block post_javascripts %}
+<script type="text/javascript">
+LOADING_ICON = '<img src="/static/ecm/img/throbber.gif" alt="Running"/>';
+TABLE = null;
+$(document).ready(function() {
+    TABLE = $('#tasks_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        iDisplayLength: 25,
+        sAjaxSource: "/scheduler/tasks/data/",
+        sDom: 'rt',
+          aoColumns: [
+              { bSearchable: false, bSortable: false},
+              { bSearchable: false, bSortable: false},
+              { bSearchable: false, bSortable: false},
+              { bSearchable: false, bSortable: false},
+              { sClass: 'center', bSearchable: false, bSortable: false},
+              { sClass: 'center', bSearchable: false, bSortable: false},
+              { sClass: 'center', bSearchable: false, bSortable: false}
+          ],
+          fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+              var lauch_btn = $('td:eq(6) a', nRow);
+              lauch_btn.addClass('btn btn-mini btn-info');
+              lauch_btn.attr('data-loading-text', 'Running...')
+
+              if (aData[4]) {
+                  $('td:eq(4)', nRow).html('success');
+                  $('td:eq(4)', nRow).css('color', 'green');
+              } else {
+                  $('td:eq(4)', nRow).html('<strong>ERROR</strong>');
+                  $('td:eq(4)', nRow).css('color', 'red');
+              }
+              
+              if (aData[5]) {
+                  $('td:eq(5)', nRow).html(LOADING_ICON);
+                  lauch_btn.button('loading');
+              } else {
+                  $('td:eq(5)', nRow).html('-');
+              }
+              
+              lauch_btn.on('click', function (event) {
+                  event.preventDefault();
+                  $.get(this.href)
+                   .success(function () {
+                       lauch_btn.button('loading');
+                       $('td:eq(5)', nRow).html(LOADING_ICON);
+                   });
+              });
+              return nRow;
+          }
+    }));
+    
+    setTimeout("refreshTable();", 5000);
+});
+function refreshTable() {
+    TABLE.fnDraw();
+    setTimeout("refreshTable();", 5000);
+}
+
+</script>
 {% endblock %}

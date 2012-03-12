@@ -45,7 +45,8 @@ class ScheduledTask(models.Model):
     function = models.CharField(max_length=256, validators=[FunctionValidator()])
     args = models.CharField(max_length=256, default="{}", validators=[ArgsValidator()])
     priority = models.IntegerField(default=0)
-    next_execution = models.DateTimeField(default=datetime.now())
+    next_execution = models.DateTimeField(auto_now_add=True)
+    last_execution = models.DateTimeField(null=True, blank=True)
     frequency = models.IntegerField()
     frequency_units = models.IntegerField(default=3600, choices=FREQUENCY_UNIT_CHOICES)
     is_active = models.BooleanField(default=True)
@@ -75,10 +76,10 @@ class ScheduledTask(models.Model):
         return url
 
     def as_html(self, next_page=None):
-        return '<a class="task" href="%s">Launch task</a>' % self.permalink(next_page)
+        return '<a class="task" href="%s">Launch</a>' % self.permalink(next_page)
 
     def launch_task_admin_display(self):
-        return self.as_html(nexturl="/admin/scheduler/scheduledtask/")
+        return self.as_html(next_page="/admin/scheduler/scheduledtask/")
     launch_task_admin_display.allow_tags = True
     launch_task_admin_display.short_description = "Launch"
 
@@ -102,6 +103,7 @@ class ScheduledTask(models.Model):
                 return
             else:
                 self.is_running = True
+                self.last_execution = datetime.now()
                 self.save()
 
             func = self.get_function()

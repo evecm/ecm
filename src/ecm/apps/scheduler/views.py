@@ -18,22 +18,18 @@
 __date__ = "2011 10 26"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 import time
 import httplib as http
 from datetime import datetime
 import logging
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template.context import RequestContext as Ctx
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseBadRequest, Http404
 
 from ecm import apps, plugins
-from ecm.views import extract_datatable_params
+from ecm.core import utils
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import basic_auth_required, check_user_access
 from ecm.apps.common.models import Setting
 from ecm.apps.scheduler.models import ScheduledTask
@@ -77,45 +73,43 @@ def task_list_data(request):
 
     tasks = []
     query = ScheduledTask.objects.filter(function__in=FUNCTIONS, is_active=True)
-    for t in query.order_by('function'):
+    for task in query.order_by('function'):
         tasks.append([
-            t.function,
-            t.next_execution_admin_display(),
-            t.frequency_admin_display(),
-            t.is_running,
-            t.as_html(next_page='/scheduler/tasks/')
+            task.function,
+            task.next_execution_admin_display(),
+            task.frequency_admin_display(),
+            utils.print_time_min(task.last_execution),
+            task.is_last_exec_success,
+            task.is_running,
+            task.as_html()
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : len(tasks),
-        "iTotalDisplayRecords" : len(tasks),
-        "aaData" : tasks
-    }
-
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(tasks, params.sEcho)
+    
 
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def launch_task(request, task_id):
     try:
-        task = ScheduledTask.objects.get(id=int(task_id))
-    except ScheduledTask.DoesNotExist:
-        return HttpResponseNotFound('No task with ID ' + task_id)
-    except ValueError, e:
-        raise HttpResponseBadRequest(str(e))
+        task = get_object_or_404(ScheduledTask, pk=int(task_id))
+    except ValueError:
+        raise Http404()
 
     if task.is_running:
         code = http.NOT_MODIFIED
-        LOG.warning("Task '%s' is already running." % task.function)
+        message = 'Task "%s" is already running.' % task.function
     elif not task.is_active:
         code = http.NOT_MODIFIED
-        LOG.warning("Task '%s' is disabled." % task.function)
+        message = 'Task "%s" is disabled.' % task.function
     else:
         code = http.ACCEPTED
+        message = ''
         TaskThread(tasks=[task]).start()
 
+    if message:
+        LOG.warning(message)
+    
     next_page = request.GET.get("next", None)
     if next_page is not None:
         # we let the task the time to start before redirecting
@@ -123,5 +117,5 @@ def launch_task(request, task_id):
         time.sleep(0.2)
         return redirect(next_page)
     else:
-        return HttpResponse(status=code)
+        return HttpResponse(message, status=code)
 
