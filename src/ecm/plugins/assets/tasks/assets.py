@@ -55,8 +55,8 @@ def update():
 
     LOG.debug("fetching old assets from the database...")
     oldItems = {}
-    for a in Asset.objects.all():
-        oldItems[a] = a
+    for asset in Asset.objects.all():
+        oldItems[asset] = asset
 
     newItems = {}
     LOG.debug("%d assets fetched", len(oldItems.keys()))
@@ -82,7 +82,7 @@ def update():
             # this row contains assets in space
             try:
                 if cst.HAS_HANGAR_DIVISIONS[row.typeID]:
-                    row_is_pos_corporate_hangar_array(corpArray=row, items_dic=newItems)
+                    row_is_pos_corp_hangar(corpArray=row, items_dic=newItems)
                 else:
                     row_is_pos_array(array=row, items_dic=newItems)
                 assets_to_locate.append(row.itemID)
@@ -122,7 +122,7 @@ def calc_assets_diff(oldItems, newItems, date):
     diffs = []
 
     # so we don't get an Attribute error when calling addasset.duplicate
-    for a in added: a.duplicate = False
+    for asset in added: asset.duplicate = False
 
     for remasset in removed:
         added_qty = 0
@@ -182,7 +182,7 @@ def row_is_office(office, items_dic):
     'office' represents an office in a station
     """
     try :
-        stationID = locationID_to_stationID(office.locationID)
+        stationID = locationid_to_stationid(office.locationID)
         solarSystemID = CelestialObject.objects.get(itemID=stationID).solarSystemID
         #solarSystemID = db.getSolarSystemID(stationID)
         for item in office.contents:
@@ -195,7 +195,7 @@ def row_is_office(office, items_dic):
         pass
 
 #------------------------------------------------------------------------------
-def row_is_pos_corporate_hangar_array(corpArray, items_dic):
+def row_is_pos_corp_hangar(corpArray, items_dic):
     """
     'corpArray' represents an anchorable structure with corporate hangar divisions
     such as a 'Corporate Hangar Array' or a 'Mobile Laboratory'
@@ -255,7 +255,7 @@ def row_is_in_hangar(item, items_dic, solarSystemID=None, stationID=None, hangar
 
     if solarSystemID is None and stationID is None:
         # we come from the update() method and the item has a locationID attribute
-        asset.stationID = locationID_to_stationID(item.locationID)
+        asset.stationID = locationid_to_stationid(item.locationID)
         asset.solarSystemID = CelestialObject.objects.get(itemID=asset.stationID).solarSystemID
         #asset.solarSystemID = db.getSolarSystemID(asset.stationID)
     else:
@@ -330,15 +330,23 @@ def make_asset_from_row(row):
         volume = 0.0
     else:
         volume = item.volume * row.quantity
-    return Asset(itemID    = row.itemID,
-                 typeID    = row.typeID,
-                 quantity  = row.quantity,
-                 flag      = row.flag,
-                 singleton = row.singleton,
-                 volume    = volume)
+    try:
+        if row.rawQuantity == -1:
+            is_original = True
+        else:
+            is_original = False
+    except AttributeError:
+        is_original = False
+    return Asset(itemID      = row.itemID,
+                 typeID      = row.typeID,
+                 quantity    = row.quantity,
+                 flag        = row.flag,
+                 singleton   = row.singleton,
+                 volume      = volume,
+                 is_original = is_original)
 
 #------------------------------------------------------------------------------
-def locationID_to_stationID(locationID):
+def locationid_to_stationid(locationID):
     """
     to convert locationIDs starting 66000000 to stationIDs from staStations
                                                     subtract 6000001 from the locationID

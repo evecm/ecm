@@ -69,7 +69,7 @@ comment=no
 required-attributes=__author__,__date__
 
 # List of builtins function names that should not be used, separated by a comma
-bad-functions=map,filter,apply,input
+bad-functions=filter,apply,input
 
 # Regular expression which should only match correct module names
 module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
@@ -193,13 +193,13 @@ max-args=7
 ignored-argument-names=_.*
 
 # Maximum number of locals for function / method body
-max-locals=15
+max-locals=20
 
 # Maximum number of return / yield for function / method body
 max-returns=6
 
 # Maximum number of branch for function / method body
-max-branchs=12
+max-branchs=15
 
 # Maximum number of statements in function / method body
 max-statements=50

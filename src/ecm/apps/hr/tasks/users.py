@@ -56,7 +56,7 @@ def update_character_sheet(user):
             ids = [ char.characterID for char in api.get_account_characters( user_api ) if char.is_corped ]
             conn = eveapi.EVEAPIConnection()
             api = conn.auth( keyID=user_api.keyID, vCode=user_api.vCode )
-            for id in ids:
+            for id in ids: #@ReservedAssignment
                 member = Member.objects.filter( characterID = id )
                 sheet = api.char.CharacterSheet( characterID = id )
                 set_extended_char_attributes( member, sheet )

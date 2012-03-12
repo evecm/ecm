@@ -42,6 +42,9 @@ class Asset(models.Model):
     # added for locating items in solar system
     closest_object_id = models.BigIntegerField(default=0)
     name = models.CharField(max_length=255, null=True, blank=True)
+    
+    # added for identifying bpo's
+    is_original = models.BooleanField(default=False)
 
     class Meta:
         get_latest_by = 'itemID'

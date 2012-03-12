@@ -32,6 +32,7 @@ urlpatterns = patterns('ecm.plugins.assets.views.normal',
     (r'^(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/data/$',          'get_can1_content_data'),
     (r'^(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/(\d+)/data/$',    'get_can2_content_data'),
     (r'^search/$',                                      'search_items'),
+    (r'^addbp/$',                                       'add_bp_to_industry'),
 )
 
 DATE = r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})"
@@ -47,4 +48,11 @@ urlpatterns += patterns('ecm.plugins.assets.views.diff',
     (r'^changes/' + DATE + r'/(\d+)/(\d+)/data/$',       'get_hangars_data'),
     (r'^changes/' + DATE + r'/(\d+)/(\d+)/(\d+)/data/$', 'get_hangar_content_data'),
     (r'^changes/' + DATE + r'/search/$',                 'search_items'),
+)
+
+urlpatterns = patterns('ecm.plugins.assets.views.addbp',
+    ###########################################################################
+    # ADD BLUEPRINT VIEWS
+    (r'^addbp/$',                                       'list_bps'),
+    (r'^addbp/data$',                                   'get_bps'),
 )
