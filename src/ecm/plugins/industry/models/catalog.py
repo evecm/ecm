@@ -52,7 +52,7 @@ class CatalogEntry(models.Model):
 
     def missing_blueprints(self, skip_invented=True):
         involved_bps = set()
-        for bp in self.blueprint.getInvolvedBlueprints(recurse=True) | set([self.blueprint]):
+        for bp in self.blueprint.get_involved_blueprints(recurse=True) | set([self.blueprint]):
             if skip_invented and bp.item.techLevel == 2 and bp.parentBlueprintTypeID is not None:
                 continue
             else:
