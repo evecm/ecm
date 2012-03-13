@@ -331,7 +331,7 @@ def make_asset_from_row(row):
     else:
         volume = item.volume * row.quantity
     try:
-        if row.rawQuantity == -1:
+        if row.rawQuantity == -1 and item.category == 9:
             is_original = True
         else:
             is_original = False
