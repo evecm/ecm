@@ -16,8 +16,7 @@ from ecm.views.decorators import check_user_access
 @check_user_access()
 def list_bps(request):
     
-    return render_to_response('assets_addbp.html', 
-                              
+    return render_to_response('catalog/addbp.html', 
                               Ctx(request))
 
 #------------------------------------------------------------------------------

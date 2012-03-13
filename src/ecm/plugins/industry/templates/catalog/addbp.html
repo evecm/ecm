@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block headtitle %}Bpo's in Assets{% endblock %}
+{% block breadcrumbs %}
+	<li><a href="/">Home</a></li>
+	<li><a href="/assets/" >Assets</a></li>
+	<li><a href="/assets/addbp" >Add BP's</a></li>
+{% endblock %}
+{% block main_content %}
+		{%for item in bpos%}
+			{{item}} <br>
+		{% endfor %}
+{% endblock %}
+
