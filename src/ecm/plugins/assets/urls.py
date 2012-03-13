@@ -48,10 +48,3 @@ urlpatterns += patterns('ecm.plugins.assets.views.diff',
     (r'^changes/' + DATE + r'/(\d+)/(\d+)/(\d+)/data/$', 'get_hangar_content_data'),
     (r'^changes/' + DATE + r'/search/$',                 'search_items'),
 )
-
-urlpatterns += patterns('ecm.plugins.assets.views.addbp',
-    ###########################################################################
-    # ADD BLUEPRINT VIEWS
-    (r'^addbp/$',                                       'list_bps'),
-    (r'^addbp/data$',                                   'get_bps'),
-)
