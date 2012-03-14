@@ -33,7 +33,7 @@ MENUS = [
             {'title': 'Items',         'url': 'catalog/items/'},
             {'title': 'Blueprints',    'url': 'catalog/blueprints/', },
             {'title': 'Supplies',      'url': 'catalog/supplies/'},
-            {'title': 'Add BP\'s',     'url': 'catalog/addbp/'},
+            {'title': 'Import BP\'s',  'url': 'catalog/addbp/'},
         ]},
     ]},
 ]

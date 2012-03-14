@@ -102,6 +102,10 @@ class OwnedBlueprint(models.Model):
     def permalink(self):
         return '<a href="%s" class="catalog-blueprint">%s</a>' % (self.url, self.typeName)
 
+    @property
+    def is_original(self):
+        return not self.copy
+
     def bill_of_materials(self, activity, runs=1, round_result=False):
         return self.get_bill_of_materials(activity, runs, self.me, round_result)
 

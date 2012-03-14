@@ -38,14 +38,15 @@ class Asset(models.Model):
     singleton = models.BooleanField(default=False) # true if assembled
     hasContents = models.BooleanField(default=False) # true if item container
     volume = models.FloatField(default=0.0)
-
+    
     # added for locating items in solar system
     closest_object_id = models.BigIntegerField(default=0)
     name = models.CharField(max_length=255, null=True, blank=True)
     
     # added for identifying bpo's
-    is_original = models.BooleanField(default=False)
-
+    is_original = models.NullBooleanField(null=True, blank=True, default=None)
+    
+    __item = None
     class Meta:
         get_latest_by = 'itemID'
 
@@ -82,6 +83,14 @@ class Asset(models.Model):
                 and self.stationID == other.stationID
                 and self.hangarID == other.hangarID
                 and self.typeID == other.typeID)
+
+    def __getattr__(self, attr):
+        try:
+            if self.__item is None:
+                self.__item = Type.objects.get(pk=self.typeID)
+            return getattr(self.__item, attr)
+        except AttributeError:
+            return models.Model.__getattribute__(self, attr)
 
 #------------------------------------------------------------------------------
 class AssetDiff(models.Model):

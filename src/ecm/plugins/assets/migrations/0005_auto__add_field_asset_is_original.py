@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'Asset.is_original'
-        db.add_column('assets_asset', 'is_original', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+        db.add_column('assets_asset', 'is_original', self.gf('django.db.models.fields.NullBooleanField')(default=None, null=True, blank=True), keep_default=False)
 
 
     def backwards(self, orm):
@@ -27,7 +27,7 @@ class Migration(SchemaMigration):
             'flag': ('django.db.models.fields.BigIntegerField', [], {}),
             'hangarID': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'hasContents': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_original': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_original': ('django.db.models.fields.NullBooleanField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
             'itemID': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'quantity': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
@@ -39,7 +39,7 @@ class Migration(SchemaMigration):
         },
         'assets.assetdiff': {
             'Meta': {'object_name': 'AssetDiff'},
-            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 3, 12, 11, 36, 28, 414000)', 'db_index': 'True'}),
+            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 3, 13, 15, 38, 5, 605000)', 'db_index': 'True'}),
             'flag': ('django.db.models.fields.BigIntegerField', [], {}),
             'hangarID': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'id': ('ecm.lib.bigintpatch.BigAutoField', [], {'primary_key': 'True'}),

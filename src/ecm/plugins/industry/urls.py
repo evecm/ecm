@@ -56,5 +56,6 @@ urlpatterns = patterns('ecm.plugins.industry.views',
     (r'^catalog/supplies/(\w+)/$',              'catalog.supplies.info'),
     
     (r'^catalog/addbp/$',                       'catalog.addbp.list_bps'),
-    (r'^catalog/addbp/data$',                   'catalog.addbp.get_bps'),
+    (r'^catalog/addbp/data/$',                  'catalog.addbp.get_bps'),
+    (r'^catalog/addbp/add/$',                   'catalog.addbp.add_bps'),
 )

@@ -1,13 +1,169 @@
 {% extends "base.html" %}
+
+
 {% block headtitle %}Bpo's in Assets{% endblock %}
+
+
 {% block breadcrumbs %}
 	<li><a href="/">Home</a></li>
-	<li><a href="/assets/" >Assets</a></li>
-	<li><a href="/assets/addbp" >Add BP's</a></li>
-{% endblock %}
-{% block main_content %}
-		{%for item in bpos%}
-			{{item}} <br>
-		{% endfor %}
+	<li><a href="/industry">Industry</a></li>
+	<li>Import BP's</li>
 {% endblock %}
 
+
+{% block main_content %}
+<div class="page-header">
+    <h1>Blueprints Found</h1>
+</div>
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+  </div>
+</form>
+
+<div class="well well-tight">
+  <div class="btn-toolbar" >
+    <span class="label label-info">Filter</span>
+    <div title="Press CTRL + Click to select only one" class="btn-group" data-toggle="buttons-checkbox" id="filter_buttons">
+    {% for id, name in filter.items %}
+      <button class="btn btn-mini btn-info active" id="{{ id }}" >{{ name }}</button>
+    {% endfor %}</div>
+  </div>
+  <div class="btn-group">
+    <a class="btn btn-mini" id="apply_filter"><i class="icon-ok"></i> Apply Filter</a>
+    <a class="btn btn-mini" id="reset_filter"><i class="icon-remove"></i> Reset</a>
+  </div>
+</div>
+<form action="/industry/catalog/addbp/add/" method="POST" id="import_form">
+	{% csrf_token %}
+<table class="table table-bordered table-condensed" id="bp_list">
+  <thead>
+    <tr>
+      {%for col in columns%}
+      <th class="top" scope="col" >{{col}}</th>
+      {%endfor%}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {%for col in columns%}
+      <th>{{col}}</th>
+      {%endfor%}
+    </tr>
+  </tfoot>
+
+</table>
+<button class="btn btn-danger">Import</button>
+</form>
+{% endblock %}
+{% block post_javascripts %}
+<script>
+/************************************
+ * "BP list" table setup *
+ ************************************/
+
+PARAMS = '{%for id, name in filter.items%}{{id}}{%if not forloop.last%},{%endif%}{%endfor%}';
+
+$(document).ready(function() {
+      var table = $('#bp_list').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: '/industry/catalog/addbp/data/',
+        aoColumns: [
+            { /* # */           sWidth: "10%", bSortable: false },
+            { /* Name */        sWidth: "35%", bSortable: false },
+            { /* Location */    sWidth: "35%", bSortable: false },
+            { /* Copy */        sWidth: "10%", bSortable: false },
+            { /* Import */      sWidth: "10%", bSortable: false },
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+        	var chkbox = $('td:eq(4)', nRow);
+        	chkbox.html('<input type="checkbox" name="' + aData[0] + '"/>');
+            $(nRow).on('click', function () {
+            	var checked = $('td:eq(4) input', this).attr('checked');
+            	$('td:eq(4) input', this).attr('checked', !checked);
+            });
+            return nRow;
+        },
+
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: 'filter',
+                value: PARAMS
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        }
+    }));
+
+    /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
+    });
+
+    /* disable multi column sorting */
+    $('#bp_list thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+    /* enable control click on state buttons */
+    $('#filter_buttons button').click(function (event) {
+        if (event.ctrlKey) {
+            /* if ctrl + click, deselect all divisions before selecting */
+            $('#filter_buttons button').removeClass('active');
+        }
+    });
+    $('#apply_filter').click(function() {
+        var filterBtns = $('#filter_buttons button.active');
+        var filter = '';
+        for (var i=0 ; i < filterBtns.length ; i++) {
+            filter += ',' + filterBtns[i].id;
+        }
+        if (filter.length != 0) {
+            filter = filter.substring(1);
+        }
+        PARAMS = filter;
+        table.fnDraw();
+    });
+    $('#reset_filter').click(function() {
+        var filterBtns = $('#filter_buttons button');
+        var filter = '';
+        for (var i=0 ; i < filterBtns.length ; i++) {
+            filter += ',' + filterBtns[i].id;
+        }
+        if (filter.length != 0) {
+            filter = filter.substring(1);
+        }
+        PARAMS = filter;
+        table.fnDraw();
+        $('#filter_buttons button').addClass('active');
+    });
+
+} );
+
+</script>
+{% endblock %}

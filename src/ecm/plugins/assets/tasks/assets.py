@@ -32,6 +32,7 @@ from ecm.plugins.assets.models import Asset, AssetDiff
 
 LOG = logging.getLogger(__name__)
 IGNORE_CAN_VOLUMES = True
+BLUEPRINTS_CATEGORYID = 9
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -330,13 +331,13 @@ def make_asset_from_row(row):
         volume = 0.0
     else:
         volume = item.volume * row.quantity
-    try:
-        if row.rawQuantity == -1 and item.category == 9:
-            is_original = True
-        else:
+    if item.categoryID == BLUEPRINTS_CATEGORYID:
+        try:
+            is_original = row.rawQuantity == -1
+        except AttributeError:
             is_original = False
-    except AttributeError:
-        is_original = False
+    else:
+        is_original = None
     return Asset(itemID      = row.itemID,
                  typeID      = row.typeID,
                  quantity    = row.quantity,
