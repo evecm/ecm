@@ -38,7 +38,6 @@ PASSWD_FORCE_LETTERS = False
 
 BASIC_AUTH_ONLY_ON_LOCALHOST = False
 
-
 ###############################################################################
 ###################
 # DJANGO SETTINGS #
@@ -66,8 +65,10 @@ SITE_ID = 1
 ##########
 # E-MAIL #
 ##########
-# to enable email error reporting, put a tuple in there, ('name', 'email@adddress.com')
-ADMINS = ()
+# to enable email error reporting, add tuples in there, ('name', 'email@adddress.com')
+ADMINS = (
+    #('name', 'email@adddress.com'),
+)
 # for development, you can use python dummy smtp server, run this command:
 # >>> python -m smtpd -n -c DebuggingServer localhost:25
 EMAIL_HOST = 'localhost'
@@ -140,7 +141,7 @@ TEMPLATE_DIRS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.static',
-    
+
     'ecm.views.context_processors.corporation_name',
     'ecm.views.context_processors.menu',
     'ecm.views.context_processors.version',
@@ -221,7 +222,7 @@ LOGGING = {
         },
     },
     'handlers': {
-        'ecm_file_handler': {
+        'file_handler': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'INFO',
@@ -230,16 +231,16 @@ LOGGING = {
             'when': 'midnight', # roll over each day at midnight
             'backupCount': 15, # keep 15 backup files
         },
-        'ecm_console_handler': {
+        'console_handler': {
             'class': 'logging.StreamHandler',
             'formatter': 'ecm_formatter',
             'level': 'DEBUG',
         },
-        'django_mail_admins': {
+        'email_handler': {
             'class': 'django.utils.log.AdminEmailHandler',
             'level': 'ERROR',
         },
-        'django_error': {
+        'error_file_handler': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'ERROR',
@@ -250,18 +251,13 @@ LOGGING = {
         },
     },
     'loggers': {
-        'ecm': {                            # remove console handler on production
-            'handlers': ['ecm_file_handler', 'ecm_console_handler'],
+        'ecm': {                                        # remove console handler on production
+            'handlers': ['file_handler', 'email_handler', 'console_handler'],
             'propagate': True,
             'level': 'DEBUG',
         },
-        'ecm.core': {
-            'handlers': ['django_error', 'django_mail_admins'],
-            'propagate': True,
-            'level': 'ERROR',
-        },
         'django.request': {
-            'handlers': ['django_mail_admins', 'django_error', 'ecm_file_handler'],
+            'handlers': ['email_handler', 'error_file_handler', 'file_handler'],
             'propagate': False,
             'level': 'ERROR',
         },
