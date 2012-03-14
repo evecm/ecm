@@ -121,18 +121,7 @@ def details(request, order_id):
     if order.originator != request.user:
         return forbidden(request)
 
-    logs = order.logs.all().order_by('-date')
-    valid_transitions = [ (trans.__name__, utils.verbose_name(trans)) 
-                               for trans in order.get_valid_transitions(customer=True) ]
-
-    data = {
-        'order': order, 
-        'logs': logs, 
-        'valid_transitions': valid_transitions, 
-        'states': Order.STATES.items(),
-    }
-
-    return render_to_response('shop_order_details.html', data, Ctx(request))
+    return _order_details(request, order)
 
 
 #------------------------------------------------------------------------------
@@ -185,21 +174,23 @@ def change_state(request, order_id, transition):
             return forbidden(request)
     except ValueError:
         raise Http404()
-    except IllegalTransition, e:
-        logs = order.logs.all().order_by('-date')
-        valid_transitions = [ (trans.__name__, trans.text) 
-                               for trans in order.get_valid_transitions(customer=True) ]
+    except IllegalTransition, error:
+        return _order_details(request, order, error)
+
+#------------------------------------------------------------------------------
+def _order_details(request, order, error=None):
+    logs = order.logs.all().order_by('-date')
+    valid_transitions = [(trans.__name__, utils.verbose_name(trans)) 
+                         for trans in order.get_valid_transitions(customer=True)]
+    data = {
+        'order': order, 
+        'logs': logs, 
+        'valid_transitions': valid_transitions, 
+        'states': Order.STATES.items(),
+        'error': error,
+    }
     
-        data = {
-            'order': order, 
-            'logs': logs, 
-            'valid_transitions': valid_transitions, 
-            'error': e,
-            'states': Order.STATES.items(),
-        }
-    
-        return render_to_response('shop_order_details.html', data, Ctx(request))
-    
+    return render_to_response('shop_order_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 def _modify(request, order):

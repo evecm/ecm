@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2012 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2012 2 2"
@@ -38,7 +38,7 @@ from ecm.apps.common.models import Setting
 def parse_eft(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed()
-    
+
     eft_block = request.POST.get('eft_block', None)
     if not eft_block:
         return HttpResponseBadRequest('Empty EFT block')
@@ -46,22 +46,22 @@ def parse_eft(request):
         quantity = int(request.POST.get('quantity', 1))
     except ValueError, e:
         return HttpResponseBadRequest(str(e))
-    
+
     eft_items = eft.parse_export(eft_block)
-    
+
     member_group_name = Setting.get('hr_corp_members_group_name')
     if request.user.groups.filter(name=member_group_name):
         margin = Setting.get('industry_internal_price_margin')
     else:
         margin = Setting.get('industry_external_price_margin')
-    
+
     query = CatalogEntry.objects.filter(typeName__in=eft_items.keys(), is_available=True)
     items = []
     for entry in query:
         if entry.fixed_price:
             price = entry.fixed_price
         else:
-            price = entry.production_cost * (1 + margin)
+            price = (entry.production_cost or 0.0) * (1 + margin)
         items.append({
             'typeID': entry.typeID,
             'typeName': entry.typeName,
@@ -69,9 +69,9 @@ def parse_eft(request):
             'price': price
         })
         eft_items.pop(entry.typeName) # we remove the item from the list
-    
+
     for typeName, _ in eft_items.items():
-        # we add the missing items so that the page can display them
+        # we add the missing items to inform the user
         items.append({
             'typeID': 0,
             'typeName': typeName,
@@ -105,13 +105,13 @@ def get_item_id(request):
         if query.filter(is_available=True).exists():
             item = query[0]
             price = item.fixed_price or item.production_cost
-            
+
             member_group_name = Setting.get('hr_corp_members_group_name')
             if request.user.groups.filter(name=member_group_name):
                 margin = Setting.get('industry_internal_price_margin')
             else:
                 margin = Setting.get('industry_external_price_margin')
-            
+
             if price is not None:
                 price *= 1 + margin
             return HttpResponse(json.dumps([item.typeID, item.typeName, price]), mimetype=JSON)
