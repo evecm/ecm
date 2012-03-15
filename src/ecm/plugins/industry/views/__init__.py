@@ -22,6 +22,8 @@ import logging
 import time
 
 from django.db import connections, transaction
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext as Ctx
 
 from ecm.core import utils
 from ecm.apps.eve.models import Type, BlueprintReq
@@ -29,6 +31,11 @@ from ecm.apps.eve import constants
 from ecm.plugins.industry.models import CatalogEntry, Supply
 
 logger = logging.getLogger(__name__)
+
+#------------------------------------------------------------------------------
+def home(request):
+    return render_to_response('industry_home.html', {}, Ctx(request))
+
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -41,9 +48,9 @@ def create_missing_catalog_entries():
     manufacturable_types = manufacturable_types.exclude(typeID__in=constants.FACTION_FRIGATES_TYPEIDS)
     eve_typeIDs = set(manufacturable_types.values_list('typeID', flat=True))
     ecm_typeIDs = set(CatalogEntry.objects.values_list('typeID', flat=True))
-    
+
     missing_ids = list(eve_typeIDs - ecm_typeIDs)
-    
+
     for sublist in utils.sublists(missing_ids, 50):
         for obj in Type.objects.filter(typeID__in=sublist):
             CatalogEntry.objects.create(typeID=obj.typeID, typeName=obj.typeName, is_available=False)
@@ -55,14 +62,14 @@ create_missing_catalog_entries()
 @transaction.commit_on_success
 def create_missing_supplies():
     start = time.time()
-    eve_supplies = BlueprintReq.objects.filter(required_type__blueprint__isnull=True, 
-                                               required_type__published=1, 
+    eve_supplies = BlueprintReq.objects.filter(required_type__blueprint__isnull=True,
+                                               required_type__published=1,
                                                damagePerJob__gt=0.0)
     eve_typeIDs = set(eve_supplies.values_list('required_type', flat=True).distinct())
     ecm_typeIDs = set(Supply.objects.values_list('typeID', flat=True))
-    
+
     missing_ids = eve_typeIDs - ecm_typeIDs
-    
+
     for typeID in missing_ids:
         Supply.objects.create(typeID=typeID)
     duration = time.time() - start

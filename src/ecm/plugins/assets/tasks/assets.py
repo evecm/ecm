@@ -32,7 +32,7 @@ from ecm.plugins.assets.models import Asset, AssetDiff
 
 LOG = logging.getLogger(__name__)
 IGNORE_CAN_VOLUMES = True
-BLUEPRINTS_CATEGORYID = 9
+
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -327,24 +327,27 @@ def fill_contents(container, item, items_dic, flag=None):
 #------------------------------------------------------------------------------
 def make_asset_from_row(row):
     item = Type.objects.get(pk=row.typeID)
-    if IGNORE_CAN_VOLUMES and item.category == 2:
+
+    if IGNORE_CAN_VOLUMES and item.category == cst.CELESTIAL_CATEGORYID:
         volume = 0.0
     else:
         volume = item.volume * row.quantity
-    if item.categoryID == BLUEPRINTS_CATEGORYID:
+
+    if item.categoryID == cst.BLUEPRINTS_CATEGORYID:
         try:
-            is_original = row.rawQuantity == -1
+            is_bpc = row.rawQuantity == -2 # -2 <=> blueprint copy (-1 are originals)
         except AttributeError:
-            is_original = False
+            is_bpc = None
     else:
-        is_original = None
+        is_bpc = None
+
     return Asset(itemID      = row.itemID,
                  typeID      = row.typeID,
                  quantity    = row.quantity,
                  flag        = row.flag,
                  singleton   = row.singleton,
                  volume      = volume,
-                 is_original = is_original)
+                 is_bpc=is_bpc)
 
 #------------------------------------------------------------------------------
 def locationid_to_stationid(locationID):

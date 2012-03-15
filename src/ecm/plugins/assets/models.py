@@ -26,6 +26,10 @@ from ecm.apps.eve.models import Type
 
 #------------------------------------------------------------------------------
 class Asset(models.Model):
+
+    class Meta:
+        get_latest_by = 'itemID'
+
     itemID = models.BigIntegerField(primary_key=True) # supposed to be unique
     solarSystemID = models.BigIntegerField()
     stationID = models.BigIntegerField()
@@ -43,12 +47,10 @@ class Asset(models.Model):
     closest_object_id = models.BigIntegerField(default=0)
     name = models.CharField(max_length=255, null=True, blank=True)
     
-    # added for identifying bpo's
-    is_original = models.NullBooleanField(null=True, blank=True, default=None)
+    # added for identifying blueprints (True -> Copy, False -> Original, NULL -> not a bp)
+    is_bpc = models.NullBooleanField(null=True, blank=True, default=None)
     
     __item = None
-    class Meta:
-        get_latest_by = 'itemID'
 
     def __repr__(self):
         return str(self)
@@ -94,6 +96,10 @@ class Asset(models.Model):
 
 #------------------------------------------------------------------------------
 class AssetDiff(models.Model):
+
+    class Meta:
+        get_latest_by = 'date'
+
     id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     solarSystemID = models.BigIntegerField()
     stationID = models.BigIntegerField()
@@ -104,8 +110,4 @@ class AssetDiff(models.Model):
     new = models.BooleanField()
     flag = models.BigIntegerField() # used to determine the state or path of the asset
     volume = models.BigIntegerField(default=0)
-
-    class Meta:
-        get_latest_by = 'date'
-
 

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+
+{% block headtitle %}Bpo's in Assets{% endblock %}
+
+
+{% block breadcrumbs %}
+    <li><a href="/">Home</a></li>
+  <li><a href="/industry/">Industry</a></li>
+  <li><a href="/industry/catalog/">Catalog</a></li>
+  <li><a href="/industry/catalog/blueprints/">Blueprints</a></li>
+  <li class="active"><a href="/industry/catalog/blueprints/import/">Import from corp assets</a></li>
+{% endblock %}
+
+
+{% block main_content %}
+<div class="page-header">
+    <h1>Blueprints found in corporation assets</h1>
+</div>
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+    <span class="label label-info">Display</span>
+    <div class="btn-group" data-toggle="buttons-radio" id="display_buttons">
+      <button class="btn btn-small btn-info" id="display_all">All Blueprints</button>
+      <button class="btn btn-small btn-info" id="display_originals">Only Originals</button>
+      <button class="btn btn-small btn-info" id="display_copies">Only Copies</button>
+    </div>
+  </div>
+</form>
+
+{% if error %}
+<div class="alert alert-error">
+  <a class="close" data-dismiss="alert">&times;</a>
+  <strong>Error!</strong> {{error}}
+</div>
+{% endif %}
+{% if imported %}
+<div class="alert alert-success">
+  <a class="close" data-dismiss="alert">&times;</a>
+  <strong>Success!</strong> {{imported}} blueprints imported.
+</div>
+{% endif %}
+
+<table class="table table-bordered table-condensed" id="bp_table">
+  <thead>
+    <tr>
+      {%for col in columns%}
+      <th class="top" scope="col" >{{col}}</th>
+      {%endfor%}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {%for col in columns%}
+      <th>{{col}}</th>
+      {%endfor%}
+    </tr>
+  </tfoot>
+
+</table>
+
+<form action="/industry/catalog/blueprints/import/" method="POST" id="import_form">{% csrf_token %}
+    <a class="btn btn-danger btn-large">Import All BPOs</a>
+    <input type="hidden" name="blueprints" value="" />
+    <button class="btn btn-danger btn-large">Import Selected Blueprints</button>
+</form>
+{% endblock %}
+{% block post_javascripts %}
+<script>
+/************************************
+ * "BP list" table setup *
+ ************************************/
+
+ DISPLAY_MODE = 'originals';
+
+$(document).ready(function() {
+      var table = $('#bp_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: '/industry/catalog/blueprints/import/data/',
+        aoColumns: [
+            { /* # */           sWidth: "5%", bSortable: false, sClass: 'right' },
+            { /* Name */        sWidth: "35%", bSortable: false },
+            { /* Location */    sWidth: "55%", bSortable: false },
+            { /* Original */    sWidth: "5%", bSortable: false, sClass: 'center' },
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            if (aData[3]) {
+                $('td:eq(3)', nRow).html('<strong>BPO</strong>');
+                $('td:eq(3)', nRow).css('color', 'green');
+            } else {
+                $('td:eq(3)', nRow).html('');
+            }
+            $('td:eq(1)', nRow).html('<strong>' + aData[1] + '</strong>');
+            return nRow;
+        },
+        fnDrawCallback: function () {
+            $('#bp_table tbody tr').css('cursor', 'pointer');
+            $('#bp_table tbody tr').on('click', function () {
+                if ($(this).hasClass('row-selected')) {
+                    $(this).removeClass('row-selected');
+                } else {
+                    $(this).addClass('row-selected');
+                }
+            });
+        },
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: 'displayMode',
+                value: DISPLAY_MODE
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        fnStateSaveParams: function (oSettings, oData) {
+            oData.sFilter = $("#search_text").val()
+            oData.displayMode = DISPLAY_MODE;
+        },
+
+        /* restore the search field content */
+        fnStateLoadParams: function (oSettings, oData) {
+            $("#search_text").val(oData.sFilter);
+            if ('displayMode' in oData) {
+                DISPLAY_MODE = oData.displayMode;
+                updateDisplayModeButtons();
+            }
+            return true;
+        }
+    }));
+
+    /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
+    });
+
+    /* disable multi column sorting */
+    $('#bp_list thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+    /* Display mode buttons */
+    var dispButtons = $('#display_buttons button');
+    for (var i = 0; i < dispButtons.length; i++) {
+        $(dispButtons[i]).click(function () {
+            var mode = $(this).attr('id').substr('display_'.length);
+            if (DISPLAY_MODE != mode) {
+                DISPLAY_MODE = mode;
+                table.fnDraw();
+        }
+    });
+        }
+    updateDisplayModeButtons();
+
+
+    $('#import_form a').on('click', function () {
+         $('#import_form input[name="blueprints"]').val('all');
+         $('#import_form').submit();
+    });
+
+    $('#import_form').on('submit', function (event) {
+        if ($('#import_form input[name="blueprints"]').val() != 'all') {
+            var selectedRows = $('#bp_table tr.row-selected');
+            if (selectedRows.length > 0) {
+                var bpIDs = '';
+                for (var i=0; i < selectedRows.length; i++) {
+                    bpIDs += $('td:eq(0)', selectedRows[i]).html() + ',';
+                }
+                bpIDs = bpIDs.substring(0, bpIDs.length - 1);
+                $('#import_form input[name="blueprints"]').val(bpIDs);
+            } else {
+                return false;
+            }
+        }
+        return true;
+    });
+
+} );
+
+function updateDisplayModeButtons() {
+    var buttons = $('#display_buttons button');
+    for (var i = 0; i < buttons.length; i++) {
+        if (endsWith(buttons[i].id, DISPLAY_MODE)) {
+            $(buttons[i]).addClass('active');
+        } else {
+            $(buttons[i]).removeClass('active');
+        }
+    }
+}
+
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+</script>
+{% endblock %}
