@@ -86,8 +86,10 @@ class POS(models.Model):
     type_name = models.CharField(max_length=255, default="")
 
     state = models.SmallIntegerField(choices=STATES.items(), default=0)
-    state_timestamp = models.DateTimeField(auto_now_add=True) # used when pos is reinforced
-    online_timestamp = models.DateTimeField(auto_now_add=True) # online date (only minutes matter here)
+    # state_timestamp used when pos is reinforced
+    state_timestamp = models.DateTimeField(auto_now_add=True)
+    # online_timestamp online date (only minutes matter here)
+    online_timestamp = models.DateTimeField(auto_now_add=True)
     cached_until = models.DateTimeField(auto_now_add=True)
 
     # general settings
@@ -111,7 +113,7 @@ class POS(models.Model):
     has_sov = models.BooleanField(default=False)
 
     @property
-    def stateText(self):
+    def state_text(self):
         return POS.STATES[self.state]
 
     @property
@@ -174,14 +176,17 @@ class FuelLevel(models.Model):
 
     def current_fuel(self):
         'return the current fuel based on hours since the last update.'
-        date_delta = datetime.datetime.now() - self.date
-        hours = int(date_delta.seconds / 3600)
-        consumed_fuel = hours * self.consumption
-        remaining_fuel = self.quantity - consumed_fuel
-        if remaining_fuel < 0:
-            return 0
+        if self.type_id == constants.STRONTIUM_CLATHRATES_TYPEID:
+            return self.quantity
         else:
-            return int(remaining_fuel)
+            date_delta = datetime.datetime.now() - self.date
+            hours = int(date_delta.seconds / 3600)
+            consumed_fuel = hours * self.consumption
+            remaining_fuel = self.quantity - consumed_fuel
+            if remaining_fuel < 0:
+                return 0
+            else:
+                return int(remaining_fuel)
         
     def fuel_admin_display(self):
         fuel_name = Type.objects.get(typeID=self.type_id)
