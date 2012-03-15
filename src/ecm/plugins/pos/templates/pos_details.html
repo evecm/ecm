@@ -14,7 +14,7 @@
 
 {% block main_content %}
 <div class="page-header{%if pos.state != 4%} error{%endif%}">
-  <h1>{{ pos.moon }}{%if pos.state != 4%} - {{pos.stateText}}{% endif %} <small id="custom_name" class="editable">{{ pos.custom_name|default_if_none:"" }}</small>
+  <h1>{{ pos.moon }}{%if pos.state != 4%} - {{pos.state_text}}{% endif %} <small id="custom_name" class="editable">{{ pos.custom_name|default_if_none:"" }}</small>
   </h1>
 </div>
 
@@ -26,7 +26,7 @@
     <h3>General Info</h3>
     <dl class="table">
       <dt{%if pos.state == 3%} class="error"{%endif%}>State</dt>
-        <dd>{{pos.stateText}}{%if pos.state == 3%} until {{pos.state_timestamp|ecm_datetime}}{%endif%}</dd>
+        <dd>{{pos.state_text}}{%if pos.state == 3%} until {{pos.state_timestamp|ecm_datetime}}{%endif%}</dd>
       <dt>Online since</dt>
         <dd>{{pos.online_timestamp|ecm_datetime}}</dd>
       <dt>POS type</dt>
