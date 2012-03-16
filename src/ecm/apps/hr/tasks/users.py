@@ -53,30 +53,29 @@ def update_character_sheet(user):
     user_apis = UserAPIKey.objects.filter(user=user)
     for user_api in user_apis:
         try:
-            ids = [ char.characterID for char in api.get_account_characters( user_api ) if char.is_corped ]
-            conn = eveapi.EVEAPIConnection()
-            api = conn.auth( keyID=user_api.keyID, vCode=user_api.vCode )
-            for id in ids: #@ReservedAssignment
-                member = Member.objects.filter( characterID = id )
-                sheet = api.char.CharacterSheet( characterID = id )
+            api_chars = api.get_account_characters( user_api )
+            chars = [ char.characterID for char in api_chars if char.is_corped ]
+            conn = api.connect_user( user_api )
+            for char in chars: #@ReservedAssignment
+                member = Member.objects.get( characterID = char )
+                sheet = conn.char.CharacterSheet( characterID = char )
                 set_extended_char_attributes( member, sheet )
                 set_character_skills( member, sheet)
-        except eveapi.Error, e:
-            if e.code == 0 or 200 <= e.code < 300:
+        except eveapi.Error, err:
+            if err.code == 0 or 200 <= err.code < 300:
                 # authentication failure error codes.
                 # This happens if the vCode does not match the keyID
                 # or if the account is disabled
                 # or if the key does not allow to list characters from an account
-                LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, user_api.keyID))
+                LOG.warning("%s (user: '%s' keyID: %d)" % (str(err), user.username, user_api.keyID))
                 user_api.is_valid = False
-                user_api.error = str(e)
-                #invalid_apis.append(user_api)
+                user_api.error = str(err)
                 user_api.save()
             else:
                 # for all other errors, we abort the operation so that
                 # character associations are not deleted by mistake and
                 # therefore, that users find themselves with no access :)
-                LOG.error("%d: %s (user: '%s' keyID: %d)" % (e.code, str(e), user.username, user_api.keyID))
+                LOG.error("%d: %s (user: '%s' keyID: %d)" % (err.code, str(err), user.username, user_api.keyID))
                 raise
 
 #-----------------------------------------------------------------------------
@@ -98,31 +97,55 @@ def set_character_skills( member, sheet):
 def set_extended_char_attributes(member, sheet):
     member.DoB = sheet.DoB
     member.race = sheet.race
-    member.bloodLine = sheet.bloodline
+    member.bloodLine = sheet.bloodLine
     member.ancestry = sheet.ancestry
     member.gender = sheet.gender
     member.corporationName = sheet.corporationName
     member.corporationID = sheet.corporationID
-    member.allianceName = sheet.allianceName
-    member.allianceID = sheet.allianceID
+    try:
+        member.allianceName = sheet.allianceName
+        member.allianceID = sheet.allianceID
+    except AttributeError:
+        member.allianceName = None
+        member.allianceID = 0
     member.cloneName = sheet.cloneName
-    member.CloneSkillPoints = sheet.CloneSkillPoints
+    member.cloneSkillPoints = sheet.cloneSkillPoints
     member.balance = sheet.balance
-    member.memoryBonusName = sheet.memoryBonusName
-    member.memoryBonusValue = sheet.memoryBonusValue
-    member.intelligenceBonusName = sheet.intelligenceBonusName
-    member.intelligenceBonusValue = sheet.intelligenceBonusValue
-    member.charismaBonusName = sheet.charismaBonusName
-    member.charismaBonusValue = sheet.charismaBonusValue
-    member.willpowerBonusName = sheet.willpowerBonusName
-    member.willpowerBonusValue = sheet.willpowerBonusValue
-    member.perceptionBonusName = sheet.perceptionBonusName
-    member.perceptionBonusValue = sheet.perceptionBonusValue
-    member.intelligence = sheet.intelligence
-    member.memory = sheet.memory
-    member.charisma = sheet.charisma
-    member.perception = sheet.perception
-    member.willpower = sheet.willpower
+    try:
+        member.memoryBonusName = sheet.memoryBonusName
+        member.memoryBonusValue = sheet.memoryBonusValue
+    except AttributeError:
+        member.memoryBonusName = None
+        member.memoryBonusValue = 0
+    try:
+        member.intelligenceBonusName = sheet.intelligenceBonusName
+        member.intelligenceBonusValue = sheet.intelligenceBonusValue
+    except AttributeError:
+        member.intelligenceBonusName = None
+        member.intelligenceBonusValue = 0
+    try:
+        member.charismaBonusName = sheet.charismaBonusName
+        member.charismaBonusValue = sheet.charismaBonusValue
+    except AttributeError:
+        member.charismaBonusName = None
+        member.charismaBonusValue = 0
+    try:
+        member.willpowerBonusName = sheet.willpowerBonusName
+        member.willpowerBonusValue = sheet.willpowerBonusValue
+    except AttributeError:
+        member.willpowerBonusName = None
+        member.willpowerBonusValue = 0
+    try:
+        member.perceptionBonusName = sheet.perceptionBonusName
+        member.perceptionBonusValue = sheet.perceptionBonusValue
+    except AttributeError:
+        member.perceptionBonusName = None
+        member.perceptionBonusValue = 0
+    member.intelligence = sheet.attributes.intelligence
+    member.memory = sheet.attributes.memory
+    member.charisma = sheet.attributes.charisma
+    member.perception = sheet.attributes.perception
+    member.willpower = sheet.attributes.willpower
     member.save()
 
 #-----------------------------------------------------------------------------

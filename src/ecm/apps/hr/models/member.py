@@ -70,7 +70,7 @@ class Member(models.Model):
     allianceName = models.CharField(max_length=128, null=True, blank=True)
     allianceID = models.IntegerField(blank=True, null=True)
     cloneName = models.CharField(max_length=128, null=True, blank=True)
-    CloneSkillPoints = models.IntegerField(null=True, blank=True)
+    cloneSkillPoints = models.IntegerField(null=True, blank=True)
     balance = models.FloatField(default=0.0)
     memoryBonusName = models.CharField(max_length=128, blank=True, null=True)
     memoryBonusValue = models.IntegerField(blank=True, null=True)
@@ -227,6 +227,8 @@ class MemberSession(models.Model):
 
 #------------------------------------------------------------------------------
 class Skill(models.Model):
+    class Meta:
+        app_label = 'hr'
     character = models.ForeignKey(Member, related_name = 'skills')
     typeID = models.IntegerField(default=0)
     skillpoints = models.IntegerField(default=0)
