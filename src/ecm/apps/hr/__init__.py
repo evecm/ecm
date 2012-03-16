@@ -59,6 +59,11 @@ TASKS = [
         'priority' : 1,
         'frequency' : 2,
         'frequency_units' : 3600, # hour
+    }, {
+        'function' : 'ecm.apps.hr.tasks.charactersheet.update_extended_characters_info',
+        'priority' : 1,
+        'frequency' : 1,
+        'frequency_units' : 86400, # day
     },
 ]
 
