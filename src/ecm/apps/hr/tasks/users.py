@@ -113,7 +113,7 @@ def update_all_users_accesses():
     LOG.info("User accesses updated")
 
 #------------------------------------------------------------------------------
-def update_user_accesses(user, corp_members_group, directors_group):
+def update_user_accesses(user, corp_members_group=None, directors_group=None):
     """
     Synchronizes a user's groups with his/hers owned characters' in-game titles.
     """
