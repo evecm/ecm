@@ -71,7 +71,10 @@ ul.breadcrumb li:before {
 
 .children-block > * {
     display: block;
+    margin: auto;
 }
+
+
 
 
 dl.table {
