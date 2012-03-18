@@ -14,17 +14,17 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db import transaction
 
 __author__ = 'Ajurna'
 __author__ = '12 Mar 2012'
 
+from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
 from ecm.plugins.industry.models import OwnedBlueprint, CatalogEntry
-from ecm.apps.eve.models import Type, CelestialObject
+from ecm.apps.eve.models import Type, CelestialObject, BlueprintType
 from ecm.plugins.assets.models import Asset
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
@@ -55,11 +55,15 @@ def blueprints(request):
                 blueprint_ids = [ int(bp) for bp in blueprint_ids.split(',') ]
                 bps_to_import = Asset.objects.filter(itemID__in=blueprint_ids)
 
-            imported = bps_to_import.count()
+            imported = len(bps_to_import)
             for bp in bps_to_import:
-                catalog_entry, _ = CatalogEntry.objects.get_or_create(typeID=bp.typeID,
-                                                                      typeName=bp.typeName,
-                                                                      is_available=False)
+                productTypeID = BlueprintType.objects.get(pk=bp.typeID).productTypeID
+                try:
+                    catalog_entry = CatalogEntry.objects.get(typeID=productTypeID)
+                except CatalogEntry.DoesNotExist:
+                    catalog_entry = CatalogEntry.objects.create(typeID=productTypeID,
+                                                                typeName=bp.typeName,
+                                                                is_available=False)
                 catalog_entry.blueprints.create(typeID=bp.typeID)
         except ValueError, err:
             error = err
@@ -76,10 +80,6 @@ def blueprints(request):
 #------------------------------------------------------------------------------
 @check_user_access()
 def blueprints_data(request):
-
-    # FIXME: this function locks the interpreter when all BPOs are already imported
-
-
     # pull request params
     try:
         params = extract_datatable_params(request)
@@ -88,31 +88,25 @@ def blueprints_data(request):
     except Exception, e:
         return HttpResponseBadRequest(str(e))
 
+    not_imported = get_missing_blueprints(params.displayMode)
 
-    query = get_missing_blueprints(only_originals=False)
-
-    total_count = query.count()
-
-    if params.displayMode == 'copies':
-        query = query.filter(is_bpc=True)
-    elif params.displayMode == 'originals':
-        query = query.filter(is_bpc=False)
-
+    total_count = len(not_imported)
     # handle search string
     if params.search:
         matching_items = Type.objects.filter(typeName__icontains=params.search)
         matching_ids = matching_items.values_list('typeID', flat=True)
-        query = query.filter(typeID__in=matching_ids)
+        not_imported = [ bp for bp in not_imported if bp.typeID in matching_ids ]
+    filtered_count = len(not_imported)
 
-    filtered_count = query.count()
+    celestial_objects = CelestialObject.objects.all()
 
     # finish filtered list and prep it for display.
     prints = []
-    for bp in query[params.first_id:params.last_id]:
+    for bp in not_imported[params.first_id:params.last_id]:
         try:
-            location_name = CelestialObject.objects.get(itemID=bp.stationID).itemName
+            location_name = celestial_objects.get(itemID=bp.stationID).itemName
         except CelestialObject.DoesNotExist:
-            location_name = CelestialObject.objects.get(itemID=bp.closest_object_id).itemName
+            location_name = celestial_objects.get(itemID=bp.closest_object_id).itemName
 
         prints.append([
            bp.itemID,
@@ -125,17 +119,30 @@ def blueprints_data(request):
                                total=total_count, filtered=filtered_count)
 
 #------------------------------------------------------------------------------
-def get_missing_blueprints(only_originals=True):
-    assets_qry = Asset.objects.filter(is_bpc__isnull=False)
-    if only_originals:
-        assets_qry = assets_qry.filter(is_bpc=False)
+def get_missing_blueprints(display_mode='originals'):
+    query = Asset.objects.filter(is_bpc__isnull=False)
 
-    # remove already imported blueprints
-    already_imported = [(bp.typeID, bp.copy) for bp in OwnedBlueprint.objects.all()]
-    query = assets_qry
-    for asset in assets_qry:
-        if (asset.typeID, asset.is_bpc) in already_imported:
-            already_imported.remove((asset.typeID, asset.is_bpc))
-            query = query.exclude(itemID=asset.itemID)
+    if display_mode == 'copies':
+        query = query.filter(is_bpc=True)
+    elif display_mode == 'originals':
+        query = query.filter(is_bpc=False)
 
-    return query
+    already_imported = {}
+    for bp in OwnedBlueprint.objects.all():
+        key = bp.typeID, bp.copy
+        if already_imported.has_key(key):
+            already_imported[key] += 1
+        else:
+            already_imported[key] = 1
+
+    not_imported = []
+    for asset in query:
+        key = asset.typeID, asset.is_bpc
+        if already_imported.has_key(key):
+            already_imported[key] -= 1
+            if already_imported[key] == 0:
+                already_imported.pop(key)
+        else:
+            not_imported.append(asset)
+
+    return not_imported
