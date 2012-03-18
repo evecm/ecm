@@ -26,7 +26,7 @@
 {% block stylesheets %}{% endblock %}
 {% endcompress %}
   <link rel="icon" type="image/png" href="{{ STATIC_URL }}ecm/img/favicon.png" />
-  <link rel="shortcut icon" type="image/png" href="{{ STATIC_URL }}ecm/img/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="{{ STATIC_URL }}ecm/img/favicon.ico" />
 </head>
 <body>
   <!-- NAVBAR -->
@@ -38,7 +38,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </a>
-        <a class="brand" href="/" title="EVE Corporation Management">ECM</a>
+        <a class="brand" href="/" title="EVE Corporation Management"><img src="{{ STATIC_URL }}ecm/img/logo.png"> ECM</a>
         <span class="navbar-text pull-left"><em>{{corp_name}}</em></span>
         <div class="nav-collapse">
           <ul class="nav pull-right">
