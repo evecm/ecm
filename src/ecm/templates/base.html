@@ -43,7 +43,7 @@
         <div class="nav-collapse">
           <ul class="nav pull-right">
             {% if user.is_authenticated %}
-            <li {%if request_path == '/account/'%}class="active"{%endif%} ><a href="/account/" >User Profile</a></li>
+            <li {%if request_path == '/account/'%}class="active"{%endif%} ><a href="/account/" ></i>Account</a></li>
             <li><a href="/account/logout/" title="Log out from ECM">Logout</a></li>
             {% else %}
             <li><a href="/account/login/?next=/account/" >Login</a></li>
@@ -56,7 +56,7 @@
           <p class="navbar-text pull-right">
             {% if user.is_authenticated %}Logged in as <a href="/account/">{{ user.username }}</a>
             {% else %}Please log in.
-            {% endif %} 
+            {% endif %}
           </p>
         </div><!--/.nav-collapse -->
       </div>
@@ -77,20 +77,20 @@
       </div>
     </div>
   </div> <!-- /CONTAINER -->
-  
+
   <!-- FOOTER -->
   <footer>
     <div class="container-fluid">
       <hr>
       <span class="pull-left">
         version <strong>{{ecm_version}}</strong> &bull;
-        <em>Copyright &copy; 2010-2012 
+        <em>Copyright &copy; 2010-2012
             <a href="http://www.myspace.com/therealdiabeteman/videos">diabeteman</a></em>
       </span>
       <span class="pull-right">
         <a href="http://code.google.com/p/eve-corp-management/">Project on google code</a>
         &bull;
-        Powered by <a href="http://www.python.org/">Python</a> and 
+        Powered by <a href="http://www.python.org/">Python</a> and
         <a href="http://www.djangoproject.com/">Django</a>
       </span>
     </div>
