@@ -32,20 +32,28 @@ from ecm.apps.common.models import Setting,\
 
 class SettingAdmin(admin.ModelAdmin):
     list_display = ['name', 'value']
+    search_fields = ['name']
 class ColorThresholdAdmin(admin.ModelAdmin):
     list_display = ['color', 'threshold']
+    search_fields = []
 class ExternalApplicationAdmin(admin.ModelAdmin):
     list_display = ['name', 'url']
+    search_fields = ['name']
 class GroupBindingAdmin(admin.ModelAdmin):
     list_display = ['external_name', 'external_id', 'group', 'external_app']
+    search_fields = ['external_name', 'group__name']
 class UpdateDateAdmin(admin.ModelAdmin):
     list_display = ['model_name', 'update_date', 'prev_update']
+    search_fields = ['model_name']
 class UrlPermissionAdmin(admin.ModelAdmin):
     list_display = ['pattern', 'groups_admin_display']
+    search_fields = ['pattern']
 class UserAPIKeyAdmin(admin.ModelAdmin):
     list_display = ['user', 'keyID', 'vCode', 'is_valid']
+    search_fields = ['user__username']
 class UserBindingAdmin(admin.ModelAdmin):
     list_display = ['external_name', 'external_id', 'user', 'external_app']
+    search_fields = ['external_name', 'user__username']
 
 admin.site.register(Setting, SettingAdmin)
 admin.site.register(ColorThreshold, ColorThresholdAdmin)

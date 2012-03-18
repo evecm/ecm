@@ -20,24 +20,16 @@ __author__ = 'diabeteman'
 
 from django.contrib import admin
 
-from ecm.plugins.industry.models import (InventionPolicy, 
-                                         Job, 
+from ecm.plugins.industry.models import (InventionPolicy,
+                                         Job,
                                          Order,
-                                         OrderLog, 
-                                         OrderRow, 
-                                         OwnedBlueprint, 
+                                         OrderLog,
+                                         OrderRow,
+                                         OwnedBlueprint,
                                          PriceHistory,
                                          SupplySource,
-                                         Supply, 
+                                         Supply,
                                          CatalogEntry)
-
-#------------------------------------------------------------------------------
-class MileStoneAdmin(admin.ModelAdmin):
-    list_display = ['date']
-
-#------------------------------------------------------------------------------
-class PricingAdmin(admin.ModelAdmin):
-    list_display = ['name', 'margin_admin_display']
 
 #------------------------------------------------------------------------------
 class OrderAdmin(admin.ModelAdmin):
@@ -54,14 +46,18 @@ class OrderAdmin(admin.ModelAdmin):
         'discount',
         'quote',
     ]
+    search_fields = ['originator__username', 'client', 'manufacturer__username',
+                     'delivery_boy__username', 'delivery_location']
 
 #------------------------------------------------------------------------------
 class OrderLogAdmin(admin.ModelAdmin):
     list_display = ['order', 'state', 'date', 'user', 'text' ]
+    search_fields = ['user__username', 'text']
 
 #------------------------------------------------------------------------------
 class OrderRowAdmin(admin.ModelAdmin):
     list_display = ['catalog_entry', 'quantity', 'cost', 'order', ]
+    search_fields = ['catalog_entry__typeName']
 
 #------------------------------------------------------------------------------
 class JobAdmin(admin.ModelAdmin):

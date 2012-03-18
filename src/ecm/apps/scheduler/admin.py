@@ -33,6 +33,7 @@ class ScheduledTaskOptions(admin.ModelAdmin):
                     "priority",
                     "launch_task_admin_display"]
     list_filter = ["is_active"]
+    search_fields = ["function"]
 
 class GarbageCollectorOptions(admin.ModelAdmin):
     list_display = ["db_table_admin_display",

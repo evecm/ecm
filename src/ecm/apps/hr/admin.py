@@ -32,7 +32,13 @@ from ecm.apps.hr.models import Member,\
                                TitleCompoDiff,\
                                TitleMemberDiff,\
                                RoleMemberDiff
-admin.site.register(Member)
+
+class MemberAdmin(admin.ModelAdmin):
+    list_display = ['name', 'nickname', 'owner', 'corpDate', 'lastLogin']
+    search_fields = ['name', 'nickname', 'owner__username']
+
+
+admin.site.register(Member, MemberAdmin)
 admin.site.register(Role)
 admin.site.register(RoleType)
 admin.site.register(Title)
