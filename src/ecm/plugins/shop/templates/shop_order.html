@@ -6,10 +6,7 @@
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.autocomplete.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 <style type="text/css">
-#eft-modal {display: none;}
-.throbber {display:none;}
-#error-box {display:none;}
-#warning-box {display:none;}
+#eft-modal, #lifecycle-modal, .throbber, #error-box, #warning-box {display: none;}
 </style>
 {% endblock %}
 
@@ -30,6 +27,7 @@
 {% block main_content %}
 <div class="page-header">
   <h1>Please add items to your basket</h1>
+  <a class="pull-right" data-toggle="modal" data-target="#lifecycle-modal">Click here to view the orders' life-cycle</a>
 </div>
 
 <form class="well form-inline" id="search_form">
@@ -87,14 +85,14 @@
   <div class="right">
     <span class="label label-success">Estimated Total Price</span>
     <strong id="total_price">0.0 ISK</strong>
-    <button class="btn btn-success btn-large" type="submit">
+    <button class="btn btn-success btn-large"
+            type="submit"
+            title="Once your order is created, you will be able to modify it before confirming it. See the orders' life-cycle for more info.">
       <i class="icon-shopping-cart icon-white"></i>
       Submit Order
     </button>
     <img id="throbber-submit" class="throbber right" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
   </div>
-  <p class="right"><em>Once your order is created, you will be able to modify it before confirming it.</em></p>
-
 </form>
 
 <div class="modal" id="eft-modal">
@@ -111,6 +109,16 @@
     <a id="eft-submit" class="btn btn-primary" data-dismiss="modal">Import EFT Fitting</a>
   </div>
 </div>
+
+<div class="modal" id="lifecycle-modal">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">&times;</a>
+  </div>
+  <div class="modal-body">
+  <img alt="Order life-cyle" src="{{ STATIC_URL }}industry/img/order_life_cycle.png">
+  </div>
+</div>
+
 
 {% endblock %}
 
@@ -240,7 +248,6 @@ $(document).ready(function() {
         }
     });
 
-    $('#items_form button[type="submit"]').tooltip();
 
     /* when eft modal dialog is submited */
     $('a#eft-submit').click(function () {
