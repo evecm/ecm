@@ -54,8 +54,10 @@ def create_missing_catalog_entries():
     for sublist in utils.sublists(missing_ids, 50):
         for obj in Type.objects.filter(typeID__in=sublist):
             CatalogEntry.objects.create(typeID=obj.typeID, typeName=obj.typeName, is_available=False)
-    duration = time.time() - start
-    logger.info('added %d missing catalog entries (took %.2f sec.)', len(missing_ids), duration)
+
+    if missing_ids:
+        duration = time.time() - start
+        logger.info('added %d missing catalog entries (took %.2f sec.)', len(missing_ids), duration)
 create_missing_catalog_entries()
 
 #------------------------------------------------------------------------------
@@ -72,6 +74,8 @@ def create_missing_supplies():
 
     for typeID in missing_ids:
         Supply.objects.create(typeID=typeID)
-    duration = time.time() - start
-    logger.info('added %d missing supplies (took %.2f sec.)', len(missing_ids), duration)
+
+    if missing_ids:
+        duration = time.time() - start
+        logger.info('added %d missing supplies (took %.2f sec.)', len(missing_ids), duration)
 create_missing_supplies()

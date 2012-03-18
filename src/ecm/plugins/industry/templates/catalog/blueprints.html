@@ -75,7 +75,7 @@ $(document).ready(function() {
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             var bp_id = aData[5];
 
-            $('td:eq(1)', nRow).addClass('right');
+            $('td:eq(1)', nRow).addClass('right editable');
             $('td:eq(1)', nRow).attr('id', bp_id);
             /* Apply jEditable handlers to the cells each time we redraw the table */
             $('td:eq(1)', nRow).editable( '/industry/catalog/blueprints/me/', {
@@ -86,7 +86,7 @@ $(document).ready(function() {
                 },
             } );
 
-            $('td:eq(2)', nRow).addClass('right');
+            $('td:eq(2)', nRow).addClass('right editable');
             $('td:eq(2)', nRow).attr('id', bp_id);
             /* Apply jEditable handlers to the cells each time we redraw the table */
             $('td:eq(2)', nRow).editable( '/industry/catalog/blueprints/pe/', {
@@ -111,7 +111,7 @@ $(document).ready(function() {
                 $.post('/industry/catalog/blueprints/copy/', params);
             });
 
-            $('td:eq(4)', nRow).addClass('right');
+            $('td:eq(4)', nRow).addClass('right editable');
             $('td:eq(4)', nRow).attr('id', bp_id);
             /* Apply jEditable handlers to the cells each time we redraw the table */
             $('td:eq(4)', nRow).editable( '/industry/catalog/blueprints/runs/', {

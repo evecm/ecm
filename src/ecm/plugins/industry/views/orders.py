@@ -18,6 +18,7 @@
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
 
+import logging
 
 from django.http import Http404, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
@@ -25,9 +26,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.text import truncate_words
 
+from ecm.views.decorators import check_user_access, forbidden
+from ecm.plugins.industry.models.order import IllegalTransition
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.core import utils
-from ecm.plugins.industry.models import Order, CatalogEntry
+from ecm.plugins.industry.models import Order
+
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 COLUMNS = [
@@ -42,9 +47,9 @@ COLUMNS = [
 @login_required
 def orders(request):
     columns = [ col[0] for col in COLUMNS ]
-    return render_to_response('orders_list.html', 
+    return render_to_response('orders_list.html',
                               {'columns' : columns,
-                               'states': Order.STATES}, 
+                               'states': Order.STATES},
                               Ctx(request))
 
 #------------------------------------------------------------------------------
@@ -58,16 +63,16 @@ def orders_data(request):
         states = [int(x) for x in request.GET.get('states').split(',')]
     except ValueError:
         states = []
-    
+
     query = Order.objects.filter(state__in= states)
-    
+
     sort_by = COLUMNS[params.column][1]
-    
+
     if not params.asc:
         sort_by = '-' + sort_by
 
     query = query.order_by(sort_by)
-    
+
     orders = []
     for order in query[params.first_id:params.last_id]:
         items = [ row.catalog_entry.typeName for row in order.rows.all() ]
@@ -88,61 +93,85 @@ def orders_data(request):
     return datatable_ajax_data(data=orders, echo=params.sEcho)
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def details(request, order_id):
+    """
+    Serves URL /industry/orders/<order_id>/
+    """
     try:
         order = get_object_or_404(Order, id=int(order_id))
     except ValueError:
         raise Http404()
 
+    if order.originator != request.user:
+        return forbidden(request)
+
+    return _order_details(request, order)
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def change_state(request, order_id, transition):
+    """
+    Serves URL /industry/orders/<order_id>/<transition>/
+    """
+    try:
+        order = get_object_or_404(Order, id=int(order_id))
+
+        if request.user != order.originator:
+            return forbidden(request)
+
+        order.check_can_pass_transition(transition)
+
+        if transition == order.accept.__name__:
+            if order.accept(request.user):
+                return redirect('/industry/orders/%d/' % order.id)
+            else:
+                raise IllegalTransition('Order could not be accepted. See order log for details.')
+        elif transition == order.confirm.__name__:
+            order.confirm()
+            return redirect('/industry/orders/%d/' % order.id)
+        elif transition == order.cancel.__name__:
+            comment = request.POST.get('comment', None)
+            if not comment:
+                raise IllegalTransition('Please leave a comment.')
+            order.cancel(comment)
+            return redirect('/industry/orders/%d/' % order.id)
+        else:
+            return forbidden(request)
+    except ValueError:
+        raise Http404()
+    except IllegalTransition, error:
+        return _order_details(request, order, error)
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def add_comment(request, order_id):
+    """
+    Serves URL /industry/orders/<order_id>/comment/
+    """
+    try:
+        order = get_object_or_404(Order, id=int(order_id))
+    except ValueError:
+        raise Http404()
+
+    if request.method == 'POST':
+        comment = request.POST.get('comment', '')
+        order.add_comment(request.user, comment)
+        LOG.info('"%s" added a comment on order #%d', request.user, order.id)
+
+    return redirect('/industry/orders/%d/' % order.id)
+
+#------------------------------------------------------------------------------
+def _order_details(request, order, error=None):
     logs = order.logs.all().order_by('-date')
-    validTransitions = [ (trans.__name__, utils.verbose_name(trans)) 
-                               for trans in order.get_valid_transitions() ]
-
-
-    data = {'order' : order, 'logs': logs, 'validTransitions' : validTransitions}
+    valid_transitions = [(trans.__name__, utils.verbose_name(trans))
+                         for trans in order.get_valid_transitions(customer=False)]
+    data = {
+        'order': order,
+        'logs': logs,
+        'valid_transitions': valid_transitions,
+        'states': Order.STATES.items(),
+        'error': error,
+    }
 
     return render_to_response('order_details.html', data, Ctx(request))
-
-
-#------------------------------------------------------------------------------
-@login_required
-def change_state(request, order_id, transition):
-    try:
-        order = get_object_or_404(Order, id=int(order_id))
-    except ValueError:
-        raise Http404()
-    if transition == Order.modify.id: #@UndefinedVariable
-        return modify(request, order)
-    elif transition == Order.confirm.id: #@UndefinedVariable
-        order.confirm()
-        return redirect('/shop/orders/%d/' % order.id)
-
-#------------------------------------------------------------------------------
-def modify(request, order):
-    if request.method == 'POST':
-        items, valid_order = extract_order_items(request)
-        if valid_order:
-            order.modify(items)
-            return redirect('/industry/orders/%d/' % order.id)
-    return render_to_response('order_modify.html', {'order': order}, Ctx(request))
-
-#------------------------------------------------------------------------------
-def extract_order_items(request):
-    items = []
-    valid_order = True
-    for key, value in request.POST.items():
-        try:
-            typeID = int(key)
-            quantity = int(value)
-            item = CatalogEntry.objects.get(typeID=typeID)
-            if item.is_available:
-                items.append( (item, quantity) )
-            else:
-                valid_order = False
-        except ValueError:
-            pass
-        except CatalogEntry.DoesNotExist:
-            valid_order = False
-    return items, valid_order
-

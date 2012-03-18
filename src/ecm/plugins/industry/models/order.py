@@ -126,7 +126,7 @@ class Order(models.Model):
             comment = "Created."
         self.apply_transition(Order.modify, Order.DRAFT, self.originator, comment)
         self.rows.all().delete()
-        
+
         self.cost = 0.0
         self.quote = 0.0
         missing_price = False
@@ -280,10 +280,7 @@ class Order(models.Model):
 
 
     def get_valid_transitions(self, customer=False):
-        if customer:
-            return [ tr for tr in Order.VALID_TRANSITIONS[self.state] if tr.customer_access ]
-        else:
-            return Order.VALID_TRANSITIONS[self.state]
+        return [ tr for tr in Order.VALID_TRANSITIONS[self.state] if customer == tr.customer_access ]
 
     def check_can_pass_transition(self, function_name):
         valid_functions_names = [ t.__name__ for t in Order.VALID_TRANSITIONS[self.state] ]
@@ -307,7 +304,7 @@ class Order(models.Model):
         missing_blueprints = set()
         for row in self.rows.all():
             missing_blueprints.update(row.catalog_entry.missing_blueprints())
-        
+
         if missing_blueprints:
             raise OrderCannotBeFulfilled(missing_blueprints=missing_blueprints)
 
@@ -330,7 +327,7 @@ class Order(models.Model):
             row.save()
         self.save()
         return missingPrices
-            
+
 
 
     def get_aggregated_jobs(self, activity=None):

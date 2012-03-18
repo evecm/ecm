@@ -2,102 +2,165 @@
 
 {% block headtitle %}Order #{{ order.id }} Details{% endblock %}
 
-
-
-{% block javascripts %}
-<script type="text/javascript">
-$(document).ready(function () {{% for transition, name in validTransitions %}
-  $("#{{transition}}_button").click(function() {
-      window.location = "/industry/orders/{{order.id}}/{{transition}}/";
-  });
-{% endfor %}});
-</script>
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+<style>
+#reject-form {display: none;}
+#reject-form form {margin: 0;}
+</style>
 {% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/industry">Industry</a></li>
-<li><a href="/industry/orders">Orders</a></li>
-<li><a href="/industry/orders/{{ order.id }}">#{{ order.id }}</a></li>
+<li><a href="/industry/">Industry</a></li>
+<li><a href="/industry/orders/">Orders</a></li>
+<li class="active"><a href="/industry/orders/{{ order.id }}/">#{{ order.id }}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1 class="pagetitle">Order #{{ order.id }} <span class="date">- {{order.state_text}}</span></h1>
-
-<table class="transparent">
-  <tbody>
-    <tr>
-      <td class="bold">Originator</td>
-      <td class="right">{{order.originator_permalink|safe}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Manufacturer</td>
-      <td class="right">{{order.manufacturer_permalink|safe}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Delivery Man</td>
-      <td class="right">{{order.delivery_boy_permalink|safe}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Creation Date</td>
-      <td class="right">{{order.creation_date|ecm_datetime}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Last Modified</td>
-      <td class="right">{{order.last_modified|ecm_datetime}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Delivery Date</td>
-      <td class="right">{{order.delivery_date|ecm_datetime}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Pricing</td>
-      <td class="right">{{order.pricing}}</td>
-    </tr>
-    <tr>
-      <td class="bold">Quote</td>
-      <td class="right">{%if order.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
-    </tr>
-  </tbody>
-</table>
-
-<div>
-  {% for transition, name in validTransitions %}
-  <input type="button" class="button" id="{{transition}}_button" value="{{name}}"/>
-  {% endfor %}
+<div class="page-header">
+  <h1>Order #{{ order.id }} <small>{{order.state_text}}</small></h1>
 </div>
 
-<h1>Items</h1>
+<ul class="order-states">{%for state, text in states%}
+<li{%if state == order.state%} class="active"{%endif%}>{{text}}</li>
+{%endfor%}</ul>
 
-<table class="order_table">
-    <thead>
-      <tr>
-      <th style="width: 10%;">Icon</th>
-      <th style="width: 30%;">Item</th>
-      <th style="width: 20%;">Quantity</th>
-      <th style="width: 40%;">Price</th>
-      </tr>
-    </thead>
-  <tbody>
-    {% for row in order.rows.all %}
+{% if error %}
+<div class="alert alert-error">
+  <a class="close" data-dismiss="alert">&times;</a>
+  <strong>Error!</strong> {{error|safe}}
+</div>
+{% endif %}
+
+{%if valid_transitions%}
+<div class="btn-toolbar">
+  <span class="label label-important">Actions</span>
+  {% for transition, name in valid_transitions %}
+  <a class="btn btn-danger" id="{{transition}}" href="/industry/orders/{{order.id}}/{{transition}}/">{{name}}</a>
+{% endfor %}
+</div>
+
+<div class="alert alert-error" id="reject-form" >
+  <form method="post" action="/industry/orders/{{order.id}}/reject/" class="form-inline">{%csrf_token%}
+    <input class="span8" name="comment" id="reject-comment" value="" placeholder="Please explain why you are rejecting..."/>
+    <button type="submit" class="btn btn-danger btn-small" disabled="disabled"><i class="icon-exclamation-sign icon-white"></i> Cancel Order</button>
+    <button id="abort-reject" class="btn btn-small"><i class="icon-remove"></i> Abort</button>
+  </form>
+</div>
+{%endif%}
+
+<hr>
+
+<div class="row-fluid">
+  <div class="span4">
+    <h2>Order details</h2>
+    <dl class="table">
+      <dt>Total Quote</dt><dd><h4>{%if order.quote == 0.0%}N/A{%else%}{{order.quote|ecm_price}} ISK{%endif%}</h4></dd>
+      <dt>Creation Date</dt><dd>{{order.creation_date|ecm_datetime}}</dd>
+      <dt>Last Modified</dt><dd>{{order.last_modified|ecm_datetime}}</dd>
+      <dt>Manufactured by</dt><dd>{{order.manufacturer_permalink|safe}}</dd>
+      <dt>Delivered by</dt><dd>{{order.delivery_boy_permalink|safe}}</dd>
+      <dt>Delivery Date</dt><dd>{{order.delivery_date|ecm_datetime}}</dd>
+    </dl>
+  </div>
+  <div class="span8">
+    <h2>Ordered items</h2>
+    <table class="table table-striped table-bordered table-condensed table-centered">
+      <thead>
+        <tr>
+          <th>Icon</th>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>{% for row in order.rows.all %}
+        <tr>
+          <td><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
+          <td><strong>{{row.catalog_entry.typeName}}</strong></td>
+          <td>{{row.quantity|ecm_quantity}}</td>
+          <td {%if row.quote %}class="right"{%endif%}>{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>
+        </tr>{% empty %}<tr id="empty">
+          <td colspan="4" class="order_cart_empty" >No items in order.</td>
+        </tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr>
+
+<h2>History</h2>
+
+<form method="post" action="/industry/orders/{{order.id}}/comment/" class="form-inline" id="add-comment-form">
+{%csrf_token%}
+    <input class="span8" name="comment" id="new-comment" value="" placeholder="Please type some text..."/>
+    <button type="submit" class="btn btn-small" disabled="disabled"><i class="icon-comment"></i> Add comment</button>
+</form>
+
+<table class="table table-striped table-bordered table-condensed">
+  <thead>
     <tr>
-          <td class="center"><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
-           <td>{{row.catalog_entry.permalink|safe}}</td>
-           <td class="center">{{row.quantity|ecm_quantity}}</td>
-           <td class="right">{%if row.quote == 0.0%}N/A{%else%}{{row.quote|ecm_price}} ISK{%endif%}</td>
-         </tr>
-         {% empty %}
-         <tr id="empty">
-           <td colspan="4" class="order_cart_empty" >No items in order.</td>
-         </tr>
-         {% endfor %}
+      <th style="width: 15%;">Date</th>
+      <th style="width: 15%;">Order Status</th>
+      <th style="width: 15%;">User</th>
+      <th style="width: 55%;">Comment</th>
+    </tr>
+  </thead>
+  <tbody>{% for log in logs %}
+    <tr>
+      <td>{{log.date|ecm_datetime}}</td>
+      <td>{{log.state_text}}</td>
+      <td>{{log.user}}</td>
+      <td>{{log.text}}</td>
+    </tr>{% empty %}<tr>
+      <td colspan="4" >None.</td>
+    </tr>{% endfor %}
   </tbody>
 </table>
-
-<ul>
-{% for log in logs %}
-  <li>{{log.date|ecm_datetime}} [{{log.state_text}}] {{log.user_permalink|safe}} - {{log.text}}</li>
-{% endfor %}
-</ul>
-
 {% endblock %}
+
+{% block post_javascripts %}
+<script type="text/javascript">
+$(document).ready(function () {
+    $('a#reject').on('click', function(event) {
+        event.preventDefault();
+        $('#reject-form').show();
+    });
+    $('#reject-form').on('submit', function(event) {
+        if ($('#reject-comment').val().length == 0) {
+            event.preventDefault();
+        }
+    });
+    $('#abort-reject').on('click', function(event) {
+        event.preventDefault();
+        $('#reject-form').hide();
+    });
+    $('#add-comment-form').on('submit', function (event) {
+        if ($('#new-comment').val().length == 0) {
+            event.preventDefault();
+        }
+    });
+
+    $('#new-comment').on('keyup', function () {
+        if ($(this).val().length > 0) {
+            $('#add-comment-form button').removeAttr('disabled');
+        } else {
+            $('#add-comment-form button').attr('disabled', 'disabled');
+        }
+    });
+
+    $('#reject-comment').on('keyup', function () {
+        if ($(this).val().length > 0) {
+            $('#reject-form form button:eq(0)').removeAttr('disabled');
+        } else {
+            $('#reject-form form button:eq(0)').attr('disabled', 'disabled');
+        }
+    });
+});
+</script>
+{% endblock %}
+
+
+

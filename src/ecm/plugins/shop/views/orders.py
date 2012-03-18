@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.plugins.shop.views.utils import extract_order_items
 
 __date__ = "2011 11 12"
 __author__ = "diabeteman"
@@ -30,7 +31,6 @@ from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.core import utils
 from ecm.views.decorators import forbidden
 from ecm.plugins.industry.models.order import Order, IllegalTransition
-from ecm.plugins.industry.views.orders import extract_order_items
 
 LOG = logging.getLogger(__name__)
 
@@ -71,10 +71,10 @@ def myorders_data(request):
     if params.column not in (0, 1, 3):
         params.column = 0 # by default, show latest orders first
     sort_col = COLUMNS[params.column][1]
-    if not params.asc: 
+    if not params.asc:
         sort_col = '-' + sort_col
-    
-    query = query.order_by(sort_col) 
+
+    query = query.order_by(sort_col)
 
     orders = []
     for order in query[params.first_id:params.last_id]:
@@ -87,7 +87,7 @@ def myorders_data(request):
             utils.print_time_min(order.creation_date()),
         ])
 
-    return datatable_ajax_data(data=orders, echo=params.sEcho, 
+    return datatable_ajax_data(data=orders, echo=params.sEcho,
                                total=order_count, filtered=filtered_count)
 
 #------------------------------------------------------------------------------
@@ -137,12 +137,12 @@ def add_comment(request, order_id):
 
     if order.originator != request.user:
         return forbidden(request)
-    
+
     if request.method == 'POST':
         comment = request.POST.get('comment', '')
         order.add_comment(request.user, comment)
         LOG.info('"%s" added a comment on order #%d', request.user, order.id)
-    
+
     return redirect('/shop/orders/%d/' % order.id)
 
 #------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ def change_state(request, order_id, transition):
     """
     try:
         order = get_object_or_404(Order, id=int(order_id))
-        
+
         if request.user != order.originator:
             return forbidden(request)
 
@@ -180,16 +180,16 @@ def change_state(request, order_id, transition):
 #------------------------------------------------------------------------------
 def _order_details(request, order, error=None):
     logs = order.logs.all().order_by('-date')
-    valid_transitions = [(trans.__name__, utils.verbose_name(trans)) 
+    valid_transitions = [(trans.__name__, utils.verbose_name(trans))
                          for trans in order.get_valid_transitions(customer=True)]
     data = {
-        'order': order, 
-        'logs': logs, 
-        'valid_transitions': valid_transitions, 
+        'order': order,
+        'logs': logs,
+        'valid_transitions': valid_transitions,
         'states': Order.STATES.items(),
         'error': error,
     }
-    
+
     return render_to_response('shop_order_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
@@ -203,4 +203,4 @@ def _modify(request, order):
             order.modify(items)
             return redirect('/shop/orders/%d/' % order.id)
     return render_to_response('shop_order.html', {'order': order}, Ctx(request))
-    
+

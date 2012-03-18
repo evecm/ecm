@@ -81,6 +81,25 @@ def parse_eft(request):
     return HttpResponse(json.dumps(items), mimetype=JSON)
 
 #------------------------------------------------------------------------------
+def extract_order_items(request):
+    items = []
+    valid_order = True
+    for key, value in request.POST.items():
+        try:
+            typeID = int(key)
+            quantity = int(value)
+            item = CatalogEntry.objects.get(typeID=typeID)
+            if item.is_available:
+                items.append( (item, quantity) )
+            else:
+                valid_order = False
+        except ValueError:
+            pass
+        except CatalogEntry.DoesNotExist:
+            valid_order = False
+    return items, valid_order
+
+#------------------------------------------------------------------------------
 @login_required
 def search_item(request):
     querystring = request.GET.get('q', None)

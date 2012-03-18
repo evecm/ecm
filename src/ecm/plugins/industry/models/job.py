@@ -60,7 +60,7 @@ class Job(models.Model):
     # self.row is not None only if this is a root job
     row = models.ForeignKey('OrderRow', related_name='jobs', null=True, blank=True)
     # self.parent_job is None if this job is directly issued from an OrderRow
-    parent_job = models.ForeignKey('self', related_name='childrenJobs', null=True, blank=True)
+    parent_job = models.ForeignKey('self', related_name='children_jobs', null=True, blank=True)
 
     state = models.PositiveSmallIntegerField(default=PENDING, choices=STATES.items())
 
@@ -86,15 +86,15 @@ class Job(models.Model):
         if self.activity == Job.SUPPLY:
             return # stop recursion
 
-        materials = self.blueprint.getBillOfMaterials(runs=self.runs,
-                                                      meLevel=self.blueprint.me,
-                                                      activity=self.activity)
+        materials = self.blueprint.get_bill_of_materials(activity=self.activity,
+                                                         runs=self.runs,
+                                                         me_level=self.blueprint.me)
 
         for mat in materials:
-            self.childrenJobs.add(Job.create(item_id=mat.requiredTypeID,
-                                             quantity=mat.quantity,
-                                             order=self.order,
-                                             row=self.row))
+            self.children_jobs.add(Job.create(item_id=mat.requiredTypeID,
+                                              quantity=mat.quantity,
+                                              order=self.order,
+                                              row=self.row))
 
         parent_bp_id = self.blueprint.parentBlueprintTypeID
         if parent_bp_id is not None and self.blueprint.runs == -1:
@@ -103,30 +103,30 @@ class Job(models.Model):
             # create a temp OwnedBlueprint that will be used to run the invention
             bpc = OwnedBlueprint.objects.create(typeID=parent_bp_id, copy=True)
             # add an INVENTION job
-            self.childrenJobs.create(item_id=parent_bp_id,
-                                     blueprint=bpc,
-                                     runs=round(self.runs) * attempts,
-                                     order=self.order,
-                                     row=self.row,
-                                     activity=Job.INVENTION)
+            self.children_jobs.create(item_id=parent_bp_id,
+                                      blueprint=bpc,
+                                      runs=round(self.runs) * attempts,
+                                      order=self.order,
+                                      row=self.row,
+                                      activity=Job.INVENTION)
 
         if self.activity == Job.INVENTION:
             # add a SUPPLY job for T1 BPCs
-            self.childrenJobs.create(item_id=self.blueprint.typeID,
-                                     runs=round(self.runs),
-                                     order=self.order,
-                                     row=self.row,
-                                     activity=Job.SUPPLY)
+            self.children_jobs.create(item_id=self.blueprint.typeID,
+                                      runs=round(self.runs),
+                                      order=self.order,
+                                      row=self.row,
+                                      activity=Job.SUPPLY)
             decriptorTypeID  = InventionPolicy.decryptor(self.parent_job.blueprint)
             if decriptorTypeID is not None:
                 # add a SUPPLY job for a decryptor if needed
-                self.childrenJobs.create(item_id=decriptorTypeID,
-                                         runs=round(self.runs),
-                                         order=self.order,
-                                         row=self.row,
-                                         activity=Job.SUPPLY)
-                
-        for job in self.childrenJobs.all():
+                self.children_jobs.create(item_id=decriptorTypeID,
+                                          runs=round(self.runs),
+                                          order=self.order,
+                                          row=self.row,
+                                          activity=Job.SUPPLY)
+
+        for job in self.children_jobs.all():
             # recursive call
             job.create_requirements()
 
@@ -144,14 +144,19 @@ class Job(models.Model):
         item = Type.objects.select_related(depth=2).get(pk=item_id)
         try:
             if item.blueprint is None:
-                raise Type.NoBlueprintException()
-            bpid = item.blueprintTypeID
-            activity = Job.MANUFACTURING
-            bp = OwnedBlueprint.objects.filter(typeID=bpid, copy=False).order_by('-me')[0]
-            runs = quantity / item.portionSize
-            if quantity % item.portionSize:
-                runs += 1
-            duration = bp.manufacturing_time(runs)
+                # item cannot be manufactured
+                bp = None
+                activity = Job.SUPPLY
+                duration = 0
+                runs = quantity
+            else:
+                bpid = item.blueprintTypeID
+                activity = Job.MANUFACTURING
+                bp = OwnedBlueprint.objects.filter(typeID=bpid, copy=False).order_by('-me')[0]
+                runs = quantity / item.portionSize
+                if quantity % item.portionSize:
+                    runs += 1
+                duration = bp.manufacturing_time(runs)
         except IndexError:
             if item.techLevel == 2 and item.blueprint.parent_blueprint is not None:
                 # we're trying to manufacture a T2 item without owning its BPO
@@ -170,12 +175,6 @@ class Job(models.Model):
                 activity = Job.SUPPLY
                 duration = 0
                 runs = quantity
-        except Type.NoBlueprintException:
-            # item cannot be manufactured
-            bp = None
-            activity = Job.SUPPLY
-            duration = 0
-            runs = quantity
 
         return Job.objects.create(order=order,
                                   row=row,
@@ -187,7 +186,7 @@ class Job(models.Model):
 
     def repr_as_tree(self, indent=0):
         output = '    ' * indent + '-> ' + unicode(self) + '\n'
-        for j in self.childrenJobs.all():
+        for j in self.children_jobs.all():
             output += j.repr_as_tree(indent + 1)
         return output
 
