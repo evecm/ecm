@@ -9,7 +9,8 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry">Industry</a></li>
-<li><a href="/industry/catalog/blueprints/">Blueprints Catalog</a></li>
+<li><a href="/industry/catalog/">Catalog</a></li>
+<li><a href="/industry/catalog/blueprints/">Blueprints</a></li>
 <li class="active"><a href="/industry/catalog/blueprints/{{ blueprint.typeID }}/">{{ blueprint.typeName }}</a></li>
 {% endblock %}
 
@@ -119,14 +120,14 @@ $(document).ready(function() {
                 fnCallback(json)
             } );
         },
-        
+
         /* the search field being outside the table object, we need to save its status
          * explicitly here in order to restore it with the rest */
         fnStateSaveParams: function (oSettings, oData) {
             oData.sFilter = $("#search_text").val()
             oData.activityID = ACTIVITY_ID;
         },
-       
+
         /* restore the search field content */
         fnStateLoadParams: function (oSettings, oData) {
             $("#search_text").val(oData.sFilter);
@@ -168,12 +169,12 @@ $(document).ready(function() {
             style: 'inherit',
             tooltip: 'Click to edit...',
     });
-    
+
     $('#activity_buttons button').on('click', function() {
         ACTIVITY_ID = $(this).attr('id');
         table.fnDraw();
     });
-    
+
     updateButtons();
 });
 

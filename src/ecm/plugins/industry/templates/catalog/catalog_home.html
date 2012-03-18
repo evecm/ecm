@@ -1,32 +1,17 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Industry{% endblock %}
+{% block headtitle %}Catalog{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li class="active"><a href="/industry/">Industry</a></li>
+<li><a href="/industry/">Industry</a></li>
+<li class="active"><a href="/industry/catalog/">Catalog</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Industry Management Home</h1>
+  <h1>Industry Catalog Management</h1>
 </div>
-
-<div class="row-fluid links">
-  <a href="/industry/orders/"
-     class="btn btn-large children-block"
-     title="Orders passed from the shop.">
-    <img src="{{ STATIC_URL }}industry/img/cart-128.png">
-    <strong>Follow orders</strong>
-  </a>
-  <a href="/industry/jobs/"
-     class="btn btn-large children-block"
-     title="Manufacturing, Invention and supply jobs.">
-    <img src="{{ STATIC_URL }}industry/img/helmet-128.png">
-    <strong>Follow industry jobs</strong>
-  </a>
-</div>
-<hr>
 
 <div class="row-fluid links">
   <a href="/industry/catalog/items/"
@@ -57,4 +42,7 @@ $(document).ready(function () {
     $('div.links a').tooltip();
 });
 </script>
+
+
+
 {% endblock %}

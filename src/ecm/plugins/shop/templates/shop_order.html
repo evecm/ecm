@@ -33,9 +33,9 @@
 </div>
 
 <form class="well form-inline" id="search_form">
-    <input type="text" id="search_box"/>
-    <button type="submit" class="btn btn-info"><i class="icon-plus icon-white"></i> Add item to my order</button>
-    <a class="btn btn-primary" data-toggle="modal" data-target="#eft-modal" ><i class="icon-plane icon-white"></i> Import EFT Fitting</a>
+    <input type="text" id="search_box" placeholder="Start typing to search items..."/>
+    <button type="submit" class="btn btn-small"><i class="icon-plus"></i> Add item to my order</button>
+    <a class="btn btn-primary pull-right" data-toggle="modal" data-target="#eft-modal" ><i class="icon-plane icon-white"></i> Import EFT Fitting</a>
 </form>
 
 <div class="alert alert-error" id="error-box">
@@ -65,26 +65,36 @@
         <th>Remove</th>
       </tr>
     </thead>
-  <tbody id="items">
-    {% for row in order.rows.all %}
-    <tr id="{{row.catalog_entry.typeID}}">
-      <td><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
-      <td><strong>{{row.catalog_entry.typeName}}</strong></td>
-      <td class="right price" price="{{row.quote}}">{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>
-      <td><input class="span1" type="text" name="{{row.catalog_entry.typeID}}" value="{{row.quantity}}" /></td>
-      <td><a class="btn btn-small btn-danger"><i class="icon-trash icon-white"></i></a></td>
-    </tr>
-    {% empty %}
-    <tr id="empty">
-        <td colspan="4" class="order_cart_empty" >Your shopping cart is empty.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
+    <tbody id="items">
+      {% for row in order.rows.all %}
+      <tr id="{{row.catalog_entry.typeID}}">
+        <td><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
+        <td><strong>{{row.catalog_entry.typeName}}</strong></td>
+        <td class="right price" price="{{row.quote}}">{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>
+        <td><input class="span1" type="text" name="{{row.catalog_entry.typeID}}" value="{{row.quantity}}" /></td>
+        <td><a class="btn btn-small btn-danger"><i class="icon-trash icon-white"></i></a></td>
+      </tr>
+      {% empty %}
+      <tr id="empty">
+          <td colspan="5" class="order_cart_empty" >Your shopping cart is empty.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
   </table>
-  <p style="font-size: 150%;"><span class="bold">TOTAL PRICE:</span>  <span id="total_price">0.0 ISK</span></p>
 
-  <button class="btn btn-success" type="submit"><i class="icon-shopping-cart icon-white"></i> Submit Order</button>
-  <img id="throbber-submit" class="throbber" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
+  <hr>
+
+  <div class="right">
+    <span class="label label-success">Estimated Total Price</span>
+    <strong id="total_price">0.0 ISK</strong>
+    <button class="btn btn-success btn-large" type="submit">
+      <i class="icon-shopping-cart icon-white"></i>
+      Submit Order
+    </button>
+    <img id="throbber-submit" class="throbber right" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
+  </div>
+  <p class="right"><em>Once your order is created, you will be able to modify it before confirming it.</em></p>
+
 </form>
 
 <div class="modal" id="eft-modal">
@@ -118,18 +128,18 @@ NEW_ITEM =
  '<td><input class="span1" type="text" name="%typeID" value="%quantity" /></td>' +
  '<td><a class="btn btn-small btn-danger"><i class="icon-trash icon-white"></i></a></td>' +
 '</tr>';
-EMPTY = '<tr id="empty"><td colspan="4" class="order_cart_empty" >Your shopping cart is empty.</td></tr>';
+EMPTY = '<tr id="empty"><td colspan="5" class="order_cart_empty" >Your shopping cart is empty.</td></tr>';
 CONFIRM_DELETE_BUTTONS = '<span><a class="btn btn-mini btn-danger">I\'m Sure</a><a class="btn btn-mini">Cancel</a></span>';
 function removeItem() {
     var row = this.parentNode.parentNode;
     var typeName = $('td:eq(1)', row).text();
-    
+
     var td = this.parentNode;
-    
+
     if ($('span', td).length == 0) {
         $(td).append(CONFIRM_DELETE_BUTTONS);
     }
-    
+
     $('span a:eq(0)', td).on('click', function () {
         $(row).remove();
         var rows =  $('#items tr');
@@ -138,7 +148,7 @@ function removeItem() {
         }
         updateTotal();
     });
-    
+
     $('span a:eq(1)', td).on('click', function () {
         $('span', td).remove();
     });
@@ -198,14 +208,14 @@ function updateTotal() {
             var price = $('td.price', rows[i]).attr('price');
             var qty = $('td:eq(3) input', rows[i]).val();
             if (price == 'null') {
-                $('span#total_price').text('N/A');
+                $('#total_price').text('N/A');
                 return;
             } else {
                 total += parseFloat(price) * parseInt(qty);
             }
         }
     }
-    $('span#total_price').text((total).formatMoney() + ' ISK');
+    $('#total_price').text((total).formatMoney() + ' ISK');
 }
 
 
@@ -214,7 +224,7 @@ $(document).ready(function() {
         minChars: 3,
         selectFirst: true,
     });
-    
+
     /* add item on search form submission */
     $("#search_form").on('submit', function(event) {
         event.preventDefault();
@@ -229,6 +239,8 @@ $(document).ready(function() {
             $('#throbber-submit').show();
         }
     });
+
+    $('#items_form button[type="submit"]').tooltip();
 
     /* when eft modal dialog is submited */
     $('a#eft-submit').click(function () {
@@ -271,14 +283,14 @@ $(document).ready(function() {
              $('#throbber').hide();
          });
     });
-    
+
     $('#error-box a.close').on('click', function () {
         $('#error-box').hide();
     });
     $('#warning-box a.close').on('click', function () {
         $('#warning-box').hide();
     });
-    
+
     $('#items tr').each(function () {
         $(this).find('td:eq(3) input').on('change', updateTotal);
         $(this).find('td:eq(4) a').on('click', removeItem);

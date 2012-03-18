@@ -9,7 +9,8 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry/">Industry</a></li>
-<li class="active"><a href="/industry/catalog/blueprints/">Blueprints Catalog</a></li>
+<li><a href="/industry/catalog/">Catalog</a></li>
+<li class="active"><a href="/industry/catalog/blueprints/">Blueprints</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -28,6 +29,7 @@
       <button class="btn btn-small btn-info" id="display_originals">Only Originals</button>
       <button class="btn btn-small btn-info" id="display_copies">Only Copies</button>
     </div>
+    <a class="btn btn-small btn-danger" href="/industry/catalog/blueprints/import/">Import blueprints from corp assets</a>
   </div>
 </form>
 
@@ -142,7 +144,7 @@ $(document).ready(function() {
             oData.sFilter = $("#search_text").val()
             oData.displayMode = DISPLAY_MODE;
         },
-       
+
         /* restore the search field content */
         fnStateLoadParams: function (oSettings, oData) {
             $("#search_text").val(oData.sFilter);

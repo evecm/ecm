@@ -11,7 +11,8 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry">Industry</a></li>
-<li><a href="/industry/catalog/items/">Items Catalog</a></li>
+<li><a href="/industry/catalog/">Catalog</a></li>
+<li><a href="/industry/catalog/items/">Items</a></li>
 <li><a href="/industry/catalog/items/{{ item.typeID }}/">{{ item.typeName }}</a></li>
 {% endblock %}
 
@@ -72,8 +73,8 @@
   </tbody>
 </table>
 
-<a class="btn btn-success" 
-   onClick="addBlueprint({{item.typeID}});"><i class="icon-plus icon-white"></i> 
+<a class="btn btn-success"
+   onClick="addBlueprint({{item.typeID}});"><i class="icon-plus icon-white"></i>
    Add New Blueprint
 </a>
 {% endblock %}
@@ -100,10 +101,10 @@ $(document).ready(function() {
       };
       $.post('/industry/catalog/items/' + ITEM_ID + '/availability/', params)
        .error(function () {
-        alert('Failed to change availability!'); 
+        alert('Failed to change availability!');
       });
     });
-    
+
     $('#price').editable('/industry/catalog/items/' + ITEM_ID + '/price/', {
         loadurl: '/industry/catalog/items/' + ITEM_ID + '/price/',
         cssclass: 'edited',
@@ -111,7 +112,7 @@ $(document).ready(function() {
         tooltip: 'Click to edit',
         placeholder: '',
     });
-    
+
     setEditableHandlers();
 });
 

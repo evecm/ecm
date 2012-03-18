@@ -9,6 +9,7 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry">Industry</a></li>
+<li><a href="/industry/catalog/">Catalog</a></li>
 <li><a href="/industry/catalog/supplies/">Supplies</a></li>
 <li class="active"><a href="/industry/catalog/supplies/{{ supply.typeID }}/">{{ supply.typeName }}</a></li>
 {% endblock %}
@@ -34,7 +35,7 @@
     </dl>
   </div>
 </div>
-  
+
 <h3>Price History</h3>
 
 <div class="span6">
@@ -75,8 +76,8 @@ $(document).ready(function() {
             return nRow;
         }
     }));
-    
-    
+
+
     $('dd#price').editable( '/industry/catalog/supplies/price/', {
         submitdata : {id: {{supply.typeID}}},
         tooltip: 'Click to edit...',

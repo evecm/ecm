@@ -11,6 +11,7 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry/">Industry</a></li>
+<li><a href="/industry/catalog/">Catalog</a></li>
 <li class="active"><a href="/industry/catalog/supplies/">Supplies</a></li>
 {% endblock %}
 
@@ -92,7 +93,7 @@ $(document).ready(function() {
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             var item_id = aData[4];
-            
+
             $('td:eq(1)', nRow).attr('id', item_id);
             $('td:eq(1)', nRow).addClass('price editable right');
             /* Apply jEditable handlers to the cells each time we redraw the table */
@@ -150,7 +151,7 @@ $(document).ready(function() {
                      _this.removeAttr('disabled');
                  });
             });
-            
+
             $('td:eq(4)', nRow).hide();
             return nRow;
         },
@@ -177,7 +178,7 @@ $(document).ready(function() {
             oData.displayMode = DISPLAY_MODE;
             oData.filter = CURRENT_FILTER;
         },
-       
+
         /* restore the search field content */
         fnStateLoadParams: function (oSettings, oData) {
             $("#search_text").val(oData.sFilter);

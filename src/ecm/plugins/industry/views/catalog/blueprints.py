@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.eve.models import Type
 
 __date__ = '2011 11 13'
 __author__ = 'diabeteman'
@@ -65,20 +66,19 @@ def blueprints_data(request):
     except Exception, e:
         return HttpResponseBadRequest(str(e))
 
-    query = list(OwnedBlueprint.objects.all())
-    query.sort(key=lambda b: b.typeName)
+    query = OwnedBlueprint.objects.all().order_by('catalog_entry__typeName')
+
+    total_items = query.count()
 
     if params.displayMode == 'copies':
-        query = [ bp for bp in query if bp.copy ]
+        query = query.filter(copy=True)
     elif params.displayMode == 'originals':
-        query = [ bp for bp in query if not bp.copy ]
+        query = query.filter(copy=False)
 
     if params.search:
-        total_items = len(query)
-        query = [ bp for bp in query if params.search.lower() in bp.typeName.lower() ]
-        filtered_items = len(query)
-    else:
-        total_items = filtered_items = len(query)
+        matching_ids = Type.objects.filter(typeName__icontains=params.search).values_list('typeID', flat=True)
+        query = query.filter(typeID__in=matching_ids)
+    filtered_items = query.count()
 
     blueprints = []
     for bp in query[params.first_id:params.last_id]:
@@ -91,9 +91,9 @@ def blueprints_data(request):
             bp.id,
         ])
 
-    return datatable_ajax_data(data=blueprints, echo=params.sEcho, 
+    return datatable_ajax_data(data=blueprints, echo=params.sEcho,
                                total=total_items, filtered=filtered_items)
-    
+
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -124,9 +124,9 @@ def materials(request, blueprint_id):
         raise HttpResponseBadRequest(str(e))
 
     materials = bp.bill_of_materials(activity=params.activityID, runs=1, round_result=True)
-    
+
     materials.sort(key=lambda x: x.requiredTypeID)
-    
+
     mat_table = []
     for mat in materials:
         if mat.required_type.blueprint is not None:
@@ -143,7 +143,7 @@ def materials(request, blueprint_id):
         ])
 
     return datatable_ajax_data(data=mat_table, echo=params.sEcho)
-    
+
 #------------------------------------------------------------------------------
 @check_user_access()
 def manufacturing_time(request, blueprint_id):

@@ -21,6 +21,7 @@ __author__ = "diabeteman"
 from django.conf.urls.defaults import patterns
 urlpatterns = patterns('ecm.plugins.industry.views',
     (r'^$',                                     'home'),
+    (r'^catalog/$',                             'catalog.home'),
 )
 urlpatterns += patterns('ecm.plugins.industry.views.orders',
     (r'^orders/$',                              'orders'),
@@ -29,7 +30,6 @@ urlpatterns += patterns('ecm.plugins.industry.views.orders',
     (r'^orders/(\d+)/(\w+)/$',                  'change_state'),
 )
 urlpatterns += patterns('ecm.plugins.industry.views.catalog.items',
-    (r'^catalog/$',                             'items'),
     (r'^catalog/items/$',                       'items'),
     (r'^catalog/items/data/$',                  'items_data'),
     (r'^catalog/items/(\d+)/$',                 'details'),

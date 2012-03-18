@@ -9,7 +9,8 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/industry/">Industry</a></li>
-<li class="active"><a href="/industry/catalog/items/">Items Catalog</a></li>
+<li><a href="/industry/catalog/">Catalog</a></li>
+<li class="active"><a href="/industry/catalog/items/">Items</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -24,7 +25,7 @@
     </div>
     <span class="label label-info">Display</span>
     <div class="btn-group" data-toggle="buttons-radio">
-      <button class="btn btn-small btn-info" id="show_unavailable_button" 
+      <button class="btn btn-small btn-info" id="show_unavailable_button"
               title="Show all items">All Items</button>
       <button class="btn btn-small btn-info" id="hide_unavailable_button"
               title="Show only available items">Available Items</button>
