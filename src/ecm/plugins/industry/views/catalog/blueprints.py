@@ -76,7 +76,9 @@ def blueprints_data(request):
         query = query.filter(copy=False)
 
     if params.search:
-        matching_ids = Type.objects.filter(typeName__icontains=params.search).values_list('typeID', flat=True)
+        # note: we need to render the list as real integers here. If not, django will try to
+        #       make a SQL join between two tables that are not in the same DB...
+        matching_ids = [ t.typeID for t in Type.objects.filter(typeName__icontains=params.search) ]
         query = query.filter(typeID__in=matching_ids)
     filtered_items = query.count()
 

@@ -163,7 +163,7 @@ def get_celestial_objects_data(request, solarSystemID):
     sql = 'SELECT "closest_object_id", COUNT(*), SUM("volume") '\
           'FROM "assets_asset" '\
           'WHERE "solarSystemID"=%s '
-    if where: 
+    if where:
         sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "closest_object_id";'
     sql = utils.fix_mysql_quotes(sql)
@@ -178,12 +178,12 @@ def get_celestial_objects_data(request, solarSystemID):
 
     jstree_data = []
     for closest_object_id, items, volume in cursor:
-        
+
         if closest_object_id != 0:
             name = CelestialObject.objects.get(itemID = closest_object_id).itemName
         else:
             name = 'Stations'
-        
+
         if exact_volumes:
             volume = utils.print_float(volume)
         else:
@@ -243,11 +243,11 @@ def get_stations_data(request, solarSystemID, closest_obj_id):
         else:
             # it is an inspace anchorable array
             type_name = Type.objects.get(typeID = flag).typeName
-            
+
             name = type_name
             if item_name and type_name != item_name:
                 name += ' "%s"' % item_name
-            
+
             if constants.CONTROL_TOWERS.has_key(flag):
                 icon = 'pos'
             else:
@@ -362,7 +362,7 @@ def get_hangar_content_data(request, solarSystemID, closest_obj_id, stationID, h
             data = '%s <i>- (x %s)</i>' % (type_name, utils.print_integer(item.quantity))
             ID = ''
             state = ''
-        
+
         jstree_data.append({
             'data': data,
             'attr' : {
@@ -454,10 +454,11 @@ def search_items(request):
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
     search_string = request.GET.get('search_string', 'no-item')
-    
-    matchingIDs = [x.typeID for x in Type.objects.filter(typeName__contains = search_string)]
-    #matchingIDs = db.getMatchingIdsFromString(search_string)
-    
+
+    # note: we need to render the list as real integers here. If not, django will try to
+    #       make a SQL join between two tables that are not in the same DB...
+    matchingIDs = [t.typeID for t in Type.objects.filter(typeName__contains = search_string)]
+
     query = Asset.objects.filter(Q(typeID__in=matchingIDs) | Q(name__icontains=search_string))
 
     if divisions is not None:
