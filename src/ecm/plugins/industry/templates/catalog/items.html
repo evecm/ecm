@@ -4,6 +4,9 @@
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+<style type="text/css">
+#error-box {display: none;}
+</style>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -33,6 +36,11 @@
   </div>
 </form>
 
+<div class="alert alert-error" id="error-box">
+    <a class="close">&times;</a>
+    <span id="error-text"></span>
+</div>
+
 <table id="catalog_table" class="table table-bordered table-condensed">
   <thead>
     <tr>
@@ -60,9 +68,10 @@
 {% block post_javascripts %}
 <script>
 SHOW_UNAVAILABLE = true;
+TABLE = null;
 $(document).ready(function() {
 
-    var table = $('#catalog_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+    TABLE = $('#catalog_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: '/industry/catalog/items/data/',
         aoColumns: [
             { /* 0 Item */         sWidth: "30%" },
@@ -100,8 +109,8 @@ $(document).ready(function() {
                 tooltip: 'Click to edit',
                 placeholder: '',
                 callback: function( sValue, y ) {
-                    var aPos = oTable.fnGetPosition( this );
-                    oTable.fnUpdate( sValue, aPos[0], aPos[1] );
+                    var aPos = TABLE.fnGetPosition( this );
+                    TABLE.fnUpdate( sValue, aPos[0], aPos[1] );
                 },
                 loadurl: '/industry/catalog/items/' + item_id + '/price/',
             } );
@@ -114,14 +123,13 @@ $(document).ready(function() {
                 var id = _this.attr('id');
                 var oldPrice = _this.html();
                 _this.html('<img src="{{ STATIC_URL }}ecm/img/throbber.gif"/>');
-                $.get('/industry/catalog/items/' + id + '/updateprodcost/')
+                $.get('/industry/catalog/items/' + id + '/production_cost/')
                  .success(function (data) {
-                   if (data != 'None')
-                       _this.html(data);
-                   else
-                    _this.html("");
+                     _this.html(data);
                  })
-                 .error(function (data) {
+                 .error(function (jqXHR) {
+                     $('#error-text').html('<strong>Error!</strong> ' + jqXHR.responseText);
+                     $('#error-box').show();
                      _this.html(oldPrice);
                  });
             });
@@ -134,11 +142,13 @@ $(document).ready(function() {
                 var id = _this.attr('id');
                 var oldPrice = _this.html();
                 _this.html('<img src="{{ STATIC_URL }}ecm/img/throbber.gif"/>');
-                $.get('/industry/catalog/items/' + id + '/updatepubprice/')
+                $.get('/industry/catalog/items/' + id + '/public_price/')
                  .success(function (data) {
                      _this.html(data);
                  })
-                 .error(function (data) {
+                 .error(function (jqXHR) {
+                     $('#error-text').html('<strong>Error!</strong> ' + jqXHR.responseText);
+                     $('#error-box').show();
                      _this.html(oldPrice);
                  });
             });
@@ -183,18 +193,18 @@ $(document).ready(function() {
     /* trigger the search when pressing return in the text field */
     $("#search_form").submit(function(event) {
         event.preventDefault();
-        table.fnFilter($("#search_text").val());
+        TABLE.fnFilter($("#search_text").val());
     });
 
     /* trigger the search when clicking the "search" button */
     $("#search_button").click(function() {
-        table.fnFilter($("#search_text").val());
+        TABLE.fnFilter($("#search_text").val());
     });
 
     /* reset the search when clicking the "reset" button */
     $("#clear_search").click(function() {
         $("#search_text").val("");
-        table.fnFilter("");
+        TABLE.fnFilter("");
     });
     /* disable multi column sorting */
     $('#catalog_table thead th').click(function(event) {
@@ -207,14 +217,18 @@ $(document).ready(function() {
     $("#show_unavailable_button").click(function() {
         if (!SHOW_UNAVAILABLE) {
             SHOW_UNAVAILABLE = true;
-            table.fnDraw();
+            TABLE.fnDraw();
         }
     });
     $("#hide_unavailable_button").click(function() {
         if (SHOW_UNAVAILABLE) {
             SHOW_UNAVAILABLE = false;
-            table.fnDraw();
+            TABLE.fnDraw();
         }
+    });
+
+    $('#error-box a.close').on('click', function () {
+        $('#error-box').hide();
     });
 
     if (SHOW_UNAVAILABLE) {

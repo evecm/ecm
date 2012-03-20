@@ -163,11 +163,12 @@ class Job(models.Model):
                 # we must create an OwnedBlueprint for this job only (that will
                 # be consumed with it)
                 # The invention policies are to be specified in InventionPolicies
+                activity = Job.MANUFACTURING
                 bp = InventionPolicy.blueprint(item.blueprint)
                 runs = quantity / item.portionSize
                 if quantity % item.portionSize:
                     runs += 1
-                duration = item.blueprint.getDuration(runs, bp.pe, activity)
+                duration = bp.manufacturing_time(runs)
                 bp.runs = -1 # to identify that this BPC will be invented
                 bp.save()
             else:

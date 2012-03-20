@@ -61,9 +61,9 @@ class InventionPolicy(models.Model):
 
     @staticmethod
     def blueprint(blueprint):
-        runsPerBp, me, pe, _, _ = InventionPolicy.resolve(blueprint)
+        runs_per_bp, me, pe, _, _ = InventionPolicy.resolve(blueprint)
         return OwnedBlueprint(typeID=blueprint.blueprintTypeID,
-                              runs=runsPerBp,
+                              runs=runs_per_bp,
                               copy=True,
                               me=me,
                               pe=pe)
@@ -82,10 +82,10 @@ class InventionPolicy(models.Model):
 
         If no decryptor is required, return None as the decryptor typeID
         """
-        decryptorGroup = constants.INTERFACES_DECRYPTOR_MAPPING[blueprint.parent_blueprint.dataInterfaceID]
+        decryptor_group = constants.INTERFACES_DECRYPTOR_MAPPING[blueprint.parent_blueprint.dataInterfaceID]
 
         try:
-            policy = InventionPolicy.objects.get(item_group_id=blueprint.item.groupID)
+            policy = InventionPolicy.objects.get(item_group_id=blueprint.product.groupID)
         except InventionPolicy.DoesNotExist:
             # no specific policy defined for this blueprint,
             # fallback to the default policy (modules)
@@ -93,17 +93,17 @@ class InventionPolicy(models.Model):
 
         decriptorTypeID = None
         chance = policy.invention_chance
-        runsPerBp = 1
+        runs_per_bp = 1
         me = -4 # base ME for invented BPCs without decryptor
         pe = -4 # base PE for invented BPCs without decryptor
-        for typeID, chanceMod, meMod, peMod, runsMod, _ in constants.DECRYPTOR_INFO[decryptorGroup]:
-            if policy.target_me == (me + meMod):
+        for typeID, chance_mod, me_mod, pe_mod, runs_mod, _ in constants.DECRYPTOR_INFO[decryptor_group]:
+            if policy.target_me == (me + me_mod):
                 decriptorTypeID = typeID
-                chance *= chanceMod
-                me += meMod
-                pe += peMod
-                runsPerBp += runsMod
+                chance *= chance_mod
+                me += me_mod
+                pe += pe_mod
+                runs_per_bp += runs_mod
                 break
         attempts = int(round(1.0 / chance))
 
-        return runsPerBp, me, pe, decriptorTypeID, attempts
+        return runs_per_bp, me, pe, decriptorTypeID, attempts

@@ -166,7 +166,7 @@ function deleteBlueprint(blueprintID) {
 }
 
 function addBlueprint(itemID) {
-    $.getJSON('/industry/catalog/items/' + itemID + '/addblueprint/')
+    $.getJSON('/industry/catalog/items/' + itemID + '/add_blueprint/')
         .success(function(json) {
             $('#empty').remove();
             var checked;

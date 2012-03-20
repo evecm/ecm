@@ -45,7 +45,7 @@ TASKS = [
         'frequency_units' : 3600, # hour
     },
     {
-        'function' : 'ecm.plugins.industry.tasks.industry.update_production_costs',
+        'function' : 'ecm.plugins.industry.tasks.industry.update_all_production_costs',
         'priority' : 0,
         'frequency' : 24,
         'frequency_units' : 3600, # hour
@@ -60,6 +60,7 @@ SETTINGS = {
     'industry_group_name': 'Industry Team',
     'industry_internal_price_margin': 0.02,
     'industry_external_price_margin': 0.30,
+    'industry_default_price_source': 30000142,  # Jita
     'industry_evecentral_url': 'http://api.eve-central.com/api/marketstat',
 }
 

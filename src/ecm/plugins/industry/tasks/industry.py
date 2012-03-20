@@ -16,7 +16,6 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-from ecm.apps.eve.models import Type
 
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
@@ -26,6 +25,7 @@ from datetime import datetime
 
 from django.db import transaction
 
+from ecm.apps.eve.models import Type
 from ecm.core import utils
 from ecm.plugins.industry.models.order import OrderCannotBeFulfilled
 from ecm.plugins.industry.tasks import evecentral
@@ -55,34 +55,41 @@ def update_supply_prices():
 
 
 #------------------------------------------------------------------------------
-def update_production_costs(item_id=None):
-    now = datetime.now()
-    if item_id is None:
-        entries = CatalogEntry.objects.filter(is_available=True)
-    else:
-        entries = CatalogEntry.objects.filter(typeID=item_id)
-    for entry in entries:
-        cost = None
+def update_all_production_costs():
+    for entry in CatalogEntry.objects.filter(is_available=True):
         try:
-            missing_bps = entry.missing_blueprints()
-            if not missing_bps:
-                with transaction.commit_manually():
-                    try:
-                        order = Order.objects.create(originator_id=1)
-                        order.modify( [ (entry, 1) ] )
-                        missingPrices = order.create_jobs()
-                        if not missingPrices:
-                            cost = order.cost
-                    finally:
-                        transaction.rollback()
-            else:
-                raise OrderCannotBeFulfilled(missing_blueprints=list(missing_bps))
+            update_production_cost(entry)
         except Type.NoBlueprintException:
             # this can happen when blueprint requirements are not found in EVE database.
             # no way to work arround this issue for the moment, we just keep the price to None
             pass
         except OrderCannotBeFulfilled, err:
+            if err.missing_prices:
+                for supply in err.missing_prices:
+                    Supply.objects.get_or_create(pk=supply)
             logger.warning('Cannot calculate production cost for "%s": %s', entry.typeName, err)
-        entry.production_cost = cost
-        entry.last_update = now
-        entry.save()
+
+#------------------------------------------------------------------------------
+def update_production_cost(entry):
+    cost = None
+    missing_bps = entry.missing_blueprints()
+    if not missing_bps:
+        with transaction.commit_manually():
+            try:
+                order = Order.objects.create(originator_id=1)
+                order.modify( [ (entry, 1) ] )
+                missing_prices = order.create_jobs()
+                if missing_prices:
+                    raise OrderCannotBeFulfilled(missing_prices=missing_prices)
+                else:
+                    cost = order.cost
+            finally:
+                transaction.rollback()
+    else:
+        raise OrderCannotBeFulfilled(missing_blueprints=list(missing_bps))
+    entry.production_cost = cost
+    entry.last_update = datetime.now()
+    entry.save()
+
+
+

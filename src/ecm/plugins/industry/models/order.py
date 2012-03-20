@@ -510,23 +510,23 @@ class OrderRow(models.Model):
 class OrderCannotBeFulfilled(UserWarning):
 
     def __init__(self, missing_blueprints=None, missing_prices=None):
-        self.missing_blueprints = missing_blueprints
-        self.missing_prices = missing_prices
+        self.missing_blueprints = missing_blueprints or []
+        self.missing_prices = missing_prices or []
 
     def __str__(self):
         if self.missing_blueprints:
             if all([ type(p) == type(0) for p in self.missing_blueprints ]):
-                self.missing_blueprints = [ Type.objects.get(typeID=p).typeName for p in self.missing_blueprints ]
-                #self.missing_blueprints = [ db.get_type_name(p)[0] for p in self.missing_blueprints ]
+                self.missing_blueprints = Type.objects.filter(typeID__in=self.missing_blueprints)\
+                                                      .values_list('typeName', flat=True)
             output = 'Missing Blueprints: '
             output += ', '.join(map(str, self.missing_blueprints))
         elif self.missing_prices:
             if all([ type(p) == type(0) for p in self.missing_prices ]):
-                self.missing_prices = [ Type.objects.get(typeID=p).typeName for p in self.missing_prices ]
-                #self.missing_prices = [ db.get_type_name(p)[0] for p in self.missing_prices ]
-            output = 'Missing SupplyPrices: '
+                self.missing_prices = Type.objects.filter(typeID__in=self.missing_prices)\
+                                                  .values_list('typeName', flat=True)
+            output = 'Missing Supply prices: '
             output += ', '.join(map(str, self.missing_prices))
-        return output
+        return output or 'nothing missing'
 
 #------------------------------------------------------------------------------
 class IllegalTransition(UserWarning): pass

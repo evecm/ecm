@@ -31,11 +31,15 @@ from django.template.context import RequestContext as Ctx
 from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, render_to_response
 
-from ecm.core import utils
+from ecm.apps.common.models import Setting
+from ecm.apps.eve.models import Type
+from ecm.plugins.industry.models.order import OrderCannotBeFulfilled
+from ecm.plugins.industry.models.inventory import Supply
+from ecm.core import utils, JSON
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.models.catalog import CatalogEntry
-from ecm.plugins.industry.tasks.industry import update_production_costs
+from ecm.plugins.industry.tasks.industry import update_production_cost
 from ecm.plugins.industry.tasks import evecentral
 
 logger = logging.getLogger(__name__)
@@ -109,7 +113,7 @@ def items_data(request):
             item.typeID,
         ])
 
-    return datatable_ajax_data(data=items, echo=params.sEcho, 
+    return datatable_ajax_data(data=items, echo=params.sEcho,
                                total=total_items, filtered=filtered_items)
 
 #------------------------------------------------------------------------------
@@ -130,8 +134,8 @@ def details(request, item_id):
 def price(request, item_id):
     """
     Serves URL /industry/catalog/items/<item_id>/price/
-    
-    If request is GET: 
+
+    If request is GET:
         return the price as a raw float
     If request is POST:
         update the price of the item
@@ -152,8 +156,8 @@ def price(request, item_id):
         item.fixed_price = price
         item.save()
         displayPrice = utils.print_float(price)
-        logger.info('"%s" changed fixed_price for item "%s" -> %s' % (request.user, 
-                                                                     item.typeName, 
+        logger.info('"%s" changed fixed_price for item "%s" -> %s' % (request.user,
+                                                                     item.typeName,
                                                                      displayPrice))
         return HttpResponse(displayPrice)
     else:
@@ -161,54 +165,75 @@ def price(request, item_id):
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def updateprodcost(request, item_id):
+def production_cost(request, item_id):
     """
-    Serves URL /industry/catalog/items/<item_id>/updateprodcost/
-    
-    If request is GET: 
+    Serves URL /industry/catalog/items/<item_id>/production_cost/
+
+    If request is GET:
         update the price of the item
         return the price formatted as a string
     """
     try:
-        update_production_costs(int(item_id))
+        error = None
         item = get_object_or_404(CatalogEntry, typeID=int(item_id))
+        try:
+            update_production_cost(item)
+        except Type.NoBlueprintException, err:
+            # this can happen when blueprint requirements are not found in EVE database.
+            # no way to work arround this issue for the moment, we just keep the price to None
+            error = str(err)
+        except OrderCannotBeFulfilled, err:
+            if err.missing_prices:
+                for supply in err.missing_prices:
+                    Supply.objects.get_or_create(pk=supply)
+            error = 'Cannot calculate production cost for "%s": %s' % (item.typeName, err)
+
+        if error:
+            return HttpResponseBadRequest(error)
+        else:
+            return HttpResponse(utils.print_float(item.production_cost))
+
     except ValueError:
         raise Http404()
-    return HttpResponse(utils.print_float(item.production_cost))
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def updatepublicprice(request, item_id):
+def public_price(request, item_id):
     """
-    Serves URL /industry/catalog/items/<item_id>/updatepubprice/
-    
-    If request is GET: 
-        update the public price of the item
-        return the price formatted as a string
+    Serves URL /industry/catalog/items/<item_id>/public_price/
+
+    update the public price of the item
+    return the price formatted as a string
     """
-    #TODO: magic constant 1 for "all"
     try:
-        i_id = int(item_id)
-        buyPrices = evecentral.get_buy_prices([i_id], 1)
-        item = get_object_or_404(CatalogEntry, typeID=i_id)
+        error = None
+        type_id = int(item_id)
+        supply_source_id = Setting.get('industry_default_price_source')
+        buyPrices = evecentral.get_buy_prices([type_id], supply_source_id)
+        item = get_object_or_404(CatalogEntry, typeID=type_id)
         try:
-            if buyPrices[i_id] > 0.0 and item.public_price != buyPrices[i_id]:
-                item.public_price = buyPrices[i_id]
+            if buyPrices[type_id] > 0.0 and item.public_price != buyPrices[type_id]:
+                item.public_price = buyPrices[type_id]
                 logger.info('New price for "%s" -> %s' % (item.typeName,
-                                                      utils.print_float(buyPrices[i_id])))
+                                                      utils.print_float(buyPrices[type_id])))
                 item.save()
+            else:
+                error = "Price didn't change"
         except KeyError:
-            logger.info('Could not find buy-price for item: %s - skipping' % (i_id))
+            error = 'Could not find buy-price for item: "%s"' % item
+        if error:
+            return HttpResponseBadRequest(error)
+        else:
+            return HttpResponse(utils.print_float(item.public_price))
     except ValueError:
         raise Http404()
-    return HttpResponse(utils.print_float(item.public_price))
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def availability(request, item_id):
     """
     Serves URL /industry/catalog/items/<item_id>/availability/
-    
+
     If request is POST:
         update the availability of the item
     return the json formatted availability
@@ -226,17 +251,17 @@ def availability(request, item_id):
             return HttpResponseBadRequest('Missing "available" parameter')
         item.is_available = available
         item.save()
-        logger.info('"%s" changed availability for item "%s" -> %s' % (request.user, 
-                                                                       item.typeName, 
+        logger.info('"%s" changed availability for item "%s" -> %s' % (request.user,
+                                                                       item.typeName,
                                                                        available))
-    return HttpResponse(json.dumps(item.is_available))
+    return HttpResponse(json.dumps(item.is_available), mimetype=JSON)
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def blueprint_add(request, item_id):
+def add_blueprint(request, item_id):
     """
-    Serves URL /industry/catalog/items/<item_id>/addblueprint/
-    
+    Serves URL /industry/catalog/items/<item_id>/add_blueprint/
+
     Create a new blueprint for the given item.
     return the json formatted blueprint fields.
     """
@@ -247,12 +272,12 @@ def blueprint_add(request, item_id):
     bp = item.blueprints.create(typeID=item.blueprintTypeID)
     logger.info('"%s" created "%s" #%s' % (request.user, bp.typeName, bp.id))
     bp_dict = {
-        'id': bp.id, 
-        'typeID': bp.typeID, 
-        'me': bp.me, 
-        'pe': bp.pe, 
-        'copy': bp.copy, 
-        'runs': bp.runs, 
+        'id': bp.id,
+        'typeID': bp.typeID,
+        'me': bp.me,
+        'pe': bp.pe,
+        'copy': bp.copy,
+        'runs': bp.runs,
         'url': bp.url,
     }
-    return HttpResponse(json.dumps(bp_dict))
+    return HttpResponse(json.dumps(bp_dict), mimetype=JSON)
