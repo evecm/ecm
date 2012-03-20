@@ -328,7 +328,8 @@ class Order(models.Model):
         self.save()
         return missingPrices
 
-
+    def get_bill_of_materials(self):
+        return self.get_aggregated_jobs(Job.SUPPLY)
 
     def get_aggregated_jobs(self, activity=None):
         """

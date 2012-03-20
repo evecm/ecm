@@ -46,45 +46,50 @@ def print_date(date):
 
 #------------------------------------------------------------------------------
 def print_integer(number, thousand_separator=',', force_sign=False):
-    if type(number) not in [type(0), type(0L)]:
+    try:
+        number = int(round(number))
+        negative = number < 0
+        number = abs(number)
+
+        result = ''
+        while number >= 1000:
+            number, r = divmod(number, 1000)
+            result = '%s%03d%s' % (thousand_separator, r, result)
+
+        if negative:
+            return '- %d%s' % (number, result)
+        else:
+            return '%s%d%s' % ('+ ' if force_sign else '', number, result)
+    except:
         return number
-
-    negative = number < 0
-    number = abs(number)
-
-    result = ''
-    while number >= 1000:
-        number, r = divmod(number, 1000)
-        result = '%s%03d%s' % (thousand_separator, r, result)
-
-    if negative:
-        return '- %d%s' % (number, result)
-    else:
-        return '%s%d%s' % ('+ ' if force_sign else '', number, result)
 
 #------------------------------------------------------------------------------
 def print_delta(delta):
-    string = ''
+    try:
+        string = ''
 
-    hours, remainder = divmod(delta.seconds, 3600)
-    minutes = divmod(remainder, 60)[0]
+        hours, remainder = divmod(delta.seconds, 3600)
+        minutes = divmod(remainder, 60)[0]
 
-    if delta.days:
-        string += '%d day' % delta.days
-        if delta.days > 1:
-            string += 's'
-        string += ' '
-    string += '%dh %dm' % (hours, minutes)
+        if delta.days:
+            string += '%d day' % delta.days
+            if delta.days > 1:
+                string += 's'
+            string += ' '
+        string += '%dh %dm' % (hours, minutes)
 
-    return string
+        return string
+    except:
+        return delta
 
 #------------------------------------------------------------------------------
 def print_float(number, thousand_separator=',', decimal_separator='.', force_sign=False):
-    if type(number) != type(0.0):
+    try:
+        number = float(number)
+        decimal_part = ('%.2f' % abs(number - int(number)))[2:]
+        return print_integer(int(number), thousand_separator, force_sign) + decimal_separator + decimal_part
+    except:
         return number
-    decimal_part = ('%.2f' % abs(number - int(number)))[2:]
-    return print_integer(int(number), thousand_separator, force_sign) + decimal_separator + decimal_part
-
 #------------------------------------------------------------------------------
 def print_duration_short(hours):
     if hours / 24 > 0:
@@ -159,7 +164,7 @@ def verbose_name(class_or_function, cap_first=True):
         if cap_first:
             return name[0].upper() + name[1:]
         else:
-            return name 
+            return name
     except AttributeError:
         return str(class_or_function)
 

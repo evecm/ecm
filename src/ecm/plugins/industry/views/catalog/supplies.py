@@ -126,7 +126,7 @@ def supplies_data(request):
             i.typeID,
         ])
 
-    return datatable_ajax_data(data=items, echo=params.sEcho, 
+    return datatable_ajax_data(data=items, echo=params.sEcho,
                                total=total_items, filtered=filtered_items)
 
 #------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ def details_data(request, supply_id):
         ])
 
     return datatable_ajax_data(data=histories, echo=params.sEcho)
-    
+
 #------------------------------------------------------------------------------
 @check_user_access()
 def update_price(request, supply_id):

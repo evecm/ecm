@@ -53,10 +53,11 @@
 <hr>
 
 <div class="row-fluid">
-  <div class="span4">
+  <div class="span3">
     <h2>Order details</h2>
     <dl class="table">
       <dt>Total Quote</dt><dd><h4>{%if order.quote == 0.0%}N/A{%else%}{{order.quote|ecm_price}} ISK{%endif%}</h4></dd>
+      <dt>Production Cost</dt><dd>{%if order.cost == 0.0%}N/A{%else%}{{order.cost|ecm_price}} ISK{%endif%}</dd>
       <dt>Creation Date</dt><dd>{{order.creation_date|ecm_datetime}}</dd>
       <dt>Last Modified</dt><dd>{{order.last_modified|ecm_datetime}}</dd>
       <dt>Manufactured by</dt><dd>{{order.manufacturer_permalink|safe}}</dd>
@@ -64,28 +65,57 @@
       <dt>Delivery Date</dt><dd>{{order.delivery_date|ecm_datetime}}</dd>
     </dl>
   </div>
-  <div class="span8">
-    <h2>Ordered items</h2>
-    <table class="table table-striped table-bordered table-condensed table-centered">
-      <thead>
-        <tr>
-          <th>Icon</th>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>{% for row in order.rows.all %}
-        <tr>
-          <td><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
-          <td><strong>{{row.catalog_entry.typeName}}</strong></td>
-          <td>{{row.quantity|ecm_quantity}}</td>
-          <td {%if row.quote %}class="right"{%endif%}>{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>
-        </tr>{% empty %}<tr id="empty">
-          <td colspan="4" class="order_cart_empty" >No items in order.</td>
-        </tr>{% endfor %}
-      </tbody>
-    </table>
+  <div class="span9 tabbable">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#items-tab" data-toggle="tab">Ordered Items</a></li>
+      <li><a href="#materials-tab" data-toggle="tab">Bill Of Materials</a></li>
+      <li><a href="#jobs-tab" data-toggle="tab">Jobs Breakdown</a></li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane active" id="items-tab">
+        <table class="table table-striped table-bordered table-condensed table-centered">
+          <thead>
+            <tr>
+              <th>Icon</th>
+              <th>Item</th>
+              <th>Quantity</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>{% for row in order.rows.all %}
+            <tr>
+              <td><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
+              <td><strong>{{row.catalog_entry.typeName}}</strong></td>
+              <td>{{row.quantity|ecm_quantity}}</td>
+              <td {%if row.quote %}class="right"{%endif%}>{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>
+            </tr>{% empty %}<tr id="empty">
+              <td colspan="4" class="order_cart_empty" >No items in order.</td>
+            </tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane" id="materials-tab">
+        <table class="table table-striped table-bordered table-condensed span4">
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th class="right">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>{% for supply in order.get_bill_of_materials %}
+            <tr>
+              <td><a class="catalog-supply" href="/industry/catalog/supplies/{{supply.item_id}}/">{{supply.item.typeName}}</a></td>
+              <td class="right">{{supply.runs|ecm_quantity}}</td>
+            </tr>{% empty %}<tr>
+              <td colspan="2">No supplies.</td>
+            </tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane" id="jobs-tab">
+        <div id="jobs-tree"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -119,6 +149,10 @@
     </tr>{% endfor %}
   </tbody>
 </table>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jstree.js"></script>
 {% endblock %}
 
 {% block post_javascripts %}
@@ -157,6 +191,51 @@ $(document).ready(function () {
         } else {
             $('#reject-form form button:eq(0)').attr('disabled', 'disabled');
         }
+    });
+
+    $('#jobs-tree').jstree({
+        plugins: [ 'themes' , 'json_data' , 'ui',  'types' ],
+        json_data: { data: {{jobs_tree|safe}} },
+        core: {
+            animation : 150,
+            html_titles : true
+        },
+        ui: {
+            select_limit : 1
+        },
+        themes: {
+            url : '{{ STATIC_URL }}assets/css/jstree.css',
+            dots : false
+        },
+        types: {
+            valid_children: [ 'manufacturing', 'invention', 'supply' ],
+            types: {
+                manufacturing: {
+                    icon: {
+                        image: '{{ STATIC_URL }}industry/img/manufacturing.png'
+                    },
+                    valid_children: [ 'manufacturing', 'invention', 'supply' ],
+                    open_node: true,
+                    close_node: true
+                },
+                invention: {
+                    icon: {
+                        image: '{{ STATIC_URL }}industry/img/invention.png'
+                    },
+                    valid_children: [ 'manufacturing', 'supply' ],
+                    open_node: true,
+                    close_node: true
+                },
+                supply: {
+                    icon: {
+                        image: '{{ STATIC_URL }}industry/img/supply.png'
+                    },
+                    valid_children: 'none',
+                    open_node: true,
+                    close_node: true
+                },
+            }
+        },
     });
 });
 </script>

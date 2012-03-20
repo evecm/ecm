@@ -62,7 +62,7 @@ def ecm_duration_long(value):
 @register.filter(name='ecm_qty_diff')
 def qty_diff_format(value):
     try:
-        return unicode(utils.print_integer(int(value), force_sign=True))
+        return unicode(utils.print_integer(value, force_sign=True))
     except:
         return unicode(value)
 
@@ -70,7 +70,7 @@ def qty_diff_format(value):
 @register.filter(name='ecm_quantity')
 def qty_format(value):
     try:
-        return unicode(utils.print_float(int(value)))
+        return unicode(utils.print_integer(value))
     except:
         return unicode(value)
 
@@ -79,7 +79,7 @@ def qty_format(value):
 @register.filter(name='ecm_amount')
 def amount_format(value):
     try:
-        return unicode(utils.print_float(float(value), force_sign=True))
+        return unicode(utils.print_float(value, force_sign=True))
     except:
         return unicode(value)
 
@@ -87,6 +87,6 @@ def amount_format(value):
 @register.filter(name='ecm_price')
 def price_format(value):
     try:
-        return unicode(utils.print_float(float(value)))
+        return unicode(utils.print_float(value))
     except:
         return unicode(value)

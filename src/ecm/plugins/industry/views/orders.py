@@ -18,6 +18,11 @@
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
 
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
 import logging
 
 from django.http import Http404, HttpResponseBadRequest
@@ -166,12 +171,34 @@ def _order_details(request, order, error=None):
     logs = order.logs.all().order_by('-date')
     valid_transitions = [(trans.__name__, utils.verbose_name(trans))
                          for trans in order.get_valid_transitions(customer=False)]
+
+    # we get the 1st jobs associated to this order's rows
+    jobs = order.jobs.select_related(depth=2).exclude(row=None)
+
     data = {
         'order': order,
         'logs': logs,
         'valid_transitions': valid_transitions,
         'states': Order.STATES.items(),
         'error': error,
+        'jobs_tree': json.dumps(_build_jobs_tree(jobs)),
     }
 
     return render_to_response('order_details.html', data, Ctx(request))
+
+#------------------------------------------------------------------------------
+JOB_SPAN = '<span class="industry-job" title="%s"><strong>%s</strong> - x <i>%s</i></span>'
+def _build_jobs_tree(jobs):
+    jobs_tree = []
+    for job in jobs:
+        json_job = {
+            'data': JOB_SPAN % (job.activity_text,
+                                job.item.typeName,
+                                utils.print_integer(job.runs)),
+            'attr': {'rel': job.activity_text.lower()},
+        }
+        if job.children_jobs.all():
+            json_job['children'] = _build_jobs_tree(job.children_jobs.all())
+        jobs_tree.append(json_job)
+    return jobs_tree
+

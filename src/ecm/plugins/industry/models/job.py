@@ -195,5 +195,9 @@ class Job(models.Model):
     def item(self):
         return Type.objects.get(pk=self.item_id)
 
+    @property
+    def activity_text(self):
+        return Job.ACTIVITIES[self.activity]
+
     def __unicode__(self):
-        return u"[%s] %s x%d" % (Job.ACTIVITIES[self.activity], self.item.typeName, int(round(self.runs)))
+        return u"[%s] %s x%d" % (self.activity_text, self.item.typeName, int(round(self.runs)))
