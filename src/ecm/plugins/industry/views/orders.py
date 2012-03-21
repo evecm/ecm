@@ -173,7 +173,7 @@ def _order_details(request, order, error=None):
                          for trans in order.get_valid_transitions(customer=False)]
 
     # we get the 1st jobs associated to this order's rows
-    jobs = order.jobs.select_related(depth=2).exclude(row=None)
+    jobs = order.jobs.select_related(depth=2).filter(parent_job__isnull=True)
 
     data = {
         'order': order,
