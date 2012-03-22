@@ -25,6 +25,7 @@ except ImportError:
     import django.utils.simplejson as json
 import logging
 
+from django.db import transaction
 from django.http import Http404, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 from django.contrib.auth.decorators import login_required
@@ -108,12 +109,10 @@ def details(request, order_id):
     except ValueError:
         raise Http404()
 
-    if order.originator != request.user:
-        return forbidden(request)
-
     return _order_details(request, order)
 
 #------------------------------------------------------------------------------
+@transaction.commit_on_success
 @check_user_access()
 def change_state(request, order_id, transition):
     """
@@ -121,9 +120,6 @@ def change_state(request, order_id, transition):
     """
     try:
         order = get_object_or_404(Order, id=int(order_id))
-
-        if request.user != order.originator:
-            return forbidden(request)
 
         order.check_can_pass_transition(transition)
 
