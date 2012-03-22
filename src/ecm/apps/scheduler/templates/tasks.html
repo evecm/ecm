@@ -15,18 +15,19 @@
 <table class="table table-bordered table-condensed" id="tasks_table">
   <thead>
     <tr>
-      <th>Task description</th>
-      <th>Next auto execution</th>
+      <th>Task Description</th>
+      <th>Next Auto Execution</th>
       <th>Frequency</th>
       <th>Last Execution</th>
       <th>Last Result</th>
-      <th>Is running</th>
+      <th>Is Running</th>
+      <th>Is Scheduled</th>
       <th>Force Execution</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="7" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
     </tr>
   </tbody>
 </table>
@@ -36,11 +37,13 @@
 {% block post_javascripts %}
 <script type="text/javascript">
 LOADING_ICON = '<img src="/static/ecm/img/throbber.gif" alt="Running"/>';
+SCHEDULED_ICON = '<img src="/static/ecm/img/clock.png" alt="Scheduled"/>';
 TABLE = null;
 $(document).ready(function() {
     TABLE = $('#tasks_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         iDisplayLength: 25,
         sAjaxSource: "/scheduler/tasks/data/",
+        bProcessing: false,
         sDom: 'rt',
           aoColumns: [
               { bSearchable: false, bSortable: false},
@@ -49,40 +52,54 @@ $(document).ready(function() {
               { bSearchable: false, bSortable: false},
               { sClass: 'center', bSearchable: false, bSortable: false},
               { sClass: 'center', bSearchable: false, bSortable: false},
+              { sClass: 'center', bSearchable: false, bSortable: false},
               { sClass: 'center', bSearchable: false, bSortable: false}
           ],
           fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-              var lauch_btn = $('td:eq(6) a', nRow);
+              var lauch_btn = $('td:eq(7) a', nRow);
               lauch_btn.addClass('btn btn-mini btn-info');
               lauch_btn.attr('data-loading-text', 'Running...')
 
-              if (aData[4]) {
+              var success = aData[4];
+              var running = aData[5];
+              var scheduled = aData[6];
+
+              if (success) {
                   $('td:eq(4)', nRow).html('success');
                   $('td:eq(4)', nRow).css('color', 'green');
               } else {
                   $('td:eq(4)', nRow).html('<strong>ERROR</strong>');
                   $('td:eq(4)', nRow).css('color', 'red');
               }
-              
-              if (aData[5]) {
+
+              if (running) {
                   $('td:eq(5)', nRow).html(LOADING_ICON);
-                  lauch_btn.button('loading');
               } else {
                   $('td:eq(5)', nRow).html('-');
               }
-              
+
+              if (scheduled) {
+                  $('td:eq(6)', nRow).html(SCHEDULED_ICON);
+              } else {
+                  $('td:eq(6)', nRow).html('-');
+              }
+
+              if (running || scheduled) {
+                  lauch_btn.button('loading');
+              }
+
               lauch_btn.on('click', function (event) {
                   event.preventDefault();
                   $.get(this.href)
                    .success(function () {
                        lauch_btn.button('loading');
-                       $('td:eq(5)', nRow).html(LOADING_ICON);
+                       $('td:eq(6)', nRow).html(SCHEDULED_ICON);
                    });
               });
               return nRow;
           }
     }));
-    
+
     setTimeout("refreshTable();", 5000);
 });
 function refreshTable() {

@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.db import transaction
 
 __date__ = "2011 10 26"
 __author__ = "diabeteman"
@@ -33,12 +34,13 @@ from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import basic_auth_required, check_user_access
 from ecm.apps.common.models import Setting
 from ecm.apps.scheduler.models import ScheduledTask
-from ecm.apps.scheduler.threads import TaskThread
+from ecm.apps.scheduler.main import Scheduler
 
 
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
+@transaction.commit_on_success
 @basic_auth_required(username=Setting.get('common_cron_username'))
 def trigger_scheduler(request):
     now = datetime.now()
@@ -46,7 +48,8 @@ def trigger_scheduler(request):
                                                     is_running=False,
                                                     next_execution__lt=now).order_by("-priority")
     if tasks_to_execute:
-        TaskThread(tasks=tasks_to_execute).start()
+        tasks_to_execute.update(is_scheduled=True)
+        Scheduler.instance().schedule(*tasks_to_execute)
         return HttpResponse(status=http.ACCEPTED)
     else:
         return HttpResponse(status=http.NOT_MODIFIED)
@@ -81,14 +84,16 @@ def task_list_data(request):
             utils.print_time_min(task.last_execution),
             task.is_last_exec_success,
             task.is_running,
+            task.is_scheduled,
             task.as_html()
         ])
 
     return datatable_ajax_data(tasks, params.sEcho)
-    
+
 
 
 #------------------------------------------------------------------------------
+@transaction.commit_on_success
 @check_user_access()
 def launch_task(request, task_id):
     try:
@@ -105,11 +110,13 @@ def launch_task(request, task_id):
     else:
         code = http.ACCEPTED
         message = ''
-        TaskThread(tasks=[task]).start()
+        task.is_scheduled = True
+        task.save()
+        Scheduler.instance().schedule(task)
 
     if message:
         LOG.warning(message)
-    
+
     next_page = request.GET.get("next", None)
     if next_page is not None:
         # we let the task the time to start before redirecting

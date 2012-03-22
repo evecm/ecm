@@ -50,6 +50,7 @@ class ScheduledTask(models.Model):
     frequency = models.IntegerField()
     frequency_units = models.IntegerField(default=3600, choices=FREQUENCY_UNIT_CHOICES)
     is_active = models.BooleanField(default=True)
+    is_scheduled = models.BooleanField(default=False)
     is_running = models.BooleanField(default=False)
     is_one_shot = models.BooleanField(default=False)
     is_last_exec_success = models.BooleanField(default=False)
@@ -120,6 +121,7 @@ class ScheduledTask(models.Model):
             delta = self.frequency * self.frequency_units
             self.next_execution = datetime.now() + timedelta(seconds=delta)
             self.is_running = False
+            self.is_scheduled = False
             self.save()
 
 #------------------------------------------------------------------------------
