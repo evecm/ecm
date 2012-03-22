@@ -18,16 +18,26 @@
 __date__ = '2010-01-24'
 __author__ = 'diabeteman'
 
-import os.path
+import os
+from ConfigParser import SafeConfigParser
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
-def resolvePath(relativePath):
-    return os.path.abspath(os.path.join(ROOT, relativePath)).replace('\\', '/')
+def rel_path(pth):
+    return os.path.abspath(os.path.join(ROOT, pth)).replace('\\', '/')
 
 ###############################################################################
 ################
 # ECM SETTINGS #
 ################
+
+CONFIG_FILES = [
+    rel_path('../ecm.ini'),
+    '/etc/default/ecm.ini',
+    '/etc/conf.d/ecm.ini',
+    '/etc/sysconfig/ecm.ini',
+]
+
+SCHEDULER_MAX_CONCURRENT_TASKS = 1
 
 ACCOUNT_ACTIVATION_DAYS = 2
 
@@ -38,22 +48,33 @@ PASSWD_FORCE_LETTERS = False
 
 BASIC_AUTH_ONLY_ON_LOCALHOST = False
 
+config = SafeConfigParser()
+if not config.read(CONFIG_FILES):
+    raise RuntimeError('Could not find ECM configuration. Looked in %s.' % CONFIG_FILES)
+
 ###############################################################################
 ###################
 # DJANGO SETTINGS #
 ###################
 
-DEBUG = True # turn this to False when on production !!!
+DEBUG = config.getboolean('misc', 'DEBUG')
+
+def get_db_config(prefix):
+    engine = config.get('database', prefix + '_ENGINE')
+    if engine == 'django.db.backends.sqlite3':
+        folder = config.get('database', 'SQLITE_DB_DIR') or rel_path('../db')
+        return {'ENGINE': engine, 'NAME': os.path.join(folder, prefix + '.db')}
+    else:
+        return {
+            'ENGINE': config.get('database', prefix + '_ENGINE'),
+            'NAME': config.get('database', prefix + '_NAME'),
+            'USER': config.get('database', prefix + '_USER'),
+            'PASSWORD': config.get('database', prefix + '_PASSWORD'),
+        }
 
 DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': resolvePath('../db/ECM.db')
-    },
-    'eve': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': resolvePath('../db/EVE.db')
-    }
+    'default': get_db_config('ECM'),
+    'eve': get_db_config('EVE'),
 }
 
 DATABASE_ROUTERS = (
@@ -66,20 +87,19 @@ SITE_ID = 1
 # E-MAIL #
 ##########
 # to enable email error reporting, add tuples in there, ('name', 'email@adddress.com')
-ADMINS = (
-    #('name', 'email@adddress.com'),
-)
+ADMINS = [ ('', email) for email in config.get('email', 'ADMIN_EMAIL').split() ]
+
 # for development, you can use python dummy smtp server, run this command:
 # >>> python -m smtpd -n -c DebuggingServer localhost:25
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 25
-EMAIL_USE_TLS = False
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST = config.get('email', 'HOST')
+EMAIL_PORT = config.getint('email', 'PORT')
+EMAIL_USE_TLS = config.getboolean('email', 'USE_TLS')
+EMAIL_HOST_USER = config.get('email', 'HOST_USER')
+EMAIL_HOST_PASSWORD = config.get('email', 'HOST_PASSWORD')
 # put a real email address here, if not, emails sent by the server
 # will be discarded by the relay servers
-DEFAULT_FROM_EMAIL = ''
-SERVER_EMAIL = ''
+DEFAULT_FROM_EMAIL = config.get('email', 'DEFAULT_FROM_EMAIL')
+SERVER_EMAIL = config.get('email', 'SERVER_EMAIL')
 
 
 ##################
@@ -98,14 +118,14 @@ APPEND_SLASH = True
 ################
 
 # target dir for the 'collectstatic' command
-STATIC_ROOT = resolvePath('../static/')
+STATIC_ROOT = config.get('misc', 'STATIC_FILES_DIR') or rel_path('../static/')
 # value of the {{ STATIC_URL }} variable in templates
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 STATICFILES_DIRS = (
     # aside from looking in each django app, the 'collectstatic' command
     # will look in these directories for static files
-    resolvePath('static'),
+    rel_path('static'),
 )
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -136,7 +156,7 @@ TEMPLATE_LOADERS = (
 TEMPLATE_DIRS = (
     # aside from looking in each django app, the template loaders
     # will look in these directories
-    resolvePath('templates/'),
+    rel_path('templates/'),
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -210,15 +230,15 @@ INSTALLED_APPS += ECM_PLUGIN_APPS
 ###########
 # LOGGING #
 ###########
-
-if not os.path.exists(resolvePath('../logs')):
-    os.makedirs(resolvePath('../logs'))
+LOG_FILES_DIR = config.get('logging', 'LOG_FILES_DIR') or rel_path('../logs')
+if not os.path.exists(LOG_FILES_DIR):
+    os.makedirs(LOG_FILES_DIR)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {
         'ecm_formatter': {
-            'format': '%(asctime)s [%(levelname)-5s] %(name)s - %(message)s'
+            'format': '%(asctime)s [%(levelname)-5s] %(name)s - %(message)s',
         },
     },
     'handlers': {
@@ -226,7 +246,7 @@ LOGGING = {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'INFO',
-            'filename': resolvePath('../logs/ecm.log'),
+            'filename': os.path.join(LOG_FILES_DIR, 'ecm.log'),
             #'delay': True, # wait until first log record is emitted to open file
             'when': 'midnight', # roll over each day at midnight
             'backupCount': 15, # keep 15 backup files
@@ -244,7 +264,7 @@ LOGGING = {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
             'level': 'ERROR',
-            'filename': resolvePath('../logs/error.log'),
+            'filename': os.path.join(LOG_FILES_DIR, 'error.log'),
             #'delay': True,
             'when': 'midnight',
             'backupCount': 15,
