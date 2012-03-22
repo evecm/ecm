@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db import transaction
 
 __date__ = "2011 10 26"
 __author__ = "diabeteman"
@@ -24,6 +23,7 @@ import httplib as http
 from datetime import datetime
 import logging
 
+from django.db import transaction
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template.context import RequestContext as Ctx
 from django.http import HttpResponse, HttpResponseBadRequest, Http404
@@ -46,6 +46,7 @@ def trigger_scheduler(request):
     now = datetime.now()
     tasks_to_execute = ScheduledTask.objects.filter(is_active=True,
                                                     is_running=False,
+                                                    is_scheduled=False,
                                                     next_execution__lt=now).order_by("-priority")
     if tasks_to_execute:
         tasks_to_execute.update(is_scheduled=True)
@@ -101,7 +102,7 @@ def launch_task(request, task_id):
     except ValueError:
         raise Http404()
 
-    if task.is_running:
+    if task.is_running or task.is_scheduled:
         code = http.NOT_MODIFIED
         message = 'Task "%s" is already running.' % task.function
     elif not task.is_active:

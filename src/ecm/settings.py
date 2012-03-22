@@ -31,7 +31,7 @@ def rel_path(pth):
 ################
 
 CONFIG_FILES = [
-    rel_path('../ecm.ini'),
+    rel_path('settings.ini'),
     '/etc/default/ecm.ini',
     '/etc/conf.d/ecm.ini',
     '/etc/sysconfig/ecm.ini',
@@ -46,7 +46,7 @@ PASSWD_FORCE_SPECIAL_CHARS = False
 PASSWD_FORCE_DIGITS = False
 PASSWD_FORCE_LETTERS = False
 
-BASIC_AUTH_ONLY_ON_LOCALHOST = False
+BASIC_AUTH_REQUIRED_ON_LOCALHOST = False
 
 config = SafeConfigParser()
 if not config.read(CONFIG_FILES):
