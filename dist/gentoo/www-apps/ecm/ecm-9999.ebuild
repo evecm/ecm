@@ -21,13 +21,12 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
 
-DEPEND="${RDEPEND}
-                dev-python/django
+DEPEND="		${RDEPEND}
+                dev-python/distutils"
+                
+RDEPEND="       dev-python/django
                 dev-python/imaging
                 dev-python/south
-                dev-python/distutils"
-RDEPEND="
-                dev-python/django
-                dev-python/imaging
-                dev-python/south"
+                dev-python/django-simple-captcha
+                dev-python/django-compressor"
 
