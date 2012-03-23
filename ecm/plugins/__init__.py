@@ -16,6 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 
+
 __date__ = "2011 10 16"
 __author__ = "diabeteman"
 
@@ -26,8 +27,10 @@ from distutils.version import LooseVersion
 import ecm
 import ecm.apps
 from ecm.apps import ECMApp
-from ecm.settings import ECM_PLUGIN_APPS
+from django.conf import settings
 
+
+settings
 ECM_VERSION = LooseVersion(ecm.VERSION)
 
 DICT = {}
@@ -37,7 +40,7 @@ LIST = []
 LOGGER = logging.getLogger(__name__)
 
 # detection of all 'plugins' apps
-for app in ECM_PLUGIN_APPS:
+for app in settings.ECM_PLUGIN_APPS:
     DICT[app] = ECMApp(package=app)
     LIST.append(DICT[app])
 

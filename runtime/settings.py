@@ -25,7 +25,7 @@ from ConfigParser import SafeConfigParser
 ROOT = os.path.abspath(os.path.dirname(__file__))
 ECM_PACKAGE = os.path.abspath(os.path.dirname(ecm.__file__))
 def rel_path(pth, root=ROOT):
-    return os.path.abspath(os.path.join(ROOT, pth)).replace('\\', '/')
+    return os.path.abspath(os.path.join(root, pth)).replace('\\', '/')
 
 ###############################################################################
 ################
@@ -33,8 +33,8 @@ def rel_path(pth, root=ROOT):
 ################
 
 CONFIG_FILES = [
-    rel_path('settings.ini', root=ECM_PACKAGE)
-    rel_path('settings.ini'),
+    rel_path('settings.ini', root=ECM_PACKAGE), # default settings
+    rel_path('settings.ini'), # local settings
 ]
 
 SCHEDULER_MAX_CONCURRENT_TASKS = 1
@@ -125,7 +125,7 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 STATICFILES_DIRS = (
     # aside from looking in each django app, the 'collectstatic' command
     # will look in these directories for static files
-    rel_path('static'),
+    rel_path('static', root=ECM_PACKAGE),
 )
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -156,7 +156,7 @@ TEMPLATE_LOADERS = (
 TEMPLATE_DIRS = (
     # aside from looking in each django app, the template loaders
     # will look in these directories
-    rel_path('templates/'),
+    rel_path('templates/', root=ECM_PACKAGE),
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',

@@ -15,13 +15,14 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+
 __date__ = "2011 10 16"
 __author__ = "diabeteman"
 
 import logging
 
 import ecm
-from ecm.settings import ECM_CORE_APPS
+from django.conf import settings
 
 DICT = {}
 LIST = []
@@ -101,6 +102,6 @@ class ECMApp(object):
 
 #------------------------------------------------------------------------------
 # detection of all 'core' apps
-for app in ECM_CORE_APPS:
+for app in settings.ECM_CORE_APPS:
     DICT[app] = ECMApp(package=app)
     LIST.append(DICT[app])

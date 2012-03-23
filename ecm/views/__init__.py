@@ -30,7 +30,6 @@ from django.utils.text import truncate_words
 from django.contrib.auth.models import User
 
 from ecm import apps, plugins
-from ecm import settings
 from ecm.apps.hr.models import Member
 from ecm.core import utils, JSON
 from ecm.apps.common.models import UpdateDate, UrlPermission, Setting
