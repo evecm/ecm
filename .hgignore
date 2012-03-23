@@ -1,18 +1,15 @@
 syntax: glob
 *.pyc
 *.pyo
-src/db/ECM*.db
-src/db/*journal
-src/logs/*log*
 dist
 package
 *.old
-src/db/EVE*.db
-src/scripts/*.cmd
 install.log
 .metadata
 .settings
 *.orig
-src/static
 build
 *.swp
+runtime/db
+runtime/static
+runtime/logs

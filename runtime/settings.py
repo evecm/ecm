@@ -19,10 +19,12 @@ __date__ = '2010-01-24'
 __author__ = 'diabeteman'
 
 import os
+import ecm
 from ConfigParser import SafeConfigParser
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
-def rel_path(pth):
+ECM_PACKAGE = os.path.abspath(os.path.dirname(ecm.__file__))
+def rel_path(pth, root=ROOT):
     return os.path.abspath(os.path.join(ROOT, pth)).replace('\\', '/')
 
 ###############################################################################
@@ -31,10 +33,8 @@ def rel_path(pth):
 ################
 
 CONFIG_FILES = [
+    rel_path('settings.ini', root=ECM_PACKAGE)
     rel_path('settings.ini'),
-    '/etc/default/ecm.ini',
-    '/etc/conf.d/ecm.ini',
-    '/etc/sysconfig/ecm.ini',
 ]
 
 SCHEDULER_MAX_CONCURRENT_TASKS = 1
@@ -62,7 +62,7 @@ DEBUG = config.getboolean('misc', 'DEBUG')
 def get_db_config(prefix):
     engine = config.get('database', prefix + '_ENGINE')
     if engine == 'django.db.backends.sqlite3':
-        folder = config.get('database', 'SQLITE_DB_DIR') or rel_path('../db')
+        folder = config.get('database', 'SQLITE_DB_DIR') or rel_path('db/')
         return {'ENGINE': engine, 'NAME': os.path.join(folder, prefix + '.db')}
     else:
         return {
@@ -118,7 +118,7 @@ APPEND_SLASH = True
 ################
 
 # target dir for the 'collectstatic' command
-STATIC_ROOT = config.get('misc', 'STATIC_FILES_DIR') or rel_path('../static/')
+STATIC_ROOT = config.get('misc', 'STATIC_FILES_DIR') or rel_path('static/')
 # value of the {{ STATIC_URL }} variable in templates
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
@@ -230,7 +230,7 @@ INSTALLED_APPS += ECM_PLUGIN_APPS
 ###########
 # LOGGING #
 ###########
-LOG_FILES_DIR = config.get('logging', 'LOG_FILES_DIR') or rel_path('../logs')
+LOG_FILES_DIR = config.get('logging', 'LOG_FILES_DIR') or rel_path('logs/')
 if not os.path.exists(LOG_FILES_DIR):
     os.makedirs(LOG_FILES_DIR)
 LOGGING = {
