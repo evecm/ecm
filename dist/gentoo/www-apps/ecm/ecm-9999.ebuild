@@ -9,7 +9,7 @@ wide task in the MMO EVE Online"
 HOMEPAGE="http://code.google.com/p/eve-corp-management/"
 EHG_REPO_URI="https://code.google.com/p/eve-corp-management/"
 
-PYTHON_DEPEND="2"
+PYTHON_DEPEND="2:2.5"
 SUPPORT_PYTHON_ABIS="1"
 RESTRICT_PYTHON_ABIS="3.*"
 
