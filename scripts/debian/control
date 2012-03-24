@@ -1,0 +1,15 @@
+source: ecm
+Section: python
+Priority: optional
+Maintainer: Edouard Chamillard
+Build-Depends: 
+Standards-Version: 3.9.1.0
+
+Package: ecm
+Architecture: all
+Homepage: http://code.google.com/p/eve-corp-management/
+XS-Python-Version: ${python:Versions}
+XB-Python-Version: ${python:Versions}
+Depends: ${misc:Depends}, ${python:Depends}
+Description: web application to manage Eve Online corporations
+ long description of ecm goes here
