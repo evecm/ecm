@@ -1,0 +1,10 @@
+include README
+include AUTHORS
+include LICENSE
+include MANIFEST.in
+recursive-include extras *
+recursive-exclude scripts/runtime/db *
+recursive-exclude scripts/runtime/logs *
+recursive-exclude scripts/runtime/static *
+recursive-include scripts/debian *
+recursive-include scripts/gentoo *

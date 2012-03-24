@@ -16,38 +16,58 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-
+import ecm
 from setuptools import setup, find_packages
-setup( 
-    name='Eve Corporation Management',
-    version='2.0.0-HG',
-    description='ECM is a web application dedicated to managing corporation in the MMO EVE Online',
-    author='Robin Jarry',
-    author_email='diabeteman@gmail.com',
-    url='http://code.google.com/p/eve-corp-management/',
-    download_url='http://code.google.com/p/eve-corp-management/downloads/list',
-    license='GPLv3',
-    packages=find_packages(),
-    install_requires=['setuptools',
-                      'PIL',
-                      'south',
-                      'django-simple-captcha',
-                      'django_compressor'],
-    
+from distutils.command.install import INSTALL_SCHEMES
 
-    package_data= {
-                'ecm': ['static/ecm/css/*.css',
-                        'static/ecm/img/*.*',
-                        'static/ecm/img/datatables/*.png',
-                        'static/ecm/img/jquery_ui/*.png',
-                        'static/ecm/js/*.js',
-                        'static/ecm/js/lib/*.*']
-                   
-                   },
-            
+# to make sure all package data is installed next to the python modules
+# see https://groups.google.com/forum/?fromgroups#!topic/comp.lang.python/Nex7L-026uw
+for scheme in INSTALL_SCHEMES.values():
+    scheme['data'] = scheme['purelib']
+
+dependencies = (
+    'setuptools',
+    'django',
+    'django_simple_captcha',
+    'django_compressor',
+    'south',
+    'PIL',
+)
+
+setup(
+    # GENERAL INFO
+    name = 'ecm',
+    version = ecm.VERSION,
+    description = 'EVE Corp Management is a management and decision-making helper-application for EVE Online.',
+    long_description = open('README').read(),
+    author = 'Robin Jarry',
+    author_email = 'diab@diabeteman.com',
+    url = 'http://code.google.com/p/eve-corp-management/',
+    download_url = 'http://code.google.com/p/eve-corp-management/downloads/list',
+    license = 'GPLv3',
+    keywords = ('eve-online', 'django', 'corporation', 'management'),
+    platforms = 'any',
+    classifiers = (
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.5',
+        'Topic :: Games/Entertainment',
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+    ),
+
+    # DEPENDENCIES
+    requires = dependencies,
+    install_requires = dependencies,
+
+    # CONTENTS
+    packages = find_packages(),
+    include_package_data = True,
     zip_safe = False,
     entry_points = {
-                'console_scripts': ['ecm-admin = ecm.admin.main:run']
-                 }
-
-    )
+        'console_scripts': ('ecm-admin = ecm.admin.cli:run'),
+    },
+)

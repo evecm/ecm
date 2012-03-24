@@ -4,12 +4,12 @@ syntax: glob
 dist
 package
 *.old
-install.log
+*.log
 .metadata
-.settings
 *.orig
 build
 *.swp
-runtime/db
-runtime/static
-runtime/logs
+scripts/runtime/db
+scripts/runtime/static
+scripts/runtime/logs
+*.egg-info

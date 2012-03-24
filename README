@@ -4,28 +4,26 @@
 ECM: EVE Corporation Management
 ===============================
 
-ECM is a management and decision making helper application for the game EVE Online.
+ECM is a management and decision-making helper-application for the game EVE Online.
 
-Here is a non exhaustive list of its features: 
+Here is a non exhaustive list of its features:
 
     * Human resources management
-        - Monitoring of the members of the corporation (arrivals & departures, 
+        - Monitoring of the members of the corporation (arrivals & departures,
           roles/titles changes)
         - Association of the members to players In Real Life
-        - Calculation of the potential risk of each member (according to his/her 
+        - Calculation of the potential risk of each member (according to his/her
           access rights)
     * Assets management
-        - Browsing of all the hangars of the corporation (including deliveries 
+        - Browsing of all the hangars of the corporation (including deliveries
           hangars and In-Space assets)
         - History accessible through to a diff mechanism
     * Corporation accounts monitoring
         - Wallet journals (with more information than in the In Game interface)
         - Tax contribution stats (per member and per solar system)
     * POS monitoring and management
-        - currently in development
-    * Configurable alerts & reporting system
-        - currently in development
     * Industry management system
+    * Configurable alerts & reporting system
         - currently in development
 
 More info here: http://code.google.com/p/eve-corp-management/wiki/Features
@@ -39,12 +37,12 @@ http://code.google.com/p/eve-corp-management/wiki/InstallationInstructions
 How to run ECM
 ==============
 
-Once it is installed, you can run django development server by going into the "ecm" 
+Once it is installed, you can run django development server by going into the "ecm"
 directory located into the installation folder. And run the following command:
 
 $ python manage.py runserver
 
-For production usage, see http://code.google.com/p/eve-corp-management/wiki/InstallationInstructions#Deployment_alternatives_(standalone_WSGI_server_behind_a_reverse 
+For production usage, see http://code.google.com/p/eve-corp-management/wiki/InstallationInstructions#Deployment_alternatives_(standalone_WSGI_server_behind_a_reverse
 
 Usefull Links
 =============
