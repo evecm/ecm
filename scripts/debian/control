@@ -10,6 +10,6 @@ Architecture: all
 Homepage: http://code.google.com/p/eve-corp-management/
 XS-Python-Version: ${python:Versions}
 XB-Python-Version: ${python:Versions}
-Depends: ${misc:Depends}, ${python:Depends}
+Depends: ${misc:Depends}, ${python:Depends}, django-simple-captcha, django-compressor
 Description: web application to manage Eve Online corporations
  long description of ecm goes here
