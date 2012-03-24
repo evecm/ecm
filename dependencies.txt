@@ -1,5 +1,0 @@
-Django>=1.3
-South>=0.7
-django-simple-captcha>=0.3.0
-PIL
-django_compressor>=1.1.2

@@ -28,9 +28,14 @@ import zipfile
 import shutil
 from os import path
 
-from django.core import management
 
 from ecm.admin.util import get_logger, run_command
+
+#-------------------------------------------------------------------------------
+class ECMDB(object):
+    pass
+
+
 
 #-------------------------------------------------------------------------------
 def init_ecm_db(options):
@@ -53,8 +58,8 @@ def migrate_ecm_db(options):
     # we setup Django environment in order to be able to use DB models
     # and check if there were any existing SOUTH migrations made
     sys.path.append(options.install_dir)
-    import ecm.settings
-    management.setup_environ(ecm.settings)
+    #import ecm.settings #@UnresolvedImport
+    #management.setup_environ(ecm.settings)
     from south.models import MigrationHistory
 
     if options.old_version.startswith('1.'):
@@ -62,7 +67,7 @@ def migrate_ecm_db(options):
         # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
         MigrationHistory.objects.delete() #@UndefinedVariable
         log.info('Migrating from ECM 1.x.y...')
-        run_command(sys.executable + ' manage.py migrate 0001 hr --no-initial-data', run_dir)
+        run_command(sys.executable + ' manage.py migrate hr 0001 --no-initial-data', run_dir)
     if not MigrationHistory.objects.exclude(app_name='hr'):
         # SOUTH has never been used in that installation.
         # we MUST "fake" the first migration,
@@ -78,12 +83,6 @@ def migrate_ecm_db(options):
 
     log.info('Database Migration successful.')
 
-#-------------------------------------------------------------------------------
-def collect_static_files(options):
-    log = get_logger()
-    log.info("Gathering static files...")
-    run_dir = os.path.join(options.install_dir, 'ecm')
-    run_command(sys.executable + ' manage.py collectstatic --noinput', run_dir)
 
 #-------------------------------------------------------------------------------
 def download_eve_db(options):
