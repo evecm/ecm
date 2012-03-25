@@ -36,12 +36,12 @@ def prompt(message, default_value=None, valid_list=None):
 
     if valid_list is not None:
         while value not in valid_list:
-            value = raw_input(message + ' ')
+            value = raw_input('[ECM] ' + message + ' ')
             if not value:
                 value = default_value
     else:
         while not value:
-            value = raw_input(message + ' ')
+            value = raw_input('[ECM] ' + message + ' ')
             if not value:
                 value = default_value
 

@@ -23,7 +23,7 @@ from os import path
 from ConfigParser import SafeConfigParser
 
 from ecm.admin import instance_template
-from ecm.admin.util import prompt
+from ecm.admin.util import prompt, get_logger
 
 DB_ENGINES = {
     'postgresql': 'django.db.backends.postgresql_psycopg2',
@@ -109,6 +109,11 @@ def run(command, global_options, options, args):
     try:
         prompt_missing_options(options)
         write_settings(command, options, instance_dir)
+        log = get_logger()
+        log.info('')
+        log.info('New ECM instance created in "%s".' % instance_dir)
+        log.info('Please check the configuration in "%s" before running `ecm-admin init`.'
+                 % path.join(instance_dir, 'settings.ini'))
     except:
         # delete the created instance directory if something goes wrong
         shutil.rmtree(instance_dir, ignore_errors=True)

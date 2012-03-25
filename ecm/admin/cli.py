@@ -24,7 +24,7 @@ from optparse import OptionParser, OptionGroup
 import ecm
 from ecm.lib.subcommand import Subcommand, SubcommandsOptionParser
 from ecm.admin.cmd.create import DB_ENGINES
-from ecm.admin.cmd import create, sync, destroy, control
+from ecm.admin.cmd import create, upgrade, control, init
 
 
 
@@ -73,38 +73,45 @@ def init_options():
                             help='File where to store the PID of the server process.')
     create_cmd.parser.add_option_group(server_group)
 
-    # SYNC
-    sync_cmd = Subcommand('sync',
+    # INIT
+    init_cmd = Subcommand('init',
                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                          help='Synchronize an instance\'s database and files.',
-                          callback=sync.run)
-    sync_cmd.parser.add_option('-n', '--new', dest='new',
-                               action='store_true',
-                               help='New instance, use django "syncdb".')
-    sync_cmd.parser.add_option('--no-migrate', dest='no_migrate',
-                               action='store_true',
-                               help='Do not modify the instance\'s database.')
-    sync_cmd.parser.add_option('-u', '--upgrade-from-1.4.9', dest='upgrade_from_149',
-                               action='store_true', default=False,
-                               help='Upgrade from ECM-1.4.9.')
-    sync_cmd.parser.add_option('--eve-db-url', dest='eve_db_url', default=EVE_DB_URL,
-                               help='URL where to download EVE database archive.')
-    sync_cmd.parser.add_option('--eve-db-zip-archive', dest='eve_zip_archive',
-                               help='Local path to EVE database archive (skips download).')
-    sync_cmd.parser.add_option('--skip-eve-db-download', dest='skip_eve_db_download',
-                               action='store_true',
-                               help='Do NOT download EVE db (use with care).')
-
+                          help='Initialize an instance\'s database and files.',
+                          callback=init.run)
     if not os.name == 'nt':
-        sync_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
+        init_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
                                    help='Create symbolic links instead of copying static files.',
                                    default=False, action='store_true')
-
-    # DESTROY
-    destroy_cmd = Subcommand('destroy',
+    init_cmd.parser.add_option('--eve-db-url', dest='eve_db_url', default=EVE_DB_URL,
+                               help='URL where to download EVE database archive.')
+    init_cmd.parser.add_option('--eve-db-zip-archive', dest='eve_zip_archive',
+                               help='Local path to EVE database archive (skips download).')
+    init_cmd.parser.add_option('--skip-eve-db-download', dest='skip_eve_db_download',
+                               action='store_true',
+                               help='Do NOT download EVE db (use with care).')
+    # UPGRADE
+    upgrade_cmd = Subcommand('upgrade',
                              parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                             help='Destroy an existing ECM instance (use with care).',
-                             callback=destroy.run)
+                             help='Synchronize an instance\'s database and files.',
+                             callback=upgrade.run)
+    upgrade_cmd.parser.add_option('--no-migrate', dest='no_migrate',
+                                  action='store_true',
+                                  help='Do not modify the instance\'s database.')
+    upgrade_cmd.parser.add_option('-u', '--upgrade-from-1.4.9', dest='upgrade_from_149',
+                                  action='store_true', default=False,
+                                  help='Upgrade from ECM-1.4.9.')
+    upgrade_cmd.parser.add_option('--eve-db-url', dest='eve_db_url', default=EVE_DB_URL,
+                                  help='URL where to download EVE database archive.')
+    upgrade_cmd.parser.add_option('--eve-db-zip-archive', dest='eve_zip_archive',
+                                  help='Local path to EVE database archive (skips download).')
+    upgrade_cmd.parser.add_option('--skip-eve-db-download', dest='skip_eve_db_download',
+                                  action='store_true',
+                                  help='Do NOT download EVE db (use with care).')
+
+    if not os.name == 'nt':
+        upgrade_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
+                                      help='Create symbolic links instead of copying static files.',
+                                      default=False, action='store_true')
 
     # START - STOP - RESTART
     start_cmd = Subcommand('start',
@@ -124,7 +131,7 @@ def init_options():
                            help='Shows the run status of an existing ECM instance.',
                            callback=control.status)
 
-    subcommands = [create_cmd, sync_cmd, destroy_cmd]
+    subcommands = [create_cmd, init_cmd, upgrade_cmd]
     if not os.name == 'nt':
         # daemonizing processes cannot be done on windows
         subcommands += [start_cmd, stop_cmd, restart_cmd, status_cmd]

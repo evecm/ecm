@@ -23,32 +23,13 @@ __author__ = 'diabeteman'
 
 import os
 import sys
-import tempfile
-import urllib2
-import zipfile
-import shutil
-from os import path
 from ConfigParser import SafeConfigParser
 
 from django.core import management
 
 from ecm.admin.util import run_python_cmd, get_logger
+from ecm.admin.cmd import collect_static_files, download_eve_db
 
-#-------------------------------------------------------------------------------
-def collect_static_files(instance_dir, options):
-    log = get_logger()
-    log.info("Gathering static files...")
-    switches = '--noinput'
-    if os.name != 'nt' and options.symlink_files:
-        switches += ' --link'
-    run_python_cmd('manage.py collectstatic ' + switches, instance_dir)
-
-#-------------------------------------------------------------------------------
-def init_ecm_db(instance_dir):
-    log = get_logger()
-    log.info("Initializing database...")
-    run_python_cmd('manage.py syncdb --noinput --migrate', instance_dir)
-    log.info('Database initialization successful.')
 
 #-------------------------------------------------------------------------------
 def migrate_ecm_db(instance_dir, upgrade_from_149=False):
@@ -87,42 +68,6 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     log.info('Database Migration successful.')
 
 #-------------------------------------------------------------------------------
-def download_eve_db(instance_dir, eve_db_dir, eve_db_url, eve_zip_archive):
-    log = get_logger()
-    try:
-        tempdir = None
-        if eve_zip_archive is None:
-            tempdir = tempfile.mkdtemp()
-            eve_zip_archive = os.path.join(tempdir, 'EVE.db.zip')
-            log.info('Downloading EVE database from %s to %s...', eve_db_url, eve_zip_archive)
-            req = urllib2.urlopen(eve_db_url)
-            with open(eve_zip_archive, 'wb') as fp:
-                shutil.copyfileobj(req, fp)
-            req.close()
-            log.info('Download complete.')
-
-        if not path.exists(eve_db_dir):
-            os.makedirs(eve_db_dir)
-
-        log.info('Expanding %s to %s...', eve_zip_archive, eve_db_dir)
-        zip_file_desc = zipfile.ZipFile(eve_zip_archive, 'r')
-        for info in zip_file_desc.infolist():
-            fname = info.filename
-            data = zip_file_desc.read(fname)
-            filename = os.path.join(eve_db_dir, fname)
-            file_out = open(filename, 'wb')
-            file_out.write(data)
-            file_out.flush()
-            file_out.close()
-        zip_file_desc.close()
-        log.info('Expansion complete.')
-    finally:
-        if tempdir is not None:
-            log.info('Removing temp files...')
-            shutil.rmtree(tempdir)
-            log.info('done')
-
-#-------------------------------------------------------------------------------
 def run(command, global_options, options, args):
     if not args:
         command.parser.error('Missing instance directory.')
@@ -133,18 +78,12 @@ def run(command, global_options, options, args):
         sqlite_db_dir = config.get('database', 'sqlite_db_dir')
     if not sqlite_db_dir:
         sqlite_db_dir = os.path.join(instance_dir, 'db')
-    ecm_db_engine = config.get('database', 'ecm_engine')
 
     # run collectstatic
     collect_static_files(instance_dir, options)
 
-    # run syncdb
-    if options.new:
-        if 'sqlite' in ecm_db_engine:
-            if not os.path.exists(sqlite_db_dir):
-                os.makedirs(sqlite_db_dir)
-        init_ecm_db(instance_dir)
-    elif not options.no_migrate:
+    # migrate ecm db
+    if not options.no_migrate:
         migrate_ecm_db(instance_dir, options.upgrade_from_149)
 
     # download eve db

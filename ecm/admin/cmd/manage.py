@@ -18,7 +18,11 @@
 __date__ = '2012 3 24'
 __author__ = 'diabeteman'
 
+from ecm.admin.util import run_python_cmd
 
 def run(command, global_options, options, args):
+    if not args:
+        command.parser.error('Missing instance directory.')
+    instance_dir = args.pop(0)
     # relay command to manage.py
-    pass
+    run_python_cmd('manage.py', instance_dir)
