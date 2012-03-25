@@ -11,5 +11,4 @@ Homepage: http://code.google.com/p/eve-corp-management/
 XS-Python-Version: ${python:Versions}
 XB-Python-Version: ${python:Versions}
 Depends: ${misc:Depends}, ${python:Depends}, python-django-simple-captcha, python-django-compressor, python-django-south
-Description: web application to manage Eve Online corporations
- long description of ecm goes here
+Description: ECM is a management and decision-making helper-application for the game EVE Online.

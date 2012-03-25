@@ -4,8 +4,7 @@
 
 EAPI=3
 
-DESCRIPTION="Eve Corporation Management is a django app for various corporation
-wide task in the MMO EVE Online"
+DESCRIPTION="ECM is a management and decision-making helper-application for the game EVE Online."
 HOMEPAGE="http://code.google.com/p/eve-corp-management/"
 EHG_REPO_URI="https://code.google.com/p/eve-corp-management/"
 
