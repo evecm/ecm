@@ -78,12 +78,27 @@ def init_options():
                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
                           help='Synchronize an instance\'s database and files.',
                           callback=sync.run)
-    sync_cmd.parser.add_option('-n', '--no-syncdb', dest='no_db',
-                               help='Do not sync the instance\'s database.',
-                               default=False, action='store_true')
-    sync_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
-                               help='Create symbolic links instead of copying static files.',
-                               default=False, action='store_true')
+    sync_cmd.parser.add_option('-n', '--new', dest='new',
+                               action='store_true',
+                               help='New instance, use django "syncdb".')
+    sync_cmd.parser.add_option('--no-migrate', dest='no_migrate',
+                               action='store_true',
+                               help='Do not modify the instance\'s database.')
+    sync_cmd.parser.add_option('-u', '--upgrade-from-1.4.9', dest='upgrade_from_149',
+                               action='store_true', default=False,
+                               help='Upgrade from ECM-1.4.9.')
+    sync_cmd.parser.add_option('--eve-db-url', dest='eve_db_url', default=EVE_DB_URL,
+                               help='URL where to download EVE database archive.')
+    sync_cmd.parser.add_option('--eve-db-zip-archive', dest='eve_zip_archive',
+                               help='Local path to EVE database archive (skips download).')
+    sync_cmd.parser.add_option('--skip-eve-db-download', dest='skip_eve_db_download',
+                               action='store_true',
+                               help='Do NOT download EVE db (use with care).')
+
+    if not os.name == 'nt':
+        sync_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
+                                   help='Create symbolic links instead of copying static files.',
+                                   default=False, action='store_true')
 
     # DESTROY
     destroy_cmd = Subcommand('destroy',

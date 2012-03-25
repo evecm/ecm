@@ -15,11 +15,11 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = '2012 3 23'
+__date__ = '2012 3 25'
 __author__ = 'diabeteman'
 
+
 import subprocess
-import shlex
 import sys
 import logging
 
@@ -47,13 +47,16 @@ def prompt(message, default_value=None, valid_list=None):
 
     return value
 
+#-------------------------------------------------------------------------------
+def run_python_cmd(command_line, run_dir):
+    run_command(sys.executable + ' ' + command_line, run_dir)
 
 #-------------------------------------------------------------------------------
 def run_command(command_line, run_dir):
     log = get_logger()
     log.info('$ ' + command_line)
 
-    exitcode = subprocess.call(shlex.split(command_line), cwd=run_dir, universal_newlines=True)
+    exitcode = subprocess.call(command_line.strip().split(), cwd=run_dir, universal_newlines=True)
 
     if exitcode != 0:
         sys.exit(exitcode)
