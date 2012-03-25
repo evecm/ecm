@@ -16,28 +16,28 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-import ecm
 from setuptools import setup, find_packages
 from distutils.command.install import INSTALL_SCHEMES
 
-# to make sure all package data is installed next to the python modules
-# see https://groups.google.com/forum/?fromgroups#!topic/comp.lang.python/Nex7L-026uw
+# Tell distutils not to put the data_files in platform-specific installation
+# locations. See here for an explanation:
+# http://groups.google.com/group/comp.lang.python/browse_thread/thread/35ec7b2fed36eaec/2105ee4d9e8042cb
 for scheme in INSTALL_SCHEMES.values():
     scheme['data'] = scheme['purelib']
 
-dependencies = (
+
+dependencies = [
+    'django_simple_captcha (>= 0.3)',
+    'south (>= 0.7.3)',
+    'django_compressor (>= 1.1.2)',
     'setuptools',
-    'django',
-    'django_simple_captcha',
-    'django_compressor',
-    'south',
-    'PIL',
-)
+    'django (> 1.3, < 1.4)',
+]
 
 setup(
     # GENERAL INFO
     name = 'ecm',
-    version = ecm.VERSION,
+    version = __import__('ecm').VERSION, # dynamically get version from ecm.VERSION.
     description = 'EVE Corp Management is a management and decision-making helper-application for EVE Online.',
     long_description = open('README').read(),
     author = 'Robin Jarry',
@@ -60,11 +60,12 @@ setup(
     ),
 
     # DEPENDENCIES
+    provides = ['ecm'],
     requires = dependencies,
-    install_requires = dependencies,
+    install_requires = [ dep.split()[0] for dep in dependencies ],
 
     # CONTENTS
-    packages = find_packages(),
+    packages = find_packages(exclude=['dev-instance']),
     include_package_data = True,
     zip_safe = False,
     entry_points = {
