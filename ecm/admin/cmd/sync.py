@@ -19,5 +19,10 @@ __date__ = '2012 3 23'
 __author__ = 'diabeteman'
 
 
-def run():
+def run(command, global_options, options, args):
+    # run collectstatic
+    pass
+    # run syncdb
+    pass
+    # download eve db
     pass

@@ -24,14 +24,27 @@ import sys
 import logging
 
 #-------------------------------------------------------------------------------
-def prompt(message, valid_list=None):
+def prompt(message, default_value=None, valid_list=None):
     value = None
+
+    if valid_list is not None:
+        list_str = '{%s}' % '|'.join(map(str, valid_list))
+        message = '%s %s' % (message, list_str)
+
+    if default_value is not None:
+        message = '%s [default=%s]' % (message, default_value)
+
     if valid_list is not None:
         while value not in valid_list:
-            value = raw_input('%s %s ' % (message, valid_list))
+            value = raw_input(message + ' ')
+            if not value:
+                value = default_value
     else:
         while not value:
-            value = raw_input('%s ' % message)
+            value = raw_input(message + ' ')
+            if not value:
+                value = default_value
+
     return value
 
 

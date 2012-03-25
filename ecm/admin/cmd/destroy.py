@@ -19,5 +19,9 @@ __date__ = '2012 3 24'
 __author__ = 'diabeteman'
 
 
-def run():
+def run(command, global_options, options, args):
+    # if needed, delete all tables from database
     pass
+    # delete the instance directory
+    pass
+

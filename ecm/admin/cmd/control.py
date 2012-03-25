@@ -18,35 +18,15 @@
 __date__ = '2012 3 24'
 __author__ = 'diabeteman'
 
-from ecm.admin.util import get_logger
 
-#------------------------------------------------------------------------------
-class ECMInstance(object):
+def start(command, global_options, options, args):
+    pass
 
-    def __init__(self, base_dir):
-        self.base_dir = base_dir
-        self.logger = get_logger()
+def stop(command, global_options, options, args):
+    pass
 
-    def create(self, options):
-        pass
+def restart(command, global_options, options, args):
+    pass
 
-    def destroy(self):
-        pass
-
-    def update(self):
-        pass
-
-    def upgrade(self):
-        pass
-
-    def manage(self, *args, **kwargs):
-        pass
-
-    def start(self):
-        pass
-
-    def stop(self):
-        pass
-
-    def restart(self):
-        pass
+def status(command, global_options, options, args):
+    pass

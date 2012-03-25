@@ -14,31 +14,34 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.admin.cmd import create, sync, destroy
 
 __date__ = '2012 3 22'
 __author__ = 'diabeteman'
 
+import os
 from optparse import OptionParser, OptionGroup
-from ecm.lib.subcommand import Subcommand, SubcommandsOptionParser
 
 import ecm
+from ecm.lib.subcommand import Subcommand, SubcommandsOptionParser
+from ecm.admin.cmd.create import DB_ENGINES
+from ecm.admin.cmd import create, sync, destroy, control
 
 
-DB_ENGINES = {
-    'sqlite': 'django.db.backends.sqlite3',
-    'mysql': 'django.db.backends.mysql',
-    'postgresql': 'django.db.backends.postgresql',
-    'postgresql_psycopg2': 'django.db.backends.postgresql_psycopg2'
-}
+
 EVE_DB_URL = 'http://eve-corp-management.googlecode.com/files/ECM.EVE.db-3.zip'
 
+#------------------------------------------------------------------------------
 def init_options():
     # CREATE
     create_cmd = Subcommand('create',
                             parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
                             help='Create a new ECM instance in the given directory.',
                             callback=create.run)
+
+    create_cmd.parser.add_option('-q', '--quiet', dest='quiet',
+                                 help='Do not prompt user (use default values).',
+                                 default=False, action='store_true')
+
     db_group = OptionGroup(create_cmd.parser, 'Database options')
     db_group.add_option('--db-engine', dest='db_engine',
                         help='DB engine %s' % DB_ENGINES.keys())
@@ -51,12 +54,24 @@ def init_options():
     create_cmd.parser.add_option_group(db_group)
 
     w_group = OptionGroup(create_cmd.parser, 'Web & Mail options')
-    w_group.add_option('--host-name', dest='host_name', default='ecm.example.com',
+    w_group.add_option('--host-name', dest='host_name',
                        help='The public name of ECM host computer.')
-    w_group.add_option('--admin-email', dest='admin_email', default='',
+    w_group.add_option('--admin-email', dest='admin_email',
                        help='Email of the server administrator (for error notifications)')
+    w_group.add_option('--server-email', dest='server_email',
+                       help='Email used as "from" address in emails sent by the server.')
     create_cmd.parser.add_option_group(w_group)
 
+    server_group = OptionGroup(create_cmd.parser, 'Server options')
+    server_group.add_option('--bind-address', dest='bind_address',
+                            help='Server listening address')
+    server_group.add_option('--bind-port', dest='bind_port',
+                            help='Server listening address')
+    server_group.add_option('--run-as-user', dest='run_as_user',
+                            help='User that will be running the server')
+    server_group.add_option('--pid-file', dest='pid_file',
+                            help='File where to store the PID of the server process.')
+    create_cmd.parser.add_option_group(server_group)
 
     # SYNC
     sync_cmd = Subcommand('sync',
@@ -76,22 +91,39 @@ def init_options():
                              help='Destroy an existing ECM instance (use with care).',
                              callback=destroy.run)
 
+    # START - STOP - RESTART
+    start_cmd = Subcommand('start',
+                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
+                           help='Start an existing ECM instance.',
+                           callback=control.start)
+    stop_cmd = Subcommand('stop',
+                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
+                           help='Stop an existing ECM instance.',
+                           callback=control.stop)
+    restart_cmd = Subcommand('restart',
+                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
+                           help='Restart an existing ECM instance.',
+                           callback=control.restart)
+    status_cmd = Subcommand('status',
+                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
+                           help='Shows the run status of an existing ECM instance.',
+                           callback=control.status)
+
+    subcommands = [create_cmd, sync_cmd, destroy_cmd]
+    if not os.name == 'nt':
+        # daemonizing processes cannot be done on windows
+        subcommands += [start_cmd, stop_cmd, restart_cmd, status_cmd]
+
     # Set up the global parser and its options.
-    parser = SubcommandsOptionParser(
-        subcommands=(create_cmd, sync_cmd, destroy_cmd),
-        version='%s' % ecm.VERSION,
-    )
+    return SubcommandsOptionParser(subcommands=subcommands, version=ecm.VERSION)
 
-    return parser
-
+#------------------------------------------------------------------------------
 def run(args=None):
     parser = init_options()
     # Parse the global options and the subcommand options.
-    options, subcommand, suboptions, subargs = parser.parse_args(args)
-    print options
-    print subcommand
-    print suboptions
-    print subargs
+    global_options, command, options, args = parser.parse_args(args)
+    command.run(command, global_options, options, args)
 
+#------------------------------------------------------------------------------
 if __name__ == '__main__':
     run()

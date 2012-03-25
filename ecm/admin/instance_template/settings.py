@@ -19,13 +19,17 @@ __date__ = '2010-01-24'
 __author__ = 'diabeteman'
 
 import os
-import ecm
 from ConfigParser import SafeConfigParser
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
-ECM_PACKAGE = os.path.abspath(os.path.dirname(ecm.__file__))
+
 def rel_path(pth, root=ROOT):
     return os.path.abspath(os.path.join(root, pth)).replace('\\', '/')
+def package_path(package):
+    return os.path.abspath(os.path.dirname(__import__(package).__file__))
+
+ECM_PACKAGE = package_path('ecm')
+INSTANCE_TEMPLATE_PACKAGE = package_path('ecm.admin.instance_template')
 
 ###############################################################################
 ################
@@ -33,7 +37,7 @@ def rel_path(pth, root=ROOT):
 ################
 
 CONFIG_FILES = [
-    rel_path('settings.ini', root=ECM_PACKAGE), # default settings
+    rel_path('settings.ini', root=INSTANCE_TEMPLATE_PACKAGE), # default settings
     rel_path('settings.ini'), # local settings
 ]
 
@@ -57,24 +61,24 @@ if not config.read(CONFIG_FILES):
 # DJANGO SETTINGS #
 ###################
 
-DEBUG = config.getboolean('misc', 'DEBUG')
+DEBUG = config.getboolean('misc', 'debug')
 
 def get_db_config(prefix):
-    engine = config.get('database', prefix + '_ENGINE')
+    engine = config.get('database', prefix + '_engine')
     if engine == 'django.db.backends.sqlite3':
-        folder = config.get('database', 'SQLITE_DB_DIR') or rel_path('db/')
-        return {'ENGINE': engine, 'NAME': os.path.join(folder, prefix + '.db')}
+        folder = config.get('database', 'sqlite_db_dir') or rel_path('db/')
+        return {'ENGINE': engine, 'NAME': os.path.join(folder, prefix.upper() + '.db')}
     else:
         return {
-            'ENGINE': config.get('database', prefix + '_ENGINE'),
-            'NAME': config.get('database', prefix + '_NAME'),
-            'USER': config.get('database', prefix + '_USER'),
-            'PASSWORD': config.get('database', prefix + '_PASSWORD'),
+            'ENGINE': config.get('database', prefix + '_engine'),
+            'NAME': config.get('database', prefix + '_name'),
+            'USER': config.get('database', prefix + '_user'),
+            'PASSWORD': config.get('database', prefix + '_password'),
         }
 
 DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
-    'default': get_db_config('ECM'),
-    'eve': get_db_config('EVE'),
+    'default': get_db_config('ecm'),
+    'eve': get_db_config('eve'),
 }
 
 DATABASE_ROUTERS = (
@@ -87,19 +91,19 @@ SITE_ID = 1
 # E-MAIL #
 ##########
 # to enable email error reporting, add tuples in there, ('name', 'email@adddress.com')
-ADMINS = [ ('', email) for email in config.get('email', 'ADMIN_EMAIL').split() ]
+ADMINS = [ ('', email) for email in config.get('email', 'admin_email').split() ]
 
 # for development, you can use python dummy smtp server, run this command:
 # >>> python -m smtpd -n -c DebuggingServer localhost:25
-EMAIL_HOST = config.get('email', 'HOST')
-EMAIL_PORT = config.getint('email', 'PORT')
-EMAIL_USE_TLS = config.getboolean('email', 'USE_TLS')
-EMAIL_HOST_USER = config.get('email', 'HOST_USER')
-EMAIL_HOST_PASSWORD = config.get('email', 'HOST_PASSWORD')
+EMAIL_HOST = config.get('email', 'host')
+EMAIL_PORT = config.getint('email', 'port')
+EMAIL_USE_TLS = config.getboolean('email', 'use_tls')
+EMAIL_HOST_USER = config.get('email', 'host_user')
+EMAIL_HOST_PASSWORD = config.get('email', 'host_password')
 # put a real email address here, if not, emails sent by the server
 # will be discarded by the relay servers
-DEFAULT_FROM_EMAIL = config.get('email', 'DEFAULT_FROM_EMAIL')
-SERVER_EMAIL = config.get('email', 'SERVER_EMAIL')
+DEFAULT_FROM_EMAIL = config.get('email', 'default_from_email')
+SERVER_EMAIL = config.get('email', 'server_email')
 
 
 ##################
@@ -118,7 +122,7 @@ APPEND_SLASH = True
 ################
 
 # target dir for the 'collectstatic' command
-STATIC_ROOT = config.get('misc', 'STATIC_FILES_DIR') or rel_path('static/')
+STATIC_ROOT = config.get('misc', 'static_files_dir') or rel_path('static/')
 # value of the {{ STATIC_URL }} variable in templates
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
@@ -230,7 +234,7 @@ INSTALLED_APPS += ECM_PLUGIN_APPS
 ###########
 # LOGGING #
 ###########
-LOG_FILES_DIR = config.get('logging', 'LOG_FILES_DIR') or rel_path('logs/')
+LOG_FILES_DIR = config.get('logging', 'log_files_dir') or rel_path('logs/')
 if not os.path.exists(LOG_FILES_DIR):
     os.makedirs(LOG_FILES_DIR)
 LOGGING = {

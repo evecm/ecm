@@ -2,14 +2,11 @@ syntax: glob
 *.pyc
 *.pyo
 dist
-package
 *.old
 *.log
 .metadata
 *.orig
 build
 *.swp
-scripts/runtime/db
-scripts/runtime/static
-scripts/runtime/logs
 *.egg-info
+dev-instance
