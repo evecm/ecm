@@ -23,6 +23,9 @@ import subprocess
 import sys
 import logging
 
+from django.core.management.color import supports_color
+from django.utils.termcolors import colorize
+
 #-------------------------------------------------------------------------------
 def prompt(message, default_value=None, valid_list=None):
     value = None
@@ -34,14 +37,19 @@ def prompt(message, default_value=None, valid_list=None):
     if default_value is not None:
         message = '%s [default=%s]' % (message, default_value)
 
+    message = '[ECM] ' + message + ' '
+
+    if supports_color():
+        message = colorize(message, fg='yellow')
+
     if valid_list is not None:
         while value not in valid_list:
-            value = raw_input('[ECM] ' + message + ' ')
+            value = raw_input(message)
             if not value:
                 value = default_value
     else:
         while not value:
-            value = raw_input('[ECM] ' + message + ' ')
+            value = raw_input(message)
             if not value:
                 value = default_value
 
@@ -70,7 +78,11 @@ def get_logger():
     else:
         logger = logging.getLogger()
         console_hdlr = logging.StreamHandler(sys.stdout)
-        console_hdlr.setFormatter(logging.Formatter('[ECM] %(message)s'))
+        if supports_color():
+            log_format = colorize('[ECM] %(message)s', fg='cyan')
+        else:
+            log_format = '[ECM] %(message)s'
+        console_hdlr.setFormatter(logging.Formatter(log_format))
         logger.addHandler(console_hdlr)
         logger.setLevel(logging.INFO)
         __logger__ = logger

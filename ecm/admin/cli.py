@@ -19,100 +19,19 @@ __date__ = '2012 3 22'
 __author__ = 'diabeteman'
 
 import os
-from optparse import OptionParser, OptionGroup
+from optparse import OptionParser
 
 import ecm
 from ecm.lib.subcommand import Subcommand, SubcommandsOptionParser
-from ecm.admin.cmd.create import DB_ENGINES
 from ecm.admin.cmd import create, upgrade, control, init
 
 
 
-EVE_DB_URL = 'http://eve-corp-management.googlecode.com/files/ECM.EVE.db-3.zip'
-
 #------------------------------------------------------------------------------
 def init_options():
-    # CREATE
-    create_cmd = Subcommand('create',
-                            parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                            help='Create a new ECM instance in the given directory.',
-                            callback=create.run)
-
-    create_cmd.parser.add_option('-q', '--quiet', dest='quiet',
-                                 help='Do not prompt user (use default values).',
-                                 default=False, action='store_true')
-
-    db_group = OptionGroup(create_cmd.parser, 'Database options')
-    db_group.add_option('--db-engine', dest='db_engine',
-                        help='DB engine %s' % DB_ENGINES.keys())
-    db_group.add_option('--db-name', dest='db_name',
-                        help='Database name')
-    db_group.add_option('--db-user', dest='db_user',
-                        help='Database user')
-    db_group.add_option('--db-password', dest='db_pass',
-                        help='Database user password')
-    create_cmd.parser.add_option_group(db_group)
-
-    w_group = OptionGroup(create_cmd.parser, 'Web & Mail options')
-    w_group.add_option('--host-name', dest='host_name',
-                       help='The public name of ECM host computer.')
-    w_group.add_option('--admin-email', dest='admin_email',
-                       help='Email of the server administrator (for error notifications)')
-    w_group.add_option('--server-email', dest='server_email',
-                       help='Email used as "from" address in emails sent by the server.')
-    create_cmd.parser.add_option_group(w_group)
-
-    server_group = OptionGroup(create_cmd.parser, 'Server options')
-    server_group.add_option('--bind-address', dest='bind_address',
-                            help='Server listening address')
-    server_group.add_option('--bind-port', dest='bind_port',
-                            help='Server listening address')
-    server_group.add_option('--run-as-user', dest='run_as_user',
-                            help='User that will be running the server')
-    server_group.add_option('--pid-file', dest='pid_file',
-                            help='File where to store the PID of the server process.')
-    create_cmd.parser.add_option_group(server_group)
-
-    # INIT
-    init_cmd = Subcommand('init',
-                          parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                          help='Initialize an instance\'s database and files.',
-                          callback=init.run)
-    if not os.name == 'nt':
-        init_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
-                                   help='Create symbolic links instead of copying static files.',
-                                   default=False, action='store_true')
-    init_cmd.parser.add_option('--eve-db-url', dest='eve_db_url', default=EVE_DB_URL,
-                               help='URL where to download EVE database archive.')
-    init_cmd.parser.add_option('--eve-db-zip-archive', dest='eve_zip_archive',
-                               help='Local path to EVE database archive (skips download).')
-    init_cmd.parser.add_option('--skip-eve-db-download', dest='skip_eve_db_download',
-                               action='store_true',
-                               help='Do NOT download EVE db (use with care).')
-    # UPGRADE
-    upgrade_cmd = Subcommand('upgrade',
-                             parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                             help='Synchronize an instance\'s database and files.',
-                             callback=upgrade.run)
-    upgrade_cmd.parser.add_option('--no-migrate', dest='no_migrate',
-                                  action='store_true',
-                                  help='Do not modify the instance\'s database.')
-    upgrade_cmd.parser.add_option('-u', '--upgrade-from-1.4.9', dest='upgrade_from_149',
-                                  action='store_true', default=False,
-                                  help='Upgrade from ECM-1.4.9.')
-    upgrade_cmd.parser.add_option('--eve-db-url', dest='eve_db_url', default=EVE_DB_URL,
-                                  help='URL where to download EVE database archive.')
-    upgrade_cmd.parser.add_option('--eve-db-zip-archive', dest='eve_zip_archive',
-                                  help='Local path to EVE database archive (skips download).')
-    upgrade_cmd.parser.add_option('--skip-eve-db-download', dest='skip_eve_db_download',
-                                  action='store_true',
-                                  help='Do NOT download EVE db (use with care).')
-
-    if not os.name == 'nt':
-        upgrade_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
-                                      help='Create symbolic links instead of copying static files.',
-                                      default=False, action='store_true')
-
+    create_cmd = create.sub_command()
+    init_cmd = init.sub_command()
+    upgrade_cmd = upgrade.sub_command()
     # START - STOP - RESTART
     start_cmd = Subcommand('start',
                            parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),

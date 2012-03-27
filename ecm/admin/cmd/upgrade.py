@@ -23,13 +23,53 @@ __author__ = 'diabeteman'
 
 import os
 import sys
+from optparse import OptionParser
 from ConfigParser import SafeConfigParser
 
 from django.core import management
 
+from ecm.lib.subcommand import Subcommand
 from ecm.admin.util import run_python_cmd, get_logger
-from ecm.admin.cmd import collect_static_files, download_eve_db
+from ecm.admin.cmd import collect_static_files, download_patched_eve_db, patch_ccp_dump,\
+    PATCHED_EVE_DB_URL, CCP_EVE_DB_URL
 
+#-------------------------------------------------------------------------------
+def sub_command():
+    # UPGRADE
+    upgrade_cmd = Subcommand('upgrade',
+                             parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
+                             help='Synchronize an instance\'s database and files.',
+                             callback=run)
+    upgrade_cmd.parser.add_option('--no-syncdb',
+                                  dest='no_syncdb', action='store_true', default=False,
+                                  help='Do not modify the instance\'s database.')
+    upgrade_cmd.parser.add_option('-u', '--upgrade-from-1.4.9',
+                                  dest='upgrade_from_149', action='store_true', default=False,
+                                  help='Upgrade from ECM-1.4.9.')
+    upgrade_cmd.parser.add_option('--eve-db-url',
+                                  dest='eve_db_url', default=PATCHED_EVE_DB_URL,
+                                  help='URL where to download EVE database archive.')
+    upgrade_cmd.parser.add_option('--eve-db-zip-archive',
+                                  dest='eve_zip_archive',
+                                  help='Local path to EVE database archive (skips download).')
+    upgrade_cmd.parser.add_option('--skip-eve-db-download',
+                                  dest='skip_eve_db_download', action='store_true',
+                                  help='Do NOT download EVE db (use with care).')
+    upgrade_cmd.parser.add_option('--from-ccp-dump',
+                                  dest='from_ccp_dump', action='store_true', default=False,
+                                  help='Update EVE database from CCP official dump (can take a long time).')
+    upgrade_cmd.parser.add_option('--ccp-dump-url',
+                                  dest='ccp_dump_url', default=CCP_EVE_DB_URL,
+                                  help='URL where to download CCP official dump.')
+    upgrade_cmd.parser.add_option('--ccp-dump-archive',
+                                  dest='ccp_dump_archive',
+                                  help='Local archive of CCP official dump (skips download).')
+    if not os.name == 'nt':
+        upgrade_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
+                                      help='Create symbolic links instead of copying static files.',
+                                      default=False, action='store_true')
+
+    return upgrade_cmd
 
 #-------------------------------------------------------------------------------
 def migrate_ecm_db(instance_dir, upgrade_from_149=False):
@@ -42,8 +82,13 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     # we setup Django environment in order to be able to use DB models
     # and check if there were any existing SOUTH migrations made
     sys.path.append(instance_dir)
-    import ecm.settings #@UnresolvedImport
-    management.setup_environ(ecm.settings)
+
+    instance_dir_name = os.path.dirname(os.path.join(instance_dir, 'settings.py'))
+    module_name = os.path.basename(os.path.abspath(instance_dir_name)) + '.settings'
+
+    settings = __import__(module_name, fromlist=instance_dir_name)
+
+    management.setup_environ(settings)
     from south.models import MigrationHistory
 
     if upgrade_from_149:
@@ -61,8 +106,8 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
 
     run_python_cmd('manage.py migrate --all --no-initial-data', instance_dir)
 
-    del ecm.settings
-    del sys.modules['ecm.settings']
+    del settings
+    del sys.modules[module_name]
     sys.path.remove(instance_dir)
 
     log.info('Database Migration successful.')
@@ -83,14 +128,18 @@ def run(command, global_options, options, args):
     collect_static_files(instance_dir, options)
 
     # migrate ecm db
-    if not options.no_migrate:
+    if not options.no_syncdb:
         migrate_ecm_db(instance_dir, options.upgrade_from_149)
 
     # download eve db
     if not options.skip_eve_db_download:
-        download_eve_db(instance_dir,
-                        eve_db_dir=sqlite_db_dir,
-                        eve_db_url=options.eve_db_url,
-                        eve_zip_archive=options.eve_zip_archive)
+        if options.from_ccp_dump:
+            patch_ccp_dump(ccp_dump_url=options.ccp_dump_url,
+                           ccp_dump_archive=options.ccp_dump_archive,
+                           eve_db_dir=sqlite_db_dir)
+        else:
+            download_patched_eve_db(eve_db_url=options.eve_db_url,
+                                    eve_zip_archive=options.eve_zip_archive,
+                                    eve_db_dir=sqlite_db_dir)
 
 

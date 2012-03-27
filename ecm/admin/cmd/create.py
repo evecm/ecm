@@ -21,9 +21,11 @@ __author__ = 'diabeteman'
 import shutil
 from os import path
 from ConfigParser import SafeConfigParser
+from optparse import OptionParser, OptionGroup
 
 from ecm.admin import instance_template
 from ecm.admin.util import prompt, get_logger
+from ecm.lib.subcommand import Subcommand
 
 DB_ENGINES = {
     'postgresql': 'django.db.backends.postgresql_psycopg2',
@@ -31,6 +33,52 @@ DB_ENGINES = {
     'sqlite': 'django.db.backends.sqlite3',
     'oracle': 'django.db.backends.oracle'
 }
+
+#------------------------------------------------------------------------------
+def sub_command():
+    # CREATE
+    create_cmd = Subcommand('create',
+                            parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
+                            help='Create a new ECM instance in the given directory.',
+                            callback=run)
+
+    create_cmd.parser.add_option('-q', '--quiet', dest='quiet',
+                                 help='Do not prompt user (use default values).',
+                                 default=False, action='store_true')
+
+    db_group = OptionGroup(create_cmd.parser, 'Database options')
+    db_group.add_option('--db-engine', dest='db_engine',
+                        help='DB engine %s' % DB_ENGINES.keys())
+    db_group.add_option('--db-name', dest='db_name',
+                        help='Database name')
+    db_group.add_option('--db-user', dest='db_user',
+                        help='Database user')
+    db_group.add_option('--db-password', dest='db_pass',
+                        help='Database user password')
+    create_cmd.parser.add_option_group(db_group)
+
+    w_group = OptionGroup(create_cmd.parser, 'Web & Mail options')
+    w_group.add_option('--host-name', dest='host_name',
+                       help='The public name of ECM host computer.')
+    w_group.add_option('--admin-email', dest='admin_email',
+                       help='Email of the server administrator (for error notifications)')
+    w_group.add_option('--server-email', dest='server_email',
+                       help='Email used as "from" address in emails sent by the server.')
+    create_cmd.parser.add_option_group(w_group)
+
+    server_group = OptionGroup(create_cmd.parser, 'Server options')
+    server_group.add_option('--bind-address', dest='bind_address',
+                            help='Server listening address')
+    server_group.add_option('--bind-port', dest='bind_port',
+                            help='Server listening address')
+    server_group.add_option('--run-as-user', dest='run_as_user',
+                            help='User that will be running the server')
+    server_group.add_option('--pid-file', dest='pid_file',
+                            help='File where to store the PID of the server process.')
+    create_cmd.parser.add_option_group(server_group)
+
+    return create_cmd
+
 
 #------------------------------------------------------------------------------
 def init_instance(command, args):
@@ -112,8 +160,8 @@ def run(command, global_options, options, args):
         log = get_logger()
         log.info('')
         log.info('New ECM instance created in "%s".' % instance_dir)
-        log.info('Please check the configuration in "%s" before running `ecm-admin init`.'
-                 % path.join(instance_dir, 'settings.ini'))
+        log.info('Please check the configuration in "%s" before running `ecm-admin init "%s"`.'
+                 % (path.join(instance_dir, 'settings.ini'), instance_dir))
     except:
         # delete the created instance directory if something goes wrong
         shutil.rmtree(instance_dir, ignore_errors=True)

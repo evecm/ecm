@@ -26,6 +26,8 @@ import tempfile
 import urllib2
 import zipfile
 import shutil
+import bz2
+import sqlite3
 from os import path
 
 from ecm.admin.util import run_python_cmd, get_logger
@@ -41,7 +43,8 @@ def collect_static_files(instance_dir, options):
     run_python_cmd('manage.py collectstatic ' + switches, instance_dir)
 
 #-------------------------------------------------------------------------------
-def download_eve_db(instance_dir, eve_db_dir, eve_db_url, eve_zip_archive):
+PATCHED_EVE_DB_URL = 'http://eve-corp-management.googlecode.com/files/ECM.EVE.db-3.zip'
+def download_patched_eve_db(eve_db_url, eve_zip_archive, eve_db_dir):
     log = get_logger()
     try:
         tempdir = None
@@ -70,6 +73,49 @@ def download_eve_db(instance_dir, eve_db_dir, eve_db_url, eve_zip_archive):
             file_out.close()
         zip_file_desc.close()
         log.info('Expansion complete.')
+    finally:
+        if tempdir is not None:
+            log.info('Removing temp files...')
+            shutil.rmtree(tempdir)
+            log.info('done')
+
+#-------------------------------------------------------------------------------
+CCP_EVE_DB_URL = 'http://zofu.no-ip.de/cru110/cru110-sqlite3-v1.db.bz2'
+def patch_ccp_dump(ccp_dump_url, eve_db_dir, ccp_dump_archive=None):
+    log = get_logger()
+    sql_script = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'eve_db_patch.sql')
+    with open(sql_script, 'r') as f:
+        sql_patch = f.read()
+    try:
+
+        if ccp_dump_archive is None:
+            tempdir = tempfile.mkdtemp()
+
+            ccp_dump_archive = os.path.join(tempdir, 'EVE.db.bz2')
+            log.info('Downloading EVE original dump from %s to %s...', ccp_dump_url, ccp_dump_archive)
+            req = urllib2.urlopen(ccp_dump_url)
+            with open(ccp_dump_archive, 'wb') as fp:
+                shutil.copyfileobj(req, fp)
+            req.close()
+            log.info('Download complete.')
+        else:
+            tempdir = None
+
+        db_file = os.path.join(eve_db_dir, 'EVE.db')
+
+        log.info('Expanding %s to %s...', ccp_dump_archive, db_file)
+        bz_file_desc = bz2.BZ2File(ccp_dump_archive, 'rb')
+        with open(db_file, 'wb') as db_file_desc:
+            shutil.copyfileobj(bz_file_desc, db_file_desc)
+        bz_file_desc.close()
+        log.info('Expansion complete.')
+
+        log.info('Applying SQL patch to EVE database...')
+        conn = sqlite3.connect(db_file)
+        conn.executescript(sql_patch)
+        conn.commit()
+        conn.close()
+        log.info('EVE database successfully patched.')
     finally:
         if tempdir is not None:
             log.info('Removing temp files...')
