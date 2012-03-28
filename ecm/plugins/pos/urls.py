@@ -26,7 +26,8 @@ urlpatterns = patterns('ecm.plugins.pos.views',
     (r'^$',                     'pos_list.poses'),          # To access the list definition
     (r'^data/$',                'pos_list.poses_data'),     # ajax datatable getter
     (r'^(\d+)/$',               'pos_details.one_pos'),
-    (r'^(\d+)/data/$',          'pos_details.fuel_data'),
-    (r'^(\d+)/updatename/$',    'pos_details.update_pos_name'),
+    (r'^(\d+)/fuel_data/$',     'pos_details.fuel_data'),
+    (r'^(\d+)/silo_data/$',     'pos_details.silo_data'),
+    (r'^(\d+)/update_name/$',   'pos_details.update_pos_name'),
 )
 

@@ -96,7 +96,24 @@
 <table class="table table-bordered" id="fuel_table">
   <thead>
     <tr>
-      {% for col in columns %}
+      {% for col in fuel_columns %}
+      <th class="top" scope="col" >{{col}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Silo Levels</h2>
+
+<table class="table table-bordered" id="silo_table">
+  <thead>
+    <tr>
+      {% for col in silo_columns %}
       <th class="top" scope="col" >{{col}}</th>
       {% endfor %}
     </tr>
@@ -120,7 +137,7 @@ DISPLAY_MODE = 'quantities'; /* default */
 $(document).ready(function() {
     var table = $('#fuel_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         iDisplayLength: 10, 		/* default display 25 items */
-        sAjaxSource: "/pos/{{ pos.item_id }}/data/",
+        sAjaxSource: "/pos/{{ pos.item_id }}/fuel_data/",
         aoColumns: [
             { /* 0 Icon */      sWidth: "10%", sClass: "center", bSortable: false },
             { /* 1 Name */      sWidth: "30%", bSortable: false  },
@@ -128,6 +145,31 @@ $(document).ready(function() {
             { /* 3 Cons/Hour */ sWidth: "15%", bSortable: false },
             { /* 4 Cons/day */  sWidth: "15%", bSortable: false },
             { /* 5 TimeLeft */  sWidth: "15%", bSortable: false },
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            fuelTypeID = aData[0];
+            fuelTypeName = aData[1];
+            fuelImgUrl = 'http://image.eveonline.com/Type/' + fuelTypeID + '_32.png';
+            $('td:eq(0)', nRow).html('<img src="' + fuelImgUrl + '" title="' + fuelTypeName + '"/>');
+            for (i=2; i<6; i++) {
+                $('td:eq(' + i + ')', nRow).addClass('right');
+                if (aData[i] == '0' || aData[i] == '0h') {
+                    $('td:eq(' + i + ')', nRow).addClass('fuel-warning');
+                }
+            }
+            return nRow;
+        },
+
+    }));
+
+var table = $('#silo_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        iDisplayLength: 10, 		/* default display 25 items */
+        sAjaxSource: "/pos/{{ pos.item_id }}/silo_data/",
+        aoColumns: [
+            { /* 0 Icon */      sWidth: "25%", bSortable: false },
+            { /* 1 Name */      sWidth: "25%", bSortable: false },
+            { /* 2 Quantity */  sWidth: "25%", bSortable: false },
+            { /* 3 TimeLeft */  sWidth: "25%", bSortable: false },
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             fuelTypeID = aData[0];
@@ -153,7 +195,7 @@ $(document).ready(function() {
     });
 
     /* Apply a jEditable handler to the "Name" section */
-    $('#custom_name').editable( '/pos/{{ pos.item_id }}/updatename/', {
+    $('#custom_name').editable( '/pos/{{ pos.item_id }}/update_name/', {
         placeholder: 'Click to Change Name...',
         style: 'inherit',
         cssClass: 'edited',

@@ -33,19 +33,26 @@ from ecm.plugins.pos.views import print_fuel_quantity
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access
+from ecm.plugins.assets.models import Asset
 from ecm.plugins.pos import constants
 from ecm.views import extract_datatable_params
 from ecm.apps.corp.models import Corp
 
-COLUMNS = [
-    ['Icon', 'type_id'],
-    ['Name', 'type_id'],
-    ['Quantity', 'quantity'],
+FUEL_COLUMNS = [
+    ['Icon',            'type_id'],
+    ['Name',            'type_id'],
+    ['Quantity',        'quantity'],
     ['Burned Per Hour', None],
-    ['Burned Per Day', None],
-    ['Time Left', None],
+    ['Burned Per Day',  None],
+    ['Time Left',       None],
 ]
 
+SILO_COLUMNS = [
+    ['Icon',                    'type_id'],
+    ['Name',                    'type_id'],
+    ['Quantity',                'quantity'],
+    ['Time Left until full',    None],
+]
 
 MOON_REGEX = re.compile(".*\s+([^\s]+)\s+-\s+Moon\s+(\d+)")
 #------------------------------------------------------------------------------
@@ -78,7 +85,8 @@ def one_pos(request, pos_id):
     data = {
         'pos' : pos,
         'dotlanPOSLocation' : dotlanPOSLocation,
-        'columns': [ col for col, _ in COLUMNS ],
+        'fuel_columns': [ col for col, _ in FUEL_COLUMNS ],
+        'silo_columns': [ col for col, _ in SILO_COLUMNS ],
         'use_standings_from': use_standings_from,
     }
     return render_to_response("pos_details.html", data, RequestContext(request))
@@ -123,13 +131,48 @@ def fuel_data(request, pos_id):
             timeLeft,
         ])
 
-
-
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : len(fuelTypeIDs),
         "iTotalDisplayRecords" : len(fuelTypeIDs),
         "aaData" : fuelTable
+    }
+    return HttpResponse(json.dumps(json_data))
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def silo_data(request, pos_id):
+    try:
+        params = extract_datatable_params(request)
+        pos_id = int(pos_id)
+    except:
+        return HttpResponseBadRequest()
+    pos = get_object_or_404(POS, item_id=pos_id)
+    #silo's are actually the moon mins. this is just the quickest way
+    #using the Assets table. might make this work properly at some point.
+    silos = Asset.objects.filter(closest_object_id = pos.moon_id,
+                                 flag = constants.SILO_TYPEID)
+    silo_table = []
+    for silo in silos:
+        mineral = Type.objects.get(typeID = silo.typeID)
+        if pos.fuel_type_id == constants.GALLENTE_FUEL_BLOCK_TYPEID:
+            remaining_vol = (constants.SILO_VOLUME * 2.0) - silo.volume
+        elif pos.fuel_type_id == constants.AMARR_FUEL_BLOCK_TYPEID:
+            remaining_vol = (constants.SILO_VOLUME * 1.5) - silo.volume
+        else:
+            remaining_vol = constants.SILO_VOLUME - silo.volume
+        hours_to_full = remaining_vol / (mineral.volume * 100)
+        silo_table.append([
+            silo.typeID,
+            mineral.typeName,
+            silo.quantity,
+            utils.print_duration_short(hours_to_full),
+        ])
+    json_data= {
+        "sEcho"                 : params.sEcho,
+        "iTotalRecords"         : len(silos),
+        "iTotalDisplayRecords"  : len(silos),
+        "aaData"                : silo_table,
     }
     return HttpResponse(json.dumps(json_data))
 
