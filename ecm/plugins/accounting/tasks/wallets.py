@@ -34,7 +34,6 @@ from ecm.plugins.accounting.models import JournalEntry
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
 def update():
     """
     Updates all wallets with the missing accounting entries since last scan.
@@ -52,8 +51,12 @@ def update_wallet(wallet):
     except JournalEntry.DoesNotExist:
         lastKnownID = 0
     entries = fetch_entries(wallet, lastKnownID)
+    write_results(wallet, entries)
 
-    LOG.debug("parsing results...")
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def write_results(wallet, entries):
+    LOG.debug("Writing results...")
     for e in entries:
         if e.reason.startswith('DESC:'):
             # the "reason" field encoding is bugged
@@ -77,7 +80,7 @@ def update_wallet(wallet):
                                     reason=e.reason)
     LOG.info("%d entries added in journal" % len(entries))
 
-
+#------------------------------------------------------------------------------
 def fetch_entries(wallet, lastKnownID):
     api_conn = api.connect()
 

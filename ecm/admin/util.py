@@ -56,17 +56,24 @@ def prompt(message, default_value=None, valid_list=None):
     return value
 
 #-------------------------------------------------------------------------------
-def run_python_cmd(command_line, run_dir):
-    run_command(sys.executable + ' ' + command_line, run_dir)
+def run_python_cmd(command_line, run_dir, exit_on_failure=True):
+    if isinstance(command_line, basestring):
+        command_line = command_line.strip().split()
+
+    command_line.insert(0, sys.executable)
+
+    run_command(command_line, run_dir)
 
 #-------------------------------------------------------------------------------
-def run_command(command_line, run_dir):
+def run_command(command_line, run_dir, exit_on_failure=True):
+    if isinstance(command_line, basestring):
+        command_line = command_line.strip().split()
+
     log = get_logger()
-    log.info('$ ' + command_line)
+    log.info('$ ' + ' '.join(command_line))
+    exitcode = subprocess.call(command_line, cwd=run_dir, universal_newlines=True)
 
-    exitcode = subprocess.call(command_line.strip().split(), cwd=run_dir, universal_newlines=True)
-
-    if exitcode != 0:
+    if exitcode != 0 and exit_on_failure:
         sys.exit(exitcode)
 
 #-------------------------------------------------------------------------------

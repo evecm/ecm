@@ -18,11 +18,21 @@
 __date__ = '2012 3 24'
 __author__ = 'diabeteman'
 
+from ecm.lib.subcommand import Subcommand, PassThroughOptionParser
 from ecm.admin.util import run_python_cmd
+
+def sub_command():
+
+    manage_cmd = Subcommand('manage',
+                            parser=PassThroughOptionParser(usage='%prog [OPTIONS] instance_dir'),
+                            help='Manage an instance (proxy for manage.py).',
+                            callback=run)
+    return manage_cmd
+
 
 def run(command, global_options, options, args):
     if not args:
         command.parser.error('Missing instance directory.')
     instance_dir = args.pop(0)
     # relay command to manage.py
-    run_python_cmd('manage.py', instance_dir)
+    run_python_cmd(['manage.py'] + args, instance_dir)
