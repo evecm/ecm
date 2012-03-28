@@ -23,7 +23,7 @@ from optparse import OptionParser
 
 import ecm
 from ecm.lib.subcommand import Subcommand, SubcommandsOptionParser
-from ecm.admin.cmd import create, upgrade, control, init
+from ecm.admin.cmd import create, upgrade, control, init, manage
 
 
 
@@ -32,6 +32,8 @@ def init_options():
     create_cmd = create.sub_command()
     init_cmd = init.sub_command()
     upgrade_cmd = upgrade.sub_command()
+    manage_cmd = manage.sub_command()
+
     # START - STOP - RESTART
     start_cmd = Subcommand('start',
                            parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
@@ -50,7 +52,7 @@ def init_options():
                            help='Shows the run status of an existing ECM instance.',
                            callback=control.status)
 
-    subcommands = [create_cmd, init_cmd, upgrade_cmd]
+    subcommands = [create_cmd, init_cmd, upgrade_cmd, manage_cmd]
     if not os.name == 'nt':
         # daemonizing processes cannot be done on windows
         subcommands += [start_cmd, stop_cmd, restart_cmd, status_cmd]
