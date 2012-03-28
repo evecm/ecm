@@ -49,8 +49,9 @@ def trigger_scheduler(request):
                                                     is_scheduled=False,
                                                     next_execution__lt=now).order_by("-priority")
     if tasks_to_execute:
+        tasks = list(tasks_to_execute)
         tasks_to_execute.update(is_scheduled=True)
-        Scheduler.instance().schedule(*tasks_to_execute)
+        Scheduler.instance().schedule(*tasks)
         return HttpResponse(status=http.ACCEPTED)
     else:
         return HttpResponse(status=http.NOT_MODIFIED)
