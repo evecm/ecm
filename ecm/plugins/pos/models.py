@@ -148,6 +148,15 @@ class POS(models.Model):
     @property
     def offline_access(self):
         return POS.ACCESS_RESTRICTIONS[self.deploy_flags & POS.ACCESS_MASK]
+    
+    @property
+    def time_until_tick(self):
+        online_min = self.online_timestamp.minute
+        cur_min = datetime.datetime.now().minute
+        if cur_min <= online_min:
+            return online_min - cur_min
+        else:
+            return (online_min + 60) - cur_min
 
     def state_admin_display(self):
         return self.get_state_display()
