@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import with_statement
+
 __date__ = "2010-03-23"
 __author__ = "diabeteman"
 
@@ -35,7 +37,6 @@ IGNORE_CAN_VOLUMES = True
 
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
 def update():
     """
     Retrieve all corp assets and calculate the changes.
@@ -64,7 +65,7 @@ def update():
 
     IGNORE_CAN_VOLUMES = Setting.get('assets_ignore_containers_volumes')
 
-    # we store the itemIDs of all the assets we want to locate 
+    # we store the itemIDs of all the assets we want to locate
     # then query /corp/Locations.xml with the list
     assets_to_locate = []
 
@@ -97,21 +98,27 @@ def update():
     if len(oldItems) != 0:
         LOG.debug("computing diffs since last asset scan...")
         diffs = calc_assets_diff(oldItems=oldItems, newItems=newItems, date=currentTime)
-        if diffs:
-            for assetDiff in diffs:
-                assetDiff.save()
-            # we store the update time of the table
-            markUpdated(model=AssetDiff, date=currentTime)
+
+    # I grouped all the DB writes here so that it doesn't make a too long DB transaction.
+    # The assets parsing can last more than 10 minutes on slow servers.
+    write_results(newItems, oldItems, diffs, assets_to_locate, currentTime)
+
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def write_results(newItems, oldItems, diffs, assets_to_locate, currentTime):
+    if diffs:
+        for assetDiff in diffs:
+            assetDiff.save()
+        # we store the update time of the table
+        markUpdated(model=AssetDiff, date=currentTime)
+    if len(oldItems) > 0:
         Asset.objects.all().delete()
     for asset in newItems.values():
         asset.save()
-
     update_assets_locations(assets_to_locate)
     update_assets_names()
-
-    # we store the update time of the table
     markUpdated(model=Asset, date=currentTime)
-
+    # we store the update time of the table
     LOG.info("%d changes since last scan", len(diffs))
 
 #------------------------------------------------------------------------------
@@ -379,7 +386,7 @@ def update_assets_locations(assets_to_locate):
         locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
         for loc in locations_api.locations:
             located_assets.append( (loc.itemID, loc.itemName, loc.x, loc.y, loc.z) )
-    
+
     LOG.debug('Computing positions...')
     for itemID, itemName, X, Y, Z in located_assets:
         # filter out all assets that are into the "in space" asset
@@ -387,7 +394,7 @@ def update_assets_locations(assets_to_locate):
         if contained_assets:
             solarSystemID = contained_assets.latest().solarSystemID
             distances = []
-            
+
             #for object_id, x, y, z in db.get_celestial_objects(solarSystemID):
             for obj in CelestialObject.objects.filter(solarSystemID=solarSystemID,
                                                       group__in = [7, 8]):
@@ -397,7 +404,7 @@ def update_assets_locations(assets_to_locate):
                 # manatthan_distance = abs(X - x) + abs(Y - y) + abs(Z - z)
                 manatthan_distance = abs(X - obj.x) + abs(Y - obj.y) + abs(Z - obj.z)
                 distances.append(( obj.itemID, manatthan_distance ))
-            
+
             # Sort objects by increasing distance (we only want minimum)
             distances.sort(key=lambda obj:obj[1])
             # Finally, update all the items contained into the "in space" asset
@@ -408,10 +415,10 @@ def update_assets_locations(assets_to_locate):
 #------------------------------------------------------------------------------
 def update_assets_names():
     LOG.debug('Updating player defined names...')
-    
-    assets_to_name = Asset.objects.filter(name=None, 
-                                          container1=None, 
-                                          container2=None, 
+
+    assets_to_name = Asset.objects.filter(name=None,
+                                          container1=None,
+                                          container2=None,
                                           singleton=True,
                                           hasContents=True,
                                           quantity=1).values_list('itemID', flat=True)
@@ -424,7 +431,7 @@ def update_assets_names():
         locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
         for loc in locations_api.locations:
             named_assets.append( (loc.itemID, loc.itemName) )
-    
+
     LOG.debug('Writing to DB...')
     for itemID, itemName in named_assets:
         Asset.objects.filter(itemID=itemID).update(name=itemName)
