@@ -87,10 +87,8 @@ def patch_ccp_dump(ccp_dump_url, eve_db_dir, ccp_dump_archive=None):
     with open(sql_script, 'r') as f:
         sql_patch = f.read()
     try:
-
         if ccp_dump_archive is None:
             tempdir = tempfile.mkdtemp()
-
             ccp_dump_archive = os.path.join(tempdir, 'EVE.db.bz2')
             log.info('Downloading EVE original dump from %s to %s...', ccp_dump_url, ccp_dump_archive)
             req = urllib2.urlopen(ccp_dump_url)

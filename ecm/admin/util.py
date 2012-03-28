@@ -37,10 +37,10 @@ def prompt(message, default_value=None, valid_list=None):
     if default_value is not None:
         message = '%s [default=%s]' % (message, default_value)
 
-    message = '[ECM] ' + message + ' '
-
     if supports_color():
-        message = colorize(message, fg='yellow')
+        message = colorize('[ECM] ', fg='cyan') + colorize(message, fg='magenta') + ' '
+    else:
+        message = '[ECM] ' + message + ' '
 
     if valid_list is not None:
         while value not in valid_list:
@@ -79,7 +79,7 @@ def get_logger():
         logger = logging.getLogger()
         console_hdlr = logging.StreamHandler(sys.stdout)
         if supports_color():
-            log_format = colorize('[ECM] %(message)s', fg='cyan')
+            log_format = colorize('[ECM] ', fg='cyan') + '%(message)s'
         else:
             log_format = '[ECM] %(message)s'
         console_hdlr.setFormatter(logging.Formatter(log_format))

@@ -77,7 +77,7 @@ def task_list_data(request):
 
     tasks = []
     query = ScheduledTask.objects.filter(function__in=FUNCTIONS, is_active=True)
-    for task in query.order_by('function'):
+    for task in query.order_by('-priority'):
         tasks.append([
             task.function,
             task.next_execution_admin_display(),

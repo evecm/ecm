@@ -106,7 +106,7 @@ for plugin in plugins.LIST:
 # and cannot be triggered anymore.
 # The first time this module is imported, we reset all the scheduled tasks to
 # is_running = False to avoid this problem.
-ScheduledTask.objects.all().update(is_running=False)
+ScheduledTask.objects.all().update(is_running=False, is_scheduled=False)
 
 #------------------------------------------------------------------------------
 admin_username = Setting.get('common_admin_username')
