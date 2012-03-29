@@ -143,7 +143,7 @@ def calc_assets_diff(oldItems, newItems, date):
                 added_qty = addasset.quantity
                 break
         if (added_qty - remasset.quantity):
-            # if the added asset doesn't negates the removed one, we create a diff
+            # if the added asset doesn't negate the removed one, we create a diff
             diffs.append(AssetDiff(solarSystemID=remasset.solarSystemID,
                                        stationID=remasset.stationID,
                                         hangarID=remasset.hangarID,
@@ -172,7 +172,7 @@ def merge_duplicates(assetlist):
     # we sort assets by locationID, hangarID then typeID in order to merge duplicates
     try:
         i = 0
-        while(True):
+        while True:
             if assetlist[i].lookslike(assetlist[i + 1]):
                 # the assets are sorted so we can merge and delete the duplicate one
                 assetlist[i].quantity += assetlist[i + 1].quantity

@@ -38,7 +38,7 @@ def prompt(message, default_value=None, valid_list=None):
         message = '%s [default=%s]' % (message, default_value)
 
     if supports_color():
-        message = colorize('[ECM] ', fg='cyan') + colorize(message, fg='magenta') + ' '
+        message = colorize('[ECM] ', fg='cyan', opts=('bold',)) + colorize(message, fg='magenta') + ' '
     else:
         message = '[ECM] ' + message + ' '
 
@@ -86,7 +86,7 @@ def get_logger():
         logger = logging.getLogger()
         console_hdlr = logging.StreamHandler(sys.stdout)
         if supports_color():
-            log_format = colorize('[ECM] ', fg='cyan') + '%(message)s'
+            log_format = colorize('[ECM] ', fg='cyan', opts=('bold',)) + '%(message)s'
         else:
             log_format = '[ECM] %(message)s'
         console_hdlr.setFormatter(logging.Formatter(log_format))

@@ -19,13 +19,10 @@ __date__ = '2012 3 22'
 __author__ = 'diabeteman'
 
 import os
-from optparse import OptionParser
 
 import ecm
-from ecm.lib.subcommand import Subcommand, SubcommandsOptionParser
+from ecm.lib.subcommand import SubcommandsOptionParser
 from ecm.admin.cmd import create, upgrade, control, init, manage
-
-
 
 #------------------------------------------------------------------------------
 def init_options():
@@ -34,28 +31,10 @@ def init_options():
     upgrade_cmd = upgrade.sub_command()
     manage_cmd = manage.sub_command()
 
-    # START - STOP - RESTART
-    start_cmd = Subcommand('start',
-                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                           help='Start an existing ECM instance.',
-                           callback=control.start)
-    stop_cmd = Subcommand('stop',
-                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                           help='Stop an existing ECM instance.',
-                           callback=control.stop)
-    restart_cmd = Subcommand('restart',
-                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                           help='Restart an existing ECM instance.',
-                           callback=control.restart)
-    status_cmd = Subcommand('status',
-                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                           help='Shows the run status of an existing ECM instance.',
-                           callback=control.status)
-
     subcommands = [create_cmd, init_cmd, upgrade_cmd, manage_cmd]
     if not os.name == 'nt':
         # daemonizing processes cannot be done on windows
-        subcommands += [start_cmd, stop_cmd, restart_cmd, status_cmd]
+        subcommands.append(control.sub_command())
 
     # Set up the global parser and its options.
     return SubcommandsOptionParser(subcommands=subcommands, version=ecm.VERSION)
