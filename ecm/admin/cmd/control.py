@@ -21,6 +21,7 @@ __date__ = '2012 3 24'
 __author__ = 'diabeteman'
 
 import sys
+import time
 from os import path
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
@@ -53,6 +54,7 @@ def run(command, global_options, options, args):
     pidfile = config.get('misc', 'pid_file') or 'ecm.pid'
     address = config.get('misc', 'server_bind_ip') or '127.0.0.1'
     port = config.get('misc', 'server_bind_port') or 8888
+    run_as_user = config.get('misc', 'run_as_user') or None
 
     if not path.isabs(pidfile):
         pidfile = path.abspath(path.join(instance_dir, pidfile))
@@ -68,30 +70,50 @@ def run(command, global_options, options, args):
             log.info('Instance is stopped')
         sys.exit(0)
     else:
-        daemon = GEventWSGIDaemon(pidfile, address, port)
+        if run_as_user:
+            import pwd
+            uid = pwd.getpwnam(run_as_user)
+        else:
+            uid = None
+        
+        daemon = GEventWSGIDaemon(address=address, 
+                                  port=port, 
+                                  pidfile=pidfile, 
+                                  working_dir=path.abspath(instance_dir), 
+                                  uid=uid)
         if real_command == 'start':
-            log.info('Instance starting...')
-            daemon.start()
-            with open(pidfile, 'r') as pf:
-                pid = pf.read()
-            log.info('Instance is running with PID: %s' % pid.strip())
+            _start(daemon, pidfile, log)
         elif real_command == 'stop':
-            log.info('Instance is shutting down...')
-            daemon.stop()
-            log.info('Instance is stopped')
+            _stop(daemon, log)
         elif real_command == 'restart':
-            log.info('Instance restarting...')
-            daemon.restart()
-            with open(pidfile, 'r') as pf:
-                pid = pf.read()
-            log.info('Instance is running with PID: %s' % pid.strip())
+            _stop(daemon, log)
+            _start(daemon, pidfile, log)
+
+#------------------------------------------------------------------------------
+def _start(daemon, pidfile, log):
+    log.info('Instance starting...')
+    daemon.start()
+    try:
+        with open(pidfile, 'r') as pf:
+            pid = pf.read()
+        log.info('Instance is running with PID: %s' % pid.strip())
+    except IOError:
+        log.info('Start instance failed')
+
+#------------------------------------------------------------------------------
+def _stop(daemon, log):
+    log.info('Instance is shutting down...')
+    daemon.stop()
+    log.info('Instance is stopped')
 
 #------------------------------------------------------------------------------
 class GEventWSGIDaemon(Daemon):
 
-    def __init__(self, pidfile, address, port):
-        Daemon.__init__(self, pidfile)
-        self.address = address
+    def __init__(self, address, port, pidfile, working_dir, uid=None, gid=None, 
+                 stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+        Daemon.__init__(self, pidfile=pidfile, working_dir=working_dir, uid=uid, 
+                        gid=gid, stdin=stdin, stdout=stdout, stderr=stderr)
+        self.address = address 
         self.port = port
 
     def run(self):
@@ -107,9 +129,8 @@ class GEventWSGIDaemon(Daemon):
         server.serve_forever()
 
     def _setup_environ(self):
-        instance_dir = path.abspath(path.dirname(__file__))
-        sys.path.insert(0, instance_dir)
-
+        sys.path.insert(0, self.working_dir)
+        
         import settings #@UnresolvedImport
 
         from django.core import management
