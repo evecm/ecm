@@ -21,7 +21,6 @@ __author__ = 'diabeteman'
 
 import subprocess
 import sys
-import logging
 
 from django.core.management.color import supports_color
 from django.utils.termcolors import colorize
@@ -69,28 +68,17 @@ def run_command(command_line, run_dir, exit_on_failure=True):
     if isinstance(command_line, basestring):
         command_line = command_line.strip().split()
 
-    log = get_logger()
-    log.info('$ ' + ' '.join(command_line))
+    log('$ ' + ' '.join(command_line))
     exitcode = subprocess.call(command_line, cwd=run_dir, universal_newlines=True)
 
     if exitcode != 0 and exit_on_failure:
         sys.exit(exitcode)
 
 #-------------------------------------------------------------------------------
-__logger__ = None
-def get_logger():
-    global __logger__
-    if __logger__ is not None:
-        return __logger__
+def log(message, *args):
+    message = message % args
+    if supports_color():
+        print colorize('[ECM] ', fg='cyan', opts=('bold',)) +  message
     else:
-        logger = logging.getLogger()
-        console_hdlr = logging.StreamHandler(sys.stdout)
-        if supports_color():
-            log_format = colorize('[ECM] ', fg='cyan', opts=('bold',)) + '%(message)s'
-        else:
-            log_format = '[ECM] %(message)s'
-        console_hdlr.setFormatter(logging.Formatter(log_format))
-        logger.addHandler(console_hdlr)
-        logger.setLevel(logging.INFO)
-        __logger__ = logger
-        return __logger__
+        print '[ECM] ' + message
+

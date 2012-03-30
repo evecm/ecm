@@ -24,7 +24,7 @@ from ConfigParser import SafeConfigParser
 from optparse import OptionParser, OptionGroup
 
 from ecm.admin import instance_template
-from ecm.admin.util import prompt, get_logger
+from ecm.admin.util import prompt, log
 from ecm.lib.subcommand import Subcommand
 
 DB_ENGINES = {
@@ -132,7 +132,7 @@ def write_settings(command, options, instance_dir):
         raise IOError('Could not read %s' % settings_file)
     config.set('misc', 'debug', 'False')
     config.set('misc', 'server_bind_ip', str(options.bind_address))
-    config.set('misc', 'server_port', str(options.bind_port))
+    config.set('misc', 'server_bind_port', str(options.bind_port))
     config.set('misc', 'pid_file', 'ecm.pid')
     config.set('database', 'ecm_engine', str(options.db_engine))
     if options.db_name:
@@ -157,10 +157,9 @@ def run(command, global_options, options, args):
     try:
         prompt_missing_options(options)
         write_settings(command, options, instance_dir)
-        log = get_logger()
-        log.info('')
-        log.info('New ECM instance created in "%s".' % instance_dir)
-        log.info('Please check the configuration in "%s" before running `ecm-admin init "%s"`.'
+        log('')
+        log('New ECM instance created in "%s".' % instance_dir)
+        log('Please check the configuration in "%s" before running `ecm-admin init "%s"`.'
                  % (path.join(instance_dir, 'settings.ini'), instance_dir))
     except:
         # delete the created instance directory if something goes wrong

@@ -25,7 +25,7 @@ import os
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 
-from ecm.admin.util import run_python_cmd, get_logger
+from ecm.admin.util import run_python_cmd, log
 from ecm.lib.subcommand import Subcommand
 from ecm.admin.cmd import collect_static_files, download_patched_eve_db, PATCHED_EVE_DB_URL,\
     CCP_EVE_DB_URL, patch_ccp_dump
@@ -64,10 +64,9 @@ def sub_command():
 
 #-------------------------------------------------------------------------------
 def init_ecm_db(instance_dir):
-    log = get_logger()
-    log.info("Initializing database...")
+    log("Initializing database...")
     run_python_cmd('manage.py syncdb --noinput --migrate', instance_dir)
-    log.info('Database initialization successful.')
+    log('Database initialization successful.')
 
 #-------------------------------------------------------------------------------
 def run(command, global_options, options, args):

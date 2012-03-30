@@ -20,14 +20,16 @@ from __future__ import with_statement
 __date__ = '2012 3 24'
 __author__ = 'diabeteman'
 
+import os
 import sys
 import time
+import socket
 from os import path
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 
 from ecm.lib.subcommand import Subcommand
-from ecm.admin.util import get_logger
+from ecm.admin.util import log
 from ecm.lib.daemon import Daemon
 
 #------------------------------------------------------------------------------
@@ -36,15 +38,17 @@ def sub_command():
                      parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
                      help='Control the embedded server of an existing ECM instance.',
                      callback=run)
+    cmd.parser.add_option('-l', '--log-file',
+                          dest='logfile', metavar='FILE',
+                          help='Write server access log to FILE. Default is "/dev/null".')
     return cmd
 
 #------------------------------------------------------------------------------
 def run(command, global_options, options, args):
+    
     if not args:
         command.parser.error('Missing instance directory.')
     instance_dir = args[0]
-
-    log = get_logger()
 
     config = SafeConfigParser()
     settings_file = path.join(instance_dir, 'settings.ini')
@@ -53,7 +57,7 @@ def run(command, global_options, options, args):
 
     pidfile = config.get('misc', 'pid_file') or 'ecm.pid'
     address = config.get('misc', 'server_bind_ip') or '127.0.0.1'
-    port = config.get('misc', 'server_bind_port') or 8888
+    port = config.getint('misc', 'server_bind_port') or 8888
     run_as_user = config.get('misc', 'run_as_user') or None
 
     if not path.isabs(pidfile):
@@ -65,52 +69,90 @@ def run(command, global_options, options, args):
         if path.isfile(pidfile):
             with open(pidfile, 'r') as pf:
                 pid = pf.read()
-            log.info('Instance is running with PID: %s' % pid.strip())
+            log('Instance is running with PID: %s' % pid.strip())
         else:
-            log.info('Instance is stopped')
+            log('Instance is stopped')
         sys.exit(0)
     else:
         if run_as_user:
             import pwd
-            uid = pwd.getpwnam(run_as_user)
+            try:
+                uid = pwd.getpwnam(run_as_user).pw_uid
+            except KeyError:
+                command.parser.error('User "%s" does not exist.' % run_as_user)
         else:
             uid = None
+        
+        if options.logfile is not None:
+            logfile = path.abspath(options.logfile)
+            logdir = path.dirname(logfile)
+            if not path.exists(logdir):
+                os.makedirs(logdir)
+        else:
+            logfile = None
         
         daemon = GEventWSGIDaemon(address=address, 
                                   port=port, 
                                   pidfile=pidfile, 
                                   working_dir=path.abspath(instance_dir), 
-                                  uid=uid)
+                                  uid=uid,
+                                  stdout=logfile,
+                                  stderr=logfile)
+        
         if real_command == 'start':
-            _start(daemon, pidfile, log)
+            _start(daemon)
         elif real_command == 'stop':
-            _stop(daemon, log)
+            _stop(daemon)
         elif real_command == 'restart':
-            _stop(daemon, log)
-            _start(daemon, pidfile, log)
+            _stop(daemon)
+            _start(daemon)
 
 #------------------------------------------------------------------------------
-def _start(daemon, pidfile, log):
-    log.info('Instance starting...')
+def _start(daemon):
+    log('Starting...')
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect( (daemon.address, daemon.port) )
+        log('ERROR: Address "%s:%s" already in use.' % (daemon.address, daemon.port))
+        sys.exit(1)
+    except socket.error:
+        pass
+    finally:
+        sock.close()
+    
     daemon.start()
     try:
-        with open(pidfile, 'r') as pf:
-            pid = pf.read()
-        log.info('Instance is running with PID: %s' % pid.strip())
-    except IOError:
-        log.info('Start instance failed')
+        # wait to let the child process create the PID file
+        tries = 0
+        while tries < 10:
+            try:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.connect( (daemon.address, daemon.port) )
+                with open(daemon.pidfile, 'r') as pf:
+                    pid = pf.read()
+                log('Server is listening on "%s:%s" (PID: %s)' 
+                                     % (daemon.address, daemon.port, pid.strip()))
+                sys.exit(0)
+            except socket.error:
+                tries += 1
+                time.sleep(0.5)
+            finally:
+                sock.close()
+        raise socket.error()
+    except (IOError, socket.error):
+        log('ERROR: Failed to start instance.')
 
 #------------------------------------------------------------------------------
-def _stop(daemon, log):
-    log.info('Instance is shutting down...')
+def _stop(daemon):
+    log('Shutting down...')
     daemon.stop()
-    log.info('Instance is stopped')
+    log('Stopped')
 
 #------------------------------------------------------------------------------
 class GEventWSGIDaemon(Daemon):
 
     def __init__(self, address, port, pidfile, working_dir, uid=None, gid=None, 
-                 stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+                 stdin=None, stdout=None, stderr=None):
         Daemon.__init__(self, pidfile=pidfile, working_dir=working_dir, uid=uid, 
                         gid=gid, stdin=stdin, stdout=stdout, stderr=stderr)
         self.address = address 
@@ -118,17 +160,19 @@ class GEventWSGIDaemon(Daemon):
 
     def run(self):
         self._setup_environ()
-        try:
-            from gevent.pywsgi import WSGIServer
-        except ImportError:
-            print >>sys.stderr, 'Please install "gevent" to run this command.'
-            sys.exit(1)
+        from gevent import monkey
+        monkey.patch_all()
+        from gevent.pywsgi import WSGIServer
         import django.core.handlers.wsgi
         application = django.core.handlers.wsgi.WSGIHandler()
         server = WSGIServer((self.address, self.port), application)
         server.serve_forever()
 
     def _setup_environ(self):
+        # workaround on osx, disable kqueue
+        if sys.platform == "darwin":
+            os.environ['EVENT_NOKQUEUE'] = "1"
+        
         sys.path.insert(0, self.working_dir)
         
         import settings #@UnresolvedImport
@@ -143,3 +187,4 @@ class GEventWSGIDaemon(Daemon):
         from django.conf import settings as django_settings
         from django.utils import translation
         translation.activate(django_settings.LANGUAGE_CODE)
+        

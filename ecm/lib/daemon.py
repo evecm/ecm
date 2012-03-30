@@ -9,14 +9,14 @@ class Daemon:
 
     Usage: subclass the Daemon class and override the run() method
     """
-    def __init__(self, pidfile, working_dir, uid=None, gid=None, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+    def __init__(self, pidfile, working_dir, uid=None, gid=None, stdin=None, stdout=None, stderr=None):
         self.pidfile = pidfile
         self.working_dir = working_dir
         self.uid = uid
         self.gid = gid
-        self.stdin = stdin
-        self.stdout = stdout
-        self.stderr = stderr
+        self.stdin = stdin or os.devnull
+        self.stdout = stdout or os.devnull
+        self.stderr = stderr or os.devnull
 
     def daemonize(self):
         """
@@ -27,8 +27,8 @@ class Daemon:
         try:
             pid = os.fork() #@UndefinedVariable
             if pid > 0:
-                # exit first parent
-                sys.exit(0)
+                # return from first parent to continue execution
+                return True
         except OSError, e:
             sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
             sys.exit(1)
@@ -41,8 +41,8 @@ class Daemon:
         try:
             pid = os.fork() #@UndefinedVariable
             if pid > 0:
-                # return from second parent to continue execution
-                return pid
+                # exit second parent
+                sys.exit(0)
         except OSError, e:
             sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
             sys.exit(1)
@@ -64,7 +64,7 @@ class Daemon:
         # register the function to delete pidfile at process exit
         atexit.register(self.delpid)
         
-        return None # return None means we are in the "daemonized" child process
+        return False # return False means we are in the "daemonized" child process
 
     def delpid(self):
         os.remove(self.pidfile)
@@ -80,7 +80,7 @@ class Daemon:
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
 
-    def restore_standard_file_descriptors(self):
+    def unmask_standard_file_descriptors(self):
         os.dup2(self.init_stdin, sys.stdin.fileno())
         os.dup2(self.init_stdout, sys.stdout.fileno())
         os.dup2(self.init_stderr, sys.stderr.fileno())
@@ -102,16 +102,14 @@ class Daemon:
             sys.stderr.write(message % self.pidfile)
             sys.exit(1)
 
-        pid = self.daemonize()
-        if pid is not None:
-            # we are in the parent process and pid is
-            # the PID of the daemonized process
-            return pid
+        parent = self.daemonize()
+        if parent:
+            return
         try:
             # we can only be here if we are in the daemonized process
             self.run()
         except:
-            self.restore_standard_file_descriptors()
+            self.unmask_standard_file_descriptors()
             raise
         # make sure we exit here otherwise strange things could happen :cuir:
         sys.exit(0)

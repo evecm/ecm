@@ -29,7 +29,7 @@ from ConfigParser import SafeConfigParser
 from django.core import management
 
 from ecm.lib.subcommand import Subcommand
-from ecm.admin.util import run_python_cmd, get_logger
+from ecm.admin.util import run_python_cmd, log
 from ecm.admin.cmd import collect_static_files, download_patched_eve_db, patch_ccp_dump,\
     PATCHED_EVE_DB_URL, CCP_EVE_DB_URL
 
@@ -73,8 +73,7 @@ def sub_command():
 
 #-------------------------------------------------------------------------------
 def migrate_ecm_db(instance_dir, upgrade_from_149=False):
-    log = get_logger()
-    log.info("Migrating database...")
+    log("Migrating database...")
     run_python_cmd('manage.py syncdb --noinput', instance_dir)
 
     # now we must test if SOUTH was already installed/used
@@ -95,13 +94,13 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
         # we are upgrading from ECM 1.X.Y, we must perform the init migration
         # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
         MigrationHistory.objects.delete() #@UndefinedVariable
-        log.info('Migrating from ECM 1.4.9...')
+        log('Migrating from ECM 1.4.9...')
         run_python_cmd('manage.py migrate hr 0001 --no-initial-data', instance_dir)
     if not MigrationHistory.objects.exclude(app_name='hr'):
         # SOUTH has never been used in that installation.
         # we MUST "fake" the first migration,
         # otherwise the migrate command will fail because DB tables already exist...
-        log.info('First use of South, faking the initial migration...')
+        log('First use of South, faking the initial migration...')
         run_python_cmd('manage.py migrate 0001 --all --fake --no-initial-data', instance_dir)
 
     run_python_cmd('manage.py migrate --all --no-initial-data', instance_dir)
@@ -110,7 +109,7 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     del sys.modules[module_name]
     sys.path.remove(instance_dir)
 
-    log.info('Database Migration successful.')
+    log('Database Migration successful.')
 
 #-------------------------------------------------------------------------------
 def run(command, global_options, options, args):
