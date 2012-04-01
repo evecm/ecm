@@ -2,8 +2,8 @@
 
 <VirtualHost *:80>
 
-    DocumentRoot /srv/eve-corp-management
-    ServerName ecm.yourdomain.com
+    DocumentRoot "%(instance_dir)s"
+    ServerName "%(host_name)s"
 
     <Proxy *>
         Order deny,allow
@@ -11,9 +11,9 @@
     </Proxy>
 
     ProxyPass /static/ !
-    ProxyPass / http://localhost:8000/
+    ProxyPass / http://%(bind_address)s:%(bind_port)/
 
-    <Directory /srv/eve-corp-management>
+    <Directory "%(instance_dir)s/static">
         Order deny,allow
         Allow from all
         Options -Indexes

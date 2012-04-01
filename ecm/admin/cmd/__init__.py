@@ -22,6 +22,7 @@ __date__ = '2012 3 23'
 __author__ = 'diabeteman'
 
 import os
+import sys
 import tempfile
 import urllib2
 import zipfile
@@ -116,3 +117,44 @@ def patch_ccp_dump(ccp_dump_url, eve_db_dir, ccp_dump_archive=None):
             log('Removing temp files...')
             shutil.rmtree(tempdir)
             log('done')
+
+
+#------------------------------------------------------------------------------
+def run_server(instance_dir, address, port, access_log=False):
+    
+    # workaround on osx, disable kqueue
+    if sys.platform == "darwin":
+        os.environ['EVENT_NOKQUEUE'] = "1"
+    
+    sys.path.insert(0, instance_dir)
+    
+    import settings #@UnresolvedImport
+
+    from django.core import management
+
+    management.setup_environ(settings)
+    utility = management.ManagementUtility()
+    command = utility.fetch_command('runserver')
+    command.validate()
+
+    from django.conf import settings as django_settings
+    from django.utils import translation
+    translation.activate(django_settings.LANGUAGE_CODE)
+    
+    from gevent import monkey
+    monkey.patch_all()
+    from gevent.pywsgi import WSGIServer
+    import django.core.handlers.wsgi
+    application = django.core.handlers.wsgi.WSGIHandler()
+    
+    if access_log:
+        logfile = 'default'
+    else:
+        logfile = file(os.devnull, 'a+')
+    
+    server = WSGIServer((address, port), application, log=logfile)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        server.stop()
+    

@@ -19,8 +19,10 @@ __date__ = '2012 3 25'
 __author__ = 'diabeteman'
 
 
-import subprocess
+import os
 import sys
+import signal
+import subprocess
 
 from django.core.management.color import supports_color
 from django.utils.termcolors import colorize
@@ -69,10 +71,15 @@ def run_command(command_line, run_dir, exit_on_failure=True):
         command_line = command_line.strip().split()
 
     log('$ ' + ' '.join(command_line))
-    exitcode = subprocess.call(command_line, cwd=run_dir, universal_newlines=True)
-
-    if exitcode != 0 and exit_on_failure:
-        sys.exit(exitcode)
+    proc = None
+    try:
+        proc = subprocess.Popen(command_line, cwd=run_dir, universal_newlines=True)
+        exitcode = proc.wait()
+        if exitcode != 0 and exit_on_failure:
+            sys.exit(exitcode)
+    except KeyboardInterrupt:
+        if proc is not None:
+            os.kill(proc.pid, signal.SIGTERM)
 
 #-------------------------------------------------------------------------------
 def log(message, *args):

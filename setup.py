@@ -69,6 +69,6 @@ setup(
     include_package_data = True,
     zip_safe = False,
     entry_points = {
-        'console_scripts': ('ecm-admin = ecm.admin.cli:run'),
+        'console_scripts': ('ecm-admin = ecm.admin.cli:main'),
     },
 )

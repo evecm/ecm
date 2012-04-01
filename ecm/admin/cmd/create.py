@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import with_statement
+
 __date__ = '2012 3 23'
 __author__ = 'diabeteman'
 
@@ -117,9 +119,9 @@ def prompt_missing_options(options):
     if not options.server_email:
         options.server_email = prompt('Email used as "from" address in emails sent by the server?')
     if not options.bind_address:
-        options.bind_address = prompt('Server listening address?', default_value='127.0.0.1')
+        options.bind_address = prompt('Embedded server listening address?', default_value='127.0.0.1')
     if not options.bind_port:
-        options.bind_port = prompt('Server listening port?', default_value=8888)
+        options.bind_port = prompt('Embedded server listening port?', default_value=8888)
 
 #------------------------------------------------------------------------------
 def write_settings(command, options, instance_dir):
@@ -145,6 +147,24 @@ def write_settings(command, options, instance_dir):
     settings_fd = open(settings_file, 'w')
     config.write(settings_fd)
     settings_fd.close()
+    
+    instance_dir = path.abspath(instance_dir)
+    apache_mod_wsgi_vhost = path.join(instance_dir, 'examples/apache_mod_wsgi_vhost.example')
+    apache_proxy_vhost = path.join(instance_dir, 'examples/apache_reverse_proxy.example')
+    options.instance_dir = instance_dir
+    
+    with open(apache_mod_wsgi_vhost, 'r') as fd:
+        buff = fd.read()
+    buff = buff % options.__dict__
+    with open(apache_mod_wsgi_vhost, 'w') as fd:
+        buff = fd.write(buff)
+    
+    with open(apache_proxy_vhost, 'r') as fd:
+        buff = fd.read()
+    buff = buff % options.__dict__
+    with open(apache_proxy_vhost, 'w') as fd:
+        buff = fd.write(buff)
+    
 
 #------------------------------------------------------------------------------
 def run(command, global_options, options, args):

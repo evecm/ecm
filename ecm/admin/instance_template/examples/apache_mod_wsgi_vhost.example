@@ -2,15 +2,21 @@
 
 <VirtualHost *:80>
 
-    DocumentRoot /srv/eve-corp-management
-    ServerName ecm.yourdomain.com
+    DocumentRoot "%(instance_dir)s"
+    ServerName "%(host_name)s"
 
-    WSGIScriptAlias / /srv/eve-corp-management/scripts/apache_mod_wsgi.py
+    WSGIScriptAlias / "%(instance_dir)s/apache/apache_mod_wsgi.py"
     WSGIDaemonProcess mod_wsgi_ecm processes=1 threads=25
     WSGIProcessGroup mod_wsgi_ecm
     WSGIPassAuthorization On
 
-    <Directory /srv/eve-corp-management>
+    <Directory "%(instance_dir)s/apache">
+        Order deny,allow
+        Allow from all
+        Options -Indexes
+    </Directory>
+
+    <Directory "%(instance_dir)s/static">
         Order deny,allow
         Allow from all
         Options -Indexes

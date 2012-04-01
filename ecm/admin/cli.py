@@ -22,7 +22,7 @@ import os
 
 import ecm
 from ecm.lib.subcommand import SubcommandsOptionParser
-from ecm.admin.cmd import create, upgrade, control, init, manage
+from ecm.admin.cmd import create, upgrade, daemon, init, manage, run
 
 #------------------------------------------------------------------------------
 def init_options():
@@ -30,17 +30,18 @@ def init_options():
     init_cmd = init.sub_command()
     upgrade_cmd = upgrade.sub_command()
     manage_cmd = manage.sub_command()
-
-    subcommands = [create_cmd, init_cmd, upgrade_cmd, manage_cmd]
+    run_cmd = run.sub_command()
+    
+    subcommands = [create_cmd, init_cmd, upgrade_cmd, manage_cmd, run_cmd]
     if not os.name == 'nt':
         # daemonizing processes cannot be done on windows
-        subcommands.append(control.sub_command())
+        subcommands.append(daemon.sub_command())
 
     # Set up the global parser and its options.
     return SubcommandsOptionParser(subcommands=subcommands, version=ecm.VERSION)
 
 #------------------------------------------------------------------------------
-def run(args=None):
+def main(args=None):
     parser = init_options()
     # Parse the global options and the subcommand options.
     global_options, command, options, args = parser.parse_args(args)
@@ -48,4 +49,4 @@ def run(args=None):
 
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
-    run()
+    main()

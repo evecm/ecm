@@ -28,15 +28,16 @@ from os import path
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 
-from ecm.lib.subcommand import Subcommand
+from ecm.admin.cmd import run_server
 from ecm.admin.util import log
+from ecm.lib.subcommand import Subcommand
 from ecm.lib.daemon import Daemon
 
 #------------------------------------------------------------------------------
 def sub_command():
     cmd = Subcommand('start', aliases=('stop', 'restart', 'status'),
                      parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                     help='Control the embedded server of an existing ECM instance.',
+                     help='Control the embedded daemon server of an existing ECM instance.',
                      callback=run)
     cmd.parser.add_option('-l', '--log-file',
                           dest='logfile', metavar='FILE',
@@ -159,32 +160,6 @@ class GEventWSGIDaemon(Daemon):
         self.port = port
 
     def run(self):
-        self._setup_environ()
-        from gevent import monkey
-        monkey.patch_all()
-        from gevent.pywsgi import WSGIServer
-        import django.core.handlers.wsgi
-        application = django.core.handlers.wsgi.WSGIHandler()
-        server = WSGIServer((self.address, self.port), application)
-        server.serve_forever()
-
-    def _setup_environ(self):
-        # workaround on osx, disable kqueue
-        if sys.platform == "darwin":
-            os.environ['EVENT_NOKQUEUE'] = "1"
+        run_server(self.working_dir, self.address, self.port)
         
-        sys.path.insert(0, self.working_dir)
-        
-        import settings #@UnresolvedImport
 
-        from django.core import management
-
-        management.setup_environ(settings)
-        utility = management.ManagementUtility()
-        command = utility.fetch_command('runserver')
-        command.validate()
-
-        from django.conf import settings as django_settings
-        from django.utils import translation
-        translation.activate(django_settings.LANGUAGE_CODE)
-        
