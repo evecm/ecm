@@ -106,38 +106,43 @@ def print_duration_short(hours):
 MINUTE = 60
 HOUR = 60 * MINUTE
 DAY = 24 * HOUR
-def print_duration_long(seconds):
+DURATION_UNITS = {
+    True: {'day': ' day', 'hour': ' hour', 'min': ' min.', 'sec': ' sec.'}, # verbose
+    False: {'day': 'd', 'hour': 'h', 'min': 'm', 'sec': 's'}, # short
+}
+def print_duration(seconds, verbose=True):
     seconds = int(seconds)
-    if not seconds > 0:
-        return '0 sec.'
     duration = ''
     days = seconds / DAY
     if days > 0:
-        duration += '%d day' % days
-        if days > 1:
+        duration += str(days) + '%(day)s'
+        if verbose and days > 1:
             duration += 's'
     rest = seconds % DAY
     hours = rest / HOUR
     if hours > 0:
-        duration += ' %d hour' % hours
-        if hours > 1:
+        duration += ' %d' % hours + '%(hour)s'
+        if verbose and hours > 1:
             duration += 's'
     rest = rest % HOUR
     minutes = rest / MINUTE
     if minutes > 0:
-        duration += ' %d min.' % minutes
+        duration += ' %d' % minutes + '%(min)s'
     rest = rest % MINUTE
     if rest > 0:
-        duration += ' %d sec.' % rest
+        duration += ' %d' % rest + '%(sec)s'
+        
+    duration %= DURATION_UNITS[verbose]
     return duration.strip()
 
+
 #------------------------------------------------------------------------------
-UNITS = ['K', 'M', 'G', 'T']
+QTY_UNITS = ['K', 'M', 'G', 'T']
 def round_quantity(quantity):
     if quantity < 1000 and type(quantity) == type(0):
         return str(quantity)
     else:
-        units = UNITS[:]
+        units = QTY_UNITS[:]
         unit = ''
         while quantity >= 1000 and len(units):
             unit = units.pop(0)

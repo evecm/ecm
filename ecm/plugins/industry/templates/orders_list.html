@@ -79,7 +79,7 @@ PARAMS = '{%for id, name in states.items%}{{id}}{%if not forloop.last%},{%endif%
 
 $(document).ready(function() {
       var table = $('#orders_list').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource: '/industry/orders/all/data/',
+        sAjaxSource: '/industry/orders/data/',
         aoColumns: [
             { /* # */               sWidth: "10%" },
             { /* State */           sWidth: "10%" },

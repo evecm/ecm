@@ -53,7 +53,7 @@ def ecm_time(value):
 @register.filter(name='ecm_duration_long')
 def ecm_duration_long(value):
     try:
-        return unicode(utils.print_duration_long(value))
+        return unicode(utils.print_duration(value))
     except:
         return unicode(value)
 

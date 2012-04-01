@@ -191,10 +191,27 @@ class Job(models.Model):
             output += j.repr_as_tree(indent + 1)
         return output
 
+    def url(self):
+        return '/industry/jobs/%d/' % self.id
+
+    def permalink(self):
+        return '<a href="%s" class="industry-job">Job &#35;%s</a>' % (self.url(), self.id)
+
+    def owner_permalink(self):
+        if self.owner is not None:
+            url = '/hr/player/%d/' % self.owner.id
+            return '<a href="%s" class="player">%s</a>' % (url, self.owner.username)
+        else:
+            return '(none)'
+
     @cached_property
     def item(self):
         return Type.objects.get(pk=self.item_id)
 
+    @property
+    def state_text(self):
+        return Job.STATES[self.state]
+    
     @property
     def activity_text(self):
         return Job.ACTIVITIES[self.activity]

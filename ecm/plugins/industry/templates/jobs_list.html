@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Jobs list{% endblock %}
+
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/industry/">Industry</a></li>
+<li class="active"><a href="/industry/jobs/">Jobs</a></li>
+{% endblock %}
+
+{% block main_content %}
+<div class="page-header">
+    <h1>Jobs list</h1>
+</div>
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+    
+    <span class="label label-info">Display</span>
+    <div class="btn-group" data-toggle="buttons-radio" id="state_buttons">
+      <button class="btn btn-small btn-info" id="all" >All</button>{% for id, name in states.items %}
+      <button class="btn btn-small btn-info" id="{{ id }}" >{{ name }}</button>
+    {% endfor %}</div>
+    <span class="label label-important">Owner</span>
+    <div class="btn-group" data-toggle="buttons-radio" id="owner_buttons">
+      <button class="btn btn-small btn-danger" id="mine" >Only Me</button>
+      <button class="btn btn-small btn-danger" id="all" >Everyone</button>
+    </div>
+    
+  </div>
+</form>
+
+<table class="table table-bordered table-condensed" id="jobs_list">
+  <thead>
+    <tr>
+      {%for col in columns%}
+      <th class="top" scope="col" >{{col}}</th>
+      {%endfor%}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {%for col in columns%}
+      <th>{{col}}</th>
+      {%endfor%}
+    </tr>
+  </tfoot>
+
+</table>
+{% endblock %}
+
+
+{% block post_javascripts %}
+<script>
+STATE = '{{state}}';
+OWNER = '{{owner}}'
+  
+$(document).ready(function() {
+    var table = $('#jobs_list').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+    	iCookieDuration: 60 * 60 * 24 * 7, /* 1 week */
+        sAjaxSource: '/industry/jobs/data/',
+        aoColumns: [
+            { /* # */               sWidth: "10%" },
+            { /* State */           sWidth: "10%" },
+            { /* Order */      		sWidth: "10%" },
+            { /* Owner */          	sWidth: "15%" },
+            { /* Duration */   		sWidth: "10%" },
+            { /* Activity */        sWidth: "15%" },
+            { /* Quantity/Runs */   sWidth: "10%" , sClass: 'right'},
+            { /* Item */            sWidth: "30%" },
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            return nRow;
+        },
+
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: 'state',
+                value: STATE
+            }, {
+            	name: 'owner',
+            	value: OWNER
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+        
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        fnStateSaveParams: function (oSettings, oData) {
+            oData.sFilter = $("#search_text").val()
+            oData.state = STATE;
+            oData.owner = OWNER;
+        },
+
+        /* restore the search field content */
+        fnStateLoadParams: function (oSettings, oData) {
+            $("#search_text").val(oData.sFilter);
+            if ('state' in oData) {
+            	STATE = oData.state;
+            	updateStateButtons();
+            }
+            if ('owner' in oData) {
+            	OWNER = oData.owner;
+            	updateOwnerButtons();
+            }
+            return true;
+        }
+    }));
+
+    /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
+    });
+
+    /* disable multi column sorting */
+    $('#orders_list thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+    
+    updateStateButtons();
+    updateOwnerButtons();
+} );
+
+
+
+function updateStateButtons() {
+	$('#state_buttons button').each(function () {
+		if (this.id == STATE) {
+			$(this).addClass('active');
+		} else {
+			$(this).removeClass('active');
+		}
+	});
+}
+function updateOwnerButtons() {
+	$('#owner_buttons button').each(function () {
+		if (this.id == OWNER) {
+			$(this).addClass('active');
+		} else {
+			$(this).removeClass('active');
+		}
+	});
+}
+</script>
+{% endblock %}

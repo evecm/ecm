@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.eve.models import Type
 
 __date__ = '2011 11 13'
 __author__ = 'diabeteman'
@@ -32,6 +31,7 @@ from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response
 
 from ecm.core import utils
+from ecm.apps.eve.models import Type
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.models.catalog import OwnedBlueprint
@@ -156,7 +156,7 @@ def manufacturing_time(request, blueprint_id):
         bp = get_object_or_404(OwnedBlueprint, id=int(blueprint_id))
     except (KeyError, ValueError), e:
         raise HttpResponseBadRequest(str(e))
-    duration = utils.print_duration_long(bp.manufacturing_time())
+    duration = utils.print_duration(bp.manufacturing_time())
     return HttpResponse(duration)
 
 
