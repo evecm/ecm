@@ -3,7 +3,7 @@ include AUTHORS
 include LICENSE
 include MANIFEST.in
 graft extras
-graft scripts
+graft packaging
 graft ecm
 global-exclude *.pyc
 global-exclude *.pyo
