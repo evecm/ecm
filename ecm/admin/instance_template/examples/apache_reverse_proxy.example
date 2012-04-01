@@ -11,7 +11,7 @@
     </Proxy>
 
     ProxyPass /static/ !
-    ProxyPass / http://%(bind_address)s:%(bind_port)/
+    ProxyPass / http://%(bind_address)s:%(bind_port)s/
 
     <Directory "%(instance_dir)s/static">
         Order deny,allow

@@ -46,7 +46,7 @@ def sub_command():
 
 #------------------------------------------------------------------------------
 def run(command, global_options, options, args):
-    
+
     if not args:
         command.parser.error('Missing instance directory.')
     instance_dir = args[0]
@@ -76,14 +76,14 @@ def run(command, global_options, options, args):
         sys.exit(0)
     else:
         if run_as_user:
-            import pwd
+            import pwd #@UnresolvedImport
             try:
                 uid = pwd.getpwnam(run_as_user).pw_uid
             except KeyError:
                 command.parser.error('User "%s" does not exist.' % run_as_user)
         else:
             uid = None
-        
+
         if options.logfile is not None:
             logfile = path.abspath(options.logfile)
             logdir = path.dirname(logfile)
@@ -91,15 +91,15 @@ def run(command, global_options, options, args):
                 os.makedirs(logdir)
         else:
             logfile = None
-        
-        daemon = GEventWSGIDaemon(address=address, 
-                                  port=port, 
-                                  pidfile=pidfile, 
-                                  working_dir=path.abspath(instance_dir), 
+
+        daemon = GEventWSGIDaemon(address=address,
+                                  port=port,
+                                  pidfile=pidfile,
+                                  working_dir=path.abspath(instance_dir),
                                   uid=uid,
                                   stdout=logfile,
                                   stderr=logfile)
-        
+
         if real_command == 'start':
             _start(daemon)
         elif real_command == 'stop':
@@ -120,7 +120,7 @@ def _start(daemon):
         pass
     finally:
         sock.close()
-    
+
     daemon.start()
     try:
         # wait to let the child process create the PID file
@@ -131,7 +131,7 @@ def _start(daemon):
                 sock.connect( (daemon.address, daemon.port) )
                 with open(daemon.pidfile, 'r') as pf:
                     pid = pf.read()
-                log('Server is listening on "%s:%s" (PID: %s)' 
+                log('Server is listening on "%s:%s" (PID: %s)'
                                      % (daemon.address, daemon.port, pid.strip()))
                 sys.exit(0)
             except socket.error:
@@ -152,14 +152,14 @@ def _stop(daemon):
 #------------------------------------------------------------------------------
 class GEventWSGIDaemon(Daemon):
 
-    def __init__(self, address, port, pidfile, working_dir, uid=None, gid=None, 
+    def __init__(self, address, port, pidfile, working_dir, uid=None, gid=None,
                  stdin=None, stdout=None, stderr=None):
-        Daemon.__init__(self, pidfile=pidfile, working_dir=working_dir, uid=uid, 
+        Daemon.__init__(self, pidfile=pidfile, working_dir=working_dir, uid=uid,
                         gid=gid, stdin=stdin, stdout=stdout, stderr=stderr)
-        self.address = address 
+        self.address = address
         self.port = port
 
     def run(self):
         run_server(self.working_dir, self.address, self.port)
-        
+
 
