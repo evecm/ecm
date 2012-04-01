@@ -92,6 +92,14 @@ def init_instance(command, args):
     instance_dir = args[0]
     if path.exists(instance_dir):
         command.parser.error('Directory "%s" already exists.' % instance_dir)
+    try:
+        # check if the instance dir is not named like an existing package
+        instance_dir_name = path.basename(instance_dir)
+        __import__(instance_dir_name)
+        command.parser.error('Cannot create an instance in a folder named "%s".' % instance_dir_name
+                             + ' It clashes with another python package.' )
+    except ImportError:
+        pass
     template_dir = path.abspath(path.dirname(instance_template.__file__))
     shutil.copytree(template_dir, instance_dir)
 
@@ -147,24 +155,24 @@ def write_settings(command, options, instance_dir):
     settings_fd = open(settings_file, 'w')
     config.write(settings_fd)
     settings_fd.close()
-    
+
     instance_dir = path.abspath(instance_dir)
     apache_mod_wsgi_vhost = path.join(instance_dir, 'examples/apache_mod_wsgi_vhost.example')
     apache_proxy_vhost = path.join(instance_dir, 'examples/apache_reverse_proxy.example')
     options.instance_dir = instance_dir
-    
+
     with open(apache_mod_wsgi_vhost, 'r') as fd:
         buff = fd.read()
     buff = buff % options.__dict__
     with open(apache_mod_wsgi_vhost, 'w') as fd:
         buff = fd.write(buff)
-    
+
     with open(apache_proxy_vhost, 'r') as fd:
         buff = fd.read()
     buff = buff % options.__dict__
     with open(apache_proxy_vhost, 'w') as fd:
         buff = fd.write(buff)
-    
+
 
 #------------------------------------------------------------------------------
 def run(command, global_options, options, args):
