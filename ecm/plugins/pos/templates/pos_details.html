@@ -108,7 +108,7 @@
   </tbody>
 </table>
 
-<h2>Silo Levels</h2>
+<h2>Silo Levls</h2>
 
 <table class="table table-bordered" id="silo_table">
   <thead>
@@ -124,9 +124,14 @@
     </tr>
   </tbody>
 </table>
+
+<h2>Asset's In System</h2>
+
+<div id="assets_tree"></div>
 {% endblock %}
 
 {% block compressed_javascripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jstree.js"></script>
 <script>
 /*************************
  * "POS" table setup *
@@ -134,6 +139,12 @@
 /*POS_CSS_STATUS = {{posCSSStatus|safe}};
 POS_TEXT_STATUS = {{posTextStatus|safe}};*/
 DISPLAY_MODE = 'quantities'; /* default */
+ASSETS_URL = '/assets/'
+ASSET_PARAMS = {
+    stations: true,
+    space: true,
+    divisions: '{%for h in hangars%}{{h.hangarID}}{%if not forloop.last%},{%endif%}{%endfor%}',
+};
 $(document).ready(function() {
     var table = $('#fuel_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         iDisplayLength: 10, 		/* default display 25 items */
@@ -162,7 +173,7 @@ $(document).ready(function() {
 
     }));
 
-var table = $('#silo_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+	var table = $('#silo_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         iDisplayLength: 10, 		/* default display 25 items */
         sAjaxSource: "/pos/{{ pos.item_id }}/silo_data/",
         aoColumns: [
@@ -203,6 +214,239 @@ var table = $('#silo_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
             $('#custom_name').html(sValue);
         },
         tooltip   : 'Click to edit...'
+    });
+    
+    $('#assets_tree').jstree({
+        plugins : [ 'themes' , 'json_data' , 'search' , 'adv_search' , 'ui',  'types' , 'sort' ],
+        core : {
+            animation : 150,
+            html_titles : true
+        },
+        ui : {
+            select_limit : 1
+        },
+        themes : {
+            url : '{{ STATIC_URL }}assets/css/jstree.css',
+            dots : false
+        },
+        search : {
+            case_insensitive: true,
+            show_only_matches: true,
+            ajax : {
+                url : function() {
+                    return ASSETS_URL + 'search/?' + decodeURIComponent(jQuery.param(ASSET_PARAMS));
+                }
+            }
+        },
+        types : {
+            max_depth : -2,
+            max_children : -2,
+            valid_children : [ 'system' ],
+            types : {
+                system : {
+                    class : 'system-row',
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/system.png'
+                    },
+                    valid_children : [ 'celestial' ],
+                    max_depth : 6,
+                    open_node   : true,
+                    close_node  : true
+                },
+                celestial : {
+                    class : 'celestial-row',
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/celestial.png'
+                    },
+                    valid_children : [ 'array', 'pos', 'station' ],
+                    max_depth : 5,
+                    open_node   : true,
+                    close_node  : true
+                },
+                array : {
+                    class : 'hangar-row',
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/array.png'
+                    },
+                    valid_children : [ 'hangar' ],
+                    max_depth : 4,
+                    open_node   : true,
+                    close_node  : true
+                },
+                pos : {
+                    class : 'hangar-row',
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/pos.png'
+                    },
+                    valid_children : [ 'hangar' ],
+                    max_depth : 4,
+                    open_node   : true,
+                    close_node  : true
+                },
+                station : {
+                    class : 'station-row',
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/station.png'
+                    },
+                    valid_children : [ 'hangar' ],
+                    max_depth : 4,
+                    open_node   : true,
+                    close_node  : true
+                },
+                hangar : {
+                    class : 'hangar-row',
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/hangar.png'
+                    },
+                    valid_children : [ 'can', 'mineral', 'ship',  'ammo', 'blueprint', 'item' ],
+                    max_depth : 3,
+                    open_node   : true,
+                    close_node  : true
+                },
+                ship : {
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/ship.png'
+                    },
+                    valid_children : [ 'can', 'mineral', 'ship',  'ammo', 'blueprint', 'item' ],
+                    max_depth : 2,
+                    open_node   : true,
+                    close_node  : true
+                },
+                can : {
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/can.png'
+                    },
+                    valid_children : [ 'can', 'mineral', 'ship',  'ammo', 'blueprint', 'item' ],
+                    max_depth : 1,
+                    open_node   : true,
+                    close_node  : true
+                },
+                item : {
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/item.png'
+                    },
+                    valid_children : 'none',
+                    max_depth : 0,
+                    select_node : true,
+                    open_node   : true,
+                    close_node  : true,
+                    create_node : false,
+                    delete_node : false
+                },
+                mineral : {
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/mineral.png'
+                    },
+                    valid_children : 'none',
+                    max_depth : 0,
+                    select_node : true,
+                    open_node   : true,
+                    close_node  : true,
+                    create_node : false,
+                    delete_node : false
+                },
+                blueprint : {
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/blueprint.png'
+                    },
+                    valid_children : 'none',
+                    max_depth : 0,
+                    select_node : true,
+                    open_node   : true,
+                    close_node  : true,
+                    create_node : false,
+                    delete_node : false
+                },
+                ammo : {
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/ammo.png'
+                    },
+                    valid_children : 'none',
+                    max_depth : 0,
+                    select_node : true,
+                    open_node   : true,
+                    close_node  : true,
+                    create_node : false,
+                    delete_node : false
+                },
+                skill : {
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/skill.png'
+                    },
+                    valid_children : 'none',
+                    max_depth : 0,
+                    select_node : true,
+                    open_node   : true,
+                    close_node  : true,
+                    create_node : false,
+                    delete_node : false
+                },
+                added : {
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/plus-tree-icon.png'
+                    },
+                    valid_children : 'none',
+                    max_depth : 0,
+                    select_node : true,
+                    open_node   : true,
+                    close_node  : true,
+                    create_node : false,
+                    delete_node : false
+                },
+                removed : {
+                    icon : {
+                        image : '{{ STATIC_URL }}assets/img/minus-tree-icon.png'
+                    },
+                    valid_children : 'none',
+                    max_depth : 0,
+                    select_node : true,
+                    open_node   : true,
+                    close_node  : true,
+                    create_node : false,
+                    delete_node : false
+                }
+            }
+        },
+        json_data : {
+            ajax : {
+                url : function(node) {
+                    if (node == '-1') {
+                    	var url = ASSETS_URL + '{{system}}/';
+                    } else {
+                    	var url = ASSETS_URL;
+                    }
+                    url += node.attr ? node.attr('id').replace(/_/g, '/') : '';
+                    url += 'data/'
+                    return url + '?' +  decodeURIComponent(jQuery.param(ASSET_PARAMS));
+                }
+            }
+        },
+        sort : function (a, b) {
+            if ('sort_key' in a.attributes && 'sort_key' in b.attributes) {
+                var key_a = +a.attributes.sort_key.value;
+                var key_b = +b.attributes.sort_key.value;
+                if (isNaN(key_a)) {
+                    key_a = a.attributes.sort_key.value;
+                }
+                if (isNaN(key_b)) {
+                    key_b = b.attributes.sort_key.value;
+                }
+                if (key_a > key_b) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            } else {
+                return 0;
+            }
+        }
+    });
+    $('#assets_tree').delegate('a', 'click', function (event, data) { 
+        event.preventDefault(); 
+    });
+
+    $('#assets_tree').delegate('a', 'dblclick', function(e) {
+        $('#assets_tree').jstree('open_node', $(this).parent());
     });
 });
 

@@ -83,10 +83,12 @@ def one_pos(request, pos_id):
 
 
     data = {
-        'pos' : pos,
+        'pos'               : pos,
+        'moon'              : pos.moon_id,
+        'system'            : pos.location_id,
         'dotlanPOSLocation' : dotlanPOSLocation,
-        'fuel_columns': [ col for col, _ in FUEL_COLUMNS ],
-        'silo_columns': [ col for col, _ in SILO_COLUMNS ],
+        'fuel_columns'      : [ col for col, _ in FUEL_COLUMNS ],
+        'silo_columns'      : [ col for col, _ in SILO_COLUMNS ],
         'use_standings_from': use_standings_from,
     }
     return render_to_response("pos_details.html", data, RequestContext(request))
@@ -168,7 +170,7 @@ def silo_data(request, pos_id):
             silo.quantity,
             utils.print_duration_short(hours_to_full),
         ])
-    json_data= {
+    json_data = {
         "sEcho"                 : params.sEcho,
         "iTotalRecords"         : len(silos),
         "iTotalDisplayRecords"  : len(silos),
