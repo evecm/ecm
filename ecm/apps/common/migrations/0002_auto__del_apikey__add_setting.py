@@ -13,10 +13,12 @@ class Migration(SchemaMigration):
             keyID = 0
             vCode = ''
             characterID = 0
-            sql = 'SELECT "keyID", "vCode", "characterID" FROM "common_apikey";'
-            rows = db.execute(utils.fix_mysql_quotes(sql))
+            rows = db.execute('SELECT keyID, vCode, characterID FROM common_apikey;')
             if rows:
-                keyID, vCode, characterID = map(eval, rows[0])
+                keyID, vCode, characterID = rows[0]
+                keyID = int(keyID)
+                keyID = str(keyID)
+                keyID = int(keyID)
 
         # Deleting model 'APIKey'
         db.delete_table('common_apikey')
@@ -40,8 +42,8 @@ class Migration(SchemaMigration):
             vCode = ''
             characterID = 0
             settings = ['common_api_keyID', 'common_api_vCode', 'common_api_characterID']
-            sql = 'SELECT "name", "value" FROM "common_setting" WHERE "name" IN %s;'
-            rows = db.execute(utils.fix_mysql_quotes(sql), [settings])
+            sql = 'SELECT name, value FROM common_setting WHERE name IN %s;'
+            rows = db.execute(sql, [settings])
             for name, value in rows:
                 if name == 'common_api_keyID':
                     keyID = eval(value)
