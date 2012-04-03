@@ -23,6 +23,7 @@ __author__ = 'diabeteman'
 
 import os
 import sys
+from os import path
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
 
@@ -76,16 +77,14 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     log("Migrating database...")
     run_python_cmd('manage.py syncdb --noinput', instance_dir)
 
+    instance_dir = path.abspath(instance_dir)
     # now we must test if SOUTH was already installed/used
     # in the installation we are migrating
     # we setup Django environment in order to be able to use DB models
     # and check if there were any existing SOUTH migrations made
-    sys.path.append(instance_dir)
+    sys.path.insert(0, instance_dir)
 
-    instance_dir_name = os.path.dirname(os.path.join(instance_dir, 'settings.py'))
-    module_name = os.path.basename(os.path.abspath(instance_dir_name)) + '.settings'
-
-    settings = __import__(module_name, fromlist=instance_dir_name)
+    import settings #@UnresolvedImport
 
     management.setup_environ(settings)
     from south.models import MigrationHistory
@@ -93,7 +92,7 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     if upgrade_from_149:
         # we are upgrading from ECM 1.X.Y, we must perform the init migration
         # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
-        MigrationHistory.objects.delete() #@UndefinedVariable
+        MigrationHistory.objects.all().delete() #@UndefinedVariable
         log('Migrating from ECM 1.4.9...')
         run_python_cmd('manage.py migrate hr 0001 --no-initial-data', instance_dir)
     if not MigrationHistory.objects.exclude(app_name='hr'):
@@ -106,7 +105,7 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     run_python_cmd('manage.py migrate --all --no-initial-data', instance_dir)
 
     del settings
-    del sys.modules[module_name]
+    del sys.modules['settings']
     sys.path.remove(instance_dir)
 
     log('Database Migration successful.')
@@ -118,10 +117,10 @@ def run(command, global_options, options, args):
     instance_dir = args[0]
     sqlite_db_dir = ''
     config = SafeConfigParser()
-    if config.read([os.path.join(instance_dir, 'settings.ini')]):
+    if config.read([path.join(instance_dir, 'settings.ini')]):
         sqlite_db_dir = config.get('database', 'sqlite_db_dir')
     if not sqlite_db_dir:
-        sqlite_db_dir = os.path.join(instance_dir, 'db')
+        sqlite_db_dir = path.join(instance_dir, 'db')
 
     # run collectstatic
     collect_static_files(instance_dir, options)
