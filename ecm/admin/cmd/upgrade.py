@@ -95,12 +95,10 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
         MigrationHistory.objects.all().delete() #@UndefinedVariable
         log('Migrating from ECM 1.4.9...')
         run_python_cmd('manage.py migrate hr 0001 --no-initial-data', instance_dir)
-    if not MigrationHistory.objects.exclude(app_name='hr'):
-        # SOUTH has never been used in that installation.
-        # we MUST "fake" the first migration,
+        # we MUST "fake" the first migration for 1.4.9 apps
         # otherwise the migrate command will fail because DB tables already exist...
-        log('First use of South, faking the initial migration...')
-        run_python_cmd('manage.py migrate 0001 --all --fake --no-initial-data', instance_dir)
+        old_apps = 'common scheduler corp assets accounting'
+        run_python_cmd('manage.py migrate 0001 %s --fake --no-initial-data' % old_apps, instance_dir)
 
     run_python_cmd('manage.py migrate --all --no-initial-data', instance_dir)
 
