@@ -97,8 +97,8 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
         run_python_cmd('manage.py migrate hr 0001 --no-initial-data', instance_dir)
         # we MUST "fake" the first migration for 1.4.9 apps
         # otherwise the migrate command will fail because DB tables already exist...
-        old_apps = 'common scheduler corp assets accounting'
-        run_python_cmd('manage.py migrate 0001 %s --fake --no-initial-data' % old_apps, instance_dir)
+        for app in ('common', 'scheduler', 'corp', 'assets', 'accounting'):
+            run_python_cmd('manage.py migrate %s 0001 --fake --no-initial-data' % app, instance_dir)
 
     run_python_cmd('manage.py migrate --all --no-initial-data', instance_dir)
 
