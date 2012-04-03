@@ -9,13 +9,14 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
-        keyID = 0
-        vCode = ''
-        characterID = 0
-        sql = 'SELECT "keyID", "vCode", "characterID" FROM "common_apikey";'
-        rows = db.execute(utils.fix_mysql_quotes(sql))
-        if rows:
-            keyID, vCode, characterID = map(eval, rows[0])
+        if not db.dry_run:
+            keyID = 0
+            vCode = ''
+            characterID = 0
+            sql = 'SELECT "keyID", "vCode", "characterID" FROM "common_apikey";'
+            rows = db.execute(utils.fix_mysql_quotes(sql))
+            if rows:
+                keyID, vCode, characterID = map(eval, rows[0])
 
         # Deleting model 'APIKey'
         db.delete_table('common_apikey')
@@ -27,25 +28,27 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('common', ['Setting'])
 
-        orm.Setting.objects.create(name='common_api_keyID', value=repr(keyID))
-        orm.Setting.objects.create(name='common_api_vCode', value=repr(vCode))
-        orm.Setting.objects.create(name='common_api_characterID', value=repr(characterID))
+        if not db.dry_run:
+            orm.Setting.objects.create(name='common_api_keyID', value=repr(keyID))
+            orm.Setting.objects.create(name='common_api_vCode', value=repr(vCode))
+            orm.Setting.objects.create(name='common_api_characterID', value=repr(characterID))
 
 
     def backwards(self, orm):
-        keyID = 0
-        vCode = ''
-        characterID = 0
-        settings = ['common_api_keyID', 'common_api_vCode', 'common_api_characterID']
-        sql = 'SELECT "name", "value" FROM "common_setting" WHERE "name" IN %s;'
-        rows = db.execute(utils.fix_mysql_quotes(sql), [settings])
-        for name, value in rows:
-            if name == 'common_api_keyID':
-                keyID = eval(value)
-            elif name == 'common_api_vCode':
-                vCode = eval(value)
-            elif name == 'common_api_characterID':
-                characterID = eval(value)
+        if not db.dry_run:
+            keyID = 0
+            vCode = ''
+            characterID = 0
+            settings = ['common_api_keyID', 'common_api_vCode', 'common_api_characterID']
+            sql = 'SELECT "name", "value" FROM "common_setting" WHERE "name" IN %s;'
+            rows = db.execute(utils.fix_mysql_quotes(sql), [settings])
+            for name, value in rows:
+                if name == 'common_api_keyID':
+                    keyID = eval(value)
+                elif name == 'common_api_vCode':
+                    vCode = eval(value)
+                elif name == 'common_api_characterID':
+                    characterID = eval(value)
 
         # Adding model 'APIKey'
         db.create_table('common_apikey', (
@@ -60,7 +63,8 @@ class Migration(SchemaMigration):
         # Deleting model 'Setting'
         db.delete_table('common_setting')
 
-        orm.APIKey.objects.create(name='', keyID=keyID, vCode=vCode, characterID=characterID)
+        if not db.dry_run:
+            orm.APIKey.objects.create(name='', keyID=keyID, vCode=vCode, characterID=characterID)
 
     models = {
         'auth.group': {
