@@ -167,9 +167,9 @@ def fix_description(description):
     # an empty corp description string ('<description />' )will throw a TypeError
     # so let's catch it
     try:
-      desc, _ = FONT_TAG_REGEXP.subn("", description)
-      desc, _ = SPAN_TAG_REGEXP.subn("", desc)
-      return desc.strip()
+        desc, _ = FONT_TAG_REGEXP.subn("", description)
+        desc, _ = SPAN_TAG_REGEXP.subn("", desc)
+        return desc.strip()
     except TypeError:
-      return '-'
+        return '-'
 
