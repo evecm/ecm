@@ -50,6 +50,7 @@ USER_API_KEY_ACCESS_MASKS = {
     1 << 24: "PrivateCharacterInfo",
     1 << 25: "AccountStatus",
     1 << 26: "Contracts",
+    1 << 27: "Locations",
 }
 CORP_API_KEY_ACCESS_MASKS = {
     1 << 0:  "AccountBalance",
