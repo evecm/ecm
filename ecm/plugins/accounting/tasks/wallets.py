@@ -25,6 +25,7 @@ from datetime import datetime
 from django.db import transaction
 
 from ecm.apps.eve import api
+from ecm.lib import eveapi
 
 from ecm.apps.corp.models import Wallet
 from ecm.core.parsers import markUpdated, checkApiVersion
@@ -87,39 +88,46 @@ def fetch_entries(wallet, lastKnownID):
     LOG.info("fetching /corp/WalletJournal.xml.aspx "
                 "(accountKey=%d)..." % wallet.walletID)
     charID = api.get_charID()
-    walletsApi = api_conn.corp.WalletJournal(characterID=charID,
-                                            accountKey=wallet.walletID,
-                                            rowCount=256)
-    checkApiVersion(walletsApi._meta.version)
 
-    entries = list(walletsApi.entries)
-    if len(entries) > 0:
-        minID = min([e.refID for e in walletsApi.entries])
-    else:
-        minID = 0
-
-    # after the first fetch, we perform "journal walking"
-    # only if we got 256 entries in the response (meaning more to come)
-    # or if the lastKnownID is in the current 256 entries
-    # (entries are supposed to be sorted by decreasing refIDs)
-    while len(walletsApi.entries) == 256 and minID > lastKnownID:
-        LOG.info("fetching /corp/WalletJournal.xml.aspx "
-                    "(accountKey=%d, fromID=%d)..." % (wallet.walletID, minID))
+    # In Iceland an empty wallet causes errors....
+    try:
         walletsApi = api_conn.corp.WalletJournal(characterID=charID,
                                                  accountKey=wallet.walletID,
-                                                 fromID=minID,
                                                  rowCount=256)
         checkApiVersion(walletsApi._meta.version)
-        entries.extend(list(walletsApi.entries))
-        if len(walletsApi.entries) > 0:
+
+        entries = list(walletsApi.entries)
+        if len(entries) > 0:
             minID = min([e.refID for e in walletsApi.entries])
+        else:
+            minID = 0
 
-    # we sort the entries by increasing refIDs in order to remove
-    # the ones we already have in the database
-    entries.sort(key=lambda e: e.refID)
+        # after the first fetch, we perform "journal walking"
+        # only if we got 256 entries in the response (meaning more to come)
+        # or if the lastKnownID is in the current 256 entries
+        # (entries are supposed to be sorted by decreasing refIDs)
+        while len(walletsApi.entries) == 256 and minID > lastKnownID:
+            LOG.info("fetching /corp/WalletJournal.xml.aspx "
+                        "(accountKey=%d, fromID=%d)..." % (wallet.walletID, minID))
+            walletsApi = api_conn.corp.WalletJournal(characterID=charID,
+                                                     accountKey=wallet.walletID,
+                                                     fromID=minID,
+                                                     rowCount=256)
+            checkApiVersion(walletsApi._meta.version)
+            entries.extend(list(walletsApi.entries))
+            if len(walletsApi.entries) > 0:
+                minID = min([e.refID for e in walletsApi.entries])
 
-    while len(entries) != 0 and entries[0].refID <= lastKnownID:
-        # we already have this entry, no need to keep it
-        del entries[0]
+        # we sort the entries by increasing refIDs in order to remove
+        # the ones we already have in the database
+        entries.sort(key=lambda e: e.refID)
 
-    return entries
+        while len(entries) != 0 and entries[0].refID <= lastKnownID:
+            # we already have this entry, no need to keep it
+            del entries[0]
+
+        return entries
+    except eveapi.Error, e:
+        LOG.error("API returned: %s. WalletJournal for account key %s might be empty." 
+                  % (str(e), wallet.walletID))
+        return '' 

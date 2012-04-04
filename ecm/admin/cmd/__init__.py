@@ -98,6 +98,8 @@ def patch_ccp_dump(ccp_dump_url, eve_db_dir, ccp_dump_archive=None):
             tempdir = None
 
         db_file = os.path.join(eve_db_dir, 'EVE.db')
+        if not path.isdir(eve_db_dir):
+            os.makedirs(eve_db_dir)
 
         log('Expanding %s to %s...', ccp_dump_archive, db_file)
         bz_file_desc = bz2.BZ2File(ccp_dump_archive, 'rb')
