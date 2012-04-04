@@ -1,6 +1,6 @@
 {% extends "hr_base.html" %}
 
-{% block headtitle %}Player Details{% endblock %}
+{% block headtitle %}Player Details - {{ player.username }}{% endblock %}
 
 
 
@@ -8,23 +8,25 @@
 <li><a href="/">Home</a></li>
 <li><a href="/hr/">Human Resources</a></li>
 <li><a href="/hr/players/">Players</a></li>
-<li><a href="/hr/players/{{ player.id }}/">{{ player.username }}</a></li>
+<li class="active"><a href="/hr/players/{{ player.id }}/">{{ player.username }}</a></li>
 {% endblock %}
 
 
 
 {% block main_content %}
-<h1 class="pagetitle">Details for player <i>{{player.username}}</i></h1>
+<div class="page-header">
+  <h1 class="pagetitle">Player &quot;{{player.username}}&quot;</h1>
+</div>
 {% if player.is_staff and player.is_superuser %}<h1 class="pagetitle error">ECM Administrator</h1>{% endif %}
 
-<h1>Player Details</h1>
+<h2>Player Details</h2>
 
 <p><b>Account created:</b> {{player.date_joined|date:"Y F d - H:i"}}</p>
 <p><b>Last login in ECM:</b> {{player.last_login|date:"Y F d - H:i"}}</p>
 <p><b>Owned EVE Accounts:</b> {{eve_accounts}}</p>
 <p><b>Owned Characters:</b> {{characters}}</p>
 
-<h1>Groups</h1>
+<h2>Groups</h2>
 
 <ul>
 {% for g in groups %}
@@ -34,15 +36,19 @@
 {% endfor %}
 </ul>
 
-<h1>Owned Characters</h1>
+<h2>Owned Characters</h2>
 
-<form id="search_form" class="search_form">
-    <input type="text" id="search_text" value="" />
-    <input type="button" class="button" id="search_button" value="Search" />
-    <input type="button" class="button" id="clear_search" value="Reset" />
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+  </div>
 </form>
 
-<table class="table display" id="members_table">
+<table class="table table-bordered table-condensed" id="members_table">
   <thead>
     <tr>
       <th class="top" scope="col" >Name</th>
@@ -60,104 +66,20 @@
       <td colspan="8" class="dataTables_empty">Loading data from server...</td>
     </tr>
   </tbody>
-  <tfoot>
-    <tr>
-      <th>Name</th>
-      <th>Nickname</th>
-      <th>Player</th>
-      <th>Access Level</th>
-      <th>Corp Date</th>
-      <th>Last Login</th>
-      <th>Location</th>
-      <th style="display:none;">Titles</th>
-    </tr>
-  </tfoot>
-
 </table>
 
 {% endblock %}
 
 
-{% block post_javascripts %}
+{% block javascripts %}
 <script type="text/javascript">
-/*************************
- * "Members" table setup *
- *************************/
-/**
- * Needs three global constants to be defined:
- *      - DIRECTOR_ACCESS_LVL
- *      - COLOR_THRESHOLDS
- *      - AJAX_URL
- **/
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-$(document).ready(function() {
-    var table = $('#members_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource: '/hr/players/{{ player.id }}/data/',
-        aoColumns: [
-            { /* Name */         sWidth: "20%",   sType: "html"    },
-            { /* Nickname */     sWidth: "20%",   sType: "string"  },
-            { /* Player */       sWidth: "15%",   sType: "html"    },
-            { /* Access Level */ sWidth: "5%",    sType: "numeric" },
-            { /* Corp Date */    sWidth: "10%",   sType: "string"  },
-            { /* Last Login */   sWidth: "10%",   sType: "string"  },
-            { /* Location */     sWidth: "20%",   sType: "string"  },
-            { /* titles -> HIDDEN */ bVisible: false }
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            /* apply color to all access level cells */
-            accessLvl = aData[3];
-            if (accessLvl == DIRECTOR_ACCESS_LVL) {
-                $('td:eq(3)', nRow).html('<b>DIRECTOR</b>');
-            }
-            $('td:eq(3)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
-
-            /* hide titles column */
-            $('td:eq(7)', nRow).hide()
-
-            /* set titles tooltip on each row */
-            titles = aData[7]
-            if (titles != "") {
-                $('td:eq(3)', nRow).attr("title", titles)
-                $('td:eq(3)', nRow).cluetip({
-                    splitTitle: '|',
-                    dropShadow: false,
-                    cluetipClass: 'jtip',
-                    positionBy: 'mouse',
-                    tracking: true
-                });
-            }
-
-            return nRow;
-        },
-    }));
-
-  /* trigger the search when pressing return in the text field */
-    $("#search_form").submit(function(event) {
-        event.preventDefault();
-        table.fnFilter($("#search_text").val());
-    });
-
-    /* trigger the search when clicking the "search" button */
-    $("#search_button").click(function() {
-        table.fnFilter($("#search_text").val());
-    });
-
-    /* reset the search when clicking the "reset" button */
-    $("#clear_search").click(function() {
-        $("#search_text").val("");
-        table.fnFilter("");
-    });
-
-
-    /* disable multi column sorting */
-    $('#members_table thead th').click(function(event) {
-        if (!$(event.target).hasClass('sorthandle')) {
-            event.shiftKey = false;
-        }
-    });
-
-} );
-
+AJAX_URL = '/hr/players/{{player.id}}/data/';
+COOKIE_NAME = 'ecm_player_characters_table_';
 </script>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
 {% endblock %}
