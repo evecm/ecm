@@ -164,7 +164,12 @@ def update_wallet_divisions(corpApi, currentTime):
 FONT_TAG_REGEXP = re.compile('</?font.*?>', re.DOTALL)
 SPAN_TAG_REGEXP = re.compile('</?span.*?>', re.DOTALL)
 def fix_description(description):
-    desc, _ = FONT_TAG_REGEXP.subn("", description)
-    desc, _ = SPAN_TAG_REGEXP.subn("", desc)
-    return desc.strip()
+    # an empty corp description string ('<description />' )will throw a TypeError
+    # so let's catch it
+    try:
+      desc, _ = FONT_TAG_REGEXP.subn("", description)
+      desc, _ = SPAN_TAG_REGEXP.subn("", desc)
+      return desc.strip()
+    except TypeError:
+      return '-'
 
