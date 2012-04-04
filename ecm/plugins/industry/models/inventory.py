@@ -43,6 +43,7 @@ class Supply(models.Model):
     class Meta:
         app_label = 'industry'
         ordering = ['typeID']
+        verbose_name_plural = 'Supplies'
 
     typeID = models.PositiveIntegerField(primary_key=True)
     price = models.FloatField(default=0.0)

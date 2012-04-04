@@ -31,7 +31,7 @@ class CatalogEntry(models.Model):
     class Meta:
         app_label = 'industry'
         verbose_name = tr("Catalog Entry")
-        verbose_name_plural = tr("Catalog Enties")
+        verbose_name_plural = tr("Catalog Entries")
 
     typeID = models.IntegerField(primary_key=True)
     typeName = models.CharField(max_length=100)
