@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Activation Error{% endblock %}
+
+{% block main_content %}
+<div class="center">
+<h1 class="pagetitle error">Activation Error</h1>
+
+<p>Sorry {{ form.cleaned_data.username }}, but the server was not able to send an email {{ form.cleaned_data.email }}.</p>
+
+<p>Reason: {{ error_reason }}</p>
+<p>Please contact the administrator.</p>
+</div>
+{% endblock %}
