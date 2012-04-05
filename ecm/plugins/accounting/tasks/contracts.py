@@ -20,16 +20,12 @@ __author__ = "tash"
 
 
 import logging
-from datetime import datetime
 
 from django.db import transaction
 
+from ecm.apps.common.models import UpdateDate
+from ecm.utils import tools
 from ecm.apps.eve import api
-from ecm.lib import eveapi
-
-# from ecm.apps.corp.models import Wallet
-from ecm.core.parsers import diff, markUpdated, checkApiVersion
-from ecm.plugins.accounting.tasks import fix_encoding
 from ecm.plugins.accounting.models import Contract
 
 LOG = logging.getLogger(__name__)
@@ -37,49 +33,49 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 def update():
     """
-    Update all contracts 
+    Update all contracts
     """
     LOG.info("fetching /corp/Contracts.xml.aspx...")
     # Connect to EVE API
-    apiConn = api.connect()
-    contractsApi = apiConn.corp.Contracts()
-    checkApiVersion(contractsApi._meta.version)
+    conn = api.connect()
+    contracts_api = conn.corp.Contracts()
+    api.check_version(contracts_api._meta.version)
 
-    currentTime = contractsApi._meta.currentTime
-    cachedUntil = contractsApi._meta.cachedUntil
-    LOG.debug("current time : %s", str(currentTime))
-    LOG.debug("cached util : %s", str(cachedUntil))
+    current_time = contracts_api._meta.currentTime
+    cached_until = contracts_api._meta.cachedUntil
+    LOG.debug("current time : %s", str(current_time))
+    LOG.debug("cached util : %s", str(cached_until))
     LOG.debug("parsing api response...")
 
-    entries = contractsApi.contractList
-
     # Get old contracts
-    oldContracts = {}
+    old_contracts = {}
     for contract in Contract.objects.all():
-        oldContracts[contract] = contract
+        old_contracts[contract] = contract
 
     # Get new contracts
-    newContracts = {}
-    for entry in entries:
-        contract = create_contract_fom_row(entry)
-        newContracts[contract] = contract
+    new_contracts = {}
+    for row in contracts_api.contractList:
+        contract = create_contract_fom_row(row)
+        new_contracts[contract] = contract
 
-    removedContracts, addedContracts = diff(oldContracts, newContracts)
-    write_results(addedContracts, removedContracts)
-    markUpdated(model=Contract, date=datetime.now())
+    removed_contracts, added_contracts = tools.diff(old_contracts, new_contracts)
+    write_results(added_contracts, removed_contracts)
+    UpdateDate.mark_updated(model=Contract, date=current_time)
 
+#------------------------------------------------------------------------------
 @transaction.commit_on_success
-def write_results(newContracts, oldContracts):
+def write_results(new_contracts, old_contracts):
     """
     Write the API results
     """
-    if len(oldContracts) > 0:
+    if len(old_contracts) > 0:
         Contract.objects.all().delete()
-        LOG.info("%d old contracts removed." % len(oldContracts))
-    for contract in newContracts:
+        LOG.info("%d old contracts removed." % len(old_contracts))
+    for contract in new_contracts:
         contract.save()
-    LOG.info("%d contracts added." % len(newContracts))
+    LOG.info("%d contracts added." % len(new_contracts))
 
+#------------------------------------------------------------------------------
 def create_contract_fom_row(row):
     return Contract(contractID = row.contractID,
                     issuerID = row.issuerID,
