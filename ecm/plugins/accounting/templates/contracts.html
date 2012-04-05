@@ -46,7 +46,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="13" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="12" class="dataTables_empty">Loading data from server...</td>
     </tr>
   </tbody>
   <tfoot>
@@ -79,17 +79,18 @@ $(document).ready(function() {
     var table = $('#contract_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: "/accounting/contracts/data/",
         aoColumns: [
-            { /* Type*/             sWidth: "10%",  sType: "string" },
-            { /* Status */          sWidth: "10%",  sType: "string"    },
-            { /* Title */           sWidth: "15%",  sType: "string",  bSortable: false },
-            { /* Date Issued */     sWidth: "10%",  sType: "string",  bSortable: false },
-            { /* Date Expired */    sWidth: "10%",  sType: "string",  bSortable: false  },
-            { /* Date Completed */  sWidth: "10%",  sType: "string",  bSortable: false },
-            { /* Price */           sWidth: "7%",   sType: "string",  bSortable: false,  sClass : "right" },
-            { /* Reward*/           sWidth: "7%",   sType: "string",  bSortable: false,  sClass : "right" },
-            { /* Collatteral */     sWidth: "7%",   sType: "string",  bSortable: false,  sClass : "right" },
-            { /* Buyout */          sWidth: "7%",   sType: "string",  bSortable: false,  sClass : "right" },
-            { /* Volume*/           sWidth: "7%",   sType: "string",  bSortable: false },
+            { /* Type*/             sWidth: "5%",  sType: "string" },
+            { /* Status */          sWidth: "5%",  sType: "string" },
+            { /* Title */           sWidth: "5%",  sType: "string",  bSortable: false },
+            { /* Date Issued */     sWidth: "5%",  sType: "string",  bSortable: false },
+            { /* Date Expired */    sWidth: "5%",  sType: "string",  bSortable: false },
+            { /* Date Accepted */   sWidth: "5%",  sType: "string",  bSortable: false },
+            { /* Date Completed */  sWidth: "5%",  sType: "string",  bSortable: false },
+            { /* Price */           sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
+            { /* Reward*/           sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
+            { /* Collatteral */     sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
+            { /* Buyout */          sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
+            { /* Volume*/           sWidth: "5%",  sType: "numeric", bSortable: false,  sClass: "right" }
         ],
 
         /* this function will be called when the table has to query data to be displayed */
@@ -127,7 +128,7 @@ $(document).ready(function() {
     });
 
     /* disable multi column sorting */
-    $('#journal_table thead th').click(function(event) {
+    $('#contract_table thead th').click(function(event) {
         if (!$(event.target).hasClass('sorthandle')) {
             event.shiftKey = false;
         }

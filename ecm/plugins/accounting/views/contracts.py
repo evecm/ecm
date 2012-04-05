@@ -76,7 +76,6 @@ def contracts_data(request):
 
     query = query[params.first_id:params.last_id]
     entries = []
-
     for entry in query:
         entries.append([
             entry.type,
@@ -90,12 +89,12 @@ def contracts_data(request):
             print_float(entry.reward),
             print_float(entry.collateral),
             print_float(entry.buyout),
-            print_float(entry.volume),
+            print_float(entry.volume)
         ])
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : total_entries,
-        "iTotalDisplayRecords" : filtered_entries,
-        "aaData" : entries
+        "iTotalDisplayRecords" : total_entries,
+        "aaData" : entries,
     }
     return HttpResponse(json.dumps(json_data))
