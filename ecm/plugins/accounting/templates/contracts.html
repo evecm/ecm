@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Contracts{% endblock %}
+
+{% block stylesheets %dfaf
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}contracts/css/dummy.css" />
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li class="todo"><a href="/contracts/">Contracts</a></li>
+{% endblock %}
+
+{% block main_content %}
+<div class="page-header">
+      <h1>Contracts <small><small></h1>
+</div>
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+    <span class="label label-info">Display mode</span>
+    <div class="btn-group" data-toggle="buttons-radio">
+      <button class="btn btn-small btn-info" id="all_button"
+              title="Show all contracts">All Contracts</button>
+      <button class="btn btn-small btn-info" id="exchange_button"
+              title="Show item exchange contracts">Item Exchange</button>
+      <button class="btn btn-small btn-info" id="courier_button"
+              title="Show courier contracts">Courier</button>
+      <button class="btn btn-small btn-info" id="loan_button"
+              title="Show loan contracts">Loan</button>
+      <button class="btn btn-small btn-info" id="auction_button"
+              title="Show auction contracts">Auction</button>
+    </div>
+  </div>
+</form>
+
+<table class="table table-bordered table-condensed" id="contracts_table">
+  <thead>
+    <tr>
+      {% for col, title in columns %}
+      <th class="top" scope="col" title="{{title}}">{{col|safe}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {% for col, title in columns %}
+      <th title="{{title}}">{{col|safe}}</th>
+      {% endfor %}
+    </tr>
+  </tfoot>
+</table>
+{% endblock %}
+
+
+
+{% block compressed_javascripts %}
+<script>
+POS_CSS_STATUS = {{posCSSStatus|safe}};
+POS_TEXT_STATUS = {{posTextStatus|safe}};
+DISPLAY_MODE = 'days'; /* default */
+$(document).ready(function() {
+    var table = $('#pos_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: '/pos/data/',
+        aaSorting: [[5, 'asc']],/* sort ascending using column 5 */
+        aoColumns: [
+            { /* 0 Location */ sWidth: '6%',  sType: 'html' },
+            { /* 1 Name */     sWidth: '6%',  sType: 'html', bSortable: false },
+            { /* 2 Type */     sWidth: '1%',  sType: 'html', sClass: 'center' },
+            { /* 3 status */   sWidth: '1%',  sType: 'html' },
+            { /* 4 Time */ 	   sWidth: '2%',  sType: 'string', bSortable: false },
+            { /* 5 Blocks */   sWidth: '4%',  sType: 'string' },
+            { /* 6 Stront */   sWidth: '4%',  sType: 'string' },
+            { /* 7 Name HIDDEN */  bVisible: false, bSortable: false },
+            { /* 8 hours_int HIDDEN */  bVisible: false, bSortable: false }
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            posTypeID = aData[2];
+            posImgUrl = 'http://image.eveonline.com/Type/' + posTypeID + '_32.png';
+            $('td:eq(2)', nRow).html('<img src="' + posImgUrl + '" title="' + aData[7] + '"/>');
+
+            posState = aData[3];
+            $('td:eq(3)', nRow).addClass(POS_CSS_STATUS[posState]);
+            $('td:eq(3)', nRow).attr('title', POS_TEXT_STATUS[posState]);
+            $('td:eq(3)', nRow).html('');
+
+            for (var i=5; i<14; i++) {
+                $('td:eq(' + i + ')', nRow).addClass('right');
+            };
+            if (aData[8] <= '48') {
+                for (var i = 0 ; i < 8 ; i++) {
+                	$('td:eq(' + i + ')', nRow).addClass('fuel-alert');
+                }
+            };
+            if (aData[8] == '0') {
+                for (var i = 0 ; i < 8 ; i++) {
+                	$('td:eq(' + i + ')', nRow).addClass('fuel-warning');
+                }
+            };
+
+
+            $('td:eq(14)', nRow).hide();
+            return nRow;
+        },
+
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: 'displayMode',
+                value: DISPLAY_MODE
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        fnStateSaveParams: function (oSettings, oData) {
+            oData.sFilter = $('#search_text').val()
+            oData.displayMode = DISPLAY_MODE;
+        },
+        /* restore the search field content */
+        fnStateLoadParams: function (oSettings, oData) {
+            $('#search_text').val(oData.sFilter);
+            if ('displayMode' in oData) {
+                DISPLAY_MODE = oData.displayMode;
+                if (DISPLAY_MODE == 'quantities') {
+                    $('#quantities_button').button('toggle');
+                } else if (DISPLAY_MODE == 'days') {
+                    $('#days_button').button('toggle');
+                } else if (DISPLAY_MODE == 'hours') {
+                    $('#hours_button').button('toggle');
+                }
+            }
+            return true;
+        }
+
+    }));
+
+    /* trigger the search when pressing return in the text field */
+    $('#search_form').submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($('#search_text').val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $('#search_button').click(function() {
+        table.fnFilter($('#search_text').val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $('#clear_search').click(function() {
+        $('#search_text').val('');
+        table.fnFilter('');
+    });
+    /* disable multi column sorting */
+    $('#pos_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+    /* Button to select quatities values */
+    $('#quantities_button').click(function() {
+        if (DISPLAY_MODE != 'quantities') {
+            DISPLAY_MODE = 'quantities';
+            table.fnDraw();
+        }
+    });
+    $('#days_button').click(function() {
+        if (DISPLAY_MODE != 'days') {
+            DISPLAY_MODE = 'days';
+            table.fnDraw();
+        }
+    });
+    $('#hours_button').click(function() {
+        if (DISPLAY_MODE != 'hours') {
+            DISPLAY_MODE = 'hours';
+            table.fnDraw();
+        }
+    });
+});
+</script>
+{% endblock %}
