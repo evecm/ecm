@@ -110,9 +110,9 @@ class AccountCreationForm(forms.Form):
                     if Member.objects.filter(characterID__in=ids).exclude(owner=None):
                         self._errors["keyID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["keyID"]
-                else:
-                    self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
-                    del cleaned_data["keyID"]
+            #    else:
+                    #self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
+                    #del cleaned_data["keyID"]
             except eveapi.Error, e:
                 self._errors["keyID"] = self.error_class([str(e)])
                 self._errors["vCode"] = self.error_class([str(e)])
@@ -245,9 +245,9 @@ class AddApiKeyForm(forms.Form):
                     if Member.objects.filter(characterID__in=ids).exclude(owner=None).exclude(owner=self.user):
                         self._errors["keyID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["keyID"]
-                else:
-                    self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
-                    del cleaned_data["keyID"]
+                #else:
+                #    self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
+                #    del cleaned_data["keyID"]
             except eveapi.Error, e:
                 self._errors["keyID"] = self.error_class([str(e)])
                 self._errors["vCode"] = self.error_class([str(e)])
@@ -283,9 +283,9 @@ class EditApiKeyForm(forms.Form):
                     if Member.objects.filter(characterID__in=ids).exclude(owner__in=[None, self.user]):
                         self._errors["keyID"] = self.error_class([_("A character from this account is already registered by another player")])
                         del cleaned_data["keyID"]
-                else:
-                    self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
-                    del cleaned_data["keyID"]
+                #else:
+                    #self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
+                    #del cleaned_data["keyID"]
             except eveapi.Error, e:
                 self._errors["vCode"] = self.error_class([str(e)])
                 del cleaned_data["vCode"]

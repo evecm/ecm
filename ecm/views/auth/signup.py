@@ -64,12 +64,21 @@ def create_account(request):
                         continue
 
             logger.info('"%s" created new account id=%d' % (user, user.id))
-            send_activation_email(request, profile)
-            logger.info('activation email sent to "%s" for account "%s"' % (user.email, user))
+            # Be sure to have mail configured on your server, otherwise catch except
+            try:
+                send_activation_email(request, profile)
+                logger.info('activation email sent to "%s" for account "%s"' % (user.email, user))
+                return render_to_response('auth/account_created.html',
+                                          { 'form': form },
+                                          context_instance=Ctx(request))
+            except Exception, err:
+                logger.error('Sending an activation email failed. Address: %s Account: %s'
+                             % (user.email, user))
+                return render_to_response('auth/account_mail_fail.html',
+                                          { 'form': form,
+                                            'error_reason' : str(err)},
+                                          context_instance=Ctx(request))
 
-            return render_to_response('auth/account_created.html',
-                                      { 'form': form },
-                                      context_instance=Ctx(request))
     else: # request.method == 'GET'
         form = AccountCreationForm()
 
