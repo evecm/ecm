@@ -1,18 +1,18 @@
 # Copyright (c) 2010-2012 Robin Jarry
-# 
+#
 # This file is part of EVE Corporation Management.
-# 
-# EVE Corporation Management is free software: you can redistribute it and/or 
-# modify it under the terms of the GNU General Public License as published by 
-# the Free Software Foundation, either version 3 of the License, or (at your 
+#
+# EVE Corporation Management is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
-# EVE Corporation Management is distributed in the hope that it will be useful, 
-# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
-# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+#
+# EVE Corporation Management is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 # more details.
-# 
-# You should have received a copy of the GNU General Public License along with 
+#
+# You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 
@@ -24,12 +24,11 @@ from django.conf import settings
 from django.utils.text import truncate_words
 from django.contrib.auth.models import User
 
-from ecm.apps.hr import NAME
 from ecm.apps.hr.models import Member
-from ecm.core import utils
 from ecm.apps.common.models import UpdateDate
 from ecm.views import template_filters
-
+from ecm.utils.format import print_date
+from ecm.utils import db
 
 import logging
 logger = logging.getLogger(__name__)
@@ -55,7 +54,7 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
     # SQL hack for making a case insensitive sort
     if sort_by in (0, 1):
         sort_col = sort_col + "_nocase"
-        sort_val = utils.fix_mysql_quotes('LOWER("%s")' % member_table_columns[sort_by])
+        sort_val = db.fix_mysql_quotes('LOWER("%s")' % member_table_columns[sort_by])
         query = query.extra(select={ sort_col : sort_val })
 
     if not asc: sort_col = "-" + sort_col
@@ -85,8 +84,8 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
             truncate_words(member.nickname, 5),
             member.owner_permalink,
             member.accessLvl,
-            utils.print_date(member.corpDate),
-            utils.print_date(member.lastLogin),
+            print_date(member.corpDate),
+            print_date(member.lastLogin),
             truncate_words(member.location, 5),
             "|".join(titles)
         ]

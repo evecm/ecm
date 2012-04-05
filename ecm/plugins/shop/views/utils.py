@@ -28,7 +28,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse,\
     HttpResponseNotFound
 
-from ecm.core import JSON
+from ecm.views import JSON
 from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.shop import eft
 from ecm.apps.common.models import Setting

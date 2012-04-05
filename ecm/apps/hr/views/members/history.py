@@ -25,10 +25,11 @@ from django.http import HttpResponseBadRequest
 from django.utils.text import truncate_words
 from django.template.context import RequestContext as Ctx
 
+from ecm.utils import db
+from ecm.utils.format import print_time_min
 from ecm.views.decorators import check_user_access
 from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.models import Member, MemberDiff
-from ecm.core import utils
 
 
 #------------------------------------------------------------------------------
@@ -59,7 +60,7 @@ def history_data(request):
     # SQL hack for making a case insensitive sort
     if params.column in (1, 2):
         sort_col = sort_col + "_nocase"
-        sort_val = utils.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column])
+        sort_val = db.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column])
         query = query.extra(select={ sort_col : sort_val })
 
     if not params.asc: sort_col = "-" + sort_col
@@ -79,7 +80,7 @@ def history_data(request):
             diff.new,
             diff.permalink,
             truncate_words(diff.nickname, 5),
-            utils.print_time_min(diff.date)
+            print_time_min(diff.date)
         ])
 
     return datatable_ajax_data(members, params.sEcho, total_members, filtered_members)

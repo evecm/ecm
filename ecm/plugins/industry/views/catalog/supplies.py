@@ -29,7 +29,7 @@ from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response
 
-from ecm.core import utils
+from ecm.utils.format import print_time_min, print_float
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.tasks import evecentral
@@ -120,7 +120,7 @@ def supplies_data(request):
     for i in query[params.first_id:params.last_id]:
         items.append([
             i.permalink,
-            utils.print_float(i.price),
+            print_float(i.price),
             bool(i.auto_update),
             i.supply_source.location_id,
             i.typeID,
@@ -164,8 +164,8 @@ def details_data(request, supply_id):
     histories = []
     for history in query[params.first_id:params.last_id]:
         histories.append([
-            utils.print_time_min(history.date),
-            utils.print_float(history.price),
+            print_time_min(history.date),
+            print_float(history.price),
         ])
 
     return datatable_ajax_data(data=histories, echo=params.sEcho)
@@ -186,8 +186,8 @@ def update_price(request, supply_id):
         logger.info('"%s" updated price for supply "%s" (%s -> %s)' % (request.user,
                                                                 supply.typeName,
                                                                 supply.supply_source,
-                                                                utils.print_float(supply.price)))
-    return HttpResponse(utils.print_float(supply.price))
+                                                                print_float(supply.price)))
+    return HttpResponse(print_float(supply.price))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -215,7 +215,7 @@ def info(request, attr):
             if type(value) == type(getattr(supply, attr)):
                 if attr == 'price':
                     supply.update_price(value)
-                    displayVal = utils.print_float(value)
+                    displayVal = print_float(value)
                 else:
                     setattr(supply, attr, value)
                     supply.save()

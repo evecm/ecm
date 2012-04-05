@@ -23,9 +23,9 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
+from ecm.apps.common.models import UpdateDate
 from ecm.apps.hr.models import TitleComposition, Title, Role, TitleCompoDiff, RoleType
 from ecm.apps.eve import api
-from ecm.core.parsers import checkApiVersion, markUpdated
 
 import logging
 logger = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ def update():
     api_conn = api.connect()
     # retrieve /corp/Titles.xml.aspx
     titlesApi = api_conn.corp.Titles(characterID=api.get_charID())
-    checkApiVersion(titlesApi._meta.version)
+    api.check_version(titlesApi._meta.version)
 
     currentTime = titlesApi._meta.currentTime
     cachedUntil = titlesApi._meta.cachedUntil
@@ -67,18 +67,18 @@ def update():
         if diffs :
             for d in diffs: d.save()
             # we store the update time of the table
-            markUpdated(model=TitleCompoDiff, date=currentTime)
+            UpdateDate.mark_updated(model=TitleCompoDiff, date=currentTime)
 
             TitleComposition.objects.all().delete()
             for c in newList: c.save()
             # we store the update time of the table
-            markUpdated(model=TitleComposition, date=currentTime)
+            UpdateDate.mark_updated(model=TitleComposition, date=currentTime)
         # if no diff, we do nothing
     else:
         # 1st import
         for c in newList: c.save()
         # we store the update time of the table
-        markUpdated(model=TitleComposition, date=currentTime)
+        UpdateDate.mark_updated(model=TitleComposition, date=currentTime)
 
     # update titles access levels
     for t in Title.objects.all():

@@ -30,9 +30,8 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.db.models import Q
 
-from ecm.core.utils import print_time_min, print_float
+from ecm.utils.format import print_time_min, print_float
 from ecm.apps.eve.models import Type
-#from ecm.apps.eve import db
 from ecm.apps.corp.models import Wallet, Corp
 from ecm.apps.hr.models import Member
 from ecm.views.decorators import check_user_access

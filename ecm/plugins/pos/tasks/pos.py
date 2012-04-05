@@ -28,7 +28,6 @@ from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import CelestialObject, ControlTowerResource, Type
 from ecm.plugins.pos import constants
 from ecm.apps.eve import api
-from ecm.core.parsers import checkApiVersion
 from ecm.apps.corp.models import Corp
 
 logger = logging.getLogger(__name__)
@@ -50,7 +49,7 @@ def update():
 
     logger.info("fetching /corp/StarbaseList.xml.aspx...")
     apiPOSList = conn.corp.StarbaseList(characterID=charID)
-    checkApiVersion(apiPOSList._meta.version)
+    api.check_version(apiPOSList._meta.version)
 
     newPOSes = 0
     updatedPOSes = 0
@@ -131,7 +130,7 @@ def get_basic_info(pos, api_row):
 
     pos.location = CelestialObject.objects.get(itemID=pos.location_id).itemName
     pos.moon = CelestialObject.objects.get(itemID=pos.moon_id).itemName
-    #pos.location, _   = db.resolveLocationName(pos.location_id) 
+    #pos.location, _   = db.resolveLocationName(pos.location_id)
     #pos.moon, _  = db.resolveLocationName(pos.moon_id)
 
     item = Type.objects.get(pk=pos.type_id)
@@ -208,7 +207,7 @@ def get_details(pos, api, sov):
             base_fuel_cons = int(round(base_fuel_cons * .75))
         fuel_level.consumption = base_fuel_cons
         fuel_level.save()
-    
+
     #if db.getSecurityStatus(pos.location_id) > constants.CHARTER_MIN_SEC_STATUS:
     if CelestialObject.objects.get(itemID=pos.location_id).security > constants.CHARTER_MIN_SEC_STATUS:
         charters = constants.RACEID_TO_CHARTERID[sov[pos.location_id]['faction']]

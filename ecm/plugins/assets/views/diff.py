@@ -33,11 +33,12 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse
 from django.db import connection
 
+from ecm.utils import db
+from ecm.utils.format import print_integer, print_time_min
 from ecm.views.decorators import check_user_access
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
-from ecm.core import utils
 from ecm.plugins.assets.models import Asset, AssetDiff
 from ecm.apps.corp.models import Hangar
 from ecm.views import getScanDate, DATE_PATTERN
@@ -66,7 +67,7 @@ def last_date(request):
 
 
 def get_dates(request):
-    
+
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
     divisions = extract_divisions(request)
@@ -76,7 +77,7 @@ def get_dates(request):
 
     oldest_date = datetime.now() - timedelta(weeks=since_weeks)
     newest_date = datetime.now() - timedelta(weeks=to_weeks)
-    
+
     query = AssetDiff.objects.all()
     query = query.filter(date__gte=oldest_date)
     query = query.filter(date__lte=newest_date)
@@ -86,23 +87,23 @@ def get_dates(request):
         query = query.filter(stationID__gt=constants.MAX_STATION_ID)
     if divisions is not None:
         query = query.filter(hangarID__in=divisions)
-        
+
     dates = []
     for date in query.values_list('date', flat=True).distinct().order_by('-date'):
         dates.append({
             'value' : datetime.strftime(date, DATE_PATTERN),
-            'show' : utils.print_time_min(date),
+            'show' : print_time_min(date),
         })
-    
+
     return HttpResponse(json.dumps(dates))
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
 #------------------------------------------------------------------------------
 @check_user_access()
 def root(request, date_str):
@@ -182,7 +183,7 @@ def get_systems_data(request, date_str):
     sql += 'WHERE date=%s'
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "solarSystemID";'
-    sql = utils.fix_mysql_quotes(sql)
+    sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
@@ -236,7 +237,7 @@ def get_stations_data(request, date_str, solarSystemID):
     sql += 'WHERE "solarSystemID"=%s AND "date"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "stationID";'
-    sql = utils.fix_mysql_quotes(sql)
+    sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
@@ -289,7 +290,7 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
     sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s AND "date"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "hangarID";'
-    sql = utils.fix_mysql_quotes(sql)
+    sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
@@ -338,7 +339,7 @@ def get_hangar_content_data(request, date_str, solarSystemID, stationID, hangarI
             icon = 'added'
 
         jstree_data.append({
-            'data': '%s <i>(%s)</i>' % (name, utils.print_integer(item.quantity)),
+            'data': '%s <i>(%s)</i>' % (name, print_integer(item.quantity)),
             'attr' : {
                 'sort_key' : name.lower(),
                 'rel' : icon,
@@ -357,7 +358,7 @@ def search_items(request, date_str):
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
     search_string = request.GET.get('search_string', 'no-item')
-    
+
     matchingIDs = [x.typeID for x in Type.objects.filter(typeName__contains = search_string)]
 
     query = AssetDiff.objects.filter(typeID__in=matchingIDs, date=date)

@@ -30,7 +30,8 @@ from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response
 
-from ecm.core import utils
+
+from ecm.utils.format import print_integer, print_duration
 from ecm.apps.eve.models import Type
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
@@ -140,7 +141,7 @@ def materials(request, blueprint_id):
         mat_table.append([
             mat.requiredTypeID,
             '<a href="%s" class="%s">%s</a>' % (url, css, mat.required_type.typeName),
-            utils.print_integer(mat.quantity),
+            print_integer(mat.quantity),
             '%d%%' % (mat.damagePerJob * 100),
         ])
 
@@ -156,7 +157,7 @@ def manufacturing_time(request, blueprint_id):
         bp = get_object_or_404(OwnedBlueprint, id=int(blueprint_id))
     except (KeyError, ValueError), e:
         raise HttpResponseBadRequest(str(e))
-    duration = utils.print_duration(bp.manufacturing_time())
+    duration = print_duration(bp.manufacturing_time())
     return HttpResponse(duration)
 
 

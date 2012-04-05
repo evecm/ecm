@@ -29,9 +29,10 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
+from ecm.utils import db
+from ecm.utils.format import print_time_min
 from ecm.apps.hr.models import TitleComposition, Title, TitleCompoDiff
 from ecm.apps.common.models import ColorThreshold
-from ecm.core import utils
 from ecm.views.decorators import check_user_access
 from ecm.views import getScanDate, datatable_ajax_data, extract_datatable_params
 from ecm.apps.hr import NAME as app_prefix
@@ -70,8 +71,8 @@ WHERE "hr_titlemembership"."title_id"="hr_title"."titleID"'''
 SQL_ROLES_IN_TITLES = '''SELECT COUNT(*)
 FROM "hr_titlecomposition"
 WHERE "hr_titlecomposition"."title_id"="hr_title"."titleID"'''
-SQL_TITLE_MEMBERS = utils.fix_mysql_quotes(SQL_TITLE_MEMBERS)
-SQL_ROLES_IN_TITLES = utils.fix_mysql_quotes(SQL_ROLES_IN_TITLES)
+SQL_TITLE_MEMBERS = db.fix_mysql_quotes(SQL_TITLE_MEMBERS)
+SQL_ROLES_IN_TITLES = db.fix_mysql_quotes(SQL_ROLES_IN_TITLES)
 
 def getTitles(sort_by="titleID", asc=True):
     sort_col = "%s_nocase" % sort_by
@@ -93,7 +94,7 @@ def getTitles(sort_by="titleID", asc=True):
     for title in query:
         modification_date = TitleCompoDiff.objects.filter(title=title).order_by("-id")
         if modification_date.count():
-            modification_date = utils.print_time_min(modification_date[0].date)
+            modification_date = print_time_min(modification_date[0].date)
         else:
             modification_date = "-"
 

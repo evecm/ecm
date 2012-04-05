@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.core import utils
 
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
@@ -32,7 +31,8 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
-from ecm.core.utils import print_float
+from ecm.utils import db
+from ecm.utils.format import print_float
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
 from ecm.plugins.accounting.models import JournalEntry
@@ -171,7 +171,7 @@ def total_contrib_data(request):
                                         date__gte=from_date, date__lte=to_date)
     total_contribs = query.aggregate(sum=Sum('amount'))['sum']
 
-    return HttpResponse(utils.print_float(total_contribs))
+    return HttpResponse(print_float(total_contribs))
 
 
 #------------------------------------------------------------------------------
@@ -187,7 +187,7 @@ def member_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(
                          order_by="tax_contrib", ascending=False):
 
     sql = MEMBER_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;")
-    sql = utils.fix_mysql_quotes(sql)
+    sql = db.fix_mysql_quotes(sql)
     return Member.objects.raw(sql, [since, until])
 
 
@@ -203,7 +203,7 @@ def system_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(
                          order_by="tax_contrib", ascending=False):
 
     sql = SYSTEM_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;")
-    sql = utils.fix_mysql_quotes(sql)
+    sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     cursor.execute(sql, [since, until])

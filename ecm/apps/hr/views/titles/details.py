@@ -25,10 +25,9 @@ from django.template.context import RequestContext as Ctx
 
 from ecm.apps.common.models import ColorThreshold
 from ecm.apps.hr.models import TitleComposition, TitleCompoDiff, Title
-from ecm.core import utils
-from ecm.core.utils import get_access_color
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data
+from ecm.utils.format import print_time_min
 
 
 
@@ -42,7 +41,7 @@ def details(request, titleID):
         title.lastModified = title.lastModified[0].date
     else:
         title.lastModified = None
-    title.color = get_access_color(title.accessLvl, ColorThreshold.objects.all().order_by("threshold"))
+    title.color = ColorThreshold.get_access_color(title.accessLvl)
 
     data = {
         "title" : title,
@@ -108,7 +107,7 @@ def compo_diff_data(request, titleID):
             diff.new,
             diff.role.permalink,
             diff.role.roleType.permalink,
-            utils.print_time_min(diff.date)
+            print_time_min(diff.date)
         ])
 
     return datatable_ajax_data(diff_list, params.sEcho, total_diffs)

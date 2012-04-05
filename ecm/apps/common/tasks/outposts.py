@@ -24,7 +24,6 @@ from django.db import transaction
 
 from ecm.apps.eve.models import CelestialObject
 from ecm.apps.eve import api, constants
-from ecm.core.parsers import checkApiVersion
 
 LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
@@ -39,7 +38,7 @@ def update():
     LOG.info("fetching /eve/ConquerableStationList.xml.aspx...")
     api_conn = api.connect()
     apiOutposts = api_conn.eve.ConquerableStationList()
-    checkApiVersion(apiOutposts._meta.version)
+    api.check_version(apiOutposts._meta.version)
     created = 0
     updated = 0
     for outpost in apiOutposts.outposts:
@@ -60,28 +59,3 @@ def update():
             created += 1
         station.save()
     LOG.info("%d new outposts, %d updated", created, updated)
-
-#------------------------------------------------------------------------------
-#@transaction.commit_on_success(using='eve')
-#def update_old():
-#    """
-#    Retrieve all corp owned stations and update their name in the EVE database.
-#    Creating new entries if needed.
-#
-#    If there's an error, nothing is written in the database
-#    """
-#    LOG.info("fetching /eve/ConquerableStationList.xml.aspx...")
-#    api_conn = api.connect()
-#    apiOutposts = api_conn.eve.ConquerableStationList()
-#    checkApiVersion(apiOutposts._meta.version)
-#
-#    created = 0
-#    updated = 0
-#    for outpost in apiOutposts.outposts:
-#        if db.updateLocationName(stationID=outpost.stationID,
-#                                 solarSystemID=outpost.solarSystemID,
-#                                 locationName=outpost.stationName):
-#            created += 1
-#        else:
-#            updated += 1
-#    LOG.info("%d new outposts, %d updated", created, updated)

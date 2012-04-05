@@ -28,7 +28,7 @@ from ecm.apps.eve import api
 from ecm.lib import eveapi
 
 from ecm.apps.corp.models import Wallet
-from ecm.core.parsers import markUpdated, checkApiVersion
+from ecm.apps.common.models import UpdateDate
 from ecm.plugins.accounting.tasks import fix_encoding
 from ecm.plugins.accounting.models import JournalEntry
 
@@ -42,7 +42,7 @@ def update():
     for wallet in Wallet.objects.all():
         update_wallet(wallet)
 
-    markUpdated(model=JournalEntry, date=datetime.now())
+    UpdateDate.mark_updated(model=JournalEntry, date=datetime.now())
     LOG.debug("wallets journal updated")
 
 #------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ def fetch_entries(wallet, lastKnownID):
         walletsApi = api_conn.corp.WalletJournal(characterID=charID,
                                                  accountKey=wallet.walletID,
                                                  rowCount=256)
-        checkApiVersion(walletsApi._meta.version)
+        api.check_version(walletsApi._meta.version)
 
         entries = list(walletsApi.entries)
         if len(entries) > 0:
@@ -113,7 +113,7 @@ def fetch_entries(wallet, lastKnownID):
                                                      accountKey=wallet.walletID,
                                                      fromID=minID,
                                                      rowCount=256)
-            checkApiVersion(walletsApi._meta.version)
+            api.check_version(walletsApi._meta.version)
             entries.extend(list(walletsApi.entries))
             if len(walletsApi.entries) > 0:
                 minID = min([e.refID for e in walletsApi.entries])
@@ -128,6 +128,6 @@ def fetch_entries(wallet, lastKnownID):
 
         return entries
     except eveapi.Error, e:
-        LOG.error("API returned: %s. WalletJournal for account key %s might be empty." 
+        LOG.error("API returned: %s. WalletJournal for account key %s might be empty."
                   % (str(e), wallet.walletID))
-        return '' 
+        return ''

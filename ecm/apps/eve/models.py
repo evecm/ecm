@@ -20,7 +20,7 @@ __author__ = 'diabeteman'
 
 from django.db import models
 
-from ecm.core.utils import cached_property
+from ecm.utils.tools import cached_property
 from ecm.apps.eve.formulas import apply_production_level, apply_material_level
 
 #------------------------------------------------------------------------------

@@ -27,8 +27,8 @@ from django.core.mail.message import EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from django.template.context import RequestContext as Ctx
 
-from ecm.core import HTML
 from ecm.apps.common.models import Setting
+from ecm.views import HTML
 
 LOG = logging.getLogger(__name__)
 

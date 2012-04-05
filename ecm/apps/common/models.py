@@ -59,7 +59,7 @@ class Setting(models.Model):
 
     def __unicode__(self):
         return u'%s = %s' % (self.name, self.value)
-    
+
     @staticmethod
     def get(name):
         return Setting.objects.get(name=name).getValue()
@@ -188,6 +188,22 @@ class UpdateDate(models.Model):
     def __unicode__(self):
         return u"%s updated %s" % (self.model_name, self.update_date)
 
+    @staticmethod
+    def mark_updated(model, date):
+        """
+        Tag a model's table in the database as 'updated'
+        With the update date and the previous update date as well.
+        """
+        try:
+            update = UpdateDate.objects.get(model_name=model.__name__)
+            if not update.update_date == date:
+                update.prev_update = update.update_date
+                update.update_date = date
+                update.save()
+        except UpdateDate.DoesNotExist:
+            UpdateDate.objects.create(model_name=model.__name__, update_date=date)
+
+
 #------------------------------------------------------------------------------
 class ColorThreshold(models.Model):
     """
@@ -204,17 +220,25 @@ class ColorThreshold(models.Model):
     def __unicode__(self):
         return u"%s -> %d" % (self.color, self.threshold)
 
+    @staticmethod
+    def get_access_color(access_lvl, color_thresholds=None):
+        if color_thresholds is None:
+            color_thresholds = ColorThreshold.objects.all().order_by("threshold")
+        for t in color_thresholds:
+            if access_lvl <= t.threshold:
+                return t.color
+        return ''
 
 #------------------------------------------------------------------------------
 class UrlPermission(models.Model):
     """
     Utility class for authorization management in ECM.
-    
-    "pattern" 
+
+    "pattern"
         a perl like regular expression that should describe a group of URLs
-    "groups" 
+    "groups"
         a list of django users' groups that have access to the URLs described by the pattern.
-    
+
     @see: UrlPermission.user_has_access()
     """
     pattern = models.CharField(max_length=256)

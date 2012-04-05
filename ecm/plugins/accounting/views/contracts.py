@@ -30,14 +30,14 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.db.models import Q
 
-from ecm.core.utils import print_time_min, print_float
+from ecm.utils.format import print_time_min, print_float
 from ecm.apps.eve.models import Type
 from ecm.apps.corp.models import Wallet, Corp
 from ecm.apps.hr.models import Member
 from ecm.views.decorators import check_user_access
 from ecm.views import getScanDate, extract_datatable_params
 
-from ecm.plugins.accounting.models import Contract 
+from ecm.plugins.accounting.models import Contract
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -45,7 +45,7 @@ def contracts(request):
 
     # Get contract types
     data = {
-        'scan_date' : getScanDate(Contract)        
+        'scan_date' : getScanDate(Contract)
     }
     return render_to_response('contracts.html', data, Ctx(request))
 
@@ -58,7 +58,7 @@ def contracts_data(request):
         return HttpResponseBadRequest()
 
     query = Contract.objects.select_related(depth=1).all() # .order_by('-dateIssued')
-    
+
     if params.search:
         # Total number of entries
         total_entries = query.count()
@@ -69,7 +69,7 @@ def contracts_data(request):
             search_args |= Q(title__icontains=params.search)
 
         query = query.filter(search_args)
-        # Total number of filtered entries #TODO 
+        # Total number of filtered entries #TODO
         filtered_entries = query.count()
     else:
         total_entries = filtered_entries = query.count()

@@ -24,10 +24,10 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
+from ecm.utils.format import print_time_min
 from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
 from ecm.views.decorators import check_user_access
-from ecm.core import utils
 
 
 #------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ def access_changes_data(request):
             c.new,
             c.member_permalink,
             c.access_permalink,
-            utils.print_time_min(c.date)
+            print_time_min(c.date)
         ])
 
     return datatable_ajax_data(change_list, params.sEcho, total_count, filtered_count)

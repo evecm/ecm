@@ -16,6 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+from ecm.utils import tools
 
 __date__ = "2010-03-23"
 __author__ = "diabeteman"
@@ -24,12 +25,10 @@ import logging
 
 from django.db import transaction
 
-from ecm.apps.common.models import Setting
-from ecm.core import utils
+from ecm.apps.common.models import Setting, UpdateDate
 from ecm.apps.eve import api
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants as cst
-from ecm.core.parsers import diff, markUpdated, checkApiVersion
 from ecm.plugins.assets.models import Asset, AssetDiff
 
 LOG = logging.getLogger(__name__)
@@ -48,7 +47,7 @@ def update():
     LOG.info("fetching /corp/AssetList.xml.aspx...")
     api_conn = api.connect()
     apiAssets = api_conn.corp.AssetList(characterID=api.get_charID())
-    checkApiVersion(apiAssets._meta.version)
+    api.check_version(apiAssets._meta.version)
 
     currentTime = apiAssets._meta.currentTime
     cachedUntil = apiAssets._meta.cachedUntil
@@ -56,12 +55,12 @@ def update():
     LOG.debug("cached util : %s", str(cachedUntil))
 
     LOG.debug("fetching old assets from the database...")
-    oldItems = {}
+    old_items = {}
     for asset in Asset.objects.all():
-        oldItems[asset] = asset
+        old_items[asset] = asset
 
-    newItems = {}
-    LOG.debug("%d assets fetched", len(oldItems.keys()))
+    new_items = {}
+    LOG.debug("%d assets fetched", len(old_items.keys()))
 
     IGNORE_CAN_VOLUMES = Setting.get('assets_ignore_containers_volumes')
 
@@ -77,53 +76,53 @@ def update():
         if row.locationID >= cst.STATIONS_IDS:
             # this row contains assets in a station
             if row.typeID == cst.OFFICE_TYPEID:
-                row_is_office(office=row, items_dic=newItems)
+                row_is_office(office=row, items_dic=new_items)
             else:
-                row_is_in_hangar(item=row, items_dic=newItems)
+                row_is_in_hangar(item=row, items_dic=new_items)
         else:
             # this row contains assets in space
             try:
                 if cst.HAS_HANGAR_DIVISIONS[row.typeID]:
-                    row_is_pos_corp_hangar(corpArray=row, items_dic=newItems)
+                    row_is_pos_corp_hangar(corpArray=row, items_dic=new_items)
                 else:
-                    row_is_pos_array(array=row, items_dic=newItems)
+                    row_is_pos_array(array=row, items_dic=new_items)
                 assets_to_locate.append(row.itemID)
             except KeyError:
                 # unhandled typeID, this may be a reactor array or some other crap
                 pass
 
-    LOG.info("%d assets parsed", len(newItems))
+    LOG.info("%d assets parsed", len(new_items))
 
     diffs = []
-    if len(oldItems) != 0:
+    if len(old_items) != 0:
         LOG.debug("computing diffs since last asset scan...")
-        diffs = calc_assets_diff(oldItems=oldItems, newItems=newItems, date=currentTime)
+        diffs = calc_assets_diff(old_items=old_items, new_items=new_items, date=currentTime)
 
     # I grouped all the DB writes here so that it doesn't make a too long DB transaction.
     # The assets parsing can last more than 10 minutes on slow servers.
-    write_results(newItems, oldItems, diffs, assets_to_locate, currentTime)
+    write_results(new_items, old_items, diffs, assets_to_locate, currentTime)
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
-def write_results(newItems, oldItems, diffs, assets_to_locate, currentTime):
+def write_results(new_items, old_items, diffs, assets_to_locate, currentTime):
     if diffs:
         for assetDiff in diffs:
             assetDiff.save()
         # we store the update time of the table
-        markUpdated(model=AssetDiff, date=currentTime)
-    if len(oldItems) > 0:
+        UpdateDate.mark_updated(model=AssetDiff, date=currentTime)
+    if len(old_items) > 0:
         Asset.objects.all().delete()
-    for asset in newItems.values():
+    for asset in new_items.values():
         asset.save()
     update_assets_locations(assets_to_locate)
     update_assets_names()
-    markUpdated(model=Asset, date=currentTime)
+    UpdateDate.mark_updated(model=Asset, date=currentTime)
     # we store the update time of the table
     LOG.info("%d changes since last scan", len(diffs))
 
 #------------------------------------------------------------------------------
-def calc_assets_diff(oldItems, newItems, date):
-    removed, added = diff(oldItems=oldItems, newItems=newItems)
+def calc_assets_diff(old_items, new_items, date):
+    removed, added = tools.diff(old_items=old_items, new_items=new_items)
     merge_duplicates(removed)
     merge_duplicates(added)
 
@@ -380,7 +379,7 @@ def update_assets_locations(assets_to_locate):
     api_conn = api.connect()
     located_assets = []
     # Fetch all the x,y,z positions of the assets from the API
-    for sub_list in utils.sublists(assets_to_locate, sub_length=50): # max 50 items per request
+    for sub_list in tools.sublists(assets_to_locate, sub_length=50): # max 50 items per request
         LOG.debug('fetching /corp/Locations.xml.aspx...')
         ids = ','.join(map(str, sub_list))
         locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
@@ -425,7 +424,7 @@ def update_assets_names():
     api_conn = api.connect()
     named_assets = []
     # Fetch all the x,y,z positions of the assets from the API
-    for sub_list in utils.sublists(assets_to_name, sub_length=50): # max 50 items per request
+    for sub_list in tools.sublists(assets_to_name, sub_length=50): # max 50 items per request
         LOG.debug('fetching /corp/Locations.xml.aspx...')
         ids = ','.join(map(str, sub_list))
         locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)

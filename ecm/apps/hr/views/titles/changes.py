@@ -26,7 +26,7 @@ from django.template.context import RequestContext as Ctx
 from ecm.apps.hr.models import TitleComposition, TitleCompoDiff
 from ecm.views.decorators import check_user_access
 from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
-from ecm.core.utils import print_time_min
+from ecm.utils.format import print_time_min
 
 
 #------------------------------------------------------------------------------

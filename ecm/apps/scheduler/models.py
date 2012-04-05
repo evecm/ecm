@@ -85,11 +85,11 @@ class ScheduledTask(models.Model):
     launch_task_admin_display.short_description = "Launch"
 
     def next_execution_admin_display(self):
-        from ecm.core import utils
+        from ecm.utils.format import print_delta
         delta = self.next_execution - datetime.now()
         if delta < timedelta(0):
             delta = timedelta(0)
-        return utils.print_delta(delta)
+        return print_delta(delta)
     next_execution_admin_display.short_description = "Next execution"
 
     def get_function(self):

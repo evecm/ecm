@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.eve.models import Type
+from ecm.utils.format import print_duration, print_integer
 
 __date__ = '2011 8 19'
 __author__ = 'diabeteman'
@@ -33,11 +33,12 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.text import truncate_words
 from django.db.models import Q
+from django.conf import settings
 
+from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access, forbidden
 from ecm.plugins.industry.models.order import IllegalTransition
 from ecm.views import extract_datatable_params, datatable_ajax_data
-from ecm.core import utils
 from ecm.plugins.industry.models import Job
 
 LOG = logging.getLogger(__name__)
@@ -55,9 +56,12 @@ COLUMNS = [
 
 @check_user_access()
 def jobs_list(request):
+    activities = Job.ACTIVITIES.items()
+    #activities.sort(key=lambda x: x[0])
     data = {
         'columns' : [ col[0] for col in COLUMNS ],
         'states': Job.STATES,
+        'activities': activities,
         'state': 'all',
         'owner': 'all',
     }
@@ -72,43 +76,45 @@ def jobs_list_data(request):
         owner = getattr(request, request.method)['owner']
     except (KeyError, ValueError), e:
         return HttpResponseBadRequest(str(e))
-    
+
     query = Job.objects.all()
-    
+
     total = query.count()
-    
+
     if owner == 'mine':
         query = query.filter(owner=request.user)
-    
+
     if state != 'all':
         query = query.filter(state=int(state))
-    
+
     if params.search:
         matching_items = Type.objects.filter(typeName__icontains=params.search)
         matching_ids = list(matching_items.values_list('typeID', flat=True))
         search_args = Q(owner__username__icontains=params.search)
         search_args |= Q(item_id__in=matching_ids)
         query = query.filter(search_args)
-    
+
     filtered = query.count()
     data = []
     for job in query[params.first_id:params.last_id]:
-        
+
         if job.duration:
-            duration = utils.print_duration(job.duration, verbose=False)
+            duration = print_duration(job.duration, verbose=False)
         else:
             duration = '-'
+
+        activity_icon = '<img src="%sindustry/img/%s.png" title="%s"/>' % (settings.STATIC_URL, job.activity_text.lower(), job.activity_text)
+
         data.append([
             job.permalink(),
             job.state_text,
             job.order.permalink(shop=False),
             job.owner_permalink(),
             duration,
-            job.activity_text,
-            utils.print_integer(round(job.runs)),
+            activity_icon,
+            print_integer(round(job.runs)),
             job.item.typeName,
         ])
-    
+
     return datatable_ajax_data(data, params.sEcho, total, filtered)
-    
-    
+

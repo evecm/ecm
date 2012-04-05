@@ -16,7 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 
-from ecm.core.utils import print_float
+from ecm.utils.format import print_float
 
 WALLET_LINK = '<a href="%s" class="wallet" title="%s">%s</a>'
 
