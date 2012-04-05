@@ -37,7 +37,7 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 def update():
     """
-    Updates all contracts 
+    Update all contracts 
     """
     LOG.info("fetching /corp/Contracts.xml.aspx...")
     # Connect to EVE API
@@ -64,50 +64,18 @@ def update():
         contract = create_contract_fom_row(entry)
         newContracts[contract] = contract
 
-    addedContracts, removedContracts = diff(oldContracts, newContracts)
+    removedContracts, addedContracts = diff(oldContracts, newContracts)
     write_results(addedContracts, removedContracts)
     markUpdated(model=Contract, date=datetime.now())
-
-@transaction.commit_on_success
-def delete_results(entries):
-    """
-    Remove contracts from DB which have the state 'deleted'
-    """
-    for e in entries:
-        contract = Contract.objects.get(contractID = e.contractID)
-        contract.delete()
-    LOG.info("%d contracts removed." % len(entries))
 
 @transaction.commit_on_success
 def write_results(newContracts, oldContracts):
     """
     Write the API results
     """
-    #for e in entries:
-    #    Contract.objects.create(contractID = e.contractID,
-    #                            issuerID = e.issuerID,
-    #                            issuerCorpID = e.issuerCorpID,
-    #                            assigneeID = e.assigneeID,
-    #                            acceptorID = e.acceptorID,
-    #                            startStationID = e.startStationID,
-    #                            endStationID = e.endStationID,
-    #                            type = e.type,
-    #                            status = e.status,
-    #                            title = e.title,
-    #                            forCorp = e.forCorp,
-    #                            availability = e.availability,
-    #                            dateIssued = e.dateIssued,
-    #                            dateExpired = e.dateExpired,
-    #                            dateAccepted = e.dateAccepted,
-    #                            numDays = e.numDays,
-    #                            dateCompleted = e.dateCompleted,
-    #                            price = e.price,
-    #                            reward = e.reward,
-    #                            collateral = e.collateral,
-    #                            buyout = e.buyout,
-    #                            volume = e.volume)
     if len(oldContracts) > 0:
         Contract.objects.all().delete()
+        LOG.info("%d old contracts removed." % len(oldContracts))
     for contract in newContracts:
         contract.save()
     LOG.info("%d contracts added." % len(newContracts))
