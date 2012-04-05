@@ -75,6 +75,9 @@ class Contract(models.Model):
         verbose_name ='Contract'
         ordering = ['contractID']
 
+    def __hash__(self):
+        return self.contractID
+
     # Unique ID for this contract.
     contractID     = models.PositiveIntegerField()
 
@@ -89,7 +92,7 @@ class Contract(models.Model):
 
     # Who will accept the contract. If assigneeID is 
     # same as acceptorID then CharacterID else CorporationID 
-     # (The contract accepted by the corporation)
+    # (The contract accepted by the corporation)
     acceptorID     = models.PositiveIntegerField()
 
     # Start station ID (for Couriers contract)

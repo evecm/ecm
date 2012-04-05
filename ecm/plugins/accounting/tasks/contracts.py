@@ -28,7 +28,7 @@ from ecm.apps.eve import api
 from ecm.lib import eveapi
 
 # from ecm.apps.corp.models import Wallet
-from ecm.core.parsers import markUpdated, checkApiVersion
+from ecm.core.parsers import diff, markUpdated, checkApiVersion
 from ecm.plugins.accounting.tasks import fix_encoding
 from ecm.plugins.accounting.models import Contract
 
@@ -50,44 +50,89 @@ def update():
     LOG.debug("current time : %s", str(currentTime))
     LOG.debug("cached util : %s", str(cachedUntil))
     LOG.debug("parsing api response...")
-    entries = list(contractsApi.contractList)
-    dbEntries = list(Contract.objects.all().values_list('contractID', flat=True))
-    # Remove db entries form the api results
-    counter = 0
+
+    entries = contractsApi.contractList
+
+    # Get old contracts
+    oldContracts = {}
+    for contract in Contract.objects.all():
+        oldContracts[contract] = contract
+
+    # Get new contracts
+    newContracts = {}
     for entry in entries:
-        if entry.contractID in dbEntries:
-            del entries[counter]
-        counter += 1
-    write_results(entries)
+        contract = create_contract_fom_row(entry)
+        newContracts[contract] = contract
+
+    addedContracts, removedContracts = diff(oldContracts, newContracts)
+    write_results(addedContracts, removedContracts)
     markUpdated(model=Contract, date=datetime.now())
 
 @transaction.commit_on_success
-def write_results(entries):
+def delete_results(entries):
+    """
+    Remove contracts from DB which have the state 'deleted'
+    """
+    for e in entries:
+        contract = Contract.objects.get(contractID = e.contractID)
+        contract.delete()
+    LOG.info("%d contracts removed." % len(entries))
+
+@transaction.commit_on_success
+def write_results(newContracts, oldContracts):
     """
     Write the API results
     """
-    for e in entries:
-        Contract.objects.create(contractID = e.contractID,
-                                issuerID = e.issuerID,
-                                issuerCorpID = e.issuerCorpID,
-                                assigneeID = e.assigneeID,
-                                acceptorID = e.acceptorID,
-                                startStationID = e.startStationID,
-                                endStationID = e.endStationID,
-                                type = e.type,
-                                status = e.status,
-                                title = e.title,
-                                forCorp = e.forCorp,
-                                availability = e.availability,
-                                dateIssued = e.dateIssued,
-                                dateExpired = e.dateExpired,
-                                dateAccepted = e.dateAccepted,
-                                numDays = e.numDays,
-                                dateCompleted = e.dateCompleted,
-                                price = e.price,
-                                reward = e.reward,
-                                collateral = e.collateral,
-                                buyout = e.buyout,
-                                volume = e.volume)
-    LOG.info("%d contracts added." % len(entries))
-        
+    #for e in entries:
+    #    Contract.objects.create(contractID = e.contractID,
+    #                            issuerID = e.issuerID,
+    #                            issuerCorpID = e.issuerCorpID,
+    #                            assigneeID = e.assigneeID,
+    #                            acceptorID = e.acceptorID,
+    #                            startStationID = e.startStationID,
+    #                            endStationID = e.endStationID,
+    #                            type = e.type,
+    #                            status = e.status,
+    #                            title = e.title,
+    #                            forCorp = e.forCorp,
+    #                            availability = e.availability,
+    #                            dateIssued = e.dateIssued,
+    #                            dateExpired = e.dateExpired,
+    #                            dateAccepted = e.dateAccepted,
+    #                            numDays = e.numDays,
+    #                            dateCompleted = e.dateCompleted,
+    #                            price = e.price,
+    #                            reward = e.reward,
+    #                            collateral = e.collateral,
+    #                            buyout = e.buyout,
+    #                            volume = e.volume)
+    if len(oldContracts) > 0:
+        Contract.objects.all().delete()
+    for contract in newContracts:
+        contract.save()
+    LOG.info("%d contracts added." % len(newContracts))
+
+def create_contract_fom_row(row):
+    return Contract(contractID = row.contractID,
+                    issuerID = row.issuerID,
+                    issuerCorpID = row.issuerCorpID,
+                    assigneeID = row.assigneeID,
+                    acceptorID = row.acceptorID,
+                    startStationID = row.startStationID,
+                    endStationID = row.endStationID,
+                    type = row.type,
+                    status = row.status,
+                    title = row.title,
+                    forCorp = row.forCorp,
+                    availability = row.availability,
+                    dateIssued = row.dateIssued,
+                    dateExpired = row.dateExpired,
+                    dateAccepted = row.dateAccepted,
+                    numDays = row.numDays,
+                    dateCompleted = row.dateCompleted,
+                    price = row.price,
+                    reward = row.reward,
+                    collateral = row.collateral,
+                    buyout = row.buyout,
+                    volume = row.volume)
+
