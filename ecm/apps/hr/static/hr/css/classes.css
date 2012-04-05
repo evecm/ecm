@@ -23,3 +23,27 @@ a.kill {
     background: url(../img/kills.png) no-repeat left;
     font-size:120%;
 }
+a.evegate{
+    padding: 4px 0;
+    padding-left: 20px;
+    background: url(../img/evegate.png) no-repeat left;
+    font-size:120%;
+}
+a.eveboard{
+    padding: 4px 0;
+    padding-left: 20px;
+    background: url(../img/eveboard.png) no-repeat left;
+    font-size:120%;
+}
+a.evesearch{
+    padding: 4px 0;
+    padding-left: 20px;
+    background: url(../img/evesearch.png) no-repeat left;
+    font-size:120%;
+}
+a.evewho{
+    padding: 4px 0;
+    padding-left: 20px;
+    background: url(../img/evewho.png) no-repeat left;
+    font-size:120%;
+}
