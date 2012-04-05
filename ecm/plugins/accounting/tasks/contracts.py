@@ -51,4 +51,34 @@ def update():
     LOG.debug("cached util : %s", str(cachedUntil))
     LOG.debug("parsing api response...")
     entries = list(contractsApi.contractList)
-    return entries
+    write_results(entries)
+
+def write_results(entries):
+    """
+    Write the API results
+    """
+    for e in entries:
+        Contract.objects.create(contractID = e.contractID,
+                                issuerID = e.issuerID,
+                                issuerCorpID = e.issuerCorpID,
+                                assigneeID = e.assigneeID,
+                                acceptorID = e.acceptorID,
+                                startStationID = e.startStationID,
+                                endStationID = e.endStationID,
+                                type = e.type,
+                                status = e.status,
+                                title = e.title,
+                                forCorp = e.forCorp,
+                                availability = e.availability,
+                                dateIssued = e.dateIssued,
+                                dateExpired = e.dateExpired,
+                                dateAccepted = e.dateAccepted,
+                                numDays = e.numDays,
+                                dateCompleted = e.dateCompleted,
+                                price = e.price,
+                                reward = e.reward,
+                                collateral = e.collateral,
+                                buyout = e.buyout,
+                                volume = e.volume)
+    LOG.info("%d contracts added." % len(entries))
+        
