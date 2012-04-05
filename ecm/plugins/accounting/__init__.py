@@ -27,6 +27,7 @@ MENUS = [
      {'title': 'Accounting',    'url': '',      'items': [
         {'title': 'Wallets Journal', 'url': 'journal/', 'items': []},
         {'title': 'Tax Contributions', 'url': 'contributions/', 'items': []},
+        {'title': 'Contracts', 'url': 'contracts/', 'items': []},
     ]},
 ]
 
@@ -38,6 +39,11 @@ TASKS = [
         'frequency_units' : 86400, # day
     }, {
         'function' : 'ecm.plugins.accounting.tasks.wallets.update',
+        'priority' : 0,
+        'frequency' : 6,
+        'frequency_units' : 3600, # hour
+    }, {
+        'function' : 'ecm.plugins.accounting.tasks.contracts.update',
         'priority' : 0,
         'frequency' : 6,
         'frequency_units' : 3600, # hour
