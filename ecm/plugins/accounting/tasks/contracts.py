@@ -35,7 +35,6 @@ from ecm.plugins.accounting.models import Contract
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
 def update():
     """
     Updates all contracts 
@@ -62,6 +61,7 @@ def update():
     write_results(entries)
     markUpdated(model=Contract, date=datetime.now())
 
+@transaction.commit_on_success
 def write_results(entries):
     """
     Write the API results
