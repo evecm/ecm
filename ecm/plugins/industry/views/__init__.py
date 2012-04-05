@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.utils import tools
 
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
@@ -25,7 +26,6 @@ from django.db import connections, transaction
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
-from ecm.core import utils
 from ecm.apps.eve.models import Type, BlueprintReq
 from ecm.apps.eve import constants
 from ecm.plugins.industry.models import CatalogEntry, Supply
@@ -51,7 +51,7 @@ def create_missing_catalog_entries():
 
     missing_ids = list(eve_typeIDs - ecm_typeIDs)
 
-    for sublist in utils.sublists(missing_ids, 50):
+    for sublist in tools.sublists(missing_ids, 50):
         for obj in Type.objects.filter(typeID__in=sublist):
             CatalogEntry.objects.create(typeID=obj.typeID, typeName=obj.typeName, is_available=False)
 

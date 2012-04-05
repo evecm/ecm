@@ -25,11 +25,7 @@ from datetime import datetime
 from django.db import transaction
 
 from ecm.apps.eve import api
-from ecm.lib import eveapi
-
-# from ecm.apps.corp.models import Wallet
-from ecm.core.parsers import markUpdated, checkApiVersion
-from ecm.plugins.accounting.tasks import fix_encoding
+from ecm.apps.common.models import UpdateDate
 from ecm.plugins.accounting.models import Contract
 
 LOG = logging.getLogger(__name__)
@@ -38,13 +34,13 @@ LOG = logging.getLogger(__name__)
 @transaction.commit_on_success
 def update():
     """
-    Updates all contracts 
+    Updates all contracts
     """
     LOG.info("fetching /corp/Contracts.xml.aspx...")
     # Connect to EVE API
     apiConn = api.connect()
     contractsApi = apiConn.corp.Contracts()
-    checkApiVersion(contractsApi._meta.version)
+    api.check_version(contractsApi._meta.version)
 
     currentTime = contractsApi._meta.currentTime
     cachedUntil = contractsApi._meta.cachedUntil
@@ -60,7 +56,7 @@ def update():
             del entries[counter]
         counter += 1
     write_results(entries)
-    markUpdated(model=Contract, date=datetime.now())
+    UpdateDate.mark_updated(model=Contract, date=datetime.now())
 
 def write_results(entries):
     """
@@ -90,4 +86,4 @@ def write_results(entries):
                                 buyout = e.buyout,
                                 volume = e.volume)
     LOG.info("%d contracts added." % len(entries))
-        
+

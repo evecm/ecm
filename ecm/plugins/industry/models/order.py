@@ -23,9 +23,9 @@ __author__ = "diabeteman"
 from django.db import models, connection
 from django.contrib.auth.models import User
 
-from ecm.core import utils
+from ecm.utils import db
+from ecm.utils.format import print_date
 from ecm.apps.eve.models import Type
-from ecm.core.utils import fix_mysql_quotes
 from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.industry.models.inventory import Supply
 from ecm.plugins.industry.models.job import Job
@@ -190,7 +190,7 @@ class Order(models.Model):
         Plan an order for a delivery date
         """
         self.apply_transition(Order.plan, Order.PLANNED, manufacturer,
-                             'Order planned for date "%s"' % utils.print_date(date))
+                             'Order planned for date "%s"' % print_date(date))
         self.delivery_date = date
         self.save()
 
@@ -343,7 +343,7 @@ class Order(models.Model):
         sql = 'SELECT "item_id", SUM("runs"), "activity" FROM "industry_job"'
         sql += ' WHERE ' + ' AND '.join(where)
         sql += ' GROUP BY "item_id", "activity" ORDER BY "activity", "item_id";'
-        sql = fix_mysql_quotes(sql)
+        sql = db.fix_mysql_quotes(sql)
 
         cursor = connection.cursor() #@UndefinedVariable
         if activity is not None:
@@ -467,7 +467,7 @@ class OrderRow(models.Model):
         sql = 'SELECT "item_id", SUM("runs"), "activity" FROM "industry_job"'
         sql += ' WHERE ' + ' AND '.join(where)
         sql += ' GROUP BY "item_id", "activity" ORDER BY "activity", "item_id";'
-        sql = fix_mysql_quotes(sql)
+        sql = db.fix_mysql_quotes(sql)
 
         cursor = connection.cursor() #@UndefinedVariable
         cursor.execute(sql, [self.id])

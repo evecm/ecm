@@ -25,9 +25,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
 from ecm.lib import eveapi
+from ecm.apps.common.models import UpdateDate
 from ecm.apps.corp.models import Corp, Hangar, Wallet
 from ecm.apps.eve import api
-from ecm.core.parsers import checkApiVersion, markUpdated
 
 import logging
 LOG = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ def update():
     api_conn = api.connect()
     # retrieve /corp/CorporationSheet.xml.aspx
     corpApi = api_conn.corp.CorporationSheet(characterID=api.get_charID())
-    checkApiVersion(corpApi._meta.version)
+    api.check_version(corpApi._meta.version)
 
     currentTime = corpApi._meta.currentTime
 
@@ -122,7 +122,7 @@ def update_corp_info(corpApi, currentTime):
 
     corp.save()
     # we store the update time of the table
-    markUpdated(model=Corp, date=currentTime)
+    UpdateDate.mark_updated(model=Corp, date=currentTime)
 
     return corp
 
@@ -141,7 +141,7 @@ def update_hangar_divisions(corpApi, currentTime):
         LOG.debug("  %s [%d]", h.name, h.hangarID)
         h.save()
     # we store the update time of the table
-    markUpdated(model=Hangar, date=currentTime)
+    UpdateDate.mark_updated(model=Hangar, date=currentTime)
 
 
 #------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ def update_wallet_divisions(corpApi, currentTime):
         LOG.debug("  %s [%d]", w.name, w.walletID)
         w.save()
     # we store the update time of the table
-    markUpdated(model=Wallet, date=currentTime)
+    UpdateDate.mark_updated(model=Wallet, date=currentTime)
 
 #------------------------------------------------------------------------------
 FONT_TAG_REGEXP = re.compile('</?font.*?>', re.DOTALL)

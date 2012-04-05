@@ -31,12 +31,13 @@ from django.template.context import RequestContext as Ctx
 from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, render_to_response
 
+from ecm.utils import db
+from ecm.utils.format import print_float
 from ecm.apps.common.models import Setting
 from ecm.apps.eve.models import Type
 from ecm.plugins.industry.models.order import OrderCannotBeFulfilled
 from ecm.plugins.industry.models.inventory import Supply
-from ecm.core import utils, JSON
-from ecm.views import extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data, JSON
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.industry.tasks.industry import update_production_cost
@@ -86,7 +87,7 @@ def items_data(request):
     # SQL hack for making a case insensitive sort
     if params.column == 1:
         sort_col = sort_col + "_nocase"
-        sort_val = utils.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column])
+        sort_val = db.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column])
         query = query.extra(select={ sort_col : sort_val })
 
     if not params.asc:
@@ -105,9 +106,9 @@ def items_data(request):
         items.append([
             item.permalink,
             bool(item.is_available),
-            utils.print_float(item.fixed_price),
-            utils.print_float(item.production_cost),
-            utils.print_float(item.public_price),
+            print_float(item.fixed_price),
+            print_float(item.production_cost),
+            print_float(item.public_price),
             item.blueprint_count,
             item.order_count,
             item.typeID,
@@ -155,7 +156,7 @@ def price(request, item_id):
             price = None
         item.fixed_price = price
         item.save()
-        displayPrice = utils.print_float(price)
+        displayPrice = print_float(price)
         logger.info('"%s" changed fixed_price for item "%s" -> %s' % (request.user,
                                                                      item.typeName,
                                                                      displayPrice))
@@ -191,7 +192,7 @@ def production_cost(request, item_id):
         if error:
             return HttpResponseBadRequest(error)
         else:
-            return HttpResponse(utils.print_float(item.production_cost))
+            return HttpResponse(print_float(item.production_cost))
 
     except ValueError:
         raise Http404()
@@ -215,7 +216,7 @@ def public_price(request, item_id):
             if buyPrices[type_id] > 0.0 and item.public_price != buyPrices[type_id]:
                 item.public_price = buyPrices[type_id]
                 logger.info('New price for "%s" -> %s' % (item.typeName,
-                                                      utils.print_float(buyPrices[type_id])))
+                                                      print_float(buyPrices[type_id])))
                 item.save()
             else:
                 error = "Price didn't change"
@@ -224,7 +225,7 @@ def public_price(request, item_id):
         if error:
             return HttpResponseBadRequest(error)
         else:
-            return HttpResponse(utils.print_float(item.public_price))
+            return HttpResponse(print_float(item.public_price))
     except ValueError:
         raise Http404()
 

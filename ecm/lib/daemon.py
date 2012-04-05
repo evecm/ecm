@@ -49,21 +49,21 @@ class Daemon:
         # redirect standard file descriptors
         sys.stdout.flush()
         sys.stderr.flush()
-        
+
         if self.working_dir is not None:
             os.chdir(self.working_dir)
         if self.uid is not None:
-            os.seteuid(self.uid)
+            os.seteuid(self.uid) #@UndefinedVariable
         if self.gid is not None:
-            os.setegid(self.gid)
-        
+            os.setegid(self.gid) #@UndefinedVariable
+
         self.mask_standard_file_descriptors()
         # write pidfile
         pid = str(os.getpid())
         file(self.pidfile,'w+').write("%s\n" % pid)
         # register the function to delete pidfile at process exit
         atexit.register(self.delpid)
-        
+
         return False # return False means we are in the "daemonized" child process
 
     def delpid(self):

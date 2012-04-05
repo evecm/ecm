@@ -30,8 +30,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models.aggregates import Count
 from django.template.context import RequestContext as Ctx
 
-from ecm.core import utils
 from ecm.views.decorators import check_user_access
+from ecm.utils.format import print_time_min
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import ColorThreshold
 from ecm.views import extract_datatable_params, datatable_ajax_data
@@ -86,12 +86,12 @@ def player_list_data(request):
             player.eve_accounts.all().count(),
             player.characters.all().count(),
             player.groups.all().count(),
-            utils.print_time_min(player.last_login),
-            utils.print_time_min(player.date_joined)
+            print_time_min(player.last_login),
+            print_time_min(player.date_joined)
         ])
 
     return datatable_ajax_data(player_list, params.sEcho, total_count, filtered_count)
-    
+
 #------------------------------------------------------------------------------
 @check_user_access()
 def player_details(request, player_id):

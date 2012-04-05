@@ -25,8 +25,8 @@ from datetime import datetime
 
 from django.db import transaction
 
+from ecm.utils.format import print_float
 from ecm.apps.eve.models import Type
-from ecm.core import utils
 from ecm.plugins.industry.models.order import OrderCannotBeFulfilled
 from ecm.plugins.industry.tasks import evecentral
 from ecm.plugins.industry.models import Supply, SupplySource, Order, CatalogEntry
@@ -48,7 +48,7 @@ def update_supply_prices():
                 if buyPrices[supPrice.typeID] > 0.0 and supPrice.price != buyPrices[supPrice.typeID]:
                     supPrice.update_price(buyPrices[supPrice.typeID])
                     logger.info('New price for "%s" -> %s' % (supPrice.item_admin_display(),
-                                                          utils.print_float(buyPrices[supPrice.typeID])))
+                                                          print_float(buyPrices[supPrice.typeID])))
             except KeyError:
                 logger.info('Could not find buy-price for item: %d - skipping' % (supPrice.typeID))
 

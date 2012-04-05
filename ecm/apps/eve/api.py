@@ -26,6 +26,12 @@ from ecm.apps.corp.models import Corp
 EVE_API_VERSION = '2'
 
 #------------------------------------------------------------------------------
+def check_version(version):
+    if version != EVE_API_VERSION:
+        raise DeprecationWarning("Wrong EVE API version. "
+                "Expected '%s', got '%s'." % (EVE_API_VERSION, version))
+
+#------------------------------------------------------------------------------
 def get_api():
     keyID = Setting.get(name='common_api_keyID')
     vCode = Setting.get(name='common_api_vCode')

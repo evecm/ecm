@@ -31,15 +31,22 @@ from django.contrib.auth.models import User
 
 from ecm import apps, plugins
 from ecm.apps.hr.models import Member
-from ecm.core import utils, JSON
+
 from ecm.apps.common.models import UpdateDate, UrlPermission, Setting
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.views import template_filters
 
-DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
+
 
 import logging
 logger = logging.getLogger(__name__)
+
+
+JSON = 'text/json'
+XML = 'text/xml'
+HTML = 'text/html'
+
+DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
 #------------------------------------------------------------------------------
 def getScanDate(model):

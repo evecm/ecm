@@ -34,10 +34,11 @@ from django.http import HttpResponse
 from django.db import connection
 from django.db.models.query_utils import Q
 
+from ecm.utils.format import round_quantity, print_float, print_integer
+from ecm.utils import db
 from ecm.views.decorators import check_user_access
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
-from ecm.core import utils
 from ecm.plugins.assets.models import Asset
 from ecm.apps.corp.models import Hangar
 from ecm.views import getScanDate
@@ -105,7 +106,7 @@ def get_systems_data(request):
           'FROM "assets_asset" '
     if where: sql += ' WHERE ' + ' AND '.join(where)
     sql += ' GROUP BY "solarSystemID";'
-    sql = utils.fix_mysql_quotes(sql)
+    sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
@@ -126,9 +127,9 @@ def get_systems_data(request):
             color = 'nullsec'
 
         if exact_volumes:
-            volume = utils.print_float(volume)
+            volume = print_float(volume)
         else:
-            volume = utils.round_quantity(volume)
+            volume = round_quantity(volume)
 
         jstree_data.append({
             'data' : HTML_ITEM_SPAN % (system.itemName, items, pluralize(items), volume),
@@ -166,7 +167,7 @@ def get_celestial_objects_data(request, solarSystemID):
     if where:
         sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "closest_object_id";'
-    sql = utils.fix_mysql_quotes(sql)
+    sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
@@ -185,9 +186,9 @@ def get_celestial_objects_data(request, solarSystemID):
             name = 'Stations'
 
         if exact_volumes:
-            volume = utils.print_float(volume)
+            volume = print_float(volume)
         else:
-            volume = utils.round_quantity(volume)
+            volume = round_quantity(volume)
 
         jstree_data.append({
             'data' : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
@@ -224,7 +225,7 @@ def get_stations_data(request, solarSystemID, closest_obj_id):
           'WHERE "solarSystemID"=%s AND "closest_object_id"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "stationID";'
-    sql = utils.fix_mysql_quotes(sql)
+    sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
@@ -254,9 +255,9 @@ def get_stations_data(request, solarSystemID, closest_obj_id):
                 icon = 'array'
 
         if exact_volumes:
-            volume = utils.print_float(volume)
+            volume = print_float(volume)
         else:
-            volume = utils.round_quantity(volume)
+            volume = round_quantity(volume)
 
         jstree_data.append({
             'data' : HTML_ITEM_SPAN % (name, items, pluralize(items), volume),
@@ -289,7 +290,7 @@ def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
           'WHERE "solarSystemID"=%s AND "closest_object_id"=%s AND "stationID"=%s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "hangarID";'
-    sql = utils.fix_mysql_quotes(sql)
+    sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
@@ -307,9 +308,9 @@ def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
     for hangarID, items, volume in cursor:
 
         if exact_volumes:
-            volume = utils.print_float(volume)
+            volume = print_float(volume)
         else:
-            volume = utils.round_quantity(volume)
+            volume = round_quantity(volume)
 
         jstree_data.append({
             'data': HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items), volume),
@@ -359,7 +360,7 @@ def get_hangar_content_data(request, solarSystemID, closest_obj_id, stationID, h
             ID = ''
             state = ''
         else:
-            data = '%s <i>- (x %s)</i>' % (type_name, utils.print_integer(item.quantity))
+            data = '%s <i>- (x %s)</i>' % (type_name, print_integer(item.quantity))
             ID = ''
             state = ''
 
@@ -407,7 +408,7 @@ def get_can1_content_data(request, solarSystemID, closest_obj_id, stationID, han
             item['data'] = name
             item['attr'] = { 'rel' : icon , 'href' : ''  }
         else:
-            item['data'] = '%s <i>- (x %s)</i>' % (name, utils.print_integer(i.quantity))
+            item['data'] = '%s <i>- (x %s)</i>' % (name, print_integer(i.quantity))
             item['attr'] = { 'rel' : icon , 'href' : ''  }
 
         json_data.append(item)
@@ -439,7 +440,7 @@ def get_can2_content_data(request, solarSystemID, closest_obj_id, stationID, han
         if i.singleton:
             item['data'] = name
         else:
-            item['data'] = '%s <i>- (x %s)</i>' % (name, utils.print_integer(i.quantity))
+            item['data'] = '%s <i>- (x %s)</i>' % (name, print_integer(i.quantity))
         item['attr'] = { 'rel' : icon , 'href' : ''  }
         json_data.append(item)
 

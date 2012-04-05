@@ -23,7 +23,6 @@ import logging
 from django.db import transaction
 
 from ecm.apps.eve import api
-from ecm.core.parsers import checkApiVersion
 from ecm.plugins.accounting.models import EntryType
 
 LOG = logging.getLogger(__name__)
@@ -36,7 +35,7 @@ def update():
     api_conn = api.connect()
     # retrieve /corp/CorporationSheet.xml.aspx
     typesApi = api_conn.eve.RefTypes()
-    checkApiVersion(typesApi._meta.version)
+    api.check_version(typesApi._meta.version)
 
     currentTime = typesApi._meta.currentTime
     cachedUntil = typesApi._meta.cachedUntil

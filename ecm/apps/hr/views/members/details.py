@@ -33,7 +33,7 @@ from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDi
 from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import ColorThreshold, Setting
-from ecm.core.utils import print_time_min, get_access_color
+from ecm.utils.format import print_time_min
 from ecm.apps.eve.models import CelestialObject
 
 import logging
@@ -49,30 +49,29 @@ def details(request, characterID):
     }
     now = datetime.now()
     try:
-        colorThresholds = ColorThreshold.objects.all().order_by("threshold")
         member = Member.objects.get(characterID=int(characterID))
         try:
             member.base = CelestialObject.objects.get(itemID = member.baseID).itemName
         except CelestialObject.DoesNotExist:
             member.base = '???'
-        #member.base = db.resolveLocationName(member.baseID)[0]
-        member.color = get_access_color(member.accessLvl, colorThresholds)
+
+        member.color = ColorThreshold.get_access_color(member.accessLvl)
         member.roles_no_director = member.roles.exclude(roleID=1) # exclude 'director'
-        
+
         query = MemberSession.objects.filter(character_id=member.characterID)
         query_30 = query.filter(session_begin__gt=now - timedelta(30))
         query_7 = query.filter(session_begin__gt=now - timedelta(7))
-        
+
         session_len = query.aggregate(len=Avg('session_seconds'))['len'] or 0
         session_len_30 = query_30.aggregate(len=Avg('session_seconds'))['len'] or 0
         session_len_7 = query_7.aggregate(len=Avg('session_seconds'))['len'] or 0
-        
+
         loginhistory = query.order_by('-session_begin')[:10]
-        
+
         avg_session['sessionlength'] = timedelta(seconds=session_len)
         avg_session['30days'] = timedelta(seconds=session_len_30)
         avg_session['7days'] = timedelta(seconds=session_len_7)
-        
+
         if member.corped:
             member.date = getScanDate(Member)
         else:
@@ -87,9 +86,9 @@ def details(request, characterID):
         killboardUrl = None
 
     data = {
-        'member': member, 
+        'member': member,
         'killboardUrl': killboardUrl,
-        'sessiondata': avg_session, 
+        'sessiondata': avg_session,
         'logins': loginhistory
     }
     return render_to_response("members/member_details.html", data, Ctx(request))

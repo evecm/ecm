@@ -18,15 +18,17 @@
 __date__ = "2011 9 10"
 __author__ = "diabeteman"
 
-from django.template.defaultfilters import register
 from datetime import timedelta
-from ecm.core import utils
+
+from django.template.defaultfilters import register
+
+from ecm.utils.format import print_time_min, print_date, print_duration, print_integer, print_float
 
 #------------------------------------------------------------------------------
 @register.filter(name='ecm_date')
 def ecm_date(value):
     try:
-        return unicode(utils.print_date(value))
+        return unicode(print_date(value))
     except:
         return unicode(value)
 
@@ -34,7 +36,7 @@ def ecm_date(value):
 @register.filter(name='ecm_datetime')
 def ecm_datetime(value):
     try:
-        return unicode(utils.print_time_min(value))
+        return unicode(print_time_min(value))
     except:
         return unicode(value)
 
@@ -43,9 +45,9 @@ def ecm_datetime(value):
 def ecm_time(value):
     try:
         if isinstance(value, timedelta):
-            return unicode(utils.print_date(value))
+            return unicode(print_date(value))
         else:
-            return unicode(utils.print_date(timedelta(seconds=value)))
+            return unicode(print_date(timedelta(seconds=value)))
     except:
         return unicode(value)
 
@@ -53,7 +55,7 @@ def ecm_time(value):
 @register.filter(name='ecm_duration_long')
 def ecm_duration_long(value):
     try:
-        return unicode(utils.print_duration(value))
+        return unicode(print_duration(value))
     except:
         return unicode(value)
 
@@ -62,7 +64,7 @@ def ecm_duration_long(value):
 @register.filter(name='ecm_qty_diff')
 def qty_diff_format(value):
     try:
-        return unicode(utils.print_integer(value, force_sign=True))
+        return unicode(print_integer(value, force_sign=True))
     except:
         return unicode(value)
 
@@ -70,7 +72,7 @@ def qty_diff_format(value):
 @register.filter(name='ecm_quantity')
 def qty_format(value):
     try:
-        return unicode(utils.print_integer(value))
+        return unicode(print_integer(value))
     except:
         return unicode(value)
 
@@ -79,7 +81,7 @@ def qty_format(value):
 @register.filter(name='ecm_amount')
 def amount_format(value):
     try:
-        return unicode(utils.print_float(value, force_sign=True))
+        return unicode(print_float(value, force_sign=True))
     except:
         return unicode(value)
 
@@ -87,6 +89,6 @@ def amount_format(value):
 @register.filter(name='ecm_price')
 def price_format(value):
     try:
-        return unicode(utils.print_float(value))
+        return unicode(print_float(value))
     except:
         return unicode(value)

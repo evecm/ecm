@@ -28,7 +28,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 
-from ecm.core import utils
+
+from ecm.utils.format import print_duration
 from ecm.plugins.pos.views import print_fuel_quantity
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import Type
@@ -122,8 +123,8 @@ def fuel_data(request, pos_id):
             timeLeft = '-'
         else:
             hoursLeft = int(quantity / consumption)
-            timeLeft = utils.print_duration_short(hoursLeft)
-        
+            timeLeft = print_duration(seconds=hoursLeft * 60, verbose=False)
+
         fuelTable.append([
             type_id,
             Type.objects.get(typeID=type_id).typeName,
@@ -168,7 +169,7 @@ def silo_data(request, pos_id):
             silo.typeID,
             mineral.typeName,
             silo.quantity,
-            utils.print_duration_short(hours_to_full),
+            print_duration(seconds=hours_to_full * 60, verbose=False)
         ])
     json_data = {
         "sEcho"                 : params.sEcho,

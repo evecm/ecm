@@ -20,9 +20,6 @@ __author__ = 'diabeteman'
 
 import re
 
-from django.conf import settings
-
-
 #------------------------------------------------------------------------------
 def print_time(date):
     try:
@@ -131,7 +128,7 @@ def print_duration(seconds, verbose=True):
     rest = rest % MINUTE
     if rest > 0:
         duration += ' %d' % rest + '%(sec)s'
-        
+
     duration %= DURATION_UNITS[verbose]
     return duration.strip()
 
@@ -149,12 +146,7 @@ def round_quantity(quantity):
             quantity = quantity / 1000.0
         return '%.1f%s' % (quantity, unit)
 
-#------------------------------------------------------------------------------
-def get_access_color(accessLvl, colorThresholds):
-    for t in colorThresholds:
-        if accessLvl <= t.threshold:
-            return t.color
-    return ''
+
 
 #------------------------------------------------------------------------------
 CAMEL_CASE_RE = re.compile(r'(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))')
@@ -173,71 +165,6 @@ def verbose_name(class_or_function, cap_first=True):
     except AttributeError:
         return str(class_or_function)
 
-#------------------------------------------------------------------------------
-def sublists(big_list, sub_length):
-    for i in xrange(0, len(big_list), sub_length):
-        yield big_list[i:i + sub_length]
 
-#------------------------------------------------------------------------------
-def fix_mysql_quotes(query):
-    """
-    MySQL doesn't like double quotes. We replace them by backticks.
-    """
-    if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.mysql':
-        return query.replace('"', '`')
-    else:
-        return query
 
-#------------------------------------------------------------------------------
-class _Missing(object):
 
-    def __repr__(self):
-        return 'no value'
-
-    def __reduce__(self):
-        return '_missing'
-
-_missing = _Missing()
-
-#------------------------------------------------------------------------------
-class cached_property(object):
-    # This is borrowed from werkzeug : http://bytebucket.org/mitsuhiko/werkzeug-main
-    """A decorator that converts a function into a lazy property.  The
-    function wrapped is called the first time to retrieve the result
-    and then that calculated result is used the next time you access
-    the value::
-
-        class Foo(object):
-
-            @cached_property
-            def foo(self):
-                # calculate something important here
-                return 42
-
-    The class has to have a `__dict__` in order for this property to
-    work.
-    """
-
-    # implementation detail: this property is implemented as non-data
-    # descriptor.  non-data descriptors are only invoked if there is
-    # no entry with the same name in the instance's __dict__.
-    # this allows us to completely get rid of the access function call
-    # overhead.  If one choses to invoke __get__ by hand the property
-    # will still work as expected because the lookup logic is replicated
-    # in __get__ for manual invocation.
-
-    def __init__(self, func, name=None, doc=None):
-
-        self.__name__ = name or func.__name__
-        self.__module__ = func.__module__
-        self.__doc__ = doc or func.__doc__
-        self.func = func
-
-    def __get__(self, obj, _type):
-        if obj is None:
-            return self
-        value = obj.__dict__.get(self.__name__, _missing)
-        if value is _missing:
-            value = self.func(obj)
-            obj.__dict__[self.__name__] = value
-        return value

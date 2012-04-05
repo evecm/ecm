@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.plugins.shop.views.utils import extract_order_items
 
 __date__ = "2011 11 12"
 __author__ = "diabeteman"
@@ -27,8 +26,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseBadRequest
 from django.utils.text import truncate_words
 
+from ecm.utils.format import print_float, print_time_min, verbose_name
 from ecm.views import extract_datatable_params, datatable_ajax_data
-from ecm.core import utils
+from ecm.plugins.shop.views.utils import extract_order_items
 from ecm.views.decorators import forbidden
 from ecm.plugins.industry.models.order import Order, IllegalTransition
 
@@ -83,8 +83,8 @@ def myorders_data(request):
             order.permalink(),
             order.state_text(),
             truncate_words(', '.join(items), 6),
-            utils.print_float(order.quote) + ' ISK',
-            utils.print_time_min(order.creation_date()),
+            print_float(order.quote) + ' ISK',
+            print_time_min(order.creation_date()),
         ])
 
     return datatable_ajax_data(data=orders, echo=params.sEcho,
@@ -180,7 +180,7 @@ def change_state(request, order_id, transition):
 #------------------------------------------------------------------------------
 def _order_details(request, order, error=None):
     logs = order.logs.all().order_by('-date')
-    valid_transitions = [(trans.__name__, utils.verbose_name(trans))
+    valid_transitions = [(trans.__name__, verbose_name(trans))
                          for trans in order.get_valid_transitions(customer=True)]
     data = {
         'order': order,

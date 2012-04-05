@@ -28,6 +28,15 @@
       <a class="btn btn-small" id="clear_search">Reset</a>
     </div>
     
+	<div class="control-group inline" style="display: inline;">
+      <span class="label">Type</span>
+      <select id="filter_selector" class="input-small">
+        {% for activityID, name in activities %}
+        <option value="{{activityID}}">{{name}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    
     <span class="label label-info">Display</span>
     <div class="btn-group" data-toggle="buttons-radio" id="state_buttons">
       <button class="btn btn-small btn-info" id="all" >All</button>{% for id, name in states.items %}
@@ -70,7 +79,8 @@
 {% block post_javascripts %}
 <script>
 STATE = '{{state}}';
-OWNER = '{{owner}}'
+OWNER = '{{owner}}';
+TYPE = '{{type}}'
   
 $(document).ready(function() {
     var table = $('#jobs_list').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
@@ -82,7 +92,7 @@ $(document).ready(function() {
             { /* Order */      		sWidth: "10%" },
             { /* Owner */          	sWidth: "15%" },
             { /* Duration */   		sWidth: "10%" },
-            { /* Activity */        sWidth: "15%" },
+            { /* Activity */        sWidth: "5%", sClass: 'center' },
             { /* Quantity/Runs */   sWidth: "10%" , sClass: 'right'},
             { /* Item */            sWidth: "30%" },
         ],
@@ -150,6 +160,18 @@ $(document).ready(function() {
         if (!$(event.target).hasClass('sorthandle')) {
             event.shiftKey = false;
         }
+    });
+    
+    $('#state_buttons button').on('click', function (event) {
+    	event.preventDefault();
+    	STATE = this.id;
+    	table.fnDraw();
+    });
+    
+    $('#owner_buttons button').on('click', function (event) {
+    	event.preventDefault();
+    	OWNER = this.id;
+    	table.fnDraw();
     });
     
     updateStateButtons();

@@ -87,9 +87,9 @@ class Contract(models.Model):
     # Character ID to whom the contract was discharged
     assigneeID     = models.PositiveIntegerField()
 
-    # Who will accept the contract. If assigneeID is 
-    # same as acceptorID then CharacterID else CorporationID 
-     # (The contract accepted by the corporation)
+    # Who will accept the contract. If assigneeID is
+    # same as acceptorID then CharacterID else CorporationID
+    # (The contract accepted by the corporation)
     acceptorID     = models.PositiveIntegerField()
 
     # Start station ID (for Couriers contract)
@@ -99,10 +99,10 @@ class Contract(models.Model):
     endStationID   = models.PositiveIntegerField()
 
     # Type of the contract (ItemExchange, Courier, Loan or Auction)
-    type           = models.CharField(max_length=255)
+    type           = models.CharField(max_length=255) #@ReservedAssignment
 
-    # Status of the the contract (Outstanding, Deleted, Completed, 
-    # Failed, CompletedByIssuer, CompletedByContractor, Cancelled, 
+    # Status of the the contract (Outstanding, Deleted, Completed,
+    # Failed, CompletedByIssuer, CompletedByContractor, Cancelled,
     # Rejected, Reversed or InProgress)
     status         = models.CharField(max_length=255)
 

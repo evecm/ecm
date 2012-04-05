@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.hr.models.member import MemberSession
 
 __date__ = "2010-02-09"
 __author__ = "diabeteman"
@@ -24,10 +23,11 @@ import logging
 
 from django.db import transaction
 
+from ecm.utils import tools
 from ecm.apps.eve import api
+from ecm.apps.hr.models.member import MemberSession
+from ecm.apps.common.models import UpdateDate
 from ecm.apps.eve.models import CelestialObject
-#from ecm.apps.eve import db
-from ecm.core.parsers import checkApiVersion, diff, markUpdated
 from ecm.apps.hr.models import Member, MemberDiff
 
 LOG = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ def update():
     api_conn = api.connect()
     # retrieve /corp/MemberTracking.xml.aspx
     membersApi = api_conn.corp.MemberTracking(characterID=api.get_charID(), extended=1)
-    checkApiVersion(membersApi._meta.version)
+    api.check_version(membersApi._meta.version)
 
     currentTime = membersApi._meta.currentTime
     cachedUntil = membersApi._meta.cachedUntil
@@ -120,10 +120,10 @@ def update():
         for d in diffs:
             d.save()
         # we store the update time of the table
-        markUpdated(model=MemberDiff, date=currentTime)
+        UpdateDate.mark_updated(model=MemberDiff, date=currentTime)
 
     # we store the update time of the table
-    markUpdated(model=Member, date=currentTime)
+    UpdateDate.mark_updated(model=Member, date=currentTime)
 
 
 
@@ -143,7 +143,7 @@ def parseOneMember(member):
 
 #------------------------------------------------------------------------------
 def getDiffs(oldMembers, newMembers, date):
-    removed, added = diff(oldItems=oldMembers, newItems=newMembers)
+    removed, added = tools.diff(old_items=oldMembers, new_items=newMembers)
 
     diffs  = []
 

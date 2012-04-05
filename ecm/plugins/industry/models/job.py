@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 from django.db import models
 from django.contrib.auth.models import User
 
-from ecm.core.utils import cached_property
+from ecm.utils.tools import cached_property
 from ecm.apps.eve.models import Type
 from ecm.plugins.industry.models.research import InventionPolicy
 from ecm.plugins.industry.models.catalog import OwnedBlueprint
@@ -211,7 +211,7 @@ class Job(models.Model):
     @property
     def state_text(self):
         return Job.STATES[self.state]
-    
+
     @property
     def activity_text(self):
         return Job.ACTIVITIES[self.activity]

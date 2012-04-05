@@ -29,7 +29,7 @@ from django.template.context import RequestContext as Ctx
 from django.http import HttpResponse, HttpResponseBadRequest, Http404
 
 from ecm import apps, plugins
-from ecm.core import utils
+from ecm.utils.format import print_time_min
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import basic_auth_required, check_user_access
 from ecm.apps.common.models import Setting
@@ -83,7 +83,7 @@ def task_list_data(request):
             task.function,
             task.next_execution_admin_display(),
             task.frequency_admin_display(),
-            utils.print_time_min(task.last_execution),
+            print_time_min(task.last_execution),
             task.is_last_exec_success,
             task.is_running,
             task.is_scheduled,

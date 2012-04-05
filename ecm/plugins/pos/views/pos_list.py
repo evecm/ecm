@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.utils import db
+from ecm.utils.format import print_duration
 
 __date__ = "2011-04-25"
 __author__ = "JerryKhan"
@@ -32,7 +34,7 @@ from ecm.plugins.pos.views import print_fuel_quantity
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
-from ecm.core import utils
+
 from ecm.plugins.pos import constants as C
 
 # This table gives the association between the status of the POS
@@ -101,7 +103,7 @@ def poses_data(request):
     if params.column == 1:
         # SQL hack for making a case insensitive sort
         sort_col = sort_col + "_nocase"
-        sort_val = utils.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column][2])
+        sort_val = db.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column][2])
         query = query.extra(select={ sort_col : sort_val })
     elif params.column in (5, 6):
         # if sorting by fuel or stront. make a sorted list of (hoursleft|quantity,pos)
@@ -121,14 +123,14 @@ def poses_data(request):
                 else:
                     time_left = getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, 'hours_int')
                 pos_by_timeleft.append( (time_left, pos) )
-        
+
         if not params.asc:
             pos_by_timeleft.sort(reverse=True)
         else:
             pos_by_timeleft.sort()
     try:
         # This will fail if sorting by fuel.
-        if not params.asc: 
+        if not params.asc:
             sort_col = "-" + sort_col
     except TypeError:
         pass
@@ -195,6 +197,6 @@ def getFuelValue(pos, fuelTypeID, displayMode):
             elif displayMode == 'hours_int':
                 value = hoursLeft
             else:
-                value = utils.print_duration_short(hoursLeft)
+                value = print_duration(seconds=hoursLeft * 60, verbose=False)
     return value
 

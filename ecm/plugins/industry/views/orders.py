@@ -32,10 +32,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.text import truncate_words
 
+from ecm.utils.format import print_date, print_float, print_integer, verbose_name
 from ecm.views.decorators import check_user_access, forbidden
 from ecm.plugins.industry.models.order import IllegalTransition
 from ecm.views import extract_datatable_params, datatable_ajax_data
-from ecm.core import utils
 from ecm.plugins.industry.models import Order
 
 LOG = logging.getLogger(__name__)
@@ -83,7 +83,7 @@ def orders_data(request):
     for order in query[params.first_id:params.last_id]:
         items = [ row.catalog_entry.typeName for row in order.rows.all() ]
         if order.delivery_date is not None:
-            delivDate = utils.print_date(order.delivery_date)
+            delivDate = print_date(order.delivery_date)
         else:
             delivDate = '(none)'
         orders.append([
@@ -93,7 +93,7 @@ def orders_data(request):
             order.client or '(none)',
             delivDate,
             truncate_words(', '.join(items), 6),
-            utils.print_float(order.quote) + ' ISK',
+            print_float(order.quote) + ' ISK',
         ])
 
     return datatable_ajax_data(data=orders, echo=params.sEcho)
@@ -165,7 +165,7 @@ def add_comment(request, order_id):
 #------------------------------------------------------------------------------
 def _order_details(request, order, error=None):
     logs = order.logs.all().order_by('-date')
-    valid_transitions = [(trans.__name__, utils.verbose_name(trans))
+    valid_transitions = [(trans.__name__, verbose_name(trans))
                          for trans in order.get_valid_transitions(customer=False)]
 
     # we get the 1st jobs associated to this order's rows
@@ -190,7 +190,7 @@ def _build_jobs_tree(jobs):
         json_job = {
             'data': JOB_SPAN % (job.activity_text,
                                 job.item.typeName,
-                                utils.print_integer(job.runs)),
+                                print_integer(job.runs)),
             'attr': {'rel': job.activity_text.lower()},
         }
         if job.children_jobs.all():
