@@ -79,7 +79,7 @@ def positions_of_members():
             #solarSystemID = db.getSolarSystemID(m.locationID)
         security = CelestialObject.objects.get(itemID = solarSystemID).security
         #security = db.resolveLocationName(solarSystemID)[1]
-        if security > 0.5:
+        if security > 0.45:
             positions["hisec"] += 1
         elif security > 0:
             positions["lowsec"] += 1
