@@ -34,7 +34,7 @@
       <dt>Logged in (last 7 Days)</dt><dd>{{ sessiondata.7days|ecm_time }}</dd>
       <dt>Base Office</dt><dd>{% if member.baseID %}{{ member.base }}{% else %}None{% endif %}</dd>
       <dt>Owned by</dt><dd>{{ member.owner_permalink|safe }}</dd>
-      <dt>Latest location</dt><dd>{{ member.location }} <em>({{ member.ship }})</em> on {{ member.date|ecm_datetime }}</dd>
+      <dt>Latest location</dt><dd>{{ member.location }} <em>({%if member.ship %}{{ member.ship }}{% else %}Docked{% endif %})</em> on {{ member.date|ecm_datetime }}</dd>
       <dt>Links</dt><dd><a class="kill" href="http://eve-kill.net/?a=pilot_detail&plt_external_id={{member.characterID|iriencode}}">EVE-Kill</a></dd>
       <dd><a class="evewho" href="http://evewho.com/pilot/{{member.name|iriencode}}">EVE WHO</a></dd>
       <dd><a class="eveboard" href="http://eveboard.com/pilot/{{member.name|iriencode}}">EVEBoard</a></dd>
