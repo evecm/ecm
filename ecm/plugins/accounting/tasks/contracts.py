@@ -35,6 +35,7 @@ from ecm.plugins.accounting.models import Contract
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
+@transaction.commit_on_success
 def update():
     """
     Updates all contracts 
@@ -51,7 +52,15 @@ def update():
     LOG.debug("cached util : %s", str(cachedUntil))
     LOG.debug("parsing api response...")
     entries = list(contractsApi.contractList)
+    dbEntries = list(Contract.objects.all().values_list('contractID', flat=True))
+    # Remove db entries form the api results
+    counter = 0
+    for entry in entries:
+        if entry.contractID in dbEntries:
+            del entries[counter]
+        counter += 1
     write_results(entries)
+    markUpdated(model=Contract, date=datetime.now())
 
 def write_results(entries):
     """
