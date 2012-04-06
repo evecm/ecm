@@ -42,9 +42,25 @@ from ecm.plugins.accounting.models import Contract
 #------------------------------------------------------------------------------
 @check_user_access()
 def contracts(request):
+    typeName = request.GET.get('typeName', 'All')
+    statusName = request.GET.get('statusName', 'All')
 
+    types = [{ 'typeName' : 'All', 'selected' : typeName == 'All'}]
+    for t in Contract.objects.order_by('type').values('type').distinct():
+        types.append({
+                'typeName' : t['type'],
+                'selected' : t['type'] == typeName
+            })
+    status= [{ 'statusName' : 'All', 'selected' : statusName == 'All'}]
+    for t in Contract.objects.order_by('type').values('status').distinct():
+        status.append({
+                'statusName' : t['status'],
+                'selected' : t['status'] == statusName
+            })
     # Get contract types
     data = {
+        'types' : types,
+        'status' : status,
         'scan_date' : getScanDate(Contract)
     }
     return render_to_response('contracts.html', data, Ctx(request))
@@ -54,12 +70,14 @@ def contracts_data(request):
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
+        params.type  = REQ.get('typeName', 'All')
+        params.status = REQ.get('statusName', 'All')
     except:
         return HttpResponseBadRequest()
 
     query = Contract.objects.select_related(depth=1).all() # .order_by('-dateIssued')
 
-    if params.search:
+    if params.search or params.type or params.status:
         # Total number of entries
         total_entries = query.count()
 
@@ -67,9 +85,13 @@ def contracts_data(request):
 
         if params.search:
             search_args |= Q(title__icontains=params.search)
+        if params.type != 'All':
+            search_args &= Q(type=params.type)
+        if params.status != 'All':
+            search_args &= Q(status=params.status)
+
 
         query = query.filter(search_args)
-        # Total number of filtered entries #TODO
         filtered_entries = query.count()
     else:
         total_entries = filtered_entries = query.count()
@@ -94,7 +116,7 @@ def contracts_data(request):
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : total_entries,
-        "iTotalDisplayRecords" : total_entries,
+        "iTotalDisplayRecords" : filtered_entries,
         "aaData" : entries,
     }
     return HttpResponse(json.dumps(json_data))

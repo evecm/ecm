@@ -24,6 +24,18 @@
       <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
       <a class="btn btn-small" id="clear_search">Reset</a>
     </div>
+    <div class="control-group success" style="display: inline;">
+      <span class="label label-success">Type</span>
+      <select id="type_selector">{% for t in types %}
+            <option value="{{ t.typeName }}"{% if t.selected %} selected{% endif %}>{{ t.typeName }}</option>
+      {% endfor %}</select>
+    </div>
+    <div class="control-group error" style="display: inline;">
+      <span class="label label-important">Status</span>
+      <select id="status_selector">{% for s in status %}
+            <option value="{{ s.statusName }}"{% if s.selected %} selected{% endif %}>{{ s.statusName }}</option>
+      {% endfor %}</select>
+    </div>
   </div>
 </form>
 
@@ -118,17 +130,16 @@ $(document).ready(function() {
             return nRow;
         },
 
-
         /* this function will be called when the table has to query data to be displayed */
         fnServerData: function ( sSource, aoData, fnCallback ) {
-            /* Add some extra variables to the url 
+            /* Add some extra variables to the url */
             aoData.push( {
-                name: "walletID",
-                value: $("#wallet_selector option:selected").val()
-            },{
-                name: "entryTypeID",
+                name: "typeName",
                 value: $("#type_selector option:selected").val()
-            } ); */
+            },{
+                name: "statusName",
+                value: $("#status_selector option:selected").val()
+            } ); 
 
             $.getJSON( sSource, aoData, function (json) {
                 fnCallback(json)
@@ -151,6 +162,14 @@ $(document).ready(function() {
     $("#clear_search").click(function() {
         $("#search_text").val("");
         table.fnFilter("");
+    });
+
+    $("#type_selector").change(function () {
+        table.fnDraw();
+    });
+
+    $("#status_selector").change(function () {
+        table.fnDraw();
     });
 
     /* disable multi column sorting */
