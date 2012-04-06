@@ -6,3 +6,13 @@ a.wallet {
 
 .credit {color: green;}
 .debit {color: red;}
+.completed {color: green;}
+.outstanding {color: orange;}
+.deleted {color: red;}
+.failed {color: red;}
+.completedbyissuer {color: green;}
+.completedbycontractor {color: green;}
+.cancelled {color: red;}
+.rejected {color: red;}
+.inprogress {color: orange;}
+

@@ -44,7 +44,7 @@ class EntryType(models.Model):
 class JournalEntry(models.Model):
     """
     Represents a wallet journal entry that can be fetched from the API
-    ad the following url http://api.eve-online.com/corp/WalletJournal.xml.aspx
+    at the following url http://api.eve-online.com/corp/WalletJournal.xml.aspx
     """
     id         = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     refID      = models.BigIntegerField() # the couple (refID, wallet_id) should be unique
@@ -71,6 +71,10 @@ class JournalEntry(models.Model):
 
 #------------------------------------------------------------------------------
 class Contract(models.Model):
+    """
+    Represents a contract that can be fetched from the API
+    at the following url http://api.eve-online.com/corp/Contracts.xml.aspx
+    """
     class Meta:
         verbose_name ='Contract'
         ordering = ['contractID']
@@ -148,3 +152,19 @@ class Contract(models.Model):
 
     # Volume of items in the contract
     volume         = models.FloatField()
+
+class ContractItems(models.Model):
+    """
+    Represents a contract item that can be fetched from the API
+    at the following url http://api.eve-online.com/corp/ContractItems.xml.aspx
+    """
+    class Meta:
+        verbose_name = ['Contract Item']
+        ordering     = ['recordID']
+
+    recordID    = models.PositiveIntegerField()             
+    typeID      = models.PositiveIntegerField()          
+    quantity    = models.PositiveIntegerField()             
+    rawQuantity = models.PositiveIntegerField()             
+    singleton   = models.PositiveIntegerField()           
+    included    = models.PositiveIntegerField()

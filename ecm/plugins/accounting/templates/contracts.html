@@ -92,6 +92,32 @@ $(document).ready(function() {
             { /* Buyout */          sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
             { /* Volume*/           sWidth: "5%",  sType: "numeric", bSortable: false,  sClass: "right" }
         ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            switch (aData[1]) {
+                case "Outstanding": $('td:eq(1)', nRow).addClass('outstanding');
+                                 break;
+                case "Deleted": $('td:eq(1)', nRow).addClass('deleted');
+                                 break;
+                case "Completed": $('td:eq(1)', nRow).addClass('completed');
+                                 break;
+                case "Failed": $('td:eq(1)', nRow).addClass('failed');
+                                 break;
+                case "CompletedByIssuer": $('td:eq(1)', nRow).addClass('completedbyissuer');
+                                 break;
+                case "CompletedByContractor": $('td:eq(1)', nRow).addClass('completedbycontractor');
+                                 break;
+                case "Cancelled": $('td:eq(1)', nRow).addClass('cancelled');
+                                 break;
+                case "Rejected": $('td:eq(1)', nRow).addClass('rejected');
+                                 break;
+                case "Reversed": $('td:eq(1)', nRow).addClass('reversed');
+                                 break;
+                case "InProgress": $('td:eq(1)', nRow).addClass('inprogress');
+                                 break;
+            }
+            return nRow;
+        },
+
 
         /* this function will be called when the table has to query data to be displayed */
         fnServerData: function ( sSource, aoData, fnCallback ) {

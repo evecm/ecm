@@ -41,44 +41,44 @@ def update():
     """
     LOG.info("fetching /corp/Contracts.xml.aspx...")
     # Connect to EVE API
-    apiConn = api.connect()
-    contractsApi = apiConn.corp.Contracts()
+    api_conn = api.connect()
+    contractsApi = api_conn.corp.Contracts()
     checkApiVersion(contractsApi._meta.version)
 
-    currentTime = contractsApi._meta.currentTime
-    cachedUntil = contractsApi._meta.cachedUntil
-    LOG.debug("current time : %s", str(currentTime))
-    LOG.debug("cached util : %s", str(cachedUntil))
+    current_time = contractsApi._meta.currentTime
+    cached_until = contractsApi._meta.cachedUntil
+    LOG.debug("current time : %s", str(current_time))
+    LOG.debug("cached util : %s", str(cached_until))
     LOG.debug("parsing api response...")
 
     entries = contractsApi.contractList
 
     # Get old contracts
-    oldContracts = {}
+    old_contracts = {}
     for contract in Contract.objects.all():
-        oldContracts[contract] = contract
+        old_contracts[contract] = contract
 
     # Get new contracts
-    newContracts = {}
+    new_contracts = {}
     for entry in entries:
         contract = create_contract_fom_row(entry)
-        newContracts[contract] = contract
+        new_contracts[contract] = contract
 
-    removedContracts, addedContracts = diff(oldContracts, newContracts)
-    write_results(addedContracts, removedContracts)
+    removed_contracts, added_contracts = diff(old_contracts, new_contracts)
+    write_results(added_contracts, removed_contracts)
     markUpdated(model=Contract, date=datetime.now())
 
 @transaction.commit_on_success
-def write_results(newContracts, oldContracts):
+def write_results(new_contracts, old_contracts):
     """
     Write the API results
     """
-    if len(oldContracts) > 0:
+    if len(old_contracts) > 0:
         Contract.objects.all().delete()
-        LOG.info("%d old contracts removed." % len(oldContracts))
-    for contract in newContracts:
+        LOG.info("%d old contracts removed." % len(old_contracts))
+    for contract in new_contracts:
         contract.save()
-    LOG.info("%d contracts added." % len(newContracts))
+    LOG.info("%d contracts added." % len(new_contracts))
 
 def create_contract_fom_row(row):
     return Contract(contractID = row.contractID,
