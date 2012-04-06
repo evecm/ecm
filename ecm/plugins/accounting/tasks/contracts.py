@@ -30,7 +30,7 @@ from ecm.lib import eveapi
 # from ecm.apps.corp.models import Wallet
 from ecm.core.parsers import diff, markUpdated, checkApiVersion
 from ecm.plugins.accounting.tasks import fix_encoding
-from ecm.plugins.accounting.models import Contract
+from ecm.plugins.accounting.models import Contract, ContractItem
 
 LOG = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def update():
     # Connect to EVE API
     api_conn = api.connect()
     contractsApi = api_conn.corp.Contracts()
-    checkApiVersion(contractsApi._meta.version)
+    # checkApiVersion(contractsApi._meta.version)
 
     current_time = contractsApi._meta.currentTime
     cached_until = contractsApi._meta.cachedUntil
@@ -51,25 +51,45 @@ def update():
     LOG.debug("cached util : %s", str(cached_until))
     LOG.debug("parsing api response...")
 
-    entries = contractsApi.contractList
+    processContracts(contractsApi.contractList, api_conn)
+    markUpdated(model=Contract, date=datetime.now())
 
-    # Get old contracts
+def processContracts(contract_list, connection):
+     # Get old contracts
     old_contracts = {}
     for contract in Contract.objects.all():
         old_contracts[contract] = contract
 
     # Get new contracts
     new_contracts = {}
-    for entry in entries:
+    for entry in contract_list:
         contract = create_contract_fom_row(entry)
         new_contracts[contract] = contract
 
     removed_contracts, added_contracts = diff(old_contracts, new_contracts)
-    write_results(added_contracts, removed_contracts)
-    markUpdated(model=Contract, date=datetime.now())
+
+    # Query the contract items
+    old_items = {}
+    for item in ContractItem.objects.all():
+        old_items[item] = item
+    
+    new_items = {}
+    for contract in added_contracts:
+        items_api = connection.corp.ContractItems(contractID=contract.contractID)
+    #    checkApiVersion(items_api._meta.version)
+        item_list = items_api.itemList
+        for item in item_list:
+            new_item = create_contract_item(item, contract)
+            new_items[new_item] = new_item
+    
+    removed_items, added_items = diff(old_items, new_items)
+
+    write_contracts(added_contracts, removed_contracts)
+    write_contract_items(added_items, removed_items)
+    
 
 @transaction.commit_on_success
-def write_results(new_contracts, old_contracts):
+def write_contracts(new_contracts, old_contracts):
     """
     Write the API results
     """
@@ -78,7 +98,18 @@ def write_results(new_contracts, old_contracts):
         LOG.info("%d old contracts removed." % len(old_contracts))
     for contract in new_contracts:
         contract.save()
-    LOG.info("%d contracts added." % len(new_contracts))
+    LOG.info("%d new contracts added." % len(new_contracts))
+
+def write_contract_items(new_items, old_items):
+    """
+    Write the API results
+    """
+    if len(old_items) > 0:
+        ContractItem.objects.all().delete()
+        LOG.info("%d old contract items removed." % len(old_items))
+    for item in new_items:
+        item.save()
+    LOG.info("%d new contract items added." % len(new_items))
 
 def create_contract_fom_row(row):
     return Contract(contractID = row.contractID,
@@ -104,3 +135,11 @@ def create_contract_fom_row(row):
                     buyout = row.buyout,
                     volume = row.volume)
 
+def create_contract_item(entry, contract):
+    return ContractItem(contract_id = contract.contractID,
+                        recordID = entry.recordID,
+                        typeID = entry.typeID,
+                        quantity = entry.quantity,
+                        rawQuantity = entry.rawQuantity,
+                        singleton = entry.singleton,
+                        included = entry.included)
