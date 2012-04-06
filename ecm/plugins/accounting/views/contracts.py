@@ -45,14 +45,17 @@ def contracts(request):
     typeName = request.GET.get('typeName', 'All')
     statusName = request.GET.get('statusName', 'All')
 
+    # Since we dont know the contract types, let's get them form
+    # existing contracts + all option
     types = [{ 'typeName' : 'All', 'selected' : typeName == 'All'}]
     for t in Contract.objects.order_by('type').values('type').distinct():
         types.append({
                 'typeName' : t['type'],
                 'selected' : t['type'] == typeName
             })
+    # Since we dont know the status of     
     status= [{ 'statusName' : 'All', 'selected' : statusName == 'All'}]
-    for t in Contract.objects.order_by('type').values('status').distinct():
+    for t in Contract.objects.order_by('status').values('status').distinct():
         status.append({
                 'statusName' : t['status'],
                 'selected' : t['status'] == statusName
