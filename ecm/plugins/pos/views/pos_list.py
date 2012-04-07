@@ -197,6 +197,6 @@ def getFuelValue(pos, fuelTypeID, displayMode):
             elif displayMode == 'hours_int':
                 value = hoursLeft
             else:
-                value = print_duration(seconds=hoursLeft * 60, verbose=False)
+                value = print_duration(seconds=hoursLeft * 3600, verbose=False)
     return value
 
