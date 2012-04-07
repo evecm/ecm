@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
+{% endblock %}
+
+{% block headtitle %}Market Orders{% endblock %}
+
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/accounting/">Accounting</a></li>
+<li><a href="/accounting/marketorders/">Market Orders</a></li>
+{% endblock %}
+
+{% block main_content %}
+<h1>Market Orders <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
+    <div class="control-group success" style="display: inline;">
+      <span class="label label-success">State</span>
+      <select id="state_selector">{% for s in states %}
+            <option value="{{ s.stateID }}"{% if s.selected %} selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}</select>
+    </div>
+  </div>
+</form>
+
+<table class="table table-bordered table-condensed" id="order_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Char</th>
+      <th class="top" scope="col" >Item</th>
+      <th class="top" scope="col" >Price</th>
+      <th class="top" scope="col" >Duration</th>
+      <th class="top" scope="col" >Station</th>
+      <th class="top" scope="col" >Vol. entered</th>
+      <th class="top" scope="col" >Vol. remain.</th>
+      <th class="top" scope="col" >Min. volume</th>
+      <th class="top" scope="col" >State</th>
+      <th class="top" scope="col" >Range</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="12" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Char</th>
+      <th>Item</th>
+      <th>Price</th>
+      <th>Duration</th>
+      <th><Station</th>
+      <th>Vol. entered</th>
+      <th>Vol. remain.</th>
+      <th>Min. volume</th>
+      <th>State</th>
+      <th>Range</th>
+    </tr>
+  </tfoot>
+
+</table>
+{% endblock %}
+
+
+
+
+
+{% block compressed_javascripts %}
+<script>
+$(document).ready(function() {
+    var table = $('#order_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: "/accounting/marketorders/data/",
+        aoColumns: [
+            { /* Char */          sWidth: "5%",  sType: "string" },
+            { /* Item */           sWidth: "5%",  sType: "string",  bSortable: false},
+            { /* Price */          sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
+            { /* Duration */     sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
+            { /* Station */           sWidth: "5%",  sType: "string",  bSortable: false },
+            { /* Vol Ent */     sWidth: "2%",  sType: "string",  bSortable: false },
+            { /* Vol Rem */    sWidth: "2%",  sType: "string",  bSortable: false },
+            { /* Min Vol */   sWidth: "2%",  sType: "string",  bSortable: false },
+            { /* State */  sWidth: "5%",  sType: "string",  bSortable: false },
+            { /* Range */           sWidth: "2%",  sType: "string",  bSortable: false,  sClass: "right" }
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            switch (aData[8]) {
+                case "character deleted": $('td:eq(8)', nRow).addClass('deleted');
+                                 break;
+                case "closed": $('td:eq(8)', nRow).addClass('completed');
+                                 break;
+                case "CompletedByIssuer": $('td:eq(8)', nRow).addClass('completedbyissuer');
+                                 break;
+                case "cancelled": $('td:eq(8)', nRow).addClass('cancelled');
+                                 break;
+                case "open/closed": $('td:eq8()', nRow).addClass('inprogress');
+                                 break;
+                case "pending": $('td:eq(8)', nRow).addClass('inprogress');
+                                 break;
+                case "expired (or fulfilled)": $('td:eq(8)', nRow).addClass('completed');
+                                 break;
+            }
+            return nRow;
+        },
+
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: "stateID",
+                value: $("#state_selector option:selected").val()
+            } ); 
+
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+    }));
+
+  /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
+    });
+
+    $("#state_selector").change(function () {
+        table.fnDraw();
+    });
+
+    /* disable multi column sorting */
+    $('#contract_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+} );
+</script>
+{% endblock %}
+
+
