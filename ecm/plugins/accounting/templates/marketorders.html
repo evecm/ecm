@@ -30,12 +30,19 @@
             <option value="{{ s.stateID }}"{% if s.selected %} selected{% endif %}>{{ s.name }}</option>
       {% endfor %}</select>
     </div>
+    <div class="control-group success" style="display: inline;">
+      <span class="label label-success">Type</span>
+      <select id="type_selector">{% for t in types %}
+            <option value="{{ t.typeID }}"{% if t.selected %} selected{% endif %}>{{ t.name }}</option>
+      {% endfor %}</select>
+    </div>
   </div>
 </form>
 
 <table class="table table-bordered table-condensed" id="order_table">
   <thead>
     <tr>
+      <th class="top" scope="col" >Type</th>
       <th class="top" scope="col" >Char</th>
       <th class="top" scope="col" >Item</th>
       <th class="top" scope="col" >Price</th>
@@ -55,6 +62,7 @@
   </tbody>
   <tfoot>
     <tr>
+      <th>Type</th>
       <th>Char</th>
       <th>Item</th>
       <th>Price</th>
@@ -81,6 +89,7 @@ $(document).ready(function() {
     var table = $('#order_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: "/accounting/marketorders/data/",
         aoColumns: [
+            { /* Type */          sWidth: "5%",  sType: "string" },
             { /* Char */          sWidth: "5%",  sType: "string" },
             { /* Item */           sWidth: "5%",  sType: "string",  bSortable: false},
             { /* Price */          sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
@@ -93,20 +102,20 @@ $(document).ready(function() {
             { /* Range */           sWidth: "2%",  sType: "string",  bSortable: false,  sClass: "right" }
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            switch (aData[8]) {
-                case "character deleted": $('td:eq(8)', nRow).addClass('deleted');
+            switch (aData[9]) {
+                case "character deleted": $('td:eq(9)', nRow).addClass('deleted');
                                  break;
-                case "closed": $('td:eq(8)', nRow).addClass('completed');
+                case "closed": $('td:eq(9)', nRow).addClass('completed');
                                  break;
-                case "CompletedByIssuer": $('td:eq(8)', nRow).addClass('completedbyissuer');
+                case "CompletedByIssuer": $('td:eq(9)', nRow).addClass('completedbyissuer');
                                  break;
-                case "cancelled": $('td:eq(8)', nRow).addClass('cancelled');
+                case "cancelled": $('td:eq(9)', nRow).addClass('cancelled');
                                  break;
-                case "open/closed": $('td:eq8()', nRow).addClass('inprogress');
+                case "open/closed": $('td:eq(9)', nRow).addClass('inprogress');
                                  break;
-                case "pending": $('td:eq(8)', nRow).addClass('inprogress');
+                case "pending": $('td:eq(9)', nRow).addClass('inprogress');
                                  break;
-                case "expired (or fulfilled)": $('td:eq(8)', nRow).addClass('completed');
+                case "expired (or fulfilled)": $('td:eq(9)', nRow).addClass('completed');
                                  break;
             }
             return nRow;
@@ -118,6 +127,9 @@ $(document).ready(function() {
             aoData.push( {
                 name: "stateID",
                 value: $("#state_selector option:selected").val()
+            },{
+                name: "typeID",
+                value: $("#type_selector option:selected").val()
             } ); 
 
             $.getJSON( sSource, aoData, function (json) {
@@ -144,6 +156,10 @@ $(document).ready(function() {
     });
 
     $("#state_selector").change(function () {
+        table.fnDraw();
+    });
+
+    $("#type_selector").change(function () {
         table.fnDraw();
     });
 

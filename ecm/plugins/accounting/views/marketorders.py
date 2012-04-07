@@ -44,17 +44,32 @@ import logging
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
+_range_map = {-1: 'Station',
+             32767: 'Region'}
+
 @check_user_access()
 def marketorders(request):
     stateID = int(request.GET.get('stateID', -1))
+    typeID = request.GET.get('typeID', 0)
 
-    states= [{ 'stateID' : -1, 'name' : 'All', 'selected' : stateID == -1 }]
+    states = [{ 'stateID' : -1, 'name' : 'All', 'selected' : stateID == -1 }]
     for s in OrderState.objects.all().order_by('stateID'):
         states.append({
                 'stateID' : s.stateID,
                 'name' : s.description,
                 'selected' : s.stateID  == stateID})
+
+    types = [{ 'typeID' : 0, 'name' : 'All', 'selected' : typeID == 0}]
+    types.append({
+    'typeID' : 1,
+    'name'   : "Buy Order",
+    'selected' : typeID == 1})
+    types.append({
+    'typeID' : 2,
+    'name'   : "Sell Order",
+    'selected' : typeID == 2})
     data = { 'states' : states,
+             'types' : types,
              'scan_date' : getScanDate(MarketOrder)}
     return render_to_response('marketorders.html', data, Ctx(request))
 
@@ -64,22 +79,27 @@ def marketorders_data(request):
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
         params.stateID = int(REQ.get('stateID', -1))
+        params.typeID = int(REQ.get('typeID', 0))
     except:
         return HttpResponseBadRequest()
 
     query = MarketOrder.objects.select_related(depth=1).all() # .order_by('-dateIssued')
 
-    if params.search or params.stateID != -1:
+    if params.search or params.stateID != -1 or params.typeID:
         # Total number of entries
         total_entries = query.count()
-
         search_args = Q()
-        state = OrderState.objects.get(stateID__exact=params.stateID)
 
         if params.search:
             search_args |= Q(title__icontains=params.search)
-        if state:
-            search_args &= Q(orderState=state)
+        if params.stateID > -1:
+            state = OrderState.objects.get(stateID__exact=params.stateID)
+            if state:
+                search_args &= Q(orderState=state)
+        if params.typeID == 1:
+            search_args &= Q(bid=True)
+        elif params.typeID == 2:
+            search_args &= Q(bid=False)
 
         query = query.filter(search_args)
         filtered_entries = query.count()
@@ -93,6 +113,7 @@ def marketorders_data(request):
         try: owner = Member.objects.get(characterID=entry.charID).permalink
         except Member.DoesNotExist: owner = entry.charID
         entries.append([
+            _map_type(entry.bid),
             #entry.charID,
             owner,
             Type.objects.get(typeID = entry.typeID).typeName,
@@ -112,10 +133,15 @@ def marketorders_data(request):
         "aaData" : entries,
     }
     return HttpResponse(json.dumps(json_data))
+def _map_type(bid):
+    result = ""
+    if bid:
+        result = "Buy Order"
+    else:
+        result = "Sell Order"
+    return result
 
 def _map_range(order_range):
     result = ""
-    range_map = {-1: 'Station',
-                32767: 'Region'}
-    result =  range_map.get(int(order_range), '%d Jumps' % order_range)
+    result =  _range_map.get(int(order_range), '%d Jumps' % order_range)
     return result
