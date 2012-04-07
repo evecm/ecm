@@ -153,18 +153,63 @@ class Contract(models.Model):
     # Volume of items in the contract
     volume         = models.FloatField()
 
-class ContractItems(models.Model):
+class ContractItem(models.Model):
     """
     Represents a contract item that can be fetched from the API
     at the following url http://api.eve-online.com/corp/ContractItems.xml.aspx
     """
     class Meta:
-        verbose_name = ['Contract Item']
+        verbose_name = 'Contract Item'
         ordering     = ['recordID']
 
+    def __hash__(self):
+        return self.recordID
+
+    contract    = models.ForeignKey(Contract)
     recordID    = models.PositiveIntegerField()             
     typeID      = models.PositiveIntegerField()          
     quantity    = models.PositiveIntegerField()             
     rawQuantity = models.PositiveIntegerField()             
     singleton   = models.PositiveIntegerField()           
     included    = models.PositiveIntegerField()
+
+class MarketOrder(models.Model):
+    """
+    Represents a contract item that can be fetched from the API
+    at the following url http://api.eve-online.com/corp/MarketOrders.xml.aspx
+    """
+    class Meta:
+        verbose_name = 'Market Order'
+        ordering     = ['orderID']
+
+    def __hash__(self):
+        return self.orderID
+
+    orderID      = models.PositiveIntegerField(primary_key=True)
+    charID       = models.PositiveIntegerField()
+    stationID    = models.PositiveIntegerField()
+    volEntered   = models.PositiveIntegerField()
+    volRemaining = models.PositiveIntegerField()
+    minVolume    = models.PositiveIntegerField()
+    orderState   = models.ForeignKey('OrderState')
+    typeID       = models.PositiveIntegerField()
+    range        = models.PositiveIntegerField()
+    accountKey   = models.PositiveIntegerField()
+    duration     = models.PositiveIntegerField() 
+    escrow       = models.PositiveIntegerField()
+    price        = models.FloatField()
+    bid          = models.BooleanField(default=False)
+    issued       = models.CharField(max_length=20)
+
+class OrderState(models.Model):
+    """
+    """
+    class Meta:
+        verbose_name = ['Order State']
+        ordering     = ['description']
+
+    def __hash__(self):
+        return self.id
+
+    stateID      = models.PositiveIntegerField()
+    description  = models.CharField(max_length=10)
