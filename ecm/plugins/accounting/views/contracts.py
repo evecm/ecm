@@ -35,7 +35,7 @@ from ecm.apps.eve.models import Type
 from ecm.apps.corp.models import Wallet, Corp
 from ecm.apps.hr.models import Member
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params
+from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
 
 from ecm.plugins.accounting.models import Contract
 
@@ -68,6 +68,7 @@ def contracts(request):
     }
     return render_to_response('contracts.html', data, Ctx(request))
 
+#------------------------------------------------------------------------------
 @check_user_access()
 def contracts_data(request):
     try:
@@ -92,7 +93,6 @@ def contracts_data(request):
             search_args &= Q(type=params.type)
         if params.status != 'All':
             search_args &= Q(status=params.status)
-
 
         query = query.filter(search_args)
         filtered_entries = query.count()
@@ -123,3 +123,39 @@ def contracts_data(request):
         "aaData" : entries,
     }
     return HttpResponse(json.dumps(json_data))
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def details(request, contract_id):
+    """
+    Serves URL /accounting/contracts/<contract_id>/
+    """
+    try:
+        contract = get_object_or_404(Contract, contractID=int(contract_id))
+    except ValueError:
+        raise Http404()
+
+    # Build the data
+    data = {
+        'contract' : contract
+    }
+    return render_to_response('contract.html', data, Ctx(request))
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def details_data(request, contract_id):
+    """
+    Serves URL /accounting/contracts/<contract_id>//data/
+    """
+    try:
+        params = extract_datatable_params(request)
+        contract_id = int(contract_id)
+    except Exception, e:
+        return HttpResponseBadRequest(str(e))
+
+    query = Contract.objects.get(contractID=contract_id)
+    # #TODO ContractItems
+
+    return datatable_ajax_data(data=query, echo=params.sEcho)
+
+
