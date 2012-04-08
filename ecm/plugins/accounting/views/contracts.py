@@ -25,19 +25,16 @@ except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
-from django.http import HttpResponseBadRequest, HttpResponse
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext as Ctx
 from django.db.models import Q
-
-from ecm.utils.format import print_time_min, print_float
-from ecm.apps.eve.models import Type
-from ecm.apps.corp.models import Wallet, Corp
-from ecm.apps.hr.models import Member
-from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
-
+from django.http import HttpResponseBadRequest, HttpResponse, Http404
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template.context import RequestContext as Ctx
 from ecm.plugins.accounting.models import Contract
+from ecm.utils.format import print_time_min, print_float
+from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
+from ecm.views.decorators import check_user_access
+
+
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -54,7 +51,7 @@ def contracts(request):
                 'selected' : t['type'] == typeName
             })
     # Since we dont know the status of     
-    status= [{ 'statusName' : 'All', 'selected' : statusName == 'All'}]
+    status = [{ 'statusName' : 'All', 'selected' : statusName == 'All'}]
     for t in Contract.objects.order_by('status').values('status').distinct():
         status.append({
                 'statusName' : t['status'],
@@ -74,7 +71,7 @@ def contracts_data(request):
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
-        params.type  = REQ.get('typeName', 'All')
+        params.type = REQ.get('typeName', 'All')
         params.status = REQ.get('statusName', 'All')
     except:
         return HttpResponseBadRequest()

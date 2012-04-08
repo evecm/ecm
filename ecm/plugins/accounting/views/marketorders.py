@@ -25,22 +25,20 @@ except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
-from ecm.utils.format import print_time_min, print_float
+from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
-from django.db.models import Q
-
-from ecm.utils.format import print_time_min, print_float
-from ecm.apps.eve.models import Type
-from ecm.apps.hr.models import Member
-from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params
-
-from ecm.plugins.accounting.models import MarketOrder, OrderState 
 from ecm.apps.eve.models import CelestialObject, Type
-
+from ecm.apps.hr.models import Member
+from ecm.plugins.accounting.models import MarketOrder, OrderState
+from ecm.utils.format import print_float
+from ecm.views import getScanDate, extract_datatable_params
+from ecm.views.decorators import check_user_access
 import logging
+
+
+
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
@@ -52,12 +50,12 @@ def marketorders(request):
     stateID = int(request.GET.get('stateID', -1))
     typeID = request.GET.get('typeID', 0)
 
-    states = [{ 'stateID' : -1, 'name' : 'All', 'selected' : stateID == -1 }]
+    states = [{ 'stateID' :-1, 'name' : 'All', 'selected' : stateID == -1 }]
     for s in OrderState.objects.all().order_by('stateID'):
         states.append({
                 'stateID' : s.stateID,
                 'name' : s.description,
-                'selected' : s.stateID  == stateID})
+                'selected' : s.stateID == stateID})
 
     types = [{ 'typeID' : 0, 'name' : 'All', 'selected' : typeID == 0}]
     types.append({
@@ -116,10 +114,10 @@ def marketorders_data(request):
             _map_type(entry.bid),
             #entry.charID,
             owner,
-            Type.objects.get(typeID = entry.typeID).typeName,
+            Type.objects.get(typeID=entry.typeID).typeName,
             print_float(entry.price),
             entry.duration,
-            CelestialObject.objects.get(itemID = entry.stationID).itemName,
+            CelestialObject.objects.get(itemID=entry.stationID).itemName,
             entry.volEntered,
             entry.volRemaining,
             entry.minVolume,
@@ -142,6 +140,4 @@ def _map_type(bid):
     return result
 
 def _map_range(order_range):
-    result = ""
-    result =  _range_map.get(int(order_range), '%d Jumps' % order_range)
-    return result
+    return _range_map.get(int(order_range), '%d Jumps' % order_range)

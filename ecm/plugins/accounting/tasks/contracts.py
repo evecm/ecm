@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.common.models import UpdateDate
+from ecm.utils import tools
 
 __date__ = "2012 04 05"
 __author__ = "tash"
@@ -25,11 +27,7 @@ from datetime import datetime
 from django.db import transaction
 
 from ecm.apps.eve import api
-from ecm.lib import eveapi
 
-# from ecm.apps.corp.models import Wallet
-from ecm.core.parsers import diff, markUpdated, checkApiVersion
-from ecm.plugins.accounting.tasks import fix_encoding
 from ecm.plugins.accounting.models import Contract, ContractItem
 
 LOG = logging.getLogger(__name__)
@@ -52,10 +50,10 @@ def update():
     LOG.debug("parsing api response...")
 
     processContracts(contractsApi.contractList, api_conn)
-    markUpdated(model=Contract, date=datetime.now())
+    UpdateDate.mark_updated(model=Contract, date=datetime.now())
 
 def processContracts(contract_list, connection):
-     # Get old contracts
+    # Get old contracts
     old_contracts = {}
     for contract in Contract.objects.all():
         old_contracts[contract] = contract
@@ -66,7 +64,7 @@ def processContracts(contract_list, connection):
         contract = create_contract_fom_row(entry)
         new_contracts[contract] = contract
 
-    removed_contracts, added_contracts = diff(old_contracts, new_contracts)
+    removed_contracts, added_contracts = tools.diff(old_contracts, new_contracts)
 
     # Query the contract items
     old_items = {}
@@ -82,7 +80,7 @@ def processContracts(contract_list, connection):
             new_item = create_contract_item(item, contract)
             new_items[new_item] = new_item
     
-    removed_items, added_items = diff(old_items, new_items)
+    removed_items, added_items = tools.diff(old_items, new_items)
 
     write_contracts(added_contracts, removed_contracts)
     write_contract_items(added_items, removed_items)
@@ -112,34 +110,34 @@ def write_contract_items(new_items, old_items):
     LOG.info("%d new contract items added." % len(new_items))
 
 def create_contract_fom_row(row):
-    return Contract(contractID = row.contractID,
-                    issuerID = row.issuerID,
-                    issuerCorpID = row.issuerCorpID,
-                    assigneeID = row.assigneeID,
-                    acceptorID = row.acceptorID,
-                    startStationID = row.startStationID,
-                    endStationID = row.endStationID,
-                    type = row.type,
-                    status = row.status,
-                    title = row.title,
-                    forCorp = row.forCorp,
-                    availability = row.availability,
-                    dateIssued = row.dateIssued,
-                    dateExpired = row.dateExpired,
-                    dateAccepted = row.dateAccepted,
-                    numDays = row.numDays,
-                    dateCompleted = row.dateCompleted,
-                    price = row.price,
-                    reward = row.reward,
-                    collateral = row.collateral,
-                    buyout = row.buyout,
-                    volume = row.volume)
+    return Contract(contractID=row.contractID,
+                    issuerID=row.issuerID,
+                    issuerCorpID=row.issuerCorpID,
+                    assigneeID=row.assigneeID,
+                    acceptorID=row.acceptorID,
+                    startStationID=row.startStationID,
+                    endStationID=row.endStationID,
+                    type=row.type,
+                    status=row.status,
+                    title=row.title,
+                    forCorp=row.forCorp,
+                    availability=row.availability,
+                    dateIssued=row.dateIssued,
+                    dateExpired=row.dateExpired,
+                    dateAccepted=row.dateAccepted,
+                    numDays=row.numDays,
+                    dateCompleted=row.dateCompleted,
+                    price=row.price,
+                    reward=row.reward,
+                    collateral=row.collateral,
+                    buyout=row.buyout,
+                    volume=row.volume)
 
 def create_contract_item(entry, contract):
-    return ContractItem(contract_id = contract.contractID,
-                        recordID = entry.recordID,
-                        typeID = entry.typeID,
-                        quantity = entry.quantity,
-                        rawQuantity = entry.rawQuantity,
-                        singleton = entry.singleton,
-                        included = entry.included)
+    return ContractItem(contract_id=contract.contractID,
+                        recordID=entry.recordID,
+                        typeID=entry.typeID,
+                        quantity=entry.quantity,
+                        rawQuantity=entry.rawQuantity,
+                        singleton=entry.singleton,
+                        included=entry.included)

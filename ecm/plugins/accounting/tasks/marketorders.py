@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.common.models import UpdateDate
+from ecm.utils import tools
 
 __date__ = "2012 04 06"
 __author__ = "tash"
@@ -28,7 +30,6 @@ from ecm.apps.eve import api
 from ecm.lib import eveapi
 
 # from ecm.apps.corp.models import Wallet
-from ecm.core.parsers import diff, markUpdated, checkApiVersion
 from ecm.plugins.accounting.tasks import fix_encoding
 from ecm.plugins.accounting.models import MarketOrder, OrderState 
 
@@ -48,7 +49,7 @@ def update():
     LOG.debug("parsing api response...")
 
     processOrders(ordersApi.orders, api_conn)
-    markUpdated(model=MarketOrder, date=datetime.now())
+    UpdateDate.mark_updated(model=MarketOrder, date=datetime.now())
 
 def processOrders(orders, connection):
      # Get old Orders
@@ -62,7 +63,7 @@ def processOrders(orders, connection):
         order = create_order_fom_row(entry)
         new_orders[order] = order
 
-    removed_orders, added_orders = diff(old_orders, new_orders)
+    removed_orders, added_orders = tools.diff(old_orders, new_orders)
     write_orders(added_orders, removed_orders)
     
 
