@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.admin.instance_template.settings import STATIC_URL
 
 __date__ = '2012 04 01'
 __author__ = 'tash'
@@ -66,6 +67,11 @@ def contracts(request):
     return render_to_response('contracts.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
+TYPE_LINK = '<img src="%s" alt="%s" name="%s" class="contracttype">'
+def _type_perma_link(entry):
+    lower_type = str(entry.type).lower()
+    return TYPE_LINK % ('%saccounting/img/%s.png' % (STATIC_URL, lower_type), entry.type, entry.type)
+#------------------------------------------------------------------------------
 @check_user_access()
 def contracts_data(request):
     try:
@@ -100,7 +106,8 @@ def contracts_data(request):
     entries = []
     for entry in query:
         entries.append([
-            entry.type,
+            # entry.type,
+            _type_perma_link(entry),
             entry.status,
             entry.title,
             print_time_min(entry.dateIssued),

@@ -4,6 +4,10 @@ a.wallet {
     background: url(../img/wallet.png) no-repeat left;
 }
 
+img.contracttype {
+
+}
+
 .credit {color: green;}
 .debit {color: red;}
 .completed {color: green;}

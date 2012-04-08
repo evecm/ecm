@@ -91,7 +91,7 @@ $(document).ready(function() {
     var table = $('#contract_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: "/accounting/contracts/data/",
         aoColumns: [
-            { /* Type*/             sWidth: "5%",  sType: "string" },
+            { /* Type*/             sWidth: "5%",  sType: "html", sClass: "center" },
             { /* Status */          sWidth: "5%",  sType: "string" },
             { /* Title */           sWidth: "5%",  sType: "string",  bSortable: false },
             { /* Date Issued */     sWidth: "5%",  sType: "string",  bSortable: false },
