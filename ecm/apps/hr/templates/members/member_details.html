@@ -80,11 +80,14 @@
 
 <h3>Login-History</h3>
 <table class="table table-bordered table-condensed">
+  <thead>
   <tr>
     <th class="top" scope="col">Login</th>
     <th class="top" scope="col">Logout</th>
     <th class="top" scope="col">Duration</th>
   </tr>
+  </thead>
+  <tbody>
   {% for login in logins %}
     <tr>
       <td>{{ login.session_begin|ecm_datetime }}</td>
@@ -94,6 +97,14 @@
     {% empty %}
     <tr><td colspan="3">No Data.</td></tr>
   {% endfor %}
+  </tbody>
+  <tfoot>
+  	<tr>
+	  <th>Last Week: {{ lastWeek|ecm_time }}</th>
+	  <th>Last Month: {{ lastMonth|ecm_time }}</th>
+	  <th>Total: {{ total|ecm_time }}</th>
+	</tr>
+  </tfoot>
 </table>
 
 

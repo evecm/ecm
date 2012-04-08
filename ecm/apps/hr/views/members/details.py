@@ -26,7 +26,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.context import RequestContext as Ctx
 from django.utils.datetime_safe import datetime
-from django.db.models.aggregates import Avg
+from django.db.models.aggregates import Avg, Sum
 
 from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
@@ -65,6 +65,12 @@ def details(request, characterID):
         session_len = query.aggregate(len=Avg('session_seconds'))['len'] or 0
         session_len_30 = query_30.aggregate(len=Avg('session_seconds'))['len'] or 0
         session_len_7 = query_7.aggregate(len=Avg('session_seconds'))['len'] or 0
+        
+        # Totals
+        total = query.aggregate(len=Sum('session_seconds'))['len'] or 0
+        lastWeek = query_7.aggregate(len=Sum('session_seconds'))['len'] or 0
+        lastMonth = query_30.aggregate(len=Sum('session_seconds'))['len'] or 0
+        
 
         loginhistory = query.order_by('-session_begin')[:10]
 
@@ -89,6 +95,9 @@ def details(request, characterID):
         'member': member,
         'killboardUrl': killboardUrl,
         'sessiondata': avg_session,
+        'lastWeek' : lastWeek,
+        'lastMonth' : lastMonth,
+        'total' : total,
         'logins': loginhistory
     }
     return render_to_response("members/member_details.html", data, Ctx(request))
