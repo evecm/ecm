@@ -27,10 +27,8 @@ from datetime import datetime
 from django.db import transaction
 
 from ecm.apps.eve import api
-from ecm.lib import eveapi
 
 # from ecm.apps.corp.models import Wallet
-from ecm.plugins.accounting.tasks import fix_encoding
 from ecm.plugins.accounting.models import MarketOrder, OrderState 
 
 LOG = logging.getLogger(__name__)
@@ -52,7 +50,7 @@ def update():
     UpdateDate.mark_updated(model=MarketOrder, date=datetime.now())
 
 def processOrders(orders, connection):
-     # Get old Orders
+    # Get old Orders
     old_orders = {}
     for order in MarketOrder.objects.all():
         old_orders[order] = order

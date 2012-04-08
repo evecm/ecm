@@ -106,7 +106,7 @@ class Contract(models.Model):
     endStationID   = models.PositiveIntegerField()
 
     # Type of the contract (ItemExchange, Courier, Loan or Auction)
-    type           = models.CharField(max_length=255)
+    type           = models.CharField(max_length=255) #@ReservedAssignment
 
     # Status of the the contract (Outstanding, Deleted, Completed, 
     # Failed, CompletedByIssuer, CompletedByContractor, Cancelled, 
@@ -193,7 +193,7 @@ class MarketOrder(models.Model):
     minVolume    = models.PositiveIntegerField()
     orderState   = models.ForeignKey('OrderState')
     typeID       = models.PositiveIntegerField()
-    range        = models.PositiveIntegerField()
+    range        = models.PositiveIntegerField() #@ReservedAssignment
     accountKey   = models.PositiveIntegerField()
     duration     = models.PositiveIntegerField() 
     escrow       = models.PositiveIntegerField()
