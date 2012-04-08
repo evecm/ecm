@@ -11,12 +11,11 @@
 <div class="page-header">
   <h1>Human Resources Dashboard</h1>
 </div>
-
 <div class="row-fluid">
-  <div class="span6" id="distibution_chart"></div>
-  <div class="span6" id="positions_chart"></div>
+  <div class="span3" id="distibution_chart"></div>
+  <div class="span3" id="positions_chart"></div>
+  <div class="span3" id="playtimes_chart"></div>
 </div>
-
 <dl>
   <dt><a href="/hr/players/">Registered Players</a></dt>
     <dd>{{playerCount}}</dd>
@@ -35,6 +34,7 @@
 DISTRIBUTION = {{ distribution|safe }};
 POSITIONS = {{ positions|safe }};
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+DAILYPLAYTIMES = {{ dailyplaytimes|safe }};
 </script>
 {% endblock %}
 
@@ -97,7 +97,7 @@ function drawPositions() {
     data.addRows([
       ['Hi-Sec',   POSITIONS['hisec']],
       ['Low-Sec',  POSITIONS['lowsec']],
-      ['Null-Sec', POSITIONS['nullsec']],
+      ['Null-Sec', POSITIONS['nullsec']]
     ]);
     
     var options = {
@@ -111,8 +111,38 @@ function drawPositions() {
     chart.draw(data, options);
 }
 
+function fickDaFotz(){
+	var array = new Array(DAILYPLAYTIMES.length);
+    for (var i=0 ; i < DAILYPLAYTIMES.length ; i++) {
+        adolf = DAILYPLAYTIMES[i];
+        array[i] = [adolf['date'], adolf['time']];
+    }
+    return array;
+}
+
+function drawPlaytimes(){
+	var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Day');
+    data.addColumn('number', 'Total Avg.');
+    adolf = DAILYPLAYTIMES[0]
+    data.addRows(fickDaFotz());
+    
+    var options = {
+      width: 450, 
+      height: 350,
+      //colors: ['60FC60', 'FCAF3B', 'FD5353'],
+      title: 'Avg. Playtime',
+      vAxis: {title: 'Hours'},
+      hAxis: {title: 'Last 14 Days', direction: -1}
+    };
+    
+    var chart = new google.visualization.AreaChart(document.getElementById('playtimes_chart'));
+    chart.draw(data, options);
+}
+
 google.setOnLoadCallback(drawAccessLvls);
 google.setOnLoadCallback(drawPositions);
+google.setOnLoadCallback(drawPlaytimes);
 
 </script>
 {% endblock %}

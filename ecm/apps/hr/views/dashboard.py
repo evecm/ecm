@@ -24,20 +24,51 @@ except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
+from datetime import timedelta
+
+from django.db.models.aggregates import Avg
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
+from django.utils.datetime_safe import datetime
 
 from ecm.apps.eve.models import CelestialObject
 #from ecm.apps.eve import db
 from ecm.apps.eve import constants
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
+from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.common.models import ColorThreshold, UserAPIKey
 
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def dashboard(request):
+    dailyplaytimes = []
+    now = datetime.now()
+    for day in range(14):
+        start = now - timedelta(day+1)
+        end = now - timedelta(day)
+        
+        if average_playtime(start,end)['len'] == None:
+            time = 0.0
+        else:
+            time = round((average_playtime(start,end)['len']/3600),2)
+        date = start.strftime("%a %b %d")
+        set = {'date' : date, 'time' : time} 
+        dailyplaytimes.append(set)
+        
+    #weeklyplaytimes = []
+    #for day in range(3):
+    #    start = now - timedelta(7*day + 7)
+    #    end = now - timedelta(7*day)
+    #    weeklyplaytimes.append(weeklyplaytimes(start,end))
+    
+    #monthlyplaytimes = []
+    #for day in range(3):
+    #    start = now - timedelta(30*day + 30)
+    #    end = now - timedelta(30*day)
+    #    monthlyplaytimes.append(average_playtime(start,end))
+        
     data = {
         'unassociatedCharacters' : Member.objects.filter(corped=True, owner=None).count(),
         'playerCount' : Member.objects.filter(corped=True).exclude(owner=None).values("owner").distinct().count(),
@@ -46,7 +77,10 @@ def dashboard(request):
         'chraractersByPlayer' : avg_chraracters_by_player(),
         'positions' : positions_of_members(),
         'distribution' : access_lvl_distribution(),
-        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL 
+        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
+        'dailyplaytimes' : dailyplaytimes,
+     #   'weeklyplaytimes' : weeklyplaytimes,
+     #   'monthlyplaytimes' : monthlyplaytimes,
     }
     
     return render_to_response("dashboard.html", data, Ctx(request))
@@ -110,3 +144,8 @@ def access_lvl_distribution():
         })
     
     return json.dumps(distribution_json)
+
+#------------------------------------------------------------------------------
+def average_playtime(start_date, end_date):
+    return MemberSession.objects.filter(session_begin__range=(start_date, end_date)).aggregate(len=Avg('session_seconds'))
+    
