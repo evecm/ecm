@@ -81,29 +81,32 @@ def marketorders_data(request):
     except:
         return HttpResponseBadRequest()
 
-    query = MarketOrder.objects.select_related(depth=1).all() # .order_by('-dateIssued')
+    query = MarketOrder.objects.all() # .order_by('-dateIssued')
+    total_entries = query.count()
+    search_args = Q()
 
-    if params.search or params.stateID != -1 or params.typeID:
-        # Total number of entries
-        total_entries = query.count()
-        search_args = Q()
+    if params.search:
+        types = _get_types(params.search)
+        for type in types: #@ReservedAssignment
+            search_args |= Q(typeID__exact=type.typeID)
 
-        if params.search:
-            search_args |= Q(title__icontains=params.search)
+    if params.stateID != -1 or params.typeID:
+        # States
         if params.stateID > -1:
             state = OrderState.objects.get(stateID__exact=params.stateID)
             if state:
                 search_args &= Q(orderState=state)
+        # Types
         if params.typeID == 1:
             search_args &= Q(bid=True)
         elif params.typeID == 2:
             search_args &= Q(bid=False)
-
-        query = query.filter(search_args)
-        filtered_entries = query.count()
-    else:
+    
+    query = query.filter(search_args)
+    filtered_entries = query.count()
+    if filtered_entries == None:
         total_entries = filtered_entries = query.count()
-
+    
     query = query[params.first_id:params.last_id]
     entries = []
     for entry in query:
@@ -114,7 +117,7 @@ def marketorders_data(request):
             _map_type(entry.bid),
             #entry.charID,
             owner,
-            Type.objects.get(typeID=entry.typeID).typeName,
+            entry.typeID.typeName,
             print_float(entry.price),
             entry.duration,
             CelestialObject.objects.get(itemID=entry.stationID).itemName,
@@ -141,3 +144,7 @@ def _map_type(bid):
 
 def _map_range(order_range):
     return _range_map.get(int(order_range), '%d Jumps' % order_range)
+
+def _get_types(typeName):
+    return Type.objects.filter(typeName__icontains=typeName)
+    

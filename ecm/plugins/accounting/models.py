@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.eve.models import Type
 
 __date__ = "2010-06-03"
 __author__ = "diabeteman"
@@ -192,7 +193,7 @@ class MarketOrder(models.Model):
     volRemaining = models.PositiveIntegerField()
     minVolume    = models.PositiveIntegerField()
     orderState   = models.ForeignKey('OrderState')
-    typeID       = models.PositiveIntegerField()
+    typeID       = models.ForeignKey(Type)
     range        = models.PositiveIntegerField() #@ReservedAssignment
     accountKey   = models.PositiveIntegerField()
     duration     = models.PositiveIntegerField() 
@@ -213,3 +214,4 @@ class OrderState(models.Model):
 
     stateID      = models.PositiveIntegerField()
     description  = models.CharField(max_length=10)
+    

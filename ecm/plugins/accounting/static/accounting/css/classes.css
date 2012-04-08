@@ -4,19 +4,15 @@ a.wallet {
     background: url(../img/wallet.png) no-repeat left;
 }
 
-img.contracttype {
-
-}
-
-.credit {color: green;}
-.debit {color: red;}
-.completed {color: green;}
-.outstanding {color: orange;}
-.deleted {color: red;}
-.failed {color: red;}
-.completedbyissuer {color: green;}
-.completedbycontractor {color: green;}
-.cancelled {color: red;}
-.rejected {color: red;}
-.inprogress {color: orange;}
+.contract_credit {color: green;}
+.contract_debit {color: red;}
+.contract_completed {color: green;}
+.contract_outstanding {color: orange;}
+.contract_deleted {color: red;}
+.contract_failed {color: red;}
+.contract_completedbyissuer {color: green;}
+.contract_completedbycontractor {color: green;}
+.contract_cancelled {color: red;}
+.contract_rejected {color: red;}
+.contract_inprogress {color: orange;}
 

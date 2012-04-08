@@ -18,8 +18,6 @@
 __date__ = "2010-06-03"
 __author__ = "diabeteman"
 
-# change test
-
 
 from django.contrib import admin
 

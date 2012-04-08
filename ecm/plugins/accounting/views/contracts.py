@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.admin.instance_template.settings import STATIC_URL
+
 
 __date__ = '2012 04 01'
 __author__ = 'tash'
@@ -26,16 +26,20 @@ except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
+import logging
 from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse, Http404
+from ecm.admin.instance_template.settings import STATIC_URL
+from ecm.apps.eve.models import BlueprintType, Type, CelestialObject
+from ecm.apps.hr.models import Member
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext as Ctx
-from ecm.plugins.accounting.models import Contract
-from ecm.utils.format import print_time_min, print_float
+from ecm.plugins.accounting.models import Contract, ContractItem
+from ecm.utils.format import print_time_min, print_float, print_volume
 from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 
-
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -70,7 +74,18 @@ def contracts(request):
 TYPE_LINK = '<img src="%s" alt="%s" name="%s" class="contracttype">'
 def _type_perma_link(entry):
     lower_type = str(entry.type).lower()
-    return TYPE_LINK % ('%saccounting/img/%s.png' % (STATIC_URL, lower_type), entry.type, entry.type)
+    return TYPE_LINK % ('%saccounting/img/%s.png' % (STATIC_URL, lower_type),
+                        entry.type, entry.type)
+    
+TITLE_LINK = '<a href="%s" class="contract">%s</a>'
+def _title_perma_link(entry):
+    url = '/accounting/contracts/%d/' % entry.contractID
+    if entry.title == "" :
+        title = "&lt;No Title&gt;"
+    else:
+        title = entry.title    
+    
+    return TITLE_LINK % (url, title)
 #------------------------------------------------------------------------------
 @check_user_access()
 def contracts_data(request):
@@ -106,10 +121,9 @@ def contracts_data(request):
     entries = []
     for entry in query:
         entries.append([
-            # entry.type,
             _type_perma_link(entry),
             entry.status,
-            entry.title,
+            _title_perma_link(entry),
             print_time_min(entry.dateIssued),
             print_time_min(entry.dateExpired),
             print_time_min(entry.dateAccepted),
@@ -118,7 +132,7 @@ def contracts_data(request):
             print_float(entry.reward),
             print_float(entry.collateral),
             print_float(entry.buyout),
-            print_float(entry.volume)
+            print_volume(entry.volume)
         ])
     json_data = {
         "sEcho" : params.sEcho,
@@ -138,12 +152,36 @@ def details(request, contract_id):
         contract = get_object_or_404(Contract, contractID=int(contract_id))
     except ValueError:
         raise Http404()
+    
+    
+    try: issuer = Member.objects.get(characterID=contract.issuerID).permalink
+    except Member.DoesNotExist: issuer = contract.issuerID
+    
+    try: assignee = Member.objects.get(characterID=contract.assigneeID).permalink
+    except Member.DoesNotExist: assignee = contract.assigneeID
+    
+    try: acceptor = Member.objects.get(characterID=contract.acceptorID).permalink
+    except Member.DoesNotExist: acceptor = contract.acceptorID
+    
+    try:
+            startStation = CelestialObject.objects.get(itemID = contract.startStationID).itemName
+    except CelestialObject.DoesNotExist:
+            startStation = '???'
 
+    try:
+            endStation = CelestialObject.objects.get(itemID = contract.endStationID).itemName
+    except CelestialObject.DoesNotExist:
+            endStation = '???'
     # Build the data
     data = {
-        'contract' : contract
+        'contract'     : contract,
+        'issuer'       : issuer,
+        'assignee'     : assignee,
+        'acceptor'     : acceptor,
+        'startStation' : startStation,
+        'endStation'   : endStation,
     }
-    return render_to_response('contract.html', data, Ctx(request))
+    return render_to_response('contract_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -153,13 +191,64 @@ def details_data(request, contract_id):
     """
     try:
         params = extract_datatable_params(request)
+        REQ = request.GET if request.method == 'GET' else request.POST
         contract_id = int(contract_id)
+        params.included = REQ.get('included', 'All')
+        params.singleton = REQ.get('singleton', 'All')
     except Exception, e:
         return HttpResponseBadRequest(str(e))
 
-    query = Contract.objects.get(contractID=contract_id)
-    # #TODO ContractItems
+    contract_items = ContractItem.objects.filter(contract=contract_id)
+    total_entries = contract_items.count()
+    search_args = Q()
+    if params.search:
+        types = _get_types(params.search)
+        for type in types: #@ReservedAssignment
+            search_args |= Q(typeID__exact=type.typeID)
+    
+    query = contract_items.filter(search_args)
+    
+    filtered_entries = query.count()
+    if filtered_entries == None:
+        total_entries = filtered_entries = query.count()
+    
+    query = query[params.first_id:params.last_id]        
+    entries = []
+    for contract_item in query:
+        entries.append([   
+            Type.objects.get(typeID=contract_item.typeID).typeName,
+            contract_item.quantity,
+            _print_rawquantity(contract_item),
+            contract_item.singleton,
+            _print_included(contract_item),
+        ])
+    return datatable_ajax_data(data=entries, echo=params.sEcho, total=total_entries, filtered=filtered_entries)
 
-    return datatable_ajax_data(data=query, echo=params.sEcho)
+#------------------------------------------------------------------------------
+def _print_rawquantity(contract_item):
+    result = "---"
+    raw_quantity = contract_item.rawQuantity
+    if raw_quantity:
+        # is bp?
+        if _is_Blueprint(contract_item):
+            if int(raw_quantity) == -1:
+                result = "Original"
+            elif int(raw_quantity) == -2:
+                result = "Copy"
+        # is stackable?
+        elif int(raw_quantity) == -1:
+            result = "non stackable"
+    return result
 
+def _print_included(contract_item):
+    result = "asking"
+    included = contract_item.included
+    if included:
+        result = "submitted"
+    return result
 
+def _is_Blueprint(contract_item):
+    return BlueprintType.objects.filter(blueprintTypeID=contract_item.typeID).exists
+
+def _get_types(typeName):
+    return Type.objects.filter(typeName__icontains=typeName)

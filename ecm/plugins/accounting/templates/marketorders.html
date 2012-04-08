@@ -67,7 +67,7 @@
       <th>Item</th>
       <th>Price</th>
       <th>Duration</th>
-      <th><Station</th>
+      <th>Station</th>
       <th>Vol. entered</th>
       <th>Vol. remain.</th>
       <th>Min. volume</th>
@@ -103,19 +103,19 @@ $(document).ready(function() {
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             switch (aData[9]) {
-                case "character deleted": $('td:eq(9)', nRow).addClass('deleted');
+                case "character deleted": $('td:eq(9)', nRow).addClass('contract_deleted');
                                  break;
-                case "closed": $('td:eq(9)', nRow).addClass('completed');
+                case "closed": $('td:eq(9)', nRow).addClass('contract_completed');
                                  break;
-                case "CompletedByIssuer": $('td:eq(9)', nRow).addClass('completedbyissuer');
+                case "CompletedByIssuer": $('td:eq(9)', nRow).addClass('contract_completedbyissuer');
                                  break;
-                case "cancelled": $('td:eq(9)', nRow).addClass('cancelled');
+                case "cancelled": $('td:eq(9)', nRow).addClass('contract_cancelled');
                                  break;
-                case "open/closed": $('td:eq(9)', nRow).addClass('inprogress');
+                case "open/closed": $('td:eq(9)', nRow).addClass('contract_inprogress');
                                  break;
-                case "pending": $('td:eq(9)', nRow).addClass('inprogress');
+                case "pending": $('td:eq(9)', nRow).addClass('contract_inprogress');
                                  break;
-                case "expired (or fulfilled)": $('td:eq(9)', nRow).addClass('completed');
+                case "expired (or fulfilled)": $('td:eq(9)', nRow).addClass('contract_completed');
                                  break;
             }
             return nRow;

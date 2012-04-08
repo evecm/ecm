@@ -91,7 +91,7 @@ $(document).ready(function() {
     var table = $('#contract_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: "/accounting/contracts/data/",
         aoColumns: [
-            { /* Type*/             sWidth: "5%",  sType: "html", sClass: "center" },
+            { /* Type*/             sWidth: "2%",  sType: "html", sClass: "center" },
             { /* Status */          sWidth: "5%",  sType: "string" },
             { /* Title */           sWidth: "5%",  sType: "string",  bSortable: false },
             { /* Date Issued */     sWidth: "5%",  sType: "string",  bSortable: false },
@@ -106,25 +106,25 @@ $(document).ready(function() {
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             switch (aData[1]) {
-                case "Outstanding": $('td:eq(1)', nRow).addClass('outstanding');
+                case "Outstanding": $('td:eq(1)', nRow).addClass('contract_outstanding');
                                  break;
-                case "Deleted": $('td:eq(1)', nRow).addClass('deleted');
+                case "Deleted": $('td:eq(1)', nRow).addClass('contract_deleted');
                                  break;
-                case "Completed": $('td:eq(1)', nRow).addClass('completed');
+                case "Completed": $('td:eq(1)', nRow).addClass('contract_completed');
                                  break;
-                case "Failed": $('td:eq(1)', nRow).addClass('failed');
+                case "Failed": $('td:eq(1)', nRow).addClass('contract_failed');
                                  break;
-                case "CompletedByIssuer": $('td:eq(1)', nRow).addClass('completedbyissuer');
+                case "CompletedByIssuer": $('td:eq(1)', nRow).addClass('contract_completedbyissuer');
                                  break;
-                case "CompletedByContractor": $('td:eq(1)', nRow).addClass('completedbycontractor');
+                case "CompletedByContractor": $('td:eq(1)', nRow).addClass('contract_completedbycontractor');
                                  break;
-                case "Cancelled": $('td:eq(1)', nRow).addClass('cancelled');
+                case "Cancelled": $('td:eq(1)', nRow).addClass('contract_cancelled');
                                  break;
-                case "Rejected": $('td:eq(1)', nRow).addClass('rejected');
+                case "Rejected": $('td:eq(1)', nRow).addClass('contract_rejected');
                                  break;
-                case "Reversed": $('td:eq(1)', nRow).addClass('reversed');
+                case "Reversed": $('td:eq(1)', nRow).addClass('contract_reversed');
                                  break;
-                case "InProgress": $('td:eq(1)', nRow).addClass('inprogress');
+                case "InProgress": $('td:eq(1)', nRow).addClass('contract_inprogress');
                                  break;
             }
             return nRow;

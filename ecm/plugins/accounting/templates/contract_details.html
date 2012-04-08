@@ -1,121 +1,151 @@
-{% extends "base.html" %}
-
-{% block headtitle %}{{contract.title}}{% endblock %}
-
-{% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
-{% endblock %}
-
-{% block breadcrumbs %}
+{% extends "base.html" %} {% block headtitle %}{% if contract.title %}{{contract.title}}{% else %}&lt;No Title&gt;{% endif	%}{%endblock %} {% block stylesheets %}
+<link rel="stylesheet" type="text/css"
+	href="{{ STATIC_URL }}accounting/css/classes.css" />
+<link rel="stylesheet" type="text/css"
+	href="{{ STATIC_URL }}hr/css/classes.css" />
+{% endblock %} {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/industry">Industry</a></li>
-<li><a href="/industry/catalog/">Catalog</a></li>
-<li><a href="/industry/catalog/supplies/">Supplies</a></li>
-<li class="active"><a href="/industry/catalog/supplies/{{ supply.typeID }}/">{{ supply.typeName }}</a></li>
-{% endblock %}
-
-{% block main_content %}
-<div class="page-header"><h1>{{supply.typeName}}</h1></div>
+<li><a href="/accounting">Accounting</a></li>
+<li><a href="/accounting/contracts/">Contracts</a></li>
+<li class="active"><a
+	href="/accounting/contracts/{{ contract.contractID }}/">{% if contract.title %}{{contract.title}}{% else %}&lt;No Title&gt;{% endif	%}</a></li>
+{% endblock %} {% block main_content %}
+<div class="page-header">
+	<h1>Contract Details</h1>
+</div>
 
 <div class="row-fluid">
-  <div class="span1"><img src="http://image.eveonline.com/Type/{{supply.typeID}}_64.png" /></div>
-  <div class="span11">
-    <dl>
-      <dt>Price</dt>
-        <dd id="price">{{supply.price|ecm_price}}</dd>
-      <dt>Auto-Update</dt>
-        <dd><input type="checkbox" id="update_checkbox" {% if supply.auto_update %}checked{% endif %}/></dd>
-      <dt>Supply Source</dt>
-        <dd>
-          <select id="supply_source" class="input-medium">{% for source in supply_sources %}
-            <option value="{{source.location_id}}" {%if supply.supply_source == source%}selected{%endif%}>{{source.name}}</option>
-          {% endfor %}</select>
-          <button class="btn btn-small" id="update_button" title="Update Price"><i class="icon-refresh"></i></button>
-        </dd>
-    </dl>
+	<div class="span1">
+		<img src="{{ STATIC_URL }}accounting/img/{{contract.type|lower}}.png" />
+	</div>
+	<div class="span2">
+		<dl>
+			<dt>Title</dt>
+			<dd id="contract_title">{% if contract.title %}{{contract.title}}{% else %}&lt;No Title&gt;{% endif	%}</dd>
+			<dt>Type</dt>
+			<dd id="contract_type">{{contract.type}}</dd>
+			<dt>Status</dt>
+			<dd class="contract_{{contract.status|lower}}">{{contract.status}}</dd>
+			<dt>Availability</dt>
+			<dd id="contract_availability">{{contract.availability}}</dd>
+			<dt>Date Issued</dt>
+			<dd id="contract_dateissued">{{contract.dateIssued}}</dd>
+			<dt>Date Expired</dt>
+			<dd id="contract_dateexpired">{{contract.dateExpired}}</dd>
+			<dt>Date Accepted</dt>
+			<dd id="contract_dateaccepted">{{contract.dateAccepted}}</dd>
+			<dt>Date Completed</dt>
+			<dd id="contract_datecompleted">{{contract.dateCompleted}}</dd>
+			<dt>Station (start)</dt>
+			<dd id="contract_startstation">{{startStation}}</dd>
+			<dt>Station (end)</dt>
+			<dd id="contract_endstation">{{endStation}}</dd>
+		</dl>
+	</div>
+	<div class="span2">
+		<dl>
+				<dt>Time left</dt>
+				<dd id="contract_numdays">{{contract.numDays}} days</dd>
+				<dt>Price</dt>
+				<dd id="contract_price">{{contract.price}} ISK</dd>
+				<dt>Reward</dt>
+				<dd id="contract_rewar">{{contract.reward}} ISK</dd>
+				<dt>Collateral</dt>
+				<dd id="contract_price">{{contract.collateral}} ISK</dd>
+				<dt>Buyout</dt>
+				<dd id="contract_price">{{contract.buyout}} ISK</dd>
+				<dt>Volume</dt>
+				<dd id="contract_price">{{contract.volume}} m&sup3;</dd>
+				<dt>Issuer</dt>
+				<dd id="contract_issuer">{{issuer|safe}}</dd>
+				<dt>Assignee</dt>
+				<dd id="contract_assignee">{{assignee}}</dd>
+				<dt>Acceptor</dt>
+				<dd id="contract_acceptor">{{acceptor}}</dd>
+		</dl>
+	</div>
+</div>
+
+<h3>Contract Items</h3>
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
+      <a class="btn btn-small" id="clear_search">Reset</a>
+    </div>
   </div>
-</div>
-
-<h3>Price History</h3>
-
+</form>
 <div class="span6">
-<table class="table table-bordered table-condensed" id="pricehistory_table">
-  <thead>
-    <tr>
-      {%for col in columns%}
-      <th class="top" scope="col" >{{col}}</th>
-      {%endfor%}
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
-    </tr>
-  </tbody>
-</table>
+	<table class="table table-bordered table-condensed"
+		id="contractitems_table">
+		<thead>
+			<tr>
+				<th class="top" scope="col">Type</th>
+				<th class="top" scope="col">Quantity</th>
+				<th class="top" scope="col">Raw Quantity</th>
+				<th class="top" scope="col">Singleton</th>
+				<th class="top" scope="col">Included</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="{{columns|length}}" class="dataTables_empty">Loading
+					data from server...</td>
+			</tr>
+		</tbody>
+	</table>
 </div>
-{% endblock %}
-
-
-
-
-
-{% block post_javascripts %}
-<script type="text/javascript">
+{% endblock %} {% block post_javascripts %}
+<script>
 $(document).ready(function() {
-
-    var table = $('#pricehistory_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        iDisplayLength: 10,         /* default display 25 items */
-        sAjaxSource: '/industry/catalog/supplies/{{supply.typeID}}/data/',
+    var table = $('#contractitems_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: "/accounting/contracts/{{ contract.contractID }}/data/",
         aoColumns: [
-            { /* 0 Date */  bSortable: false },
-            { /* 1 Price */ bSortable: false  },
+            { /* Type*/             sWidth: "2%",  sType: "html" },
+            { /* Quantity */          sWidth: "5%",  sType: "string", sClass: "right" },
+            { /* Raw Quantity */       sWidth: "5%",  sType: "string", sClass: "center" },
+            { /* Singleton */       sWidth: "5%",  sType: "numeric" },
+            { /* Included */        sWidth: "5%",  sType: "numeric" }
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            $('td:eq(1)', nRow).addClass('right');
-            return nRow;
-        }
+            //return nRow;
+        },
+
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
     }));
 
-
-    $('dd#price').editable( '/industry/catalog/supplies/price/', {
-        submitdata : {id: {{supply.typeID}}},
-        tooltip: 'Click to edit...',
-        callback: function( sValue, y ) {
-            table.fnDraw();
-        },
+  /* trigger the search when pressing return in the text field */
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($("#search_text").val());
     });
-    $('#update_checkbox').click(function () {
-        var params = {
-            id: {{supply.typeID}},
-            value: $(this).is(':checked')
-        };
-        $.post('/industry/catalog/supplies/autoUpdate/', params);
+
+    /* trigger the search when clicking the "search" button */
+    $("#search_button").click(function() {
+        table.fnFilter($("#search_text").val());
     });
-    $('#supply_source').change(function () {
-        var params = {
-            id: {{supply.typeID}},
-            value: $(this).val()
-        };
-        $.post('/industry/catalog/supplies/supplySource_id/', params);
+
+    /* reset the search when clicking the "reset" button */
+    $("#clear_search").click(function() {
+        $("#search_text").val("");
+        table.fnFilter("");
     });
-    $('#update_button').click(function () {
-        var oldPrice = $('dd#price').html();
-        $('dd#price').html('<img src="/static/ecm/img/throbber.gif"/>');
-        $.get('/industry/catalog/supplies/{{supply.typeID}}/updateprice/')
-         .success(function (data) {
-            $('dd#price').html(data);
-            table.fnDraw();
-         })
-         .error(function (data) {
-            $('dd#price').html(oldPrice);
-         });
+
+    /* disable multi column sorting */
+    $('#contractitems_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
     });
-});
 
-
-
-
+} );
 </script>
 {% endblock %}
 
