@@ -25,7 +25,8 @@ from django.template.context import RequestContext as Ctx
 
 from ecm.apps.hr.models import TitleComposition, TitleCompoDiff
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
+from ecm.apps.common.models import UpdateDate
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.utils.format import print_time_min
 
 
@@ -33,7 +34,7 @@ from ecm.utils.format import print_time_min
 @check_user_access()
 def changes(request):
     data = {
-        'scan_date' : getScanDate(TitleComposition)
+        'scan_date' : UpdateDate.get_latest(TitleComposition)
     }
     return render_to_response("titles/changes.html", data, Ctx(request))
 

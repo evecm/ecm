@@ -24,8 +24,9 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
+from ecm.apps.common.models import UpdateDate
 from ecm.utils.format import print_time_min
-from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
 from ecm.views.decorators import check_user_access
 
@@ -34,7 +35,7 @@ from ecm.views.decorators import check_user_access
 @check_user_access()
 def access_changes(request):
     data = {
-        'scan_date' : getScanDate(TitleMembership)
+        'scan_date' : UpdateDate.get_latest(TitleMembership)
     }
     return render_to_response("members/access_changes.html", data, Ctx(request))
 

@@ -32,11 +32,12 @@ from django.db.models import Q
 
 from ecm.utils.format import print_time_min, print_float
 from ecm.utils import is_number
+from ecm.apps.common.models import UpdateDate
 from ecm.apps.eve.models import Type
 from ecm.apps.corp.models import Wallet, Corp
 from ecm.apps.hr.models import Member
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params
+from ecm.views import extract_datatable_params
 from ecm.plugins.accounting.models import JournalEntry, EntryType
 
 
@@ -65,7 +66,7 @@ def journal(request):
     data = {
         'wallets' : wallets,
         'entryTypes' : entryTypes,
-        'scan_date' : getScanDate(JournalEntry)
+        'scan_date' : UpdateDate.get_latest(JournalEntry)
     }
     return render_to_response("wallet_journal.html", data, Ctx(request))
 

@@ -27,10 +27,11 @@ from django.template.context import RequestContext as Ctx
 
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.hr.models import Member
+from ecm.apps.common.models import UpdateDate
 from ecm.plugins.accounting.models import MarketOrder, OrderState
 from ecm.utils.format import print_float, print_integer
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data
 
 LOG = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ def marketorders(request):
         'states': states,
         'types': types,
         'columns': COLUMNS,
-        'scan_date': getScanDate(MarketOrder),
+        'scan_date': UpdateDate.get_latest(MarketOrder),
     }
     return render_to_response('marketorders.html', data, Ctx(request))
 

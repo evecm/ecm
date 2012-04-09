@@ -30,9 +30,9 @@ from django.db.models.aggregates import Avg, Sum
 
 from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
-from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
-from ecm.apps.common.models import ColorThreshold, Setting
+from ecm.apps.common.models import ColorThreshold, Setting, UpdateDate
 from ecm.utils.format import print_time_min
 from ecm.apps.eve.models import CelestialObject
 
@@ -65,12 +65,12 @@ def details(request, characterID):
         session_len = query.aggregate(len=Avg('session_seconds'))['len'] or 0
         session_len_30 = query_30.aggregate(len=Avg('session_seconds'))['len'] or 0
         session_len_7 = query_7.aggregate(len=Avg('session_seconds'))['len'] or 0
-        
+
         # Totals
         total = query.aggregate(len=Sum('session_seconds'))['len'] or 0
         lastWeek = query_7.aggregate(len=Sum('session_seconds'))['len'] or 0
         lastMonth = query_30.aggregate(len=Sum('session_seconds'))['len'] or 0
-        
+
 
         loginhistory = query.order_by('-session_begin')[:10]
 
@@ -79,7 +79,7 @@ def details(request, characterID):
         avg_session['7days'] = timedelta(seconds=session_len_7)
 
         if member.corped:
-            member.date = getScanDate(Member)
+            member.date = UpdateDate.get_latest(Member)
         else:
             d = MemberDiff.objects.filter(member=member, new=False).order_by("-id")[0]
             member.date = d.date

@@ -33,10 +33,11 @@ from django.template.context import RequestContext as Ctx
 
 from ecm.utils import db
 from ecm.utils.format import print_float
+from ecm.apps.common.models import UpdateDate
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
 from ecm.plugins.accounting.models import JournalEntry
-from ecm.views import extract_datatable_params, getScanDate
+from ecm.views import extract_datatable_params
 
 DATE_PATTERN = "%Y-%m-%d"
 OPERATION_TYPES = (
@@ -64,7 +65,7 @@ def member_contrib(request):
                                         date__gte=from_date, date__lte=to_date)
     total_contribs = query.aggregate(sum=Sum('amount'))['sum']
     data = {
-        'scan_date' : getScanDate(JournalEntry),
+        'scan_date' : UpdateDate.get_latest(JournalEntry),
         'from_date' : datetime.strftime(from_date, DATE_PATTERN),
         'to_date' : datetime.strftime(to_date, DATE_PATTERN),
         'total_contribs' : total_contribs,

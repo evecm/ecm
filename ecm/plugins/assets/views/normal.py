@@ -41,8 +41,7 @@ from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
 from ecm.plugins.assets.models import Asset
 from ecm.apps.corp.models import Hangar
-from ecm.views import getScanDate
-from ecm.apps.common.models import Setting
+from ecm.apps.common.models import Setting, UpdateDate
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 
 
@@ -56,7 +55,7 @@ CATEGORY_ICONS = { 2 : 'can' ,
 #------------------------------------------------------------------------------
 @check_user_access()
 def root(request):
-    scan_date = getScanDate(Asset)
+    scan_date = UpdateDate.get_latest(Asset)
     if scan_date == '<no data>':
         return render_to_response('assets_no_data.html', Ctx(request))
 

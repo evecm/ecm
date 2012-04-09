@@ -16,7 +16,6 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = '2010-12-25'
-
 __author__ = 'diabeteman'
 
 try:
@@ -34,6 +33,7 @@ from django.http import HttpResponse
 from django.db import connection
 
 from ecm.utils import db
+from ecm.apps.common.models import UpdateDate
 from ecm.utils.format import print_integer, print_time_min
 from ecm.views.decorators import check_user_access
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
@@ -41,9 +41,7 @@ from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
 from ecm.plugins.assets.models import Asset, AssetDiff
 from ecm.apps.corp.models import Hangar
-from ecm.views import getScanDate, DATE_PATTERN
-
-
+from ecm.views import DATE_PATTERN
 
 
 #------------------------------------------------------------------------------
@@ -143,7 +141,7 @@ def root(request, date_str):
           'show_in_stations' : show_in_stations,
              'divisions_str' : divisions_str,
                    'hangars' : all_hangars,
-                 'scan_date' : getScanDate(Asset),
+                 'scan_date' : UpdateDate.get_latest(Asset),
                'since_weeks' : since_weeks,
                   'to_weeks' : to_weeks,
                   'date_str' : date_str,

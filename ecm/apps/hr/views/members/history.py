@@ -26,9 +26,10 @@ from django.utils.text import truncate_words
 from django.template.context import RequestContext as Ctx
 
 from ecm.utils import db
+from ecm.apps.common.models import UpdateDate
 from ecm.utils.format import print_time_min
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.models import Member, MemberDiff
 
 
@@ -36,7 +37,7 @@ from ecm.apps.hr.models import Member, MemberDiff
 @check_user_access()
 def history(request):
     data = {
-        'scan_date' : getScanDate(Member)
+        'scan_date' : UpdateDate.get_latest(Member)
     }
     return render_to_response("members/member_history.html", data, Ctx(request))
 

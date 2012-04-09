@@ -32,9 +32,9 @@ from django.template.context import RequestContext as Ctx
 from ecm.utils import db
 from ecm.utils.format import print_time_min
 from ecm.apps.hr.models import TitleComposition, Title, TitleCompoDiff
-from ecm.apps.common.models import ColorThreshold
+from ecm.apps.common.models import ColorThreshold, UpdateDate
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, datatable_ajax_data, extract_datatable_params
+from ecm.views import datatable_ajax_data, extract_datatable_params
 from ecm.apps.hr import NAME as app_prefix
 
 #------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ def titles(request):
         colorThresholds.append({ "threshold" : c.threshold, "color" : c.color })
 
     data = {
-        'scan_date' : getScanDate(TitleComposition),
+        'scan_date' : UpdateDate.get_latest(TitleComposition),
         'colorThresholds' : json.dumps(colorThresholds)
     }
     return render_to_response("titles/titles.html", data, Ctx(request))

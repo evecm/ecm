@@ -24,9 +24,9 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.models import Member
-from ecm.apps.common.models import ColorThreshold
+from ecm.apps.common.models import ColorThreshold, UpdateDate
 from ecm.apps.hr.views import get_members
 
 
@@ -35,7 +35,7 @@ from ecm.apps.hr.views import get_members
 @check_user_access()
 def members(request):
     data = {
-        'scan_date' : getScanDate(Member),
+        'scan_date' : UpdateDate.get_latest(Member),
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
@@ -65,7 +65,7 @@ def members_data(request):
 @check_user_access()
 def unassociated(request):
     data = {
-        'scan_date' : getScanDate(Member),
+        'scan_date' : UpdateDate.get_latest(Member),
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }

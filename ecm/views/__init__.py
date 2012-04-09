@@ -49,12 +49,12 @@ HTML = 'text/html'
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
 #------------------------------------------------------------------------------
-def getScanDate(model):
-    try:
-        date = UpdateDate.objects.get(model_name=model.__name__)
-        return date.update_date
-    except UpdateDate.DoesNotExist:
-        return "<no data>"
+#def UpdateDate.get_latest(model):
+#    try:
+#        date = UpdateDate.objects.get(model_name=model.__name__)
+#        return date.update_date
+#    except UpdateDate.DoesNotExist:
+#        return "<no data>"
 
 #------------------------------------------------------------------------------
 class DatatableParams: pass

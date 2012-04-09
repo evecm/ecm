@@ -25,17 +25,19 @@ except ImportError:
     import django.utils.simplejson as json
 
 import logging
+
 from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse, Http404
 from django.conf import settings
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template.context import RequestContext as Ctx
 
 from ecm.apps.eve.models import BlueprintType, Type, CelestialObject
 from ecm.apps.hr.models import Member
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template.context import RequestContext as Ctx
 from ecm.plugins.accounting.models import Contract, ContractItem
+from ecm.apps.common.models import UpdateDate
 from ecm.utils.format import print_time_min, print_float, print_volume
-from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 
 LOG = logging.getLogger(__name__)
@@ -65,7 +67,7 @@ def contracts(request):
     data = {
         'types' : types,
         'status' : status,
-        'scan_date' : getScanDate(Contract)
+        'scan_date' : UpdateDate.get_latest(Contract)
     }
     return render_to_response('contracts.html', data, Ctx(request))
 

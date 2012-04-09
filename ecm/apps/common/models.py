@@ -189,6 +189,14 @@ class UpdateDate(models.Model):
         return u"%s updated %s" % (self.model_name, self.update_date)
 
     @staticmethod
+    def get_latest(model):
+        try:
+            date = UpdateDate.objects.get(model_name=model.__name__)
+            return date.update_date
+        except UpdateDate.DoesNotExist:
+            return '<no data>'
+
+    @staticmethod
     def mark_updated(model, date):
         """
         Tag a model's table in the database as 'updated'

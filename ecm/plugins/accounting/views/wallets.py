@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.plugins.accounting.views import wallet_journal_permalink
 
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
@@ -29,16 +28,18 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
+from ecm.plugins.accounting.views import wallet_journal_permalink
+from ecm.apps.common.models import UpdateDate
 from ecm.apps.corp.models import Wallet
 from ecm.views.decorators import check_user_access
-from ecm.views import getScanDate, extract_datatable_params
+from ecm.views import extract_datatable_params
 from ecm.plugins.accounting.models import JournalEntry
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def wallets(request):
     data = {
-        'scan_date' : getScanDate(JournalEntry)
+        'scan_date' : UpdateDate.get_latest(JournalEntry)
     }
     return render_to_response("wallets.html", data, Ctx(request))
 
