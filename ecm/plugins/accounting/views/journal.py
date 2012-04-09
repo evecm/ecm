@@ -31,6 +31,7 @@ from django.template.context import RequestContext as Ctx
 from django.db.models import Q
 
 from ecm.utils.format import print_time_min, print_float
+from ecm.utils import is_number
 from ecm.apps.eve.models import Type
 from ecm.apps.corp.models import Wallet, Corp
 from ecm.apps.hr.models import Member
@@ -94,6 +95,8 @@ def journal_data(request):
             search_args |= Q(ownerName2__icontains=params.search)
             search_args |= Q(argName1__icontains=params.search)
             search_args |= Q(reason__icontains=params.search)
+            if is_number(params.search):
+                search_args |= Q(amount__gte=params.search)
         if params.walletID:
             search_args &= Q(wallet=params.walletID)
         if params.entryTypeID:
@@ -164,3 +167,4 @@ def journal_data(request):
     }
 
     return HttpResponse(json.dumps(json_data))
+
