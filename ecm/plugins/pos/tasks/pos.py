@@ -189,9 +189,9 @@ def get_details(pos, api, sov):
 
     cs = api.combatSettings
     pos.use_standings_from = cs.useStandingsFrom.ownerID
-    pos.standings_threshold = cs.onStandingDrop.standing / 100.0
+    pos.standings_threshold = float(cs.onStandingDrop.standing) / 100.0
     pos.attack_on_concord_flag = cs.onStatusDrop.enabled == 1
-    pos.security_status_threshold = cs.onStatusDrop.standing / 100.0
+    pos.security_status_threshold = float(cs.onStatusDrop.standing) / 100.0
     pos.attack_on_aggression = cs.onAggression.enabled == 1
     pos.attack_on_corp_war = cs.onCorporationWar.enabled == 1
 
