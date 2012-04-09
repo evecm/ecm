@@ -74,12 +74,13 @@ def processContracts(contract_list, connection):
     new_items = {}
     
     for contract in added_contracts:
-        items_api = connection.corp.ContractItems(contractID=contract.contractID)
-    #    checkApiVersion(items_api._meta.version)
-        item_list = items_api.itemList
-        for item in item_list:
-            new_item = create_contract_item(item, contract)
-            new_items[new_item] = new_item
+        if contract.forCorp:
+            items_api = connection.corp.ContractItems(contractID=contract.contractID)
+        #    checkApiVersion(items_api._meta.version)
+            item_list = items_api.itemList
+            for item in item_list:
+                new_item = create_contract_item(item, contract)
+                new_items[new_item] = new_item
     
     removed_items, added_items = tools.diff(old_items, new_items)
 
