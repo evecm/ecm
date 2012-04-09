@@ -54,8 +54,8 @@ def dashboard(request):
         else:
             time = round((average_playtime(start,end)['len']/3600),2)
         date = start.strftime("%a %b %d")
-        set = {'date' : date, 'time' : time} 
-        dailyplaytimes.append(set)
+        dataset = {'date' : date, 'time' : time} 
+        dailyplaytimes.append(dataset)
         
     #weeklyplaytimes = []
     #for day in range(3):
