@@ -74,6 +74,7 @@ def processContracts(contract_list, connection):
     new_items = {}
     
     for contract in added_contracts:
+        # Contracts for alliance end up in the corp/api, let's ignore them for now
         if contract.forCorp:
             items_api = connection.corp.ContractItems(contractID=contract.contractID)
         #    checkApiVersion(items_api._meta.version)

@@ -29,7 +29,8 @@ except ImportError:
 import logging
 from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse, Http404
-from ecm.admin.instance_template.settings import STATIC_URL
+from django.conf import settings
+
 from ecm.apps.eve.models import BlueprintType, Type, CelestialObject
 from ecm.apps.hr.models import Member
 from django.shortcuts import render_to_response, get_object_or_404
@@ -74,7 +75,7 @@ def contracts(request):
 TYPE_LINK = '<img src="%s" alt="%s" name="%s" class="contracttype">'
 def _type_perma_link(entry):
     lower_type = str(entry.type).lower()
-    return TYPE_LINK % ('%saccounting/img/%s.png' % (STATIC_URL, lower_type),
+    return TYPE_LINK % ('%saccounting/img/%s.png' % (settings.STATIC_URL, lower_type),
                         entry.type, entry.type)
     
 TITLE_LINK = '<a href="%s" class="contract">%s</a>'
