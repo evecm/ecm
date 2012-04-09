@@ -112,13 +112,14 @@ def contracts_data(request):
             # Search for contract title
             search_args |= Q(title__icontains=params.search)
             # Search for contract item in the contracts
-            types = _get_types(params.search).values('typeID')
+            types = _get_types(params.search)
 #            for type in types: #@ReservedAssignment
-            matching_items = query_items.filter(typeID=types[0]['typeID'])
-            for item in matching_items:
-                LOG.error(item.contract)
-                search_args |= Q(contractID=item.contract)
-            #    search_args |= Q(contractID__exact=item.typeName)
+            for eve_type in types:
+                LOG.debug("Looking also for %s" % eve_type.typeName)
+                matching_items = query_items.filter(typeID=eve_type.typeID).values('contract')
+                for match in matching_items:
+                    search_args |= Q(contractID=match['contract'])
+                
         if params.type != 'All':
             search_args &= Q(type=params.type)
         if params.status != 'All':

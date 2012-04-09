@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.corp.models import Corp
+from ecm.lib.eveapi import Error
 
 __date__ = "2012 04 05"
 __author__ = "tash"
@@ -39,6 +41,7 @@ def update():
     LOG.info("fetching /corp/Contracts.xml.aspx...")
     # Connect to EVE API
     api_conn = api.connect()
+    LOG.debug("Fetching Contracts...")
     contractsApi = api_conn.corp.Contracts()
     # checkApiVersion(contractsApi._meta.version)
 
@@ -47,7 +50,7 @@ def update():
     LOG.debug("current time : %s", str(current_time))
     LOG.debug("cached util : %s", str(cached_until))
     LOG.debug("parsing api response...")
-
+    
     process_contracts(contractsApi.contractList, api_conn)
     UpdateDate.mark_updated(model=Contract, date=datetime.now())
 
@@ -63,7 +66,7 @@ def process_contracts(contract_list, connection):
     for entry in contract_list:
         contract = create_contract_fom_row(entry)
         new_contracts[contract] = contract
-
+    
     removed_contracts, added_contracts = tools.diff(old_contracts, new_contracts)
 
     # Query the contract items
@@ -72,20 +75,25 @@ def process_contracts(contract_list, connection):
         old_items[item] = item
 
     new_items = {}
-
+    current_corp = Corp.objects.get(pk=1)
     for contract in added_contracts:
         # Contracts for alliance end up in the corp/api, let's ignore them for now
-        if contract.forCorp:
-            items_api = connection.corp.ContractItems(contractID=contract.contractID)
-        #    checkApiVersion(items_api._meta.version)
-            item_list = items_api.itemList
-            for item in item_list:
-                new_item = create_contract_item(item, contract)
-                new_items[new_item] = new_item
+        if contract.forCorp and (contract.issuerCorpID == current_corp.corporationID or contract.acceptorID == current_corp.corporationID):
+            try:
+                items_api = connection.corp.ContractItems(contractID=contract.contractID)
+            #    checkApiVersion(items_api._meta.version)
+                item_list = items_api.itemList
+                for item in item_list:
+                    new_item = create_contract_item(item, contract)
+                    new_items[new_item] = new_item
+            except Error:
+                LOG.debug("Invalid or missing contractID: %s" % contract.contractID)
+                continue
 
     removed_items, added_items = tools.diff(old_items, new_items)
-
+    LOG.debug("Writing contracts to DB...")
     write_contracts(added_contracts, removed_contracts)
+    LOG.debug("Writing contract items to DB...")
     write_contract_items(added_items, removed_items)
 
 #------------------------------------------------------------------------------

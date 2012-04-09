@@ -21,47 +21,47 @@
 	<div class="span2">
 		<dl>
 			<dt>Title</dt>
-			<dd id="contract_title">{% if contract.title %}{{contract.title}}{% else %}&lt;No Title&gt;{% endif	%}</dd>
+			<dd id="contract-title">{% if contract.title %}{{contract.title}}{% else %}&lt;No Title&gt;{% endif	%}</dd>
 			<dt>Type</dt>
-			<dd id="contract_type">{{contract.type}}</dd>
+			<dd id="contract-type">{{contract.type}}</dd>
 			<dt>Status</dt>
-			<dd class="contract_{{contract.status|lower}}">{{contract.status}}</dd>
+			<dd class="contract-{{contract.status|lower}}">{{contract.status}}</dd>
 			<dt>Availability</dt>
-			<dd id="contract_availability">{{contract.availability}}</dd>
+			<dd id="contract-availability">{{contract.availability}}</dd>
 			<dt>Date Issued</dt>
-			<dd id="contract_dateissued">{{contract.dateIssued}}</dd>
+			<dd id="contract-dateissued">{{contract.dateIssued}}</dd>
 			<dt>Date Expired</dt>
-			<dd id="contract_dateexpired">{{contract.dateExpired}}</dd>
+			<dd id="contract-dateexpired">{{contract.dateExpired}}</dd>
 			<dt>Date Accepted</dt>
-			<dd id="contract_dateaccepted">{{contract.dateAccepted}}</dd>
+			<dd id="contract-dateaccepted">{{contract.dateAccepted}}</dd>
 			<dt>Date Completed</dt>
-			<dd id="contract_datecompleted">{{contract.dateCompleted}}</dd>
+			<dd id="contract-datecompleted">{{contract.dateCompleted}}</dd>
 			<dt>Station (start)</dt>
-			<dd id="contract_startstation">{{startStation}}</dd>
+			<dd id="contract-startstation">{{startStation}}</dd>
 			<dt>Station (end)</dt>
-			<dd id="contract_endstation">{{endStation}}</dd>
+			<dd id="contract-endstation">{{endStation}}</dd>
 		</dl>
 	</div>
 	<div class="span2">
 		<dl>
 				<dt>Time left</dt>
-				<dd id="contract_numdays">{{contract.numDays}} days</dd>
+				<dd id="contract-numdays">{{contract.numDays}} days</dd>
 				<dt>Price</dt>
-				<dd id="contract_price">{{contract.price}} ISK</dd>
+				<dd id="contract-price">{{contract.price}} ISK</dd>
 				<dt>Reward</dt>
-				<dd id="contract_rewar">{{contract.reward}} ISK</dd>
+				<dd id="contract-reward">{{contract.reward}} ISK</dd>
 				<dt>Collateral</dt>
-				<dd id="contract_price">{{contract.collateral}} ISK</dd>
+				<dd id="contract-price">{{contract.collateral}} ISK</dd>
 				<dt>Buyout</dt>
-				<dd id="contract_price">{{contract.buyout}} ISK</dd>
+				<dd id="contract-price">{{contract.buyout}} ISK</dd>
 				<dt>Volume</dt>
-				<dd id="contract_price">{{contract.volume}} m&sup3;</dd>
+				<dd id="contract-price">{{contract.volume}} m&sup3;</dd>
 				<dt>Issuer</dt>
-				<dd id="contract_issuer">{{issuer|safe}}</dd>
+				<dd id="contract-issuer">{{issuer|safe}}</dd>
 				<dt>Assignee</dt>
-				<dd id="contract_assignee">{{assignee}}</dd>
+				<dd id="contract-assignee">{{assignee}}</dd>
 				<dt>Acceptor</dt>
-				<dd id="contract_acceptor">{{acceptor}}</dd>
+				<dd id="contract-acceptor">{{acceptor}}</dd>
 		</dl>
 	</div>
 </div>

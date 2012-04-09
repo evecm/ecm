@@ -111,34 +111,34 @@ $(document).ready(function() {
             /* TODO: prepare states in python like columns */
             switch (aData[1]) {
                 case "Outstanding":
-                    $('td:eq(1)', nRow).addClass('contract_outstanding');
+                    $('td:eq(1)', nRow).addClass('contract-outstanding');
                     break;
                 case "Deleted":
-                    $('td:eq(1)', nRow).addClass('contract_deleted');
+                    $('td:eq(1)', nRow).addClass('contract-deleted');
                     break;
                 case "Completed":
-                    $('td:eq(1)', nRow).addClass('contract_completed');
+                    $('td:eq(1)', nRow).addClass('contract-completed');
                     break;
                 case "Failed":
-                    $('td:eq(1)', nRow).addClass('contract_failed');
+                    $('td:eq(1)', nRow).addClass('contract-failed');
                     break;
                 case "CompletedByIssuer":
-                    $('td:eq(1)', nRow).addClass('contract_completedbyissuer');
+                    $('td:eq(1)', nRow).addClass('contract-completedbyissuer');
                     break;
                 case "CompletedByContractor":
-                    $('td:eq(1)', nRow).addClass('contract_completedbycontractor');
+                    $('td:eq(1)', nRow).addClass('contract-completedbycontractor');
                     break;
                 case "Cancelled":
-                    $('td:eq(1)', nRow).addClass('contract_cancelled');
+                    $('td:eq(1)', nRow).addClass('contract-cancelled');
                     break;
                 case "Rejected":
-                    $('td:eq(1)', nRow).addClass('contract_rejected');
+                    $('td:eq(1)', nRow).addClass('contract-rejected');
                     break;
                 case "Reversed":
-                    $('td:eq(1)', nRow).addClass('contract_reversed');
+                    $('td:eq(1)', nRow).addClass('contract-reversed');
                     break;
                 case "InProgress":
-                    $('td:eq(1)', nRow).addClass('contract_inprogress');
+                    $('td:eq(1)', nRow).addClass('contract-inprogress');
                     break;
             }
             return nRow;
