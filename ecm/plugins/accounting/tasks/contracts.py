@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.common.models import UpdateDate
-from ecm.utils import tools
 
 __date__ = "2012 04 05"
 __author__ = "tash"
@@ -27,7 +25,8 @@ from datetime import datetime
 from django.db import transaction
 
 from ecm.apps.eve import api
-
+from ecm.apps.common.models import UpdateDate
+from ecm.utils import tools
 from ecm.plugins.accounting.models import Contract, ContractItem
 
 LOG = logging.getLogger(__name__)
@@ -35,7 +34,7 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 def update():
     """
-    Update all contracts 
+    Update all contracts
     """
     LOG.info("fetching /corp/Contracts.xml.aspx...")
     # Connect to EVE API
@@ -49,10 +48,11 @@ def update():
     LOG.debug("cached util : %s", str(cached_until))
     LOG.debug("parsing api response...")
 
-    processContracts(contractsApi.contractList, api_conn)
+    process_contracts(contractsApi.contractList, api_conn)
     UpdateDate.mark_updated(model=Contract, date=datetime.now())
 
-def processContracts(contract_list, connection):
+#------------------------------------------------------------------------------
+def process_contracts(contract_list, connection):
     # Get old contracts
     old_contracts = {}
     for contract in Contract.objects.all():
@@ -70,9 +70,9 @@ def processContracts(contract_list, connection):
     old_items = {}
     for item in ContractItem.objects.all():
         old_items[item] = item
-    
+
     new_items = {}
-    
+
     for contract in added_contracts:
         # Contracts for alliance end up in the corp/api, let's ignore them for now
         if contract.forCorp:
@@ -82,13 +82,13 @@ def processContracts(contract_list, connection):
             for item in item_list:
                 new_item = create_contract_item(item, contract)
                 new_items[new_item] = new_item
-    
+
     removed_items, added_items = tools.diff(old_items, new_items)
 
     write_contracts(added_contracts, removed_contracts)
     write_contract_items(added_items, removed_items)
-    
 
+#------------------------------------------------------------------------------
 @transaction.commit_on_success
 def write_contracts(new_contracts, old_contracts):
     """
@@ -101,6 +101,8 @@ def write_contracts(new_contracts, old_contracts):
         contract.save()
     LOG.info("%d new contracts added." % len(new_contracts))
 
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
 def write_contract_items(new_items, old_items):
     """
     Write the API results
@@ -112,6 +114,7 @@ def write_contract_items(new_items, old_items):
         item.save()
     LOG.info("%d new contract items added." % len(new_items))
 
+#------------------------------------------------------------------------------
 def create_contract_fom_row(row):
     return Contract(contractID=row.contractID,
                     issuerID=row.issuerID,
@@ -136,6 +139,7 @@ def create_contract_fom_row(row):
                     buyout=row.buyout,
                     volume=row.volume)
 
+#------------------------------------------------------------------------------
 def create_contract_item(entry, contract):
     if entry.rawQuantity:
         raw_quantity = entry.rawQuantity

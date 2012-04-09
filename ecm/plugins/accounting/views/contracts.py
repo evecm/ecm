@@ -15,10 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-
 __date__ = '2012 04 01'
 __author__ = 'tash'
-
 
 try:
     import json
@@ -56,7 +54,7 @@ def contracts(request):
                 'typeName' : t['type'],
                 'selected' : t['type'] == typeName
             })
-    # Since we dont know the status of     
+    # Since we dont know the status of
     status = [{ 'statusName' : 'All', 'selected' : statusName == 'All'}]
     for t in Contract.objects.order_by('status').values('status').distinct():
         status.append({
@@ -77,15 +75,15 @@ def _type_perma_link(entry):
     lower_type = str(entry.type).lower()
     return TYPE_LINK % ('%saccounting/img/%s.png' % (settings.STATIC_URL, lower_type),
                         entry.type, entry.type)
-    
+
 TITLE_LINK = '<a href="%s" class="contract">%s</a>'
 def _title_perma_link(entry):
     url = '/accounting/contracts/%d/' % entry.contractID
     if entry.title == "" :
         title = "&lt;No Title&gt;"
     else:
-        title = entry.title    
-    
+        title = entry.title
+
     return TITLE_LINK % (url, title)
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -100,8 +98,8 @@ def contracts_data(request):
 
     query = Contract.objects.select_related(depth=1).all() # .order_by('-dateIssued')
     query_items = ContractItem.objects.all()
-    
-    
+
+
     if params.search or params.type or params.status:
         # Total number of entries
         total_entries = query.count()
@@ -117,7 +115,7 @@ def contracts_data(request):
             matching_items = query_items.filter(typeID=types[0]['typeID'])
             for item in matching_items:
                 LOG.error(item.contract)
-                search_args |= Q(contractID=item.contract)    
+                search_args |= Q(contractID=item.contract)
             #    search_args |= Q(contractID__exact=item.typeName)
         if params.type != 'All':
             search_args &= Q(type=params.type)
@@ -164,26 +162,27 @@ def details(request, contract_id):
         contract = get_object_or_404(Contract, contractID=int(contract_id))
     except ValueError:
         raise Http404()
-    
-    
-    try: issuer = Member.objects.get(characterID=contract.issuerID).permalink
-    except Member.DoesNotExist: issuer = contract.issuerID
-    
-    try: assignee = Member.objects.get(characterID=contract.assigneeID).permalink
-    except Member.DoesNotExist: assignee = contract.assigneeID
-    
-    try: acceptor = Member.objects.get(characterID=contract.acceptorID).permalink
-    except Member.DoesNotExist: acceptor = contract.acceptorID
-    
     try:
-            startStation = CelestialObject.objects.get(itemID = contract.startStationID).itemName
+        issuer = Member.objects.get(characterID=contract.issuerID).permalink
+    except Member.DoesNotExist:
+        issuer = contract.issuerID
+    try:
+        assignee = Member.objects.get(characterID=contract.assigneeID).permalink
+    except Member.DoesNotExist:
+        assignee = contract.assigneeID
+    try:
+        acceptor = Member.objects.get(characterID=contract.acceptorID).permalink
+    except Member.DoesNotExist:
+        acceptor = contract.acceptorID
+    try:
+        startStation = CelestialObject.objects.get(itemID = contract.startStationID).itemName
     except CelestialObject.DoesNotExist:
-            startStation = '???'
+        startStation = '???'
+    try:
+        endStation = CelestialObject.objects.get(itemID = contract.endStationID).itemName
+    except CelestialObject.DoesNotExist:
+        endStation = '???'
 
-    try:
-            endStation = CelestialObject.objects.get(itemID = contract.endStationID).itemName
-    except CelestialObject.DoesNotExist:
-            endStation = '???'
     # Build the data
     data = {
         'contract'     : contract,
@@ -217,17 +216,17 @@ def details_data(request, contract_id):
         types = _get_types(params.search)
         for type in types: #@ReservedAssignment
             search_args |= Q(typeID__exact=type.typeID)
-    
+
     query = contract_items.filter(search_args)
-    
+
     filtered_entries = query.count()
     if filtered_entries == None:
         total_entries = filtered_entries = query.count()
-    
-    query = query[params.first_id:params.last_id]        
+
+    query = query[params.first_id:params.last_id]
     entries = []
     for contract_item in query:
-        entries.append([   
+        entries.append([
             Type.objects.get(typeID=contract_item.typeID).typeName,
             contract_item.quantity,
             _print_rawquantity(contract_item),

@@ -11,11 +11,13 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/accounting/">Accounting</a></li>
-<li><a href="/accounting/contracts/">Contracts</a></li>
+<li class="active"><a href="/accounting/contracts/">Contracts</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1>Contracts <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+<div class="page-header">
+    <h1>Contracts <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+</div>
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
@@ -85,9 +87,10 @@
 
 
 
-{% block compressed_javascripts %}
+{% block post_javascripts %}
 <script>
 $(document).ready(function() {
+    /* TODO: prepare columns in python like in market orders */
     var table = $('#contract_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: "/accounting/contracts/data/",
         aoColumns: [
@@ -105,27 +108,38 @@ $(document).ready(function() {
             { /* Volume*/           sWidth: "5%",  sType: "numeric", bSortable: false,  sClass: "right" }
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            /* TODO: prepare states in python like columns */
             switch (aData[1]) {
-                case "Outstanding": $('td:eq(1)', nRow).addClass('contract_outstanding');
-                                 break;
-                case "Deleted": $('td:eq(1)', nRow).addClass('contract_deleted');
-                                 break;
-                case "Completed": $('td:eq(1)', nRow).addClass('contract_completed');
-                                 break;
-                case "Failed": $('td:eq(1)', nRow).addClass('contract_failed');
-                                 break;
-                case "CompletedByIssuer": $('td:eq(1)', nRow).addClass('contract_completedbyissuer');
-                                 break;
-                case "CompletedByContractor": $('td:eq(1)', nRow).addClass('contract_completedbycontractor');
-                                 break;
-                case "Cancelled": $('td:eq(1)', nRow).addClass('contract_cancelled');
-                                 break;
-                case "Rejected": $('td:eq(1)', nRow).addClass('contract_rejected');
-                                 break;
-                case "Reversed": $('td:eq(1)', nRow).addClass('contract_reversed');
-                                 break;
-                case "InProgress": $('td:eq(1)', nRow).addClass('contract_inprogress');
-                                 break;
+                case "Outstanding":
+                    $('td:eq(1)', nRow).addClass('contract_outstanding');
+                    break;
+                case "Deleted":
+                    $('td:eq(1)', nRow).addClass('contract_deleted');
+                    break;
+                case "Completed":
+                    $('td:eq(1)', nRow).addClass('contract_completed');
+                    break;
+                case "Failed":
+                    $('td:eq(1)', nRow).addClass('contract_failed');
+                    break;
+                case "CompletedByIssuer":
+                    $('td:eq(1)', nRow).addClass('contract_completedbyissuer');
+                    break;
+                case "CompletedByContractor":
+                    $('td:eq(1)', nRow).addClass('contract_completedbycontractor');
+                    break;
+                case "Cancelled":
+                    $('td:eq(1)', nRow).addClass('contract_cancelled');
+                    break;
+                case "Rejected":
+                    $('td:eq(1)', nRow).addClass('contract_rejected');
+                    break;
+                case "Reversed":
+                    $('td:eq(1)', nRow).addClass('contract_reversed');
+                    break;
+                case "InProgress":
+                    $('td:eq(1)', nRow).addClass('contract_inprogress');
+                    break;
             }
             return nRow;
         },
@@ -139,7 +153,7 @@ $(document).ready(function() {
             },{
                 name: "statusName",
                 value: $("#status_selector option:selected").val()
-            } ); 
+            } );
 
             $.getJSON( sSource, aoData, function (json) {
                 fnCallback(json)

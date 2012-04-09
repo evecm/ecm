@@ -18,59 +18,78 @@
 __date__ = '2012 04 06'
 __author__ = 'tash'
 
-
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
+import logging
 
 from django.db.models import Q
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
+
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.hr.models import Member
 from ecm.plugins.accounting.models import MarketOrder, OrderState
-from ecm.utils.format import print_float
-from ecm.views import getScanDate, extract_datatable_params
+from ecm.utils.format import print_float, print_integer
 from ecm.views.decorators import check_user_access
-import logging
-
-
+from ecm.views import getScanDate, extract_datatable_params, datatable_ajax_data
 
 LOG = logging.getLogger(__name__)
 
-#------------------------------------------------------------------------------
-_range_map = {-1: 'Station',
-             32767: 'Region'}
+COLUMNS = [
+    # name          width   sortable    css-class
+    ['Type',        '2%',   'true',     ''],
+    ['Char',        '2%',   'true',     ''],
+    ['Item',        '5%',   'false',    ''],
+    ['Price',       '1%',   'false',    'right'],
+    ['Duration',    '1%',   'false',    'right'],
+    ['Station',     '5%',   'false',    ''],
+    ['Vol. Ent.',   '1%',   'false',    'right'],
+    ['Vol. Rem.',   '1%',   'false',    'right'],
+    ['Min. Vol.',   '1%',   'false',    'right'],
+    ['State',       '5%',   'false',    ''],
+    ['Range',       '2%',   'false',    ''],
+]
 
+#------------------------------------------------------------------------------
 @check_user_access()
 def marketorders(request):
     stateID = int(request.GET.get('stateID', -1))
     typeID = request.GET.get('typeID', 0)
 
-    states = [{ 'stateID' :-1, 'name' : 'All', 'selected' : stateID == -1 }]
+    states = [{
+        'stateID': -1,
+        'name': 'All',
+        'selected' : stateID == -1 ,
+    }]
     for s in OrderState.objects.all().order_by('stateID'):
         states.append({
-                'stateID' : s.stateID,
-                'name' : s.description,
-                'selected' : s.stateID == stateID})
+            'stateID': s.stateID,
+            'name': s.description,
+            'selected': s.stateID == stateID,
+        })
 
-    types = [{ 'typeID' : 0, 'name' : 'All', 'selected' : typeID == 0}]
-    types.append({
-    'typeID' : 1,
-    'name'   : "Buy Order",
-    'selected' : typeID == 1})
-    types.append({
-    'typeID' : 2,
-    'name'   : "Sell Order",
-    'selected' : typeID == 2})
-    data = { 'states' : states,
-             'types' : types,
-             'scan_date' : getScanDate(MarketOrder)}
+    types = [{
+        'typeID': 0,
+        'name': 'All',
+        'selected': typeID == 0,
+    }, {
+        'typeID': 1,
+        'name': 'Buy Order',
+        'selected': typeID == 1,
+    }, {
+        'typeID': 2,
+        'name': 'Sell Order',
+        'selected': typeID == 2
+    }]
+
+    data = {
+        'states': states,
+        'types': types,
+        'columns': COLUMNS,
+        'scan_date': getScanDate(MarketOrder),
+    }
     return render_to_response('marketorders.html', data, Ctx(request))
 
+#------------------------------------------------------------------------------
 @check_user_access()
 def marketorders_data(request):
     try:
@@ -101,15 +120,15 @@ def marketorders_data(request):
             search_args &= Q(bid=True)
         elif params.typeID == 2:
             search_args &= Q(bid=False)
-    
+
     query = query.filter(search_args)
     filtered_entries = query.count()
     if filtered_entries == None:
         total_entries = filtered_entries = query.count()
-    
+
     query = query[params.first_id:params.last_id]
     entries = []
-    
+
     for entry in query:
         # Get the Type Name from Type
         eve_type = Type.objects.get(typeID=entry.typeID)
@@ -117,7 +136,7 @@ def marketorders_data(request):
         # Get the owner of the order
         try: owner = Member.objects.get(characterID=entry.charID).permalink
         except Member.DoesNotExist: owner = entry.charID
-        
+
         # Build the entry list
         entries.append([
             _map_type(entry.bid),
@@ -125,32 +144,32 @@ def marketorders_data(request):
             owner,
             eve_type.typeName,
             print_float(entry.price),
-            entry.duration,
+            '%d days' % entry.duration,
             CelestialObject.objects.get(itemID=entry.stationID).itemName,
-            entry.volEntered,
-            entry.volRemaining,
-            entry.minVolume,
+            print_integer(entry.volEntered),
+            print_integer(entry.volRemaining),
+            print_integer(entry.minVolume),
             entry.orderState.description,
-            _map_range(entry.range) 
+            _map_range(entry.range)
         ])
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_entries,
-        "iTotalDisplayRecords" : filtered_entries,
-        "aaData" : entries,
-    }
-    return HttpResponse(json.dumps(json_data))
+
+    return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
+
+#------------------------------------------------------------------------------
 def _map_type(bid):
-    result = ""
+    result = ''
     if bid:
-        result = "Buy Order"
+        result = 'Buy Order'
     else:
-        result = "Sell Order"
+        result = 'Sell Order'
     return result
 
+#------------------------------------------------------------------------------
+_range_map = {-1: 'Station', 32767: 'Region'}
 def _map_range(order_range):
     return _range_map.get(int(order_range), '%d Jumps' % order_range)
 
+#------------------------------------------------------------------------------
 def _get_types(typeName):
     return Type.objects.filter(typeName__icontains=typeName)
-    
+

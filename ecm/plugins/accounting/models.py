@@ -14,11 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.eve.models import Type
 
 __date__ = "2010-06-03"
 __author__ = "diabeteman"
-
 
 from django.db import models
 from ecm.lib import bigintpatch
@@ -95,8 +93,8 @@ class Contract(models.Model):
     # Character ID to whom the contract was discharged
     assigneeID     = models.PositiveIntegerField()
 
-    # Who will accept the contract. If assigneeID is 
-    # same as acceptorID then CharacterID else CorporationID 
+    # Who will accept the contract. If assigneeID is
+    # same as acceptorID then CharacterID else CorporationID
     # (The contract accepted by the corporation)
     acceptorID     = models.PositiveIntegerField()
 
@@ -109,8 +107,8 @@ class Contract(models.Model):
     # Type of the contract (ItemExchange, Courier, Loan or Auction)
     type           = models.CharField(max_length=255) #@ReservedAssignment
 
-    # Status of the the contract (Outstanding, Deleted, Completed, 
-    # Failed, CompletedByIssuer, CompletedByContractor, Cancelled, 
+    # Status of the the contract (Outstanding, Deleted, Completed,
+    # Failed, CompletedByIssuer, CompletedByContractor, Cancelled,
     # Rejected, Reversed or InProgress)
     status         = models.CharField(max_length=255)
 
@@ -167,11 +165,11 @@ class ContractItem(models.Model):
         return self.recordID
 
     contract    = models.ForeignKey(Contract)
-    recordID    = models.PositiveIntegerField()             
-    typeID      = models.PositiveIntegerField()          
-    quantity    = models.PositiveIntegerField()             
-    rawQuantity = models.PositiveIntegerField()             
-    singleton   = models.PositiveIntegerField()           
+    recordID    = models.PositiveIntegerField()
+    typeID      = models.PositiveIntegerField()
+    quantity    = models.PositiveIntegerField()
+    rawQuantity = models.PositiveIntegerField()
+    singleton   = models.PositiveIntegerField()
     included    = models.PositiveIntegerField()
 
 class MarketOrder(models.Model):
@@ -196,7 +194,7 @@ class MarketOrder(models.Model):
     typeID       = models.PositiveIntegerField()
     range        = models.PositiveIntegerField() #@ReservedAssignment
     accountKey   = models.PositiveIntegerField()
-    duration     = models.PositiveIntegerField() 
+    duration     = models.PositiveIntegerField()
     escrow       = models.PositiveIntegerField()
     price        = models.FloatField()
     bid          = models.BooleanField(default=False)
@@ -214,4 +212,3 @@ class OrderState(models.Model):
 
     stateID      = models.PositiveIntegerField()
     description  = models.CharField(max_length=10)
-    
