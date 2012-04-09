@@ -15,5 +15,12 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+#------------------------------------------------------------------------------
+def is_number(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
 
 
