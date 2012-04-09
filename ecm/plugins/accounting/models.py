@@ -193,7 +193,7 @@ class MarketOrder(models.Model):
     volRemaining = models.PositiveIntegerField()
     minVolume    = models.PositiveIntegerField()
     orderState   = models.ForeignKey('OrderState')
-    typeID       = models.ForeignKey(Type)
+    typeID       = models.PositiveIntegerField()
     range        = models.PositiveIntegerField() #@ReservedAssignment
     accountKey   = models.PositiveIntegerField()
     duration     = models.PositiveIntegerField() 

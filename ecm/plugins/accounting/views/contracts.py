@@ -99,7 +99,9 @@ def contracts_data(request):
         return HttpResponseBadRequest()
 
     query = Contract.objects.select_related(depth=1).all() # .order_by('-dateIssued')
-
+    query_items = ContractItem.objects.all()
+    
+    
     if params.search or params.type or params.status:
         # Total number of entries
         total_entries = query.count()
@@ -107,7 +109,16 @@ def contracts_data(request):
         search_args = Q()
 
         if params.search:
+            # Search for contract title
             search_args |= Q(title__icontains=params.search)
+            # Search for contract item in the contracts
+            types = _get_types(params.search).values('typeID')
+#            for type in types: #@ReservedAssignment
+            matching_items = query_items.filter(typeID=types[0]['typeID'])
+            for item in matching_items:
+                LOG.error(item.contract)
+                search_args |= Q(contractID=item.contract)    
+            #    search_args |= Q(contractID__exact=item.typeName)
         if params.type != 'All':
             search_args &= Q(type=params.type)
         if params.status != 'All':

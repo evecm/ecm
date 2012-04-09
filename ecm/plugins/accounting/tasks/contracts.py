@@ -137,10 +137,14 @@ def create_contract_fom_row(row):
                     volume=row.volume)
 
 def create_contract_item(entry, contract):
+    if entry.rawQuantity:
+        raw_quantity = entry.rawQuantity
+    else:
+        raw_quantity = 0
     return ContractItem(contract_id=contract.contractID,
                         recordID=entry.recordID,
                         typeID=entry.typeID,
                         quantity=entry.quantity,
-                        rawQuantity=entry.rawQuantity,
+                        rawQuantity=raw_quantity,
                         singleton=entry.singleton,
                         included=entry.included)

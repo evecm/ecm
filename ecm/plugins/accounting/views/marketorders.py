@@ -109,15 +109,21 @@ def marketorders_data(request):
     
     query = query[params.first_id:params.last_id]
     entries = []
+    
     for entry in query:
+        # Get the Type Name from Type
+        eve_type = Type.objects.get(typeID=entry.typeID)
+
         # Get the owner of the order
         try: owner = Member.objects.get(characterID=entry.charID).permalink
         except Member.DoesNotExist: owner = entry.charID
+        
+        # Build the entry list
         entries.append([
             _map_type(entry.bid),
             #entry.charID,
             owner,
-            entry.typeID.typeName,
+            eve_type.typeName,
             print_float(entry.price),
             entry.duration,
             CelestialObject.objects.get(itemID=entry.stationID).itemName,
