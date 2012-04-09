@@ -123,7 +123,7 @@ def fuel_data(request, pos_id):
             timeLeft = '-'
         else:
             hoursLeft = int(quantity / consumption)
-            timeLeft = print_duration(seconds=hoursLeft * 60, verbose=False)
+            timeLeft = print_duration(seconds=hoursLeft * 3600, verbose=False)
 
         fuelTable.append([
             type_id,
@@ -169,7 +169,7 @@ def silo_data(request, pos_id):
             silo.typeID,
             mineral.typeName,
             silo.quantity,
-            print_duration(seconds=hours_to_full * 60, verbose=False)
+            print_duration(seconds=hours_to_full * 3600, verbose=False)
         ])
     json_data = {
         "sEcho"                 : params.sEcho,
