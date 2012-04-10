@@ -89,20 +89,27 @@ $(document).ready(function() {
             posState = aData[3];
             $('td:eq(3)', nRow).addClass(POS_CSS_STATUS[posState]);
             $('td:eq(3)', nRow).attr('title', POS_TEXT_STATUS[posState]);
-            $('td:eq(3)', nRow).html('');
+            $('td:eq(3)', nRow).html(aData[3]);
 
             for (var i=5; i<14; i++) {
                 $('td:eq(' + i + ')', nRow).addClass('right');
             };
-            if (aData[8] <= '48' && aData[8] > '24') {
-                for (var i = 0 ; i < 8 ; i++) {
-                	$('td:eq(' + i + ')', nRow).addClass('fuel-alert');
-                }
-            };
-            if (aData[8] <= '24') {
-                for (var i = 0 ; i < 8 ; i++) {
-                	$('td:eq(' + i + ')', nRow).addClass('fuel-warning');
-                }
+            
+            if (aData[3] == '3'){
+            	for (var i = 0 ; i < 8 ; i++) {
+            		$('td:eq(' + i + ')', nRow).addClass('reinforced-alert');
+            	}
+            } else {
+	            if (aData[8] <= '48' && aData[8] > '24') {
+	                for (var i = 0 ; i < 8 ; i++) {
+	                	$('td:eq(' + i + ')', nRow).addClass('fuel-alert');
+	                }
+	            };
+	            if (aData[8] <= '24') {
+	                for (var i = 0 ; i < 8 ; i++) {
+	                	$('td:eq(' + i + ')', nRow).addClass('fuel-warning');
+	                }
+	            };
             };
 
 

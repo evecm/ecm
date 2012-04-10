@@ -109,7 +109,6 @@ def poses_data(request):
         # if sorting by fuel or stront. make a sorted list of (hoursleft|quantity,pos)
         # so that we can easily present and sort the data.
         pos_by_timeleft = []
-        reffed_pos = []
         if params.displayMode == 'quantities':
             for pos in query:
                 if params.column == 5:
