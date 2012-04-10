@@ -14,7 +14,10 @@
 <div class="row-fluid">
   <div class="span3" id="distibution_chart"></div>
   <div class="span3" id="positions_chart"></div>
-  <div class="span3" id="playtimes_chart"></div>
+</div>
+<div class="row-fluid">
+	<div class="span3" id="playtimes_chart"></div>
+	<div class="span3" id="online_chart"></div>	
 </div>
 <dl>
   <dt><a href="/hr/players/">Registered Players</a></dt>
@@ -35,6 +38,7 @@ DISTRIBUTION = {{ distribution|safe }};
 POSITIONS = {{ positions|safe }};
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 DAILYPLAYTIMES = {{ dailyplaytimes|safe }};
+ONLINE = {{ online_member_count|safe }};
 </script>
 {% endblock %}
 
@@ -111,11 +115,11 @@ function drawPositions() {
     chart.draw(data, options);
 }
 
-function fickDaFotz(){
+function getPlaytimeData(){
 	var array = new Array(DAILYPLAYTIMES.length);
     for (var i=0 ; i < DAILYPLAYTIMES.length ; i++) {
-        adolf = DAILYPLAYTIMES[i];
-        array[i] = [adolf['date'], adolf['time']];
+        datum = DAILYPLAYTIMES[i];
+        array[i] = [datum['date'], datum['time']];
     }
     return array;
 }
@@ -124,11 +128,10 @@ function drawPlaytimes(){
 	var data = new google.visualization.DataTable();
     data.addColumn('string', 'Day');
     data.addColumn('number', 'Total Avg.');
-    adolf = DAILYPLAYTIMES[0]
-    data.addRows(fickDaFotz());
+    data.addRows(getPlaytimeData());
     
     var options = {
-      width: 450, 
+      width: 350, 
       height: 350,
       //colors: ['60FC60', 'FCAF3B', 'FD5353'],
       title: 'Avg. Playtime',
@@ -140,9 +143,38 @@ function drawPlaytimes(){
     chart.draw(data, options);
 }
 
+function getOnlineData(){
+	var array = new Array(ONLINE.length);
+    for (var i=0 ; i < ONLINE.length ; i++) {
+        datum = ONLINE[i];
+        array[i] = [datum['date'],datum['online']];
+    }
+    return array;
+}
+
+function drawOnline(){
+	var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Day');
+    data.addColumn('number', 'Online');
+    data.addRows(getOnlineData());
+    
+    var options = {
+      width: 350, 
+      height: 350,
+      //colors: ['60FC60', 'FCAF3B', 'FD5353'],
+      title: 'Online Players',
+      vAxis: {title: 'Players'},
+      hAxis: {title: 'Last 14 Days', direction: -1}
+    };
+    
+    var chart = new google.visualization.ColumnChart(document.getElementById('online_chart'));
+    chart.draw(data, options);
+}
+
 google.setOnLoadCallback(drawAccessLvls);
 google.setOnLoadCallback(drawPositions);
 google.setOnLoadCallback(drawPlaytimes);
+google.setOnLoadCallback(drawOnline);
 
 </script>
 {% endblock %}

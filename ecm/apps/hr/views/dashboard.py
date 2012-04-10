@@ -25,8 +25,8 @@ except ImportError:
     import django.utils.simplejson as json
 
 from datetime import timedelta
-
-from django.db.models.aggregates import Avg
+import logging
+from django.db.models.aggregates import Avg, Count
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.utils.datetime_safe import datetime
@@ -39,11 +39,13 @@ from ecm.apps.hr.models import Member
 from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.common.models import ColorThreshold, UserAPIKey
 
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def dashboard(request):
     dailyplaytimes = []
+    online_member_count = []
     now = datetime.now()
     for day in range(14):
         start = now - timedelta(day+1)
@@ -54,21 +56,11 @@ def dashboard(request):
         else:
             time = round((average_playtime(start,end)['len']/3600),2)
         date = start.strftime("%a %b %d")
+        online  = len(members_online(start, end))
         dataset = {'date' : date, 'time' : time} 
         dailyplaytimes.append(dataset)
-        
-    #weeklyplaytimes = []
-    #for day in range(3):
-    #    start = now - timedelta(7*day + 7)
-    #    end = now - timedelta(7*day)
-    #    weeklyplaytimes.append(weeklyplaytimes(start,end))
-    
-    #monthlyplaytimes = []
-    #for day in range(3):
-    #    start = now - timedelta(30*day + 30)
-    #    end = now - timedelta(30*day)
-    #    monthlyplaytimes.append(average_playtime(start,end))
-        
+        dataset = {'date' : date, 'online' : online}
+        online_member_count.append(dataset)
     data = {
         'unassociatedCharacters' : Member.objects.filter(corped=True, owner=None).count(),
         'playerCount' : Member.objects.filter(corped=True).exclude(owner=None).values("owner").distinct().count(),
@@ -79,6 +71,7 @@ def dashboard(request):
         'distribution' : access_lvl_distribution(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
         'dailyplaytimes' : dailyplaytimes,
+        'online_member_count' : online_member_count,
      #   'weeklyplaytimes' : weeklyplaytimes,
      #   'monthlyplaytimes' : monthlyplaytimes,
     }
@@ -148,4 +141,7 @@ def access_lvl_distribution():
 #------------------------------------------------------------------------------
 def average_playtime(start_date, end_date):
     return MemberSession.objects.filter(session_begin__range=(start_date, end_date)).aggregate(len=Avg('session_seconds'))
+
+def members_online(start_date, end_date):
+    return MemberSession.objects.filter(session_begin__range=(start_date, end_date)).values('character_id').annotate(Count('character_id'))
     
