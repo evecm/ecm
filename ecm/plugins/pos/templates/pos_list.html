@@ -74,7 +74,7 @@ $(document).ready(function() {
             { /* 0 Location */ sWidth: '6%',  sType: 'html' },
             { /* 1 Name */     sWidth: '6%',  sType: 'html', bSortable: false },
             { /* 2 Type */     sWidth: '1%',  sType: 'html', sClass: 'center' },
-            { /* 3 status */   sWidth: '1%',  sType: 'html' },
+            { /* 3 status */   sWidth: '1%',  sType: 'html', bSortable: false },
             { /* 4 Time */ 	   sWidth: '2%',  sType: 'string', bSortable: false },
             { /* 5 Blocks */   sWidth: '4%',  sType: 'string' },
             { /* 6 Stront */   sWidth: '4%',  sType: 'string' },
@@ -94,12 +94,12 @@ $(document).ready(function() {
             for (var i=5; i<14; i++) {
                 $('td:eq(' + i + ')', nRow).addClass('right');
             };
-            if (aData[8] <= '48') {
+            if (aData[8] <= '48' && aData[8] > '24') {
                 for (var i = 0 ; i < 8 ; i++) {
                 	$('td:eq(' + i + ')', nRow).addClass('fuel-alert');
                 }
             };
-            if (aData[8] == '0') {
+            if (aData[8] <= '24') {
                 for (var i = 0 ; i < 8 ; i++) {
                 	$('td:eq(' + i + ')', nRow).addClass('fuel-warning');
                 }

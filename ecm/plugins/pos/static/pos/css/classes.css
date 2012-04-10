@@ -28,7 +28,7 @@ a.pos {
 .fuel-warning {
     color: white;
     font-weight: bold;
-    background-color: red;
+    background-color: orange;
 }
 .fuel-alert {
     color: black;
