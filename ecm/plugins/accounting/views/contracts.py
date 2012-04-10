@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from ecm.apps.corp.models import Corp
+from django.db.models.aggregates import Count
 
 __date__ = '2012 04 01'
 __author__ = 'tash'
@@ -99,7 +100,7 @@ def contracts_data(request):
     except:
         return HttpResponseBadRequest()
 
-    query = Contract.objects.select_related(depth=1).all() # .order_by('-dateIssued')
+    query = Contract.objects.all() # .order_by('-dateIssued')
 
 
     if params.search or params.type or params.status:
@@ -111,18 +112,15 @@ def contracts_data(request):
         if params.search:
             # Search for contract title
             search_args |= Q(title__icontains=params.search)
+
             # Search for contract item in the contracts
-            matching_ids = [t.typeID for t in Type.objects.filter(typeName__contains = params.search)[:100]]
+            matching_ids = [t.typeID for t in Type.objects.filter(typeName__icontains = params.search)[:100]]
             
-            query_items = ContractItem.objects.filter(Q(typeID__in=matching_ids))
-            
-            #for eve_type in types:
-            matching_items = query_items.distinct()
-            LOG.debug(len(matching_items))
-            for match in matching_items:
-                #LOG.debug("recordID: %s contractID: %s typeID: %s " % (match.recordID, match.contract_id, match.typeID))
-                #LOG.debug("Matching contract id found: %s. Creating search argument...." % (match.contract_id))
-                search_args |= Q(contractID=match.contract_id)
+            # HACK: Django 1.3. distincts always on the default order attribute, so we use an aggregation
+            # to get unique ids
+            query_items = ContractItem.objects.filter(Q(typeID__in=matching_ids)).values('contract').annotate(Count('contract'))
+            for match in query_items:
+                search_args |= Q(contractID=match['contract'])
                     
                 
         if params.type != 'All':
