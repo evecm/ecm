@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block headtitle %}{% if contract.title %}{{contract.title}}{% else %}&lt;No Title&gt;{% endif	%}{%endblock %} {% block stylesheets %}
+{% extends "base.html" %} {% block headtitle %}{% if contract.title %}{{contract.title|safe}}{% else %}&lt;No Title&gt;{% endif	%}{%endblock %} {% block stylesheets %}
 <link rel="stylesheet" type="text/css"
 	href="{{ STATIC_URL }}accounting/css/classes.css" />
 <link rel="stylesheet" type="text/css"
@@ -8,7 +8,7 @@
 <li><a href="/accounting">Accounting</a></li>
 <li><a href="/accounting/contracts/">Contracts</a></li>
 <li class="active"><a
-	href="/accounting/contracts/{{ contract.contractID }}/">{% if contract.title %}{{contract.title}}{% else %}&lt;No Title&gt;{% endif	%}</a></li>
+	href="/accounting/contracts/{{ contract.contractID }}/">{% if contract.title %}{{contract.title|safe}}{% else %}&lt;No Title&gt;{% endif	%}</a></li>
 {% endblock %} {% block main_content %}
 <div class="page-header">
 	<h1>Contract Details</h1>
@@ -21,7 +21,7 @@
 	<div class="span2">
 		<dl>
 			<dt>Title</dt>
-			<dd id="contract-title">{% if contract.title %}{{contract.title}}{% else %}&lt;No Title&gt;{% endif	%}</dd>
+			<dd id="contract-title">{% if contract.title %}{{contract.title|safe}}{% else %}&lt;No Title&gt;{% endif	%}</dd>
 			<dt>Type</dt>
 			<dd id="contract-type">{{contract.type}}</dd>
 			<dt>Status</dt>
@@ -47,21 +47,21 @@
 				<dt>Time left</dt>
 				<dd id="contract-numdays">{{contract.numDays}} days</dd>
 				<dt>Price</dt>
-				<dd id="contract-price">{{contract.price}} ISK</dd>
+				<dd id="contract-price">{{contract.price|ecm_price}} ISK</dd>
 				<dt>Reward</dt>
-				<dd id="contract-reward">{{contract.reward}} ISK</dd>
+				<dd id="contract-reward">{{contract.reward|ecm_price}} ISK</dd>
 				<dt>Collateral</dt>
-				<dd id="contract-price">{{contract.collateral}} ISK</dd>
+				<dd id="contract-price">{{contract.collateral|ecm_price}} ISK</dd>
 				<dt>Buyout</dt>
-				<dd id="contract-price">{{contract.buyout}} ISK</dd>
+				<dd id="contract-price">{{contract.buyout|ecm_price}} ISK</dd>
 				<dt>Volume</dt>
 				<dd id="contract-price">{{contract.volume}} m&sup3;</dd>
 				<dt>Issuer</dt>
 				<dd id="contract-issuer">{{issuer|safe}}</dd>
 				<dt>Assignee</dt>
-				<dd id="contract-assignee">{{assignee}}</dd>
+				<dd id="contract-assignee">{{assignee|safe}}</dd>
 				<dt>Acceptor</dt>
-				<dd id="contract-acceptor">{{acceptor}}</dd>
+				<dd id="contract-acceptor">{{acceptor|safe}}</dd>
 		</dl>
 	</div>
 </div>

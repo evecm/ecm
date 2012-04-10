@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.corp.models import Corp
 
 __date__ = '2012 04 01'
 __author__ = 'tash'
@@ -99,7 +100,6 @@ def contracts_data(request):
         return HttpResponseBadRequest()
 
     query = Contract.objects.select_related(depth=1).all() # .order_by('-dateIssued')
-    query_items = ContractItem.objects.all()
 
 
     if params.search or params.type or params.status:
@@ -112,13 +112,18 @@ def contracts_data(request):
             # Search for contract title
             search_args |= Q(title__icontains=params.search)
             # Search for contract item in the contracts
-            types = _get_types(params.search)
-#            for type in types: #@ReservedAssignment
-            for eve_type in types:
-                LOG.debug("Looking also for %s" % eve_type.typeName)
-                matching_items = query_items.filter(typeID=eve_type.typeID).values('contract')
-                for match in matching_items:
-                    search_args |= Q(contractID=match['contract'])
+            matching_ids = [t.typeID for t in Type.objects.filter(typeName__contains = params.search)[:100]]
+            
+            query_items = ContractItem.objects.filter(Q(typeID__in=matching_ids))
+            
+            #for eve_type in types:
+            matching_items = query_items.distinct()
+            LOG.debug(len(matching_items))
+            for match in matching_items:
+                #LOG.debug("recordID: %s contractID: %s typeID: %s " % (match.recordID, match.contract_id, match.typeID))
+                #LOG.debug("Matching contract id found: %s. Creating search argument...." % (match.contract_id))
+                search_args |= Q(contractID=match.contract_id)
+                    
                 
         if params.type != 'All':
             search_args &= Q(type=params.type)
@@ -165,18 +170,10 @@ def details(request, contract_id):
         contract = get_object_or_404(Contract, contractID=int(contract_id))
     except ValueError:
         raise Http404()
-    try:
-        issuer = Member.objects.get(characterID=contract.issuerID).permalink
-    except Member.DoesNotExist:
-        issuer = contract.issuerID
-    try:
-        assignee = Member.objects.get(characterID=contract.assigneeID).permalink
-    except Member.DoesNotExist:
-        assignee = contract.assigneeID
-    try:
-        acceptor = Member.objects.get(characterID=contract.acceptorID).permalink
-    except Member.DoesNotExist:
-        acceptor = contract.acceptorID
+    issuer = _map_id(contract.issuerID)
+    assignee = _map_id(contract.assigneeID)
+    acceptor = _map_id(contract.acceptorID)
+
     try:
         startStation = CelestialObject.objects.get(itemID = contract.startStationID).itemName
     except CelestialObject.DoesNotExist:
@@ -266,3 +263,31 @@ def _is_Blueprint(contract_item):
 
 def _get_types(typeName):
     return Type.objects.filter(typeName__icontains=typeName)
+
+def _map_member(character_id):
+    return Member.objects.get(characterID=character_id).permalink
+
+def _map_corp(corp_id):
+    return Corp.objects.get(corporationID=corp_id)
+
+def _map_alliance(alliance_id):
+    return Corp.objects.get(allianceID=alliance_id)
+
+def _map_id(character_id):
+    try:
+        member = _map_member(character_id)
+    except Member.DoesNotExist:
+        try:
+            member = _map_corp(character_id)
+        except Corp.DoesNotExist:
+            try:
+                member = _map_alliance(character_id).allianceName
+            except Corp.DoesNotExist:
+                member = character_id
+    return member
+
+def chunks(l, n):
+    """ Yield successive n-sized chunks from l.
+    """
+    for i in xrange(0, len(l), n):
+        yield l[i:i+n]

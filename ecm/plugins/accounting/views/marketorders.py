@@ -151,7 +151,7 @@ def marketorders_data(request):
             print_integer(entry.volRemaining),
             print_integer(entry.minVolume),
             entry.orderState.description,
-            _map_range(entry.range)
+            _map_range(entry)
         ])
 
     return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
@@ -167,8 +167,13 @@ def _map_type(bid):
 
 #------------------------------------------------------------------------------
 _range_map = {-1: 'Station', 32767: 'Region'}
-def _map_range(order_range):
-    return _range_map.get(int(order_range), '%d Jumps' % order_range)
+def _map_range(market_order):
+    # check if it is a buy order
+    if market_order.bid:
+        return _range_map.get(int(market_order.range), '%d Jumps' % market_order.range)
+    else:
+        # Sell orders are bound to station
+        return _range_map.get(-1)
 
 #------------------------------------------------------------------------------
 def _get_types(typeName):

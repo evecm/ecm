@@ -56,39 +56,48 @@ def update():
 
 #------------------------------------------------------------------------------
 def process_contracts(contract_list, connection):
+    current_corp = Corp.objects.get(pk=1)
+    alliance_id = current_corp.allianceID
+    LOG.debug("Fetching contracts from DB...")    
     # Get old contracts
     old_contracts = {}
     for contract in Contract.objects.all():
         old_contracts[contract] = contract
-
+    LOG.debug("%s contracts found in DB..." % len(old_contracts))
+    
     # Get new contracts
+    LOG.debug("Fetching contracts from API...")   
     new_contracts = {}
     for entry in contract_list:
-        contract = create_contract_fom_row(entry)
-        new_contracts[contract] = contract
+        if entry.assigneeID != alliance_id:
+            contract = create_contract_fom_row(entry)
+            new_contracts[contract] = contract
+    LOG.debug("%s new contracts from API..." % len(new_contracts))
     
     removed_contracts, added_contracts = tools.diff(old_contracts, new_contracts)
-
+    LOG.debug("Contracts from API: %s" % len(contract_list))
+    LOG.debug("Removed contracts: %s" % len(removed_contracts))
+    LOG.debug("Added contracts: %s" % len(added_contracts))
+    
     # Query the contract items
     old_items = {}
     for item in ContractItem.objects.all():
         old_items[item] = item
 
     new_items = {}
-    current_corp = Corp.objects.get(pk=1)
+    
     for contract in added_contracts:
-        # Contracts for alliance end up in the corp/api, let's ignore them for now
-        if contract.forCorp and (contract.issuerCorpID == current_corp.corporationID or contract.acceptorID == current_corp.corporationID):
-            try:
-                items_api = connection.corp.ContractItems(contractID=contract.contractID)
-            #    checkApiVersion(items_api._meta.version)
-                item_list = items_api.itemList
-                for item in item_list:
-                    new_item = create_contract_item(item, contract)
-                    new_items[new_item] = new_item
-            except Error:
-                LOG.debug("Invalid or missing contractID: %s" % contract.contractID)
-                continue
+        try:
+            items_api = connection.corp.ContractItems(contractID=contract.contractID)
+        #    checkApiVersion(items_api._meta.version)
+            item_list = items_api.itemList
+            LOG.debug("%s items for contract id %s..." % (len(item_list), contract.contractID))
+            for item in item_list:
+                new_item = create_contract_item(item, contract)
+                new_items[new_item] = new_item
+        except Error:
+            LOG.debug("Invalid or missing contractID: %s" % contract.contractID)
+            continue
 
     removed_items, added_items = tools.diff(old_items, new_items)
     LOG.debug("Writing contracts to DB...")
