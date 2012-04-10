@@ -130,8 +130,6 @@ def get_basic_info(pos, api_row):
 
     pos.location = CelestialObject.objects.get(itemID=pos.location_id).itemName
     pos.moon = CelestialObject.objects.get(itemID=pos.moon_id).itemName
-    #pos.location, _   = db.resolveLocationName(pos.location_id)
-    #pos.moon, _  = db.resolveLocationName(pos.moon_id)
 
     item = Type.objects.get(pk=pos.type_id)
     pos.type_name = item.typeName
@@ -201,14 +199,12 @@ def get_details(pos, api, sov):
                                      quantity = fuel.quantity,
                                      date = api._meta.currentTime)
         base_fuel_cons = ControlTowerResource.objects.get(control_tower=pos.type_id, resource=fuel.typeID).quantity
-        #base_fuel_cons = db.getFuelConsumption(pos.type_id, fuel.typeID)
         corp = Corp.objects.latest()
         if sov[pos.location_id]['alliance'] == corp.allianceID and base_fuel_cons > 1:
             base_fuel_cons = int(round(base_fuel_cons * .75))
         fuel_level.consumption = base_fuel_cons
         fuel_level.save()
 
-    #if db.getSecurityStatus(pos.location_id) > constants.CHARTER_MIN_SEC_STATUS:
     if CelestialObject.objects.get(itemID=pos.location_id).security > constants.CHARTER_MIN_SEC_STATUS:
         charters = constants.RACEID_TO_CHARTERID[sov[pos.location_id]['faction']]
         try:
@@ -219,78 +215,3 @@ def get_details(pos, api, sov):
                                                  quantity = 0,
                                                  date = api._meta.currentTime)
             fuel_level.save()
-    #for fuel in api.fuel:
-        #try:
-            #previous_level = pos.fuel_levels.filter(type_id=fuel.typeID).latest()
-        #except FuelLevel.DoesNotExist:
-            #previous_level = None
-
-        #current_level = FuelLevel.objects.create(pos=pos,
-        #                                         type_id=fuel.typeID,
-        #                                         quantity=fuel.quantity,
-        #                                         date=api._meta.currentTime)
-        #if previous_level is not None:
-            # cannot estimate consumption without a previous level
-            #get_fuel_consumption(pos, current_level, previous_level)
-
-#------------------------------------------------------------------------------
-#def get_fuel_consumption(pos, current_level, previous_level):
-"""
-This function estimates the fuel consumption based on previous and current fuel levels.
-
-The estimation involves 4 variables:
-    consumption
-        the quantity of fuel burned per hour
-    stability
-        the number of hours since when the consumption did not change
-        it is resetted to 0 whenever the consumption changes
-    probable_consumption
-        if the consumption does not change for 24 hours
-    probable_stability
-"""
-    #fuel_cons, _ = pos.fuel_consumptions.get_or_create(type_id=current_level.type_id)
-
-    #level_delta = previous_level.quantity - current_level.quantity
-    #if level_delta < 0:
-        # particular case : refuel ... cannot estimate consumption
-        #return
-
-    # time since previous level (must be in hours)
-    #time_delta = (current_level.date - previous_level.date).total_seconds() / 3600
-    #if time_delta < 0:
-        # if time_delta is negative (time travel?) cannot estimate consumption
-        #return
-    #elif time_delta < 1.0:
-        # if time_delta is less than 1 hour, make it 1 hour
-        #time_delta = 1.0
-
-    # quantity of fuel consumed per hour
-    #consumption = int(round(level_delta / time_delta))
-
-    #if fuel_cons.consumption == consumption:
-        # consumption didn't change since last scan,
-        # we increase the "stability" of the consumption
-        #fuel_cons.stability += time_delta
-
-        #if fuel_cons.stability >= fuel_cons.probable_stability or fuel_cons.stability >= 24:
-            # 24 hours with the same value we consider it stable.
-            #fuel_cons.probable_stability = fuel_cons.stability
-            #fuel_cons.probable_consumption = fuel_cons.consumption
-    #else:
-        # consumption changed since last scan
-        #if fuel_cons.consumption == 0 and fuel_cons.stability == 0:
-            # initialization: no previous info about stability and stuff
-            #fuel_cons.consumption = consumption
-        #else:
-            #if fuel_cons.stability > 0:
-                # consumption was stable until now, we do not take the new value into account.
-                # instead we reset the stability to 0.
-                # on next scan, if the consumption has not gone back to what it was before,
-                # we will take it into account.
-                #fuel_cons.stability = 0
-            #else:
-                # stability was set to 0 at last scan because it had changed
-                # we take the new consumption into account now as it is still different
-                #fuel_cons.consumption = consumption
-
-    #fuel_cons.save()

@@ -115,32 +115,38 @@ def poses_data(request):
                     quantity = pos.fuel_levels.filter(type_id=pos.fuel_type_id).latest().quantity
                 else:
                     quantity = pos.fuel_levels.filter(type_id=C.STRONTIUM_CLATHRATES_TYPEID).latest().quantity
-                pos_by_timeleft.append( (quantity, pos) )
+                pos_by_timeleft.append( (quantity, pos, pos.state) )
         else:
             for pos in query:
                 if params.column == 5:
                     time_left = getFuelValue(pos, pos.fuel_type_id, 'hours_int')
                 else:
                     time_left = getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, 'hours_int')
-                pos_by_timeleft.append( (time_left, pos) )
-
+                pos_by_timeleft.append( (time_left, pos, pos.state) )
+        
         if not params.asc:
             pos_by_timeleft.sort(reverse=True)
         else:
             pos_by_timeleft.sort()
+        for iter, item in enumerate(pos_by_timeleft):
+            if item[2] == 3:
+                pos_by_timeleft.insert(0, pos_by_timeleft.pop(iter))
     try:
         # This will fail if sorting by fuel.
         if not params.asc:
             sort_col = "-" + sort_col
     except TypeError:
         pass
-    query = query.extra(order_by=([sort_col]))
-
+    query = query.extra(order_by=('state', sort_col))
 
     pos_table = []
     if params.column < 5:
         for pos in query[params.first_id:params.last_id]:
             # Query into Fuel table to get last values. for the current POS
+            if pos.state == 3:
+                stront = pos.state_timestamp.strftime('%H:%M, %d %b')
+            else:
+                stront = getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode)
             pos_table.append([
                 pos.permalink,
                 pos.custom_name,
@@ -148,13 +154,17 @@ def poses_data(request):
                 pos.state,
                 pos.time_until_tick,
                 getFuelValue(pos, pos.fuel_type_id, params.displayMode),
-                getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode),
+                stront,
                 pos.type_name,
                 getFuelValue(pos, pos.fuel_type_id, 'hours_int'),
             ])
     else:
         # Since its a sorted list of tuples now it needs slightly different handling
-        for _, pos in pos_by_timeleft[params.first_id:params.last_id]:
+        for _, pos, state in pos_by_timeleft[params.first_id:params.last_id]:
+            if state == 3:
+                stront = pos.state_timestamp.strftime('%H:%M, %d %b')
+            else:
+                stront = getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode)
             pos_table.append([
                 pos.permalink,
                 pos.custom_name,
@@ -162,7 +172,7 @@ def poses_data(request):
                 pos.state,
                 pos.time_until_tick,
                 getFuelValue(pos, pos.fuel_type_id, params.displayMode),
-                getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, params.displayMode),
+                stront,
                 pos.type_name,
                 getFuelValue(pos, pos.fuel_type_id, 'hours_int'),
             ])

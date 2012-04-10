@@ -26,12 +26,20 @@ a.pos {
     font-style: italic;
 }
 .fuel-warning {
-    color: white;
+    color: black;
     font-weight: bold;
-    background-color: red;
+    background-color: orange;
 }
 .fuel-alert {
     color: black;
     font-weight: bold;
     background-color: yellow;
+}
+.reinforced-alert {
+    color: black;
+    font-weight: bold;
+    background-color: red;
+}
+.reinforced-alert a {
+    color: #FF9999;
 }
