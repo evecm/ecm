@@ -4,8 +4,8 @@ a.wallet {
     background: url(../img/wallet.png) no-repeat left;
 }
 
-.contract-credit {color: green;}
-.contract-debit {color: red;}
+.journal-credit {color: green;}
+.journal-debit {color: red;}
 .contract-completed {color: green;}
 .contract-outstanding {color: orange;}
 .contract-deleted {color: red;}
