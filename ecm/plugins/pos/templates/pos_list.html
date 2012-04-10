@@ -89,7 +89,7 @@ $(document).ready(function() {
             posState = aData[3];
             $('td:eq(3)', nRow).addClass(POS_CSS_STATUS[posState]);
             $('td:eq(3)', nRow).attr('title', POS_TEXT_STATUS[posState]);
-            $('td:eq(3)', nRow).html(aData[3]);
+            $('td:eq(3)', nRow).html('');
 
             for (var i=5; i<14; i++) {
                 $('td:eq(' + i + ')', nRow).addClass('right');
