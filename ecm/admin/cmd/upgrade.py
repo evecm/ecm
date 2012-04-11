@@ -18,6 +18,7 @@
 
 from __future__ import with_statement
 
+
 __date__ = '2012 3 23'
 __author__ = 'diabeteman'
 
@@ -99,6 +100,10 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
         # otherwise the migrate command will fail because DB tables already exist...
         for app in ('common', 'scheduler', 'corp', 'assets', 'accounting'):
             run_python_cmd('manage.py migrate %s 0001 --fake --no-initial-data' % app, instance_dir)
+        from ecm.apps.scheduler.models import ScheduledTask
+        ScheduledTask.objects.all().delete()
+        from ecm.apps.common.models import UrlPermission
+        UrlPermission.objects.all().delete()
 
     run_python_cmd('manage.py migrate --all --no-initial-data', instance_dir)
 
