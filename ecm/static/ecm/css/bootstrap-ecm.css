@@ -115,3 +115,22 @@ dl.table dd {
 
 #main-menu ul.nav-list a:hover{background-color: #ddd;}
 #main-menu ul.nav-list li.active > a:hover{background-color: #0088cc;}
+
+
+
+ul.errorlist {
+    list-style: none;
+    color: red;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    padding-left: 0.5em;
+}
+
+ul.errorlist li {
+    display: inline-block;
+    padding-left: 0;
+    padding-right: 0.5em;
+}
+
+.ok {color: green;}

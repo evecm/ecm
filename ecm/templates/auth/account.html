@@ -11,36 +11,49 @@
 
 {% block main_content %}
 <div class="page-header">
-  <h1>User Profile</h1>
+  <h1>Hello <em>{{ user.username }}</em></h1>
 </div>
-
-<p>Hello <strong>{{ user.username }}</strong></p>
 
 <p>Click <a href="/account/passwordchange/">here</a> to change your password.</p>
 
 <div class="row-fluid">
   <div class="span6">
     <h2>EVE API Keys</h2>
-    <table class="transparent" style="width:50%;">
+    <table class="table">
+    <thead>
+      <tr>
+        <th>KeyID</th>
+        <th>State</th>
+        <th></th>
+      </tr>
+    </thead>
     {% for key in api_keys %}
     <tr>
-      <td class="bold">{{ key.keyID }}</td>
-      <td>{{ key.is_valid_html|safe }}</td>
-      <td><input type="button" class="edit_api" id="{{ key.keyID }}" value="Edit"/></td>
-      <td><input type="button" class="del_api" id="{{ key.keyID }}" value="Delete"/></td>
+      <td><strong>#{{ key.keyID }}</strong></td>
+      <td><strong>{{ key.is_valid_html|safe }}</strong></td>
+      <td><a class="edit_api btn btn-mini" href="/account/editapi/{{ key.keyID }}/">Edit</a></td>
+      <td><a class="del_api btn btn-mini btn-danger" href="/account/deleteapi/{{ key.keyID }}/">Delete</a></td>
     </tr>
     {% endfor %}
     </table>
-    
-    <button class="btn btn-small btn-success" id="add_api">Add new API Key</button>
+
+    <a class="btn btn-small btn-success pull-right" href="/account/addapi/">Add new API Key</a>
   </div>
   <div class="span6">
     <h2>Owned Characters</h2>
-    <table class="transparent" style="width:50%;" id="owned_characters">
+    <table class="table" id="owned_characters">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th></th>
+      </tr>
+    </thead>
     {% for owned in characters %}
     <tr>
       <td>{{ owned.permalink|safe }}</td>
-      <td><button class="btn btn-small btn-danger" id="{{ owned.characterID }}" name="{{ owned.name }}"><i class="icon-trash icon-white"></i></button></td>
+      <td><a class="btn btn-mini btn-danger"
+             href="/account/deletecharacter/{{ owned.characterID }}/"
+             name="{{ owned.name }}">Delete</a></td>
     </tr>
     {% endfor %}
     </table>
@@ -48,23 +61,26 @@
 </div>
 
 
-
-
-
-
-
-
 {% if external_apps %}
 <h2>External Application Bindings</h2>
-<table class="transparent" style="width:50%;">
-{% for app in external_apps %}
-<tr>
-  <td class="bold">{{ app.app.name }}</td>
-  <td>{% if app.binding %}<span class="bold ok">{{ app.binding.external_name }}</span>{% else %}None{% endif %}</td>
-  <td>{% if app.binding %}<input type="button" class="del_binding" id="{{app.binding.id}}" name="{{ app.app.name }}" value="Delete"/>
-                {% else %}<input type="button" class="add_binding" id="{{app.app.id}}" value="Bind"/>{%endif%}</td>
-</tr>
+<table class="table">
+<thead>
+  <tr>
+    <th>Application</th>
+    <th>External Username</th>
+    <th></th>
+  </tr>
+</thead>
+<tbody>
+  {% for app in external_apps %}
+  <tr>
+    <td><strong>{{ app.app.name }}</strong></td>
+    <td>{% if app.binding %}<strong class="ok">{{ app.binding.external_name }}</strong>{% else %}None{% endif %}</td>
+    <td>{% if app.binding %}<a class="del_binding btn btn-mini btn-danger" href="/account/binding/delete/{{app.binding.id}}/">Delete</a>
+                  {% else %}<a class="add_binding btn btn-mini btn-success" href="/account/binding/add/{{app.app.id}}/">Bind</a>{%endif%}</td>
+  </tr>
 {% endfor %}
+</tbody>
 </table>
 {% endif %}
 {% endblock %}
@@ -72,33 +88,24 @@
 {% block post_javascripts %}
 <script type="text/javascript">
 $(document).ready(function () {
-    $("#owned_characters button").click(function () {
+    $("#owned_characters a").click(function (event) {
         var alert_text = "Are you sure you want to get rid of " + this.name + "?\n\n";
         alert_text += "If this character is still attached to one of your registered API Keys, it will be associated with your profile again at next scan.";
-        if (confirm(alert_text)) {
-            window.location = "/account/deletecharacter/" + this.id + "/";
+        if (!confirm(alert_text)) {
+            event.preventDefault();
         }
     });
-    $(".del_api").click(function () {
-        var alert_text = "Are you sure you want to delete API Key #" + this.id + "?";
-        if (confirm(alert_text)) {
-            window.location = "/account/deleteapi/" + this.id;
+    $("a.del_api").click(function (event) {
+        var alert_text = "Are you sure you want to delete this API Key?";
+        if (!confirm(alert_text)) {
+            event.preventDefault();
         }
-    });
-    $(".edit_api").click(function () {
-        window.location = "/account/editapi/" + this.id;
-    });
-    $("#add_api").click(function () {
-        window.location = "/account/addapi/";
     });
     $(".del_binding").click(function () {
-        var alert_text = "Are you sure you want to delete the binding with external application '" + this.name + "'?";
-        if (confirm(alert_text)) {
-            window.location = "/account/binding/delete/" + this.id;
+        var alert_text = "Are you sure you want to delete this binding?";
+        if (!confirm(alert_text)) {
+            event.preventDefault();
         }
-    });
-    $(".add_binding").click(function () {
-        window.location = "/account/binding/add/" + this.id;
     });
 });
 </script>

@@ -7,27 +7,28 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/account/">Account</a></li>
-<li><a href="/account/addapi/">Add API Key</a></li>
+<li class="active"><a href="/account/addapi/">Add API Key</a></li>
 {% endblock %}
 
 {% block main_content %}
+<div class="page-header">
+    <h1>Add API Key</h1>
+</div>
 
-<h1 class="pagetitle">Add API Key</h1>
+<a href="https://support.eveonline.com/api/Key/CreatePredefined/{{accessMask}}"
+   target="_blank">Create a new API Key on EVE-Online support website</a>
 
-<a href="https://support.eveonline.com/api/Key/CreatePredefined/{{accessMask}}" target="_blank">
-    Create a new API Key on EVE-Online support website</a>
+<form action="/account/addapi/" method="post" class="form-inline">{% csrf_token %}
 
-<form class="signupform" action="/account/addapi/" method="post">{% csrf_token %}
-    {% if form.errors %}
-    <p class="error">{{ form.non_field_errors }}</p>
-    {% endif %}
-    <fieldset>
-        <span class="label">{{ form.keyID.label_tag }}{{ form.keyID.errors }}</span>
-        {{ form.keyID }}
-        <span class="label">{{ form.vCode.label_tag }}{{ form.vCode.errors }}</span>
-        {{ form.vCode }}
-        <input type="submit" class="button" value="Submit Information"  />
-    </fieldset>
+    {{ form.non_field_errors }}<br>
+
+    {{ form.keyID.label_tag }}{{ form.keyID.errors }}<br>
+    {{ form.keyID }}<br>
+    {{ form.vCode.label_tag }}{{ form.vCode.errors }}<br>
+    {{ form.vCode }}<br>
+
+    <br>
+    <button type="submit" class="btn btn-primary">Submit Information</button>
 </form>
 
 {% endblock %}

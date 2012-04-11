@@ -71,7 +71,7 @@
       <!-- MENU -->
       {{ user_menu|safe }}
       <div class="{%if user_menu%}span10{%else%}span12{%endif%}">
-        <ul class="breadcrumb">{% block breadcrumbs %}{% endblock %}</ul>
+        {% block breadcrumbs_wrapper %}<ul class="breadcrumb">{% block breadcrumbs %}{% endblock %}</ul>{% endblock %}
       <!-- PAGE CONTENT -->
         {% block main_content %}
         {# main page content here #}
@@ -85,7 +85,7 @@
     <div class="container-fluid">
       <hr>
       <span class="pull-left">
-        version <strong>{{ecm_version}}</strong> &bull;
+        Eve Corp. Management v<strong>{{ecm_version}}</strong> &bull;
         <a href="http://www.gnu.org/licenses/gpl-3.0-standalone.html">
           <em>
             <!--[if lte IE 8]><span style="filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2); display: inline-block;"><![endif]-->
@@ -93,7 +93,7 @@
               &copy;
             </span>
             <!--[if lte IE 8]></span><![endif]-->
-            2010-2012 diabeteman</em>
+            2010-2012</em>
         </a>
       </span>
       <span class="pull-right">

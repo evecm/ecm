@@ -3,25 +3,26 @@
 
 {% block headtitle %}Enter a Director API Key{% endblock %}
 
+{% block breadcrumbs_wrapper %}{% endblock %}
 
 {% block main_content %}
-<div class="row">
-  <div class="span6 offset3">
+<div class="page-header">
     <h1>Enter a Director API Key</h1>
-    <form method="post" action="{{ request_path }}" class="well form-vertical">
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{{ next }}" />
-      {% if form.errors %}<span class="error">{{ form.non_field_errors }}</span>{% endif %}
-    
-      <label>{{ form.keyID.label_tag }}{{ form.keyID.errors }}</label>
-      {{ form.keyID }}
-      <label>{{ form.vCode.label_tag }}{{ form.vCode.errors }}</label>
-      {{ form.vCode }}
-      <label>{{ form.characterID.label_tag }}{{ form.characterID.errors }}</label>
-      {{ form.characterID }}
-      <p>
-      <button type="submit" class="btn btn-primary">Submit Information</button>
-    </form>
-  </div>
 </div>
+
+<form method="post" action="{{ request_path }}" class="form-inline">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}" />
+    {{ form.non_field_errors }}<br>
+
+    {{ form.keyID.label_tag }}{{ form.keyID.errors }}<br>
+    {{ form.keyID }}<br>
+    {{ form.vCode.label_tag }}{{ form.vCode.errors }}<br>
+    {{ form.vCode }}<br>
+    {{ form.characterID.label_tag }}{{ form.characterID.errors }}<br>
+    {{ form.characterID }}<br>
+
+    <br>
+    <button type="submit" class="btn btn-primary">Submit Information</button>
+</form>
 {% endblock %}
