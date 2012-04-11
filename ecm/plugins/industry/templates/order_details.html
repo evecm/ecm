@@ -44,7 +44,7 @@
 <div class="alert alert-error" id="reject-form" >
   <form method="post" action="/industry/orders/{{order.id}}/reject/" class="form-inline">{%csrf_token%}
     <input class="span8" name="comment" id="reject-comment" value="" placeholder="Please explain why you are rejecting..."/>
-    <button type="submit" class="btn btn-danger btn-small" disabled="disabled"><i class="icon-exclamation-sign icon-white"></i> Cancel Order</button>
+    <button type="submit" class="btn btn-danger btn-small" disabled="disabled"><i class="icon-exclamation-sign icon-white"></i> Reject Order</button>
     <button id="abort-reject" class="btn btn-small"><i class="icon-remove"></i> Abort</button>
   </form>
 </div>

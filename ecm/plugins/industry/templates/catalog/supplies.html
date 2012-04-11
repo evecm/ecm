@@ -188,7 +188,7 @@ $(document).ready(function() {
             }
             if ('filter' in oData) {
                 CURRENT_FILTER = oData.filter;
-                updateFilterSelector();
+                $('#filter_selector').val('filter_' + CURRENT_FILTER);
             }
             return true;
         }
@@ -253,20 +253,6 @@ function updateDisplayModeButtons() {
             $(buttons[i]).removeClass('active');
         }
     }
-}
-
-function updateFilterSelector() {
-    $('#filter_selector').freezeEvents();
-    var options = $('#filter_selector option');
-    for (var i = 0; i < options.length; i++) {
-        if (endsWith(options[i].value, CURRENT_FILTER)) {
-            $(options[i]).attr('selected', 'selected');
-            break;
-        } else {
-            $(options[i]).removeAttr('selected');
-        }
-    }
-    $('#filter_selector').unFreezeEvents();
 }
 
 function endsWith(str, suffix) {

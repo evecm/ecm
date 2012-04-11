@@ -228,9 +228,9 @@ class Order(models.Model):
         Delivery task is assigned to manufacturer by default, unless delivery_boy is not None.
         """
         self.apply_transition(Order.end_preparation, Order.READY,
-                              manufacturer, "Order is ready.")
+                              manufacturer, 'Order is ready.')
         self.delivery_boy = delivery_boy or manufacturer or self.manufacturer
-
+        self.jobs.all().update(state=Job.READY)
         self.save()
 
     def deliver(self, user=None):
