@@ -83,10 +83,10 @@ def _type_perma_link(entry):
 TITLE_LINK = '<a href="%s" class="contract">%s</a>'
 def _title_perma_link(entry):
     url = '/accounting/contracts/%d/' % entry.contractID
-    if entry.title == "" :
-        title = "&lt;No Title&gt;"
+    if entry.contractID == "" :
+        title = "# error"
     else:
-        title = entry.title
+        title = "# %s" % entry.contractID
 
     return TITLE_LINK % (url, title)
 #------------------------------------------------------------------------------
