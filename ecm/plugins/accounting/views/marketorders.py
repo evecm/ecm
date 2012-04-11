@@ -107,18 +107,15 @@ def marketorders_data(request):
     query = MarketOrder.objects.all() # .order_by('-dateIssued')
     total_entries = query.count()
     search_args = Q()
-
     if params.search:
         types = _get_types(params.search)
         for type in types: #@ReservedAssignment
             search_args |= Q(typeID__exact=type.typeID)
 
-    if params.stateID != -1 or params.typeID:
+    if params.stateID > -1 or params.typeID:
         # States
-        if params.stateID > -1:
-            state = params.stateID
-            if state:
-                search_args &= Q(orderState=state)
+        state = params.stateID
+        search_args &= Q(orderState=state)
         # Types
         if params.typeID == 1:
             search_args &= Q(bid=True)
