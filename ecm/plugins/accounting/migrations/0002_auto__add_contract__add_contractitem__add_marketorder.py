@@ -1,4 +1,5 @@
 #@PydevCodeAnalysisIgnore
+# encoding: utf-8
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -7,20 +8,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-
-        # Adding model 'ContractItem'
-        db.create_table('accounting_contractitem', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('contract', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounting.Contract'])),
-            ('recordID', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('typeID', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('quantity', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('rawQuantity', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('singleton', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('included', self.gf('django.db.models.fields.PositiveIntegerField')()),
-        ))
-        db.send_create_signal('accounting', ['ContractItem'])
-
+        
         # Adding model 'Contract'
         db.create_table('accounting_contract', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -49,6 +37,19 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('accounting', ['Contract'])
 
+        # Adding model 'ContractItem'
+        db.create_table('accounting_contractitem', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('contract', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounting.Contract'])),
+            ('recordID', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('typeID', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('quantity', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('rawQuantity', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('singleton', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('included', self.gf('django.db.models.fields.PositiveIntegerField')()),
+        ))
+        db.send_create_signal('accounting', ['ContractItem'])
+
         # Adding model 'MarketOrder'
         db.create_table('accounting_marketorder', (
             ('orderID', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True)),
@@ -57,7 +58,7 @@ class Migration(SchemaMigration):
             ('volEntered', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('volRemaining', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('minVolume', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('orderState', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounting.OrderState'])),
+            ('orderState', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('typeID', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('range', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('accountKey', self.gf('django.db.models.fields.PositiveIntegerField')()),
@@ -69,28 +70,17 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('accounting', ['MarketOrder'])
 
-        # Adding model 'OrderState'
-        db.create_table('accounting_orderstate', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('stateID', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=10)),
-        ))
-        db.send_create_signal('accounting', ['OrderState'])
-
 
     def backwards(self, orm):
+        
+        # Deleting model 'Contract'
+        db.delete_table('accounting_contract')
 
         # Deleting model 'ContractItem'
         db.delete_table('accounting_contractitem')
 
-        # Deleting model 'Contract'
-        db.delete_table('accounting_contract')
-
         # Deleting model 'MarketOrder'
         db.delete_table('accounting_marketorder')
-
-        # Deleting model 'OrderState'
-        db.delete_table('accounting_orderstate')
 
 
     models = {
@@ -163,19 +153,13 @@ class Migration(SchemaMigration):
             'issued': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
             'minVolume': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'orderID': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'}),
-            'orderState': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounting.OrderState']"}),
+            'orderState': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'price': ('django.db.models.fields.FloatField', [], {}),
             'range': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'stationID': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'typeID': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'volEntered': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'volRemaining': ('django.db.models.fields.PositiveIntegerField', [], {})
-        },
-        'accounting.orderstate': {
-            'Meta': {'ordering': "['description']", 'object_name': 'OrderState'},
-            'description': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'stateID': ('django.db.models.fields.PositiveIntegerField', [], {})
         },
         'corp.wallet': {
             'Meta': {'ordering': "['walletID']", 'object_name': 'Wallet'},

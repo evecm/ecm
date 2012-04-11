@@ -190,7 +190,7 @@ class MarketOrder(models.Model):
     volEntered   = models.PositiveIntegerField()
     volRemaining = models.PositiveIntegerField()
     minVolume    = models.PositiveIntegerField()
-    orderState   = models.ForeignKey('OrderState')
+    orderState   = models.PositiveIntegerField()
     typeID       = models.PositiveIntegerField()
     range        = models.PositiveIntegerField() #@ReservedAssignment
     accountKey   = models.PositiveIntegerField()
@@ -199,16 +199,3 @@ class MarketOrder(models.Model):
     price        = models.FloatField()
     bid          = models.BooleanField(default=False)
     issued       = models.CharField(max_length=20)
-
-class OrderState(models.Model):
-    """
-    """
-    class Meta:
-        verbose_name = ['Order State']
-        ordering     = ['description']
-
-    def __hash__(self):
-        return self.id
-
-    stateID      = models.PositiveIntegerField()
-    description  = models.CharField(max_length=10)

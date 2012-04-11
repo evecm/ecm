@@ -16,6 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from ecm.apps.common.models import UpdateDate
 from ecm.utils import tools
+from ecm.plugins.accounting.constants import ORDER_STATES
 
 __date__ = "2012 04 06"
 __author__ = "tash"
@@ -29,7 +30,7 @@ from django.db import transaction
 from ecm.apps.eve import api
 
 # from ecm.apps.corp.models import Wallet
-from ecm.plugins.accounting.models import MarketOrder, OrderState 
+from ecm.plugins.accounting.models import MarketOrder
 
 LOG = logging.getLogger(__name__)
 
@@ -78,14 +79,13 @@ def write_orders(new_orders, old_orders):
     LOG.info("%d new orders added." % len(new_orders))
 
 def create_order_fom_row(row):
-    state = OrderState.objects.get(stateID__exact=row.orderState)
     return MarketOrder(orderID = row.orderID,
                        charID = row.charID,
                        stationID = row.stationID,
                        volEntered = row.volEntered,
                        volRemaining = row.volRemaining,
                        minVolume = row.minVolume,
-                       orderState = state,
+                       orderState = row.orderState,
                        typeID = row.typeID,
                        range = row.range,
                        accountKey = row.accountKey,

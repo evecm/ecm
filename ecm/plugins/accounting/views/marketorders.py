@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.plugins.accounting.constants import ORDER_STATES
 
 __date__ = '2012 04 06'
 __author__ = 'tash'
@@ -28,7 +29,7 @@ from django.template.context import RequestContext as Ctx
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import UpdateDate
-from ecm.plugins.accounting.models import MarketOrder, OrderState
+from ecm.plugins.accounting.models import MarketOrder
 from ecm.utils.format import print_float, print_integer
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data
@@ -61,11 +62,13 @@ def marketorders(request):
         'name': 'All',
         'selected' : stateID == -1 ,
     }]
-    for s in OrderState.objects.all().order_by('stateID'):
+    LOG.debug("stateID: %s " % stateID)
+    for s in range(len(ORDER_STATES)):
+        LOG.debug(s)
         states.append({
-            'stateID': s.stateID,
-            'name': s.description,
-            'selected': s.stateID == stateID,
+            'stateID': s,
+            'name': ORDER_STATES[s],
+            'selected': s == stateID,
         })
 
     types = [{
@@ -113,7 +116,7 @@ def marketorders_data(request):
     if params.stateID != -1 or params.typeID:
         # States
         if params.stateID > -1:
-            state = OrderState.objects.get(stateID__exact=params.stateID)
+            state = params.stateID
             if state:
                 search_args &= Q(orderState=state)
         # Types
@@ -150,7 +153,7 @@ def marketorders_data(request):
             print_integer(entry.volEntered),
             print_integer(entry.volRemaining),
             print_integer(entry.minVolume),
-            entry.orderState.description,
+            '%s' % ORDER_STATES[entry.orderState],
             _map_range(entry)
         ])
 
