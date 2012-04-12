@@ -131,14 +131,15 @@
 
 <h2>POS Operators</h2>
 
-<form action="/pos/{{ pos.item_id }}/update_oper/" method="post">
+<!--  <form action="/pos/{{ pos.item_id }}/update_oper/" method="post"> -->
+<form action="" method="">
 	{% csrf_token %}
-	<select name="user">
+	<select name="user" id="user_id">
 		{% for user in opers %}
 		<option value="{{ user.id }}">{{ user.username }}</option>
 		{% endfor %}
 	</select>
-	<button>Add/Remove</button>
+	<button class="btn" type="submit" autocomplete="off" data-loading-text="Chargin ma lazers" id="btn_addremove_op"><i class="icon-plus"></i><i class="icon-minus"></i>Add/Remove</button>
 </form>
 
 <table class="table table-bordered" id="oper_table">
@@ -225,7 +226,7 @@ $(document).ready(function() {
 
     }));
 	
-	var table = $('#oper_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+	var oper_table = $('#oper_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         iDisplayLength: 10, 		/* default display 25 items */
         sAjaxSource: "/pos/{{ pos.item_id }}/oper_data/",
         aoColumns: [
@@ -255,6 +256,26 @@ $(document).ready(function() {
         },
         tooltip   : 'Click to edit...'
     });
+    var buttonz = $('#btn_addremove_op'); 
+     $('#btn_addremove_op').click(function() {  
+    //alert (dataString);return false; 
+    var data = 'user=' + $("#user_id option:selected").val();
+	$('#btn_addremove_op').button('loading');
+    $.ajax({  
+      type: "POST",  
+      url: "/pos/{{ pos.item_id }}/update_oper/",  
+      data: data,
+      callback: function( sValue, y ) {
+            $('#custom_name').html(sValue);
+            oper_table.fnDraw();
+        },
+      success: function (reqCode) {
+      	oper_table.fnDraw();
+      	$('#btn_addremove_op').button('reset');
+      }  
+    });
+    return false;
+   }); 
 
 
     $('#assets_tree').jstree({

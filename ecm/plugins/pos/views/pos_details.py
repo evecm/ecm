@@ -23,6 +23,8 @@ try:
     import json
 except ImportError:
     import django.utils.simplejson as json
+    
+import logging
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
@@ -41,6 +43,8 @@ from ecm.apps.corp.models import Corp
 from ecm.apps.hr.models.member import Member
 from ecm.apps.common.models import UrlPermission
 from django.contrib.auth.models import User
+
+LOG = logging.getLogger(__name__)
 
 FUEL_COLUMNS = [
     ['Icon',            'type_id'],
@@ -245,7 +249,9 @@ def update_pos_name(request, pos_id):
 #------------------------------------------------------------------------------
 @check_user_access()
 def update_pos_oper(request, pos_id):
+    
     user_id = request.POST["user"]
+    LOG.debug("User ID: %s" % user_id)
     pos = get_object_or_404(POS, item_id=int(pos_id))
     user = get_object_or_404(User, id=int(user_id))
     print locals()
