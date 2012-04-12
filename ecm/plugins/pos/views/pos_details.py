@@ -171,16 +171,25 @@ def silo_data(request, pos_id):
         mineral = Type.objects.get(typeID = silo.typeID)
         if pos.fuel_type_id == constants.GALLENTE_FUEL_BLOCK_TYPEID:
             remaining_vol = (constants.SILO_VOLUME * 2.0) - silo.volume
+            remaining_per = int((1.0 * silo.volume / (constants.SILO_VOLUME * 2.0)) * 100)
         elif pos.fuel_type_id == constants.AMARR_FUEL_BLOCK_TYPEID:
             remaining_vol = (constants.SILO_VOLUME * 1.5) - silo.volume
+            remaining_per = int((1.0 * silo.volume / (constants.SILO_VOLUME * 1.5)) * 100)
         else:
             remaining_vol = constants.SILO_VOLUME - silo.volume
+            remaining_per = int((1.0 * silo.volume / (constants.SILO_VOLUME)) * 100)
         hours_to_full = remaining_vol / (mineral.volume * 100)
+        
+        silo_div = '<div class="progress"><div class="bar" style="width: '
+        silo_div += str(remaining_per)+'%;"><span style="color:black;">'
+        silo_div += print_duration(seconds=hours_to_full * 3600, verbose=False)
+        silo_div += '</span></div></div>'
         silo_table.append([
             silo.typeID,
             mineral.typeName,
             silo.quantity,
-            print_duration(seconds=hours_to_full * 3600, verbose=False)
+            silo_div,
+            #print_duration(seconds=hours_to_full * 3600, verbose=False)
         ])
     json_data = {
         "sEcho"                 : params.sEcho,
