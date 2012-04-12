@@ -26,7 +26,7 @@ except ImportError:
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
-from django.http import HttpResponse, Http404, HttpResponseBadRequest
+from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
 
 
 from ecm.utils.format import print_duration
@@ -38,6 +38,9 @@ from ecm.plugins.assets.models import Asset
 from ecm.plugins.pos import constants
 from ecm.views import extract_datatable_params
 from ecm.apps.corp.models import Corp
+from ecm.apps.hr.models.member import Member
+from ecm.apps.common.models import UrlPermission
+from django.contrib.auth.models import User
 
 FUEL_COLUMNS = [
     ['Icon',            'type_id'],
@@ -54,7 +57,11 @@ SILO_COLUMNS = [
     ['Quantity',                'quantity'],
     ['Time Left until full',    None],
 ]
-
+OPERATOR_COLUMNS = [
+    ['Username',    'username'],
+    ['Characters',  'chars'],
+    ['Titles',      'titles'],
+]
 MOON_REGEX = re.compile(".*\s+([^\s]+)\s+-\s+Moon\s+(\d+)")
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -81,15 +88,19 @@ def one_pos(request, pos_id):
             use_standings_from = pos.use_standings_from
     except Corp.DoesNotExist:
         use_standings_from = "???"
-
+    
+    groups = UrlPermission.objects.get(pattern='^/pos.*$').groups.all()
+    oper_list = User.objects.all().distinct().filter(groups__in=groups).extra(select={ 'lower_name': 'lower(username)' }).order_by('lower_name')
 
     data = {
         'pos'               : pos,
         'moon'              : pos.moon_id,
         'system'            : pos.location_id,
+        'opers'             : oper_list,
         'dotlanPOSLocation' : dotlanPOSLocation,
         'fuel_columns'      : [ col for col, _ in FUEL_COLUMNS ],
         'silo_columns'      : [ col for col, _ in SILO_COLUMNS ],
+        'oper_columns'      : [ col for col, _ in OPERATOR_COLUMNS],
         'use_standings_from': use_standings_from,
     }
     return render_to_response("pos_details.html", data, RequestContext(request))
@@ -181,6 +192,45 @@ def silo_data(request, pos_id):
 
 #------------------------------------------------------------------------------
 @check_user_access()
+def oper_data(request, pos_id):
+    try:
+        params = extract_datatable_params(request)
+        pos_id = int(pos_id)
+    except:
+        return HttpResponseBadRequest()
+    pos = get_object_or_404(POS, item_id=pos_id)
+    oper_table = []
+    for user in pos.operators.all():
+        for iter, char in enumerate(user.characters.all()):
+            if iter == 0:
+                chars = char.name
+            else:
+                chars += ', ' + char.name
+        groups_list =  [group.name for group in user.groups.all()]
+        try:
+            groups_list.pop(groups_list.index('Members'))
+        except ValueError:
+            pass
+        for iter, group in enumerate(groups_list):
+            if iter == 0:
+                groups = group
+            else:
+                groups += ', ' + group
+        oper_table.append([
+            user.username,
+            chars,
+            groups,
+        ])
+    json_data = {
+        "sEcho"                 : params.sEcho,
+        "iTotalRecords"         : len(pos.operators.all()),
+        "iTotalDisplayRecords"  : len(pos.operators.all()),
+        "aaData"                : oper_table,
+    }
+    return HttpResponse(json.dumps(json_data))
+
+#------------------------------------------------------------------------------
+@check_user_access()
 def update_pos_name(request, pos_id):
     try:
         new_name = request.POST["value"]
@@ -191,3 +241,19 @@ def update_pos_name(request, pos_id):
         return HttpResponse(new_name)
     except:
         return HttpResponseBadRequest()
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def update_pos_oper(request, pos_id):
+    user_id = request.POST["user"]
+    pos = get_object_or_404(POS, item_id=int(pos_id))
+    user = get_object_or_404(User, id=int(user_id))
+    print locals()
+    if user in pos.operators.all():
+        pos.operators.remove(user)
+    else:
+        pos.operators.add(user)
+    pos.save()
+    return HttpResponseRedirect('/pos/' + pos_id + '/')
+
+

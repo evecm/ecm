@@ -200,7 +200,7 @@ def get_details(pos, api, sov):
                                      date = api._meta.currentTime)
         base_fuel_cons = ControlTowerResource.objects.get(control_tower=pos.type_id, resource=fuel.typeID).quantity
         corp = Corp.objects.latest()
-        if sov[pos.location_id]['alliance'] == corp.allianceID and base_fuel_cons > 1:
+        if sov.get(pos.location_id) and sov[pos.location_id]['alliance'] == corp.allianceID and base_fuel_cons > 1:
             base_fuel_cons = int(round(base_fuel_cons * .75))
         fuel_level.consumption = base_fuel_cons
         fuel_level.save()

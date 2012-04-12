@@ -128,6 +128,33 @@
 <h2>Asset's In System</h2>
 
 <div id="assets_tree"></div>
+
+<h2>POS Operators</h2>
+
+<form action="/pos/{{ pos.item_id }}/update_oper/" method="post">
+	{% csrf_token %}
+	<select name="user">
+		{% for user in opers %}
+		<option value="{{ user.id }}">{{ user.username }}</option>
+		{% endfor %}
+	</select>
+	<button>Add/Remove</button>
+</form>
+
+<table class="table table-bordered" id="oper_table">
+  <thead>
+    <tr>
+      {% for col in oper_columns %}
+      <th class="top" scope="col" >{{col}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+</table>
 {% endblock %}
 
 {% block compressed_javascripts %}
@@ -197,7 +224,20 @@ $(document).ready(function() {
         },
 
     }));
+	
+	var table = $('#oper_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        iDisplayLength: 10, 		/* default display 25 items */
+        sAjaxSource: "/pos/{{ pos.item_id }}/oper_data/",
+        aoColumns: [
+            { /* 0 Name */      sWidth: "25%", bSortable: false },
+            { /* 1 Chars */     sWidth: "50%", bSortable: false },
+            { /* 2 Titles */    sWidth: "25%", bSortable: false },
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            return nRow;
+        },
 
+    }));
     /* disable multi column sorting */
     $('#pos_table thead th').click(function(event) {
         if (!$(event.target).hasClass('sorthandle')) {
@@ -215,7 +255,8 @@ $(document).ready(function() {
         },
         tooltip   : 'Click to edit...'
     });
-    
+
+
     $('#assets_tree').jstree({
         plugins : [ 'themes' , 'json_data' , 'search' , 'adv_search' , 'ui',  'types' , 'sort' ],
         core : {

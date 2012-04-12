@@ -28,6 +28,8 @@ urlpatterns = patterns('ecm.plugins.pos.views',
     (r'^(\d+)/$',               'pos_details.one_pos'),
     (r'^(\d+)/fuel_data/$',     'pos_details.fuel_data'),
     (r'^(\d+)/silo_data/$',     'pos_details.silo_data'),
+    (r'^(\d+)/oper_data/$',     'pos_details.oper_data'),
     (r'^(\d+)/update_name/$',   'pos_details.update_pos_name'),
+    (r'^(\d+)/update_oper/$',   'pos_details.update_pos_oper'),
 )
 
