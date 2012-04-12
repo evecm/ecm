@@ -132,7 +132,7 @@
 <h2>POS Operators</h2>
 
 <!--  <form action="/pos/{{ pos.item_id }}/update_oper/" method="post"> -->
-<form action="" method="">
+<form action="" method=""  class="form-horizontal">
 	{% csrf_token %}
 	<select name="user" id="user_id">
 		{% for user in opers %}
