@@ -18,7 +18,6 @@
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
 
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -50,7 +49,7 @@ class InventionPolicy(models.Model):
     target_me = models.IntegerField()
 
     def invention_chance_admin_display(self):
-        return '%d%' % (self.invention_chance * 100.0)
+        return '%d' % (self.invention_chance * 100.0)
     invention_chance_admin_display.short_description = "InventionChance"
 
 
@@ -99,11 +98,17 @@ class InventionPolicy(models.Model):
         for typeID, chance_mod, me_mod, pe_mod, runs_mod, _ in constants.DECRYPTOR_INFO[decryptor_group]:
             if policy.target_me == (me + me_mod):
                 decriptorTypeID = typeID
-                chance *= chance_mod
+                # Max Skill mod.
+                skill_enc = 5
+                skill_data = 5
+                skill_data_2 = 5
+                chance = chance * (1+(0.01 * skill_enc))*(1+((skill_data+skill_data_2)*0.1/5)) * chance_mod
+                # chance *= chance_mod
                 me += me_mod
                 pe += pe_mod
+                
                 runs_per_bp += runs_mod
                 break
-        attempts = int(round(1.0 / chance))
+        attempts = 1.0 / chance
 
         return runs_per_bp, me, pe, decriptorTypeID, attempts

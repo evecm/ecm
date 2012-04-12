@@ -20,6 +20,7 @@ from __future__ import with_statement
 __date__ = "2011 8 17"
 __author__ = "diabeteman"
 
+
 from django.db import models, connection
 from django.contrib.auth.models import User
 
@@ -496,7 +497,8 @@ class OrderRow(models.Model):
         missing_prices = set([])
         for job in self.get_aggregated_jobs(Job.SUPPLY):
             try:
-                cost += prices[job.item_id] * round(job.runs)
+                job_price = prices[job.item_id] * round(job.runs) 
+                cost += job_price
             except KeyError:
                 missing_prices.add(job.item_id)
         return cost, missing_prices
