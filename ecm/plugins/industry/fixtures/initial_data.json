@@ -1,164 +1,182 @@
 [
   {
-    "pk": 0,
+    "pk": 1,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -4,
+      "item_group_id": -1,
+      "me_mod": null,
       "item_group": "Modules",
-      "invention_chance": 0.5
+      "base_invention_chance": 0.4
     }
   },
   {
-    "pk": 324,
+    "pk": 2,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -4,
+      "item_group_id": 324,
+      "me_mod": null,
       "item_group": "Assault Ships",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 541,
+    "pk": 3,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -4,
+      "item_group_id": 541,
+      "me_mod": null,
       "item_group": "Interdictors",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 830,
+    "pk": 4,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -4,
+      "item_group_id": 830,
+      "me_mod": null,
       "item_group": "Covert Ops",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 831,
+    "pk": 5,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -4,
+      "item_group_id": 830,
+      "me_mod": null,
       "item_group": "Interceptors",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 834,
+    "pk": 6,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -4,
+      "item_group_id": 834,
+      "me_mod": null,
       "item_group": "Stealth Bombers",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 893,
+    "pk": 7,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -4,
+      "item_group_id": 893,
+      "me_mod": null,
       "item_group": "Electronic Attack Ships",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 906,
+    "pk": 8,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -4,
+      "item_group_id": 906,
+      "me_mod": null,
       "item_group": "Combat Recon Ships",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 358,
+    "pk": 9,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+      "item_group_id": 358,
+      "me_mod": 3,
       "item_group": "Heavy Assault Ships",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 380,
+    "pk": 10,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+      "item_group_id": 380,
+      "me_mod": 3,
       "item_group": "Transport Ships",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 540,
+    "pk": 11,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+      "item_group_id": 540,
+      "me_mod": 3,
       "item_group": "Command Ships",
-      "invention_chance": 0.25
+      "base_invention_chance": 0.25
     }
   },
   {
-    "pk": 543,
+    "pk": 12,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+      "item_group_id": 543,
+      "me_mod": 3,
       "item_group": "Exhumers",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 832,
+    "pk": 13,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+        "item_group_id": 832,
+      "me_mod": 3,
       "item_group": "Logistics",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 833,
+    "pk": 14,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+      "item_group_id": 833,
+      "me_mod": 3,
       "item_group": "Force Recon Ships",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 894,
+    "pk": 15,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+      "item_group_id": 894,
+      "me_mod": 3,
       "item_group": "Heavy Interdictors",
-      "invention_chance": 0.33333333333
+      "base_invention_chance": 0.33333333333
     }
   },
   {
-    "pk": 898,
+    "pk": 16,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+      "item_group_id": 898,
+      "me_mod": 3,
       "item_group": "Black Ops",
-      "invention_chance": 0.25
+      "base_invention_chance": 0.25
     }
   },
   {
-    "pk": 900,
+    "pk": 17,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+      "item_group_id": 900,
+      "me_mod": 3,
       "item_group": "Marauders",
-      "invention_chance": 0.25
+      "base_invention_chance": 0.25
     }
   },
   {
-    "pk": 902,
+    "pk": 18,
     "model": "industry.inventionpolicy",
     "fields": {
-      "target_me": -1,
+      "item_group_id": 902,
+      "me_mod": 3,
       "item_group": "Jump Freighters",
-      "invention_chance": 0.2
+      "base_invention_chance": 0.2
     }
   },
   {

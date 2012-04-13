@@ -19,10 +19,19 @@ __date__ = "2011 8 20"
 __author__ = "diabeteman"
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as tr
 
+from ecm.apps.eve import formulas
 from ecm.plugins.industry import constants
 from ecm.plugins.industry.models.catalog import OwnedBlueprint
+from ecm.plugins.industry.constants import DECRYPTOR_ATTRIBUTES
+
+ME_CHOICES = []
+for me_mod in constants.DECRYPTOR_ATTRIBUTES.keys():
+    if me_mod is not None:
+        ME_CHOICES.append( (me_mod, '%+d' % me_mod) )
+    else:
+        ME_CHOICES.append( (me_mod, 'None') )
 
 #------------------------------------------------------------------------------
 class InventionPolicy(models.Model):
@@ -39,18 +48,40 @@ class InventionPolicy(models.Model):
 
     class Meta:
         app_label = 'industry'
-        verbose_name = _("Invention Policy")
-        verbose_name_plural = _("Invention Policies")
-        ordering = ['target_me', 'item_group_id']
+        verbose_name = tr("Invention Policy")
+        verbose_name_plural = tr("Invention Policies")
+        ordering = ['item_group_id']
 
-    item_group_id = models.IntegerField(primary_key=True)
+    item_group_id = models.IntegerField(default=0)
+    item_id = models.IntegerField(blank=True, null=True)
     item_group = models.CharField(max_length=255)
-    invention_chance = models.FloatField()
-    target_me = models.IntegerField()
+    base_invention_chance = models.FloatField()
+    encryption_skill_lvl = models.SmallIntegerField(default=5)
+    science1_skill_lvl = models.SmallIntegerField(default=5)
+    science2_skill_lvl = models.SmallIntegerField(default=5)
+    me_mod = models.IntegerField(choices=ME_CHOICES, blank=True, null=True)
+
+    def base_invention_chance_admin_display(self):
+        return '%d%%' % int(self.base_invention_chance * 100.0)
+    base_invention_chance_admin_display.short_description = "Base Invention Chance"
+
+    def skills_admin_display(self):
+        return '%s | %s %s' % (self.encryption_skill_lvl, self.science1_skill_lvl, self.science2_skill_lvl)
+    skills_admin_display.short_description = 'Skills'
+
+    def chance_mod_admin_display(self):
+        return '%+d%%' % int(100 * DECRYPTOR_ATTRIBUTES[self.me_mod][0] - 100)
+    chance_mod_admin_display.short_description = 'Chance mod'
 
     def invention_chance_admin_display(self):
-        return '%d' % (self.invention_chance * 100.0)
-    invention_chance_admin_display.short_description = "InventionChance"
+        chance = formulas.calc_invention_chance(self.base_invention_chance,
+                                                self.encryption_skill_lvl,
+                                                self.science1_skill_lvl,
+                                                self.science2_skill_lvl,
+                                                DECRYPTOR_ATTRIBUTES[self.me_mod][0])
+        return '%d%%' % int(chance * 100.0)
+    invention_chance_admin_display.short_description = "Invention Chance"
+
 
 
     @staticmethod
@@ -65,7 +96,8 @@ class InventionPolicy(models.Model):
                               runs=runs_per_bp,
                               copy=True,
                               me=me,
-                              pe=pe)
+                              pe=pe,
+                              invented=True)
 
     @staticmethod
     def decryptor(blueprint):
@@ -83,31 +115,34 @@ class InventionPolicy(models.Model):
         """
         decryptor_group = constants.INTERFACES_DECRYPTOR_MAPPING[blueprint.parent_blueprint.dataInterfaceID]
 
-        try:
+        if InventionPolicy.objects.filter(item_id=blueprint.product.typeID):
+            policy = InventionPolicy.objects.get(item_id=blueprint.product.typeID)
+        elif InventionPolicy.objects.filter(item_group_id=blueprint.product.groupID):
             policy = InventionPolicy.objects.get(item_group_id=blueprint.product.groupID)
-        except InventionPolicy.DoesNotExist:
+        else:
             # no specific policy defined for this blueprint,
             # fallback to the default policy (modules)
-            policy = InventionPolicy.objects.get(item_group_id=0)
+            policy = InventionPolicy.objects.get(item_group_id=-1)
 
         decriptorTypeID = None
-        chance = policy.invention_chance
+        chance = policy.base_invention_chance
         runs_per_bp = 1
         me = -4 # base ME for invented BPCs without decryptor
         pe = -4 # base PE for invented BPCs without decryptor
         for typeID, chance_mod, me_mod, pe_mod, runs_mod, _ in constants.DECRYPTOR_INFO[decryptor_group]:
             if policy.target_me == (me + me_mod):
                 decriptorTypeID = typeID
-                # Max Skill mod.
-                skill_enc = 5
-                skill_data = 5
-                skill_data_2 = 5
-                chance = chance * (1+(0.01 * skill_enc))*(1+((skill_data+skill_data_2)*0.1/5)) * chance_mod
-                # chance *= chance_mod
+                chance = formulas.calc_invention_chance(policy.base_invention_chance,
+                                                        policy.encryption_skill_lvl,
+                                                        policy.science1_skill_lvl,
+                                                        policy.science2_skill_lvl,
+                                                        chance_mod)
                 me += me_mod
                 pe += pe_mod
-                
-                runs_per_bp += runs_mod
+                runs_per_bp = formulas.invented_bpc_runs(blueprint.parent_blueprint.maxProductionLimit,
+                                                         blueprint.parent_blueprint.maxProductionLimit,
+                                                         blueprint.maxProductionLimit,
+                                                         runs_mod)
                 break
         attempts = 1.0 / chance
 

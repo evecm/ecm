@@ -18,6 +18,15 @@
 __date__ = "2011 11 20"
 __author__ = "diabeteman"
 
+DECRYPTOR_ATTRIBUTES = {
+#   ME_mod     CHANCE_mod   PE_mod   RUNS_mod
+    +3:        (1.1,        +3,      +0),
+    +2:        (1.2,        +5,      +1),
+    +1:        (1.0,        +4,      +2),
+  None:        (1.0,        +0,      +0),
+    -1:        (1.8,        +2,      +4),
+    -2:        (0.6,        +1,      +9),
+}
 
 DECRYPTOR_INFO = {
 #            typeID   CHANCE_mod   ME_mod   PE_mod   RUNS_mod  typeName

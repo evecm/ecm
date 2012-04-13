@@ -92,6 +92,7 @@ class OwnedBlueprint(models.Model):
     pe = models.SmallIntegerField(default=0)
     copy = models.BooleanField(default=False)
     runs = models.SmallIntegerField(default=0)
+    invented = models.BooleanField(default=False)
     catalog_entry = models.ForeignKey(CatalogEntry, related_name='blueprints', null=True, blank=True)
     __blueprint = None
 

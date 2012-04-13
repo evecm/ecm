@@ -91,35 +91,27 @@ class Job(models.Model):
                                                          me_level=self.blueprint.me)
 
         for mat in materials:
-            
-            my_type = Type.objects.get(typeID=mat.requiredTypeID)
-            DATA_CORE_GROUP_ID = 333
-            quantity = mat.quantity
-            if my_type.group_id == DATA_CORE_GROUP_ID:
-                # Get the type for the root product like 'vagabond'
-                root_type = Type.objects.get(typeID=self.row.catalog_entry.typeID)
-                # prorate data cores for ships
-                if root_type.categoryID==6:
-                    quantity = quantity / 3
-                # prorate data cores for modules
-                elif root_type.categoryID==7:
-                    quantity = quantity / 10
-                
             self.children_jobs.add(Job.create(item_id=mat.requiredTypeID,
-                                              quantity=quantity,
+                                              quantity=mat.quantity,
                                               order=self.order,
                                               row=self.row))
 
         parent_bp_id = self.blueprint.parentBlueprintTypeID
-        if parent_bp_id is not None and self.blueprint.runs == -1:
-            # only create invention jobs if we don't own a BPO/BPC (runs == -1)
+        if parent_bp_id is not None and self.blueprint.invented:
+            # only create invention jobs if we don't own a BPO/BPC
             attempts  = InventionPolicy.attempts(self.blueprint)
+
+            # Since invented blueprints have fixed number of runs, we need to
+            # prorate the number of invention jobs that will be actually charged
+            # to the client.
+            effective_runs = self.runs / float(self.blueprint.runs) * attempts
+
             # create a temp OwnedBlueprint that will be used to run the invention
             bpc = OwnedBlueprint.objects.create(typeID=parent_bp_id, copy=True)
             # add an INVENTION job
             self.children_jobs.create(item_id=parent_bp_id,
                                       blueprint=bpc,
-                                      runs=self.runs * attempts,
+                                      runs=effective_runs,
                                       order=self.order,
                                       row=self.row,
                                       activity=Job.INVENTION)
@@ -143,8 +135,8 @@ class Job(models.Model):
         for job in self.children_jobs.all():
             # recursive call
             job.create_requirements()
-    
-    
+
+
 
     @staticmethod
     def create(item_id, quantity, order, row):
@@ -184,7 +176,6 @@ class Job(models.Model):
                 if quantity % item.portionSize:
                     runs += 1
                 duration = bp.manufacturing_time(runs)
-                bp.runs = -1 # to identify that this BPC will be invented
                 bp.save()
             else:
                 bp = None
