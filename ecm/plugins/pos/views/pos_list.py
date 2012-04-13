@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.utils import db
-from ecm.utils.format import print_duration
 
 __date__ = "2011-04-25"
 __author__ = "JerryKhan"
@@ -30,6 +28,8 @@ from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 
+from ecm.utils import db
+from ecm.utils.format import print_duration
 from ecm.plugins.pos.views import print_fuel_quantity
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.views import extract_datatable_params
@@ -123,14 +123,14 @@ def poses_data(request):
                 else:
                     time_left = getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, 'hours_int')
                 pos_by_timeleft.append( (time_left, pos, pos.state) )
-        
+
         if not params.asc:
             pos_by_timeleft.sort(reverse=True)
         else:
             pos_by_timeleft.sort()
-        for iter, item in enumerate(pos_by_timeleft):
+        for i, item in enumerate(pos_by_timeleft):
             if item[2] == 3:
-                pos_by_timeleft.insert(0, pos_by_timeleft.pop(iter))
+                pos_by_timeleft.insert(0, pos_by_timeleft.pop(i))
     try:
         # This will fail if sorting by fuel.
         if not params.asc:

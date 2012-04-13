@@ -14,9 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.common.models import UpdateDate
-from ecm.utils import tools
-from ecm.plugins.accounting.constants import ORDER_STATES
 
 __date__ = "2012 04 06"
 __author__ = "tash"
@@ -27,9 +24,9 @@ from datetime import datetime
 
 from django.db import transaction
 
+from ecm.utils import tools
+from ecm.apps.common.models import UpdateDate
 from ecm.apps.eve import api
-
-# from ecm.apps.corp.models import Wallet
 from ecm.plugins.accounting.models import MarketOrder
 
 LOG = logging.getLogger(__name__)
@@ -37,7 +34,7 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 def update():
     """
-    Update all orders 
+    Update all orders
     """
     LOG.info("fetching /corp/MarketOrders.xml.aspx...")
     # Connect to EVE API
@@ -64,7 +61,7 @@ def processOrders(orders, connection):
 
     removed_orders, added_orders = tools.diff(old_orders, new_orders)
     write_orders(added_orders, removed_orders)
-    
+
 
 @transaction.commit_on_success
 def write_orders(new_orders, old_orders):
@@ -93,4 +90,4 @@ def create_order_fom_row(row):
                        escrow = row.escrow,
                        price = row.price,
                        bid = row.bid,
-                       issued = row.issued) 
+                       issued = row.issued)

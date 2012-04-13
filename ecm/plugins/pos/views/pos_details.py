@@ -38,8 +38,7 @@ from ecm.plugins.assets.models import Asset
 from ecm.plugins.pos import constants
 from ecm.views import extract_datatable_params
 from ecm.apps.corp.models import Corp
-from ecm.apps.hr.models.member import Member
-from ecm.apps.common.models import UrlPermission
+from ecm.apps.common.models import UrlPermission, Setting
 from django.contrib.auth.models import User
 
 FUEL_COLUMNS = [
@@ -88,7 +87,7 @@ def one_pos(request, pos_id):
             use_standings_from = pos.use_standings_from
     except Corp.DoesNotExist:
         use_standings_from = "???"
-    
+
     groups = UrlPermission.objects.get(pattern='^/pos.*$').groups.all()
     oper_list = User.objects.all().distinct().filter(groups__in=groups).extra(select={ 'lower_name': 'lower(username)' }).order_by('lower_name')
 
@@ -179,7 +178,7 @@ def silo_data(request, pos_id):
             remaining_vol = constants.SILO_VOLUME - silo.volume
             remaining_per = int((1.0 * silo.volume / (constants.SILO_VOLUME)) * 100)
         hours_to_full = remaining_vol / (mineral.volume * 100)
-        
+
         silo_div = '<div class="progress"><div class="bar" style="width: '
         silo_div += str(remaining_per)+'%;"><span style="color:black;">'
         silo_div += print_duration(seconds=hours_to_full * 3600, verbose=False)
@@ -209,26 +208,12 @@ def oper_data(request, pos_id):
         return HttpResponseBadRequest()
     pos = get_object_or_404(POS, item_id=pos_id)
     oper_table = []
+    members = Setting.get('hr_corp_members_group_name')
     for user in pos.operators.all():
-        for iter, char in enumerate(user.characters.all()):
-            if iter == 0:
-                chars = char.name
-            else:
-                chars += ', ' + char.name
-        groups_list =  [group.name for group in user.groups.all()]
-        try:
-            groups_list.pop(groups_list.index('Members'))
-        except ValueError:
-            pass
-        for iter, group in enumerate(groups_list):
-            if iter == 0:
-                groups = group
-            else:
-                groups += ', ' + group
         oper_table.append([
             user.username,
-            chars,
-            groups,
+            ', '.join(user.characters.all().values_list('name', flat=True)),
+            ', '.join(user.groups.exclude(name=members).values_list('name', flat=True)),
         ])
     json_data = {
         "sEcho"                 : params.sEcho,
