@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from django.contrib.auth.models import Group
-from ecm.apps.eve.models import Type
-from django.db.models.aggregates import Count
 
 __date__ = "2012 2 2"
 __author__ = "diabeteman"
@@ -166,10 +164,10 @@ def _fetch_margin(request, item):
                 break; 
     if result == 0:
         if request.user.groups.filter(name=group_name):
-            margin = Setting.get('industry_internal_price_margin')
+            result = Setting.get('industry_internal_price_margin')
             LOG.debug('Using default internal price margin')
         else:
-            margin = Setting.get('industry_external_price_margin')
+            result = Setting.get('industry_external_price_margin')
             LOG.debug('Using default external price margin')
     LOG.debug("Final margin is: %s" % result)
     return result
