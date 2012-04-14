@@ -233,11 +233,10 @@ class GroupFilter(models.Model):
     class Meta:
         verbose_name = "Group Filter"
         verbose_name_plural = "Group Filters"
-        
-    
     
     group = models.ForeignKey(Group, related_name='group', null=True)
     pos = models.ManyToManyField(POS, related_name='group_filter', blank=True, null=True)
+    all = models.BooleanField(default=False)
     
     def pos_location(self):
         return ', '.join([pos.location for pos in self.pos.all()])

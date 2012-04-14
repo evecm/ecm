@@ -41,6 +41,7 @@ class FuelLevelAdmin(admin.ModelAdmin):
 class GroupFilterAdmin(admin.ModelAdmin):
     list_display = [
                  'group',
+                 'all',
                  'pos_location',]
 
 #------------------------------------------------------------------------------

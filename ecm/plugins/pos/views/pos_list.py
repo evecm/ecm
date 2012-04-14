@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.common import auth
 
 __date__ = "2011-04-25"
 __author__ = "JerryKhan"
@@ -31,7 +32,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from ecm.utils import db
 from ecm.utils.format import print_duration
 from ecm.plugins.pos.views import print_fuel_quantity
-from ecm.plugins.pos.models import POS, FuelLevel
+from ecm.plugins.pos.models import POS, FuelLevel, GroupFilter
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
 
@@ -94,8 +95,24 @@ def poses_data(request):
     # Query all by default.
     query = POS.objects.all().select_related(depth=1)
     
-    # Only show POS for user group, where group filter applies
-    query = query.filter(group_filter__group__in=request.user.groups.values('id')).distinct()
+    # Check if a group filter exists
+    if not GroupFilter.objects.all().exists():
+        # TODO Refactor... just a hack to please ajurna :P
+        # If no group filter exists, create one for directors with all pos'es
+        directors_group = auth.get_directors_group()
+        group_filter = GroupFilter.objects.create(group=directors_group, all=True)
+        group_filter.save()
+        LOG.debug("Directors POS group filter created for all POS'es...")
+    
+    # Show all POS'es if a group filter has 'all' set, otherwise show POS for user group, where group filter applies
+    show_all = False
+    for group in request.user.groups.all():
+        if GroupFilter.objects.filter(group__id=group.id):
+            show_all = True
+            break
+    if not show_all:
+        LOG.debug("Showing only for group filter...")
+        query = query.filter(group_filter__group__in=request.user.groups.values('id')).distinct()
     # Then get the database content and translate to display table
     # manage the search filter
     if params.search:
