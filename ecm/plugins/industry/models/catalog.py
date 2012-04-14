@@ -23,7 +23,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as tr
 
 from ecm.apps.eve.models import Type, BlueprintType
-
+import logging
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 class CatalogEntry(models.Model):
@@ -149,3 +150,28 @@ class OwnedBlueprint(models.Model):
 
     def __cmp__(self, other):
         return cmp(self.typeID, other.typeID)
+    
+#------------------------------------------------------------------------------
+class PricingPolicy(models.Model):
+    
+        class Meta:
+            app_label = 'industry'
+            verbose_name = tr("Surcharge Policy")
+            verbose_name_plural = tr("Surcharge Policies")
+    
+        item_group_id = models.IntegerField(null=True, blank=True)
+        item_id = models.IntegerField(blank=True, null=True)
+        item_group = models.CharField(blank=True, null=True, max_length=255)
+        user_group = models.CharField(blank=True, null=True, max_length=255)
+        user_group_id = models.IntegerField(default=0)
+        category_id = models.IntegerField(blank=True, null=True)
+        active = models.BooleanField(default=False)
+        
+        surcharge_absolute = models.FloatField(blank=True, null=True,default=0.0)
+        surcharge_relative = models.FloatField(default=0.0)
+        
+        def calculate_surcharge(self, price):
+            result = price * self.surcharge_relative
+            if self.surcharge_absolute != None:
+                result += self.surcharge_absolute
+            return result

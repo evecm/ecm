@@ -30,7 +30,8 @@ from ecm.apps.eve.models import Type
 from ecm.plugins.industry.models.catalog import CatalogEntry
 from ecm.plugins.industry.models.inventory import Supply
 from ecm.plugins.industry.models.job import Job
-
+import logging
+LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 class Order(models.Model):
     """
@@ -144,6 +145,7 @@ class Order(models.Model):
         if missing_price:
             self.cost = 0.0
             self.quote = 0.0
+        LOG.debug("Quote changed: %d" % self.quote)
         self.save()
 
     def confirm(self):
@@ -286,7 +288,7 @@ class Order(models.Model):
     def check_can_pass_transition(self, function_name):
         valid_functions_names = [ t.__name__ for t in Order.VALID_TRANSITIONS[self.state] ]
         if function_name not in valid_functions_names:
-            raise IllegalTransition('Cannot apply transition "%s" from state "%s".' %
+            raise IllegalTransition('Cannot apply transition "%s" from state "%s".' % 
                                     (function_name, Order.STATES[self.state]))
 
     ################################
