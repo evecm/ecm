@@ -19,7 +19,7 @@ __date__ = "2011 04 23"
 __author__ = "JerryKhan"
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 import datetime
 
 from ecm.plugins.pos import constants
@@ -227,3 +227,19 @@ class FuelLevel(models.Model):
 #    def __unicode__(self):
 #        fuelName, _ = db.get_type_name(self.typeID)
 #        return u'%s: %s = %d / hour' % (unicode(self.pos), fuelName, self.consumption)
+
+#------------------------------------------------------------------------------
+class GroupFilter(models.Model):
+    class Meta:
+        verbose_name = "Group Filter"
+        verbose_name_plural = "Group Filters"
+        
+    
+    
+    group = models.ForeignKey(Group, related_name='group', null=True)
+    pos = models.ManyToManyField(POS, related_name='group_filter', blank=True, null=True)
+    
+    def pos_location(self):
+        return ', '.join([pos.location for pos in self.pos.all()])
+    
+    pos_location.short_description = "POS Location" 

@@ -37,6 +37,9 @@ from ecm.views.decorators import check_user_access
 
 from ecm.plugins.pos import constants as C
 
+import logging
+LOG = logging.getLogger(__name__)
+
 # This table gives the association between the status of the POS
 # and the related CSS class for display
 POS_CSS_STATUS = {
@@ -86,10 +89,17 @@ def poses_data(request):
     except:
         return HttpResponseBadRequest()
     print params.column
-
+    
+    
     # Query all by default.
     query = POS.objects.all().select_related(depth=1)
-
+    
+    # Only show POS for user group, where group filter applies
+    groups = []
+    for g in request.user.groups.all():
+        groups.append(g.name) 
+        LOG.debug("Only POS for Group_ID: %s" % g.id)
+        query |= query.filter(group_filter__group="%s"%g.id)
     # Then get the database content and translate to display table
     # manage the search filter
     if params.search:
