@@ -95,7 +95,7 @@ def poses_data(request):
     query = POS.objects.all().select_related(depth=1)
     
     # Only show POS for user group, where group filter applies
-    query = query.filter(group_filter__group__in=request.user.groups.values('id'))
+    query = query.filter(group_filter__group__in=request.user.groups.values('id')).distinct()
     # Then get the database content and translate to display table
     # manage the search filter
     if params.search:
