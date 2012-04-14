@@ -3,180 +3,280 @@
     "pk": 1,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": -1,
-      "me_mod": null,
+      "encryption_skill_lvl": 5,
       "item_group": "Modules",
-      "base_invention_chance": 0.4
+      "me_mod": null,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.4,
+      "science1_skill_lvl": 5,
+      "item_group_id": -1
     }
   },
   {
     "pk": 2,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 324,
-      "me_mod": null,
+      "encryption_skill_lvl": 5,
       "item_group": "Assault Ships",
-      "base_invention_chance": 0.33333333333
-    }
-  },
-  {
-    "pk": 3,
-    "model": "industry.inventionpolicy",
-    "fields": {
-      "item_group_id": 541,
       "me_mod": null,
-      "item_group": "Interdictors",
-      "base_invention_chance": 0.33333333333
-    }
-  },
-  {
-    "pk": 4,
-    "model": "industry.inventionpolicy",
-    "fields": {
-      "item_group_id": 830,
-      "me_mod": null,
-      "item_group": "Covert Ops",
-      "base_invention_chance": 0.33333333333
-    }
-  },
-  {
-    "pk": 5,
-    "model": "industry.inventionpolicy",
-    "fields": {
-      "item_group_id": 830,
-      "me_mod": null,
-      "item_group": "Interceptors",
-      "base_invention_chance": 0.33333333333
-    }
-  },
-  {
-    "pk": 6,
-    "model": "industry.inventionpolicy",
-    "fields": {
-      "item_group_id": 834,
-      "me_mod": null,
-      "item_group": "Stealth Bombers",
-      "base_invention_chance": 0.33333333333
-    }
-  },
-  {
-    "pk": 7,
-    "model": "industry.inventionpolicy",
-    "fields": {
-      "item_group_id": 893,
-      "me_mod": null,
-      "item_group": "Electronic Attack Ships",
-      "base_invention_chance": 0.33333333333
-    }
-  },
-  {
-    "pk": 8,
-    "model": "industry.inventionpolicy",
-    "fields": {
-      "item_group_id": 906,
-      "me_mod": null,
-      "item_group": "Combat Recon Ships",
-      "base_invention_chance": 0.33333333333
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.3,
+      "science1_skill_lvl": 5,
+      "item_group_id": 324
     }
   },
   {
     "pk": 9,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 358,
-      "me_mod": 3,
+      "encryption_skill_lvl": 5,
       "item_group": "Heavy Assault Ships",
-      "base_invention_chance": 0.33333333333
+      "me_mod": 3,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.25,
+      "science1_skill_lvl": 5,
+      "item_group_id": 358
     }
   },
   {
     "pk": 10,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 380,
-      "me_mod": 3,
+      "encryption_skill_lvl": 5,
       "item_group": "Transport Ships",
-      "base_invention_chance": 0.33333333333
+      "me_mod": 3,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.25,
+      "science1_skill_lvl": 5,
+      "item_group_id": 380
     }
   },
   {
     "pk": 11,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 540,
-      "me_mod": 3,
+      "encryption_skill_lvl": 5,
       "item_group": "Command Ships",
-      "base_invention_chance": 0.25
+      "me_mod": 3,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.2,
+      "science1_skill_lvl": 5,
+      "item_group_id": 540
+    }
+  },
+  {
+    "pk": 3,
+    "model": "industry.inventionpolicy",
+    "fields": {
+      "encryption_skill_lvl": 5,
+      "item_group": "Interdictors",
+      "me_mod": null,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.3,
+      "science1_skill_lvl": 5,
+      "item_group_id": 541
     }
   },
   {
     "pk": 12,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 543,
+      "encryption_skill_lvl": 5,
+      "item_group": "Exhumers - Hulk",
       "me_mod": 3,
-      "item_group": "Exhumers",
-      "base_invention_chance": 0.33333333333
+      "science2_skill_lvl": 5,
+      "item_id": 22544,
+      "base_invention_chance": 0.2,
+      "science1_skill_lvl": 5,
+      "item_group_id": 543
     }
   },
   {
     "pk": 13,
     "model": "industry.inventionpolicy",
     "fields": {
-        "item_group_id": 832,
+      "encryption_skill_lvl": 5,
+      "item_group": "Exhumers - Skiff",
       "me_mod": 3,
-      "item_group": "Logistics",
-      "base_invention_chance": 0.33333333333
+      "science2_skill_lvl": 5,
+      "item_id": 22546,
+      "base_invention_chance": 0.3,
+      "science1_skill_lvl": 5,
+      "item_group_id": 543
     }
   },
   {
     "pk": 14,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 833,
+      "encryption_skill_lvl": 5,
+      "item_group": "Exhumers - Mackinaw",
       "me_mod": 3,
-      "item_group": "Force Recon Ships",
-      "base_invention_chance": 0.33333333333
+      "science2_skill_lvl": 5,
+      "item_id": 22548,
+      "base_invention_chance": 0.25,
+      "science1_skill_lvl": 5,
+      "item_group_id": 543
+    }
+  },
+  {
+    "pk": 4,
+    "model": "industry.inventionpolicy",
+    "fields": {
+      "encryption_skill_lvl": 5,
+      "item_group": "Covert Ops",
+      "me_mod": null,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.3,
+      "science1_skill_lvl": 5,
+      "item_group_id": 830
+    }
+  },
+  {
+    "pk": 5,
+    "model": "industry.inventionpolicy",
+    "fields": {
+      "encryption_skill_lvl": 5,
+      "item_group": "Interceptors",
+      "me_mod": null,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.3,
+      "science1_skill_lvl": 5,
+      "item_group_id": 830
     }
   },
   {
     "pk": 15,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 894,
+      "encryption_skill_lvl": 5,
+      "item_group": "Logistics",
       "me_mod": 3,
-      "item_group": "Heavy Interdictors",
-      "base_invention_chance": 0.33333333333
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.25,
+      "science1_skill_lvl": 5,
+      "item_group_id": 832
     }
   },
   {
     "pk": 16,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 898,
+      "encryption_skill_lvl": 5,
+      "item_group": "Force Recon Ships",
       "me_mod": 3,
-      "item_group": "Black Ops",
-      "base_invention_chance": 0.25
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.25,
+      "science1_skill_lvl": 5,
+      "item_group_id": 833
+    }
+  },
+  {
+    "pk": 6,
+    "model": "industry.inventionpolicy",
+    "fields": {
+      "encryption_skill_lvl": 5,
+      "item_group": "Stealth Bombers",
+      "me_mod": null,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.3,
+      "science1_skill_lvl": 5,
+      "item_group_id": 834
+    }
+  },
+  {
+    "pk": 7,
+    "model": "industry.inventionpolicy",
+    "fields": {
+      "encryption_skill_lvl": 5,
+      "item_group": "Electronic Attack Ships",
+      "me_mod": null,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.3,
+      "science1_skill_lvl": 5,
+      "item_group_id": 893
     }
   },
   {
     "pk": 17,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 900,
+      "encryption_skill_lvl": 5,
+      "item_group": "Heavy Interdictors",
       "me_mod": 3,
-      "item_group": "Marauders",
-      "base_invention_chance": 0.25
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.25,
+      "science1_skill_lvl": 5,
+      "item_group_id": 894
     }
   },
   {
     "pk": 18,
     "model": "industry.inventionpolicy",
     "fields": {
-      "item_group_id": 902,
+      "encryption_skill_lvl": 5,
+      "item_group": "Black Ops",
       "me_mod": 3,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.2,
+      "science1_skill_lvl": 5,
+      "item_group_id": 898
+    }
+  },
+  {
+    "pk": 19,
+    "model": "industry.inventionpolicy",
+    "fields": {
+      "encryption_skill_lvl": 5,
+      "item_group": "Marauders",
+      "me_mod": 3,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.2,
+      "science1_skill_lvl": 5,
+      "item_group_id": 900
+    }
+  },
+  {
+    "pk": 20,
+    "model": "industry.inventionpolicy",
+    "fields": {
+      "encryption_skill_lvl": 5,
       "item_group": "Jump Freighters",
-      "base_invention_chance": 0.2
+      "me_mod": 3,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.3,
+      "science1_skill_lvl": 5,
+      "item_group_id": 902
+    }
+  },
+  {
+    "pk": 8,
+    "model": "industry.inventionpolicy",
+    "fields": {
+      "encryption_skill_lvl": 5,
+      "item_group": "Combat Recon Ships",
+      "me_mod": null,
+      "science2_skill_lvl": 5,
+      "item_id": null,
+      "base_invention_chance": 0.25,
+      "science1_skill_lvl": 5,
+      "item_group_id": 906
     }
   },
   {
@@ -184,6 +284,13 @@
     "model": "industry.supplysource",
     "fields": {
       "name": "All Systems"
+    }
+  },
+  {
+    "pk": 30002187,
+    "model": "industry.supplysource",
+    "fields": {
+      "name": "Amarr"
     }
   },
   {
@@ -198,13 +305,6 @@
     "model": "industry.supplysource",
     "fields": {
       "name": "Rens"
-    }
-  },
-  {
-    "pk": 30002187,
-    "model": "industry.supplysource",
-    "fields": {
-      "name": "Amarr"
     }
   }
 ]

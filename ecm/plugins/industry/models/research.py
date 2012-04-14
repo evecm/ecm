@@ -18,6 +18,8 @@
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
 
+import math
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as tr
 
@@ -130,7 +132,7 @@ class InventionPolicy(models.Model):
         me = -4 # base ME for invented BPCs without decryptor
         pe = -4 # base PE for invented BPCs without decryptor
         for typeID, chance_mod, me_mod, pe_mod, runs_mod, _ in constants.DECRYPTOR_INFO[decryptor_group]:
-            if policy.target_me == (me + me_mod):
+            if policy.me_mod == me_mod:
                 decriptorTypeID = typeID
                 chance = formulas.calc_invention_chance(policy.base_invention_chance,
                                                         policy.encryption_skill_lvl,
@@ -144,6 +146,6 @@ class InventionPolicy(models.Model):
                                                          blueprint.maxProductionLimit,
                                                          runs_mod)
                 break
-        attempts = 1.0 / chance
+        attempts = int(math.ceil(1.0 / chance))
 
         return runs_per_bp, me, pe, decriptorTypeID, attempts
