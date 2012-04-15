@@ -37,19 +37,26 @@ from ecm.views import extract_datatable_params, datatable_ajax_data
 LOG = logging.getLogger(__name__)
 
 COLUMNS = [
-    # name          width   sortable    css-class
-    ['Type',        '2%',   'true',     ''],
-    ['Char',        '2%',   'true',     ''],
-    ['Item',        '5%',   'false',    ''],
-    ['Price',       '1%',   'false',    'right'],
-    ['Duration',    '1%',   'false',    'right'],
-    ['Station',     '5%',   'false',    ''],
-    ['Vol. Ent.',   '1%',   'false',    'right'],
-    ['Vol. Rem.',   '1%',   'false',    'right'],
-    ['Min. Vol.',   '1%',   'false',    'right'],
-    ['State',       '5%',   'false',    ''],
-    ['Range',       '2%',   'false',    ''],
+    # name          width   sortable    css-class   type
+    ['Type',        '2%',   'true',     '',         'html' ],
+    ['Char',        '2%',   'true',     '',         'html' ],
+    ['Item',        '5%',   'true',    '',         'string' ],
+    ['Price',       '1%',   'true',     'right',    'html'],
+    ['Duration',    '1%',   'false',    'right',    'numeric'],
+    ['Station',     '5%',   'false',    '',         'string' ],
+    ['Vol. Ent.',   '1%',   'false',    'right',    'numeric'],
+    ['Vol. Rem.',   '1%',   'false',    'right',    'numeric'],
+    ['Min. Vol.',   '1%',   'false',    'right',    'numeric'],
+    ['State',       '5%',   'false',    '',         'string' ],
+    ['Range',       '2%',   'false',    '',         'string' ],
 ]
+
+SORT_COLUMNS= {
+    0 :  'bid',
+    1 :  'charID',
+    2 :  'typeID',
+    3 :  'price'         
+    }
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -103,7 +110,8 @@ def marketorders_data(request):
         params.typeID = int(REQ.get('typeID', 0))
     except:
         return HttpResponseBadRequest()
-
+    LOG.debug(params.column)
+    LOG.debug(SORT_COLUMNS[params.column])
     query = MarketOrder.objects.all() # .order_by('-dateIssued')
     total_entries = query.count()
     search_args = Q()
@@ -127,7 +135,11 @@ def marketorders_data(request):
     filtered_entries = query.count()
     if filtered_entries == None:
         total_entries = filtered_entries = query.count()
-
+    
+    # Apply sorting (if desc, set '-' in front of the column to sort)
+    
+    query = query.order_by(_get_sort_order(params))
+    
     query = query[params.first_id:params.last_id]
     entries = []
 
@@ -154,7 +166,6 @@ def marketorders_data(request):
             '%s' % ORDER_STATES[entry.orderState],
             _map_range(entry)
         ])
-
     return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
 
 #------------------------------------------------------------------------------
@@ -180,3 +191,7 @@ def _map_range(market_order):
 def _get_types(typeName):
     return Type.objects.filter(typeName__icontains=typeName)
 
+#------------------------------------------------------------------------------
+def _get_sort_order(params):
+    sort_string = SORT_COLUMNS[params.column] if params.asc else "-%s" % (SORT_COLUMNS[params.column])
+    return sort_string
