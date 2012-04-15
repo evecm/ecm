@@ -132,9 +132,9 @@ def details(request, item_id):
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def price(request, item_id):
+def fixed_price(request, item_id):
     """
-    Serves URL /industry/catalog/items/<item_id>/price/
+    Serves URL /industry/catalog/items/<item_id>/fixed_price/
 
     If request is GET:
         return the price as a raw float
@@ -218,8 +218,6 @@ def public_price(request, item_id):
                 logger.info('New price for "%s" -> %s' % (item.typeName,
                                                       print_float(buyPrices[type_id])))
                 item.save()
-            else:
-                error = "Price didn't change"
         except KeyError:
             error = 'Could not find buy-price for item: "%s"' % item
         if error:

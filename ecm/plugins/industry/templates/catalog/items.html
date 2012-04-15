@@ -103,7 +103,7 @@ $(document).ready(function() {
 
             $('td:eq(2)', nRow).addClass('right editable');
             /* Apply jEditable handlers to the cells each time we redraw the table */
-            $('td:eq(2)', nRow).editable( '/industry/catalog/items/' + item_id + '/price/', {
+            $('td:eq(2)', nRow).editable( '/industry/catalog/items/' + item_id + '/fixed_price/', {
                 cssclass: 'edited',
                 style: 'inherit',
                 tooltip: 'Click to edit',
@@ -112,7 +112,7 @@ $(document).ready(function() {
                     var aPos = TABLE.fnGetPosition( this );
                     TABLE.fnUpdate( sValue, aPos[0], aPos[1] );
                 },
-                loadurl: '/industry/catalog/items/' + item_id + '/price/',
+                loadurl: '/industry/catalog/items/' + item_id + '/fixed_price/',
             } );
 
             $('td:eq(3)', nRow).addClass('right editable');
