@@ -112,15 +112,16 @@ def marketorders_data(request):
         for type in types: #@ReservedAssignment
             search_args |= Q(typeID__exact=type.typeID)
 
-    if params.stateID > -1 or params.typeID:
+    if params.stateID > -1:
         # States
         state = params.stateID
         search_args &= Q(orderState=state)
-        # Types
-        if params.typeID == 1:
-            search_args &= Q(bid=True)
-        elif params.typeID == 2:
-            search_args &= Q(bid=False)
+    
+    # Types
+    if params.typeID == 1:
+        search_args &= Q(bid=True)
+    elif params.typeID == 2:
+        search_args &= Q(bid=False)
 
     query = query.filter(search_args)
     filtered_entries = query.count()
