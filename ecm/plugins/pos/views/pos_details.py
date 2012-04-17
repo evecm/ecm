@@ -196,10 +196,11 @@ def silo_data(request, pos_id):
             silo_div,
             #print_duration(seconds=hours_to_full * 3600, verbose=False)
         ])
+    silo_count = silos.count()
     json_data = {
         "sEcho"                 : params.sEcho,
-        "iTotalRecords"         : len(silos),
-        "iTotalDisplayRecords"  : len(silos),
+        "iTotalRecords"         : silo_count,
+        "iTotalDisplayRecords"  : silo_count,
         "aaData"                : silo_table,
     }
     return HttpResponse(json.dumps(json_data))
@@ -221,10 +222,12 @@ def oper_data(request, pos_id):
             ', '.join(user.characters.all().values_list('name', flat=True)),
             ', '.join(user.groups.exclude(name=members).values_list('name', flat=True)),
         ])
+        
+    operator_count = pos.operators.all().count()
     json_data = {
         "sEcho"                 : params.sEcho,
-        "iTotalRecords"         : len(pos.operators.all()),
-        "iTotalDisplayRecords"  : len(pos.operators.all()),
+        "iTotalRecords"         : operator_count,
+        "iTotalDisplayRecords"  : operator_count,
         "aaData"                : oper_table,
     }
     return HttpResponse(json.dumps(json_data))
