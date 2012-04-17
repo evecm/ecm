@@ -130,6 +130,68 @@
     </tr>
   </tfoot>
 </table>
+
+<!-- CONTRACTS -->
+<!-- ##########################################################################
+     # Type    Status    Title    Date Issued
+     ########################################################################## -->
+<h3>Contracts</h3>
+<table class="table table-bordered table-condensed" id="contract_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Type</th>
+      <th class="top" scope="col" >Status</th>
+      <th class="top" scope="col" >Title</th>
+      <th class="top" scope="col" >Date Issued</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Type</th>
+      <th>Status</th>
+      <th>Title</th>
+      <th>Date Issued</th>
+    </tr>
+  </tfoot>
+</table>
+<!-- /CONTRACTS -->
+<!-- MARKET ORDERS -->
+<!-- ##########################################################################
+     # Type    Item    Price    Station    Issued
+     ########################################################################## -->
+<h3>Market Orders</h3>
+<table class="table table-bordered table-condensed" id="marketorders_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Type</th>
+      <th class="top" scope="col" >Item</th>
+      <th class="top" scope="col" >Price</th>
+      <th class="top" scope="col" >Station</th>
+      <th class="top" scope="col" >Issued</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Type</th>
+      <th>Item</th>
+      <th>Price</th>
+      <th>Station</th>
+      <th>Issued</th>
+    </tr>
+  </tfoot>
+</table>
+<!-- /MARKET ORDERS -->
+
 {% endblock %}
 
 {% block post_javascripts %}
@@ -151,6 +213,35 @@ $(document).ready(function() {
             return nRow;
         }
     }));
+    
+    // Type    Status    Title    Date Issued
+    $('#contract_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource : "/hr/members/{{ member.characterID }}/contracts/data/",
+        aoColumns: [
+            { sTitle: "Type",     sWidth: "5%", sType: "html" ,  bSortable: false, sClass: "center" },
+            { sTitle: "Status", sWidth: "10%", sType: "html" ,  bSortable: false },
+            { sTitle: "Title",       sWidth: "70%", sType: "html", bSortable: false },
+            { sTitle: "Date Issued",       sWidth: "15%", sType: "html", bSortable: false, sClass: "right" },
+        ]
+    }));
+    
+    // Type    Item    Price    Station    Issued
+    $('#marketorders_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource : "/hr/members/{{ member.characterID }}/marketorders/data/",
+        aoColumns: [
+            { sTitle: "Type",     	sWidth: "15%", sType: "html" ,  bSortable: false, sClass: "center" },
+            { sTitle: "Item", 		sWidth: "25%", sType: "html" ,  bSortable: false },
+            { sTitle: "Price",      sWidth: "15%", sType: "string", bSortable: false, sClass:"right"},
+            { sTitle: "Station",    sWidth: "30%", sType: "string", bSortable: false },
+            { sTitle: "Issued",     sWidth: "15%", sType: "string", bSortable: false, sClass: "right" }
+        ],
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+    }));
+
 });
 /* Apply a jEditable handler to the "notes" paragraph */
 $('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {
