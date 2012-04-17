@@ -16,6 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from ecm.apps.corp.models import Corp
 from django.db.models.aggregates import Count
+from ecm.plugins.accounting.constants import FORMATED_CONTRACT_STATES
 
 __date__ = '2012 04 01'
 __author__ = 'tash'
@@ -43,6 +44,22 @@ from ecm.views.decorators import check_user_access
 
 LOG = logging.getLogger(__name__)
 
+COLUMNS = [
+     #Name               witdth type        sortable    class    
+    [ 'Type',            '2%',  'html',     'true',         'center' ],
+    [ 'Status',          "5%",  "string",   'true',         ''],
+    [ 'Title',           "5%",  "string",   'false',    ''],
+    [ 'Date Issued',     '5%',  'string',   'false',    ''],
+    [ 'Date Expired',    '5%',  'string',   'false',    ''],
+    [ 'Date Accepted',   '5%',  'string',   'false',    ''],
+    [ 'Date Completed',  '5%',  'string',   'false',    ''],
+    [ 'Price',           '5%',  'string',   'false',    'right' ],
+    [ 'Reward',          '5%',  'string',   'false',    'right' ],
+    [ 'Collateral',      '5%',  'string',   'false',    'right' ],
+    [ 'Buyout',          '5%',  'string',   'false',    'right' ],
+    [ 'Volume',          '5%',  'numeric',  'false',    'right' ],          
+]
+
 #------------------------------------------------------------------------------
 @check_user_access()
 def contracts(request):
@@ -68,7 +85,8 @@ def contracts(request):
     data = {
         'types' : types,
         'status' : status,
-        'scan_date' : UpdateDate.get_latest(Contract)
+        'scan_date' : UpdateDate.get_latest(Contract),
+        'columns' : COLUMNS,
     }
     return render_to_response('contracts.html', data, Ctx(request))
 
@@ -121,7 +139,7 @@ def contracts_data(request):
     for entry in query:
         entries.append([
             entry.permalink_type,
-            entry.status,
+            FORMATED_CONTRACT_STATES[entry.status],
             entry.permalink,
             print_time_min(entry.dateIssued),
             print_time_min(entry.dateExpired),

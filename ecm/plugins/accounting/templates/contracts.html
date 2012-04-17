@@ -43,20 +43,9 @@
 
 <table class="table table-bordered table-condensed" id="contract_table">
   <thead>
-    <tr>
-      <th class="top" scope="col" >Type</th>
-      <th class="top" scope="col" >Status</th>
-      <th class="top" scope="col" >Title</th>
-      <th class="top" scope="col" >Date Issued</th>
-      <th class="top" scope="col" >Date Expired</th>
-      <th class="top" scope="col" >Date Accepted</th>
-      <th class="top" scope="col" >Date Completed</th>
-      <th class="top" scope="col" >Price</th>
-      <th class="top" scope="col" >Reward</th>
-      <th class="top" scope="col" >Collateral</th>
-      <th class="top" scope="col" >Buyout</th>
-      <th class="top" scope="col" >Volume</th>
-    </tr>
+    <tr>{% for name, width, type, sortable, css in columns %}
+      <th>{{name}}</th>
+    {% endfor %}</tr>
   </thead>
   <tbody>
     <tr>
@@ -64,20 +53,9 @@
     </tr>
   </tbody>
   <tfoot>
-    <tr>
-      <th>Type</th>
-      <th>Status</th>
-      <th>Title</th>
-      <th>Date Issued</th>
-      <th>Date Expired</th>
-      <th>Date Accepted</th>
-      <th>Date Completed</th>
-      <th>Price</th>
-      <th>Reward</th>
-      <th>Collateral</th>
-      <th>Buyout</th>
-      <th>Volume</th>
-    </tr>
+    <tr>{% for name, width, sortable, css, type in columns %}
+      <th>{{name}}</th>
+    {% endfor %}</tr>
   </tfoot>
 
 </table>
@@ -90,59 +68,11 @@
 {% block post_javascripts %}
 <script>
 $(document).ready(function() {
-    /* TODO: prepare columns in python like in market orders */
     var table = $('#contract_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: "/accounting/contracts/data/",
-        aoColumns: [
-            { /* Type*/             sWidth: "2%",  sType: "html", sClass: "center" },
-            { /* Status */          sWidth: "5%",  sType: "string" },
-            { /* Title */           sWidth: "5%",  sType: "string",  bSortable: false },
-            { /* Date Issued */     sWidth: "5%",  sType: "string",  bSortable: false },
-            { /* Date Expired */    sWidth: "5%",  sType: "string",  bSortable: false },
-            { /* Date Accepted */   sWidth: "5%",  sType: "string",  bSortable: false },
-            { /* Date Completed */  sWidth: "5%",  sType: "string",  bSortable: false },
-            { /* Price */           sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
-            { /* Reward*/           sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
-            { /* Collatteral */     sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
-            { /* Buyout */          sWidth: "5%",  sType: "string",  bSortable: false,  sClass: "right" },
-            { /* Volume*/           sWidth: "5%",  sType: "numeric", bSortable: false,  sClass: "right" }
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            /* TODO: prepare states in python like columns */
-            switch (aData[1]) {
-                case "Outstanding":
-                    $('td:eq(1)', nRow).addClass('contract-outstanding');
-                    break;
-                case "Deleted":
-                    $('td:eq(1)', nRow).addClass('contract-deleted');
-                    break;
-                case "Completed":
-                    $('td:eq(1)', nRow).addClass('contract-completed');
-                    break;
-                case "Failed":
-                    $('td:eq(1)', nRow).addClass('contract-failed');
-                    break;
-                case "CompletedByIssuer":
-                    $('td:eq(1)', nRow).addClass('contract-completedbyissuer');
-                    break;
-                case "CompletedByContractor":
-                    $('td:eq(1)', nRow).addClass('contract-completedbycontractor');
-                    break;
-                case "Cancelled":
-                    $('td:eq(1)', nRow).addClass('contract-cancelled');
-                    break;
-                case "Rejected":
-                    $('td:eq(1)', nRow).addClass('contract-rejected');
-                    break;
-                case "Reversed":
-                    $('td:eq(1)', nRow).addClass('contract-reversed');
-                    break;
-                case "InProgress":
-                    $('td:eq(1)', nRow).addClass('contract-inprogress');
-                    break;
-            }
-            return nRow;
-        },
+        aoColumns: [{% for name, width, type, sortable, css in columns %}
+            { /* {{name}} */ sWidth: '{{width}}', sType: '{{type}}', bSortable: {{sortable}}, sClass: '{{css}}' },
+        {%endfor%}],
 
         /* this function will be called when the table has to query data to be displayed */
         fnServerData: function ( sSource, aoData, fnCallback ) {

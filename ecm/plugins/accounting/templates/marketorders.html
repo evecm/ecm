@@ -76,34 +76,6 @@ $(document).ready(function() {
         aoColumns: [{% for name, width, sortable, css, type in columns %}
             { /* {{name}} */ sWidth: '{{width}}', sType: '{{type}}', bSortable: {{sortable}}, sClass: '{{css}}' },
         {%endfor%}],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            switch (aData[9]) {
-            /* TODO: adapt this for market orders */
-            /* TODO: prepare states in python like columns */
-                case 'character deleted':
-                    $('td:eq(9)', nRow).addClass('contract-deleted');
-                    break;
-                case 'closed':
-                    $('td:eq(9)', nRow).addClass('contract-completed');
-                    break;
-                case 'CompletedByIssuer':
-                    $('td:eq(9)', nRow).addClass('contract-completedbyissuer');
-                    break;
-                case 'cancelled':
-                    $('td:eq(9)', nRow).addClass('contract-cancelled');
-                    break;
-                case 'open / active':
-                    $('td:eq(9)', nRow).addClass('contract-inprogress');
-                    break;
-                case 'pending':
-                    $('td:eq(9)', nRow).addClass('contract-inprogress');
-                    break;
-                case 'expired (or fulfilled)':
-                    $('td:eq(9)', nRow).addClass('contract-completed');
-                    break;
-            }
-            return nRow;
-        },
 
         /* this function will be called when the table has to query data to be displayed */
         fnServerData: function ( sSource, aoData, fnCallback ) {

@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.plugins.accounting.constants import ORDER_STATES
+from ecm.plugins.accounting.constants import ORDER_STATES, FORMATED_ORDER_STATES
 
 __date__ = '2012 04 06'
 __author__ = 'tash'
@@ -40,7 +40,7 @@ COLUMNS = [
     # name          width   sortable    css-class   type
     ['Type',        '2%',   'true',     '',         'html' ],
     ['Char',        '2%',   'true',     '',         'html' ],
-    ['Item',        '5%',   'true',    '',         'string' ],
+    ['Item',        '5%',   'true',     '',         'string' ],
     ['Price',       '1%',   'true',     'right',    'html'],
     ['Duration',    '1%',   'false',    'right',    'numeric'],
     ['Station',     '5%',   'false',    '',         'string' ],
@@ -71,7 +71,6 @@ def marketorders(request):
     }]
     LOG.debug("stateID: %s " % stateID)
     for s in range(len(ORDER_STATES)):
-        LOG.debug(s)
         states.append({
             'stateID': s,
             'name': ORDER_STATES[s],
@@ -163,7 +162,7 @@ def marketorders_data(request):
             print_integer(entry.volEntered),
             print_integer(entry.volRemaining),
             print_integer(entry.minVolume),
-            '%s' % ORDER_STATES[entry.orderState],
+            '%s' % FORMATED_ORDER_STATES[entry.orderState],
             entry.map_range
         ])
     return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
