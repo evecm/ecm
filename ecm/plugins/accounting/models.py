@@ -19,9 +19,12 @@ __date__ = "2010-06-03"
 __author__ = "diabeteman"
 
 from django.db import models
+from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
+
 from ecm.lib import bigintpatch
 from ecm.apps.corp.models import Wallet
-from django.utils.translation import ugettext_lazy as _
+
 
 #------------------------------------------------------------------------------
 class EntryType(models.Model):
@@ -151,6 +154,24 @@ class Contract(models.Model):
 
     # Volume of items in the contract
     volume         = models.FloatField()
+    
+    @property
+    def permalink(self):
+        title_link = '<a href="%s" class="contract">%s</a>'
+        url = '/accounting/contracts/%d/' % self.contractID
+        if self.contractID == "" :
+            title = "# error"
+        else:
+            title = "# %s" % self.contractID
+    
+        return title_link % (url, title)
+    
+    @property
+    def permalink_type(self):
+        TYPE_LINK = '<img src="%s" alt="%s" name="%s" class="contracttype">'
+        lower_type = str(self.type).lower()
+        return TYPE_LINK % ('%saccounting/img/%s.png' % (settings.STATIC_URL, lower_type),
+                            self.type, self.type)
 
 class ContractItem(models.Model):
     """
@@ -199,3 +220,25 @@ class MarketOrder(models.Model):
     price        = models.FloatField()
     bid          = models.BooleanField(default=False)
     issued       = models.CharField(max_length=20)
+
+#------------------------------------------------------------------------------
+    @property
+    def get_type(self):
+        result = ''
+        if self.bid:
+            result = 'Buy Order'
+        else:
+            result = 'Sell Order'
+        return result
+    
+    
+#------------------------------------------------------------------------------
+    @property
+    def map_range(self):
+        _range_map = {-1: 'Station', 32767: 'Region'}
+        # check if it is a buy order
+        if self.bid:
+            return _range_map.get(int(self.range), '%d Jumps' % self.range)
+        else:
+            # Sell orders are bound to station
+            return _range_map.get(-1)

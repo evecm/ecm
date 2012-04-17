@@ -30,7 +30,6 @@ import logging
 
 from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse, Http404
-from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext as Ctx
 
@@ -73,22 +72,6 @@ def contracts(request):
     }
     return render_to_response('contracts.html', data, Ctx(request))
 
-#------------------------------------------------------------------------------
-TYPE_LINK = '<img src="%s" alt="%s" name="%s" class="contracttype">'
-def _type_perma_link(entry):
-    lower_type = str(entry.type).lower()
-    return TYPE_LINK % ('%saccounting/img/%s.png' % (settings.STATIC_URL, lower_type),
-                        entry.type, entry.type)
-
-TITLE_LINK = '<a href="%s" class="contract">%s</a>'
-def _title_perma_link(entry):
-    url = '/accounting/contracts/%d/' % entry.contractID
-    if entry.contractID == "" :
-        title = "# error"
-    else:
-        title = "# %s" % entry.contractID
-
-    return TITLE_LINK % (url, title)
 #------------------------------------------------------------------------------
 @check_user_access()
 def contracts_data(request):
@@ -137,9 +120,9 @@ def contracts_data(request):
     entries = []
     for entry in query:
         entries.append([
-            _type_perma_link(entry),
+            entry.permalink_type,
             entry.status,
-            _title_perma_link(entry),
+            entry.permalink,
             print_time_min(entry.dateIssued),
             print_time_min(entry.dateExpired),
             print_time_min(entry.dateAccepted),

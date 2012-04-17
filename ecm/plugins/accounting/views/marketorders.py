@@ -153,7 +153,7 @@ def marketorders_data(request):
 
         # Build the entry list
         entries.append([
-            _map_type(entry.bid),
+            entry.get_type,
             #entry.charID,
             owner,
             eve_type.typeName,
@@ -164,28 +164,9 @@ def marketorders_data(request):
             print_integer(entry.volRemaining),
             print_integer(entry.minVolume),
             '%s' % ORDER_STATES[entry.orderState],
-            _map_range(entry)
+            entry.map_range
         ])
     return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
-
-#------------------------------------------------------------------------------
-def _map_type(bid):
-    result = ''
-    if bid:
-        result = 'Buy Order'
-    else:
-        result = 'Sell Order'
-    return result
-
-#------------------------------------------------------------------------------
-_range_map = {-1: 'Station', 32767: 'Region'}
-def _map_range(market_order):
-    # check if it is a buy order
-    if market_order.bid:
-        return _range_map.get(int(market_order.range), '%d Jumps' % market_order.range)
-    else:
-        # Sell orders are bound to station
-        return _range_map.get(-1)
 
 #------------------------------------------------------------------------------
 def _get_types(typeName):
