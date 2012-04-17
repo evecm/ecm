@@ -1,4 +1,4 @@
-#@PydevCodeAnalysisIgnore
+# encoding: utf-8
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -34,6 +34,7 @@ class Migration(SchemaMigration):
             ('fuel_type_id', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('custom_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('notes', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('has_sov', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal('pos', ['POS'])
 
@@ -45,6 +46,14 @@ class Migration(SchemaMigration):
         ))
         db.create_unique('pos_pos_operators', ['pos_id', 'user_id'])
 
+        # Adding M2M table for field authorized_groups on 'POS'
+        db.create_table('pos_pos_authorized_groups', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('pos', models.ForeignKey(orm['pos.pos'], null=False)),
+            ('group', models.ForeignKey(orm['auth.group'], null=False))
+        ))
+        db.create_unique('pos_pos_authorized_groups', ['pos_id', 'group_id'])
+
         # Adding model 'FuelLevel'
         db.create_table('pos_fuellevel', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -52,20 +61,9 @@ class Migration(SchemaMigration):
             ('date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, db_index=True, blank=True)),
             ('type_id', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
             ('quantity', self.gf('django.db.models.fields.IntegerField')()),
+            ('consumption', self.gf('django.db.models.fields.IntegerField')(default=0)),
         ))
         db.send_create_signal('pos', ['FuelLevel'])
-
-        # Adding model 'FuelConsumption'
-        db.create_table('pos_fuelconsumption', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('pos', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fuel_consumptions', to=orm['pos.POS'])),
-            ('type_id', self.gf('django.db.models.fields.IntegerField')()),
-            ('consumption', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('stability', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('probable_consumption', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('probable_stability', self.gf('django.db.models.fields.IntegerField')(default=0)),
-        ))
-        db.send_create_signal('pos', ['FuelConsumption'])
 
 
     def backwards(self, orm):
@@ -76,11 +74,11 @@ class Migration(SchemaMigration):
         # Removing M2M table for field operators on 'POS'
         db.delete_table('pos_pos_operators')
 
+        # Removing M2M table for field authorized_groups on 'POS'
+        db.delete_table('pos_pos_authorized_groups')
+
         # Deleting model 'FuelLevel'
         db.delete_table('pos_fuellevel')
-
-        # Deleting model 'FuelConsumption'
-        db.delete_table('pos_fuelconsumption')
 
 
     models = {
@@ -120,18 +118,9 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'pos.fuelconsumption': {
-            'Meta': {'ordering': "['pos', 'type_id']", 'object_name': 'FuelConsumption'},
-            'consumption': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'pos': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'fuel_consumptions'", 'to': "orm['pos.POS']"}),
-            'probable_consumption': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'probable_stability': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'stability': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'type_id': ('django.db.models.fields.IntegerField', [], {})
-        },
         'pos.fuellevel': {
             'Meta': {'ordering': "['pos', 'date', 'type_id']", 'object_name': 'FuelLevel'},
+            'consumption': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'db_index': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'pos': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'fuel_levels'", 'to': "orm['pos.POS']"}),
@@ -145,10 +134,12 @@ class Migration(SchemaMigration):
             'attack_on_aggression': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'attack_on_concord_flag': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'attack_on_corp_war': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'authorized_groups': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'visible_group'", 'symmetrical': 'False', 'to': "orm['auth.Group']"}),
             'cached_until': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'custom_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'deploy_flags': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
             'fuel_type_id': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'has_sov': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'item_id': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
             'location': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
             'location_id': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
