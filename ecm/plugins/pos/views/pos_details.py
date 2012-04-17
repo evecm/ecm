@@ -70,7 +70,13 @@ def one_pos(request, pos_id):
     except ValueError:
         raise Http404()
     pos = get_object_or_404(POS, item_id=pos_id)
-
+    #check if superuser
+    if not request.user.is_superuser:
+        #check if there are authorised groups
+        if not len(pos.authorized_groups.all()) == 0:
+            #check if user in authorised group!
+            if len(set(request.user.groups.all()) & set(pos.authorized_groups.all())) == 0:
+                raise Http404()
     match = MOON_REGEX.match(pos.moon)
     if match:
         dotlanPOSLocation = match.group(1) + '-Moon-' + match.group(2)

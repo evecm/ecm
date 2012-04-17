@@ -20,7 +20,7 @@ __author__ = "JerryKhan"
 
 from django.contrib import admin
 
-from ecm.plugins.pos.models import POS, FuelLevel, GroupFilter
+from ecm.plugins.pos.models import POS, FuelLevel
 
 #------------------------------------------------------------------------------
 class POSAdmin(admin.ModelAdmin):
@@ -37,15 +37,8 @@ class FuelLevelAdmin(admin.ModelAdmin):
                     'date',
                     'fuel_admin_display',
                     'quantity']
-#------------------------------------------------------------------------------
-class GroupFilterAdmin(admin.ModelAdmin):
-    list_display = [
-                 'group',
-                 'all',
-                 'pos_location',]
 
 #------------------------------------------------------------------------------
 admin.site.register(POS, POSAdmin)
 admin.site.register(FuelLevel, FuelLevelAdmin)
-admin.site.register(GroupFilter, GroupFilterAdmin)
 

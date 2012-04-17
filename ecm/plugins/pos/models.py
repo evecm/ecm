@@ -111,6 +111,7 @@ class POS(models.Model):
     notes = models.TextField(null=True, blank=True)
     operators = models.ManyToManyField(User, related_name="operated_poses")
     has_sov = models.BooleanField(default=False)
+    authorized_groups = models.ManyToManyField(Group, related_name='visible_group')
 
     @property
     def state_text(self):
@@ -205,40 +206,3 @@ class FuelLevel(models.Model):
     def __unicode__(self):
         fuel_name = Type.objects.get(typeID=self.type_id)
         return u'%s: %d x %s' % (unicode(self.pos), self.quantity, fuel_name.typeName)
-
-#------------------------------------------------------------------------------
-#class FuelConsumption(models.Model):
-#
-#    class Meta:
-#        ordering = ['pos', 'type_id']
-#
-#    pos = models.ForeignKey(POS, related_name='fuel_consumptions')
-#    type_id = models.IntegerField() # id of fuel type
-#    consumption = models.IntegerField(default=0) # consumption of this fuel type
-#    stability = models.IntegerField(default=0) # stability of the estimation.
-#    probable_consumption = models.IntegerField(default=0) # Most often this consumption
-#    probable_stability = models.IntegerField(default=0) # nb point to reach to change stability
-#
-#    def fuel_admin_display(self):
-#        fuelName, _ = db.get_type_name(self.typeID)
-#        return unicode(fuelName)
-#    fuel_admin_display.short_description = "Fuel"
-#
-#    def __unicode__(self):
-#        fuelName, _ = db.get_type_name(self.typeID)
-#        return u'%s: %s = %d / hour' % (unicode(self.pos), fuelName, self.consumption)
-
-#------------------------------------------------------------------------------
-class GroupFilter(models.Model):
-    class Meta:
-        verbose_name = "Group Filter"
-        verbose_name_plural = "Group Filters"
-    
-    group = models.ForeignKey(Group, related_name='group', null=True)
-    pos = models.ManyToManyField(POS, related_name='group_filter', blank=True, null=True)
-    all = models.BooleanField(default=False)
-    
-    def pos_location(self):
-        return ', '.join([pos.location for pos in self.pos.all()])
-    
-    pos_location.short_description = "POS Location" 

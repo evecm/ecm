@@ -28,11 +28,12 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.db.models import Q
 
 from ecm.utils import db
 from ecm.utils.format import print_duration
 from ecm.plugins.pos.views import print_fuel_quantity
-from ecm.plugins.pos.models import POS, FuelLevel, GroupFilter
+from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.views import extract_datatable_params
 from ecm.views.decorators import check_user_access
 
@@ -92,27 +93,12 @@ def poses_data(request):
     print params.column
     
     
-    # Query all by default.
-    query = POS.objects.all().select_related(depth=1)
+    # Query all authorised by default except for superuser
+    if request.user.is_superuser:
+        query = POS.objects.all()
+    else:
+        query = POS.objects.filter(Q(authorized_groups__isnull=True) | Q(authorized_groups__in=request.user.groups.all())).select_related(depth=1)
     
-    # Check if a group filter exists
-    if not GroupFilter.objects.all().exists():
-        # TODO Refactor... just a hack to please ajurna :P
-        # If no group filter exists, create one for directors with all pos'es
-        directors_group = auth.get_directors_group()
-        group_filter = GroupFilter.objects.create(group=directors_group, all=True)
-        group_filter.save()
-        LOG.debug("Directors POS group filter created for all POS'es...")
-    
-    # Show all POS'es if a group filter has 'all' set, otherwise show POS for user group, where group filter applies
-    show_all = False
-    for group in request.user.groups.all():
-        if GroupFilter.objects.filter(group__id=group.id):
-            show_all = True
-            break
-    if not show_all:
-        LOG.debug("Showing only for group filter...")
-        query = query.filter(group_filter__group__in=request.user.groups.values('id')).distinct()
     # Then get the database content and translate to display table
     # manage the search filter
     if params.search:
