@@ -98,9 +98,17 @@ class Daemon:
             pid = None
 
         if pid:
-            message = "pidfile %s already exist. Daemon already running?\n"
-            sys.stderr.write(message % self.pidfile)
-            sys.exit(1)
+            try:
+                os.kill(pid, 0)
+                message = "Daemon already running.\n"
+                sys.stderr.write(message % self.pidfile)
+                sys.exit(1)
+            except OSError:
+                # process with PID=pid does not exist, 
+                # we delete the PID file and continue
+                message = "Process %d is not running. Deleting pidfile %s...\n"
+                sys.stderr.write(message % (pid, self.pidfile))
+                os.remove(self.pidfile)
 
         parent = self.daemonize()
         if parent:
