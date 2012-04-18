@@ -59,7 +59,7 @@ def details(request, characterID):
         member.color = ColorThreshold.get_access_color(member.accessLvl)
         member.roles_no_director = member.roles.exclude(roleID=1) # exclude 'director'
 
-        query = MemberSession.objects.filter(character_id=member.characterID)
+        query = MemberSession.objects.filter(character_id=member.characterID).order_by('session_begin')
         query_30 = query.filter(session_begin__gt=now - timedelta(30))
         query_7 = query.filter(session_begin__gt=now - timedelta(7))
 

@@ -198,7 +198,6 @@ class MemberSession(models.Model):
     """
     class Meta:
         app_label = 'hr'
-        ordering = ['session_begin']
 
     id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     #TODO: somehow use FK's

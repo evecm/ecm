@@ -136,7 +136,7 @@ function drawPlaytimes(){
       //colors: ['60FC60', 'FCAF3B', 'FD5353'],
       title: 'Avg. Playtime',
       vAxis: {title: 'Hours'},
-      hAxis: {title: 'Last 14 Days', direction: -1}
+      hAxis: {title: 'Last 30 Days', direction: -1}
     };
     
     var chart = new google.visualization.AreaChart(document.getElementById('playtimes_chart'));
@@ -164,7 +164,7 @@ function drawOnline(){
       //colors: ['60FC60', 'FCAF3B', 'FD5353'],
       title: 'Online Players',
       vAxis: {title: 'Players'},
-      hAxis: {title: 'Last 14 Days', direction: -1}
+      hAxis: {title: 'Last 30 Days', direction: -1}
     };
     
     var chart = new google.visualization.ColumnChart(document.getElementById('online_chart'));
