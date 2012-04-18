@@ -43,13 +43,13 @@ def collect_static_files(instance_dir, options):
     run_python_cmd('manage.py collectstatic ' + switches, instance_dir)
 
 #-------------------------------------------------------------------------------
-PATCHED_EVE_DB_URL = 'http://eve-corp-management.googlecode.com/files/ECM.EVE.db-3.zip'
+PATCHED_EVE_DB_URL = 'http://releases.eve-corp-management.googlecode.com/eve/eve_ecm.sqlite-4.zip'
 def download_patched_eve_db(eve_db_url, eve_zip_archive, eve_db_dir):
     try:
         tempdir = None
         if eve_zip_archive is None:
             tempdir = tempfile.mkdtemp()
-            eve_zip_archive = os.path.join(tempdir, 'EVE.db.zip')
+            eve_zip_archive = os.path.join(tempdir, 'eve_ecm.sqlite.zip')
             log('Downloading EVE database from %s to %s...', eve_db_url, eve_zip_archive)
             req = urllib2.urlopen(eve_db_url)
             with open(eve_zip_archive, 'wb') as fp:
@@ -81,13 +81,13 @@ def download_patched_eve_db(eve_db_url, eve_zip_archive, eve_db_dir):
 #-------------------------------------------------------------------------------
 CCP_EVE_DB_URL = 'http://zofu.no-ip.de/cru110/cru110-sqlite3-v1.db.bz2'
 def patch_ccp_dump(ccp_dump_url, eve_db_dir, ccp_dump_archive=None):
-    sql_script = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'eve_db_patch.sql')
+    sql_script = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'eve_ecm_patch.sql')
     with open(sql_script, 'r') as f:
         sql_patch = f.read()
     try:
         if ccp_dump_archive is None:
             tempdir = tempfile.mkdtemp()
-            ccp_dump_archive = os.path.join(tempdir, 'EVE.db.bz2')
+            ccp_dump_archive = os.path.join(tempdir, 'eve.sqlite.bz2')
             log('Downloading EVE original dump from %s to %s...', ccp_dump_url, ccp_dump_archive)
             req = urllib2.urlopen(ccp_dump_url)
             with open(ccp_dump_archive, 'wb') as fp:
@@ -97,7 +97,7 @@ def patch_ccp_dump(ccp_dump_url, eve_db_dir, ccp_dump_archive=None):
         else:
             tempdir = None
 
-        db_file = os.path.join(eve_db_dir, 'EVE.db')
+        db_file = os.path.join(eve_db_dir, 'eve.sqlite')
         if not path.isdir(eve_db_dir):
             os.makedirs(eve_db_dir)
 

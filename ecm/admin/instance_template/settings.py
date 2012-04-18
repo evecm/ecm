@@ -67,7 +67,7 @@ def get_db_config(prefix):
     engine = config.get('database', prefix + '_engine')
     if engine == 'django.db.backends.sqlite3':
         folder = config.get('database', 'sqlite_db_dir') or rel_path('db/')
-        return {'ENGINE': engine, 'NAME': os.path.join(folder, prefix.upper() + '.db')}
+        return {'ENGINE': engine, 'NAME': os.path.join(folder, prefix + '.sqlite')}
     else:
         return {
             'ENGINE': config.get('database', prefix + '_engine'),

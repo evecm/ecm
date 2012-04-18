@@ -16,6 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+import os
 
 __date__ = '2012 3 23'
 __author__ = 'diabeteman'
@@ -102,6 +103,9 @@ def init_instance(command, args):
         pass
     template_dir = path.abspath(path.dirname(instance_template.__file__))
     shutil.copytree(template_dir, instance_dir)
+    
+    if hasattr(os, 'chmod'):
+        os.chmod(path.join(instance_dir, 'manage.py'), 00755)
 
     return instance_dir
 

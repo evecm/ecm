@@ -25,7 +25,7 @@ TASKS = [
         'frequency_units' : 86400, # day
     }, {
         'function' : 'ecm.apps.common.tasks.outposts.update',
-        'priority' : 1,
+        'priority' : 1000,
         'frequency' : 1,
         'frequency_units' : 86400, # day
     },
