@@ -56,6 +56,9 @@ def update():
 
 #------------------------------------------------------------------------------
 def process_contracts(contract_list, connection):
+    """
+    Process all contracts from the API
+    """
     current_corp = Corp.objects.get(pk=1)
     alliance_id = current_corp.allianceID
     LOG.debug("Fetching contracts from DB...")    
@@ -70,11 +73,12 @@ def process_contracts(contract_list, connection):
     new_contracts = {}
     for entry in contract_list:
         if entry.assigneeID != alliance_id:
-            contract = create_contract_fom_row(entry)
+            contract = populate_contract(entry)
             new_contracts[contract] = contract
     LOG.debug("%s new contracts from API..." % len(new_contracts))
     
-    removed_contracts, added_contracts = tools.diff(old_contracts, new_contracts)
+    # Get changes
+    removed_contracts, added_contracts = tools.diff(old_items=old_contracts, new_items=new_contracts)
     LOG.debug("Contracts from API: %s" % len(contract_list))
     LOG.debug("Removed contracts: %s" % len(removed_contracts))
     LOG.debug("Added contracts: %s" % len(added_contracts))
@@ -84,8 +88,9 @@ def process_contracts(contract_list, connection):
     for item in ContractItem.objects.all():
         old_items[item] = item
 
+    # Note: We dont need to diff items, since they are contained in contracts
+    # Get new items by contractID from EVE API
     new_items = {}
-    
     for contract in added_contracts:
         try:
             items_api = connection.corp.ContractItems(contractID=contract.contractID)
@@ -93,17 +98,20 @@ def process_contracts(contract_list, connection):
             item_list = items_api.itemList
             LOG.debug("%s items for contract id %s..." % (len(item_list), contract.contractID))
             for item in item_list:
-                new_item = create_contract_item(item, contract)
+                new_item = populate_contract_item(item, contract)
                 new_items[new_item] = new_item
         except Error:
             LOG.debug("Invalid or missing contractID: %s" % contract.contractID)
             continue
+    # Get all contractitem ids for removed contracts
+    removed_items = {}
+    for contract in removed_contracts:
+        removed_items.append(ContractItem.objects.filter(contract=contract).values_list())
 
-    removed_items, added_items = tools.diff(old_items, new_items)
     LOG.debug("Writing contracts to DB...")
     write_contracts(added_contracts, removed_contracts)
     LOG.debug("Writing contract items to DB...")
-    write_contract_items(added_items, removed_items)
+    write_contract_items(new_items, removed_items)
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -122,17 +130,21 @@ def write_contracts(new_contracts, old_contracts):
 @transaction.commit_on_success
 def write_contract_items(new_items, old_items):
     """
-    Write the API results
+    Write the API results for contract items to DB.
+    If old_items exists, they will 
     """
     if len(old_items) > 0:
-        ContractItem.objects.all().delete()
+        ContractItem.objects.filter(contractID__in=old_items).delete()
         LOG.info("%d old contract items removed." % len(old_items))
     for item in new_items:
         item.save()
     LOG.info("%d new contract items added." % len(new_items))
 
 #------------------------------------------------------------------------------
-def create_contract_fom_row(row):
+def populate_contract(row):
+    """
+    Takes a contract row from the API resultset and creates a Contract object.
+    """
     return Contract(contractID=row.contractID,
                     issuerID=row.issuerID,
                     issuerCorpID=row.issuerCorpID,
@@ -157,7 +169,10 @@ def create_contract_fom_row(row):
                     volume=row.volume)
 
 #------------------------------------------------------------------------------
-def create_contract_item(entry, contract):
+def populate_contract_item(entry, contract):
+    """
+    Takes a contract item row from the API ResultSet and creates a ContractItem object.
+    """
     if entry.rawQuantity:
         raw_quantity = entry.rawQuantity
     else:

@@ -26,7 +26,7 @@ except ImportError:
 
 from datetime import timedelta
 import logging
-from django.db.models.aggregates import Avg, Count
+from django.db.models.aggregates import Avg
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.utils.datetime_safe import datetime
@@ -47,7 +47,7 @@ def dashboard(request):
     dailyplaytimes = []
     online_member_count = []
     now = datetime.now()
-    for day in range(14):
+    for day in range(30):
         start = now - timedelta(day+1)
         end = now - timedelta(day)
         
@@ -56,7 +56,7 @@ def dashboard(request):
         else:
             time = round((average_playtime(start,end)['len']/3600),2)
         date = start.strftime("%a %b %d")
-        online  = len(members_online(start, end))
+        online  = members_online(start, end)
         dataset = {'date' : date, 'time' : time} 
         dailyplaytimes.append(dataset)
         dataset = {'date' : date, 'online' : online}
@@ -72,8 +72,6 @@ def dashboard(request):
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
         'dailyplaytimes' : dailyplaytimes,
         'online_member_count' : online_member_count,
-     #   'weeklyplaytimes' : weeklyplaytimes,
-     #   'monthlyplaytimes' : monthlyplaytimes,
     }
     
     return render_to_response("dashboard.html", data, Ctx(request))
@@ -140,8 +138,10 @@ def access_lvl_distribution():
 
 #------------------------------------------------------------------------------
 def average_playtime(start_date, end_date):
-    return MemberSession.objects.filter(session_begin__range=(start_date, end_date)).aggregate(len=Avg('session_seconds'))
+    return _get_sessions(start_date, end_date).aggregate(len=Avg('session_seconds'))
 
 def members_online(start_date, end_date):
-    return MemberSession.objects.filter(session_begin__range=(start_date, end_date)).values('character_id').annotate(Count('character_id'))
-    
+    return _get_sessions(start_date, end_date).values('character_id').distinct().count()
+
+def _get_sessions(start_date, end_date):
+    return MemberSession.objects.filter(session_begin__range=(start_date, end_date))
