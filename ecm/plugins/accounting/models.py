@@ -83,6 +83,15 @@ class Contract(models.Model):
 
     def __hash__(self):
         return self.contractID
+    
+    def __eq__(self, other):
+        return (self.contractID == other.contractID)
+
+    def __cmp__(self, other):
+        return cmp(self.contractID, other.contractID)
+    
+    def __repr__(self):
+        return str(self.contractID)
 
     # Unique ID for this contract.
     contractID     = models.PositiveIntegerField()
@@ -184,6 +193,12 @@ class ContractItem(models.Model):
 
     def __hash__(self):
         return self.recordID
+    
+    def __eq__(self, other):
+        return (self.recordID == other.recordID)
+
+    def __cmp__(self, other):
+        return cmp(self.recordID, other.recordID)
 
     contract    = models.ForeignKey(Contract)
     recordID    = models.PositiveIntegerField()
