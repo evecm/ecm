@@ -43,7 +43,7 @@ def collect_static_files(instance_dir, options):
     run_python_cmd('manage.py collectstatic ' + switches, instance_dir)
 
 #-------------------------------------------------------------------------------
-PATCHED_EVE_DB_URL = 'http://releases.eve-corp-management.googlecode.com/eve/eve_ecm.sqlite-4.zip'
+PATCHED_EVE_DB_URL = 'http://releases.eve-corp-management.org/eve/eve_ecm.sqlite-4.zip'
 def download_patched_eve_db(eve_db_url, eve_zip_archive, eve_db_dir):
     try:
         tempdir = None
