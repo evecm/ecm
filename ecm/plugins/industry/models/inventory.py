@@ -29,7 +29,6 @@ class SupplySource(models.Model):
 
     class Meta:
         app_label = 'industry'
-        ordering = ['name']
 
     location_id = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(max_length=50)
@@ -42,7 +41,6 @@ class Supply(models.Model):
 
     class Meta:
         app_label = 'industry'
-        ordering = ['typeID']
         verbose_name_plural = 'Supplies'
 
     typeID = models.PositiveIntegerField(primary_key=True)
@@ -91,7 +89,6 @@ class PriceHistory(models.Model):
         app_label = 'industry'
         verbose_name = "Price History"
         verbose_name_plural = "Prices History"
-        ordering = ['supply', '-date']
 
     supply = models.ForeignKey('Supply', related_name='price_histories')
     price = models.FloatField()

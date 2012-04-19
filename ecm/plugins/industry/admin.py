@@ -67,7 +67,7 @@ class JobAdmin(admin.ModelAdmin):
         'row',
         'parent_job',
         'state',
-        'owner',
+        'assignee',
         'item_id',
         'runs',
         'blueprint',

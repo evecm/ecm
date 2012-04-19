@@ -20,18 +20,16 @@ from __future__ import with_statement
 __date__ = "2011 8 17"
 __author__ = "diabeteman"
 
-
 from django.db import models, connection
 from django.contrib.auth.models import User
 
 from ecm.utils import db
 from ecm.utils.format import print_date
 from ecm.apps.eve.models import Type
-from ecm.plugins.industry.models.catalog import CatalogEntry
+from ecm.plugins.industry.models.catalog import CatalogEntry, SurchargePolicy
 from ecm.plugins.industry.models.inventory import Supply
 from ecm.plugins.industry.models.job import Job
-import logging
-LOG = logging.getLogger(__name__)
+
 #------------------------------------------------------------------------------
 class Order(models.Model):
     """
@@ -41,7 +39,6 @@ class Order(models.Model):
     """
 
     class Meta:
-        ordering = ['id']
         get_latest_by = 'id'
         app_label = 'industry'
 
@@ -80,10 +77,7 @@ class Order(models.Model):
     client = models.CharField(max_length=255, null=True, blank=True)
     delivery_location = models.CharField(max_length=255, null=True, blank=True)
     delivery_date = models.DateField(null=True, blank=True)
-    cost = models.FloatField(default=0.0)
     quote = models.FloatField(default=0.0)
-    discount = models.FloatField(default=0.0)
-    margin = models.FloatField(default=0.0)
 
     def last_modified(self):
         try:
@@ -145,7 +139,6 @@ class Order(models.Model):
         if missing_price:
             self.cost = 0.0
             self.quote = 0.0
-        LOG.debug("Quote changed: %d" % self.quote)
         self.save()
 
     def confirm(self):
@@ -166,7 +159,7 @@ class Order(models.Model):
         """
         try:
             self.check_feasibility()
-            missing_prices = self.create_jobs()
+            missing_prices = self.create_jobs(calculate_surcharge=True)
             if missing_prices: # FIXME moche moche moche
                 raise OrderCannotBeFulfilled('Missing prices for items %s' % list(missing_prices))
             self.apply_transition(Order.accept, Order.ACCEPTED, user=manufacturer, comment="Accepted")
@@ -184,7 +177,7 @@ class Order(models.Model):
         This is a manual operation and entering a comment is mandatory to explain
         why the order was accepted despite the fact that is was PROBLEMATIC
         """
-        self.create_jobs()
+        self.create_jobs(calculate_surcharge=True)
         self.apply_transition(Order.resolve, Order.ACCEPTED, manufacturer, comment)
         self.save()
 
@@ -311,25 +304,28 @@ class Order(models.Model):
         if missing_blueprints:
             raise OrderCannotBeFulfilled(missing_blueprints=missing_blueprints)
 
-    def create_jobs(self):
+    def create_jobs(self, calculate_surcharge=False):
         """
         Create all jobs needed to complete this order.
         Calculating costs for all the order's rows.
-
-        If dry_run is True, only the prices are written, and any job creation is rollbacked.
         """
         prices = {}
         for sp in Supply.objects.all():
             prices[sp.typeID] = sp.price
-        missingPrices = set([])
-        self.cost = 0.0
+        all_missing_prices = set([])
+        self.quote = 0.0
         for row in self.rows.all():
-            row.cost, missPrices = row.create_jobs(prices=prices)
-            missingPrices.update(missPrices)
-            self.cost += row.cost
+            row.cost, miss_prices = row.create_jobs(prices=prices)
+            all_missing_prices.update(miss_prices)
+            self.quote += row.cost
+            
+            if calculate_surcharge:
+                row.surcharge = row.calculate_surcharge(self.originator)
+                self.quote += row.surcharge
+            
             row.save()
         self.save()
-        return missingPrices
+        return all_missing_prices
 
     def get_bill_of_materials(self):
         return self.get_aggregated_jobs(Job.SUPPLY)
@@ -456,7 +452,7 @@ class OrderRow(models.Model):
     catalog_entry = models.ForeignKey(CatalogEntry, related_name='order_rows')
     quantity = models.PositiveIntegerField()
     cost = models.FloatField(default=0.0)
-
+    surcharge = models.FloatField(default=0.0)
 
     def get_aggregated_jobs(self, activity=None):
         """
@@ -505,6 +501,9 @@ class OrderRow(models.Model):
                 missing_prices.add(job.item_id)
         return cost, missing_prices
 
+    def calculate_surcharge(self, user):
+        policy = SurchargePolicy.resolve(self.catalog_entry, user)
+        return policy.calculate(self.cost)
 
     def __unicode__(self):
         return '%s x%d : %f' % (self.catalog_entry.typeName, self.quantity, self.cost)

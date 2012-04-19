@@ -18,12 +18,14 @@
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
 
+import logging
 
 from django.db import models
+from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as tr
 
 from ecm.apps.eve.models import Type, BlueprintType
-import logging
+
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
@@ -85,7 +87,6 @@ class OwnedBlueprint(models.Model):
 
     class Meta:
         app_label = 'industry'
-        ordering = ['typeID', '-me']
         get_latest_by = 'id'
 
     typeID = models.IntegerField()
@@ -152,26 +153,39 @@ class OwnedBlueprint(models.Model):
         return cmp(self.typeID, other.typeID)
     
 #------------------------------------------------------------------------------
-class PricingPolicy(models.Model):
+class SurchargePolicy(models.Model):
     
         class Meta:
             app_label = 'industry'
             verbose_name = tr("Surcharge Policy")
             verbose_name_plural = tr("Surcharge Policies")
     
-        item_group_id = models.IntegerField(null=True, blank=True)
-        item_id = models.IntegerField(blank=True, null=True)
-        item_group = models.CharField(blank=True, null=True, max_length=255)
-        user_group = models.CharField(blank=True, null=True, max_length=255)
-        user_group_id = models.IntegerField(default=0)
-        category_id = models.IntegerField(blank=True, null=True)
         active = models.BooleanField(default=False)
+
+        item_id = models.IntegerField(blank=True, null=True) # typeID
+        item_group_id = models.IntegerField(null=True, blank=True) # groupID
+        item_category_id = models.IntegerField(blank=True, null=True) # categoryID
+        tech_level = models.SmallIntegerField(blank=True, null=True)
+        user_group = models.ForeignKey(Group, blank=True, null=True)
         
-        surcharge_absolute = models.FloatField(blank=True, null=True,default=0.0)
-        surcharge_relative = models.FloatField(default=0.0)
+        surcharge_absolute = models.FloatField(default=0.0) # fixed amount of iSK 
+        surcharge_relative = models.FloatField(default=0.0) # a percentage
         
-        def calculate_surcharge(self, price):
+        def calculate(self, price):
             result = price * self.surcharge_relative
-            if self.surcharge_absolute != None:
-                result += self.surcharge_absolute
+            result += self.surcharge_absolute
             return result
+
+        @staticmethod
+        def resolve(item, user):
+            policies = SurchargePolicy.objects.filter(user_group__in=user.groups)
+            if not policies:
+                SurchargePolicy.objects.all()
+            if policies.filter(item_id=item.typeID):
+                return policies.filter(item_id=item.typeID)[0]
+            elif policies.filter(item_group_id=item.groupID):
+                pass
+                
+                #TODO
+
+

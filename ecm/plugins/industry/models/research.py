@@ -52,7 +52,6 @@ class InventionPolicy(models.Model):
         app_label = 'industry'
         verbose_name = tr("Invention Policy")
         verbose_name_plural = tr("Invention Policies")
-        ordering = ['item_group_id']
 
     item_group_id = models.IntegerField(default=0)
     item_id = models.IntegerField(blank=True, null=True)

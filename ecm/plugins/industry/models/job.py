@@ -31,7 +31,6 @@ class Job(models.Model):
 
     class Meta:
         app_label = 'industry'
-        ordering = ['order', 'id']
 
     PENDING = 0
     PLANNED = 1
@@ -62,9 +61,9 @@ class Job(models.Model):
     # self.parent_job is None if this job is directly issued from an OrderRow
     parent_job = models.ForeignKey('self', related_name='children_jobs', null=True, blank=True)
 
-    state = models.PositiveSmallIntegerField(default=PENDING, choices=STATES.items())
+    state = models.SmallIntegerField(default=PENDING, choices=STATES.items())
 
-    owner = models.ForeignKey(User, related_name='jobs', null=True, blank=True)
+    assignee = models.ForeignKey(User, related_name='jobs', null=True, blank=True)
 
     item_id = models.PositiveIntegerField()
     # runs must be a float number, else when jobs are aggregated there may be rounding errors
@@ -203,10 +202,10 @@ class Job(models.Model):
     def permalink(self):
         return '<a href="%s" class="industry-job">Job &#35;%s</a>' % (self.url(), self.id)
 
-    def owner_permalink(self):
-        if self.owner is not None:
-            url = '/hr/player/%d/' % self.owner.id
-            return '<a href="%s" class="player">%s</a>' % (url, self.owner.username)
+    def assignee_permalink(self):
+        if self.assignee is not None:
+            url = '/hr/player/%d/' % self.assignee.id
+            return '<a href="%s" class="player">%s</a>' % (url, self.assignee.username)
         else:
             return '(none)'
 
