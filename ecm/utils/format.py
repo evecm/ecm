@@ -128,6 +128,8 @@ def print_duration(seconds, verbose=True):
     rest = rest % MINUTE
     if rest > 0:
         duration += ' %d' % rest + '%(sec)s'
+    if seconds == 0:
+        duration = '0'
 
     duration %= DURATION_UNITS[verbose]
     return duration.strip()

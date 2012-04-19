@@ -190,7 +190,7 @@ class FuelLevel(models.Model):
             return self.quantity
         else:
             date_delta = datetime.datetime.now() - self.date
-            hours = int(date_delta.seconds / 3600)
+            hours = int(date_delta.total_seconds() / 3600)
             consumed_fuel = hours * self.consumption
             remaining_fuel = self.quantity - consumed_fuel
             if remaining_fuel < 0:
