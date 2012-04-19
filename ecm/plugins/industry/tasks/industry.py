@@ -29,6 +29,7 @@ from ecm.utils.format import print_float
 from ecm.apps.eve.models import Type
 from ecm.plugins.industry.models.order import OrderCannotBeFulfilled
 from ecm.plugins.industry.tasks import evecentral
+from ecm.plugins.industry.tasks import evemarketeer
 from ecm.plugins.industry.models import Supply, SupplySource, Order, CatalogEntry
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,8 @@ def update_supply_prices():
         logger.debug('Updating supply prices for %s (%d)...' % (supply_source.name,supply_source.location_id))
         prices = supplyPrices.filter(supply_source=supply_source)
         item_ids = prices.values_list('typeID', flat=True)
-        buyPrices = evecentral.get_buy_prices(item_ids, supply_source.location_id)
+        #buyPrices = evecentral.get_buy_prices(item_ids, supply_source.location_id)
+        buyPrices = evemarketeer.get_buy_prices(item_ids, supply_source.location_id)
 
         for supPrice in prices:
             try:
