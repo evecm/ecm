@@ -114,7 +114,7 @@ def jobs_list_data(request):
             job.state,
             job.id,
             job.order.permalink(shop=False),
-            job.owner_permalink(),
+            job.assignee_permalink(),
             duration,
             activity_icon,
             print_integer(round(job.runs)),
@@ -134,8 +134,9 @@ def change_state(request, job_id, action):
 
     if action == 'start':
         job.state = Job.IN_PRODUCTION
-        job.owner = request.user
+        job.assignee = request.user
         job.save()
+        job.children_jobs.filter(state=Job.PENDING).update(owner=request.user, state=Job.IN_PRODUCTION)
         try:
             if job.order is not None:
                 job.order.start_preparation(user=request.user)
@@ -145,6 +146,7 @@ def change_state(request, job_id, action):
     elif action == 'done':
         job.state = Job.READY
         job.save()
+        job.children_jobs.exclude(state=Job.READY).update(owner=request.user, state=Job.READY)
         try:
             if job.order is not None and not job.order.jobs.exclude(state=Job.READY):
                 job.order.end_preparation(manufacturer=request.user)

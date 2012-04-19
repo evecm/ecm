@@ -27,22 +27,16 @@
       <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
       <a class="btn btn-small" id="clear_search">Reset</a>
     </div>
+    <div class="control-group inline error" style="display: inline;">
+      <span class="label label-important">Display</span>
+      <select id="display_mode_selector" class="input-medium">
+        {% for mode_id, name in display_modes %}
+        <option value="{{mode_id}}">{{name}}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
 </form>
-
-<div class="well well-tight">
-  <div class="btn-toolbar" >
-    <span class="label label-info">States</span>
-    <div title="Press CTRL + Click to select only one" class="btn-group" data-toggle="buttons-checkbox" id="state_buttons">
-    {% for id, name in states.items %}
-      <button class="btn btn-mini btn-info active" id="{{ id }}" >{{ name }}</button>
-    {% endfor %}</div>
-  </div>
-  <div class="btn-group">
-    <a class="btn btn-mini" id="apply_filter"><i class="icon-ok"></i> Apply Filter</a>
-    <a class="btn btn-mini" id="reset_filter"><i class="icon-remove"></i> Reset</a>
-  </div>
-</div>
 
 <table class="table table-bordered table-condensed" id="orders_list">
   <thead>
@@ -75,7 +69,7 @@
  * "Orders List" table setup *
  ************************************/
 
-PARAMS = '{%for id, name in states.items%}{{id}}{%if not forloop.last%},{%endif%}{%endfor%}';
+DISPLAY_MODE = '{{selected_mode}}';
 
 $(document).ready(function() {
       var table = $('#orders_list').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
@@ -97,13 +91,31 @@ $(document).ready(function() {
         fnServerData: function ( sSource, aoData, fnCallback ) {
             /* Add some extra variables to the url */
             aoData.push( {
-                name: 'states',
-                value: PARAMS
+                name: 'display_mode',
+                value: DISPLAY_MODE
             } );
             $.getJSON( sSource, aoData, function (json) {
                 fnCallback(json)
             } );
+        },
+        
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        fnStateSaveParams: function (oSettings, oData) {
+            oData.sFilter = $("#search_text").val()
+            oData.display_mode = DISPLAY_MODE;
+        },
+
+        /* restore the search field content */
+        fnStateLoadParams: function (oSettings, oData) {
+            $("#search_text").val(oData.sFilter);
+            if ('display_mode' in oData) {
+            	DISPLAY_MODE = oData.display_mode;
+                $('#display_mode_selector').val(DISPLAY_MODE);
+            }
+            return true;
         }
+        
     }));
 
     /* trigger the search when pressing return in the text field */
@@ -129,39 +141,13 @@ $(document).ready(function() {
             event.shiftKey = false;
         }
     });
-    /* enable control click on state buttons */
-    $('#state_buttons button').click(function (event) {
-        if (event.ctrlKey) {
-            /* if ctrl + click, deselect all divisions before selecting */
-            $('#state_buttons button').removeClass('active');
-        }
+    
+    $('#display_mode_selector').on('change', function () {
+    	DISPLAY_MODE = this.value;
+    	table.fnDraw();
     });
-    $('#apply_filter').click(function() {
-        
-        var stateBtns = $('#state_buttons button.active');
-        var states = '';
-        for (var i=0 ; i < stateBtns.length ; i++) {
-            states += ',' + stateBtns[i].id;
-        }
-        if (states.length != 0) {
-            states = states.substring(1);
-        }
-        PARAMS = states;
-        table.fnDraw();
-    });
-    $('#reset_filter').click(function() {
-        var stateBtns = $('#state_buttons button');
-        var states = '';
-        for (var i=0 ; i < stateBtns.length ; i++) {
-            states += ',' + stateBtns[i].id;
-        }
-        if (states.length != 0) {
-            states = states.substring(1);
-        }
-        PARAMS = states;
-        table.fnDraw();
-        $('#state_buttons button').addClass('active');
-    });
+    
+    $('#display_mode_selector').val(DISPLAY_MODE);
 
 } );
 

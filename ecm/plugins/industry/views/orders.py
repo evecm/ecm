@@ -28,7 +28,6 @@ import logging
 from django.db import transaction
 from django.http import Http404, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.text import truncate_words
 
@@ -50,27 +49,47 @@ COLUMNS = [
     ['Items', None],
     ['Quote', 'quote'],
 ]
-@login_required
+DISPLAY_MODES = [
+    ('all', 'All Orders'),
+    ('new', 'New Orders'),
+    ('in_progress', 'Orders in progress'),
+    ('open', 'Open orders'),
+    ('closed', 'Closed orders'),
+]
+@check_user_access()
 def orders(request):
-    columns = [ col[0] for col in COLUMNS ]
-    return render_to_response('orders_list.html',
-                              {'columns' : columns,
-                               'states': Order.STATES},
-                              Ctx(request))
+    data = {
+        'columns' : [ col[0] for col in COLUMNS ],
+        'states': Order.STATES,
+        'display_modes': DISPLAY_MODES,
+        'selected_mode': request.GET.get('display_mode', 'open')
+    }
+    return render_to_response('orders_list.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def orders_data(request):
     try:
         params = extract_datatable_params(request)
+        display_mode = getattr(request, request.method).get('display_mode', 'open')
     except Exception, e:
         return HttpResponseBadRequest(str(e))
-    try:
-        states = [int(x) for x in request.GET.get('states').split(',')]
-    except ValueError:
-        states = []
+    
+    if display_mode == 'closed':
+        states = [Order.CANCELED, Order.REJECTED, Order.PAID]
+    elif display_mode == 'open':
+        states = [Order.PENDING, Order.PROBLEMATIC, Order.ACCEPTED, Order.PLANNED, 
+                  Order.IN_PREPARATION, Order.READY, Order.DELIVERED]
+    elif display_mode == 'new':
+        states = [Order.PENDING, Order.PROBLEMATIC]
+    elif display_mode == 'in_progress':
+        states = [Order.ACCEPTED, Order.PLANNED, Order.IN_PREPARATION, Order.READY, 
+                  Order.DELIVERED]
+    else:
+        states = Order.STATES.keys()
+        states.remove(Order.DRAFT)
 
-    query = Order.objects.filter(state__in= states)
+    query = Order.objects.filter(state__in=states)
 
     sort_by = COLUMNS[params.column][1]
 
