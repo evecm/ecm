@@ -2,7 +2,11 @@ from django.db.backends import util, BaseDatabaseOperations
 from django.db.backends.sqlite3.base import DatabaseOperations
 from django.db.models import fields
 from django.db.models.fields.related import ForeignKey
-#from django.db.backends.postgresql_psycopg2.creation import DatabaseCreation as PostgresDBCreation
+try:
+    from django.db.backends.postgresql_psycopg2.creation import DatabaseCreation as PostgresDBCreation
+except:
+    # fix for django 1.4
+    pass
 from django.db.backends.sqlite3.creation import DatabaseCreation as SQLiteDBCreation
 from django.db.backends.oracle.creation import DatabaseCreation as OracleDBCreation
 from django.db.backends.mysql.creation import DatabaseCreation as MySQLDBCreation
@@ -25,7 +29,11 @@ class BigAutoField(fields.AutoField):
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], [r'^ecm\.lib\.bigintpatch\.BigAutoField'])
 
-#PostgresDBCreation.data_types['BigAutoField'] = 'bigserial'
+try:
+    PostgresDBCreation.data_types['BigAutoField'] = 'bigserial'
+except:
+    # fix for django 1.4
+    pass
 OracleDBCreation.data_types['BigAutoField'] = 'NUMBER(19)'
 MySQLDBCreation.data_types['BigAutoField'] = 'bigint AUTO_INCREMENT'
 SQLiteDBCreation.data_types['BigAutoField'] = 'integer'
