@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.plugins.industry.models.catalog import PricingPolicy
+#from ecm.plugins.industry.models.catalog import PricingPolicy
 
 __date__ = '2011 6 9'
 __author__ = 'diabeteman'
@@ -43,8 +43,8 @@ class OrderAdmin(admin.ModelAdmin):
         'delivery_location',
         'delivery_date',
         'state',
-        'cost',
-        'discount',
+        #'cost',
+        #'discount',
         'quote',
     ]
     search_fields = ['originator__username', 'client', 'manufacturer__username',
@@ -143,5 +143,5 @@ admin.site.register(PriceHistory, PriceHistoryAdmin)
 admin.site.register(CatalogEntry, CatalogEntryAdmin)
 admin.site.register(OwnedBlueprint, OwnedBlueprintAdmin)
 admin.site.register(InventionPolicy, InventionPolicyAdmin)
-admin.site.register(PricingPolicy, PricingPolicyAdmin)
+#admin.site.register(PricingPolicy, PricingPolicyAdmin)
 
