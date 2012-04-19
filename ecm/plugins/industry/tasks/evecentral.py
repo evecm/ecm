@@ -35,7 +35,7 @@ def get_buy_prices(item_ids, systemID):
         params=[]
         for item_id in item_ids[i*50:(i+1)*50]:
             params.append(("typeid", item_id))
-        params.append(("minQ", 1000))
+        params.append(("minQ", 10))
         if systemID != 1:
             params.append(("usesystem", systemID))
         evecentralurl = Setting.get('industry_evecentral_url')
