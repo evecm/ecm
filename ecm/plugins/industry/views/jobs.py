@@ -88,14 +88,14 @@ def jobs_list_data(request):
     if state != 'all':
         query = query.filter(state=int(state))
     if assignment == 'me':
-        query = query.filter(owner=request.user)
+        query = query.filter(assignee=request.user)
     elif assignment == 'unassigned':
-        query = query.filter(owner__isnull=True)
+        query = query.filter(assignee__isnull=True)
 
     if params.search:
         matching_items = Type.objects.filter(typeName__icontains=params.search)
         matching_ids = list(matching_items.values_list('typeID', flat=True)[:100])
-        search_args = Q(owner__username__icontains=params.search)
+        search_args = Q(assignee__username__icontains=params.search)
         search_args |= Q(item_id__in=matching_ids)
         query = query.filter(search_args).distinct()
 
@@ -136,7 +136,7 @@ def change_state(request, job_id, action):
         job.state = Job.IN_PRODUCTION
         job.assignee = request.user
         job.save()
-        job.children_jobs.filter(state=Job.PENDING).update(owner=request.user, state=Job.IN_PRODUCTION)
+        job.children_jobs.filter(state=Job.PENDING).update(assignee=request.user, state=Job.IN_PRODUCTION)
         try:
             if job.order is not None:
                 job.order.start_preparation(user=request.user)
@@ -146,7 +146,7 @@ def change_state(request, job_id, action):
     elif action == 'done':
         job.state = Job.READY
         job.save()
-        job.children_jobs.exclude(state=Job.READY).update(owner=request.user, state=Job.READY)
+        job.children_jobs.exclude(state=Job.READY).update(assignee=request.user, state=Job.READY)
         try:
             if job.order is not None and not job.order.jobs.exclude(state=Job.READY):
                 job.order.end_preparation(manufacturer=request.user)

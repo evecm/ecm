@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.utils import tools
 
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
@@ -26,6 +25,8 @@ from django.db import connections, transaction
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
+from ecm.utils import tools
+from ecm.plugins.industry.models.catalog import ItemGroup
 from ecm.apps.eve.models import Type, BlueprintReq
 from ecm.apps.eve import constants
 from ecm.plugins.industry.models import CatalogEntry, Supply
@@ -79,3 +80,76 @@ def create_missing_supplies():
         duration = time.time() - start
         logger.info('added %d missing supplies (took %.2f sec.)', len(missing_ids), duration)
 create_missing_supplies()
+
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def create_missing_item_groups():
+    start = time.time()
+    all_types = Type.objects.filter(blueprint__isnull=False,
+                                    published=1,
+                                    metaGroupID__in=constants.MANUFACTURABLE_ITEMS,
+                                    market_group__isnull=False)
+    all_types = all_types.exclude(typeID__in=constants.FACTION_FRIGATES_TYPEIDS)
+    
+    t1_items_group, _ = ItemGroup.objects.get_or_create(name='Tech 1 Items')
+    t2_items_group, _ = ItemGroup.objects.get_or_create(name='Tech 2 Items')
+    t3_items_group, _ = ItemGroup.objects.get_or_create(name='Tech 3 Items')
+    
+    t1_ships_group, _ = ItemGroup.objects.get_or_create(name='Tech 1 Ships')
+    t2_ships_group, _ = ItemGroup.objects.get_or_create(name='Tech 2 Ships')
+    t3_ships_group, _ = ItemGroup.objects.get_or_create(name='Tech 3 Ships')
+    
+    t1_modules_group, _ = ItemGroup.objects.get_or_create(name='Tech 1 Modules')
+    t2_modules_group, _ = ItemGroup.objects.get_or_create(name='Tech 2 Modules')
+    t3_modules_group, _ = ItemGroup.objects.get_or_create(name='Tech 3 Modules')
+    
+    charges_group, _ = ItemGroup.objects.get_or_create(name='Charges')
+    capital_ships_group, _ = ItemGroup.objects.get_or_create(name='Capital Ships')
+    
+    
+    t1_items = all_types.filter(techLevel=1)
+    t2_items = all_types.filter(techLevel=2)
+    t3_items = all_types.filter(techLevel=3)
+    
+    t1_ships = t1_items.filter(category=constants.SHIP_CATEGORYID)
+    t2_ships = t2_items.filter(category=constants.SHIP_CATEGORYID)
+    t3_ships = t3_items.filter(category=constants.SHIP_CATEGORYID)
+    
+    t1_modules = t1_items.filter(category=constants.MODULE_CATEGORYID)
+    t2_modules = t2_items.filter(category=constants.MODULE_CATEGORYID)
+    t3_modules = t3_items.filter(category=constants.MODULE_CATEGORYID)
+    
+    charges = all_types.filter(category=constants.CHARGE_CATEGORYID)
+    capital_ships = all_types.filter(group__in=constants.CAPITAL_SHIPS_GROUPID)
+    
+    for ids in tools.sublists(list(t1_items.values_list('typeID', flat=True)), 200):
+        t1_items_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    for ids in tools.sublists(list(t2_items.values_list('typeID', flat=True)), 200):
+        t2_items_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    for ids in tools.sublists(list(t3_items.values_list('typeID', flat=True)), 200):
+        t3_items_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    
+    for ids in tools.sublists(list(t1_ships.values_list('typeID', flat=True)), 200):
+        t1_ships_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    for ids in tools.sublists(list(t2_ships.values_list('typeID', flat=True)), 200):
+        t2_ships_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    for ids in tools.sublists(list(t3_ships.values_list('typeID', flat=True)), 200):
+        t3_ships_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    
+    for ids in tools.sublists(list(t1_modules.values_list('typeID', flat=True)), 200):
+        t1_modules_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    for ids in tools.sublists(list(t2_modules.values_list('typeID', flat=True)), 200):
+        t2_modules_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    for ids in tools.sublists(list(t3_modules.values_list('typeID', flat=True)), 200):
+        t3_modules_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    
+    for ids in tools.sublists(list(charges.values_list('typeID', flat=True)), 200):
+        charges_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+    for ids in tools.sublists(list(capital_ships.values_list('typeID', flat=True)), 200):
+        capital_ships_group.items.add(*CatalogEntry.objects.filter(typeID__in=ids))
+        
+    duration = time.time() - start
+    logger.info('Initialized item groups (took %.2f sec.)', duration)
+    
+create_missing_item_groups()
+

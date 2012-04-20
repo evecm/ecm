@@ -18,19 +18,21 @@
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
 
-import logging
-
 from django.db import models
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as tr
 
+from ecm.apps.common.models import Setting
 from ecm.apps.eve.models import Type, BlueprintType
-
-LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 class CatalogEntry(models.Model):
-
+    """
+    Represents a EVE item that can be manufactured with a blueprint.
+    
+    Extra fields are available to integrate it into the industry/shop system.
+    """
+    
     class Meta:
         app_label = 'industry'
         verbose_name = tr("Catalog Entry")
@@ -84,7 +86,12 @@ class CatalogEntry(models.Model):
 
 #------------------------------------------------------------------------------
 class OwnedBlueprint(models.Model):
-
+    """
+    Represents a EVE blueprint owned by the corporation.
+    
+    It has a link to a CatalogEntry and carries variable data of blueprints (ME, PE, etc.)
+    """
+    
     class Meta:
         app_label = 'industry'
         get_latest_by = 'id'
@@ -151,41 +158,99 @@ class OwnedBlueprint(models.Model):
 
     def __cmp__(self, other):
         return cmp(self.typeID, other.typeID)
-    
+
 #------------------------------------------------------------------------------
-class SurchargePolicy(models.Model):
+class ItemGroup(models.Model):
+    """
+    Represents a user-defined logical ensemble of items.
     
-        class Meta:
-            app_label = 'industry'
-            verbose_name = tr("Surcharge Policy")
-            verbose_name_plural = tr("Surcharge Policies")
+    An ItemGroup will be used in along with PricingPolicy to associate margins to items.
     
-        active = models.BooleanField(default=False)
+    NB: A single item can be in multiple groups. 
+    """
+    
+    class Meta:
+        app_label = 'industry'
+    
+    name = models.CharField(max_length=100, unique=True)
+    items = models.ManyToManyField(CatalogEntry, related_name='item_groups')
 
-        item_id = models.IntegerField(blank=True, null=True) # typeID
-        item_group_id = models.IntegerField(null=True, blank=True) # groupID
-        item_category_id = models.IntegerField(blank=True, null=True) # categoryID
-        tech_level = models.SmallIntegerField(blank=True, null=True)
-        user_group = models.ForeignKey(Group, blank=True, null=True)
+    def item_count(self):
+        return self.items.all().count()
+
+    def __unicode__(self):
+        return self.name
+    
+    def __hash__(self):
+        return self.id
+    
+    def __eq__(self, other):
+        return self.id == other.id
+    
+    def __cmp__(self, other):
+        return cmp(self.id, other.id)
+
+#------------------------------------------------------------------------------
+class PricingPolicy(models.Model):
+    """
+    Stores a pricing policy for a combination of (item_group, user_group).
+    
+    surcharge_relative 
+        a percentage of the price that should be considered as a surcharge
+    surcharge_absolute 
+        a fixed amount of iSK that should be added to the total surcharge
+    
+    Price calculation
+    -----------------
         
-        surcharge_absolute = models.FloatField(default=0.0) # fixed amount of iSK 
-        surcharge_relative = models.FloatField(default=0.0) # a percentage
+        >>> total_surcharge = production_cost * surcharge_relative + surcharge_absolute
+        >>> sell_price = production_cost + total_surcharge
+    
+    Special Values Meaning
+    ----------------------
+    
+        >>> item_group = None    # means  "all items" 
+        >>> user_group = None    # means  "all users"
+    """
+    
+    class Meta:
+        app_label = 'industry'
+        verbose_name = tr("Surcharge Policy")
+        verbose_name_plural = tr("Surcharge Policies")
+    
+    is_active = models.BooleanField(default=True)
+    item_group = models.ForeignKey(ItemGroup, blank=True, null=True)
+    user_group = models.ForeignKey(Group, blank=True, null=True)
+    surcharge_relative = models.FloatField(default=0.0) # a percentage
+    surcharge_absolute = models.FloatField(default=0.0) # fixed amount of iSK 
+    
+    @staticmethod
+    def resolve_surcharge(item, user, price):
+        active_policies = PricingPolicy.objects.filter(is_active=True)
         
-        def calculate(self, price):
-            result = price * self.surcharge_relative
-            result += self.surcharge_absolute
-            return result
-
-        @staticmethod
-        def resolve(item, user):
-            policies = SurchargePolicy.objects.filter(user_group__in=user.groups)
-            if not policies:
-                SurchargePolicy.objects.all()
-            if policies.filter(item_id=item.typeID):
-                return policies.filter(item_id=item.typeID)[0]
-            elif policies.filter(item_group_id=item.groupID):
-                pass
-                
-                #TODO
-
-
+        if active_policies.filter(user_group__in=user.groups.all()):
+            policies = active_policies.filter(user_group__in=user.groups.all())
+        else:
+            # if no policy matches the user's groups, we use only non group-based policies
+            policies = active_policies.filter(user_group__isnull=True)
+        
+        if policies.filter(item_group__in=item.item_groups.all()):
+            policies = policies.filter(item_group__in=item.item_groups.all())
+        else:
+            # if no policy matches the item, we use only non item-based policies
+            policies = policies.filter(item_group__isnull=True)
+        
+        if policies:
+            policies = policies.extra(
+                select={'total_surcharge': '%s * surcharge_relative + surcharge_absolute'},
+                select_params=(price,),
+                order_by='total_surcharge', # sort by increasing surcharge
+            )
+            surcharge = policies[0].total_surcharge # take the smallest surcharge
+        else:
+            # If no policy is defined for this (item, user) combination,
+            # we fallback to the default margin.
+            surcharge = Setting.get('industry_default_margin') * price
+        
+        return surcharge
+        

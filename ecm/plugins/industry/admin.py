@@ -21,33 +21,22 @@ __author__ = 'diabeteman'
 
 from django.contrib import admin
 
-from ecm.plugins.industry.models import (InventionPolicy,
-                                         Job,
-                                         Order,
-                                         OrderLog,
-                                         OrderRow,
-                                         OwnedBlueprint,
-                                         PriceHistory,
-                                         SupplySource,
-                                         Supply,
-                                         CatalogEntry)
+from ecm.plugins.industry.models import *
 
 #------------------------------------------------------------------------------
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
         'id',
         'originator',
-        'manufacturer',
+        'responsible',
         'delivery_boy',
         'client',
         'delivery_location',
         'delivery_date',
         'state',
-        #'cost',
-        #'discount',
         'quote',
     ]
-    search_fields = ['originator__username', 'client', 'manufacturer__username',
+    search_fields = ['originator__username', 'client', 'responsible__username',
                      'delivery_boy__username', 'delivery_location']
 
 #------------------------------------------------------------------------------
@@ -125,14 +114,17 @@ class InventionPolicyAdmin(admin.ModelAdmin):
 #------------------------------------------------------------------------------
 class PricingPolicyAdmin(admin.ModelAdmin):
     list_display = [
-        'active',
-        'category_id',
-        'item_group_id',
-        'item_id',
+        'is_active',
         'item_group',
         'user_group',
-        'user_group_id',
+        'surcharge_relative',
+        'surcharge_absolute',
     ]
+
+#------------------------------------------------------------------------------
+class ItemGroupAdmin(admin.ModelAdmin):
+    list_display = ['name', 'item_count']
+
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderLog, OrderLogAdmin)
 admin.site.register(OrderRow, OrderRowAdmin)
@@ -143,5 +135,6 @@ admin.site.register(PriceHistory, PriceHistoryAdmin)
 admin.site.register(CatalogEntry, CatalogEntryAdmin)
 admin.site.register(OwnedBlueprint, OwnedBlueprintAdmin)
 admin.site.register(InventionPolicy, InventionPolicyAdmin)
-#admin.site.register(PricingPolicy, PricingPolicyAdmin)
+admin.site.register(ItemGroup, ItemGroupAdmin)
+admin.site.register(PricingPolicy, PricingPolicyAdmin)
 

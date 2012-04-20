@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.contrib.auth.models import Group
 
 __date__ = "2012 2 2"
 __author__ = "diabeteman"
@@ -30,11 +29,8 @@ from django.http import HttpResponseNotAllowed, HttpResponseBadRequest, HttpResp
     HttpResponseNotFound
 
 from ecm.views import JSON
-from ecm.plugins.industry.models.catalog import CatalogEntry, PricingPolicy
 from ecm.plugins.shop import eft
-from ecm.apps.common.models import Setting
-import logging
-LOG = logging.getLogger(__name__)
+from ecm.plugins.industry.models import CatalogEntry, PricingPolicy
 
 #------------------------------------------------------------------------------
 @login_required
@@ -52,26 +48,21 @@ def parse_eft(request):
 
     eft_items = eft.parse_export(eft_block)
 
-    member_group_name = Setting.get('hr_corp_members_group_name')
-    if request.user.groups.filter(name=member_group_name):
-        margin = Setting.get('industry_internal_price_margin')
-    else:
-        margin = Setting.get('industry_external_price_margin')
-
     query = CatalogEntry.objects.filter(typeName__in=eft_items.keys(), is_available=True)
     items = []
-    for entry in query:
-        if entry.fixed_price:
-            price = entry.fixed_price
+    for item in query:
+        if item.fixed_price is not None:
+            price = item.fixed_price
         else:
-            price = (entry.production_cost or 0.0) * (1 + margin)
+            surcharge = PricingPolicy.resolve_surcharge(item, request.user, item.production_cost)
+            price = item.production_cost + surcharge
         items.append({
-            'typeID': entry.typeID,
-            'typeName': entry.typeName,
-            'quantity': eft_items[entry.typeName] * quantity,
+            'typeID': item.typeID,
+            'typeName': item.typeName,
+            'quantity': eft_items[item.typeName] * quantity,
             'price': price
         })
-        eft_items.pop(entry.typeName) # we remove the item from the list
+        eft_items.pop(item.typeName) # we remove the item from the list
 
     for typeName, _ in eft_items.items():
         # we add the missing items to inform the user
@@ -116,7 +107,7 @@ def search_item(request):
         matches = query[:limit].values_list('typeName', flat=True)
         return HttpResponse('\n'.join(matches))
     else:
-        return HttpResponseBadRequest('Missing "querystring" parameter.')
+        return HttpResponseBadRequest('Missing "q" parameter.')
 
 #------------------------------------------------------------------------------
 @login_required
@@ -127,47 +118,15 @@ def get_item_id(request):
         if query.filter(is_available=True).exists():
             
             item = query[0]
-            price = item.fixed_price or item.production_cost
-            margin = _fetch_margin(request, item)
-            if price is not None:
-                price *= 1 + margin
+            
+            if item.fixed_price is not None:
+                price = item.fixed_price
+            else:
+                surcharge = PricingPolicy.resolve_surcharge(item, request.user, item.production_cost)
+                price = item.production_cost + surcharge
+            
             return HttpResponse(json.dumps([item.typeID, item.typeName, price]), mimetype=JSON)
         else:
             return HttpResponseNotFound('Item <em>%s</em> not available in the shop.' % querystring)
     else:
-        return HttpResponseBadRequest('Missing "querystring" parameter.')
-    
-def _fetch_margin(request, item):
-    """
-    Determines the margin for a given item via Pricing Policies.
-    Hierarchy of pricing policies: item > category > everything else
-    """
-    result = 0
-    group_name = Setting.get('hr_corp_members_group_name')
-    group_id = Group.objects.get(name=group_name).id
-    policy_query = PricingPolicy.objects.filter(item_id=item.typeID, user_group_id=group_id, active=True)
-    # Policy without a category has highest priority
-    if policy_query.count() > 0:
-        LOG.debug('asdf %s' % policy_query[0])
-        for policy in policy_query:
-            result = policy.surcharge_relative
-            LOG.debug('Using custom item pricing policy')
-            break;
-    else:
-        LOG.debug('Looking for category pricing policy: %s' % item.category_id)
-        policy_query = PricingPolicy.objects.filter(category_id=item.category_id, user_group_id=group_id)
-        if policy_query.count() > 0:
-            LOG.debug("Policies found: %s", policy_query[0])
-            for policy in policy_query:
-                result = policy.surcharge_relative
-                LOG.debug('Using custom category pricing policy')
-                break; 
-    if result == 0:
-        if request.user.groups.filter(name=group_name):
-            result = Setting.get('industry_internal_price_margin')
-            LOG.debug('Using default internal price margin')
-        else:
-            result = Setting.get('industry_external_price_margin')
-            LOG.debug('Using default external price margin')
-    LOG.debug("Final margin is: %s" % result)
-    return result
+        return HttpResponseBadRequest('Missing "q" parameter.')

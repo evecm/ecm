@@ -28,7 +28,7 @@ from django.db import transaction
 from ecm.utils.format import print_float
 from ecm.apps.eve.models import Type
 from ecm.plugins.industry.models.order import OrderCannotBeFulfilled
-from ecm.plugins.industry.tasks import evecentral
+#from ecm.plugins.industry.tasks import evecentral
 from ecm.plugins.industry.tasks import evemarketeer
 from ecm.plugins.industry.models import Supply, SupplySource, Order, CatalogEntry
 
@@ -80,11 +80,11 @@ def update_production_cost(entry):
             try:
                 order = Order.objects.create(originator_id=1)
                 order.modify( [ (entry, 1) ] )
-                missing_prices = order.create_jobs()
+                missing_prices = order.create_jobs(ignore_fixed_prices=True)
                 if missing_prices:
                     raise OrderCannotBeFulfilled(missing_prices=missing_prices)
                 else:
-                    cost = order.cost
+                    cost = order.quote
             finally:
                 transaction.rollback()
     else:

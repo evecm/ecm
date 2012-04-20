@@ -60,7 +60,7 @@
       <dt>Production Cost</dt><dd>{%if order.cost == 0.0%}N/A{%else%}{{order.cost|ecm_price}} ISK{%endif%}</dd>
       <dt>Creation Date</dt><dd>{{order.creation_date|ecm_datetime}}</dd>
       <dt>Last Modified</dt><dd>{{order.last_modified|ecm_datetime}}</dd>
-      <dt>Manufactured by</dt><dd>{{order.manufacturer_permalink|safe}}</dd>
+      <dt>Manufactured by</dt><dd>{{order.responsible_permalink|safe}}</dd>
       <dt>Delivered by</dt><dd>{{order.delivery_boy_permalink|safe}}</dd>
       <dt>Delivery Date</dt><dd>{{order.delivery_date|ecm_datetime}}</dd>
     </dl>

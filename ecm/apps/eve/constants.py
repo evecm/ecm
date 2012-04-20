@@ -143,4 +143,17 @@ TECH1_METAGRP_ID = 0
 TECH2_METAGRP_ID = 2
 TECH3_METAGRP_ID = 14
 MANUFACTURABLE_ITEMS = (TECH1_METAGRP_ID, TECH2_METAGRP_ID, TECH3_METAGRP_ID)
+SHIP_CATEGORYID = 6
+MODULE_CATEGORYID = 7
+CHARGE_CATEGORYID = 8
 
+CAPITAL_SHIPS_GROUPID = (
+    485, # dread
+    547, # carrier
+    659, # supercarrier
+    883, # capital industrial
+    513, # freighter
+    941, # industrial command ship
+    902, # jump freighter
+    30,  # titan
+)

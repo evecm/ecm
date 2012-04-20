@@ -33,19 +33,31 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('industry', ['OwnedBlueprint'])
 
-        # Adding model 'SurchargePolicy'
-        db.create_table('industry_surchargepolicy', (
+        # Adding model 'ItemGroup'
+        db.create_table('industry_itemgroup', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('active', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('item_id', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('item_group_id', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('item_category_id', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('tech_level', self.gf('django.db.models.fields.SmallIntegerField')(null=True, blank=True)),
-            ('user_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.Group'], null=True, blank=True)),
-            ('surcharge_absolute', self.gf('django.db.models.fields.FloatField')(default=0.0)),
-            ('surcharge_relative', self.gf('django.db.models.fields.FloatField')(default=0.0)),
+            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
         ))
-        db.send_create_signal('industry', ['SurchargePolicy'])
+        db.send_create_signal('industry', ['ItemGroup'])
+
+        # Adding M2M table for field items on 'ItemGroup'
+        db.create_table('industry_itemgroup_items', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('itemgroup', models.ForeignKey(orm['industry.itemgroup'], null=False)),
+            ('catalogentry', models.ForeignKey(orm['industry.catalogentry'], null=False))
+        ))
+        db.create_unique('industry_itemgroup_items', ['itemgroup_id', 'catalogentry_id'])
+
+        # Adding model 'PricingPolicy'
+        db.create_table('industry_pricingpolicy', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('item_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['industry.ItemGroup'], null=True, blank=True)),
+            ('user_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.Group'], null=True, blank=True)),
+            ('surcharge_relative', self.gf('django.db.models.fields.FloatField')(default=0.0)),
+            ('surcharge_absolute', self.gf('django.db.models.fields.FloatField')(default=0.0)),
+        ))
+        db.send_create_signal('industry', ['PricingPolicy'])
 
         # Adding model 'SupplySource'
         db.create_table('industry_supplysource', (
@@ -110,7 +122,7 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('state', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
             ('originator', self.gf('django.db.models.fields.related.ForeignKey')(related_name='orders_created', to=orm['auth.User'])),
-            ('manufacturer', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='orders_manufactured', null=True, to=orm['auth.User'])),
+            ('responsible', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='orders_responsible', null=True, to=orm['auth.User'])),
             ('delivery_boy', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='orders_delivered', null=True, to=orm['auth.User'])),
             ('client', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('delivery_location', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
@@ -148,8 +160,14 @@ class Migration(SchemaMigration):
         # Deleting model 'OwnedBlueprint'
         db.delete_table('industry_ownedblueprint')
 
-        # Deleting model 'SurchargePolicy'
-        db.delete_table('industry_surchargepolicy')
+        # Deleting model 'ItemGroup'
+        db.delete_table('industry_itemgroup')
+
+        # Removing M2M table for field items on 'ItemGroup'
+        db.delete_table('industry_itemgroup_items')
+
+        # Deleting model 'PricingPolicy'
+        db.delete_table('industry_pricingpolicy')
 
         # Deleting model 'SupplySource'
         db.delete_table('industry_supplysource')
@@ -234,6 +252,12 @@ class Migration(SchemaMigration):
             'science1_skill_lvl': ('django.db.models.fields.SmallIntegerField', [], {'default': '5'}),
             'science2_skill_lvl': ('django.db.models.fields.SmallIntegerField', [], {'default': '5'})
         },
+        'industry.itemgroup': {
+            'Meta': {'object_name': 'ItemGroup'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'items': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'item_groups'", 'symmetrical': 'False', 'to': "orm['industry.CatalogEntry']"}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'})
+        },
         'industry.job': {
             'Meta': {'object_name': 'Job'},
             'activity': ('django.db.models.fields.SmallIntegerField', [], {'default': '1'}),
@@ -258,9 +282,9 @@ class Migration(SchemaMigration):
             'delivery_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'delivery_location': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'manufacturer': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'orders_manufactured'", 'null': 'True', 'to': "orm['auth.User']"}),
             'originator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'orders_created'", 'to': "orm['auth.User']"}),
             'quote': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
+            'responsible': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'orders_responsible'", 'null': 'True', 'to': "orm['auth.User']"}),
             'state': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'})
         },
         'industry.orderlog': {
@@ -299,6 +323,15 @@ class Migration(SchemaMigration):
             'price': ('django.db.models.fields.FloatField', [], {}),
             'supply': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'price_histories'", 'to': "orm['industry.Supply']"})
         },
+        'industry.pricingpolicy': {
+            'Meta': {'object_name': 'PricingPolicy'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'item_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['industry.ItemGroup']", 'null': 'True', 'blank': 'True'}),
+            'surcharge_absolute': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
+            'surcharge_relative': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
+            'user_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.Group']", 'null': 'True', 'blank': 'True'})
+        },
         'industry.supply': {
             'Meta': {'object_name': 'Supply'},
             'auto_update': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -310,18 +343,6 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'SupplySource'},
             'location_id': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'industry.surchargepolicy': {
-            'Meta': {'object_name': 'SurchargePolicy'},
-            'active': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'item_category_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'item_group_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'item_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'surcharge_absolute': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
-            'surcharge_relative': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
-            'tech_level': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'user_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.Group']", 'null': 'True', 'blank': 'True'})
         }
     }
 

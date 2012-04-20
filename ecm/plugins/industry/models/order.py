@@ -26,7 +26,7 @@ from django.contrib.auth.models import User
 from ecm.utils import db
 from ecm.utils.format import print_date
 from ecm.apps.eve.models import Type
-from ecm.plugins.industry.models.catalog import CatalogEntry, SurchargePolicy
+from ecm.plugins.industry.models.catalog import CatalogEntry, PricingPolicy
 from ecm.plugins.industry.models.inventory import Supply
 from ecm.plugins.industry.models.job import Job
 
@@ -67,12 +67,12 @@ class Order(models.Model):
         DELIVERED:         'Delivered',
         PAID:              'Paid',
         CANCELED:          'Canceled by Client',
-        REJECTED:          'Rejected by Manufacturer',
+        REJECTED:          'Rejected by Responsible',
     }
 
     state = models.PositiveIntegerField(default=DRAFT, choices=STATES.items())
     originator = models.ForeignKey(User, related_name='orders_created')
-    manufacturer = models.ForeignKey(User, null=True, blank=True, related_name='orders_manufactured')
+    responsible = models.ForeignKey(User, null=True, blank=True, related_name='orders_responsible')
     delivery_boy = models.ForeignKey(User, null=True, blank=True, related_name='orders_delivered')
     client = models.CharField(max_length=255, null=True, blank=True)
     delivery_location = models.CharField(max_length=255, null=True, blank=True)
@@ -123,21 +123,26 @@ class Order(models.Model):
         self.apply_transition(Order.modify, Order.DRAFT, self.originator, comment)
         self.rows.all().delete()
 
-        self.cost = 0.0
         self.quote = 0.0
         missing_price = False
-        for catalog_entry, quantity in entries:
-            self.rows.create(catalog_entry=catalog_entry, quantity=quantity)
-            if catalog_entry.production_cost is not None:
-                if catalog_entry.fixed_price is not None:
-                    self.quote += catalog_entry.fixed_price
-                else:
-                    self.quote += catalog_entry.production_cost * (1 + self.margin)
-                self.cost += catalog_entry.production_cost
-            else:
+        for entry, quantity in entries:
+            cost = 0.0
+            surcharge = 0.0
+            if entry.production_cost is None and entry.fixed_price is None:
                 missing_price = True
+            else:
+                if entry.fixed_price is not None:
+                    surcharge = entry.fixed_price
+                else:
+                    cost = entry.production_cost
+                    surcharge = PricingPolicy.resolve_surcharge(entry, self.originator, cost)
+            
+            self.quote += quantity * (cost + surcharge)
+            self.rows.create(catalog_entry=entry, 
+                             quantity=quantity, 
+                             cost=cost, 
+                             surcharge=surcharge)
         if missing_price:
-            self.cost = 0.0
             self.quote = 0.0
         self.save()
 
@@ -149,9 +154,9 @@ class Order(models.Model):
         self.save()
         # TODO: handle the alerts to the manufacturing team
 
-    def accept(self, manufacturer):
+    def accept(self, user):
         """
-        Acceptation by a manufacturer.
+        Acceptation by a responsible.
         The order cannot be modified by its originator after acceptation.
 
         During the "accept" transition, we check if the order can be fulfilled.
@@ -162,15 +167,17 @@ class Order(models.Model):
             missing_prices = self.create_jobs(calculate_surcharge=True)
             if missing_prices: # FIXME moche moche moche
                 raise OrderCannotBeFulfilled('Missing prices for items %s' % list(missing_prices))
-            self.apply_transition(Order.accept, Order.ACCEPTED, user=manufacturer, comment="Accepted")
+            self.apply_transition(Order.accept, Order.ACCEPTED, user=user, comment="Accepted")
+            self.responsible = user
             self.save()
             return True
         except OrderCannotBeFulfilled, err:
-            self.apply_transition(Order.accept, Order.PROBLEMATIC, user=manufacturer, comment=str(err))
+            self.apply_transition(Order.accept, Order.PROBLEMATIC, user=user, comment=str(err))
+            self.responsible = user
             self.save()
             return False
 
-    def resolve(self, manufacturer, comment):
+    def resolve(self, user, comment):
         """
         Resolution of a problematic order.
 
@@ -178,26 +185,27 @@ class Order(models.Model):
         why the order was accepted despite the fact that is was PROBLEMATIC
         """
         self.create_jobs(calculate_surcharge=True)
-        self.apply_transition(Order.resolve, Order.ACCEPTED, manufacturer, comment)
+        self.apply_transition(Order.resolve, Order.ACCEPTED, user, comment)
+        self.responsible = user
         self.save()
 
-    def plan(self, manufacturer, date):
+    def plan(self, user, date):
         """
         Plan an order for a delivery date
         """
-        self.apply_transition(Order.plan, Order.PLANNED, manufacturer,
+        self.apply_transition(Order.plan, Order.PLANNED, user,
                              'Order planned for date "%s"' % print_date(date))
         self.delivery_date = date
         self.save()
 
-    def reject(self, manufacturer, comment):
+    def reject(self, user, comment):
         """
-        Rejection of an order by a manufacturer.
+        Rejection of an order by a responsible.
 
         This is a manual operation and entering a comment is mandatory to explain
         why the order was rejected.
         """
-        self.apply_transition(Order.reject, Order.REJECTED, manufacturer, comment)
+        self.apply_transition(Order.reject, Order.REJECTED, user, comment)
         self.save()
         # TODO: handle the alerts to the client
 
@@ -214,18 +222,18 @@ class Order(models.Model):
         Order preparation started (first job is started)
         """
         self.apply_transition(Order.start_preparation, Order.IN_PREPARATION,
-                              user or self.manufacturer, 'Preparation started.')
+                              user or self.responsible, 'Preparation started.')
         self.save()
 
-    def end_preparation(self, manufacturer=None, delivery_boy=None):
+    def end_preparation(self, responsible=None, delivery_boy=None):
         """
         Order is ready (all jobs are ready)
 
-        Delivery task is assigned to manufacturer by default, unless delivery_boy is not None.
+        Delivery task is assigned to responsible by default, unless delivery_boy is not None.
         """
         self.apply_transition(Order.end_preparation, Order.READY,
-                              manufacturer, 'Order is ready.')
-        self.delivery_boy = delivery_boy or manufacturer or self.manufacturer
+                              responsible, 'Order is ready.')
+        self.delivery_boy = delivery_boy or responsible or self.responsible
         self.jobs.all().update(state=Job.READY)
         self.save()
 
@@ -304,7 +312,7 @@ class Order(models.Model):
         if missing_blueprints:
             raise OrderCannotBeFulfilled(missing_blueprints=missing_blueprints)
 
-    def create_jobs(self, calculate_surcharge=False):
+    def create_jobs(self, ignore_fixed_prices=False, calculate_surcharge=False):
         """
         Create all jobs needed to complete this order.
         Calculating costs for all the order's rows.
@@ -313,18 +321,29 @@ class Order(models.Model):
         for sp in Supply.objects.all():
             prices[sp.typeID] = sp.price
         all_missing_prices = set([])
+        
         self.quote = 0.0
+        
         for row in self.rows.all():
-            row.cost, miss_prices = row.create_jobs(prices=prices)
+            cost, miss_prices = row.create_jobs(prices=prices)
             all_missing_prices.update(miss_prices)
-            self.quote += row.cost
             
-            if calculate_surcharge:
-                row.surcharge = row.calculate_surcharge(self.originator)
-                self.quote += row.surcharge
+            if ignore_fixed_prices or row.catalog_entry.fixed_price is None:
+                if calculate_surcharge:
+                    surcharge = PricingPolicy.resolve_surcharge(row.catalog_entry, self.originator, row.cost)
+                else:
+                    surcharge = 0.0
+            else:
+                surcharge = row.catalog_entry.fixed_price * row.quantity
+                cost = 0.0
             
+            row.surcharge = surcharge
+            row.cost = cost
             row.save()
+            self.quote += cost + surcharge
+            
         self.save()
+        
         return all_missing_prices
 
     def get_bill_of_materials(self):
@@ -384,10 +403,10 @@ class Order(models.Model):
         else:
             return '(none)'
 
-    def manufacturer_permalink(self):
-        if self.manufacturer is not None:
-            url = '/hr/player/%d/' % self.manufacturer.id
-            return '<a href="%s" class="player">%s</a>' % (url, self.manufacturer.username)
+    def responsible_permalink(self):
+        if self.responsible is not None:
+            url = '/hr/player/%d/' % self.responsible.id
+            return '<a href="%s" class="player">%s</a>' % (url, self.responsible.username)
         else:
             return '(none)'
 
@@ -495,15 +514,11 @@ class OrderRow(models.Model):
         missing_prices = set([])
         for job in self.get_aggregated_jobs(Job.SUPPLY):
             try:
-                job_price = prices[job.item_id] * round(job.runs) 
+                job_price = prices[job.item_id] * round(job.runs)
                 cost += job_price
             except KeyError:
                 missing_prices.add(job.item_id)
         return cost, missing_prices
-
-    def calculate_surcharge(self, user):
-        policy = SurchargePolicy.resolve(self.catalog_entry, user)
-        return policy.calculate(self.cost)
 
     def __unicode__(self):
         return '%s x%d : %f' % (self.catalog_entry.typeName, self.quantity, self.cost)
