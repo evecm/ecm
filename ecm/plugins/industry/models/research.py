@@ -126,25 +126,27 @@ class InventionPolicy(models.Model):
             policy = InventionPolicy.objects.get(item_group_id=-1)
 
         decriptorTypeID = None
-        chance = policy.base_invention_chance
-        runs_per_bp = 1
+        runs_mod = 0
+        chance_mod = 1.0
         me = -4 # base ME for invented BPCs without decryptor
         pe = -4 # base PE for invented BPCs without decryptor
-        for typeID, chance_mod, me_mod, pe_mod, runs_mod, _ in constants.DECRYPTOR_INFO[decryptor_group]:
-            if policy.me_mod == me_mod:
+        for typeID, _chance, _me, _pe, _runs, _ in constants.DECRYPTOR_INFO[decryptor_group]:
+            if policy.me_mod == _me:
                 decriptorTypeID = typeID
-                chance = formulas.calc_invention_chance(policy.base_invention_chance,
-                                                        policy.encryption_skill_lvl,
-                                                        policy.science1_skill_lvl,
-                                                        policy.science2_skill_lvl,
-                                                        chance_mod)
-                me += me_mod
-                pe += pe_mod
-                runs_per_bp = formulas.invented_bpc_runs(blueprint.parent_blueprint.maxProductionLimit,
-                                                         blueprint.parent_blueprint.maxProductionLimit,
-                                                         blueprint.maxProductionLimit,
-                                                         runs_mod)
+                me += _me
+                pe += _pe
+                chance_mod = _chance
+                runs_mod = _runs
                 break
+        runs_per_bp = formulas.invented_bpc_runs(blueprint.parent_blueprint.maxProductionLimit,
+                                                 blueprint.parent_blueprint.maxProductionLimit,
+                                                 blueprint.maxProductionLimit,
+                                                 runs_mod)
+        chance = formulas.calc_invention_chance(policy.base_invention_chance,
+                                                policy.encryption_skill_lvl,
+                                                policy.science1_skill_lvl,
+                                                policy.science2_skill_lvl,
+                                                chance_mod)
         attempts = int(math.ceil(1.0 / chance))
 
         return runs_per_bp, me, pe, decriptorTypeID, attempts
