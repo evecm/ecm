@@ -59,8 +59,7 @@ def process_contracts(contract_list, connection):
     """
     Process all contracts from the API
     """
-    current_corp = Corp.objects.get(pk=1)
-    alliance_id = current_corp.allianceID
+    alliance_id = Corp.objects.get(pk=1).allianceID
     LOG.debug("Fetching contracts from DB...")    
     # Get old contracts
     old_contracts = {}
@@ -92,19 +91,20 @@ def process_contracts(contract_list, connection):
     # Get new items by contractID from EVE API
     new_items = {}
     for contract in added_contracts:
-        try:
-            items_api = connection.corp.ContractItems(contractID=contract.contractID)
-        #    checkApiVersion(items_api._meta.version)
-            item_list = items_api.itemList
-            LOG.debug("%s items for contract id %s..." % (len(item_list), contract.contractID))
-            for item in item_list:
-                new_item = populate_contract_item(item, contract)
-                new_items[new_item] = new_item
-        except Error:
-            LOG.debug("Invalid or missing contractID: %s" % contract.contractID)
-            continue
+        if contract.type != 'Courier': # No items for courier contracts from API
+            try:
+                items_api = connection.corp.ContractItems(contractID=contract.contractID)
+            #    checkApiVersion(items_api._meta.version)
+                item_list = items_api.itemList
+                LOG.debug("%s items for contract id %s..." % (len(item_list), contract.contractID))
+                for item in item_list:
+                    new_item = populate_contract_item(item, contract)
+                    new_items[new_item] = new_item
+            except Error:
+                LOG.debug("Invalid or missing contractID: %s" % contract.contractID)
+                continue
     # Get all contractitem ids for removed contracts
-    removed_items = {}
+    removed_items = []
     for contract in removed_contracts:
         removed_items.append(ContractItem.objects.filter(contract=contract).values_list())
 
@@ -134,7 +134,7 @@ def write_contract_items(new_items, old_items):
     If old_items exists, they will 
     """
     if len(old_items) > 0:
-        ContractItem.objects.filter(contractID__in=old_items).delete()
+        ContractItem.objects.filter(contract__in=old_items).delete()
         LOG.info("%d old contract items removed." % len(old_items))
     for item in new_items:
         item.save()
