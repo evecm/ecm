@@ -17,63 +17,63 @@
 
 {% block main_content %}
 <h1>Wallets Journal <small>last update {{ scan_date|ecm_datetime }}</small></h1>
-<div class="navbar navbar-fixed-bottom">
-<div class="navbar-inner">
-<div class="container">
-<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-</a>
-<div class="nav-collapse">
-<form id="search_form" class="navbar-form pull-left form-inline">
-<div class="btn-toolbar">
-	<label class="label btn-inverse"><i class="icon-user icon-white"></i>
-    <input type="text" id="search_text" class="input-medium search-query span2" value="" /></label>
-    
-    <label class="label btn-inverse">Wallet
-    <select id="wallet_selector" class="span2">{% for w in wallets %}
-      <option value="{{ w.walletID }}"{% if w.selected %} selected{% endif %}>{{ w.name }}</option>
-    {% endfor %}</select></label>
-    
-    <label class="label btn-inverse">Operation
-    <select id="type_selector" class="span2">{% for et in entryTypes %}
-      <option value="{{ et.refTypeID }}"{% if et.selected %} selected{% endif %}>{{ et.refTypeName }}</option>
-    {% endfor %}</select></label>
-  	<label class="label btn-inverse">Amount
-  	<input type="number" id="amount_text" class="input-medium search-query span2" value="" />
-  	<select id="comp_selector" class="span1">
-   	<option>==</option>
-   	<option>&lt;&gt;</option>
-   	<option>&gt;=</option>
-   	<option>&gt;</option>
-   	<option>&lt;=</option>
-   	<option>&lt;</option>
-    	</select>
-    	    </label>
-	<label class="label btn-inverse">Period  <select
-		id="period_selector" class="input-small">
-		<option value="all" selected="selected">All Time</option>
-		<option value="thismonth">This Month</option>
-		<option value="week">Last Week</option>
-		<option value="month">Last Month</option>
-		<option value="year">Last Year</option>
-	</select>
-	</label>
-	<label class="label btn-inverse"><i class="icon-calendar icon-white"></i>From  
-		<input type="text" id="from_date" name="from_date" value="{{ from_date }}" class="input-small" /></label>
-	<label class="label btn-inverse"><i class="icon-calendar icon-white"></i>To  
-			<input type="text" id="to_date" name="to_date" value="{{ to_date }}" class="input-small" /></label>
-	<label class="btn-group btn-inverse">
+<form id="search_form" class="form-search form-inline btn-toolbar">
+<div class="btn-toolbar" >
+	<div style="display: inline;">
+		<span class="label label-info"><i class="icon-user icon-white">   </i></span>
+	    <input type="text" id="search_text" class="input-medium search-query span2" value="" />
+    </div>
+    <div class="btn-group">
     	<button type="submit" id="search_button" class="btn btn-small"><i class="icon-search"></i>Search</button>
     	<button type="submit" id="clear_search" class="btn btn-small"><i class="icon-search"></i>Reset</button>
-    </label>
-  </div>
+	</div>
+    <div style="display: inline;">
+	    <span class="label label-info">Wallet</span>
+	    <select id="wallet_selector" class="span2">{% for w in wallets %}
+	      <option value="{{ w.walletID }}"{% if w.selected %} selected{% endif %}>{{ w.name }}</option>
+	    {% endfor %}</select>
+	</div>
+	<div style="display: inline;">
+	    <span class="label label-info">Operation</span>
+	    <select id="type_selector" class="span2">{% for et in entryTypes %}
+	      <option value="{{ et.refTypeID }}"{% if et.selected %} selected{% endif %}>{{ et.refTypeName }}</option>
+	    {% endfor %}</select>
+	</div>
+    <div style="display: inline;">
+	  	<span class="label label-info">Amount</span>
+	  	<input type="number" id="amount_text" class="input-small search-query span2" value="" />
+	  	<select id="comp_selector" class="span1">
+	   	<option>==</option>
+	   	<option>&lt;&gt;</option>
+	   	<option>&gt;=</option>
+	   	<option>&gt;</option>
+	   	<option>&lt;=</option>
+	   	<option>&lt;</option>
+	    </select>
+    </div>
+</div>
+ <div class="btn-toolbar center">
+    <div style="display: inline;">
+		<span class="label label-info">Period</span>
+		<select
+			id="period_selector" class="input-small">
+			<option value="all" selected="selected">All Time</option>
+			<option value="thismonth">This Month</option>
+			<option value="week">Last Week</option>
+			<option value="month">Last Month</option>
+			<option value="year">Last Year</option>
+		</select>
+	</div>
+	<div style="display: inline;">
+		<span class="label label-info"><i class="icon-calendar icon-white"></i>From</span>
+		<input type="text" id="from_date" name="from_date" value="{{ from_date }}" class="input-small" />
+	</div>
+	<div style="display: inline;">
+		<span class="label label-info"><i class="icon-calendar icon-white"></i>To</span>
+		<input type="text" id="to_date" name="to_date" value="{{ to_date }}" class="input-small" />
+	</div>
+    </div>
 </form>
-</div>
-</div>
-</div>
-</div>
 
 <table class="table table-bordered table-condensed" id="journal_table">
   <thead>
@@ -116,7 +116,6 @@
 {% block compressed_javascripts %}
 <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.ui.js"></script>
 <script type="text/javascript">
-$(".collapse").collapse();
 
 FROM_DATE = "{{ from_date }}";
 TO_DATE = "{{ to_date }}";
