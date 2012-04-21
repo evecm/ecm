@@ -146,19 +146,19 @@ $(document).ready(function() {
 });
 
 function setEditableHandlers() {
-    $('blueprints_table td.me').editable('/industry/catalog/blueprints/me/', {
+    $('#blueprints td.me').editable('/industry/catalog/blueprints/me/', {
         cssclass: 'edited',
         style: 'inherit',
         tooltip: 'Click to edit',
         placeholder: '',
     });
-    $('blueprints_table td.pe').editable('/industry/catalog/blueprints/pe/', {
+    $('#blueprints td.pe').editable('/industry/catalog/blueprints/pe/', {
         cssclass: 'edited',
         style: 'inherit',
         tooltip: 'Click to edit',
         placeholder: '',
     });
-    $('blueprints_table input.copy').click(function () {
+    $('#blueprints input.copy').click(function () {
         var thisId = $(this).attr('id');
         var checked = $(this).is(':checked');
         $.post('/industry/catalog/blueprints/copy/', {id: thisId, value: checked})
@@ -166,7 +166,7 @@ function setEditableHandlers() {
             alert('Failed to change copy!');
         });
     });
-    $('blueprints_table td.runs').editable('/industry/catalog/blueprints/runs/', {
+    $('#blueprints td.runs').editable('/industry/catalog/blueprints/runs/', {
         cssclass: 'edited',
         style: 'inherit',
         tooltip: 'Click to edit',
