@@ -80,34 +80,35 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     log("Migrating database...")
     run_python_cmd('manage.py syncdb --noinput', instance_dir)
 
-    instance_dir = path.abspath(instance_dir)
-    sys.path.insert(0, instance_dir)
-
-    import settings #@UnresolvedImport
-
-    management.setup_environ(settings)
-    from south.models import MigrationHistory
-
     if upgrade_from_149:
+        instance_dir = path.abspath(instance_dir)
+        sys.path.insert(0, instance_dir)
+    
+        import settings #@UnresolvedImport
+        management.setup_environ(settings)
+        
+        from south.models import MigrationHistory
+
+        log('Migrating from ECM 1.4.9...')
         # we are upgrading from ECM 1.X.Y, we must perform the init migration
         # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
         MigrationHistory.objects.all().delete() #@UndefinedVariable
-        log('Migrating from ECM 1.4.9...')
-        run_python_cmd('manage.py migrate hr 0001', instance_dir)
+        run_python_cmd('manage.py migrate hr 0001 --noinput', instance_dir)
         # we MUST "fake" the first migration for 1.4.9 apps
         # otherwise the migrate command will fail because DB tables already exist...
         for app in ('common', 'scheduler', 'corp', 'assets', 'accounting'):
-            run_python_cmd('manage.py migrate %s 0001 --fake' % app, instance_dir)
+            run_python_cmd('manage.py migrate %s 0001 --fake --noinput' % app, instance_dir)
+
         from ecm.apps.scheduler.models import ScheduledTask
         ScheduledTask.objects.all().delete()
         from ecm.apps.common.models import UrlPermission
         UrlPermission.objects.all().delete()
+    
+        del settings
+        del sys.modules['settings']
+        sys.path.remove(instance_dir)
 
-    run_python_cmd('manage.py migrate --all', instance_dir)
-
-    del settings
-    del sys.modules['settings']
-    sys.path.remove(instance_dir)
+    run_python_cmd('manage.py migrate --all --noinput', instance_dir)
 
     log('Database Migration successful.')
 
