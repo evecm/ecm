@@ -18,13 +18,11 @@
 __date__ = "2012 4 19"
 __author__ = "Ajurna"
 
-import logging
+#import logging
 import json
 import urllib2
 
-from ecm.apps.common.models import Setting
-
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 
 #------------------------------------------------------------------------------
@@ -38,7 +36,7 @@ def get_buy_prices(item_ids, systemID):
             
         evemarketeerurl = 'http://www.evemarketeer.com/api/info/'
         url = evemarketeerurl + str(item) +'/json/' + str(systemID) + '/buy_highest5'
-        logger.info('Fetching market info from %s...' % url)
+        #logger.debug('Fetching market info from %s...' % url)
         response = urllib2.urlopen(url)
         price = json.load(response)
         prices[item] = price[0]['buy_highest5']

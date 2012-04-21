@@ -24,7 +24,6 @@ from django.db import models, connection
 from django.contrib.auth.models import User
 
 from ecm.utils import db
-from ecm.utils.format import print_date
 from ecm.apps.eve.models import Type
 from ecm.plugins.industry.models.catalog import CatalogEntry, PricingPolicy
 from ecm.plugins.industry.models.inventory import Supply
@@ -47,7 +46,6 @@ class Order(models.Model):
     PENDING = 1
     PROBLEMATIC = 2
     ACCEPTED = 3
-    PLANNED = 4
     IN_PREPARATION = 5
     READY = 6
     DELIVERED = 7
@@ -61,7 +59,6 @@ class Order(models.Model):
         PENDING:           'Pending',
         PROBLEMATIC:       'Problematic',
         ACCEPTED:          'Accepted',
-        PLANNED:           'Planned',
         IN_PREPARATION:    'In Preparation',
         READY:             'Ready',
         DELIVERED:         'Delivered',
@@ -189,15 +186,6 @@ class Order(models.Model):
         self.responsible = user
         self.save()
 
-    def plan(self, user, date):
-        """
-        Plan an order for a delivery date
-        """
-        self.apply_transition(Order.plan, Order.PLANNED, user,
-                             'Order planned for date "%s"' % print_date(date))
-        self.delivery_date = date
-        self.save()
-
     def reject(self, user, comment):
         """
         Rejection of an order by a responsible.
@@ -247,12 +235,13 @@ class Order(models.Model):
         self.save()
         # TODO: handle the alerts to the client
 
-    def pay(self, user=None):
+    def record_payment(self, user=None):
         """
         Order has been paid.
         """
-        self.apply_transition(Order.pay, Order.PAID,
-                             user or self.delivery_boy, 'Order has been delivered to the client.')
+        self.apply_transition(Order.record_payment, Order.PAID,
+                              user or self.delivery_boy, 
+                              'Payment received.')
         self.save()
 
     # allowed transitions between states
@@ -260,11 +249,10 @@ class Order(models.Model):
         DRAFT : (modify, confirm, cancel),
         PENDING : (modify, accept, cancel, reject),
         PROBLEMATIC : (modify, resolve, cancel, reject),
-        ACCEPTED : (plan, start_preparation, cancel),
-        PLANNED : (start_preparation, cancel),
+        ACCEPTED : (start_preparation, cancel),
         IN_PREPARATION : (end_preparation, cancel),
         READY : (deliver, cancel),
-        DELIVERED : (pay, cancel),
+        DELIVERED : (record_payment, cancel),
         PAID : (),
         CANCELED : (),
         REJECTED : (),
@@ -274,13 +262,12 @@ class Order(models.Model):
     confirm.customer_access = True
     accept.customer_access = False
     resolve.customer_access = False
-    plan.customer_access = False
     reject.customer_access = False
     cancel.customer_access = True
     start_preparation.customer_access = False
     end_preparation.customer_access = False
     deliver.customer_access = False
-    pay.customer_access = True
+    record_payment.customer_access = False
 
 
     def get_valid_transitions(self, customer=False):

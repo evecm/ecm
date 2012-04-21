@@ -52,10 +52,11 @@ class Migration(SchemaMigration):
         db.create_table('industry_pricingpolicy', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('item_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['industry.ItemGroup'], null=True, blank=True)),
-            ('user_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.Group'], null=True, blank=True)),
+            ('item_group', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['industry.ItemGroup'], null=True, blank=True)),
+            ('user_group', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['auth.Group'], null=True, blank=True)),
             ('surcharge_relative', self.gf('django.db.models.fields.FloatField')(default=0.0)),
             ('surcharge_absolute', self.gf('django.db.models.fields.FloatField')(default=0.0)),
+            ('priority', self.gf('django.db.models.fields.SmallIntegerField')(default=0)),
         ))
         db.send_create_signal('industry', ['PricingPolicy'])
 
@@ -327,10 +328,11 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'PricingPolicy'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'item_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['industry.ItemGroup']", 'null': 'True', 'blank': 'True'}),
+            'item_group': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['industry.ItemGroup']", 'null': 'True', 'blank': 'True'}),
+            'priority': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
             'surcharge_absolute': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
             'surcharge_relative': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
-            'user_group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.Group']", 'null': 'True', 'blank': 'True'})
+            'user_group': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['auth.Group']", 'null': 'True', 'blank': 'True'})
         },
         'industry.supply': {
             'Meta': {'object_name': 'Supply'},

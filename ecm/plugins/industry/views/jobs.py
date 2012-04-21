@@ -149,7 +149,7 @@ def change_state(request, job_id, action):
         job.children_jobs.exclude(state=Job.READY).update(assignee=request.user, state=Job.READY)
         try:
             if job.order is not None and not job.order.jobs.exclude(state=Job.READY):
-                job.order.end_preparation(manufacturer=request.user)
+                job.order.end_preparation(request.user)
         except IllegalTransition:
             pass
         return HttpResponse()

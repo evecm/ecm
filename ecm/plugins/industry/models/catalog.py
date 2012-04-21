@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.utils import format
 
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
@@ -180,15 +181,6 @@ class ItemGroup(models.Model):
 
     def __unicode__(self):
         return self.name
-    
-    def __hash__(self):
-        return self.id
-    
-    def __eq__(self, other):
-        return self.id == other.id
-    
-    def __cmp__(self, other):
-        return cmp(self.id, other.id)
 
 #------------------------------------------------------------------------------
 class PricingPolicy(models.Model):
@@ -219,10 +211,11 @@ class PricingPolicy(models.Model):
         verbose_name_plural = tr("Surcharge Policies")
     
     is_active = models.BooleanField(default=True)
-    item_group = models.ForeignKey(ItemGroup, blank=True, null=True)
-    user_group = models.ForeignKey(Group, blank=True, null=True)
+    item_group = models.ForeignKey(ItemGroup, blank=True, null=True, default=None)
+    user_group = models.ForeignKey(Group, blank=True, null=True, default=None)
     surcharge_relative = models.FloatField(default=0.0) # a percentage
-    surcharge_absolute = models.FloatField(default=0.0) # fixed amount of iSK 
+    surcharge_absolute = models.FloatField(default=0.0) # fixed amount of iSK
+    priority = models.SmallIntegerField(default=0)
     
     @staticmethod
     def resolve_surcharge(item, user, price):
@@ -244,8 +237,8 @@ class PricingPolicy(models.Model):
             policies = policies.extra(
                 select={'total_surcharge': '%s * surcharge_relative + surcharge_absolute'},
                 select_params=(price,),
-                order_by='total_surcharge', # sort by increasing surcharge
             )
+            policies = policies.order_by('-priority', 'total_surcharge')
             surcharge = policies[0].total_surcharge # take the smallest surcharge
         else:
             # If no policy is defined for this (item, user) combination,
@@ -253,4 +246,14 @@ class PricingPolicy(models.Model):
             surcharge = Setting.get('industry_default_margin') * price
         
         return surcharge
-        
+    
+    def surcharge_relative_admin_display(self):
+        return '%d %%' % round(self.surcharge_relative * 100)
+    surcharge_relative_admin_display.short_description = 'Relative surcharge'
+    
+    def surcharge_absolute_admin_display(self):
+        return '%s iSK' % format.print_float(self.surcharge_absolute)
+    surcharge_absolute_admin_display.short_description = 'Fixed surcharge'
+    
+    
+    

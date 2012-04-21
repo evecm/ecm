@@ -18,14 +18,14 @@
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
 
-import logging
+#import logging
 import urllib
 import urllib2
 from xml.etree import ElementTree
 
 from ecm.apps.common.models import Setting
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 def get_buy_prices(item_ids, systemID):
@@ -35,17 +35,38 @@ def get_buy_prices(item_ids, systemID):
         params=[]
         for item_id in item_ids[i*50:(i+1)*50]:
             params.append(("typeid", item_id))
-        params.append(("minQ", 10))
         if systemID != 1:
             params.append(("usesystem", systemID))
         evecentralurl = Setting.get('industry_evecentral_url')
         url = evecentralurl + '?' + urllib.urlencode(params)
-        logger.info('Fetching market info from %s...' % url)
+        #logger.debug('Fetching market info from %s...' % url)
         response = urllib2.urlopen(url)
         element = ElementTree.parse(source=response)
         for typ in element.findall('.//type'):
             typeID = int(typ.attrib['id'])
             buyMax = typ.find('buy/max')
+            if buyMax is not None:
+                prices[typeID] = round(float(buyMax.text), 2)
+    return prices
+
+#------------------------------------------------------------------------------
+def get_sell_prices(item_ids, systemID):
+
+    prices = {}
+    for i in range(len(item_ids)//50+1):
+        params=[]
+        for item_id in item_ids[i*50:(i+1)*50]:
+            params.append(("typeid", item_id))
+        if systemID != 1:
+            params.append(("usesystem", systemID))
+        evecentralurl = Setting.get('industry_evecentral_url')
+        url = evecentralurl + '?' + urllib.urlencode(params)
+        #logger.debug('Fetching market info from %s...' % url)
+        response = urllib2.urlopen(url)
+        element = ElementTree.parse(source=response)
+        for typ in element.findall('.//type'):
+            typeID = int(typ.attrib['id'])
+            buyMax = typ.find('sell/min')
             if buyMax is not None:
                 prices[typeID] = round(float(buyMax.text), 2)
     return prices

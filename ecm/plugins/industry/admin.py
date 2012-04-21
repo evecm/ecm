@@ -114,11 +114,13 @@ class InventionPolicyAdmin(admin.ModelAdmin):
 #------------------------------------------------------------------------------
 class PricingPolicyAdmin(admin.ModelAdmin):
     list_display = [
+        'id',
         'is_active',
         'item_group',
         'user_group',
-        'surcharge_relative',
-        'surcharge_absolute',
+        'surcharge_relative_admin_display',
+        'surcharge_absolute_admin_display',
+        'priority',
     ]
 
 #------------------------------------------------------------------------------

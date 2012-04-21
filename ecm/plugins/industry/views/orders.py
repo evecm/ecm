@@ -35,7 +35,7 @@ from ecm.utils.format import print_date, print_float, print_integer, verbose_nam
 from ecm.views.decorators import check_user_access, forbidden
 from ecm.plugins.industry.models.order import IllegalTransition
 from ecm.views import extract_datatable_params, datatable_ajax_data
-from ecm.plugins.industry.models import Order
+from ecm.plugins.industry.models import Order, Job
 
 LOG = logging.getLogger(__name__)
 
@@ -78,12 +78,12 @@ def orders_data(request):
     if display_mode == 'closed':
         states = [Order.CANCELED, Order.REJECTED, Order.PAID]
     elif display_mode == 'open':
-        states = [Order.PENDING, Order.PROBLEMATIC, Order.ACCEPTED, Order.PLANNED, 
+        states = [Order.PENDING, Order.PROBLEMATIC, Order.ACCEPTED, 
                   Order.IN_PREPARATION, Order.READY, Order.DELIVERED]
     elif display_mode == 'new':
         states = [Order.PENDING, Order.PROBLEMATIC]
     elif display_mode == 'in_progress':
-        states = [Order.ACCEPTED, Order.PLANNED, Order.IN_PREPARATION, Order.READY, 
+        states = [Order.ACCEPTED, Order.IN_PREPARATION, Order.READY, 
                   Order.DELIVERED]
     else:
         states = Order.STATES.keys()
@@ -112,7 +112,7 @@ def orders_data(request):
             order.client or '(none)',
             delivDate,
             truncate_words(', '.join(items), 6),
-            print_float(order.quote) + ' ISK',
+            print_float(order.quote) + ' iSK',
         ])
 
     return datatable_ajax_data(data=orders, echo=params.sEcho)
@@ -143,21 +143,40 @@ def change_state(request, order_id, transition):
         order.check_can_pass_transition(transition)
 
         if transition == order.accept.__name__:
-            if order.accept(request.user):
-                return redirect('/industry/orders/%d/' % order.id)
-            else:
+            if not order.accept(request.user):
                 raise IllegalTransition('Order could not be accepted. See order log for details.')
-        elif transition == order.confirm.__name__:
-            order.confirm()
-            return redirect('/industry/orders/%d/' % order.id)
+        
+        elif transition == order.resolve.__name__:
+            order.resolve(request.user, '')
+        
         elif transition == order.cancel.__name__:
             comment = request.POST.get('comment', None)
             if not comment:
                 raise IllegalTransition('Please leave a comment.')
             order.cancel(comment)
-            return redirect('/industry/orders/%d/' % order.id)
+        
+        elif transition == order.start_preparation.__name__:
+            order.start_preparation(user=request.user)
+            jobs = order.jobs.exclude(state__in=[Job.IN_PRODUCTION, Job.READY])
+            jobs.update(state=Job.IN_PRODUCTION, assignee=request.user)
+            
+        elif transition == order.end_preparation.__name__:
+            order.end_preparation(request.user)
+            jobs = order.jobs.exclude(state=Job.READY)
+            jobs.update(state=Job.READY, assignee=request.user)
+        
+        elif transition == order.deliver.__name__:
+            order.deliver(request.user)
+        
+        elif transition == order.record_payment.__name__:
+            order.record_payment(request.user)
+        
         else:
             return forbidden(request)
+    
+        # operation was successfull    
+        return redirect('/industry/orders/%d/' % order.id)
+    
     except ValueError:
         raise Http404()
     except IllegalTransition, error:
