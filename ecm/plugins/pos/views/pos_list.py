@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.common import auth
 
 __date__ = "2011-04-25"
 __author__ = "JerryKhan"

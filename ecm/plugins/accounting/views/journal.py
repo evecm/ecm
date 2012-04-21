@@ -14,13 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-import datetime
-from django.db.models.aggregates import Min, Max
-import operator
 
 __date__ = "2011 5 23"
 __author__ = "diabeteman"
-
 
 try:
     import json
@@ -34,6 +30,7 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.db.models import Q
+from django.db.models.aggregates import Min, Max
 
 from ecm.utils.format import print_time_min, print_float
 from ecm.utils import is_number
@@ -71,7 +68,7 @@ def journal(request):
         })
 
     entryTypes = [{ 'refTypeID' : 0, 'refTypeName' : 'All', 'selected' : entryTypeID == 0 }]
-    for et in EntryType.objects.exclude(refTypeID=0).order_by('refTypeName'):
+    for et in EntryType.objects.exclude(refTypeID=0).exclude(refTypeName='').order_by('refTypeName'):
         entryTypes.append({
             'refTypeID' : et.refTypeID,
             'refTypeName' : et.refTypeName,
@@ -103,7 +100,7 @@ def journal_data(request):
         params.walletID = int(REQ.get('walletID', 0))
         params.entryTypeID = int(REQ.get('entryTypeID', 0))
         params.amount = request.GET.get('amount',None)
-        params.comparator = request.GET.get('comparator','>')
+        params.comparator = request.GET.get('comparator','gt')
         params.from_date = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
         params.to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
     except:
@@ -130,12 +127,12 @@ def journal_data(request):
         LOG.debug(params.amount)
         if params.amount:
             comparator_map = {
-                              '>':  Q(amount__gt=params.amount), 
-                              '<':  Q(amount__lt=params.amount), 
-                              '>=': Q(amount__gte=params.amount),
-                              '<=': Q(amount__lte=params.amount),
-                              '==': Q(amount=params.amount),
-                              '<>': Q(amount__lt=params.amount, amount__gt=params.amount),
+                              'gt':  Q(amount__gt=params.amount), 
+                              'lt':  Q(amount__lt=params.amount), 
+                              'gte': Q(amount__gte=params.amount),
+                              'lte': Q(amount__lte=params.amount),
+                              'eq': Q(amount=params.amount),
+                              'neq': Q(amount__lt=params.amount, amount__gt=params.amount),
                               }
             search_args &= comparator_map[params.comparator]
             LOG.debug(comparator_map[params.comparator])

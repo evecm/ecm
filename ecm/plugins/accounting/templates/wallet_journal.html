@@ -12,11 +12,14 @@
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
 <li><a href="/accounting/">Accounting</a></li>
-<li><a href="/accounting/journal/">Journal</a></li>
+<li class="active"><a href="/accounting/journal/">Journal</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1>Wallets Journal <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+<div class="page-header">
+	<h1>Wallets Journal <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+</div>
+
 <form id="search_form" class="form-search form-inline btn-toolbar center">
     <div class="btn-group">
     	<i class="icon-search"></i>
@@ -25,12 +28,12 @@
     <div style="display: inline;">
 	  	<span class="label label-info">Amount</span>
 	  	<select id="comp_selector" class="span1">
-		   	<option>==</option>
-		   	<option>&lt;&gt;</option>
-		   	<option>&gt;=</option>
-		   	<option>&gt;</option>
-		   	<option>&lt;=</option>
-		   	<option>&lt;</option>
+		   	<option value="eq">==</option>
+		   	<option value="neq">&lt;&gt;</option>
+		   	<option value="gte">&gt;=</option>
+		   	<option value="gt">&gt;</option>
+		   	<option value="lte">&lt;=</option>
+		   	<option value="lt">&lt;</option>
 	    </select>
 	  	<input type="number" id="amount_text" class="input-small search-query" value="" />
     </div>
@@ -108,11 +111,12 @@
 {% endblock %}
 
 
-
-
-
 {% block compressed_javascripts %}
 <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.ui.js"></script>
+{% endblock %}
+
+
+{% block post_javascripts %}
 <script type="text/javascript">
 
 FROM_DATE = "{{ from_date }}";
