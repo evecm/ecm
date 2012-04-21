@@ -36,18 +36,13 @@ Here is a non-exhaustive list of its features:
 	  - Catalog & pricings management
 	  - Corp blueprints management (synchronization with corp assets)
 	  
-More info here: http://eve-corp-management.org/
+Official website: http://eve-corp-management.org/
 
 Installation Instructions
 =========================
 
-For detailed installation instructions, please read the following:
-http://eve-corp-management.org/projects/ecm/wiki/InstallationInstructions
+Source releases are available from here: http://releases.eve-corp-management.org/src/
 
-Usefull Links
-=============
+For detailed installation instructions, please `read this`__. 
 
-Official page (Redmine)
-   http://eve-corp-management.org/
-IRC Channel
-   irc://irc.epiknet.org:6667/ecm
+__ http://eve-corp-management.org/projects/ecm/wiki/InstallationInstructions

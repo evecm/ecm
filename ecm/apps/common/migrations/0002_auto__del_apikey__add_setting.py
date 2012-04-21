@@ -13,7 +13,7 @@ class Migration(SchemaMigration):
             keyID = 0
             vCode = ''
             characterID = 0
-            rows = db.execute('SELECT keyID, vCode, characterID FROM common_apikey;')
+            rows = db.execute('SELECT `keyID`, `vCode`, `characterID` FROM `common_apikey`;')
             if rows:
                 keyID, vCode, characterID = rows[0]
                 keyID = int(keyID)
@@ -42,7 +42,7 @@ class Migration(SchemaMigration):
             vCode = ''
             characterID = 0
             settings = ['common_api_keyID', 'common_api_vCode', 'common_api_characterID']
-            sql = 'SELECT name, value FROM common_setting WHERE name IN %s;'
+            sql = 'SELECT `name`, `value` FROM `common_setting` WHERE name IN %s;'
             rows = db.execute(sql, [settings])
             for name, value in rows:
                 if name == 'common_api_keyID':
