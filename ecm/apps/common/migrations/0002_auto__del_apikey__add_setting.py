@@ -4,16 +4,23 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+def mysql_quotes(self, sql):
+    if 'mysql' in db.backend_name.lower():
+        return sql.replace('"', '`')
+    else:
+        return sql
 
 class Migration(SchemaMigration):
-
+    
+    
     def forwards(self, orm):
-
+        
         if not db.dry_run:
             keyID = 0
             vCode = ''
             characterID = 0
-            rows = db.execute('SELECT `keyID`, `vCode`, `characterID` FROM common_apikey;')
+            sql = mysql_quotes('SELECT "keyID", "vCode", "characterID" FROM "common_apikey";')
+            rows = db.execute(sql)
             if rows:
                 keyID, vCode, characterID = rows[0]
                 keyID = int(keyID)
@@ -42,8 +49,8 @@ class Migration(SchemaMigration):
             vCode = ''
             characterID = 0
             settings = ['common_api_keyID', 'common_api_vCode', 'common_api_characterID']
-            sql = 'SELECT `name`, `value` FROM common_setting WHERE `name` IN %s;'
-            rows = db.execute(sql, [settings])
+            sql = 'SELECT "name", "value" FROM "common_setting" WHERE "name" IN %s;'
+            rows = db.execute(mysql_quotes(sql), [settings])
             for name, value in rows:
                 if name == 'common_api_keyID':
                     keyID = eval(value)
