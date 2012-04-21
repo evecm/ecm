@@ -130,24 +130,17 @@ def run_server(instance_dir, address, port, access_log=False):
     
     sys.path.insert(0, instance_dir)
     
-    import settings #@UnresolvedImport
-
-    from django.core import management
-
-    management.setup_environ(settings)
-    utility = management.ManagementUtility()
-    command = utility.fetch_command('runserver')
-    command.validate()
-
-    from django.conf import settings as django_settings
-    from django.utils import translation
-    translation.activate(django_settings.LANGUAGE_CODE)
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+    
+    # This application object is used by any WSGI server configured to use this
+    # file. This includes Django's development server, if the WSGI_APPLICATION
+    # setting points here.
+    from django.core.wsgi import get_wsgi_application
+    application = get_wsgi_application()
     
     from gevent import monkey
     monkey.patch_all()
     from gevent.pywsgi import WSGIServer
-    import django.core.handlers.wsgi
-    application = django.core.handlers.wsgi.WSGIHandler()
     
     if access_log:
         logfile = 'default'
