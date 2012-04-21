@@ -3,7 +3,7 @@
 <VirtualHost *:80>
 
     DocumentRoot "%(instance_dir)s"
-    ServerName "%(host_name)s"
+    ServerName %(host_name)s
 
     WSGIScriptAlias / "%(instance_dir)s/apache/apache_mod_wsgi.py"
     WSGIDaemonProcess mod_wsgi_ecm processes=1 threads=25

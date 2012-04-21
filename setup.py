@@ -30,7 +30,7 @@ dependencies = [
     'south (>= 0.7.3)',
     'django_compressor (>= 1.1.2)',
     'setuptools',
-    'django (> 1.3, < 1.4)',
+    'django (>= 1.4)',
 ]
 
 setup(
