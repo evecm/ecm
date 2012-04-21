@@ -35,35 +35,30 @@ MENUS = [
 
 TASKS = [
     {
-        'function' : 'ecm.apps.hr.tasks.membertrack.update',
-        'priority' : 50,
-        'frequency' : 2,
-        'frequency_units' : 3600, # hour
+        'function': 'ecm.apps.hr.tasks.titles.update',
+        'priority': 50,
+        'frequency': 6,
+        'frequency_units': 3600, # hour
     }, {
-        'function' : 'ecm.apps.hr.tasks.membersecu.update',
-        'priority' : 20,
-        'frequency' : 2,
-        'frequency_units' : 3600, # hour
+        'function': 'ecm.apps.hr.tasks.members.update',
+        'priority': 20,
+        'frequency': 2,
+        'frequency_units': 3600, # hour
     }, {
-        'function' : 'ecm.apps.hr.tasks.titles.update',
-        'priority' : 10,
-        'frequency' : 6,
-        'frequency_units' : 3600, # hour
+        'function': 'ecm.apps.hr.tasks.users.update_all_character_associations',
+        'priority': 5,
+        'frequency': 1,
+        'frequency_units': 86400, # day
     }, {
-        'function' : 'ecm.apps.hr.tasks.users.update_all_character_associations',
-        'priority' : 5,
-        'frequency' : 1,
-        'frequency_units' : 86400, # day
+        'function': 'ecm.apps.hr.tasks.users.update_all_users_accesses',
+        'priority': 1,
+        'frequency': 2,
+        'frequency_units': 3600, # hour
     }, {
-        'function' : 'ecm.apps.hr.tasks.users.update_all_users_accesses',
-        'priority' : 1,
-        'frequency' : 2,
-        'frequency_units' : 3600, # hour
-    }, {
-        'function' : 'ecm.apps.hr.tasks.charactersheet.update_extended_characters_info',
-        'priority' : 1,
-        'frequency' : 1,
-        'frequency_units' : 86400, # day
+        'function': 'ecm.apps.hr.tasks.members.charactersheet.update_extended_characters_info',
+        'priority': 1,
+        'frequency': 1,
+        'frequency_units': 86400, # day
     },
 ]
 
