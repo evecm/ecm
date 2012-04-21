@@ -6,25 +6,25 @@
 
 <div class="row">
   <div class="span4 offset4">
-  <h1>Please login</h1>
-
-  <form method="post" action="/account/login/" class="well">
-    {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}" />
-    {% if form.errors %}<span class="error">{{ form.non_field_errors }}</span>{% endif %}
-  
-    <input type="text" name="username" {%if form.username.value%}value="{{form.username.value}}"{%endif%}
-           placeholder="username" />
-    <input type="password" name="password" placeholder="password" />
-    <label class="checkbox">
-       <input type="checkbox" id="rememberme" name="rememberme" value="0" />
-       Remember Me
-    </label>
-    <input type="submit" name="cmdweblogin" class="btn btn-primary" value="Login" />
-  
-  </form>
-  <p class="center">Not a member yet, you can <a href="/account/create/">create an acount</a>.</p>
-  <p class="center">Forgot your password? Click <a href="/account/passwordreset/">here to reset it</a>.</p>
+	  <h1>Please login</h1>
+	  
+	  <form method="post" action="/account/login/" class="well">
+	    {% csrf_token %}
+	    <input type="hidden" name="next" value="{{ next }}" />
+	    {% if form.errors %}{{ form.non_field_errors }}<br>{% endif %}
+	  
+	    <input type="text" name="username" {%if form.username.value%}value="{{form.username.value}}"{%endif%}
+	           placeholder="username" />
+	    <input type="password" name="password" placeholder="password" />
+	    <label class="checkbox">
+	       <input type="checkbox" id="rememberme" name="rememberme" value="0" />
+	       Remember Me
+	    </label>
+	    <input type="submit" name="cmdweblogin" class="btn btn-primary" value="Login" />
+	  
+	  </form>
+	  <p class="center">Not a member yet, you can <a href="/account/create/">create an acount</a>.</p>
+	  <p class="center">Forgot your password? Click <a href="/account/passwordreset/">here to reset it</a>.</p>
   
   </div>
 </div>
