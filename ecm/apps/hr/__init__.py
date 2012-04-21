@@ -64,9 +64,9 @@ TASKS = [
 
 URL_PERMISSIONS = [
     r'^/hr/$',
-    r'^/hr/members.*$',
-    r'^/hr/roles.*$',
-    r'^/hr/titles.*$',
+    r'^/hr/members/.*$',
+    r'^/hr/roles/.*$',
+    r'^/hr/titles/.*$',
 ]
 
 SETTINGS = {

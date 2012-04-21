@@ -54,7 +54,7 @@ TASKS = [
 ]
 
 URL_PERMISSIONS = [
-    r'^/industry.*$',
+    r'^/industry/.*$',
 ]
 
 SETTINGS = {

@@ -57,5 +57,5 @@ TASKS = [
 ]
 
 URL_PERMISSIONS = [
-    r'^/accounting.*$',
+    r'^/accounting/.*$',
 ]

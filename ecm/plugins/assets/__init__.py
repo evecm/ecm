@@ -38,7 +38,7 @@ TASKS = [
 ]
 
 URL_PERMISSIONS = [
-    r'^/assets.*$',
+    r'^/assets/.*$',
 ]
 
 SETTINGS = {

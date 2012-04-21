@@ -36,5 +36,5 @@ TASKS = [
 ]
 
 URL_PERMISSIONS = [
-    r'^/pos.*$',
+    r'^/pos/.*$',
 ]
