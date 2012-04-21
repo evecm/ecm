@@ -24,8 +24,8 @@ class Migration(SchemaMigration):
             if rows:
                 keyID, vCode, characterID = rows[0]
                 keyID = int(keyID)
-                keyID = str(keyID)
-                keyID = int(keyID)
+                vCode = str(vCode)
+                characterID = int(characterID)
 
         # Deleting model 'APIKey'
         db.delete_table('common_apikey')
