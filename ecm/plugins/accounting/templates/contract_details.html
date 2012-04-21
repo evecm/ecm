@@ -80,13 +80,9 @@
 	<table class="table table-bordered table-condensed"
 		id="contractitems_table">
 		<thead>
-			<tr>
-				<th class="top" scope="col">Type</th>
-				<th class="top" scope="col">Quantity</th>
-				<th class="top" scope="col">Raw Quantity</th>
-				<th class="top" scope="col">Singleton</th>
-				<th class="top" scope="col">Included</th>
-			</tr>
+			<tr>{% for name, width, type, sortable, css in columns %}
+			<th>{{name}}</th>
+			{% endfor %}</tr>
 		</thead>
 		<tbody>
 			<tr>
@@ -101,13 +97,9 @@
 $(document).ready(function() {
     var table = $('#contractitems_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: "/accounting/contracts/{{ contract.contractID }}/data/",
-        aoColumns: [
-            { /* Type*/             sWidth: "2%",  sType: "html" },
-            { /* Quantity */          sWidth: "5%",  sType: "string", sClass: "right" },
-            { /* Raw Quantity */       sWidth: "5%",  sType: "string", sClass: "center" },
-            { /* Singleton */       sWidth: "5%",  sType: "numeric" },
-            { /* Included */        sWidth: "5%",  sType: "numeric" }
-        ],
+        aoColumns: [{% for name, width, type, sortable, css in columns %}
+            { /* {{name}} */ sWidth: '{{width}}', sType: '{{type}}', bSortable: {{sortable}}, sClass: '{{css}}' },
+        {%endfor%}],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             //return nRow;
         },

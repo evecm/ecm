@@ -189,7 +189,7 @@ class ContractItem(models.Model):
     """
     class Meta:
         verbose_name = 'Contract Item'
-        ordering     = ['recordID']
+        #ordering     = ['recordID']
 
     def __hash__(self):
         return self.recordID

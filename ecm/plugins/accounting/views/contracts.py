@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from ecm.apps.corp.models import Corp
-from django.db.models.aggregates import Count
+from django.db.models.aggregates import Count, Sum
 from ecm.plugins.accounting.constants import FORMATED_CONTRACT_STATES
 
 __date__ = '2012 04 01'
@@ -160,6 +160,15 @@ def contracts_data(request):
     return HttpResponse(json.dumps(json_data))
 
 #------------------------------------------------------------------------------
+DETAILS_COLUMNS = [
+     #Name               witdth type        sortable    class    
+    [ 'Type',            '2%',  'html',     'false',    'left' ],
+    [ 'Category',        '5%',  'string',   'false',    'left'],
+    [ 'Quantity',        '5%',  'string',   'false',    'center'],
+    [ 'Raw Quantity',    '5%',  'string',   'false',    'center'],
+    [ 'Singleton',       '5%',  'string',   'false',    'center'],
+    [ 'Included',        '5%',  'string',   'false',    'right' ],
+]
 @check_user_access()
 def details(request, contract_id):
     """
@@ -190,6 +199,7 @@ def details(request, contract_id):
         'acceptor'     : acceptor,
         'startStation' : startStation,
         'endStation'   : endStation,
+        'columns'      : DETAILS_COLUMNS,
     }
     return render_to_response('contract_details.html', data, Ctx(request))
 
@@ -217,30 +227,56 @@ def details_data(request, contract_id):
             search_args |= Q(typeID__exact=type.typeID)
 
     query = contract_items.filter(search_args)
-
+    
     filtered_entries = query.count()
     if filtered_entries == None:
         total_entries = filtered_entries = query.count()
 
     query = query[params.first_id:params.last_id]
-    entries = []
-    for contract_item in query:
-        entries.append([
-            Type.objects.get(typeID=contract_item.typeID).typeName,
-            contract_item.quantity,
-            _print_rawquantity(contract_item),
-            contract_item.singleton,
-            _print_included(contract_item),
-        ])
+    grouped = True
+    entries = _populate(query,grouped)
+    # Account for grouped items
+    if grouped:
+        LOG.debug(filtered_entries)
+        filtered_entries -=  filtered_entries - len(entries)
+    LOG.debug(filtered_entries)
     return datatable_ajax_data(data=entries, echo=params.sEcho, total=total_entries, filtered=filtered_entries)
 
 #------------------------------------------------------------------------------
-def _print_rawquantity(contract_item):
+def _populate(contract_items, grouped=False):
+    entries = []
+    if grouped:
+        item_group = contract_items.values('typeID', 'rawQuantity', 'singleton', 'included').annotate(quantity=Sum('quantity'))
+        
+        for item in item_group:
+            item_type = Type.objects.get(typeID=item['typeID'])
+            entries.append([
+                item_type.typeName,
+                item_type.category.categoryName,
+                item['quantity'],
+                _print_rawquantity(item['rawQuantity'], item['typeID']),
+                item['singleton'],
+                _print_included(item['included']),
+            ]) 
+    else:
+        for contract_item in contract_items:
+            item_type = Type.objects.get(typeID=contract_item.typeID)
+            entries.append([
+                item_type.typeName,
+                item_type.category.categoryName,
+                contract_item.quantity,
+                _print_rawquantity(contract_item.rawQuantity, contract_item.typeID),
+                contract_item.singleton,
+                _print_included(contract_item.included),
+            ]) 
+    return entries
+    
+#------------------------------------------------------------------------------
+def _print_rawquantity(raw_quantity, type_id):
     result = "---"
-    raw_quantity = contract_item.rawQuantity
     if raw_quantity:
         # is bp?
-        if _is_Blueprint(contract_item):
+        if _is_Blueprint(type_id):
             if int(raw_quantity) == -1:
                 result = "Original"
             elif int(raw_quantity) == -2:
@@ -250,15 +286,11 @@ def _print_rawquantity(contract_item):
             result = "non stackable"
     return result
 
-def _print_included(contract_item):
-    result = "asking"
-    included = contract_item.included
-    if included:
-        result = "submitted"
-    return result
+def _print_included(included):
+    return "submitted" if included else "asking"
 
-def _is_Blueprint(contract_item):
-    return BlueprintType.objects.filter(blueprintTypeID=contract_item.typeID).exists
+def _is_Blueprint(type_id):
+    return BlueprintType.objects.filter(blueprintTypeID=type_id).exists
 
 def _get_types(typeName):
     return Type.objects.filter(typeName__icontains=typeName)
@@ -284,9 +316,3 @@ def _map_id(character_id):
             except Corp.DoesNotExist:
                 member = character_id
     return member
-
-def chunks(l, n):
-    """ Yield successive n-sized chunks from l.
-    """
-    for i in xrange(0, len(l), n):
-        yield l[i:i+n]
