@@ -191,7 +191,6 @@ def row_is_office(office, items_dic):
     try :
         stationID = locationid_to_stationid(office.locationID)
         solarSystemID = CelestialObject.objects.get(itemID=stationID).solarSystemID
-        #solarSystemID = db.getSolarSystemID(stationID)
         for item in office.contents:
             if item.typeID == cst.BOOKMARK_TYPEID :
                 continue # we don't give a flying @#!$ about the bookmarks...
@@ -264,7 +263,6 @@ def row_is_in_hangar(item, items_dic, solarSystemID=None, stationID=None, hangar
         # we come from the update() method and the item has a locationID attribute
         asset.stationID = locationid_to_stationid(item.locationID)
         asset.solarSystemID = CelestialObject.objects.get(itemID=asset.stationID).solarSystemID
-        #asset.solarSystemID = db.getSolarSystemID(asset.stationID)
     else:
         asset.solarSystemID = solarSystemID
         asset.stationID = stationID
@@ -360,7 +358,7 @@ def locationid_to_stationid(locationID):
     """
     to convert locationIDs starting 66000000 to stationIDs from staStations
                                                     subtract 6000001 from the locationID
-    to convert locationIDs starting 66014933 to stationIDs from the eveAPI
+    to convert locationIDs starting 66014933 to stationIDs from the eve API
                             ConquerableStationList subtract 6000000 from the locationID
 
     source : http://www.eveonline.com/ingameboard.asp?a=topic&threadID=667487
@@ -394,15 +392,14 @@ def update_assets_locations(assets_to_locate):
             solarSystemID = contained_assets.latest().solarSystemID
             distances = []
 
-            #for object_id, x, y, z in db.get_celestial_objects(solarSystemID):
             for obj in CelestialObject.objects.filter(solarSystemID=solarSystemID,
                                                       group__in = [7, 8]):
                 # Distances between celestial objects are huge. The error margin
-                # that comes with manatthan distance is totally acceptable.
+                # that comes with manhattan distance is totally acceptable.
                 # See http://en.wikipedia.org/wiki/Taxicab_geometry for culture.
-                # manatthan_distance = abs(X - x) + abs(Y - y) + abs(Z - z)
-                manatthan_distance = abs(X - obj.x) + abs(Y - obj.y) + abs(Z - obj.z)
-                distances.append(( obj.itemID, manatthan_distance ))
+                # manhattan_distance = abs(X - x) + abs(Y - y) + abs(Z - z)
+                manhattan_distance = abs(X - obj.x) + abs(Y - obj.y) + abs(Z - obj.z)
+                distances.append(( obj.itemID, manhattan_distance ))
 
             # Sort objects by increasing distance (we only want minimum)
             distances.sort(key=lambda obj:obj[1])
