@@ -24,16 +24,16 @@ except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse, \
     HttpResponseNotFound
 
 from ecm.views import JSON
 from ecm.plugins.shop import eft
+from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.models import CatalogEntry, PricingPolicy
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def parse_eft(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed()
@@ -94,7 +94,7 @@ def extract_order_items(request):
     return items, valid_order
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def search_item(request):
     querystring = request.GET.get('q', None)
     try:
@@ -110,7 +110,7 @@ def search_item(request):
         return HttpResponseBadRequest('Missing "q" parameter.')
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def get_item_id(request):
     querystring = request.GET.get('q', None)
     if querystring is not None:

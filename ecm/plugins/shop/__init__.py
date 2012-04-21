@@ -31,4 +31,6 @@ MENUS = [
 
 TASKS = []
 
-URL_PERMISSIONS = []
+URL_PERMISSIONS = [
+    r'^/shop/.*$',
+]

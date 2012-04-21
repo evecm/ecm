@@ -22,14 +22,13 @@ import logging
 
 from django.template.context import RequestContext as Ctx
 from django.shortcuts import render_to_response, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseBadRequest
 from django.utils.text import truncate_words
 
 from ecm.utils.format import print_float, print_time_min, verbose_name
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.plugins.shop.views.utils import extract_order_items
-from ecm.views.decorators import forbidden
+from ecm.views.decorators import forbidden, check_user_access
 from ecm.plugins.industry.models.order import Order, IllegalTransition
 
 LOG = logging.getLogger(__name__)
@@ -42,7 +41,7 @@ COLUMNS = [
     ['Quote', 'quote'],
     ['Creation Date', None],
 ]
-@login_required
+@check_user_access()
 def myorders(request):
     """
     Serves URL /shop/orders/
@@ -51,7 +50,7 @@ def myorders(request):
     return render_to_response('shop_myorders.html', {'columns' : columns}, Ctx(request))
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def myorders_data(request):
     """
     Serves URL /shop/orders/data/ (jQuery datatables plugin)
@@ -91,7 +90,7 @@ def myorders_data(request):
                                total=order_count, filtered=filtered_count)
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def create(request):
     """
     Serves URL /shop/orders/create/
@@ -108,7 +107,7 @@ def create(request):
     return render_to_response('shop_order.html', {'items': items}, Ctx(request))
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def details(request, order_id):
     """
     Serves URL /shop/orders/<order_id>/
@@ -125,7 +124,7 @@ def details(request, order_id):
 
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def add_comment(request, order_id):
     """
     Serves URL /shop/orders/<order_id>/comment/
@@ -146,7 +145,7 @@ def add_comment(request, order_id):
     return redirect('/shop/orders/%d/' % order.id)
 
 #------------------------------------------------------------------------------
-@login_required
+@check_user_access()
 def change_state(request, order_id, transition):
     """
     Serves URL /shop/orders/<order_id>/<transition>/

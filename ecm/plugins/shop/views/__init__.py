@@ -19,7 +19,10 @@
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
+from ecm.views.decorators import check_user_access
+
 #------------------------------------------------------------------------------
+@check_user_access()
 def home(request):
     return render_to_response('shop.html', {}, Ctx(request))
 
