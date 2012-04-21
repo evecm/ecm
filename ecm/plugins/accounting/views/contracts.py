@@ -200,6 +200,7 @@ def details(request, contract_id):
         'startStation' : startStation,
         'endStation'   : endStation,
         'columns'      : DETAILS_COLUMNS,
+        'grouped'      : 0,
     }
     return render_to_response('contract_details.html', data, Ctx(request))
 
@@ -215,6 +216,7 @@ def details_data(request, contract_id):
         contract_id = int(contract_id)
         params.included = REQ.get('included', 'All')
         params.singleton = REQ.get('singleton', 'All')
+        params.grouped = int(REQ.get('grouped', 0))
     except Exception, e:
         return HttpResponseBadRequest(str(e))
 
@@ -233,9 +235,10 @@ def details_data(request, contract_id):
         total_entries = filtered_entries = query.count()
 
    
-    grouped = False
     entries = []
-    if grouped:
+    LOG.debug(params.grouped)
+    if params.grouped:
+        LOG.debug("Displaying grouped")
         item_group = query.values('typeID', 'rawQuantity', 'singleton', 'included').annotate(quantity=Sum('quantity'))
         total_entries = item_group.count() 
         filtered_entries = total_entries
@@ -250,6 +253,7 @@ def details_data(request, contract_id):
                 _print_included(item['included']),
             ]) 
     else:
+        LOG.debug("Displaying ungrouped")
         query = query[params.first_id:params.last_id]
         for contract_item in query:
             item_type = Type.objects.get(typeID=contract_item.typeID)
@@ -265,8 +269,6 @@ def details_data(request, contract_id):
     #if grouped:
     #    LOG.debug(filtered_entries)
     #    filtered_entries -=  filtered_entries - len(entries)
-    LOG.debug(total_entries)
-    LOG.debug(filtered_entries)
     return datatable_ajax_data(data=entries, echo=params.sEcho, total=total_entries, filtered=filtered_entries)
 
 #------------------------------------------------------------------------------

@@ -74,6 +74,7 @@
       <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
       <a class="btn btn-small" id="clear_search">Reset</a>
     </div>
+    <a class="btn btn-small" data-toggle="button" id="toggle_grouped">Group</a>
   </div>
 </form>
 <div class="span10">
@@ -94,6 +95,8 @@
 </div>
 {% endblock %} {% block post_javascripts %}
 <script>
+$('.tabs').button()
+GROUPED = '{{ grouped }}';
 $(document).ready(function() {
     var table = $('#contractitems_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource: "/accounting/contracts/{{ contract.contractID }}/data/",
@@ -106,7 +109,10 @@ $(document).ready(function() {
 
         /* this function will be called when the table has to query data to be displayed */
         fnServerData: function ( sSource, aoData, fnCallback ) {
-
+			aoData.push( {
+                name: 'grouped',
+                value: GROUPED
+            } );
             $.getJSON( sSource, aoData, function (json) {
                 fnCallback(json)
             } );
@@ -129,7 +135,15 @@ $(document).ready(function() {
         $("#search_text").val("");
         table.fnFilter("");
     });
-
+    /* Toggle between grouped and ungrouped items */
+    $("#toggle_grouped").click(function() {
+    	if (GROUPED != 1) {
+            GROUPED = 1;
+        } else {
+        	GROUPED = 0;
+        }
+        table.fnFilter($("#search_text").val());
+    });
     /* disable multi column sorting */
     $('#contractitems_table thead th').click(function(event) {
         if (!$(event.target).hasClass('sorthandle')) {
