@@ -162,11 +162,11 @@ def contracts_data(request):
 #------------------------------------------------------------------------------
 DETAILS_COLUMNS = [
      #Name               witdth type        sortable    class    
-    [ 'Type',            '2%',  'html',     'false',    'left' ],
+    [ 'Type',            '75%',  'html',     'false',    'left' ],
     [ 'Category',        '5%',  'string',   'false',    'left'],
     [ 'Quantity',        '5%',  'string',   'false',    'center'],
     [ 'Raw Quantity',    '5%',  'string',   'false',    'center'],
-    [ 'Singleton',       '5%',  'string',   'false',    'center'],
+#    [ 'Singleton',       '5%',  'string',   'false',    'center'],
     [ 'Included',        '5%',  'string',   'false',    'right' ],
 ]
 @check_user_access()
@@ -232,45 +232,43 @@ def details_data(request, contract_id):
     if filtered_entries == None:
         total_entries = filtered_entries = query.count()
 
-    query = query[params.first_id:params.last_id]
-    grouped = True
-    entries = _populate(query,grouped)
-    # Account for grouped items
-    if grouped:
-        LOG.debug(filtered_entries)
-        filtered_entries -=  filtered_entries - len(entries)
-    LOG.debug(filtered_entries)
-    return datatable_ajax_data(data=entries, echo=params.sEcho, total=total_entries, filtered=filtered_entries)
-
-#------------------------------------------------------------------------------
-def _populate(contract_items, grouped=False):
+   
+    grouped = False
     entries = []
     if grouped:
-        item_group = contract_items.values('typeID', 'rawQuantity', 'singleton', 'included').annotate(quantity=Sum('quantity'))
-        
-        for item in item_group:
+        item_group = query.values('typeID', 'rawQuantity', 'singleton', 'included').annotate(quantity=Sum('quantity'))
+        total_entries = item_group.count() 
+        filtered_entries = total_entries
+        for item in item_group[params.first_id:params.last_id]:
             item_type = Type.objects.get(typeID=item['typeID'])
             entries.append([
                 item_type.typeName,
                 item_type.category.categoryName,
                 item['quantity'],
                 _print_rawquantity(item['rawQuantity'], item['typeID']),
-                item['singleton'],
+                #item['singleton'],
                 _print_included(item['included']),
             ]) 
     else:
-        for contract_item in contract_items:
+        query = query[params.first_id:params.last_id]
+        for contract_item in query:
             item_type = Type.objects.get(typeID=contract_item.typeID)
             entries.append([
                 item_type.typeName,
                 item_type.category.categoryName,
                 contract_item.quantity,
                 _print_rawquantity(contract_item.rawQuantity, contract_item.typeID),
-                contract_item.singleton,
+                #contract_item.singleton,
                 _print_included(contract_item.included),
-            ]) 
-    return entries
-    
+            ])
+    # Account for grouped items
+    #if grouped:
+    #    LOG.debug(filtered_entries)
+    #    filtered_entries -=  filtered_entries - len(entries)
+    LOG.debug(total_entries)
+    LOG.debug(filtered_entries)
+    return datatable_ajax_data(data=entries, echo=params.sEcho, total=total_entries, filtered=filtered_entries)
+
 #------------------------------------------------------------------------------
 def _print_rawquantity(raw_quantity, type_id):
     result = "---"
