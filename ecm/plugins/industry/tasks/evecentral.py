@@ -18,14 +18,12 @@
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
 
-#import logging
 import urllib
 import urllib2
 from xml.etree import ElementTree
 
 from ecm.apps.common.models import Setting
 
-#logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 def get_buy_prices(item_ids, systemID):
@@ -39,7 +37,6 @@ def get_buy_prices(item_ids, systemID):
             params.append(("usesystem", systemID))
         evecentralurl = Setting.get('industry_evecentral_url')
         url = evecentralurl + '?' + urllib.urlencode(params)
-        #logger.debug('Fetching market info from %s...' % url)
         response = urllib2.urlopen(url)
         element = ElementTree.parse(source=response)
         for typ in element.findall('.//type'):
@@ -61,7 +58,6 @@ def get_sell_prices(item_ids, systemID):
             params.append(("usesystem", systemID))
         evecentralurl = Setting.get('industry_evecentral_url')
         url = evecentralurl + '?' + urllib.urlencode(params)
-        #logger.debug('Fetching market info from %s...' % url)
         response = urllib2.urlopen(url)
         element = ElementTree.parse(source=response)
         for typ in element.findall('.//type'):
