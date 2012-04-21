@@ -4,7 +4,7 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-def mysql_quotes(self, sql):
+def mysql_quotes(sql):
     if 'mysql' in db.backend_name.lower():
         return sql.replace('"', '`')
     else:
