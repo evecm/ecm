@@ -24,6 +24,7 @@ __author__ = 'diabeteman'
 
 import os
 import sys
+import shutil
 from os import path
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
@@ -31,6 +32,7 @@ from ConfigParser import SafeConfigParser
 from django.core import management
 
 from ecm.lib.subcommand import Subcommand
+from ecm.admin import instance_template
 from ecm.admin.util import run_python_cmd, log
 from ecm.admin.cmd import collect_static_files, download_patched_eve_db, patch_ccp_dump,\
     PATCHED_EVE_DB_URL, CCP_EVE_DB_URL
@@ -79,10 +81,6 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     run_python_cmd('manage.py syncdb --noinput', instance_dir)
 
     instance_dir = path.abspath(instance_dir)
-    # now we must test if SOUTH was already installed/used
-    # in the installation we are migrating
-    # we setup Django environment in order to be able to use DB models
-    # and check if there were any existing SOUTH migrations made
     sys.path.insert(0, instance_dir)
 
     import settings #@UnresolvedImport
@@ -95,17 +93,17 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
         # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
         MigrationHistory.objects.all().delete() #@UndefinedVariable
         log('Migrating from ECM 1.4.9...')
-        run_python_cmd('manage.py migrate hr 0001 --no-initial-data', instance_dir)
+        run_python_cmd('manage.py migrate hr 0001', instance_dir)
         # we MUST "fake" the first migration for 1.4.9 apps
         # otherwise the migrate command will fail because DB tables already exist...
         for app in ('common', 'scheduler', 'corp', 'assets', 'accounting'):
-            run_python_cmd('manage.py migrate %s 0001 --fake --no-initial-data' % app, instance_dir)
+            run_python_cmd('manage.py migrate %s 0001 --fake' % app, instance_dir)
         from ecm.apps.scheduler.models import ScheduledTask
         ScheduledTask.objects.all().delete()
         from ecm.apps.common.models import UrlPermission
         UrlPermission.objects.all().delete()
 
-    run_python_cmd('manage.py migrate --all --no-initial-data', instance_dir)
+    run_python_cmd('manage.py migrate --all', instance_dir)
 
     del settings
     del sys.modules['settings']
@@ -124,7 +122,14 @@ def run(command, global_options, options, args):
         sqlite_db_dir = config.get('database', 'sqlite_db_dir')
     if not sqlite_db_dir:
         sqlite_db_dir = path.join(instance_dir, 'db')
-
+    
+    # copy settings.py & manage.py from template
+    template_dir = path.abspath(path.dirname(instance_template.__file__))
+    shutil.copy(path.join(template_dir, 'settings.py'), instance_dir)
+    shutil.copy(path.join(template_dir, 'manage.py'), instance_dir)
+    if hasattr(os, 'chmod'):
+        os.chmod(path.join(instance_dir, 'manage.py'), 00755)
+    
     # run collectstatic
     collect_static_files(instance_dir, options)
 

@@ -194,8 +194,8 @@ CACHES = {
     }
 }
 
-CAPTCHA_LENGTH = 5
-CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+CAPTCHA_NOISE_FUNCTIONS = ()
 
 #################
 # DJANGO 'APPS' #
