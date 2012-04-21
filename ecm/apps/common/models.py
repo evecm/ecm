@@ -251,10 +251,16 @@ class UrlPermission(models.Model):
     """
     pattern = models.CharField(max_length=256)
     groups = models.ManyToManyField(Group, related_name='allowed_urls')
-
+    PERMISSIONS_CACHE = None
+    
     def groups_admin_display(self):
         return ', '.join(self.groups.values_list('name', flat=True))
     groups_admin_display.short_description = 'Groups'
+
+    #Override
+    def save(self, force_insert=False, force_update=False, using=None):
+        models.Model.save(self, force_insert=force_insert, force_update=force_update, using=using)
+        UrlPermission.PERMISSIONS_CACHE = None
 
     def __unicode__(self):
         return unicode(self.pattern)
@@ -270,10 +276,14 @@ class UrlPermission(models.Model):
         """
         Checks if a User has access to the specified target_url.
         """
-        for url in UrlPermission.objects.all():
-            url_re = re.compile(url.pattern)
-            if url_re.match(target_url): # we stop on first match.
-                if set(url.groups.all()).intersection(set(user.groups.all())):
+        if UrlPermission.PERMISSIONS_CACHE is None:
+            UrlPermission.PERMISSIONS_CACHE = UrlPermission.objects.all()
+            for perm in UrlPermission.PERMISSIONS_CACHE:
+                perm.compiled_pattern = re.compile(perm.pattern)
+        
+        for perm in UrlPermission.PERMISSIONS_CACHE:
+            if perm.compiled_pattern.match(target_url): # we stop on first match.
+                if set(perm.groups.all()).intersection(set(user.groups.all())):
                     return True
                 else:
                     return False
