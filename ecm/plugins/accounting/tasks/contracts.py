@@ -106,7 +106,7 @@ def process_contracts(contract_list, connection):
     # Get all contractitem ids for removed contracts
     removed_items = []
     for contract in removed_contracts:
-        removed_items.append(ContractItem.objects.filter(contract=contract).values_list())
+        removed_items.append(ContractItem.objects.filter(contract=contract))
 
     LOG.debug("Writing contracts to DB...")
     write_contracts(added_contracts, removed_contracts)
@@ -119,9 +119,9 @@ def write_contracts(new_contracts, old_contracts):
     """
     Write the API results
     """
-    if len(old_contracts) > 0:
-        Contract.objects.all().delete()
-        LOG.info("%d old contracts removed." % len(old_contracts))
+    for contract in old_contracts:
+        old_contracts.delete()
+    LOG.info("%d old contracts removed." % len(old_contracts))
     for contract in new_contracts:
         contract.save()
     LOG.info("%d new contracts added." % len(new_contracts))
@@ -131,10 +131,10 @@ def write_contracts(new_contracts, old_contracts):
 def write_contract_items(new_items, old_items):
     """
     Write the API results for contract items to DB.
-    If old_items exists, they will 
     """
     if len(old_items) > 0:
-        ContractItem.objects.filter(contract__in=old_items).delete()
+        for item in old_items:
+            item.delete()
         LOG.info("%d old contract items removed." % len(old_items))
     for item in new_items:
         item.save()
