@@ -14,9 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.corp.models import Corp
-from django.db.models.aggregates import Count, Sum
-from ecm.plugins.accounting.constants import FORMATED_CONTRACT_STATES
 
 __date__ = '2012 04 01'
 __author__ = 'tash'
@@ -26,14 +23,16 @@ try:
 except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
-
 import logging
 
 from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext as Ctx
+from django.db.models.aggregates import Count, Sum
 
+from ecm.apps.corp.models import Corp
+from ecm.plugins.accounting.constants import FORMATED_CONTRACT_STATES
 from ecm.apps.eve.models import BlueprintType, Type, CelestialObject
 from ecm.apps.hr.models import Member
 from ecm.plugins.accounting.models import Contract, ContractItem
@@ -236,9 +235,7 @@ def details_data(request, contract_id):
 
    
     entries = []
-    LOG.debug(params.grouped)
     if params.grouped:
-        LOG.debug("Displaying grouped")
         item_group = query.values('typeID', 'rawQuantity', 'singleton', 'included').annotate(quantity=Sum('quantity'))
         total_entries = item_group.count() 
         filtered_entries = total_entries
@@ -249,11 +246,9 @@ def details_data(request, contract_id):
                 item_type.category.categoryName,
                 item['quantity'],
                 _print_rawquantity(item['rawQuantity'], item['typeID']),
-                #item['singleton'],
                 _print_included(item['included']),
             ]) 
     else:
-        LOG.debug("Displaying ungrouped")
         query = query[params.first_id:params.last_id]
         for contract_item in query:
             item_type = Type.objects.get(typeID=contract_item.typeID)
@@ -262,13 +257,8 @@ def details_data(request, contract_id):
                 item_type.category.categoryName,
                 contract_item.quantity,
                 _print_rawquantity(contract_item.rawQuantity, contract_item.typeID),
-                #contract_item.singleton,
                 _print_included(contract_item.included),
             ])
-    # Account for grouped items
-    #if grouped:
-    #    LOG.debug(filtered_entries)
-    #    filtered_entries -=  filtered_entries - len(entries)
     return datatable_ajax_data(data=entries, echo=params.sEcho, total=total_entries, filtered=filtered_entries)
 
 #------------------------------------------------------------------------------

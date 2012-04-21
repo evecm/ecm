@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.plugins.accounting.constants import ORDER_STATES, FORMATED_ORDER_STATES
 
 __date__ = '2012 04 06'
 __author__ = 'tash'
@@ -26,6 +25,7 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
+from ecm.plugins.accounting.constants import ORDER_STATES, FORMATED_ORDER_STATES
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import UpdateDate
@@ -69,7 +69,6 @@ def marketorders(request):
         'name': 'All',
         'selected' : stateID == -1 ,
     }]
-    LOG.debug("stateID: %s " % stateID)
     for s in range(len(ORDER_STATES)):
         states.append({
             'stateID': s,
@@ -109,8 +108,6 @@ def marketorders_data(request):
         params.typeID = int(REQ.get('typeID', 0))
     except:
         return HttpResponseBadRequest()
-    LOG.debug(params.column)
-    LOG.debug(SORT_COLUMNS[params.column])
     query = MarketOrder.objects.all() # .order_by('-dateIssued')
     total_entries = query.count()
     search_args = Q()

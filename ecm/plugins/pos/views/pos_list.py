@@ -75,8 +75,8 @@ def poses(request):
     return render_to_response("pos_list.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
-@check_user_access()
 @cache_page(60 * 60) # 1 hour cache
+@check_user_access()
 def poses_data(request):
     '''
     Read data when table request by Ajax.
