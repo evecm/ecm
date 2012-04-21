@@ -41,9 +41,7 @@ from ecm.apps.hr.models import Member
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params
 from ecm.plugins.accounting.models import JournalEntry, EntryType
-import logging
 
-LOG = logging.getLogger(__name__)
 DATE_PATTERN = "%Y-%m-%d"
 
 #------------------------------------------------------------------------------
@@ -124,7 +122,6 @@ def journal_data(request):
         if params.entryTypeID:
             search_args &= Q(type=params.entryTypeID)
         # Add query amount
-        LOG.debug(params.amount)
         if params.amount:
             comparator_map = {
                               'gt':  Q(amount__gt=params.amount), 
@@ -135,7 +132,6 @@ def journal_data(request):
                               'neq': Q(amount__lt=params.amount, amount__gt=params.amount),
                               }
             search_args &= comparator_map[params.comparator]
-            LOG.debug(comparator_map[params.comparator])
             
         # Add query dates
         if params.from_date and params.to_date:
