@@ -94,14 +94,14 @@ def one_pos(request, pos_id):
     except Corp.DoesNotExist:
         use_standings_from = "???"
 
-    groups = UrlPermission.objects.get(pattern='^/pos.*$').groups.all()
-    oper_list = User.objects.all().distinct().filter(groups__in=groups).extra(select={ 'lower_name': 'lower(username)' }).order_by('lower_name')
+    groups = UrlPermission.objects.get(pattern='^/pos/.*$').groups.all()
+    operators = User.objects.filter(groups__in=groups).distinct().extra(select={ 'lower_name': 'lower(username)' })
 
     data = {
         'pos'               : pos,
         'moon'              : pos.moon_id,
         'system'            : pos.location_id,
-        'opers'             : oper_list,
+        'opers'             : operators.order_by('lower_name'),
         'dotlanPOSLocation' : dotlanPOSLocation,
         'fuel_columns'      : [ col for col, _ in FUEL_COLUMNS ],
         'silo_columns'      : [ col for col, _ in SILO_COLUMNS ],
