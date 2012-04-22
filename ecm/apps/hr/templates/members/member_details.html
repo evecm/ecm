@@ -1,5 +1,7 @@
 {% extends "hr_base.html" %}
 
+{% block hr_stylesheets %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />{% endblock %}
+
 {% block headtitle %}Member Details - {{ member.name }}{% endblock %}
 
 
@@ -196,6 +198,7 @@
 
 {% block post_javascripts %}
 <script type="text/javascript">
+
 $(document).ready(function() {
     $('#access_changes_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource : "/hr/members/{{ member.characterID }}/accesschanges/data/",
@@ -211,9 +214,8 @@ $(document).ready(function() {
                 $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"></img>');
             }
             return nRow;
-        }
+        },
     }));
-    
     // Type    Status    Title    Date Issued
     $('#contract_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource : "/hr/members/{{ member.characterID }}/contracts/data/",
@@ -222,11 +224,10 @@ $(document).ready(function() {
             { sTitle: "Status", sWidth: "10%", sType: "html" ,  bSortable: false },
             { sTitle: "Title",       sWidth: "70%", sType: "html", bSortable: false },
             { sTitle: "Date Issued",       sWidth: "15%", sType: "html", bSortable: false, sClass: "right" },
-        ]
+        ],
     }));
-    
     // Type    Item    Price    Station    Issued
-    $('#marketorders_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+    $('#marketorders_table').dataTable( $.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource : "/hr/members/{{ member.characterID }}/marketorders/data/",
         aoColumns: [
             { sTitle: "Type",     	sWidth: "15%", sType: "html" ,  bSortable: false, sClass: "center" },
@@ -241,7 +242,6 @@ $(document).ready(function() {
             } );
         },
     }));
-
 });
 /* Apply a jEditable handler to the "notes" paragraph */
 $('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {

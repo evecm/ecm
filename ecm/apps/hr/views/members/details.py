@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from ecm.plugins.accounting.models import MarketOrder, Contract
+from ecm.plugins.accounting.constants import FORMATED_CONTRACT_STATES
 
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
@@ -167,7 +168,7 @@ def issued_contracts(request, characterID):
         # Append the results
         contract_list.append([
             contract.permalink_type,
-            contract.status,
+            FORMATED_CONTRACT_STATES[contract.status],
             contract.permalink,
             print_time_min(contract.dateIssued),
         ])
