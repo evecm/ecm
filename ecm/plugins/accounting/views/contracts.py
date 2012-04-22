@@ -32,12 +32,14 @@ from django.template.context import RequestContext as Ctx
 from django.db.models.aggregates import Count, Sum
 
 from ecm.apps.corp.models import Corp
-from ecm.plugins.accounting.constants import FORMATED_CONTRACT_STATES
+from ecm.plugins.accounting.constants import FORMATED_CONTRACT_STATES,\
+    REPACKAGED_VOLUMES
 from ecm.apps.eve.models import BlueprintType, Type, CelestialObject
 from ecm.apps.hr.models import Member
 from ecm.plugins.accounting.models import Contract, ContractItem
 from ecm.apps.common.models import UpdateDate
-from ecm.utils.format import print_time_min, print_float, print_volume
+from ecm.utils.format import print_time_min, print_float, print_volume,\
+    print_integer
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 
@@ -45,8 +47,8 @@ LOG = logging.getLogger(__name__)
 
 COLUMNS = [
      #Name               witdth type        sortable    class    
-    [ 'Type',            '2%',  'html',     'true',         'center' ],
-    [ 'Status',          "5%",  "string",   'true',         ''],
+    [ 'Type',            '2%',  'html',     'true',     'center' ],
+    [ 'Status',          "5%",  "string",   'true',     ''],
     [ 'Title',           "5%",  "string",   'false',    ''],
     [ 'Date Issued',     '5%',  'string',   'false',    ''],
     [ 'Date Expired',    '5%',  'string',   'false',    ''],
@@ -160,13 +162,14 @@ def contracts_data(request):
 
 #------------------------------------------------------------------------------
 DETAILS_COLUMNS = [
-     #Name               witdth type        sortable    class    
-    [ 'Type',            '75%',  'html',     'false',    'left' ],
-    [ 'Category',        '5%',  'string',   'false',    'left'],
-    [ 'Quantity',        '5%',  'string',   'false',    'center'],
-    [ 'Raw Quantity',    '5%',  'string',   'false',    'center'],
-#    [ 'Singleton',       '5%',  'string',   'false',    'center'],
-    [ 'Included',        '5%',  'string',   'false',    'right' ],
+     #Name                  witdth type        sortable    class    
+    [ 'Type',                       '35%', 'html',     'false',    'left' ],
+    #[ 'Category / Group',           '5%',  'string',   'false',    'left'],
+    [ 'Quantity',                   '5%',  'string',   'false',    'right'],
+    [ 'Volume each',                '25%', 'string',   'false',    'right'],
+    [ 'Volume total',               '25%', 'string',   'false',    'right'],
+    #[ 'Raw Quantity',               '5%',  'string',   'false',    'center'],
+    [ 'Included',                   '5%',  'string',   'false',    'right' ],
 ]
 @check_user_access()
 def details(request, contract_id):
@@ -241,22 +244,28 @@ def details_data(request, contract_id):
         filtered_entries = total_entries
         for item in item_group[params.first_id:params.last_id]:
             item_type = Type.objects.get(typeID=item['typeID'])
+            cat_group = "%s / %s" % ( item_type.category.categoryName,item_type.group.groupName)
             entries.append([
                 item_type.typeName,
-                item_type.category.categoryName,
-                item['quantity'],
-                _print_rawquantity(item['rawQuantity'], item['typeID']),
+                #cat_group,
+                print_integer(item['quantity']),
+                _print_repackaged_volume(item_type),
+                _print_repackaged_volume(item_type, item['quantity']),
+                #_print_rawquantity(item['rawQuantity'], item['typeID']),
                 _print_included(item['included']),
             ]) 
     else:
         query = query[params.first_id:params.last_id]
         for contract_item in query:
             item_type = Type.objects.get(typeID=contract_item.typeID)
+            cat_group = "%s / %s" % ( item_type.category.categoryName,item_type.group.groupName)
             entries.append([
                 item_type.typeName,
-                item_type.category.categoryName,
-                contract_item.quantity,
-                _print_rawquantity(contract_item.rawQuantity, contract_item.typeID),
+                #cat_group,
+                print_integer(contract_item.quantity),
+                _print_repackaged_volume(item_type),
+                _print_repackaged_volume(item_type, contract_item.quantity),
+                #_print_rawquantity(contract_item.rawQuantity, contract_item.typeID),
                 _print_included(contract_item.included),
             ])
     return datatable_ajax_data(data=entries, echo=params.sEcho, total=total_entries, filtered=filtered_entries)
@@ -278,6 +287,17 @@ def _print_rawquantity(raw_quantity, type_id):
 
 def _print_included(included):
     return "submitted" if included else "asking"
+
+def _print_repackaged_volume(item, quantity=1):
+    result = ""
+    if REPACKAGED_VOLUMES.has_key(item.group.groupName):
+        vol_rep = print_volume(REPACKAGED_VOLUMES[item.group.groupName] * quantity)
+        vol_tot = print_volume(item.volume * quantity)
+        result = "%s / %s" % ( vol_rep, vol_tot)
+    else:
+        vol = print_volume(item.volume * quantity)
+        result = "%s / %s" % (vol, vol)
+    return result
 
 def _is_Blueprint(type_id):
     return BlueprintType.objects.filter(blueprintTypeID=type_id).exists
