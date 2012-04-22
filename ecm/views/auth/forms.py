@@ -14,11 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-import urllib2
-import urllib
 
 __date__ = "2011 4 6"
 __author__ = "diabeteman"
+
+import urllib2
+import urllib
 
 from django import forms
 from django.contrib.auth.models import User, AnonymousUser
@@ -141,7 +142,7 @@ class PasswordResetForm(forms.Form):
 
     def save(self, email_template_name='registration/password_reset_email.html',
              use_https=False, token_generator=default_token_generator, from_email=None, 
-             request=None, domain_override=False):
+             request=None, domain_override=False, *args, **kwargs):
         """
         Generates a one-use only link for resetting password and sends to the user
         """
