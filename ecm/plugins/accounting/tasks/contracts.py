@@ -75,7 +75,6 @@ def process_contracts(contract_list, connection):
             contract = populate_contract(entry)
             new_contracts[contract] = contract
     LOG.debug("%s new contracts from API..." % len(new_contracts))
-    
     # Get changes
     removed_contracts, added_contracts = tools.diff(old_items=old_contracts, new_items=new_contracts)
     LOG.debug("Contracts from API: %s" % len(contract_list))
@@ -107,7 +106,7 @@ def process_contracts(contract_list, connection):
     removed_items = []
     for contract in removed_contracts:
         removed_items.append(ContractItem.objects.filter(contract=contract))
-
+    
     LOG.debug("Writing contracts to DB...")
     write_contracts(added_contracts, removed_contracts)
     LOG.debug("Writing contract items to DB...")
@@ -120,7 +119,7 @@ def write_contracts(new_contracts, old_contracts):
     Write the API results
     """
     for contract in old_contracts:
-        old_contracts.delete()
+        contract.delete()
     LOG.info("%d old contracts removed." % len(old_contracts))
     for contract in new_contracts:
         contract.save()
