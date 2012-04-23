@@ -249,8 +249,11 @@ def update_pos_name(request, pos_id):
 @check_user_access()
 def update_pos_oper(request, pos_id):
     user_id = request.POST["user"]
-    pos = get_object_or_404(POS, item_id=int(pos_id))
-    user = get_object_or_404(User, id=int(user_id))
+    try:
+        pos = get_object_or_404(POS, item_id=int(pos_id))
+        user = get_object_or_404(User, id=int(user_id))
+    except ValueError:
+        return HttpResponseRedirect('/pos/' + pos_id + '/')
     if user in pos.operators.all():
         pos.operators.remove(user)
     else:
