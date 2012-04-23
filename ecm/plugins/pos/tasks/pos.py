@@ -20,6 +20,7 @@ __author__ = "JerryKhan"
 
 import logging
 import calendar
+import pytz
 from datetime import datetime
 
 from django.db import transaction
@@ -68,9 +69,9 @@ def update():
         apiCurPOS = conn.corp.StarbaseDetail(characterID=charID,
                                              itemID=row.itemID)
         cached_until = apiCurPOS._meta.cachedUntil
-
+        cached_until = cached_until.replace(tzinfo=pytz.UTC)
         if cached_until != pos.cached_until:
-            pos.cached_until = cached_until
+            pos.cached_until = cached_until # @todo: causing  RuntimeWarning: dont know why :|
             get_details(pos, apiCurPOS, sov)
         else:
             localCachedUntil = datetime.fromtimestamp(calendar.timegm(cached_until.timetuple()))
