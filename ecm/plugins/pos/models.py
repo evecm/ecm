@@ -153,7 +153,7 @@ class POS(models.Model):
     @property
     def time_until_tick(self):
         online_min = self.online_timestamp.minute
-        cur_min = datetime.datetime.now().minute
+        cur_min = datetime.datetime.utcnow().minute
         if cur_min <= online_min:
             return online_min - cur_min
         else:
@@ -189,7 +189,7 @@ class FuelLevel(models.Model):
         if self.type_id == constants.STRONTIUM_CLATHRATES_TYPEID:
             return self.quantity
         else:
-            date_delta = datetime.datetime.now() - self.date
+            date_delta = datetime.datetime.utcnow() - self.date
             total_seconds = date_delta.days * 24 * 60 * 60 + date_delta.seconds
             hours = int(total_seconds / 3600)
             consumed_fuel = hours * self.consumption

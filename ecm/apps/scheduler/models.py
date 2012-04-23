@@ -24,6 +24,7 @@ from datetime import datetime, timedelta
 
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import force_unicode
+from django.utils import timezone
 from django.db import models
 
 from ecm.apps.scheduler.validators import (FunctionValidator, extract_function, extract_model,
@@ -86,7 +87,7 @@ class ScheduledTask(models.Model):
 
     def next_execution_admin_display(self):
         from ecm.utils.format import print_delta
-        delta = self.next_execution - datetime.now()
+        delta = self.next_execution - timezone.now()
         if delta < timedelta(0):
             delta = timedelta(0)
         return print_delta(delta)
@@ -104,7 +105,7 @@ class ScheduledTask(models.Model):
                 return
             else:
                 self.is_running = True
-                self.last_execution = datetime.now()
+                self.last_execution = timezone.now()
                 self.save()
 
             func = self.get_function()
@@ -119,7 +120,7 @@ class ScheduledTask(models.Model):
             LOG.exception("")
         finally:
             delta = self.frequency * self.frequency_units
-            self.next_execution = datetime.now() + timedelta(seconds=delta)
+            self.next_execution = timezone.now() + timedelta(seconds=delta)
             self.is_running = False
             self.is_scheduled = False
             self.save()
@@ -148,7 +149,7 @@ class GarbageCollector(models.Model):
     max_age_threshold_admin_display.short_description = "Max Age Threshold"
 
     def get_expiration_date(self):
-        return datetime.now() + timedelta(seconds=self.max_age_threshold * self.age_units)
+        return timezone.now() + timedelta(seconds=self.max_age_threshold * self.age_units)
 
     def get_model(self):
         return extract_model(self.db_table)
