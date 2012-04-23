@@ -228,7 +228,7 @@ class MarketOrder(models.Model):
     minVolume    = models.PositiveIntegerField()
     orderState   = models.PositiveIntegerField()
     typeID       = models.PositiveIntegerField()
-    range        = models.PositiveIntegerField() #@ReservedAssignment
+    range        = models.IntegerField() #@ReservedAssignment
     accountKey   = models.PositiveIntegerField()
     duration     = models.PositiveIntegerField()
     escrow       = models.PositiveIntegerField()
