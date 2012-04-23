@@ -92,3 +92,11 @@ def price_format(value):
         return unicode(print_float(value))
     except:
         return unicode(value)
+
+#------------------------------------------------------------------------------
+@register.filter(name='ecm_absolute')
+def absolute_format(value):
+    try:
+        return unicode(abs(value))
+    except:
+        return unicode(value)

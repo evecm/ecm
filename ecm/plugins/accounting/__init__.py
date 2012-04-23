@@ -29,6 +29,7 @@ MENUS = [
         {'title': 'Tax Contributions', 'url': 'contributions/', 'items': []},
         {'title': 'Contracts', 'url': 'contracts/', 'items': []},
         {'title': 'Market Orders', 'url': 'marketorders/', 'items': []},
+        {'title': 'Reporting', 'url': 'reporting/', 'items': []},
     ]},
 ]
 

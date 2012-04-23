@@ -35,4 +35,5 @@ urlpatterns = patterns('ecm.plugins.accounting.views',
     (r'^contributions/members/data/$',   'contrib.member_contrib_data'),
     (r'^contributions/systems/data/$',   'contrib.system_contrib_data'),
     (r'^contributions/total/data/$',     'contrib.total_contrib_data'),
+    (r'^reporting/$',                    'reporting.reporting'),
 )

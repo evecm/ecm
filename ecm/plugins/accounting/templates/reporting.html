@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Reporting{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li><a href="/reporting/">Reporting</a></li>
+{% endblock %}
+
+{% block main_content %}
+<div class="page-header">
+  <h1>Reporting</h1>
+</div>
+<div>
+	<div class="row-fluid">
+		<div class="span4">
+			<table class="table table-condensed table-striped" id="cashflow_table">
+			<!-- HEADER -->
+			  <thead>
+			    <tr>{% for name, width, type, sortable, css in columns_cashflow %}
+			      <th style="text-align: {{ css }};">{{name}}</th>
+			    {% endfor %}</tr>
+			  </thead>
+			<tbody>
+			    <tr>
+				<td>Income total</td>
+				<td style="text-align: right;">{{income_total|ecm_amount}}</td>
+			    </tr>
+			<tr>
+				<td>Expenditure total</td>
+				<td style="text-align: right;">{{expenditure_total|ecm_amount}}</td>
+			</tr>
+			</tbody>
+			<tfoot>
+			    <tr>
+				<th>Net cash inflow</th>
+				<th style="text-align: right;">{{cashflow|ecm_amount}}</th>
+			    </tr>
+			</tfoot>
+			</table>
+		</div>
+	<div id="chart_balances"></div>
+	</div>
+	<div class="row-fluid">
+		<div class="span7">
+			<table class="table table-condensed table-striped" id="income_table">
+			<!-- HEADER -->
+			  <thead>
+			    <tr>{% for name, width, type, sortable, css in columns_income %}
+			      <th style="text-align: {{ css }};">{{name}}</th>
+			    {% endfor %}</tr>
+			  </thead>
+			<tbody>
+			{% for item in income %}
+			    <tr>
+				<td>{{item.type__refTypeName}}</td>
+				<td style="text-align: right;">{{item.percentage|floatformat:2}} %</td>
+				<td style="text-align: right;">{{item.amount|ecm_amount}}</td>
+			    </tr>
+			{% endfor %}
+			  </tbody>
+			<tfoot>
+			    <tr>
+			      <th>Total:</th>
+			      <th style="text-align: right;">100 %</th>
+			      <th style="text-align: right;">{{income_total|ecm_amount}}</th>
+			    </tr>
+			</tfoot>
+			</table>
+		</div>
+	<div id="chart_income" class="span4"></div>
+	</div>
+	<div class="row-fluid">
+		<div class="span7">
+			<table class="table table-condensed table-striped" id="expenditure_table">
+			<!-- HEADER -->
+			  <thead>
+			    <tr>{% for name, width, type, sortable, css in columns_expenditure %}
+			      <th style="text-align: {{ css }};">{{name}}</th>
+			    {% endfor %}</tr>
+			  </thead>
+			<tbody>
+			{% for item in expenditure %}
+			    <tr>
+				<td>{{item.type__refTypeName}}</td>
+				<td style="text-align: right;">{{item.percentage|floatformat:2}} %</td>
+				<td style="text-align: right;">{{item.amount|ecm_amount}}</td>
+			    </tr>
+			{% endfor %}
+			  </tbody>
+			<tfoot>
+			    <tr>
+			      <th>Total:</th>
+			      <th style="text-align: right;">100 %</th>
+			      <th style="text-align: right;">{{expenditure_total|ecm_amount}}</th>
+			    </tr>
+			</tfoot>
+			</table>
+		</div>
+	<div id="chart_expenditure" class="span4"></div>
+	</div>
+	
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+</script>
+{% endblock %}
+
+{% block post_javascripts %}
+<script type="text/javascript">
+
+google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawIncome);
+      function drawIncome() {
+        var data = google.visualization.arrayToDataTable([
+        ['Income', 'Amount'],
+	{% for item in income %}
+	['{{ item.type__refTypeName }}', {{ item.amount }}]{% if forloop.last %}{% else %},{% endif %}{% endfor %}
+        ]);
+
+        var options = {
+          title: 'Income',
+          width: 450, 
+          height: 350,
+  	  colors: ['#80c65a','#94cf74','#a9d98f','#bde2a9','#d2ebc4'],
+	  tooltip: {text: 'percentage'}
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart_income'));
+        chart.draw(data, options);
+      }
+
+      google.setOnLoadCallback(drawExpenditure);
+      function drawExpenditure() {
+        var data = google.visualization.arrayToDataTable([
+        ['Income', 'Amount'],
+	{% for item in expenditure %}
+	['{{ item.type__refTypeName }}', {{ item.amount|ecm_absolute }}]{% if forloop.last %}{% else %},{% endif %}{% endfor %}
+        ]);
+
+        var options = {
+          title: 'Expenditure',
+          width: 450, 
+          height: 350,
+  	  colors: ['#ff9900','#ffa928','#ffba51','#ffca7a','#ffdba3'],
+	  tooltip: {text: 'percentage'}
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart_expenditure'));
+        chart.draw(data, options);
+      }
+
+</script>
+{% endblock %}
