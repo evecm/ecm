@@ -21,6 +21,7 @@ __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
 from datetime import timedelta
+import json
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.cache import cache_page
@@ -31,16 +32,19 @@ from django.utils.datetime_safe import datetime
 from django.db.models.aggregates import Avg, Sum
 
 from ecm.apps.hr.models.member import MemberSession
-from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
+from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff, Skill
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import ColorThreshold, Setting, UpdateDate
 from ecm.utils.format import print_time_min, print_float
-from ecm.apps.eve.models import CelestialObject, Type
+from ecm.apps.eve.models import CelestialObject, Type, Group
+from ecm.utils.format import print_integer
 
 import logging
 logger = logging.getLogger(__name__)
 
+GROUP_SPAN = '<span class="industry-job" title="%s"><strong>%s</strong> - Skills: <i>%s</i>, Points <i>%s</i></span>'
+SKILL_SPAN = '<span class="industry-job" title="%s"><strong>%s</strong> - Points: <i>%s</i>, Level: <i>%s</i></span>'
 #------------------------------------------------------------------------------
 @check_user_access()
 def details(request, characterID):
@@ -85,22 +89,59 @@ def details(request, characterID):
         else:
             d = MemberDiff.objects.filter(member=member, new=False).order_by("-id")[0]
             member.date = d.date
+        if member.DoB:
+            skill_groups = Group.objects.filter(category = 16, published = 1).order_by('groupName')
+            skill_count = Skill.objects.filter(character = characterID).count()
+            skillpoint_count = Skill.objects.filter(character = characterID).aggregate(Sum('skillpoints'))['skillpoints__sum']
+            skills_json = []
+            for group in skill_groups:
+                skill_typeids = Type.objects.filter(group = group.groupID).order_by('typeName').values_list('typeID', flat=True)
+                group_points = Skill.objects.filter(typeID__in = list(skill_typeids), character = characterID).aggregate(Sum('skillpoints'))
+                skills_in_group = Skill.objects.filter(typeID__in = list(skill_typeids), character = characterID)
+                skills_in_group = [(x.name, x.skillpoints, x.level) for x in skills_in_group]
+                skills_in_group.sort()
+                if len(skills_in_group) != 0:
+                    skillgroup = {
+                                  'data' : GROUP_SPAN % ('group', 
+                                                         group, 
+                                                         len(skills_in_group), 
+                                                         print_integer(group_points['skillpoints__sum'])),
+                                  'attr' : { 'rel' : 'group'},
+                    }
+                    skillgroup['children'] = []
+                    for skill in skills_in_group:
+                        skillskill = {
+                                  'data' : SKILL_SPAN % ('skill', 
+                                                         skill[0], 
+                                                         print_integer(skill[1]), 
+                                                         skill[2]),
+                                  'attr' : { 'rel' : 'skill'},
+                        }
+                        skillgroup['children'].append(skillskill)
+                skills_json.append(skillgroup)
+        else:
+            skills_json = []
+            skill_count = 0
+            skillpoint_count = 0
     except ObjectDoesNotExist:
         member = Member(characterID=int(characterID), name="???")
-
+    
     try:
         killboardUrl = Setting.get('corp_killboard_url')
     except Setting.DoesNotExist:
         killboardUrl = None
-
+    
     data = {
-        'member': member,
-        'killboardUrl': killboardUrl,
-        'sessiondata': avg_session,
-        'lastWeek' : lastWeek,
-        'lastMonth' : lastMonth,
-        'total' : total,
-        'logins': loginhistory
+        'member'            : member,
+        'killboardUrl'      : killboardUrl,
+        'sessiondata'       : avg_session,
+        'lastWeek'          : lastWeek,
+        'lastMonth'         : lastMonth,
+        'total'             : total,
+        'logins'            : loginhistory,
+        'skills_tree'       : json.dumps(skills_json),
+        'skill_count'       : skill_count,
+        'skillpoint_count'  : print_integer(skillpoint_count),
     }
     return render_to_response("members/member_details.html", data, Ctx(request))
 

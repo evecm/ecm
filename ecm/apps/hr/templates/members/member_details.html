@@ -192,14 +192,61 @@
     </tr>
   </tfoot>
 </table>
-<!-- /MARKET ORDERS -->
 
+<!-- Skill List  -->
+<!-- ##########################################################################
+     # Type    Item    Price    Station    Issued
+     ########################################################################## -->
+<h3>Skills</h3>
+<h4>Current Skills: {{skill_count}} (Skill Points: {{skillpoint_count}})</h4>
+
+<div id="skills-tree"></div>
+
+<!-- /skill list -->
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jstree.js"></script>
 {% endblock %}
 
 {% block post_javascripts %}
 <script type="text/javascript">
 
 $(document).ready(function() {
+	$('#skills-tree').jstree({
+        plugins: [ 'themes' , 'json_data' , 'ui',  'types' ],
+        json_data: { data: {{skills_tree|safe}} },
+        core: {
+            animation : 150,
+            html_titles : true
+        },
+        ui: {
+            select_limit : 1
+        },
+        themes: {
+            url : '{{ STATIC_URL }}hr/css/jstree.css',
+            dots : false
+        },
+        types: {
+            valid_children: [ 'group', 'skill', ],
+            types: {
+                group: {
+                    valid_children: [ 'skill' ],
+                    open_node: true,
+                    close_node: true
+                },
+                skill: {
+                    icon: {
+                        image: '{{ STATIC_URL }}hr/img/skillbook.png'
+                    },
+                    valid_children: 'none',
+                    open_node: true,
+                    close_node: true
+                },
+            }
+        },
+    });
+
     $('#access_changes_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sAjaxSource : "/hr/members/{{ member.characterID }}/accesschanges/data/",
         aoColumns: [

@@ -233,8 +233,8 @@ class Skill(models.Model):
     skillpoints = models.IntegerField(default=0)
     level = models.IntegerField(default=0)
     def __unicode__(self):
-        return self.name()
+        return self.name
+    @property
     def name(self):
         name = Type.objects.get(typeID=self.typeID).typeName
-        #name = get_type_name(self.typeID)
-        return unicode(name[0])
+        return unicode(name)
