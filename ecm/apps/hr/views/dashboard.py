@@ -100,9 +100,15 @@ def positions_of_members():
     for m in Member.objects.filter(corped=True):
         solarSystemID = m.locationID
         if solarSystemID > constants.STATIONS_IDS:
-            solarSystemID = CelestialObject.objects.get(itemID = m.locationID).solarSystemID
+            try:
+                solarSystemID = CelestialObject.objects.get(itemID = m.locationID).solarSystemID
+            except CelestialObject.DoesNotExist:
+                LOG.error("No celestial found for id: %s" % m.locationID)
             #solarSystemID = db.getSolarSystemID(m.locationID)
-        security = CelestialObject.objects.get(itemID = solarSystemID).security
+        try:
+            security = CelestialObject.objects.get(itemID = solarSystemID).security
+        except CelestialObject.DoesNotExist:
+            LOG.error("No celestial found for id: %s" % solarSystemID)
         #security = db.resolveLocationName(solarSystemID)[1]
         if security > 0.45:
             positions["hisec"] += 1
