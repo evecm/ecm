@@ -31,6 +31,7 @@ dependencies = [
     'django_compressor (>= 1.1.2)',
     'setuptools',
     'django (>= 1.4)',
+    'pytz',
 ]
 
 setup(
