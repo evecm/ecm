@@ -69,7 +69,8 @@ def update():
         apiCurPOS = conn.corp.StarbaseDetail(characterID=charID,
                                              itemID=row.itemID)
         cached_until = apiCurPOS._meta.cachedUntil
-        cached_until = cached_until.replace(tzinfo=pytz.UTC)
+        if pos.cached_until.is_aware():
+            cached_until = cached_until.replace(tzinfo=pytz.UTC)
         if cached_until != pos.cached_until:
             pos.cached_until = cached_until # @todo: causing  RuntimeWarning: dont know why :|
             get_details(pos, apiCurPOS, sov)
