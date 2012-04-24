@@ -118,7 +118,7 @@ def details(request, characterID):
                                   'attr' : { 'rel' : 'skill'},
                         }
                         skillgroup['children'].append(skillskill)
-                skills_json.append(skillgroup)
+                    skills_json.append(skillgroup)
         else:
             skills_json = []
             skillpoint_count = 0

@@ -26,6 +26,7 @@ except ImportError:
 import re
 import random
 import datetime
+import pytz
 
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
@@ -33,6 +34,7 @@ from django.db import models, transaction
 from django.conf import settings
 from django.utils.hashcompat import sha_constructor
 from django.core.validators import RegexValidator
+from django.utils import timezone
 
 #------------------------------------------------------------------------------
 class Setting(models.Model):
@@ -204,6 +206,8 @@ class UpdateDate(models.Model):
         """
         try:
             update = UpdateDate.objects.get(model_name=model.__name__)
+            if update.update_date.tzinfo:
+                date = date.replace(tzinfo=pytz.UTC)
             if not update.update_date == date:
                 update.prev_update = update.update_date
                 update.update_date = date
@@ -359,6 +363,6 @@ class RegistrationProfile(models.Model):
     def activation_key_expired(self):
         expiration_date = datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
         return self.activation_key == self.ACTIVATED or \
-               (self.user.date_joined + expiration_date <= datetime.datetime.now())
+               (self.user.date_joined + expiration_date <= timezone.now())
     activation_key_expired.boolean = True
 
