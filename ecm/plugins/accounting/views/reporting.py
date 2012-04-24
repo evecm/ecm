@@ -53,7 +53,7 @@ COLUMNS_EXPENDITURE = [
 
 COLUMNS_CASHFLOW = [
      #Name               witdth type        sortable    class    
-    [ 'Cash Flow',     '2%',  'html',     'true',     'left' ],
+    [ 'Summary',     '2%',  'html',     'true',     'left' ],
     [ 'Amount',          '5%',  'string',   'true',     'right'],
 ]
 
@@ -64,21 +64,41 @@ def reporting(request):
     end = now
     date_entries = JournalEntry.objects.filter(date__range=(start, end))
     
-    # Get an income overview
-    income_entries = date_entries.filter(amount__gt=0).values('type__refTypeName').annotate(amount=Sum('amount'))
+    # Get an income_aggregated overview
+    incomes = date_entries.filter(amount__gt=0)
+    # Aggregate over type
+    income_aggregated = []
+    income_entries = incomes.values('type__refTypeName').annotate(amount=Sum('amount'))
     income_total = date_entries.filter(amount__gt=0).aggregate(Sum('amount'))['amount__sum']
-    income = []
     for item in income_entries:
         item['percentage']= item['amount'] / (income_total / 100)
-        income.append(item)
+        income_aggregated.append(item)
+    
+    # Aggregate amount for each day in period
+    start_day = datetime.today() - timedelta(30)
+    u = datetime.utcnow()
+    start_day = datetime(u.year, u.month, u.day, 0, 0, 0, 0, u.tzinfo) - timedelta(30)
+    income_time=[]
+    expenditure_time=[]
+    for day in range(30):
+        start = start_day + timedelta(day)
+        end = _end_of_day(start)
+        inc_entry = JournalEntry.objects.filter(date__range=(start, end)).filter(amount__gt=0).aggregate(Sum('amount'))['amount__sum']
+        exp_entry = JournalEntry.objects.filter(date__range=(start, end)).filter(amount__lt=0).aggregate(Sum('amount'))['amount__sum']
+        amount =  0 if inc_entry == None else inc_entry
+        income_time.append({'date' : start, 'amount' : amount})
+        amount =  0 if exp_entry == None else exp_entry
+        expenditure_time.append({'date' : start, 'amount' : amount})
         
-    # Get an expenditure overview
-    expenditure_entries = date_entries.filter(amount__lt=0).values('type__refTypeName').annotate(amount=Sum('amount'))
+    # Get an expenditure_aggregated overview
+    expenditures = date_entries.filter(amount__lt=0)
+    expenditure_entries = expenditures.values('type__refTypeName').annotate(amount=Sum('amount'))
     expenditure_total = date_entries.filter(amount__lt=0).aggregate(Sum('amount'))['amount__sum']
-    expenditure = []
+    expenditure_aggregated = []
     for item in expenditure_entries:
         item['percentage']= item['amount'] / (expenditure_total / 100)
-        expenditure.append(item)
+        expenditure_aggregated.append(item)
+        
     # Get a cash flow overview
     cashflow = income_total + expenditure_total
     
@@ -97,13 +117,23 @@ def reporting(request):
         ]) 
     data = {
             'columns_income'        : COLUMNS_INCOME,
-            'income'                : income,
-            'income_total'          : income_total,
+            'income_aggregated'     : income_aggregated,                   # aggregated
+            'income_total'          : income_total,             # total
+            'income_time'           : income_time,                  # all entries in period
             'columns_expenditure'   : COLUMNS_EXPENDITURE,
-            'expenditure'           : expenditure,
-            'expenditure_total'     : expenditure_total,
+            'expenditure_aggregated': expenditure_aggregated,              # aggregated
+            'expenditure_total'     : expenditure_total,        # total
+            'expenditure_time'      : expenditure_time,             # all entries in period
             'columns_cashflow'      : COLUMNS_CASHFLOW,
             'cashflow'              : cashflow,
             'balances'              : balances,
             }
     return render_to_response("reporting.html", data, RequestContext(request))
+
+def extract_date(entity):
+    'extracts the starting date from an entity'
+    return entity.date.date()
+
+def _end_of_day(start):
+    start_of_day = datetime(start.year, start.month, start.day, 0, 0, 0, 0, start.tzinfo)
+    return start_of_day + timedelta(hours = 23, minutes = 59, seconds = 59)

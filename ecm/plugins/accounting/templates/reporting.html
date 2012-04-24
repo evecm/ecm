@@ -11,8 +11,14 @@
 <div class="page-header">
   <h1>Reporting</h1>
 </div>
-<div>
-	<div class="row-fluid">
+<ul class="nav nav-tabs" id="myTab">
+	<li class="active"><a href="#summary" data-toggle="tab">Summary</a></li>
+	<li><a href="#income" data-toggle="tab">Income</a></li>
+	<li><a href="#expenditure" data-toggle="tab">Expenditure</a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="summary">
 		<div class="span4">
 			<table class="table table-condensed table-striped" id="cashflow_table">
 			<!-- HEADER -->
@@ -39,9 +45,9 @@
 			</tfoot>
 			</table>
 		</div>
-	<div id="chart_balances"></div>
+		<div id="chart_balances"></div>
 	</div>
-	<div class="row-fluid">
+	<div class="tab-pane" id="income">
 		<div class="span7">
 			<table class="table table-condensed table-striped" id="income_table">
 			<!-- HEADER -->
@@ -51,7 +57,7 @@
 			    {% endfor %}</tr>
 			  </thead>
 			<tbody>
-			{% for item in income %}
+			{% for item in income_aggregated %}
 			    <tr>
 				<td>{{item.type__refTypeName}}</td>
 				<td style="text-align: right;">{{item.percentage|floatformat:2}} %</td>
@@ -68,9 +74,10 @@
 			</tfoot>
 			</table>
 		</div>
-	<div id="chart_income" class="span4"></div>
+		<div id="chart_income" class="span4"></div>
+		<div id="chart_incomes" class="span11"></div>
 	</div>
-	<div class="row-fluid">
+	<div class="tab-pane" id="expenditure">
 		<div class="span7">
 			<table class="table table-condensed table-striped" id="expenditure_table">
 			<!-- HEADER -->
@@ -80,7 +87,7 @@
 			    {% endfor %}</tr>
 			  </thead>
 			<tbody>
-			{% for item in expenditure %}
+			{% for item in expenditure_aggregated %}
 			    <tr>
 				<td>{{item.type__refTypeName}}</td>
 				<td style="text-align: right;">{{item.percentage|floatformat:2}} %</td>
@@ -97,9 +104,9 @@
 			</tfoot>
 			</table>
 		</div>
-	<div id="chart_expenditure" class="span4"></div>
+		<div id="chart_expenditure" class="span4"></div>
+		<div id="chart_expenditures" class="span11"></div>
 	</div>
-	
 </div>
 
 {% endblock %}
@@ -118,13 +125,13 @@ google.load("visualization", "1", {packages:["corechart"]});
       function drawIncome() {
         var data = google.visualization.arrayToDataTable([
         ['Income', 'Amount'],
-	{% for item in income %}
+	{% for item in income_aggregated %}
 	['{{ item.type__refTypeName }}', {{ item.amount }}]{% if forloop.last %}{% else %},{% endif %}{% endfor %}
         ]);
 
         var options = {
           title: 'Income',
-          width: 450, 
+          width: 550, 
           height: 350,
   	  colors: ['#80c65a','#94cf74','#a9d98f','#bde2a9','#d2ebc4'],
 	  tooltip: {text: 'percentage'}
@@ -134,17 +141,63 @@ google.load("visualization", "1", {packages:["corechart"]});
         chart.draw(data, options);
       }
 
+      google.setOnLoadCallback(drawIncomes);
+      function drawIncomes() {
+        var data = new google.visualization.DataTable();
+	data.addColumn('string', 'Date'); 
+	data.addColumn('number', 'ISK'); 
+	data.addColumn({type:'string',role:'tooltip'});
+	data.addRows([
+	  {% for item in income_time %}
+	  ['{{ item.date|date:"D M d" }}', {{ item.amount|ecm_absolute }}, '{{ item.date|date:"D M d" }}\n{{ item.amount|ecm_amount }} ISK']{% if forloop.last %}{% else %},{% endif %}{% endfor %}
+	]);
+
+        var options = {
+          title: 'Over time',
+	  width:  800, 
+          height: 550,
+	  hAxis: {title: 'Last 30 Days'}
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_incomes'));
+        chart.draw(data, options);
+      }
+
+      google.setOnLoadCallback(drawExps);
+      function drawExps() {
+	var data = new google.visualization.DataTable();
+	data.addColumn('string', 'Date'); 
+	data.addColumn('number', 'ISK'); 
+	data.addColumn({type:'string',role:'tooltip'});
+	data.addRows([
+	  {% for item in expenditure_time %}
+	  ['{{ item.date|date:"D M d" }}', {{ item.amount|ecm_absolute }}, '{{ item.date|date:"D M d" }}\n{{ item.amount|ecm_amount }} ISK']{% if forloop.last %}{% else %},{% endif %}{% endfor %}
+	]);
+
+        var options = {
+          title: 'Over time',
+	  width:  800, 
+          height: 550,
+	  hAxis: {title: 'Last 30 Days'},
+	  vAxis: {title: 'ISK', format: '¤ #,##0.00'}
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_expenditures'));
+        chart.draw(data, options);
+      }
+
+
       google.setOnLoadCallback(drawExpenditure);
       function drawExpenditure() {
         var data = google.visualization.arrayToDataTable([
-        ['Income', 'Amount'],
-	{% for item in expenditure %}
+        ['Expenditure', 'Amount'],
+	{% for item in expenditure_aggregated %}
 	['{{ item.type__refTypeName }}', {{ item.amount|ecm_absolute }}]{% if forloop.last %}{% else %},{% endif %}{% endfor %}
         ]);
 
         var options = {
           title: 'Expenditure',
-          width: 450, 
+          width: 550, 
           height: 350,
   	  colors: ['#ff9900','#ffa928','#ffba51','#ffca7a','#ffdba3'],
 	  tooltip: {text: 'percentage'}
