@@ -32,7 +32,7 @@ from django.utils.datetime_safe import datetime
 from django.db.models.aggregates import Avg, Sum
 
 from ecm.apps.hr.models.member import MemberSession
-from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff, Skill
+from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import ColorThreshold, Setting, UpdateDate
@@ -89,15 +89,15 @@ def details(request, characterID):
         else:
             d = MemberDiff.objects.filter(member=member, new=False).order_by("-id")[0]
             member.date = d.date
-        if member.skills.count() > 0:
+        skill_count = member.skills.filter(character = characterID).count()
+        if skill_count > 0:
             skill_groups = Group.objects.filter(category = 16, published = 1).order_by('groupName')
-            skill_count = Skill.objects.filter(character = characterID).count()
-            skillpoint_count = Skill.objects.filter(character = characterID).aggregate(Sum('skillpoints'))['skillpoints__sum']
+            skillpoint_count = member.skills.all().aggregate(Sum('skillpoints'))['skillpoints__sum']
             skills_json = []
             for group in skill_groups:
                 skill_typeids = Type.objects.filter(group = group.groupID).order_by('typeName').values_list('typeID', flat=True)
-                group_points = Skill.objects.filter(typeID__in = list(skill_typeids), character = characterID).aggregate(Sum('skillpoints'))
-                skills_in_group = Skill.objects.filter(typeID__in = list(skill_typeids), character = characterID)
+                group_points = member.skills.filter(typeID__in = list(skill_typeids)).aggregate(Sum('skillpoints'))
+                skills_in_group = member.skills.filter(typeID__in = list(skill_typeids))
                 skills_in_group = [(x.name, x.skillpoints, x.level) for x in skills_in_group]
                 skills_in_group.sort()
                 if len(skills_in_group) != 0:
@@ -121,7 +121,6 @@ def details(request, characterID):
                 skills_json.append(skillgroup)
         else:
             skills_json = []
-            skill_count = 0
             skillpoint_count = 0
     except ObjectDoesNotExist:
         member = Member(characterID=int(characterID), name="???")
