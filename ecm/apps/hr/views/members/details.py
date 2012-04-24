@@ -89,7 +89,7 @@ def details(request, characterID):
         else:
             d = MemberDiff.objects.filter(member=member, new=False).order_by("-id")[0]
             member.date = d.date
-        if member.DoB:
+        if member.skills.count() > 0:
             skill_groups = Group.objects.filter(category = 16, published = 1).order_by('groupName')
             skill_count = Skill.objects.filter(character = characterID).count()
             skillpoint_count = Skill.objects.filter(character = characterID).aggregate(Sum('skillpoints'))['skillpoints__sum']
