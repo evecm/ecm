@@ -144,8 +144,15 @@ def marketorders_data(request):
         eve_type = Type.objects.get(typeID=entry.typeID)
 
         # Get the owner of the order
-        try: owner = Member.objects.get(characterID=entry.charID).permalink
-        except Member.DoesNotExist: owner = entry.charID
+        try: 
+            owner = Member.objects.get(characterID=entry.charID).permalink
+        except Member.DoesNotExist: 
+            owner = entry.charID
+
+        try:
+            station = CelestialObject.objects.get(itemID=entry.stationID).itemName
+        except CelestialObject.DoesNotExist:
+            station = str(entry.stationID)
 
         # Build the entry list
         entries.append([
@@ -155,7 +162,7 @@ def marketorders_data(request):
             eve_type.typeName,
             print_float(entry.price),
             '%d days' % entry.duration,
-            CelestialObject.objects.get(itemID=entry.stationID).itemName,
+            station,
             print_integer(entry.volEntered),
             print_integer(entry.volRemaining),
             print_integer(entry.minVolume),

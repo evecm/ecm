@@ -185,13 +185,13 @@ def details(request, contract_id):
     acceptor = _map_id(contract.acceptorID)
 
     try:
-        startStation = CelestialObject.objects.get(itemID = contract.startStationID).itemName
+        startStation = CelestialObject.objects.get(itemID=contract.startStationID).itemName
     except CelestialObject.DoesNotExist:
-        startStation = '???'
+        startStation = str(contract.startStationID)
     try:
-        endStation = CelestialObject.objects.get(itemID = contract.endStationID).itemName
+        endStation = CelestialObject.objects.get(itemID=contract.endStationID).itemName
     except CelestialObject.DoesNotExist:
-        endStation = '???'
+        endStation = str(contract.endStationID)
 
     # Build the data
     data = {

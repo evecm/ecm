@@ -129,6 +129,10 @@ def update():
 
 #------------------------------------------------------------------------------
 def parseOneMember(member):
+    try:
+        location = CelestialObject.objects.get(itemID = member.locationID).itemName
+    except CelestialObject.DoesNotExist:
+        location = str(member.locationID)
     return Member(characterID   = member.characterID,
                   name          = member.name,
                   nickname      = member.title,
@@ -136,8 +140,7 @@ def parseOneMember(member):
                   corpDate      = member.startDateTime,
                   lastLogin     = member.logonDateTime,
                   lastLogoff    = member.logoffDateTime,
-                  location      = CelestialObject.objects.get(itemID = member.locationID).itemName,
-                  #location      = db.resolveLocationName(member.locationID)[0],
+                  location      = location,
                   locationID    = member.locationID,
                   ship          = member.shipType)
 

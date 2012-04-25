@@ -117,7 +117,10 @@ def get_systems_data(request):
 
     jstree_data = []
     for solarSystemID, items, volume in cursor:
-        system = CelestialObject.objects.get(itemID=solarSystemID)
+        try:
+            system = CelestialObject.objects.get(itemID=solarSystemID)
+        except CelestialObject.DoesNotExist:
+            system = CelestialObject(itemID=solarSystemID, itemName=str(solarSystemID), security=0)
         if system.security > 0.5:
             color = 'hisec'
         elif system.security > 0:
@@ -180,7 +183,10 @@ def get_celestial_objects_data(request, solarSystemID):
     for closest_object_id, items, volume in cursor:
 
         if closest_object_id != 0:
-            name = CelestialObject.objects.get(itemID = closest_object_id).itemName
+            try:
+                name = CelestialObject.objects.get(itemID=closest_object_id).itemName
+            except CelestialObject.DoesNotExist:
+                name = str(closest_object_id)
         else:
             name = 'Stations'
 
@@ -238,7 +244,10 @@ def get_stations_data(request, solarSystemID, closest_obj_id):
     for stationID, item_name, flag, items, volume in cursor:
         if stationID < constants.MAX_STATION_ID:
             # it's a real station
-            name = CelestialObject.objects.get(itemID=stationID).itemName
+            try:
+                name = CelestialObject.objects.get(itemID=stationID).itemName
+            except CelestialObject.DoesNotExist:
+                name = str(stationID)
             icon = 'station'
         else:
             # it is an inspace anchorable array

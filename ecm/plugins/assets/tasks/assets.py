@@ -190,7 +190,10 @@ def row_is_office(office, items_dic):
     """
     try :
         stationID = locationid_to_stationid(office.locationID)
-        solarSystemID = CelestialObject.objects.get(itemID=stationID).solarSystemID
+        try:
+            solarSystemID = CelestialObject.objects.get(itemID=stationID).solarSystemID
+        except:
+            solarSystemID = 0
         for item in office.contents:
             if item.typeID == cst.BOOKMARK_TYPEID :
                 continue # we don't give a flying @#!$ about the bookmarks...
@@ -262,7 +265,10 @@ def row_is_in_hangar(item, items_dic, solarSystemID=None, stationID=None, hangar
     if solarSystemID is None and stationID is None:
         # we come from the update() method and the item has a locationID attribute
         asset.stationID = locationid_to_stationid(item.locationID)
-        asset.solarSystemID = CelestialObject.objects.get(itemID=asset.stationID).solarSystemID
+        try:
+            asset.solarSystemID = CelestialObject.objects.get(itemID=asset.stationID).solarSystemID
+        except CelestialObject.DoesNotExist:
+            asset.solarSystemID = 0
     else:
         asset.solarSystemID = solarSystemID
         asset.stationID = stationID

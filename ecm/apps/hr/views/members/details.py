@@ -59,7 +59,7 @@ def details(request, characterID):
         try:
             member.base = CelestialObject.objects.get(itemID=member.baseID).itemName
         except CelestialObject.DoesNotExist:
-            member.base = '???'
+            member.base = str(member.baseID)
 
         member.color = ColorThreshold.get_access_color(member.accessLvl)
         member.roles_no_director = member.roles.exclude(roleID=1) # exclude 'director'
@@ -248,7 +248,7 @@ def issued_marketorders(request, characterID):
             station_name = CelestialObject.objects.get(itemID=order.stationID).itemName
         except CelestialObject.DoesNotExist:
             # Unlikely, but take the station id as displayed station name then
-            station_name = order.stationID
+            station_name = str(order.stationID)
         # Append the results
         order_list.append([
             order.get_type,

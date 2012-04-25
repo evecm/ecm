@@ -123,8 +123,11 @@ class POS(models.Model):
 
     @property
     def permalink(self):
-        moon = CelestialObject.objects.get(itemID=self.moon_id)
-        return '<a href="%s" class="pos">%s</a>' % (self.url, moon.itemName)
+        try:
+            moon = CelestialObject.objects.get(itemID=self.moon_id).itemName
+        except CelestialObject.DoesNotExist:
+            moon = str(self.moon_id)
+        return '<a href="%s" class="pos">%s</a>' % (self.url, moon)
 
     @property
     def fuel_bay_view_access(self):

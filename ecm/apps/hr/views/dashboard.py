@@ -25,21 +25,18 @@ except ImportError:
     import django.utils.simplejson as json
 
 from datetime import timedelta
-import logging
 from django.db.models.aggregates import Avg
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.utils.datetime_safe import datetime
 
 from ecm.apps.eve.models import CelestialObject
-#from ecm.apps.eve import db
 from ecm.apps.eve import constants
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
 from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.common.models import ColorThreshold, UserAPIKey
 
-LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -103,14 +100,12 @@ def positions_of_members():
             try:
                 solarSystemID = CelestialObject.objects.get(itemID = m.locationID).solarSystemID
             except CelestialObject.DoesNotExist:
-                LOG.warning("No celestial found for id: %s" % m.locationID)
                 solarSystemID = 0
         
         if solarSystemID > 0:
             try:
                 security = CelestialObject.objects.get(itemID = solarSystemID).security
             except CelestialObject.DoesNotExist:
-                LOG.warning("No celestial found for id: %s" % solarSystemID)
                 security = 0
         else:
             security = 0
