@@ -11,14 +11,16 @@ $(document).ready(function() {
     var table = $('#members_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sCookiePrefix: COOKIE_NAME,
         sAjaxSource: AJAX_URL,
+        ships: '',
         aoColumns: [
-            { /* Name */         sWidth: "20%",   sType: "html"    },
-            { /* Nickname */     sWidth: "20%",   sType: "string"  },
+            { /* Name */         sWidth: "15%",   sType: "html"    },
+            { /* Nickname */     sWidth: "15%",   sType: "string"  },
             { /* Player */       sWidth: "15%",   sType: "html"    },
             { /* Access Level */ sWidth: "5%",    sType: "numeric" },
             { /* Corp Date */    sWidth: "10%",   sType: "string"  },
             { /* Last Login */   sWidth: "10%",   sType: "string"  },
-            { /* Location */     sWidth: "20%",   sType: "string"  },
+            { /* Location */     sWidth: "15%",   sType: "string"  },
+            { /* Ship */         sWidth: "15%",   sType: "string"  },
             { /* titles -> HIDDEN */ bVisible: false }
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
@@ -30,10 +32,10 @@ $(document).ready(function() {
             $('td:eq(3)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
 
             /* hide titles column */
-            $('td:eq(7)', nRow).hide()
+            $('td:eq(8)', nRow).hide()
 
             /* set titles tooltip on each row */
-            titles = aData[7]
+            titles = aData[8]
             if (titles != "") {
                 $('td:eq(3)', nRow).attr("title", titles)
                 $('td:eq(3)', nRow).cluetip({

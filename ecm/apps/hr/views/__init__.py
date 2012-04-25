@@ -43,10 +43,11 @@ member_table_columns = [
     "accessLvl",
     "corpDate",
     "lastLogin",
-    "location"
+    "location",
+    "ship",
 ]
 
-def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
+def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True, ships=''):
 
     query = query.select_related(depth=2) # improve performance
 
@@ -56,7 +57,10 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
         sort_col = sort_col + "_nocase"
         sort_val = db.fix_mysql_quotes('LOWER("%s")' % member_table_columns[sort_by])
         query = query.extra(select={ sort_col : sort_val })
+    elif sort_by == 7:
+        query.order_by('ship')
 
+    
     if not asc: sort_col = "-" + sort_col
     query = query.extra(order_by=([sort_col]))
 
@@ -79,6 +83,7 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
         titles = ["Titles"]
         titles.extend(member.titles.values_list("titleName", flat=True))
 
+        ship = member.ship or '(docked)'
         memb = [
             member.permalink,
             truncate_words(member.nickname, 5),
@@ -87,6 +92,7 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
             print_date(member.corpDate),
             print_date(member.lastLogin),
             truncate_words(member.location, 5),
+            ship,
             "|".join(titles)
         ]
 

@@ -49,7 +49,7 @@ def members_data(request):
         params = extract_datatable_params(request)
     except KeyError:
         return HttpResponseBadRequest()
-
+    ships = request.GET.get('ships', '')
     total_members,\
     filtered_members,\
     members = get_members(query=Member.objects.filter(corped=True),
@@ -57,7 +57,8 @@ def members_data(request):
                           last_id=params.last_id,
                           search_str=params.search,
                           sort_by=params.column,
-                          asc=params.asc)
+                          asc=params.asc,
+                          ships=ships)
 
     return datatable_ajax_data(members, params.sEcho, total_members, filtered_members)
 
