@@ -26,10 +26,11 @@ import os
 import sys
 import shutil
 from os import path
+import subprocess
+import signal
+from subprocess import PIPE
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
-
-from django.core import management
 
 from ecm.lib.subcommand import Subcommand
 from ecm.admin import instance_template
@@ -76,39 +77,51 @@ def sub_command():
     return upgrade_cmd
 
 #-------------------------------------------------------------------------------
+def pipe_to_django_shell(python_code, run_dir, exit_on_failure=True):
+    
+    log('Piping code to django shell: "%s"' % python_code)
+    
+    command_line = [sys.executable, 'manage.py', 'shell']
+    proc = None
+    try:
+        proc = subprocess.Popen(command_line, stdin=PIPE, stdout=PIPE, stderr=PIPE, 
+                                cwd=run_dir, universal_newlines=True)
+        (_, stderr) = proc.communicate(python_code)
+        exitcode = proc.wait()
+        if exitcode != 0 and exit_on_failure:
+            print >>sys.stderr, stderr
+            sys.exit(exitcode)
+    except KeyboardInterrupt:
+        if proc is not None:
+            os.kill(proc.pid, signal.SIGTERM)
+
+#-------------------------------------------------------------------------------
 def migrate_ecm_db(instance_dir, upgrade_from_149=False):
+    instance_dir = path.abspath(instance_dir)
+    
     log("Migrating database...")
     run_python_cmd('manage.py syncdb --noinput', instance_dir)
 
     if upgrade_from_149:
-        instance_dir = path.abspath(instance_dir)
-        sys.path.insert(0, instance_dir)
-    
-        import settings #@UnresolvedImport
-        management.setup_environ(settings)
-        
-        from south.models import MigrationHistory
-
         log('Migrating from ECM 1.4.9...')
         # we are upgrading from ECM 1.X.Y, we must perform the init migration
         # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
-        MigrationHistory.objects.all().delete() #@UndefinedVariable
+        pipe_to_django_shell('from south.models import MigrationHistory;'\
+                             'MigrationHistory.objects.all().delete()' , instance_dir)
+        
         run_python_cmd('manage.py migrate hr 0001 --noinput', instance_dir)
         # we MUST "fake" the first migration for 1.4.9 apps
         # otherwise the migrate command will fail because DB tables already exist...
         for app in ('common', 'scheduler', 'corp', 'assets', 'accounting'):
             run_python_cmd('manage.py migrate %s 0001 --fake --noinput' % app, instance_dir)
 
-        from ecm.apps.scheduler.models import ScheduledTask
-        ScheduledTask.objects.all().delete()
-        from ecm.apps.common.models import UrlPermission
-        UrlPermission.objects.all().delete()
-    
-        del settings
-        del sys.modules['settings']
-        sys.path.remove(instance_dir)
-
     run_python_cmd('manage.py migrate --all --noinput', instance_dir)
+    
+    if upgrade_from_149:
+        pipe_to_django_shell('from ecm.apps.scheduler.models import ScheduledTask;'\
+                             'ScheduledTask.objects.all().delete()' , instance_dir)
+        pipe_to_django_shell('from ecm.apps.common.models import UrlPermission;'\
+                             'UrlPermission.objects.all().delete()' , instance_dir)
 
     log('Database Migration successful.')
 
@@ -124,9 +137,9 @@ def run(command, global_options, options, args):
     if not sqlite_db_dir:
         sqlite_db_dir = path.join(instance_dir, 'db')
     
-    # copy settings.py & manage.py from template
+    # copy ecm_settings.py & manage.py from template
     template_dir = path.abspath(path.dirname(instance_template.__file__))
-    shutil.copy(path.join(template_dir, 'settings.py'), instance_dir)
+    shutil.copy(path.join(template_dir, 'ecm_settings.py'), instance_dir)
     shutil.copy(path.join(template_dir, 'manage.py'), instance_dir)
     if hasattr(os, 'chmod'):
         os.chmod(path.join(instance_dir, 'manage.py'), 00755)
