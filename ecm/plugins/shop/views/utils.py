@@ -54,8 +54,9 @@ def parse_eft(request):
         if item.fixed_price is not None:
             price = item.fixed_price
         else:
-            surcharge = PricingPolicy.resolve_surcharge(item, request.user, item.production_cost)
-            price = item.production_cost + surcharge
+            cost = item.production_cost or 0.0
+            surcharge = PricingPolicy.resolve_surcharge(item, request.user, cost)
+            price = cost + surcharge
         items.append({
             'typeID': item.typeID,
             'typeName': item.typeName,
@@ -122,8 +123,9 @@ def get_item_id(request):
             if item.fixed_price is not None:
                 price = item.fixed_price
             else:
-                surcharge = PricingPolicy.resolve_surcharge(item, request.user, item.production_cost)
-                price = item.production_cost + surcharge
+                cost = item.production_cost or 0.0
+                surcharge = PricingPolicy.resolve_surcharge(item, request.user, cost)
+                price = cost + surcharge
             
             return HttpResponse(json.dumps([item.typeID, item.typeName, price]), mimetype=JSON)
         else:

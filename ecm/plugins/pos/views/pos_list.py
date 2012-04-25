@@ -89,8 +89,6 @@ def poses_data(request):
         params.displayMode = REQ.get('displayMode', 'days')
     except:
         return HttpResponseBadRequest()
-    print params.column
-    
     
     # Query all authorised by default except for superuser
     if request.user.is_superuser:
