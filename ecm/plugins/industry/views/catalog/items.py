@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from urllib2 import HTTPError
 
 __date__ = "2011 11 13"
 __author__ = "diabeteman"
@@ -210,9 +211,9 @@ def public_price(request, item_id):
         error = None
         type_id = int(item_id)
         supply_source_id = Setting.get('industry_default_price_source')
-        buyPrices = evecentral.get_buy_prices([type_id], supply_source_id)
-        item = get_object_or_404(CatalogEntry, typeID=type_id)
         try:
+            buyPrices = evecentral.get_buy_prices([type_id], supply_source_id)
+            item = get_object_or_404(CatalogEntry, typeID=type_id)
             if buyPrices[type_id] > 0.0 and item.public_price != buyPrices[type_id]:
                 item.public_price = buyPrices[type_id]
                 logger.info('New price for "%s" -> %s' % (item.typeName,
@@ -220,6 +221,9 @@ def public_price(request, item_id):
                 item.save()
         except KeyError:
             error = 'Could not find buy-price for item: "%s"' % item
+        except HTTPError, e:
+            error = 'Online price source is down: %s' % str(e)
+            
         if error:
             return HttpResponseBadRequest(error)
         else:
