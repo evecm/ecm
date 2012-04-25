@@ -139,7 +139,7 @@ def run(command, global_options, options, args):
     
     # copy ecm_settings.py & manage.py from template
     template_dir = path.abspath(path.dirname(instance_template.__file__))
-    shutil.copy(path.join(template_dir, 'ecm_settings.py'), instance_dir)
+    shutil.copy(path.join(template_dir, 'settings.py'), instance_dir)
     shutil.copy(path.join(template_dir, 'manage.py'), instance_dir)
     if hasattr(os, 'chmod'):
         os.chmod(path.join(instance_dir, 'manage.py'), 00755)
