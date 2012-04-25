@@ -41,7 +41,6 @@ member_table_columns = [
     "nickname",
     "owner__username",
     "accessLvl",
-    "corpDate",
     "lastLogin",
     "location",
     "ship",
@@ -57,8 +56,6 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True,
         sort_col = sort_col + "_nocase"
         sort_val = db.fix_mysql_quotes('LOWER("%s")' % member_table_columns[sort_by])
         query = query.extra(select={ sort_col : sort_val })
-    elif sort_by == 7:
-        query.order_by('ship')
 
     
     if not asc: sort_col = "-" + sort_col
@@ -89,7 +86,6 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True,
             truncate_words(member.nickname, 5),
             member.owner_permalink,
             member.accessLvl,
-            print_date(member.corpDate),
             print_date(member.lastLogin),
             truncate_words(member.location, 5),
             ship,

@@ -17,9 +17,8 @@ $(document).ready(function() {
             { /* Nickname */     sWidth: "15%",   sType: "string"  },
             { /* Player */       sWidth: "15%",   sType: "html"    },
             { /* Access Level */ sWidth: "5%",    sType: "numeric" },
-            { /* Corp Date */    sWidth: "10%",   sType: "string"  },
             { /* Last Login */   sWidth: "10%",   sType: "string"  },
-            { /* Location */     sWidth: "15%",   sType: "string"  },
+            { /* Location */     sWidth: "20%",   sType: "string"  },
             { /* Ship */         sWidth: "15%",   sType: "string"  },
             { /* titles -> HIDDEN */ bVisible: false }
         ],
@@ -35,7 +34,7 @@ $(document).ready(function() {
             $('td:eq(8)', nRow).hide()
 
             /* set titles tooltip on each row */
-            titles = aData[8]
+            titles = aData[7]
             if (titles != "") {
                 $('td:eq(3)', nRow).attr("title", titles)
                 $('td:eq(3)', nRow).cluetip({
