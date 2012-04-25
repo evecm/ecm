@@ -25,21 +25,22 @@ a.pos {
     font-weight: bold;
     font-style: italic;
 }
-.fuel-warning {
-    color: black;
+.cycle-warning {
     font-weight: bold;
-    background-color: orange;
+    color: red;
+}
+.fuel-warning {
+    background-color: #FFFFA9 !important;
 }
 .fuel-alert {
-    color: black;
-    font-weight: bold;
-    background-color: yellow;
+    font-weight: bold !important;
+    background-color: #ffc376 !important;
 }
 .reinforced-alert {
-    color: black;
-    font-weight: bold;
-    background-color: red;
+    color: white !important;
+    font-weight: bold !important;
+    background-color: red !important;
 }
 .reinforced-alert a {
-    color: #FF9999;
+    color: white;
 }

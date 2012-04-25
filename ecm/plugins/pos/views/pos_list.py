@@ -33,7 +33,7 @@ from ecm.utils import db
 from ecm.utils.format import print_duration
 from ecm.plugins.pos.views import print_fuel_quantity
 from ecm.plugins.pos.models import POS, FuelLevel
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 
 from ecm.plugins.pos import constants as C
@@ -58,7 +58,7 @@ COLUMNS = [
     ['Name',            'Name',                 'custom_name'],
     ['Type',            'Type',                 'type_id'],
     ['Status',          'Status',               'state'],
-    ['Time To Tick',    'Cycle Time',           'online_timestamp'],
+    ['Next Cycle',      'Next Cycle',           'online_timestamp'],
     ['Fuel Blocks',     'Fuel Blocks',          None],
     ['Strontium',       'Strontium Clathrates', None],
     ['Name',            None,                   None],
@@ -92,9 +92,11 @@ def poses_data(request):
     
     # Query all authorised by default except for superuser
     if request.user.is_superuser:
-        query = POS.objects.all()
+        query = POS.objects.all().select_related(depth=1)
     else:
-        query = POS.objects.filter(Q(authorized_groups__isnull=True) | Q(authorized_groups__in=request.user.groups.all())).select_related(depth=1)
+        query = POS.objects.select_related(depth=1)
+        query = query.filter(Q(authorized_groups__isnull=True) | 
+                             Q(authorized_groups__in=request.user.groups.all()))
     
     # Then get the database content and translate to display table
     # manage the search filter
@@ -158,7 +160,7 @@ def poses_data(request):
                 pos.custom_name,
                 pos.type_id,
                 pos.state,
-                pos.time_until_tick,
+                pos.time_until_next_cycle,
                 getFuelValue(pos, pos.fuel_type_id, params.displayMode),
                 stront,
                 pos.type_name,
@@ -176,20 +178,14 @@ def poses_data(request):
                 pos.custom_name,
                 pos.type_id,
                 pos.state,
-                pos.time_until_tick,
+                pos.time_until_next_cycle,
                 getFuelValue(pos, pos.fuel_type_id, params.displayMode),
                 stront,
                 pos.type_name,
                 getFuelValue(pos, pos.fuel_type_id, 'hours_int'),
             ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_count,  # Number of lines
-        "iTotalDisplayRecords" : filtered_count,# Number of displayed lines,
-        "aaData" : pos_table
-    }
-    return HttpResponse(json.dumps(json_data))
+    return datatable_ajax_data(pos_table, params.sEcho, total_count, filtered_count)
 
 #------------------------------------------------------------------------------
 def getFuelValue(pos, fuelTypeID, displayMode):

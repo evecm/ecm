@@ -109,9 +109,9 @@ class POS(models.Model):
     fuel_type_id = models.IntegerField(choices=FUEL_BLOCKS.items(), default=0)
     custom_name = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
-    operators = models.ManyToManyField(User, related_name="operated_poses")
     has_sov = models.BooleanField(default=False)
-    authorized_groups = models.ManyToManyField(Group, related_name='visible_group')
+    operators = models.ManyToManyField(User, related_name="operated_poses", blank=True)
+    authorized_groups = models.ManyToManyField(Group, related_name='visible_group', blank=True)
 
     @property
     def state_text(self):
@@ -154,7 +154,7 @@ class POS(models.Model):
         return POS.ACCESS_RESTRICTIONS[self.deploy_flags & POS.ACCESS_MASK]
     
     @property
-    def time_until_tick(self):
+    def time_until_next_cycle(self):
         online_min = self.online_timestamp.minute
         cur_min = timezone.now().minute
         if cur_min <= online_min:

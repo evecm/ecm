@@ -71,13 +71,13 @@ $(document).ready(function() {
         sAjaxSource: '/pos/data/',
         aaSorting: [[5, 'asc']],/* sort ascending using column 5 */
         aoColumns: [
-            { /* 0 Location */ sWidth: '6%',  sType: 'html' },
-            { /* 1 Name */     sWidth: '6%',  sType: 'html', bSortable: false },
-            { /* 2 Type */     sWidth: '1%',  sType: 'html', sClass: 'center' },
-            { /* 3 status */   sWidth: '1%',  sType: 'html', bSortable: false },
-            { /* 4 Time */ 	   sWidth: '2%',  sType: 'string', bSortable: false },
-            { /* 5 Blocks */   sWidth: '4%',  sType: 'string' },
-            { /* 6 Stront */   sWidth: '4%',  sType: 'string' },
+            { /* 0 Location */ sWidth: '6%' },
+            { /* 1 Name */     sWidth: '6%', bSortable: false },
+            { /* 2 Type */     sWidth: '1%', sClass: 'center' },
+            { /* 3 status */   sWidth: '1%', sClass: 'center', bSortable: false },
+            { /* 4 Time */ 	   sWidth: '2%', sClass: 'right', bSortable: false },
+            { /* 5 Blocks */   sWidth: '4%', sClass: 'right' },
+            { /* 6 Stront */   sWidth: '4%', sClass: 'right' },
             { /* 7 Name HIDDEN */  bVisible: false, bSortable: false },
             { /* 8 hours_int HIDDEN */  bVisible: false, bSortable: false }
         ],
@@ -87,33 +87,30 @@ $(document).ready(function() {
             $('td:eq(2)', nRow).html('<img src="' + posImgUrl + '" title="' + aData[7] + '"/>');
 
             posState = aData[3];
+            hoursLeft = aData[8];
+            
             $('td:eq(3)', nRow).addClass(POS_CSS_STATUS[posState]);
             $('td:eq(3)', nRow).attr('title', POS_TEXT_STATUS[posState]);
             $('td:eq(3)', nRow).html('');
-
-            for (var i=5; i<14; i++) {
-                $('td:eq(' + i + ')', nRow).addClass('right');
-            };
             
-            if (aData[3] == '3'){
-            	for (var i = 0 ; i < 8 ; i++) {
-            		$('td:eq(' + i + ')', nRow).addClass('reinforced-alert');
-            	}
+            time_until_next_cycle = aData[4];
+            if (time_until_next_cycle < 5) {
+            	$('td:eq(4)', nRow).addClass('cycle-warning');
+            }
+            $('td:eq(4)', nRow).html(time_until_next_cycle + ' min.');
+            
+            if (posState == 3) { /* REINFORCED */
+            	$('td', nRow).addClass('reinforced-alert');
             } else {
-	            if (aData[8] <= '48' && aData[8] > '24') {
-	                for (var i = 0 ; i < 8 ; i++) {
-	                	$('td:eq(' + i + ')', nRow).addClass('fuel-alert');
-	                }
-	            };
-	            if (aData[8] <= '24') {
-	                for (var i = 0 ; i < 8 ; i++) {
-	                	$('td:eq(' + i + ')', nRow).addClass('fuel-warning');
-	                }
+	            if (hoursLeft <= 48 && hoursLeft > 24) {
+	                $('td', nRow).addClass('fuel-warning');
+	            } else if (hoursLeft <= 24) {
+	                $('td', nRow).addClass('fuel-alert');
 	            };
             };
 
-
-            $('td:eq(14)', nRow).hide();
+            $('td:eq(7)', nRow).hide();
+            $('td:eq(8)', nRow).hide();
             return nRow;
         },
 
