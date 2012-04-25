@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from urllib2 import HTTPError
 
 __date__ = "2011 11 13"
 __author__ = "diabeteman"
@@ -221,8 +220,6 @@ def public_price(request, item_id):
                 item.save()
         except KeyError:
             error = 'Could not find buy-price for item: "%s"' % item
-        except HTTPError, e:
-            error = 'Online price source is down: %s' % str(e)
             
         if error:
             return HttpResponseBadRequest(error)

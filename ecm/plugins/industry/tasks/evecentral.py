@@ -18,51 +18,71 @@
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
 
+import logging
 import urllib
 import urllib2
+from urllib2 import HTTPError, URLError
 from xml.etree import ElementTree
 
+from ecm.utils import tools
 from ecm.apps.common.models import Setting
 
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 def get_buy_prices(item_ids, systemID):
 
     prices = {}
-    for i in range(len(item_ids)//50+1):
-        params=[]
-        for item_id in item_ids[i*50:(i+1)*50]:
-            params.append(("typeid", item_id))
+    for some_ids in tools.sublists(item_ids, 50):
+
+        params = [ ("typeid", type_id) for type_id in some_ids ]
         if systemID != 1:
             params.append(("usesystem", systemID))
+        
         evecentralurl = Setting.get('industry_evecentral_url')
+        
         url = evecentralurl + '?' + urllib.urlencode(params)
-        response = urllib2.urlopen(url)
+        
+        try:
+            response = urllib2.urlopen(url)
+        except (URLError, HTTPError), err:
+            LOG.warning(str(err))
+            continue
+        
         element = ElementTree.parse(source=response)
         for typ in element.findall('.//type'):
             typeID = int(typ.attrib['id'])
             buyMax = typ.find('buy/max')
             if buyMax is not None:
                 prices[typeID] = round(float(buyMax.text), 2)
+        
     return prices
 
 #------------------------------------------------------------------------------
 def get_sell_prices(item_ids, systemID):
 
     prices = {}
-    for i in range(len(item_ids)//50+1):
-        params=[]
-        for item_id in item_ids[i*50:(i+1)*50]:
-            params.append(("typeid", item_id))
+    for some_ids in tools.sublists(item_ids, 50):
+
+        params = [ ("typeid", type_id) for type_id in some_ids ]
         if systemID != 1:
             params.append(("usesystem", systemID))
+        
         evecentralurl = Setting.get('industry_evecentral_url')
+        
         url = evecentralurl + '?' + urllib.urlencode(params)
-        response = urllib2.urlopen(url)
+        
+        try:
+            response = urllib2.urlopen(url)
+        except (URLError, HTTPError), err:
+            LOG.warning(str(err))
+            continue
+        
         element = ElementTree.parse(source=response)
         for typ in element.findall('.//type'):
             typeID = int(typ.attrib['id'])
             buyMax = typ.find('sell/min')
             if buyMax is not None:
                 prices[typeID] = round(float(buyMax.text), 2)
+        
     return prices
