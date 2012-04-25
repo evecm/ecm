@@ -74,8 +74,11 @@ def run(command, global_options, options, args):
         command.parser.error('Missing instance directory.')
     instance_dir = args[0]
     sqlite_db_dir = ''
+    settings_file = os.path.join(instance_dir, 'settings.ini')
     config = SafeConfigParser()
-    if config.read([os.path.join(instance_dir, 'settings.ini')]):
+    if not config.read([settings_file]):
+        command.parser.error('Settings file "%s" not found.' % settings_file)
+    else:
         sqlite_db_dir = config.get('database', 'sqlite_db_dir')
     if not sqlite_db_dir:
         sqlite_db_dir = os.path.join(instance_dir, 'db')

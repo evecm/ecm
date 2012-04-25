@@ -188,9 +188,9 @@ MIDDLEWARE_CLASSES = (
 
 CACHES = {
     'default': {
-#        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-#        'LOCATION': '/var/django/cache/',
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': rel_path('cache'),
+#        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
 

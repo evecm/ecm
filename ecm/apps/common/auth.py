@@ -45,12 +45,8 @@ def get_or_create_group(group_name):
     try:
         return Group.objects.get(name=group_name)
     except Group.DoesNotExist:
-        try:
-            LOG.info('Group "%s" does not exists. Creating...' % group_name)
-            return Group.objects.create(name=group_name)
-        except:
-            LOG.exception("")
-            raise
+        LOG.info('Group "%s" does not exists. Creating...' % group_name)
+        return Group.objects.create(name=group_name)
 
 #------------------------------------------------------------------------------
 def alert_user_for_invalid_apis(user, invalid_apis):
