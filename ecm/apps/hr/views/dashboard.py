@@ -103,14 +103,14 @@ def positions_of_members():
             try:
                 solarSystemID = CelestialObject.objects.get(itemID = m.locationID).solarSystemID
             except CelestialObject.DoesNotExist:
-                LOG.error("No celestial found for id: %s" % m.locationID)
+                LOG.warning("No celestial found for id: %s" % m.locationID)
                 solarSystemID = 0
         
         if solarSystemID > 0:
             try:
                 security = CelestialObject.objects.get(itemID = solarSystemID).security
             except CelestialObject.DoesNotExist:
-                LOG.error("No celestial found for id: %s" % solarSystemID)
+                LOG.warning("No celestial found for id: %s" % solarSystemID)
                 security = 0
         else:
             security = 0
