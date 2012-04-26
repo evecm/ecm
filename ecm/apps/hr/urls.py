@@ -45,8 +45,6 @@ urlpatterns += patterns('ecm.apps.hr.views.members',
     (r'^members/(\d+)/$',                       'details.details'),
     (r'^members/(\d+)/accesschanges/data/$',    'details.access_changes_member_data'),
     (r'^members/(\d+)/updatenotes/$',           'details.update_member_notes'),
-    (r'^members/(\d+)/contracts/data/$',        'details.issued_contracts'),
-    (r'^members/(\d+)/marketorders/data/$',     'details.issued_marketorders'),
 )
 
 urlpatterns += patterns('ecm.apps.hr.views.titles',

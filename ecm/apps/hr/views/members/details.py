@@ -14,9 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.plugins.accounting.models import MarketOrder, Contract
-from ecm.plugins.accounting.constants import FORMATED_CONTRACT_STATES
-
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
@@ -36,7 +33,7 @@ from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDi
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import ColorThreshold, Setting, UpdateDate
-from ecm.utils.format import print_time_min, print_float
+from ecm.utils.format import print_time_min
 from ecm.apps.eve.models import CelestialObject, Type, Group
 from ecm.utils.format import print_integer
 
@@ -187,77 +184,3 @@ def access_changes_member_data(request, characterID):
         ])
 
     return datatable_ajax_data(change_list, params.sEcho, count)
-
-#------------------------------------------------------------------------------
-@check_user_access()
-def issued_contracts(request, characterID):
-    #TODO: cache issued contracts by member
-    try:
-        params = extract_datatable_params(request)
-    except:
-        return HttpResponseBadRequest()
-    contracts = Contract.objects.filter(issuerID=characterID).order_by("-id")
-    count = contracts.count()
-    contracts = contracts[params.first_id:params.last_id]
-    contract_list = []
-    ##########################################################################
-    # Type    Status    Title    Date Issued
-    ##########################################################################
-    for contract in contracts:
-        # Build table data
-        # Append the results
-        contract_list.append([
-            contract.permalink_type,
-            FORMATED_CONTRACT_STATES[contract.status],
-            contract.permalink,
-            print_time_min(contract.dateIssued),
-        ])
-    logger.debug("call")
-    logger.debug(contracts.count())
-    return datatable_ajax_data(contract_list, params.sEcho, count)
-
-#------------------------------------------------------------------------------
-@check_user_access()
-def issued_marketorders(request, characterID):
-    #TODO: cache issued contracts by member
-    logger.debug("marketorders call")
-    try:
-        params = extract_datatable_params(request)
-    except:
-        return HttpResponseBadRequest()
-    market_orders = MarketOrder.objects.filter(charID=characterID).order_by("-issued")
-    count = market_orders.count()
-    market_orders = market_orders[params.first_id:params.last_id]
-    order_list = []
-    ##########################################################################
-    # Type    Item    Price    Station    Issued
-    ##########################################################################
-    for order in market_orders:
-        # Build table data
-        # Get item name
-        type_name = ''
-        try:
-            type_name = Type.objects.get(typeID=order.typeID).typeName
-        except Type.DoesNotExist:
-            # Unlikely, but take the item id as displayed item name then
-            type_name = order.typeID
-            
-        # Get the station name
-        station_name = ''
-        try:
-            station_name = CelestialObject.objects.get(itemID=order.stationID).itemName
-        except CelestialObject.DoesNotExist:
-            # Unlikely, but take the station id as displayed station name then
-            station_name = str(order.stationID)
-        # Append the results
-        order_list.append([
-            order.get_type,
-            type_name,
-            print_float(order.price),
-            station_name,
-            order.issued,
-        ])
-        
-    logger.debug("marketorders call")
-    logger.debug(market_orders.count())
-    return datatable_ajax_data(order_list, params.sEcho, count)
