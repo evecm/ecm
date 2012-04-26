@@ -125,7 +125,6 @@ APPEND_SLASH = True
 STATIC_ROOT = config.get('misc', 'static_files_dir') or rel_path('static/')
 # value of the {{ STATIC_URL }} variable in templates
 STATIC_URL = '/static/'
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 STATICFILES_DIRS = (
     # aside from looking in each django app, the 'collectstatic' command
     # will look in these directories for static files
@@ -174,8 +173,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 ########
 # MISC #
 ########
-USE_I18N = False # for optimization
-TIME_ZONE = None # use system default
+USE_I18N = config.getboolean('misc', 'use_i18n')
+TIME_ZONE = config.get('misc', 'time_zone') or None # use system default
 SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
 
 MIDDLEWARE_CLASSES = (
