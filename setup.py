@@ -32,6 +32,7 @@ dependencies = [
     'setuptools',
     'django (>= 1.4)',
     'pytz',
+    'PIL',
 ]
 
 setup(
