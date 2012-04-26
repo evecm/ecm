@@ -19,60 +19,52 @@
 .system-hisec-row > a {
     width:95%;
     background-color: #d2ffde;/* for non-css3 browsers */
-    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00d2ffde,EndColor=0x00ffffff,iOrientation=1);
     background: -webkit-gradient(linear, left top, right top, from(#d2ffde), to(#fff)); /* for webkit browsers */
     background: -moz-linear-gradient(left,  #d2ffde,  #fff); /* for firefox 3.6+ */
 }
 
 .system-lowsec-row > a {
     width:95%;
-    background-color: #ddd;/* for non-css3 browsers */
-    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00fff38c,EndColor=0x00ffffff,iOrientation=1);
+    background-color: #fff38c;/* for non-css3 browsers */
     background: -webkit-gradient(linear, left top, right top, from(#fff38c), to(#fff)); /* for webkit browsers */
     background: -moz-linear-gradient(left,  #fff38c,  #fff); /* for firefox 3.6+ */
 }
 
 .system-nullsec-row > a {
     width:95%;
-    background-color: #ddd;/* for non-css3 browsers */
-    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00ffc4c4,EndColor=0x00ffffff,iOrientation=1);
+    background-color: #ffc4c4;/* for non-css3 browsers */
     background: -webkit-gradient(linear, left top, right top, from(#ffc4c4), to(#fff)); /* for webkit browsers */
     background: -moz-linear-gradient(left,  #ffc4c4,  #fff); /* for firefox 3.6+ */
 }
 
 .station-row > a {
     width:95%;
-    background-color: #ddd;/* for non-css3 browsers */
-    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00cccccc,EndColor=0x00ffffff,iOrientation=1);
+    background-color: #ccc;/* for non-css3 browsers */
     background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#fff)); /* for webkit browsers */
     background: -moz-linear-gradient(left,  #ccc,  #fff); /* for firefox 3.6+ */
 }
 
 .array-row > a {
     width:95%;
-    background-color: #ddd;/* for non-css3 browsers */
-    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00cccccc,EndColor=0x00ffffff,iOrientation=1);
+    background-color: #ccc;/* for non-css3 browsers */
     background: -webkit-gradient(linear, left top, right top, from(#ccc), to(#fff)); /* for webkit browsers */
     background: -moz-linear-gradient(left,  #ccc,  #fff); /* for firefox 3.6+ */
 }
 
 .hangar-row > a {
-    background-color: #eee;/* for non-css3 browsers */
-    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00dddddd,EndColor=0x00ffffff,iOrientation=1);
+    background-color: #ddd;/* for non-css3 browsers */
     background: -webkit-gradient(linear, left top, right top, from(#ddd), to(#fff)); /* for webkit browsers */
     background: -moz-linear-gradient(left,  #ddd,  #fff); /* for firefox 3.6+ */
 }
 
 .added-row > a {
     background-color: #d2ffde;/* for non-css3 browsers */
-    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00d2ffde,EndColor=0x00ffffff,iOrientation=1);
     background: -webkit-gradient(linear, left top, right top, from(#d2ffde), to(#fff)); /* for webkit browsers */
     background: -moz-linear-gradient(left,  #d2ffde,  #fff); /* for firefox 3.6+ */
 }
 
 .removed-row > a {
     background-color: #ffc4c4;/* for non-css3 browsers */
-    filter:progid:DXImageTransform.Microsoft.Gradient(Enabled=true,StartColor=0x00ffc4c4,EndColor=0x00ffffff,iOrientation=1);
     background: -webkit-gradient(linear, left top, right top, from(#ffc4c4), to(#fff)); /* for webkit browsers */
     background: -moz-linear-gradient(left,  #ffc4c4,  #fff); /* for firefox 3.6+ */
 }
