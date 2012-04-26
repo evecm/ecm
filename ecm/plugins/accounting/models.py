@@ -31,7 +31,7 @@ class EntryType(models.Model):
     """
     Wallet journal entry transaction type
     """
-    refTypeID = models.PositiveIntegerField(primary_key=True)
+    refTypeID = models.BigIntegerField(primary_key=True)
     refTypeName = models.CharField(max_length=64)
 
     PLAYER_DONATION = 10
@@ -94,27 +94,27 @@ class Contract(models.Model):
         return str(self.contractID)
 
     # Unique ID for this contract.
-    contractID     = models.PositiveIntegerField()
+    contractID     = models.BigIntegerField(primary_key=True)
 
     # Character ID who created contract
-    issuerID       = models.PositiveIntegerField()
+    issuerID       = models.BigIntegerField()
 
     # Corporation ID who created contract
-    issuerCorpID   = models.PositiveIntegerField()
+    issuerCorpID   = models.BigIntegerField()
 
     # Character ID to whom the contract was discharged
-    assigneeID     = models.PositiveIntegerField()
+    assigneeID     = models.BigIntegerField()
 
     # Who will accept the contract. If assigneeID is
     # same as acceptorID then CharacterID else CorporationID
     # (The contract accepted by the corporation)
-    acceptorID     = models.PositiveIntegerField()
+    acceptorID     = models.BigIntegerField()
 
     # Start station ID (for Couriers contract)
-    startStationID = models.PositiveIntegerField()
+    startStationID = models.BigIntegerField()
 
     # End station ID (for Couriers contract)
-    endStationID   = models.PositiveIntegerField()
+    endStationID   = models.BigIntegerField()
 
     # Type of the contract (ItemExchange, Courier, Loan or Auction)
     type           = models.CharField(max_length=255) #@ReservedAssignment
@@ -129,7 +129,7 @@ class Contract(models.Model):
 
     # 1 if the contract was issued on behalf of the issuer's corporation,
     # 0 otherwise
-    forCorp        = models.PositiveIntegerField()
+    forCorp        = models.BigIntegerField()
 
     # Public or Private
     availability   = models.CharField(max_length=255)
@@ -144,7 +144,7 @@ class Contract(models.Model):
     dateAccepted   = models.CharField(max_length=20)
 
     # Number of days to perform the contract
-    numDays        = models.PositiveIntegerField()
+    numDays        = models.BigIntegerField()
 
     # DateTime  Date of completed of contract
     dateCompleted  = models.CharField(max_length=20)
@@ -200,13 +200,13 @@ class ContractItem(models.Model):
     def __cmp__(self, other):
         return cmp(self.recordID, other.recordID)
 
-    contract    = models.ForeignKey(Contract)
-    recordID    = models.PositiveIntegerField()
-    typeID      = models.PositiveIntegerField()
-    quantity    = models.PositiveIntegerField()
-    rawQuantity = models.PositiveIntegerField()
-    singleton   = models.PositiveIntegerField()
-    included    = models.PositiveIntegerField()
+    contract    = models.ForeignKey(Contract, related_name="+", to_field='contractID')
+    recordID    = models.BigIntegerField()
+    typeID      = models.BigIntegerField()
+    quantity    = models.BigIntegerField()
+    rawQuantity = models.BigIntegerField()
+    singleton   = models.BigIntegerField()
+    included    = models.BigIntegerField()
 
 class MarketOrder(models.Model):
     """
@@ -220,18 +220,18 @@ class MarketOrder(models.Model):
     def __hash__(self):
         return self.orderID
 
-    orderID      = models.PositiveIntegerField(primary_key=True)
-    charID       = models.PositiveIntegerField()
-    stationID    = models.PositiveIntegerField()
-    volEntered   = models.PositiveIntegerField()
-    volRemaining = models.PositiveIntegerField()
-    minVolume    = models.PositiveIntegerField()
-    orderState   = models.PositiveIntegerField()
-    typeID       = models.PositiveIntegerField()
-    range        = models.IntegerField() #@ReservedAssignment
-    accountKey   = models.PositiveIntegerField()
-    duration     = models.PositiveIntegerField()
-    escrow       = models.PositiveIntegerField()
+    orderID      = models.BigIntegerField(primary_key=True)
+    charID       = models.BigIntegerField()
+    stationID    = models.BigIntegerField()
+    volEntered   = models.BigIntegerField()
+    volRemaining = models.BigIntegerField()
+    minVolume    = models.BigIntegerField()
+    orderState   = models.BigIntegerField()
+    typeID       = models.BigIntegerField()
+    range        = models.BigIntegerField() #@ReservedAssignment
+    accountKey   = models.BigIntegerField()
+    duration     = models.BigIntegerField()
+    escrow       = models.BigIntegerField()
     price        = models.FloatField()
     bid          = models.BooleanField(default=False)
     issued       = models.CharField(max_length=20)
