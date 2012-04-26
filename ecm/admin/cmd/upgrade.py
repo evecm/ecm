@@ -24,10 +24,12 @@ __author__ = 'diabeteman'
 
 import os
 import sys
+import re
 import shutil
 from os import path
 import subprocess
 import signal
+from distutils import dir_util
 from subprocess import PIPE
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
@@ -126,6 +128,57 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     log('Database Migration successful.')
 
 #-------------------------------------------------------------------------------
+SERVER_NAME_REGEXP = re.compile('ServerName (.+)', re.IGNORECASE)
+def upgrade_instance_files(instance_dir, config):
+    log('Upgrading instance config files & examples...')
+    
+    apache_mod_wsgi_vhost = path.join(instance_dir, 'examples/apache_mod_wsgi_vhost.example')
+    apache_proxy_vhost = path.join(instance_dir, 'examples/apache_reverse_proxy.example')
+    try:
+        with open(apache_proxy_vhost) as fd:
+            buff = fd.read()
+        match = SERVER_NAME_REGEXP.search(buff)
+        if match:
+            host_name = match.group(1)
+        else:
+            host_name = '???'
+    except IOError:
+        buff = ''
+        host_name = '???'
+    
+    template_dir = path.abspath(path.dirname(instance_template.__file__))
+    shutil.copy(path.join(template_dir, 'settings.py'), instance_dir)
+    shutil.copy(path.join(template_dir, 'manage.py'), instance_dir)
+    dir_util.copy_tree(path.join(template_dir, 'apache'), path.join(instance_dir, 'apache'))
+    dir_util.copy_tree(path.join(template_dir, 'examples'), path.join(instance_dir, 'examples'))
+    if hasattr(os, 'chmod'):
+        os.chmod(path.join(instance_dir, 'manage.py'), 00755)
+    
+    options = {
+        'host_name': host_name,
+        'instance_dir': path.abspath(instance_dir),
+        'bind_address': config.get('misc', 'server_bind_ip'),
+        'bind_port': config.get('misc', 'server_bind_port'),
+    }
+    
+    try:
+        with open(apache_mod_wsgi_vhost, 'r') as fd:
+            buff = fd.read()
+        buff = buff % options
+        with open(apache_mod_wsgi_vhost, 'w') as fd:
+            buff = fd.write(buff)
+    except IOError, err:
+        log(err)
+    try:
+        with open(apache_proxy_vhost, 'r') as fd:
+            buff = fd.read()
+        buff = buff % options
+        with open(apache_proxy_vhost, 'w') as fd:
+            buff = fd.write(buff)
+    except IOError, err:
+        log(err)
+
+#-------------------------------------------------------------------------------
 def run(command, global_options, options, args):
     if not args:
         command.parser.error('Missing instance directory.')
@@ -137,12 +190,8 @@ def run(command, global_options, options, args):
     if not sqlite_db_dir:
         sqlite_db_dir = path.join(instance_dir, 'db')
     
-    # copy ecm_settings.py & manage.py from template
-    template_dir = path.abspath(path.dirname(instance_template.__file__))
-    shutil.copy(path.join(template_dir, 'settings.py'), instance_dir)
-    shutil.copy(path.join(template_dir, 'manage.py'), instance_dir)
-    if hasattr(os, 'chmod'):
-        os.chmod(path.join(instance_dir, 'manage.py'), 00755)
+    # upgrade files from template
+    upgrade_instance_files(instance_dir, config)
     
     # run collectstatic
     collect_static_files(instance_dir, options)

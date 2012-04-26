@@ -2,25 +2,34 @@
 
 <VirtualHost *:80>
 
-    DocumentRoot "%(instance_dir)s"
     ServerName %(host_name)s
-
-    WSGIScriptAlias / "%(instance_dir)s/apache/apache_mod_wsgi.py"
+    
     WSGIDaemonProcess mod_wsgi_ecm processes=1 threads=25
     WSGIProcessGroup mod_wsgi_ecm
     WSGIPassAuthorization On
 
-    <Directory "%(instance_dir)s/apache">
-        Order deny,allow
-        Allow from all
-        Options -Indexes
-    </Directory>
+    # Alias /static/ needs to be *BEFORE* WSGIScriptAlias /
+    # else it will not have precedence and the static files
+    # will not be accessible.
+    Alias /static/ "%(instance_dir)s/static/"
 
     <Directory "%(instance_dir)s/static">
         Order deny,allow
         Allow from all
         Options -Indexes
     </Directory>
+    
+    WSGIScriptAlias / "%(instance_dir)s/apache/apache_mod_wsgi.py"
+
+    <Directory "%(instance_dir)s/apache">
+        Order deny,allow
+        Allow from all
+        Options -Indexes
+    </Directory>
+    
+#    CustomLog /var/log/httpd/ecm_access_log combined
+#    LogLevel warn
+#    ErrorLog /var/log/httpd/ecm_error_log
 
 </VirtualHost>
 

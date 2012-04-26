@@ -5,6 +5,12 @@
     DocumentRoot "%(instance_dir)s"
     ServerName %(host_name)s
 
+    <Directory "%(instance_dir)s/static">
+        Order deny,allow
+        Allow from all
+        Options -Indexes
+    </Directory>
+
     <Proxy *>
         Order deny,allow
         Allow from all
@@ -12,12 +18,11 @@
 
     ProxyPass /static/ !
     ProxyPass / http://%(bind_address)s:%(bind_port)s/
+    ProxyPreserveHost On
 
-    <Directory "%(instance_dir)s/static">
-        Order deny,allow
-        Allow from all
-        Options -Indexes
-    </Directory>
+#    CustomLog /var/log/httpd/ecm_access_log combined
+#    LogLevel warn
+#    ErrorLog /var/log/httpd/ecm_error_log
 
 </VirtualHost>
 

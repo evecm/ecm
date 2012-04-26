@@ -29,7 +29,7 @@ def package_path(package):
     return os.path.abspath(os.path.dirname(__import__(package).__file__))
 
 ECM_PACKAGE = package_path('ecm')
-INSTANCE_TEMPLATE_PACKAGE = package_path('ecm.admin.instance_template')
+INSTANCE_TEMPLATE_PACKAGE = os.path.join(ECM_PACKAGE, 'admin/instance_template')
 
 ###############################################################################
 ################
