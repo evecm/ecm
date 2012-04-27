@@ -25,7 +25,6 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
-from ecm.plugins.accounting.constants import ORDER_STATES, FORMATED_ORDER_STATES
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import UpdateDate
@@ -52,11 +51,11 @@ COLUMNS = [
 ]
 
 SORT_COLUMNS= {
-    0 :  'bid',
-    1 :  'charID',
-    2 :  'typeID',
-    3 :  'price'         
-    }
+    0: 'bid',
+    1: 'charID',
+    2: 'typeID',
+    3: 'price',         
+}
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -69,11 +68,11 @@ def marketorders(request):
         'name': 'All',
         'selected' : stateID == -1 ,
     }]
-    for s in range(len(ORDER_STATES)):
+    for sid, name in MarketOrder.STATE.items():
         states.append({
-            'stateID': s,
-            'name': ORDER_STATES[s],
-            'selected': s == stateID,
+            'stateID': sid,
+            'name': name,
+            'selected': name == stateID,
         })
 
     types = [{
@@ -115,7 +114,7 @@ def marketorders_data(request):
         types = _get_types(params.search)
         for type in types: #@ReservedAssignment
             search_args |= Q(typeID__exact=type.typeID)
-
+        
     if params.stateID > -1:
         # States
         state = params.stateID
@@ -166,7 +165,7 @@ def marketorders_data(request):
             print_integer(entry.volEntered),
             print_integer(entry.volRemaining),
             print_integer(entry.minVolume),
-            '%s' % FORMATED_ORDER_STATES[entry.orderState],
+            entry.state_html,
             entry.map_range
         ])
     return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)

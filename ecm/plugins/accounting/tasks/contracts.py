@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.corp.models import Corp
-from ecm.lib.eveapi import Error
 
 __date__ = "2012 04 05"
 __author__ = "tash"
@@ -26,7 +24,9 @@ from datetime import datetime
 
 from django.db import transaction
 
+from ecm.lib import eveapi
 from ecm.apps.eve import api
+from ecm.apps.corp.models import Corp
 from ecm.apps.common.models import UpdateDate
 from ecm.utils import tools
 from ecm.plugins.accounting.models import Contract, ContractItem
@@ -43,7 +43,6 @@ def update():
     api_conn = api.connect()
     LOG.debug("Fetching Contracts...")
     contractsApi = api_conn.corp.Contracts()
-    # checkApiVersion(contractsApi._meta.version)
 
     current_time = contractsApi._meta.currentTime
     cached_until = contractsApi._meta.cachedUntil
@@ -59,7 +58,7 @@ def process_contracts(contract_list, connection):
     """
     Process all contracts from the API
     """
-    alliance_id = Corp.objects.get(pk=1).allianceID
+    alliance_id = Corp.objects.latest().allianceID
     LOG.debug("Fetching contracts from DB...")    
     # Get old contracts
     old_contracts = {}
@@ -74,10 +73,10 @@ def process_contracts(contract_list, connection):
         if entry.assigneeID != alliance_id:
             contract = populate_contract(entry)
             new_contracts[contract] = contract
-    LOG.debug("%s new contracts from API..." % len(new_contracts))
+    
     # Get changes
     removed_contracts, added_contracts = tools.diff(old_items=old_contracts, new_items=new_contracts)
-    LOG.debug("Contracts from API: %s" % len(contract_list))
+    LOG.debug("Contracts from API: %s" % len(new_contracts))
     LOG.debug("Removed contracts: %s" % len(removed_contracts))
     LOG.debug("Added contracts: %s" % len(added_contracts))
     
@@ -93,13 +92,12 @@ def process_contracts(contract_list, connection):
         if contract.type != 'Courier': # No items for courier contracts from API
             try:
                 items_api = connection.corp.ContractItems(contractID=contract.contractID)
-            #    checkApiVersion(items_api._meta.version)
                 item_list = items_api.itemList
                 LOG.debug("%s items for contract id %s..." % (len(item_list), contract.contractID))
                 for item in item_list:
                     new_item = populate_contract_item(item, contract)
                     new_items[new_item] = new_item
-            except Error:
+            except eveapi.Error:
                 LOG.debug("Invalid or missing contractID: %s" % contract.contractID)
                 continue
     # Get all contractitem ids for removed contracts
@@ -118,12 +116,16 @@ def write_contracts(new_contracts, old_contracts):
     """
     Write the API results
     """
-    for contract in old_contracts:
-        contract.delete()
-    LOG.info("%d old contracts removed." % len(old_contracts))
-    for contract in new_contracts:
-        contract.save()
-    LOG.info("%d new contracts added." % len(new_contracts))
+    try:
+        for contract in old_contracts:
+            contract.delete()
+        LOG.info("%d old contracts removed." % len(old_contracts))
+        for contract in new_contracts:
+            contract.save()
+        LOG.info("%d new contracts added." % len(new_contracts))
+    except:
+        print contract.__dict__
+        raise
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -131,19 +133,38 @@ def write_contract_items(new_items, old_items):
     """
     Write the API results for contract items to DB.
     """
-    if len(old_items) > 0:
-        for item in old_items:
-            item.delete()
-        LOG.info("%d old contract items removed." % len(old_items))
-    for item in new_items:
-        item.save()
-    LOG.info("%d new contract items added." % len(new_items))
+    try:
+        if len(old_items) > 0:
+            for item in old_items:
+                item.delete()
+            LOG.info("%d old contract items removed." % len(old_items))
+        for item in new_items:
+            item.save()
+        LOG.info("%d new contract items added." % len(new_items))
+    except:
+        print item.__dict__
+        raise
 
 #------------------------------------------------------------------------------
 def populate_contract(row):
     """
     Takes a contract row from the API resultset and creates a Contract object.
     """
+    try:
+        contract_status = Contract.STATUS_KEYS[row.status]
+    except KeyError:
+        contract_status = -1 # unknown
+    
+    try:
+        contract_type = Contract.TYPE_KEYS[row.type]
+    except KeyError:
+        contract_type = -1 # unknown
+        
+    try:
+        contract_availability = Contract.AVAILABILITY_KEYS[row.availability]
+    except KeyError:
+        contract_availability = -1 # unknown
+    
     return Contract(contractID=row.contractID,
                     issuerID=row.issuerID,
                     issuerCorpID=row.issuerCorpID,
@@ -151,16 +172,16 @@ def populate_contract(row):
                     acceptorID=row.acceptorID,
                     startStationID=row.startStationID,
                     endStationID=row.endStationID,
-                    type=row.type,
-                    status=row.status,
+                    type=contract_type,
+                    status=contract_status,
                     title=row.title,
-                    forCorp=row.forCorp,
-                    availability=row.availability,
-                    dateIssued=row.dateIssued,
-                    dateExpired=row.dateExpired,
-                    dateAccepted=row.dateAccepted,
+                    forCorp=bool(row.forCorp),
+                    availability=contract_availability,
+                    dateIssued=row.dateIssued or None,
+                    dateExpired=row.dateExpired or None,
+                    dateAccepted=row.dateAccepted or None,
+                    dateCompleted=row.dateCompleted or None,
                     numDays=row.numDays,
-                    dateCompleted=row.dateCompleted,
                     price=row.price,
                     reward=row.reward,
                     collateral=row.collateral,

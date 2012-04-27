@@ -18,43 +18,10 @@
 __date__ = "2012 04 10"
 __author__ = "tash"
 
-COLOR_FORMAT = '<font class="%s">%s</font>'
-
-ORDER_STATES = {
-0 :    'open / active',
-1 :    'closed',
-2 :    'expired (or fulfilled)',
-3 :    'cancelled',
-4 :    'pending',
-5 :    'character deleted',
-}
-
 REPORT_TYPES = {
 0 :    'Income',
 1 :    'Expenditure',
 2 :    'Cash Flow',
-}
-
-FORMATED_ORDER_STATES = {
-0 :    COLOR_FORMAT % ('contract-inprogress', ORDER_STATES[0]),
-1 :    COLOR_FORMAT % ('contract-completed', ORDER_STATES[1]),
-2 :    COLOR_FORMAT % ('contract-completed', ORDER_STATES[2]),
-3 :    COLOR_FORMAT % ('contract-cancelled', ORDER_STATES[3]),
-4 :    COLOR_FORMAT % ('contract-inprogress', ORDER_STATES[4]),
-5 :    COLOR_FORMAT % ('contract-deleted', ORDER_STATES[5]),
-}
-
-FORMATED_CONTRACT_STATES = {
-'Outstanding':             COLOR_FORMAT % ('contract-outstanding', 'Outstanding'),
-'Deleted':                 COLOR_FORMAT % ('contract-deleted', 'Deleted'),
-'Completed':               COLOR_FORMAT % ('contract-completed', 'Completed'),
-'Failed':                  COLOR_FORMAT % ('contract-failed', 'Failed'),
-'CompletedByIssuer':       COLOR_FORMAT % ('contract-completedbyissuer', 'CompletedByIssuer'),
-'CompletedByContractor':   COLOR_FORMAT % ('contract-completedbycontractor', 'CompletedByContractor'),
-'Cancelled':               COLOR_FORMAT % ('contract-cancelled', 'Cancelled'),
-'Rejected':                COLOR_FORMAT % ('contract-rejected', 'Rejected'),
-'Reversed':                COLOR_FORMAT % ('contract-reversed', 'Reversed'),
-'InProgress':              COLOR_FORMAT % ('contract-inprogress', 'InProgress'),
 }
 
 REPACKAGED_VOLUMES = {

@@ -28,14 +28,14 @@
     </div>
     <div class="control-group success" style="display: inline;">
       <span class="label label-success">Type</span>
-      <select id="type_selector">{% for t in types %}
-            <option value="{{ t.typeName }}"{% if t.selected %} selected{% endif %}>{{ t.typeName }}</option>
+      <select id="type_selector">{% for id, name, selected in types %}
+            <option value="{{ id }}"{% if selected %} selected{% endif %}>{{ name }}</option>
       {% endfor %}</select>
     </div>
     <div class="control-group error" style="display: inline;">
       <span class="label label-important">Status</span>
-      <select id="status_selector">{% for s in status %}
-            <option value="{{ s.statusName }}"{% if s.selected %} selected{% endif %}>{{ s.statusName }}</option>
+      <select id="status_selector">{% for id, name, selected in statuses %}
+            <option value="{{ id }}"{% if selected %} selected{% endif %}>{{ name }}</option>
       {% endfor %}</select>
     </div>
   </div>
@@ -78,10 +78,10 @@ $(document).ready(function() {
         fnServerData: function ( sSource, aoData, fnCallback ) {
             /* Add some extra variables to the url */
             aoData.push( {
-                name: "typeName",
+                name: "type",
                 value: $("#type_selector option:selected").val()
             },{
-                name: "statusName",
+                name: "status",
                 value: $("#status_selector option:selected").val()
             } );
 

@@ -76,7 +76,41 @@ class Contract(models.Model):
     """
     Represents a contract that can be fetched from the API
     at the following url http://api.eve-online.com/corp/Contracts.xml.aspx
+    
+    More info: http://wiki.eve-id.net/APIv2_Char_Contracts_XML
     """
+    
+    STATUS_KEYS = {
+        'Unknown': -1,
+        'Outstanding': 1,
+        'Deleted': 2,
+        'Completed': 3,
+        'Failed': 4,
+        'CompletedByIssuer': 5,
+        'CompletedByContractor': 6,
+        'Cancelled': 7,
+        'Rejected': 8,
+        'Reversed': 9,
+        'InProgress': 10,
+    }
+    STATUS = dict((key, _(name)) for name, key in STATUS_KEYS.iteritems())
+
+    TYPE_KEYS = {
+        'Unkown': -1,
+        'ItemExchange': 1,
+        'Courier': 2,
+        'Loan': 3,
+        'Auction': 4,
+    }
+    TYPE = dict((key, _(name)) for name, key in TYPE_KEYS.iteritems())
+    
+    AVAILABILITY_KEYS = {
+        'Unknown': -1,
+        'Private': 0,
+        'Public': 1,
+    }
+    AVAILABILITY = dict((key, _(name)) for name, key in AVAILABILITY_KEYS.iteritems())
+    
     class Meta:
         verbose_name ='Contract'
         ordering = ['contractID']
@@ -93,95 +127,48 @@ class Contract(models.Model):
     def __repr__(self):
         return str(self.contractID)
 
-    # Unique ID for this contract.
-    contractID     = models.BigIntegerField(primary_key=True)
-
-    # Character ID who created contract
-    issuerID       = models.BigIntegerField()
-
-    # Corporation ID who created contract
-    issuerCorpID   = models.BigIntegerField()
-
-    # Character ID to whom the contract was discharged
-    assigneeID     = models.BigIntegerField()
-
-    # Who will accept the contract. If assigneeID is
-    # same as acceptorID then CharacterID else CorporationID
-    # (The contract accepted by the corporation)
-    acceptorID     = models.BigIntegerField()
-
-    # Start station ID (for Couriers contract)
-    startStationID = models.BigIntegerField()
-
-    # End station ID (for Couriers contract)
-    endStationID   = models.BigIntegerField()
-
-    # Type of the contract (ItemExchange, Courier, Loan or Auction)
-    type           = models.CharField(max_length=255) #@ReservedAssignment
-
-    # Status of the the contract (Outstanding, Deleted, Completed,
-    # Failed, CompletedByIssuer, CompletedByContractor, Cancelled,
-    # Rejected, Reversed or InProgress)
-    status         = models.CharField(max_length=255)
-
-    # Title of the contract
+    contractID     = models.BigIntegerField(primary_key=True) # Unique ID for this contract.
+    issuerID       = models.BigIntegerField() # Character ID who created contract
+    issuerCorpID   = models.BigIntegerField() # Corporation ID who created contract
+    assigneeID     = models.BigIntegerField() # Character ID to whom the contract was discharged
+    acceptorID     = models.BigIntegerField() # Who will accept the contract.
+    startStationID = models.BigIntegerField() # for Couriers contract
+    endStationID   = models.BigIntegerField() # for Couriers contract
+    type           = models.SmallIntegerField(choices=TYPE.items()) #@ReservedAssignment
+    status         = models.SmallIntegerField(choices=STATUS.items())
     title          = models.CharField(max_length=255)
-
-    # 1 if the contract was issued on behalf of the issuer's corporation,
-    # 0 otherwise
-    forCorp        = models.BigIntegerField()
-
-    # Public or Private
-    availability   = models.CharField(max_length=255)
-
-    # Creation date of the contract
-    dateIssued     = models.CharField(max_length=20)
-
-    # Expiration date of the contract
-    dateExpired    = models.CharField(max_length=20)
-
-    # Date of confirmation of contract
-    dateAccepted   = models.CharField(max_length=20)
-
-    # Number of days to perform the contract
-    numDays        = models.BigIntegerField()
-
-    # DateTime  Date of completed of contract
-    dateCompleted  = models.CharField(max_length=20)
-
-    # Price of contract (for ItemsExchange and Auctions)
-    price          = models.FloatField()
-
-    # Remuneration for contract (for Couriers only)
-    reward         = models.FloatField()
-
-    # Collateral price (for Couriers only)
-    collateral     = models.FloatField()
-
-    # Buyout price (for Auctions only)
-    buyout         = models.FloatField()
-
-    # Volume of items in the contract
-    volume         = models.FloatField()
+    forCorp        = models.BooleanField() # True if the contract was issued on behalf of the issuer's corporation
+    availability   = models.SmallIntegerField(choices=AVAILABILITY.items()) # Public or Private
+    dateIssued     = models.DateTimeField(null=True, blank=True)
+    dateExpired    = models.DateTimeField(null=True, blank=True)
+    dateAccepted   = models.DateTimeField(null=True, blank=True)
+    dateCompleted  = models.DateTimeField(null=True, blank=True)
+    numDays        = models.SmallIntegerField() # Number of days to perform the contract
+    price          = models.FloatField() # Price of contract (for ItemsExchange and Auctions)
+    reward         = models.FloatField() # Remuneration for contract (for Couriers only)
+    collateral     = models.FloatField() # Collateral price (for Couriers only)
+    buyout         = models.FloatField() # Buyout price (for Auctions only)
+    volume         = models.FloatField() # Volume of items in the contract (courier)
     
     @property
     def permalink(self):
-        title_link = '<a href="%s" class="contract">%s</a>'
         url = '/accounting/contracts/%d/' % self.contractID
-        if self.contractID == "" :
-            title = "# error"
-        else:
-            title = "# %s" % self.contractID
-    
-        return title_link % (url, title)
+        title = "&#35;%s" % self.contractID
+        return '<a href="%s" class="contract">%s</a>' % (url, title)
     
     @property
     def permalink_type(self):
-        TYPE_LINK = '<img src="%s" alt="%s" name="%s" class="contracttype">'
-        lower_type = str(self.type).lower()
+        TYPE_LINK = '<img src="%s" alt="%s" name="%s" class="contracttype"/>'
+        lower_type = self.get_type_display().lower()
         return TYPE_LINK % ('%saccounting/img/%s.png' % (settings.STATIC_URL, lower_type),
                             self.type, self.type)
+    
+    @property
+    def status_html(self):
+        status = Contract.STATUS[self.status]
+        return '<span class="contract-%s">%s</span>' % (status.lower(), status)
 
+#------------------------------------------------------------------------------
 class ContractItem(models.Model):
     """
     Represents a contract item that can be fetched from the API
@@ -189,7 +176,6 @@ class ContractItem(models.Model):
     """
     class Meta:
         verbose_name = 'Contract Item'
-        #ordering     = ['recordID']
 
     def __hash__(self):
         return self.recordID
@@ -200,14 +186,15 @@ class ContractItem(models.Model):
     def __cmp__(self, other):
         return cmp(self.recordID, other.recordID)
 
-    contract    = models.ForeignKey(Contract, related_name="+", to_field='contractID')
+    contract    = models.ForeignKey(Contract, related_name='items')
     recordID    = models.BigIntegerField()
-    typeID      = models.BigIntegerField()
+    typeID      = models.IntegerField()
     quantity    = models.BigIntegerField()
     rawQuantity = models.BigIntegerField()
-    singleton   = models.BigIntegerField()
-    included    = models.BigIntegerField()
+    singleton   = models.SmallIntegerField()
+    included    = models.SmallIntegerField()
 
+#------------------------------------------------------------------------------
 class MarketOrder(models.Model):
     """
     Represents a contract item that can be fetched from the API
@@ -216,6 +203,15 @@ class MarketOrder(models.Model):
     class Meta:
         verbose_name = 'Market Order'
         ordering     = ['orderID']
+
+    STATE = {
+        0: 'Open/Active', 
+        1: 'Closed', 
+        2: 'Expired (or Fulfilled)', 
+        3: 'Cancelled', 
+        4: 'Pending', 
+        5: 'Character Deleted',
+    }
 
     def __hash__(self):
         return self.orderID
@@ -226,28 +222,37 @@ class MarketOrder(models.Model):
     volEntered   = models.BigIntegerField()
     volRemaining = models.BigIntegerField()
     minVolume    = models.BigIntegerField()
-    orderState   = models.BigIntegerField()
-    typeID       = models.BigIntegerField()
-    range        = models.BigIntegerField() #@ReservedAssignment
-    accountKey   = models.BigIntegerField()
-    duration     = models.BigIntegerField()
-    escrow       = models.BigIntegerField()
+    orderState   = models.SmallIntegerField(choices=STATE.items())
+    typeID       = models.IntegerField()
+    range        = models.SmallIntegerField() #@ReservedAssignment
+    accountKey   = models.ForeignKey(Wallet, related_name='market_orders')
+    duration     = models.SmallIntegerField()
+    escrow       = models.FloatField()
     price        = models.FloatField()
     bid          = models.BooleanField(default=False)
-    issued       = models.CharField(max_length=20)
+    issued       = models.DateTimeField()
 
-#------------------------------------------------------------------------------
     @property
     def get_type(self):
-        result = ''
         if self.bid:
-            result = 'Buy Order'
+            return 'Buy Order'
         else:
-            result = 'Sell Order'
-        return result
+            return 'Sell Order'
+        
+    STATE_CSS = {
+        0: 'inprogress',
+        1: 'completed',
+        2: 'completed',
+        3: 'cancelled',
+        4: 'inprogress',
+        5: 'deleted',
+    }
+    @property
+    def state_html(self):
+        css_class = MarketOrder.STATE_CSS[self.orderState]
+        state_text = MarketOrder.STATE[self.orderState]
+        return '<span class="contract-%s">%s</span>' % (css_class, state_text)
     
-    
-#------------------------------------------------------------------------------
     @property
     def map_range(self):
         _range_map = {-1: 'Station', 32767: 'Region'}

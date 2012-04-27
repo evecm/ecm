@@ -168,7 +168,10 @@ def verbose_name(class_or_function, cap_first=True):
         return str(class_or_function)
 
 #------------------------------------------------------------------------------
-def print_volume(volume):
-    return "%s  m&sup3" % print_float(volume)
+def print_volume(volume, rounded=False):
+    if rounded:
+        return '%s m&sup3' % round_quantity(volume)
+    else:
+        return "%s m&sup3" % print_float(volume)
 
 
