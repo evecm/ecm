@@ -28,6 +28,7 @@ from datetime import timedelta
 from django.db.models.aggregates import Avg
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
+from django.utils import timezone
 from django.utils.datetime_safe import datetime
 
 from ecm.apps.eve.models import CelestialObject
@@ -43,7 +44,7 @@ from ecm.apps.common.models import ColorThreshold, UserAPIKey
 def dashboard(request):
     dailyplaytimes = []
     online_member_count = []
-    now = datetime.now()
+    now = timezone.now()
     for day in range(30):
         start = now - timedelta(day+1)
         end = now - timedelta(day)

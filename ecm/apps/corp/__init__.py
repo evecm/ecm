@@ -17,7 +17,9 @@
 
 
 NAME = 'corp'
-
+MENUS = [ 
+         {'title': 'Standings',    'url': '/standings/',      'items': []},
+         ]
 TASKS = [
     {
         'function' : 'ecm.apps.corp.tasks.corp.update',
@@ -25,8 +27,15 @@ TASKS = [
         'frequency' : 12,
         'frequency_units' : 3600, # hour
     },
+    {
+        'function' : 'ecm.apps.corp.tasks.standings.update',
+        'priority' : 200,
+        'frequency' : 24,
+        'frequency_units' : 3600, # hour
+    },
 ]
 
 SETTINGS = {
     'corp_killboard_url': None,
+    'standings_public': 'none',
 }

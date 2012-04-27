@@ -69,3 +69,30 @@ class Corp(models.Model):
     def __unicode__(self):
         return unicode(self.corporationName)
 
+class Standings(models.Model):
+    
+    class Meta:
+        ordering = ['standing']
+    
+    contactID = models.BigIntegerField(default=0)
+    is_corp_contact = models.BooleanField(default=True)
+    contactName = models.CharField(max_length=50)
+    standing = models.IntegerField(default=0)
+    
+    @property
+    def contact_type(self):
+        #https://forums.eveonline.com/default.aspx?g=posts&m=716708#post716708
+        #Characters: ]90000000, 98000000[
+        #Corporations: ]98000000, 99000000[
+        #Alliances: ]99000000, 100000000[
+        #Note: This is not accurate and should not be used until a better solution is found.
+        if self.contactID > 90000000 and self.contactID < 98000000:
+            return 'Character'
+        elif self.contactID > 98000000 and self.contactID < 99000000:
+            return 'Corporation'
+        elif self.contactID > 99000000 and self.contactID < 100000000:
+            return 'Alliance'
+        else:
+            return unicode(self.contactID)
+    def __unicode__(self):
+        return unicode(self.contactName)

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Standings{{ posViewMode }}{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li>Standings</li>
+{% endblock %}
+
+{% block main_content %}
+{% if user.is_superuser %}
+<h2>Set Public settings</h2>
+<div class="row">
+	<div class="span4">
+		<form class="well form-inline" action='/standings/' method="post">
+			{% csrf_token %}
+			<select name="standings_public">
+				<option value="none" {% if not standings_public %}selected="selected"{% endif %}>None</option>
+				<option value="alliance" {% if standings_public == 'alliance' %}selected="selected"{% endif %}>Alliance</option>
+				<option value="corporation"{% if standings_public == 'corporation' %}selected="selected"{% endif %}>Corp</option>
+				<option value="both"{% if standings_public == 'both' %}selected="selected"{% endif %}>Both</option>
+			</select>
+			<button type="submit" class="btn">Set Access</button>
+		</form>
+	</div>
+</div>
+{% endif %}
+<div class="row">
+	{% if standings_public == 'alliance' or standings_public == 'both' or user.is_superuser %}
+	<div class="span6">
+		<table class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th colspan="2"><h3><b>Alliance Standings</b></h3></th>
+				</tr>
+				<tr>
+					<th>Entity</th><th><center>Standing</center></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for contact in allaince_standings %}
+				<tr class="{% cycle 'odd' 'even' %}">
+					<td>{{contact.contactName}}</td><td class="{{contact.standing}}"><center>{{contact.standing}}</center></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{% endif %}
+	{% if standings_public == 'corporation' or standings_public == 'both' or user.is_superuser %}
+	<div class="span6">
+		<table class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th colspan="2"><h3><b>Corporation Standings</b></h3></th>
+				</tr>
+				<tr>
+					<th>Entity</th><th><center>Standing</center></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for contact in corp_standings %}
+				<tr class="{% cycle 'odd' 'even' %}">
+					<td>{{contact.contactName}}</td><td class="{{contact.standing}}"><center>{{contact.standing}}</center></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{% endif %}
+</div>
+{% if standings_public == 'none' or standings_public == '\'none\''%}
+<h2>Standings are set to Private.</h2>
+{% endif %}
+
+{% endblock %}

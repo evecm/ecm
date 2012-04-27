@@ -85,13 +85,18 @@ urlpatterns += patterns('ecm.views',
     (r'^editapi/$',             'common.edit_apikey'),
 )
 
-
 urlpatterns += patterns('ecm.views.api',
     ###########################################################################
     # JSON API VIEWS
     (r'^api/players/$',               'players'),
     (r'^api/bindings/(\w+)/users/$',  'user_bindings'),
     (r'^api/bindings/(\w+)/groups/$', 'group_bindings'),
+)
+
+urlpatterns += patterns('ecm.views.standings',
+    ###########################################################################
+    # STANGINGS API VIEWS
+    (r'^standings/$',               'standings'),
 )
 
 import ecm.apps
