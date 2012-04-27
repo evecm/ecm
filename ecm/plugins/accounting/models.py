@@ -262,3 +262,15 @@ class MarketOrder(models.Model):
         else:
             # Sell orders are bound to station
             return _range_map.get(-1)
+#------------------------------------------------------------------------------
+class Report(models.Model):
+    """
+    A customizable Report for wallet entries.
+    """
+    class Meta:
+        verbose_name = 'Report'
+    
+    name = models.CharField() # name of this report
+    entry_types = models.ForeignKey(EntryType) # wallet entry types to use for this report
+    default_period = models.IntegerField(null=True, blank=True) # the default period for this report
+    default_step= models.IntegerField(null=True, blank=True) # the default step in days for this report

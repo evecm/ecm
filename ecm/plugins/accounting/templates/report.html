@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Reporting{% endblock %}
+{% block headtitle %}Report{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">Home</a></li>
-<li><a href="/reporting/">Reporting</a></li>
+<li><a href="/balance_sheet/">Report</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Reporting</h1>
+  <h1>Report</h1>
 </div>
 <ul class="nav nav-tabs" id="myTab">
 	<li class="active"><a href="#summary" data-toggle="tab">Summary</a></li>
@@ -153,13 +153,16 @@ google.load("visualization", "1", {packages:["corechart"]});
 	]);
 
         var options = {
-          title: 'Over time',
+          title: 'Income over time (w/o Corporation Account Withdrawal)',
 	  width:  800, 
           height: 550,
-	  hAxis: {title: 'Last 30 Days'}
+	  hAxis: {title: 'Last 30 Days', slantedText: true, slantedTextAngle: '30'},
+	  vAxis: {format: '+#,###,###,###'},
+	  legend:{position: 'in'},
+  	  colors: ['#80c65a','#94cf74','#a9d98f','#bde2a9','#d2ebc4']
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('chart_incomes'));
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_incomes'));
         chart.draw(data, options);
       }
 
@@ -175,14 +178,16 @@ google.load("visualization", "1", {packages:["corechart"]});
 	]);
 
         var options = {
-          title: 'Over time',
+          title: 'Expenditures over time (w/o Corporation Account Withdrawal)',
 	  width:  800, 
           height: 550,
-	  hAxis: {title: 'Last 30 Days'},
-	  vAxis: {title: 'ISK', format: '¤ #,##0.00'}
+	  hAxis: {title: 'Last 30 Days', slantedText: true, slantedTextAngle: '30'},
+	  vAxis: {format: '-#,###,###,###'},
+	  legend:{position: 'in'},
+	  colors: ['#ff9900','#ffa928','#ffba51','#ffca7a','#ffdba3']
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('chart_expenditures'));
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_expenditures'));
         chart.draw(data, options);
       }
 
@@ -199,8 +204,8 @@ google.load("visualization", "1", {packages:["corechart"]});
           title: 'Expenditure',
           width: 550, 
           height: 350,
-  	  colors: ['#ff9900','#ffa928','#ffba51','#ffca7a','#ffdba3'],
-	  tooltip: {text: 'percentage'}
+  	  	  colors: ['#ff9900','#ffa928','#ffba51','#ffca7a','#ffdba3'],
+	      tooltip: {text: 'percentage'}
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('chart_expenditure'));
