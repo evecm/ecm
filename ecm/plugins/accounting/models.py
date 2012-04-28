@@ -31,7 +31,7 @@ class EntryType(models.Model):
     """
     Wallet journal entry transaction type
     """
-    refTypeID = models.BigIntegerField(primary_key=True)
+    refTypeID = models.PositiveIntegerField(primary_key=True)
     refTypeName = models.CharField(max_length=64)
 
     PLAYER_DONATION = 10

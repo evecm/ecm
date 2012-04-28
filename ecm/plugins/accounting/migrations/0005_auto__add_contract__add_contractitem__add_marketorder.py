@@ -117,7 +117,7 @@ class Migration(SchemaMigration):
         },
         'accounting.entrytype': {
             'Meta': {'object_name': 'EntryType'},
-            'refTypeID': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
+            'refTypeID': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'}),
             'refTypeName': ('django.db.models.fields.CharField', [], {'max_length': '64'})
         },
         'accounting.journalentry': {

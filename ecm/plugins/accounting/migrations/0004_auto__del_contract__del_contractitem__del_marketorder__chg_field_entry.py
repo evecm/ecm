@@ -8,18 +8,19 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting model 'Contract'
-        db.delete_table('accounting_contract')
-
+        db.execute('DELETE FROM accounting_contractitem;')
+        db.execute('DELETE FROM accounting_contract;')
+        db.execute('DELETE FROM accounting_marketorder;')
+        
         # Deleting model 'ContractItem'
         db.delete_table('accounting_contractitem')
+
+        # Deleting model 'Contract'
+        db.delete_table('accounting_contract')
 
         # Deleting model 'MarketOrder'
         db.delete_table('accounting_marketorder')
 
-
-        # Changing field 'EntryType.refTypeID'
-        db.alter_column('accounting_entrytype', 'refTypeID', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True))
     def backwards(self, orm):
         # Adding model 'Contract'
         db.create_table('accounting_contract', (
@@ -83,12 +84,10 @@ class Migration(SchemaMigration):
         db.send_create_signal('accounting', ['MarketOrder'])
 
 
-        # Changing field 'EntryType.refTypeID'
-        db.alter_column('accounting_entrytype', 'refTypeID', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True))
     models = {
         'accounting.entrytype': {
             'Meta': {'object_name': 'EntryType'},
-            'refTypeID': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
+            'refTypeID': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'}),
             'refTypeName': ('django.db.models.fields.CharField', [], {'max_length': '64'})
         },
         'accounting.journalentry': {
