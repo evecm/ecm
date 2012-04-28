@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import force_unicode
@@ -59,7 +59,6 @@ class ScheduledTask(models.Model):
     class Meta:
         verbose_name = _("scheduled task")
         verbose_name_plural = _("scheduled tasks")
-        ordering = ("-priority", "function")
 
     def __unicode__(self):
         return force_unicode(self.function)

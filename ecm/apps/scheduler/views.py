@@ -23,7 +23,6 @@ import httplib as http
 from datetime import datetime
 import logging
 
-from django.db import transaction
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template.context import RequestContext as Ctx
 from django.http import HttpResponse, HttpResponseBadRequest, Http404
@@ -40,7 +39,6 @@ from ecm.apps.scheduler.main import Scheduler
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
 @basic_auth_required(username=Setting.get('common_cron_username'))
 def trigger_scheduler(request):
     now = datetime.now()
@@ -95,7 +93,6 @@ def task_list_data(request):
 
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
 @check_user_access()
 def launch_task(request, task_id):
     try:
