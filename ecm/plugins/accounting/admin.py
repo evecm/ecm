@@ -46,6 +46,7 @@ class MarketOrderAdmin(admin.ModelAdmin):
     list_filter   = ['typeID']
 class ReportAdmin(admin.ModelAdmin):
     list_display  = ['name', 'default_period', 'default_step',]
+    # good stuff
     filter_horizontal = ['entry_types']
 
 admin.site.register(JournalEntry, JournalEntryAdmin)
