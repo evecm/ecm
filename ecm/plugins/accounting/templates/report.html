@@ -15,6 +15,9 @@
 	<li class="active"><a href="#summary" data-toggle="tab">Summary</a></li>
 	<li><a href="#income" data-toggle="tab">Income</a></li>
 	<li><a href="#expenditure" data-toggle="tab">Expenditure</a></li>
+	{% for custom_report in custom_reports %}
+	<li><a href="#{{ custom_report.name|slugify }}" data-toggle="tab">{{ custom_report.name }}</a></li>
+	{% endfor %}
 </ul>
 
 <div class="tab-content">
@@ -107,6 +110,37 @@
 		<div id="chart_expenditure" class="span4"></div>
 		<div id="chart_expenditures" class="span11"></div>
 	</div>
+	{% for custom_report in custom_reports %}
+	<div class="tab-pane" id="{{ custom_report.name|slugify }}">
+		<div class="span7">
+			<table class="table table-condensed table-striped" id="{{ custom_report.name|slugify }}-table">
+			<!-- HEADER -->
+			  <thead>
+			    <tr>{% for name, width, type, sortable, css in custom_report.columns %}
+			      <th style="text-align: {{ css }};">{{name}}</th>
+			    {% endfor %}</tr>
+			  </thead>
+			<tbody>
+{% if custom_report.entries %}{% for item in custom_report.entries %}<tr>
+				<td>{{item.type__refTypeName}}</td>
+				<td style="text-align: right;">{{item.amount|ecm_amount}}</td>
+			    </tr>
+			{% endfor %}{% else %}<td>No data.</td>
+				<td style="text-align: right;"></td>
+			    </tr>{% endif %}
+			  </tbody>
+			<tfoot>
+			    <tr>
+			      <th>Total:</th>
+			      <th style="text-align: right;">{{ custom_report.total|ecm_amount}}</th>
+			    </tr>
+			</tfoot>
+			</table>
+		</div>
+		<!--<div id="chart_expenditure" class="span4"></div>
+		<div id="chart_expenditures" class="span11"></div>-->
+	</div>
+	{% endfor %}
 </div>
 
 {% endblock %}

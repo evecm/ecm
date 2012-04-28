@@ -270,7 +270,7 @@ class Report(models.Model):
     class Meta:
         verbose_name = 'Report'
     
-    name = models.CharField() # name of this report
-    entry_types = models.ForeignKey(EntryType) # wallet entry types to use for this report
+    name = models.CharField(max_length=255) # name of this report
+    entry_types = models.ManyToManyField(EntryType) # wallet entry types to use for this report
     default_period = models.IntegerField(null=True, blank=True) # the default period for this report
     default_step= models.IntegerField(null=True, blank=True) # the default step in days for this report

@@ -100,3 +100,13 @@ class cached_property(object):
             value = self.func(obj)
             obj.__dict__[self.__name__] = value
         return value
+
+
+def end_of_day(datetime):
+    return datetime.replace(hour=23, minute=59, second=59)
+
+
+def start_of_day(datetime):
+    return datetime.replace(hour=0, minute=0, second=0)
+
+

@@ -14,135 +14,202 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+import logging
 from datetime import timedelta
 from django.shortcuts import render_to_response
 from django.utils.datetime_safe import datetime
 from ecm.views.decorators import check_user_access
 from django.template.context import RequestContext
-import logging
-from ecm.plugins.accounting.models import JournalEntry
+from ecm.plugins.accounting.models import JournalEntry, Report
 from django.db.models.aggregates import Sum, Avg
 from ecm.apps.corp.models import Wallet
+from ecm.utils.tools import end_of_day, start_of_day
+from django.db.models.query_utils import Q
 
 __date__ = '2012 04 22'
 __author__ = 'tash'
-
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-    
 
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 COLUMNS_INCOME = [
      #Name               witdth type        sortable    class    
-    [ 'Income',     '2%',  'html',     'true',     'left' ],
-    [ 'Percentage',               '5%',  'string',   'true',     'right'],
-    [ 'Amount',          '5%',  'string',   'true',     'right'],
+    [ 'Income', '2%', 'html', 'true', 'left' ],
+    [ 'Percentage', '5%', 'string', 'true', 'right'],
+    [ 'Amount', '5%', 'string', 'true', 'right'],
 ]
 
 COLUMNS_EXPENDITURE = [
      #Name               witdth type        sortable    class    
-    [ 'Expenditure',     '2%',  'html',     'true',     'left' ],
-    [ 'Percentage',               '5%',  'string',   'true',     'right'],
-    [ 'Amount',          '5%',  'string',   'true',     'right'],
+    [ 'Expenditure', '2%', 'html', 'true', 'left' ],
+    [ 'Percentage', '5%', 'string', 'true', 'right'],
+    [ 'Amount', '5%', 'string', 'true', 'right'],
 ]
 
 COLUMNS_CASHFLOW = [
      #Name               witdth type        sortable    class    
-    [ 'Summary',     '2%',  'html',     'true',     'left' ],
-    [ 'Amount',          '5%',  'string',   'true',     'right'],
+    [ 'Summary', '2%', 'html', 'true', 'left' ],
+    [ 'Amount', '5%', 'string', 'true', 'right'],
 ]
 
-
-
+#------------------------------------------------------------------------------
 @check_user_access()
 def report(request):
-    now = datetime.now()
-    start = now - timedelta(30)
-    end = now
-    date_entries = JournalEntry.objects.filter(date__range=(start, end))
+    # Set the period for the report to 30 days
+    period = 30
+    # !!!TODO: Make period variable (Datepicker)
+    end = datetime.utcnow()
+    start = end - timedelta(period)
     
-    # Get an income_aggregated overview
-    incomes = date_entries.filter(amount__gt=0)
-    # Aggregate over type
+    
+    # Query all journal entries in this period
+    journal_entries = JournalEntry.objects.filter(date__range=(start, end))
+    
+    # Get an aggregated set of the positive income in this period
+    positivie_entries = journal_entries.filter(amount__gt=0)
+    
+    # Calculate the total positive income in this period 
+    income_total = positivie_entries.aggregate(Sum('amount'))['amount__sum']
+    
+    # Calculate the sum for each journal entry type and order by entry type
+    income_entries = _group_by_wallet_entry(positivie_entries)
     income_aggregated = []
-    income_entries = incomes.values('type__refTypeName').annotate(amount=Sum('amount')).order_by('type__refTypeName')
-    income_total = date_entries.filter(amount__gt=0).aggregate(Sum('amount'))['amount__sum']
     for item in income_entries:
-        item['percentage']= item['amount'] / (income_total / 100)
+        # populate results with percentage for each entry
+        item['percentage'] = item['amount'] / (income_total / 100)
         income_aggregated.append(item)
     
-    # Aggregate amount for each day in period
-    start_day = _start_date()
-    income_time, expenditure_time=_get_by_time(start, end, start_day)
-        
-    # Get an expenditure_aggregated overview
-    expenditures = date_entries.filter(amount__lt=0)
-    expenditure_entries = expenditures.values('type__refTypeName').annotate(amount=Sum('amount')).order_by('type__refTypeName')
-    expenditure_total = date_entries.filter(amount__lt=0).aggregate(Sum('amount'))['amount__sum']
+    # Get an aggregated set of the negative_entries in this period
+    negative_entries = journal_entries.filter(amount__lt=0)
+    
+    # Calculate the total expenditures in this periodamount__gt=0
+    expenditure_total = negative_entries.aggregate(Sum('amount'))['amount__sum']
+    
+    # Calculate the sum for each journal entry type and order by entry type
+    expenditure_entries = _group_by_wallet_entry(negative_entries)
     expenditure_aggregated = []
     for item in expenditure_entries:
-        item['percentage']= item['amount'] / (expenditure_total / 100)
+        item['percentage'] = item['amount'] / (expenditure_total / 100)
         expenditure_aggregated.append(item)
         
-    # Get a cash flow overview
+    # Get the daily sums for income and expenditure
+    income_time = _get_daily_sums(period, positivie_entries)
+    expenditure_time = _get_daily_sums(period, negative_entries)
+    
+    # Calculate the cash flow
     cashflow = income_total + expenditure_total
     
     # Get wallet balance
-    wallets = Wallet.objects.all()
-    balances = []
-    for wallet in wallets:
-        try:
-            balance = JournalEntry.objects.filter(date__range=(start, end)).values('type__refTypeName').annotate(average=Avg('amount'))
-        except JournalEntry.DoesNotExist:
-            # no journal information, we assume the balance is 0.0
-            balance = 0.0
-        balances.append([
-            wallet,
-            balance,
-        ]) 
+    wallet_balance = _get_wallet_balance_by_day(start, end)
+    
+    # Get custom report data
+    custom_reports = _load_custom_reports()
+    
+    # Create default report data
     data = {
             'columns_income'        : COLUMNS_INCOME,
-            'income_aggregated'     : income_aggregated,                   # aggregated
-            'income_total'          : income_total,             # total
-            'income_time'           : income_time,                  # all entries in period
+            'income_aggregated'     : income_aggregated, # aggregated
+            'income_total'          : income_total, # total
+            'income_time'           : income_time, # all entries in period
             'columns_expenditure'   : COLUMNS_EXPENDITURE,
-            'expenditure_aggregated': expenditure_aggregated,              # aggregated
-            'expenditure_total'     : expenditure_total,        # total
-            'expenditure_time'      : expenditure_time,             # all entries in period
+            'expenditure_aggregated': expenditure_aggregated, # aggregated
+            'expenditure_total'     : expenditure_total, # total
+            'expenditure_time'      : expenditure_time, # all entries in period
             'columns_cashflow'      : COLUMNS_CASHFLOW,
             'cashflow'              : cashflow,
-            'balances'              : balances,
+            'wallet_balance'        : wallet_balance,
+            'custom_reports'        : custom_reports,
             }
-    return render_to_response("balance_sheet.html", data, RequestContext(request))
+    
+    # Add custom report data
+    return render_to_response("report.html", data, RequestContext(request))
 
-def extract_date(entity):
+def _load_custom_reports(end=datetime.utcnow(), period=30):
+    custom_reports = []
+    reports = Report.objects.all()
+    for report in reports:
+        # Set the time period
+        if report.default_period:
+            start = end - timedelta(report.default_period)
+        else:
+            # no default period for custom report, use current period (30 days)
+            start = end - timedelta(period)
+            
+        # Set the date range for journal entries
+        entries = JournalEntry.objects.filter(date__range=(start, end))
+        
+        # Since entry types are many-to-many, we have to iterate over them.
+        # filter(type__in) will throw an error
+        search_args = Q()
+        for entry_type in report.entry_types.all():
+            search_args |= Q(type=entry_type)
+        
+        # Apply the filer    
+        entries = entries.filter(search_args)
+        
+        # Get total sum
+        custom_total = entries.aggregate(Sum('amount'))['amount__sum']
+        
+        # Group by wallet entry
+        entries_grouped = _group_by_wallet_entry(entries)
+        entries_result = []
+        for entry in entries_grouped:
+            entry['percentage'] = entry['amount'] / (custom_total / 100)
+            entries_result.append(entry)
+            
+        COLUMNS_CUSTOM = [
+             #Name               witdth type        sortable    class    
+            [ report.name, '2%', 'html', 'true', 'left' ],
+            [ 'Amount', '5%', 'string', 'true', 'right'],
+        ]
+        
+        # Append to data
+        custom_reports.append({'name': report.name, 'entries': entries_result, 'columns': COLUMNS_CUSTOM, 'total': custom_total})
+    return custom_reports
+
+#------------------------------------------------------------------------------
+def _extract_date(entity):
     'extracts the starting date from an entity'
     return entity.date.date()
 
-def _end_of_day(start):
-    start_of_day = datetime(start.year, start.month, start.day, 0, 0, 0, 0, start.tzinfo)
-    return start_of_day + timedelta(hours = 23, minutes = 59, seconds = 59)
+#------------------------------------------------------------------------------
+def _get_wallet_balance_by_day(start, end):
+    balances = []
+    for wallet in Wallet.objects.all():
+        try:
+            balance = JournalEntry.objects.filter(date__range=(start, end)).values('type__refTypeName').annotate(average=Avg('amount'))
+        except JournalEntry.DoesNotExist:
+            # no journal information, assume the balance is 0.0
+            balance = 0.0
+        balances.append([wallet, balance])
+    return balances
 
-def _start_date():
-    u = datetime.utcnow()
-    return (datetime(u.year, u.month, u.day, 0, 0, 0, 0, u.tzinfo) - timedelta(30))
-    
-def _get_by_time(start, end, start_day):
-    income_time = []
-    expenditure_time = []
-    for day in range(30):
+#------------------------------------------------------------------------------
+def _group_by_wallet_entry(query_set):
+    return query_set.values('type__refTypeName').annotate(amount=Sum('amount')).order_by('type__refTypeName')
+
+#------------------------------------------------------------------------------
+def _start_date(period, start=datetime.utcnow()):
+    """
+    Returns a date with a timedelta days_from_now and time 0:0:0 to mark the start of the day.
+    """
+    return start_of_day(start) - timedelta(period)
+
+#------------------------------------------------------------------------------    
+def _get_daily_sums(period, entries, step=1):
+    """
+    Returns both income and expenditure by type for each day in the provided period.
+    Period is a number of days starting from utcnow back to utcnow - period.
+    Step is the number of days to cummulate income and expenditure with default to 1.
+    Daily sums are calculated for each day starting at 0:0:0 and ending with 23:59:59. 
+    """
+    start_day = _start_date(period)
+    result = []
+    for day in range(0, period, step):
         start = start_day + timedelta(day)
-        end = _end_of_day(start)
-        dated_query = JournalEntry.objects.filter(date__range=(start, end))
-        inc_entry = dated_query.filter(amount__gt=0).aggregate(Sum('amount'))['amount__sum']
-        exp_entry = dated_query.filter(amount__lt=0).aggregate(Sum('amount'))['amount__sum']
-        amount = 0 if inc_entry == None else inc_entry
-        income_time.append({'date':start, 'amount':amount})
-        amount = 0 if exp_entry == None else exp_entry
-        expenditure_time.append({'date':start, 'amount':amount})
-    return income_time, expenditure_time
+        end = end_of_day(start)
+        dated_query = entries.filter(date__range=(start, end))
+        entry = dated_query.aggregate(Sum('amount'))['amount__sum']
+        amount = 0 if entry == None else entry
+        result.append({'date':start, 'amount':amount})
+    return result
