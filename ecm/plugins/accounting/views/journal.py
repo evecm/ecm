@@ -54,7 +54,7 @@ def journal(request):
     comparator = request.GET.get('comparator','>')
     
     from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
-    if from_date is None: from_date = datetime.fromtimestamp(0)
+    if from_date is None: from_date = datetime.utcfromtimestamp(0)
     to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
     if to_date is None: to_date = timezone.now()
     

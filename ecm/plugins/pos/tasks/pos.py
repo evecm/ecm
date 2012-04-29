@@ -75,7 +75,7 @@ def update():
             pos.cached_until = cached_until # @todo: causing  RuntimeWarning: dont know why :|
             get_details(pos, apiCurPOS, sov)
         else:
-            localCachedUntil = datetime.fromtimestamp(calendar.timegm(cached_until.timetuple()))
+            localCachedUntil = datetime.utcfromtimestamp(calendar.timegm(cached_until.timetuple()))
             logger.info("POS %s is cached until %s: no update required",
                         row.itemID, localCachedUntil)
         pos.save()
