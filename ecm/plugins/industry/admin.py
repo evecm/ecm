@@ -126,6 +126,7 @@ class PricingPolicyAdmin(admin.ModelAdmin):
 #------------------------------------------------------------------------------
 class ItemGroupAdmin(admin.ModelAdmin):
     list_display = ['name', 'item_count']
+    filter_horizontal = ['items']
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderLog, OrderLogAdmin)
