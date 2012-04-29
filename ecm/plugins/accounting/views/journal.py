@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.utils import timezone
 
 __date__ = "2011 5 23"
 __author__ = "diabeteman"
@@ -55,7 +56,7 @@ def journal(request):
     from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
     if from_date is None: from_date = datetime.fromtimestamp(0)
     to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
-    if to_date is None: to_date = datetime.now()
+    if to_date is None: to_date = timezone.now()
     
     wallets = [{ 'walletID' : 0, 'name' : 'All', 'selected' : walletID == 0 }]
     for w in Wallet.objects.all().order_by('walletID'):

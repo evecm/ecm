@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.utils import timezone
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
@@ -25,7 +26,6 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.context import RequestContext as Ctx
-from django.utils.datetime_safe import datetime
 from django.db.models.aggregates import Avg, Sum
 
 from ecm.apps.hr.models.member import MemberSession
@@ -50,7 +50,7 @@ def details(request, characterID):
       '30days': 0,
       '7days': 0,
     }
-    now = datetime.now()
+    now = timezone.now()
     try:
         member = Member.objects.get(characterID=int(characterID))
         try:

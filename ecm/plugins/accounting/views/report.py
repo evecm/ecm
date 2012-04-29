@@ -25,6 +25,7 @@ from django.db.models.aggregates import Sum, Avg
 from ecm.apps.corp.models import Wallet
 from ecm.utils.tools import end_of_day, start_of_day
 from django.db.models.query_utils import Q
+from django.utils import timezone
 
 __date__ = '2012 04 22'
 __author__ = 'tash'
@@ -58,7 +59,7 @@ def report(request):
     # Set the period for the report to 30 days
     period = 30
     # !!!TODO: Make period variable (Datepicker)
-    end = datetime.utcnow()
+    end = timezone.now()
     start = end - timedelta(period)
     
     
@@ -124,7 +125,7 @@ def report(request):
     # Add custom report data
     return render_to_response("report.html", data, RequestContext(request))
 
-def _load_custom_reports(end=datetime.utcnow(), period=30):
+def _load_custom_reports(end=timezone.now(), period=30):
     custom_reports = []
     reports = Report.objects.all()
     for report in reports:
@@ -189,7 +190,7 @@ def _group_by_wallet_entry(query_set):
     return query_set.values('type__refTypeName').annotate(amount=Sum('amount')).order_by('type__refTypeName')
 
 #------------------------------------------------------------------------------
-def _start_date(period, start=datetime.utcnow()):
+def _start_date(period, start=timezone.now()):
     """
     Returns a date with a timedelta days_from_now and time 0:0:0 to mark the start of the day.
     """

@@ -192,7 +192,7 @@ class FuelLevel(models.Model):
         if self.type_id == constants.STRONTIUM_CLATHRATES_TYPEID:
             return self.quantity
         else:
-            #date_delta = datetime.datetime.now() - self.date
+            #date_delta = datetime.timezone.now() - self.date
             date_delta = timezone.now() - self.date
             total_seconds = date_delta.days * 24 * 60 * 60 + date_delta.seconds
             hours = int(total_seconds / 3600)

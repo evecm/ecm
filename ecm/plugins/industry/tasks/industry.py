@@ -16,6 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+from django.utils import timezone
 
 __date__ = "2011 8 20"
 __author__ = "diabeteman"
@@ -90,7 +91,7 @@ def update_production_cost(entry):
     else:
         raise OrderCannotBeFulfilled(missing_blueprints=list(missing_bps))
     entry.production_cost = cost
-    entry.last_update = datetime.now()
+    entry.last_update = timezone.now()
     entry.save()
 
 

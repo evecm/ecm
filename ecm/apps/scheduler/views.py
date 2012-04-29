@@ -41,7 +41,7 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 @basic_auth_required(username=Setting.get('common_cron_username'))
 def trigger_scheduler(request):
-    now = datetime.now()
+    now = timezone.now()
     tasks_to_execute = ScheduledTask.objects.filter(is_active=True,
                                                     is_running=False,
                                                     is_scheduled=False,

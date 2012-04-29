@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.utils import timezone
 
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
@@ -59,7 +60,7 @@ def member_contrib(request):
     from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
     if from_date is None: from_date = datetime.fromtimestamp(0)
     to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
-    if to_date is None: to_date = datetime.now()
+    if to_date is None: to_date = timezone.now()
 
     query = JournalEntry.objects.filter(type__in=OPERATION_TYPES,
                                         date__gte=from_date, date__lte=to_date)
@@ -166,7 +167,7 @@ def total_contrib_data(request):
         from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
         if from_date is None: from_date = datetime.fromtimestamp(0)
         to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
-        if to_date is None: to_date = datetime.now()
+        if to_date is None: to_date = timezone.now()
 
     query = JournalEntry.objects.filter(type__in=OPERATION_TYPES,
                                         date__gte=from_date, date__lte=to_date)
@@ -184,7 +185,7 @@ MEMBER_CONTRIB_SQL = '''SELECT m."characterID" AS "characterID", m."name" AS "na
   AND j."date" < %%s
  GROUP BY m."characterID", m."name"
  ORDER BY ''' % str(OPERATION_TYPES)
-def member_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(),
+def member_contributions(since=datetime.fromtimestamp(0), until=timezone.now(),
                          order_by="tax_contrib", ascending=False):
 
     sql = MEMBER_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;")
@@ -200,7 +201,7 @@ SYSTEM_CONTRIB_SQL = '''SELECT j."argName1" AS "argName1", SUM(j."amount") AS "t
    AND j."date" < %%s
  GROUP BY j."argName1"
  ORDER BY ''' % str(OPERATION_TYPES)
-def system_contributions(since=datetime.fromtimestamp(0), until=datetime.utcnow(),
+def system_contributions(since=datetime.fromtimestamp(0), until=timezone.now(),
                          order_by="tax_contrib", ascending=False):
 
     sql = SYSTEM_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;")

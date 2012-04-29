@@ -14,14 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.utils import timezone
 
 __date__ = "2012 04 05"
 __author__ = "tash"
 
 
 import logging
-from datetime import datetime
-
 from django.db import transaction
 
 from ecm.lib import eveapi
@@ -51,7 +50,7 @@ def update():
     LOG.debug("parsing api response...")
     
     process_contracts(contractsApi.contractList, api_conn)
-    UpdateDate.mark_updated(model=Contract, date=datetime.now())
+    UpdateDate.mark_updated(model=Contract, date=timezone.now())
 
 #------------------------------------------------------------------------------
 def process_contracts(contract_list, connection):

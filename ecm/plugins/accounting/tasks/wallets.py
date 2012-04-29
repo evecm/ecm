@@ -14,14 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.utils import timezone
 
 __date__ = "2011-03-27"
 __author__ = "diabeteman"
 
 
 import logging
-from datetime import datetime
-
 from django.db import transaction
 
 from ecm.apps.eve import api
@@ -42,7 +41,7 @@ def update():
     for wallet in Wallet.objects.all():
         update_wallet(wallet)
 
-    UpdateDate.mark_updated(model=JournalEntry, date=datetime.now())
+    UpdateDate.mark_updated(model=JournalEntry, date=timezone.now())
     LOG.debug("wallets journal updated")
 
 #------------------------------------------------------------------------------

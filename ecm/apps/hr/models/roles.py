@@ -14,11 +14,10 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.utils import timezone
 
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
-
-from datetime import datetime
 
 from django.db import models
 
@@ -205,7 +204,7 @@ class RoleMemberDiff(models.Model):
     # true if role is new for member, false if role was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
-    date = models.DateTimeField(db_index=True, default=datetime.now())
+    date = models.DateTimeField(db_index=True, default=timezone.now())
 
     @property
     def access_permalink(self):

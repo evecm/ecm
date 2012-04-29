@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.utils import timezone
 
 __date__ = '2010-12-25'
 __author__ = 'diabeteman'
@@ -49,8 +50,8 @@ def last_date(request):
     # if called without date, redirect to the last date.
     since_weeks = int(request.GET.get('since_weeks', '8'))
     to_weeks = int(request.GET.get('to_weeks', '0'))
-    oldest_date = datetime.now() - timedelta(weeks=since_weeks)
-    newest_date = datetime.now() - timedelta(weeks=to_weeks)
+    oldest_date = timezone.now() - timedelta(weeks=since_weeks)
+    newest_date = timezone.now() - timedelta(weeks=to_weeks)
 
     query = AssetDiff.objects.values_list('date', flat=True).distinct().order_by('-date')
     query = query.filter(date__gte=oldest_date)
@@ -73,8 +74,8 @@ def get_dates(request):
     since_weeks = int(request.GET.get('since_weeks', '8'))
     to_weeks = int(request.GET.get('to_weeks', '0'))
 
-    oldest_date = datetime.now() - timedelta(weeks=since_weeks)
-    newest_date = datetime.now() - timedelta(weeks=to_weeks)
+    oldest_date = timezone.now() - timedelta(weeks=since_weeks)
+    newest_date = timezone.now() - timedelta(weeks=to_weeks)
 
     query = AssetDiff.objects.all()
     query = query.filter(date__gte=oldest_date)
@@ -123,8 +124,8 @@ def root(request, date_str):
     since_weeks = int(request.GET.get('since_weeks', '8'))
     to_weeks = int(request.GET.get('to_weeks', '0'))
 
-    oldest_date = datetime.now() - timedelta(weeks=since_weeks)
-    newest_date = datetime.now() - timedelta(weeks=to_weeks)
+    oldest_date = timezone.now() - timedelta(weeks=since_weeks)
+    newest_date = timezone.now() - timedelta(weeks=to_weeks)
 
     query = AssetDiff.objects.values_list('date', flat=True).distinct().order_by('-date')
     query = query.filter(date__gte=oldest_date)

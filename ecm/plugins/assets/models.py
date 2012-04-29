@@ -14,12 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.utils import timezone
 
 __date__ = "2010-03-18"
 __author__ = "diabeteman"
 
 from django.db import models
-from datetime import datetime
 
 from ecm.lib import bigintpatch
 from ecm.apps.eve.models import Type
@@ -106,7 +106,7 @@ class AssetDiff(models.Model):
     hangarID = models.PositiveIntegerField() # hangar division
     typeID = models.PositiveIntegerField(default=0) # item typeID from the EVE database
     quantity = models.IntegerField(default=0)
-    date = models.DateTimeField(db_index=True, default=datetime.now())
+    date = models.DateTimeField(db_index=True, default=timezone.now())
     new = models.BooleanField()
     flag = models.BigIntegerField() # used to determine the state or path of the asset
     volume = models.BigIntegerField(default=0)
