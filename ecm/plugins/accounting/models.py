@@ -167,7 +167,9 @@ class Contract(models.Model):
     def status_html(self):
         status = Contract.STATUS[self.status]
         return '<span class="contract-%s">%s</span>' % (status.lower(), status)
-
+    
+    def availability_string(self):
+        return Contract.AVAILABILITY[self.availability]
 #------------------------------------------------------------------------------
 class ContractItem(models.Model):
     """

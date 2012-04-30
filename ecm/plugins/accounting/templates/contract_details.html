@@ -23,11 +23,11 @@
 			<dt>Title</dt>
 			<dd id="contract-title">{% if contract.title %}{{contract.title|safe}}{% else %}&lt;No Title&gt;{% endif	%}</dd>
 			<dt>Type</dt>
-			<dd id="contract-type">{{contract.type}}</dd>
+			<dd id="contract-type">{{contract.permalink_type|safe}}</dd>
 			<dt>Status</dt>
-			<dd class="contract-{{contract.status|lower}}">{{contract.status}}</dd>
+			<dd class="contract-{{contract.status|lower}}">{{contract.status_html|safe}}</dd>
 			<dt>Availability</dt>
-			<dd id="contract-availability">{{contract.availability}}</dd>
+			<dd id="contract-availability">{{contract.availability_string}}</dd>
 			<dt>Date Issued</dt>
 			<dd id="contract-dateissued">{{contract.dateIssued|ecm_datetime}}</dd>
 			<dt>Date Expired</dt>

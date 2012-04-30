@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
+
 
 __date__ = "2011 10 26"
 __author__ = "diabeteman"
@@ -26,6 +26,7 @@ import logging
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template.context import RequestContext as Ctx
 from django.http import HttpResponse, HttpResponseBadRequest, Http404
+from django.utils import timezone
 
 from ecm import apps, plugins
 from ecm.utils.format import print_time_min
