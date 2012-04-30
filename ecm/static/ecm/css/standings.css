@@ -1,0 +1,45 @@
+.s10{
+	background-color: navy;
+}
+.sr10{
+	color: white;
+}
+.sr10:hover{
+	color:	black;
+}
+.s5{
+	background-color: blue;
+}
+.sr5{
+	color: white;
+}
+.sr5:hover{
+	color:	black;
+}
+.s0{
+	background-color: grey;
+}
+.sr0{
+	color: white;
+}
+.sr0:hover{
+	color:	black;
+}
+.s-5{
+	background-color: orange;
+}
+.sr-5{
+	color: white;
+}
+.sr-5:hover{
+	color:	black;
+}
+.s-10{
+	background-color: red;
+}
+.sr-10{
+	color: white;
+}
+.sr-10:hover{
+	color:	black;
+}
