@@ -17,7 +17,6 @@
 import logging
 from datetime import timedelta
 from django.shortcuts import render_to_response
-from django.utils.datetime_safe import datetime
 from ecm.views.decorators import check_user_access
 from django.template.context import RequestContext
 from ecm.plugins.accounting.models import JournalEntry, Report

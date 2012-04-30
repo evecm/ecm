@@ -14,13 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.utils import timezone
 
 __date__ = "2011 10 26"
 __author__ = "diabeteman"
 
 import time
 import httplib as http
-from datetime import datetime
 import logging
 
 from django.shortcuts import render_to_response, redirect, get_object_or_404

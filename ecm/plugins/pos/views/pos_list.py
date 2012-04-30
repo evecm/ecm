@@ -26,7 +26,7 @@ except ImportError:
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.db.models import Q
 
 from ecm.utils import db
