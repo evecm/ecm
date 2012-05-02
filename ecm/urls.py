@@ -82,6 +82,7 @@ urlpatterns += patterns('ecm.views',
     ###########################################################################
     # COMMON VIEWS
     (r'^$',                     'common.corp'),
+    (r'^editmotd/$',            'common.edit_motd'),
     (r'^editapi/$',             'common.edit_apikey'),
 )
 

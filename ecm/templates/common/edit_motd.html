@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block headtitle %}Edit MOTD{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">Home</a></li>
+<li>Edit MOTD</li>
+{% endblock %}
+
+
+{% block main_content %}
+<form class="well form-horizontal" target="/editapi/" method="post">
+	{% csrf_token %}
+	<label><h2>Edit MOTD</h2></label>
+	<label>MOTD Text</label>
+	<textarea rows="10" class="span5" name="message">{{motd.message}}</textarea>
+	
+	<br>
+	<label>Select Markup</label>
+	<select name="markup">
+		{% for markup_id, markup in markups.items %}
+		<option value="{{markup_id}}" {% if motd.markup = markup_id %}selected="selected"{% endif %}>{{markup}}</option>
+		{% endfor %}
+	</select>
+	<button type="submit" class="btn">Save Changes</button>
+</form>
+
+{% endblock %}

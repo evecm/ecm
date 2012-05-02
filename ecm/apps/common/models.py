@@ -366,3 +366,49 @@ class RegistrationProfile(models.Model):
                (self.user.date_joined + expiration_date <= timezone.now())
     activation_key_expired.boolean = True
 
+class Motd(models.Model):
+    #softdeps
+    #  PyTextile       : Textile 
+    #  Python-markdown : Markdown 
+    #  docutils        : reST (reStructured Text)
+    from django.contrib.markup.templatetags import markup
+
+    MARKUPS = {0: 'Plain Text'}
+    MARKUP_FUNCTIONS = {0: unicode}
+    try:
+        from docutils.core import publish_parts
+        MARKUPS[1] = 'reStructured Text'
+        MARKUP_FUNCTIONS[1] = markup.restructuredtext
+    except ImportError:
+        pass
+    try:
+        import markdown
+        MARKUPS[2] = 'Markdown'
+        MARKUP_FUNCTIONS[2] = markup.markdown
+    except ImportError:
+        pass
+    try:
+        import textile
+        MARKUPS[3] = 'Textile'
+        MARKUP_FUNCTIONS[3] = markup.textile
+    except ImportError:
+        pass
+    
+    class Meta:
+        verbose_name = 'Message of the day'
+        verbose_name_plural = 'Messages of the day'
+        ordering = ['date']
+        get_latest_by = 'date'
+    
+    message = models.TextField(default='MOTD Text')
+    date = models.DateTimeField(auto_now_add=True)
+    markup = models.SmallIntegerField(default=0, choices=MARKUPS.items())
+    
+    def __unicode__(self):
+        return self.message[:50]
+
+    def render_html(self):
+        try:
+            return self.MARKUP_FUNCTIONS[self.markup](self.message)
+        except KeyError:
+            return self.message

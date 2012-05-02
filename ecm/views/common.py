@@ -31,11 +31,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.scheduler.main import Scheduler
-from ecm.apps.common.models import Setting
+from ecm.apps.common.models import Setting, Motd
 from ecm.apps.eve.validators import validate_director_api_key
 from ecm.apps.eve import api
 from ecm.apps.hr.models import Member
 from ecm.apps.corp.models import Corp
+from ecm.views.decorators import check_user_access
+from ecm.apps.common.models import UrlPermission
 
 #------------------------------------------------------------------------------
 SHOWINFO_PATTERN = re.compile(r'showinfo:13\d\d//(\d+)')
@@ -55,10 +57,42 @@ def corp(request):
         corp.memberCount = Member.objects.filter(corped=True).count()
     except Corp.DoesNotExist:
         corp = Corp(corporationName='No Corporation info')
-
-    data = { 'corp' : corp }
+    #{{motd|safe}} to escape html markup
+    button = UrlPermission.user_has_access(request.user, '/editmotd/')
+    try:
+        motd = Motd.objects.latest()
+    except Motd.DoesNotExist:
+        motd = None
+    data = { 
+            'corp'    : corp, 
+            'motd'    : motd,
+            'button'  : button,
+    }
 
     return render_to_response('common/corp.html', data, Ctx(request))
+
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def edit_motd(request):
+    try:
+        motd = Motd.objects.latest()
+    except Motd.DoesNotExist:
+        motd = None
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            motd = Motd(
+                        message = request.POST['message'],
+                        markup  = request.POST['markup'],
+            )
+            motd.save()
+            return redirect('/')
+            
+    data = {
+            'motd'    : motd,
+            'markups' : Motd.MARKUPS,
+    }
+    return render_to_response('common/edit_motd.html', data, Ctx(request))
 
 
 #------------------------------------------------------------------------------

@@ -27,7 +27,7 @@ from ecm.views.decorators import forbidden
 from ecm.apps.hr.tasks.users import update_user_accesses
 from ecm.views.auth.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
 from ecm.apps.hr.models import Member
-from ecm.apps.common.models import UserAPIKey, ExternalApplication, UserBinding
+from ecm.apps.common.models import UserAPIKey, ExternalApplication, UserBinding, Motd
 from ecm.apps.eve.validators import user_access_mask
 
 import logging
@@ -43,11 +43,15 @@ def account(request):
         except UserBinding.DoesNotExist:
             binding = None
         external_apps.append({'app': app, 'binding': binding})
-
+    try:
+        motd = Motd.objects.latest()
+    except Motd.DoesNotExist:
+        motd = None
     data = {
-        'characters' : Member.objects.filter(owner=request.user),
-        'api_keys' :  UserAPIKey.objects.filter(user=request.user),
-        'external_apps' : external_apps
+        'characters'    : Member.objects.filter(owner=request.user),
+        'api_keys'      : UserAPIKey.objects.filter(user=request.user),
+        'external_apps' : external_apps,
+        'motd'          : motd
     }
     return render_to_response('auth/account.html', data, Ctx(request))
 

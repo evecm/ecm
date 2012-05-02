@@ -15,7 +15,12 @@
 </div>
 
 <p>Click <a href="/account/passwordchange/">here</a> to change your password.</p>
-
+<h2>MOTD</h2>
+{% if motd %}
+{{motd.render_html|safe}}
+{% else %}
+No MOTD
+{% endif %}
 <div class="row-fluid">
   <div class="span6">
     <h2>EVE API Keys</h2>
