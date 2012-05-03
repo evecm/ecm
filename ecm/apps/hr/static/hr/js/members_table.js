@@ -95,22 +95,14 @@ $(document).ready(function() {
         table.fnFilter($("#search_text").val());
     });
 
-    /* trigger the search when clicking the "search" button */
-    $("#search_button").on('click', function(event) {
-    	event.preventDefault();
-        table.fnFilter($("#search_text").val());
-    });
-
     /* reset the search when clicking the "reset" button */
     $("#clear_search").on('click', function() {
-    	event.preventDefault();
         $("#search_text").val("");
         table.fnFilter("");
     });
 
-
     /* disable multi column sorting */
-    $('#members_table thead th').click(function(event) {
+    $('#members_table thead th').on('click', function(event) {
         if (!$(event.target).hasClass('sorthandle')) {
             event.shiftKey = false;
         }
