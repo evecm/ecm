@@ -56,6 +56,9 @@ config = SafeConfigParser()
 if not config.read(CONFIG_FILES):
     raise RuntimeError('Could not find ECM configuration. Looked in %s.' % CONFIG_FILES)
 
+EXTERNAL_HOST_NAME = config.get('misc', 'external_host_name')
+USE_HTTPS = config.get('misc', 'use_https')
+
 ###############################################################################
 ###################
 # DJANGO SETTINGS #

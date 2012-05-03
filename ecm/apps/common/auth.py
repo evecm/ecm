@@ -20,11 +20,11 @@ __author__ = 'diabeteman'
 
 import logging
 
+from django.conf import settings
 from django.contrib.auth.models import Group, AnonymousUser
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.core.mail.message import EmailMultiAlternatives
-from django.contrib.sites.models import Site
 from django.template.context import RequestContext as Ctx
 
 from ecm.apps.common.models import Setting
@@ -51,7 +51,8 @@ def get_or_create_group(group_name):
 #------------------------------------------------------------------------------
 def alert_user_for_invalid_apis(user, invalid_apis):
     ctx_dict = {
-        'site':Site.objects.get_current(),
+        'host_name': settings.EXTERNAL_HOST_NAME,
+        'use_https': settings.USE_HTTPS,
         'user_name':user.username,
         'invalid_apis':invalid_apis
     }

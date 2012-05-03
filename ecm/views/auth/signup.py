@@ -18,8 +18,8 @@
 __date__ = "2011 4 5"
 __author__ = "diabeteman"
 
+import logging
 
-from django.contrib.sites.models import Site
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.template.loader import render_to_string
@@ -33,7 +33,6 @@ from ecm.apps.hr.models import Member
 from ecm.views.auth.forms import AccountCreationForm
 from ecm.apps.eve.validators import user_access_mask
 
-import logging
 logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
@@ -108,7 +107,8 @@ def activate_account(request, activation_key):
 
 #------------------------------------------------------------------------------
 def send_activation_email(request, user_profile):
-    ctx_dict = {'site': Site.objects.get_current(),
+    ctx_dict = {'host_name': settings.EXTERNAL_HOST_NAME,
+                'use_https': settings.USE_HTTPS,
                 'user_name': user_profile.user.username,
                 'activation_key': user_profile.activation_key,
                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS}

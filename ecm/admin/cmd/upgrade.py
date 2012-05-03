@@ -23,20 +23,16 @@ __date__ = '2012 3 23'
 __author__ = 'diabeteman'
 
 import os
-import sys
 import re
 import shutil
 from os import path
-import subprocess
-import signal
 from distutils import dir_util
-from subprocess import PIPE
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
 
 from ecm.lib.subcommand import Subcommand
 from ecm.admin import instance_template
-from ecm.admin.util import run_python_cmd, log
+from ecm.admin.util import run_python_cmd, log, pipe_to_django_shell
 from ecm.admin.cmd import collect_static_files, download_patched_eve_db, patch_ccp_dump,\
     PATCHED_EVE_DB_URL, CCP_EVE_DB_URL
 
@@ -79,25 +75,6 @@ def sub_command():
     return upgrade_cmd
 
 #-------------------------------------------------------------------------------
-def pipe_to_django_shell(python_code, run_dir, exit_on_failure=True):
-    
-    log('Piping code to django shell: "%s"' % python_code)
-    
-    command_line = [sys.executable, 'manage.py', 'shell']
-    proc = None
-    try:
-        proc = subprocess.Popen(command_line, stdin=PIPE, stdout=PIPE, stderr=PIPE, 
-                                cwd=run_dir, universal_newlines=True)
-        (_, stderr) = proc.communicate(python_code)
-        exitcode = proc.wait()
-        if exitcode != 0 and exit_on_failure:
-            print >>sys.stderr, stderr
-            sys.exit(exitcode)
-    except KeyboardInterrupt:
-        if proc is not None:
-            os.kill(proc.pid, signal.SIGTERM)
-
-#-------------------------------------------------------------------------------
 def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     instance_dir = path.abspath(instance_dir)
     
@@ -108,7 +85,7 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
         log('Migrating from ECM 1.4.9...')
         # we are upgrading from ECM 1.X.Y, we must perform the init migration
         # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
-        pipe_to_django_shell('from south.models import MigrationHistory;'\
+        pipe_to_django_shell('from south.models import MigrationHistory; '\
                              'MigrationHistory.objects.all().delete()' , instance_dir)
         
         run_python_cmd('manage.py migrate hr 0001 --noinput', instance_dir)
@@ -120,9 +97,9 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     run_python_cmd('manage.py migrate --all --noinput', instance_dir)
     
     if upgrade_from_149:
-        pipe_to_django_shell('from ecm.apps.scheduler.models import ScheduledTask;'\
+        pipe_to_django_shell('from ecm.apps.scheduler.models import ScheduledTask; '\
                              'ScheduledTask.objects.all().delete()' , instance_dir)
-        pipe_to_django_shell('from ecm.apps.common.models import UrlPermission;'\
+        pipe_to_django_shell('from ecm.apps.common.models import UrlPermission; '\
                              'UrlPermission.objects.all().delete()' , instance_dir)
 
     log('Database Migration successful.')

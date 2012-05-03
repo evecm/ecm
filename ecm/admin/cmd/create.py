@@ -148,6 +148,7 @@ def write_settings(command, options, instance_dir):
     config.set('misc', 'server_bind_ip', str(options.bind_address))
     config.set('misc', 'server_bind_port', str(options.bind_port))
     config.set('misc', 'pid_file', 'ecm.pid')
+    config.set('misc', 'external_host_name', str(options.host_name))
     config.set('database', 'ecm_engine', str(options.db_engine))
     if options.db_name:
         config.set('database', 'ecm_name', str(options.db_name))

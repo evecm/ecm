@@ -10,7 +10,7 @@
 	{% endfor %}</ul>
 	
 	<p>All the characters from the accounts related to these API Keys are not associated with your profile anymore. 
-	Please log-in to <a href="http://{{ site }}">http://{{ site }}</a> and make sure that these API Keys are valid.</p>
+	Please log-in to <a href="http{% if use_https %}s{% endif %}://{{ host_name }}/">http{% if use_https %}s{% endif %}://{{ host_name }}/</a> and make sure that these API Keys are valid.</p>
 	
 	<p><i>NB: If you don't own the accounts related to these API Keys anymore, 
 	you can delete them from your profile to stop receiving these e-mails.</i></p>

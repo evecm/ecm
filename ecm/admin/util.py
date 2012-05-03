@@ -23,6 +23,7 @@ import os
 import sys
 import signal
 import subprocess
+from subprocess import PIPE
 
 from django.core.management.color import supports_color
 from django.utils.termcolors import colorize
@@ -80,6 +81,27 @@ def run_command(command_line, run_dir, exit_on_failure=True):
     except KeyboardInterrupt:
         if proc is not None:
             os.kill(proc.pid, signal.SIGTERM)
+
+
+#-------------------------------------------------------------------------------
+def pipe_to_django_shell(python_code, run_dir, exit_on_failure=True):
+    
+    log('Piping code to django shell: "%s"' % python_code)
+    
+    command_line = [sys.executable, 'manage.py', 'shell']
+    proc = None
+    try:
+        proc = subprocess.Popen(command_line, stdin=PIPE, stdout=PIPE, stderr=PIPE, 
+                                cwd=run_dir, universal_newlines=True)
+        (_, stderr) = proc.communicate(python_code)
+        exitcode = proc.wait()
+        if exitcode != 0 and exit_on_failure:
+            print >>sys.stderr, stderr
+            sys.exit(exitcode)
+    except KeyboardInterrupt:
+        if proc is not None:
+            os.kill(proc.pid, signal.SIGTERM)
+
 
 #-------------------------------------------------------------------------------
 def log(message, *args):
