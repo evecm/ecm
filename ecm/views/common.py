@@ -16,6 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
+import multiprocessing
 
 __date__ = '2010-05-16'
 __author__ = 'diabeteman'
@@ -25,12 +26,10 @@ import re
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.template.context import RequestContext as Ctx
-from django.db import transaction
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from ecm.apps.scheduler.models import ScheduledTask
-from ecm.apps.scheduler.main import Scheduler
 from ecm.apps.common.models import Setting, Motd
 from ecm.apps.eve.validators import validate_director_api_key
 from ecm.apps.eve import api
@@ -105,18 +104,17 @@ def edit_apikey(request):
             vCode = form.cleaned_data.get('vCode')
             characterID = form.cleaned_data.get('characterID')
             
-            with transaction.commit_manually():
-                try:
-                    api.set_api(keyID, vCode, characterID)
-                    tasks_to_execute = ScheduledTask.objects.filter(is_active=True).order_by("-priority")
-                    tasks_to_execute.update(is_scheduled=True)
-                except:
-                    transaction.rollback()
-                    raise
-                else:
-                    transaction.commit()
-                
-            Scheduler.instance().schedule(*list(tasks_to_execute))
+            api.set_api(keyID, vCode, characterID)
+            tasks_to_execute = ScheduledTask.objects.filter(is_active=True).order_by("-priority")
+            tasks_to_execute.update(is_scheduled=True)
+            
+            def _run(tasks):
+                for task in tasks:
+                    task.run()
+            
+            proc = multiprocessing.Process(target=_run, args=[tasks_to_execute])
+            proc.daemon = True
+            proc.start()
             
             return redirect('/scheduler/tasks/')
     else:

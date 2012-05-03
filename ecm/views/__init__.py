@@ -124,12 +124,3 @@ if not User.objects.filter(username=admin_username):
     except:
         logger.exception("")
         raise
-#------------------------------------------------------------------------------
-cron_username = Setting.get('common_cron_username')
-if not User.objects.filter(username=cron_username):
-    try:
-        logger.info('user "%s" does not exists. Creating...' % cron_username)
-        User.objects.create_user(username=cron_username, email='', password='cron')
-    except:
-        logger.exception("")
-        raise
