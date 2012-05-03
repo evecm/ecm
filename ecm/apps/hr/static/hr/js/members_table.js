@@ -7,11 +7,13 @@
  *      - COLOR_THRESHOLDS
  *      - AJAX_URL
  **/
+
+SHOW_SHIPS = 'all';
+
 $(document).ready(function() {
     var table = $('#members_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
         sCookiePrefix: COOKIE_NAME,
         sAjaxSource: AJAX_URL,
-        ships: '',
         aoColumns: [
             { /* Name */         sWidth: "15%",   sType: "html"    },
             { /* Nickname */     sWidth: "15%",   sType: "string"  },
@@ -48,21 +50,60 @@ $(document).ready(function() {
 
             return nRow;
         },
+        
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+        	if ($('#ships_selector button').length) {
+        		aoData.push( {
+        			name: 'show_ships',
+        			value: SHOW_SHIPS,
+        		} );
+        	}
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+        
+        fnStateSaveParams:function (oSettings, oData) {
+            oData.sFilter = $("#search_text").val();
+            if ($('#ships_selector button').length) {
+            	oData.show_ships = SHOW_SHIPS;
+            }
+        },
+        
+        fnStateLoadParams: function (oSettings, oData) {
+            $("#search_text").val(oData.sFilter);
+            if ('show_ships' in oData) {
+            	var buttons = $('#ships_selector button');
+            	SHOW_SHIPS = oData.show_ships;
+                for (var i = 0; i < buttons.length; i++) {
+                    if (buttons[i].id == SHOW_SHIPS) {
+                        $(buttons[i]).addClass('active');
+                    } else {
+                        $(buttons[i]).removeClass('active');
+                    }
+                }
+            }
+            return true;
+        },
+        
     }));
 
   /* trigger the search when pressing return in the text field */
-    $("#search_form").submit(function(event) {
+    $("#search_form").on('submit', function(event) {
         event.preventDefault();
         table.fnFilter($("#search_text").val());
     });
 
     /* trigger the search when clicking the "search" button */
-    $("#search_button").click(function() {
+    $("#search_button").on('click', function(event) {
+    	event.preventDefault();
         table.fnFilter($("#search_text").val());
     });
 
     /* reset the search when clicking the "reset" button */
-    $("#clear_search").click(function() {
+    $("#clear_search").on('click', function() {
+    	event.preventDefault();
         $("#search_text").val("");
         table.fnFilter("");
     });
@@ -74,6 +115,12 @@ $(document).ready(function() {
             event.shiftKey = false;
         }
     });
+    
+    $('#ships_selector button').on('click', function (event) {
+    	event.preventDefault();
+    	SHOW_SHIPS = this.id;
+		table.fnDraw();
+	});
 
 } );
 

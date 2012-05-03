@@ -46,7 +46,7 @@ member_table_columns = [
     "ship",
 ]
 
-def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True, ships=''):
+def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
 
     query = query.select_related(depth=2) # improve performance
 
@@ -80,7 +80,6 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True,
         titles = ["Titles"]
         titles.extend(member.titles.values_list("titleName", flat=True))
 
-        ship = member.ship or '(docked)'
         memb = [
             member.permalink,
             truncate_words(member.nickname, 5),
@@ -88,7 +87,7 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True,
             member.accessLvl,
             print_date(member.lastLogin),
             truncate_words(member.location, 5),
-            ship,
+            member.ship or '(docked)',
             "|".join(titles)
         ]
 

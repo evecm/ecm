@@ -42,23 +42,37 @@ def members(request):
     return render_to_response("members/member_list.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
+SUPER_CAPITALS = [
+    'Erebus', # <3
+    'Avatar', 
+    'Leviathan', # ugly
+    'Ragnarok',
+    'Nyx', # <3
+    'Aeon', # space taco
+    'Wyvern', # ugliest
+    'Hel', 
+]
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def members_data(request):
     try:
         params = extract_datatable_params(request)
+        ships = request.GET.get('show_ships', 'all')
     except KeyError:
         return HttpResponseBadRequest()
-    ships = request.GET.get('ships', '')
+    
+    query = Member.objects.filter(corped=True)
+    if ships == 'supers':
+        query = query.filter(ship__in=SUPER_CAPITALS)
+    
     total_members,\
     filtered_members,\
-    members = get_members(query=Member.objects.filter(corped=True),
+    members = get_members(query=query,
                           first_id=params.first_id,
                           last_id=params.last_id,
                           search_str=params.search,
                           sort_by=params.column,
-                          asc=params.asc,
-                          ships=ships)
+                          asc=params.asc)
 
     return datatable_ajax_data(members, params.sEcho, total_members, filtered_members)
 
