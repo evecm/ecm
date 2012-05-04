@@ -12,40 +12,21 @@
 {% endblock %}
 
 {% block main_content %}
-{% if user.is_superuser %}
-<h2>Set Public settings</h2>
-<div class="row">
-	<div class="span4">
-		<form class="well form-inline" action='/standings/' method="post">
-			{% csrf_token %}
-			<select name="standings_public">
-				<option value="none" {% if not standings_public %}selected="selected"{% endif %}>None</option>
-				<option value="alliance" {% if standings_public == 'alliance' %}selected="selected"{% endif %}>Alliance</option>
-				<option value="corporation"{% if standings_public == 'corporation' %}selected="selected"{% endif %}>Corp</option>
-				<option value="both"{% if standings_public == 'both' %}selected="selected"{% endif %}>Both</option>
-			</select>
-			<button type="submit" class="btn">Set Access</button>
-		</form>
-	</div>
-</div>
-{% endif %}
-<div class="row">
+<div class="row-fluid">
 	{% if standings_public == 'alliance' or standings_public == 'both' or user.is_superuser %}
-	<div class="span4">
+	<div class="span6">
+	    <h2>Alliance Standings</h2>
 		<table class="table table-bordered table-condensed">
 			<thead>
 				<tr>
-					<th colspan="2"><h3><b>Alliance Standings</b></h3></th>
-				</tr>
-				<tr>
-					<th>Entity</th><th><center>Standing</center></th>
+					<th>Entity</th><th class="center">Standing</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for contact in allaince_standings %}
-				<tr class="sr{{contact.standing}}">
+				<tr class="standing-row_{{contact.standing}}">
 					<td><a href="http://evewho.com/search/{{contact.contactName}}">{{contact.contactName}}</a></td>
-					<td class="s{{contact.standing}}"><center>{{contact.standing}}</center></td>
+					<td class="standing-cell_{{contact.standing}} center">{{contact.standing}}</td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -53,21 +34,19 @@
 	</div>
 	{% endif %}
 	{% if standings_public == 'corporation' or standings_public == 'both' or user.is_superuser %}
-	<div class="span4">
+	<div class="span6">
+	    <h2>Corporation Standings</h2>
 		<table class="table table-bordered table-condensed">
 			<thead>
 				<tr>
-					<th colspan="2"><h3><b>Corporation Standings</b></h3></th>
-				</tr>
-				<tr>
-					<th>Entity</th><th><center>Standing</center></th>
+					<th>Entity</th><th class="center">Standing</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for contact in corp_standings %}
-				<tr class="sr{{contact.standing}}">
+				<tr class="standing-row_{{contact.standing}}">
 					<td><a href="http://evewho.com/search/{{contact.contactName}}">{{contact.contactName}}</a></td>
-					<td class="s{{contact.standing}}"><center>{{contact.standing}}</center></td>
+					<td class="standing-cell_{{contact.standing}} center">{{contact.standing}}</td>
 				</tr>
 				{% endfor %}
 			</tbody>
@@ -75,8 +54,27 @@
 	</div>
 	{% endif %}
 </div>
+
 {% if standings_public == 'none' or standings_public == '\'none\''%}
 <h2>Standings are set to Private.</h2>
+{% endif %}
+
+{% if user.is_superuser %}
+<h2>Set Public settings</h2>
+<div class="row">
+    <div class="span4">
+        <form class="well form-inline" action='/standings/' method="post">
+            {% csrf_token %}
+            <select name="standings_public">
+                <option value="none" {% if not standings_public %}selected="selected"{% endif %}>None</option>
+                <option value="alliance" {% if standings_public == 'alliance' %}selected="selected"{% endif %}>Alliance</option>
+                <option value="corporation"{% if standings_public == 'corporation' %}selected="selected"{% endif %}>Corp</option>
+                <option value="both"{% if standings_public == 'both' %}selected="selected"{% endif %}>Both</option>
+            </select>
+            <button type="submit" class="btn">Set Access</button>
+        </form>
+    </div>
+</div>
 {% endif %}
 
 {% endblock %}

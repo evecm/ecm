@@ -1,45 +1,35 @@
-.s10{
-	background-color: navy;
-}
-.sr10{
+.standing-cell_10 { 
+	background-color: #0044cf;
 	color: white;
+	font-weight: bold;
 }
-.sr10:hover{
-	color:	black;
+.standing-row_10:hover td.standing-cell_10 {
+	background-color: #0038ab;
 }
-.s5{
-	background-color: blue;
-}
-.sr5{
+
+.standing-cell_5 { 
+	background-color: #5293ff;
 	color: white;
+	font-weight: bold;
 }
-.sr5:hover{
-	color:	black;
+.standing-row_5:hover td.standing-cell_5 { 
+	background-color: #3e82f1; 
 }
-.s0{
-	background-color: grey;
+
+.standing-cell_-5 {
+	background-color: #ffd800;
+	color: black;
+    font-weight: bold;
 }
-.sr0{
+.standing-row_-5:hover td.standing-cell_-5 {
+	background-color: #f4c900;
+}
+
+.standing-cell_-10 {
+	background-color: #dc0000;
 	color: white;
+    font-weight: bold;
 }
-.sr0:hover{
-	color:	black;
-}
-.s-5{
-	background-color: orange;
-}
-.sr-5{
-	color: white;
-}
-.sr-5:hover{
-	color:	black;
-}
-.s-10{
-	background-color: red;
-}
-.sr-10{
-	color: white;
-}
-.sr-10:hover{
-	color:	black;
+.standing-row_-10:hover td.standing-cell_-10 {
+	background-color: #cb0101;
 }
