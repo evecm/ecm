@@ -8,13 +8,13 @@
 
 {% block main_content %}
 <div class="row-fluid">
-	<div class="span9">
+	<div class="span8">
 		<div class="page-header">
 		  <h1>Message Of The Day</h1>
 		</div>
 		{{motd.render_html|safe}}
 		{% if can_edit_motd %}
-		<br><a class="btn btn-mini" href="/editmotd/">Edit</a>
+		<br><br><a class="btn btn-mini" href="/editmotd/">Edit</a>
 		{% endif %}
 		<hr>
 		
@@ -26,7 +26,7 @@
 	        <dt>Description</dt><dd>{{ corp.description|safe }}</dd>
         </dl>
 	</div>
-	<div class="span3">
+	<div class="span4">
 	  <img src="http://image.eveonline.com/Corporation/{{ corp.corporationID }}_128.png"></img><br>
 	  <em>{{ corp.corporationName }} [{{ corp.ticker }}]</em><br>
 	  {% if corp.allianceID %}
