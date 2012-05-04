@@ -204,7 +204,7 @@ class Job(models.Model):
 
     def assignee_permalink(self):
         if self.assignee is not None:
-            url = '/hr/player/%d/' % self.assignee.id
+            url = '/hr/players/%d/' % self.assignee.id
             return '<a href="%s" class="player">%s</a>' % (url, self.assignee.username)
         else:
             return '(none)'

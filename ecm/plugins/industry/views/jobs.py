@@ -110,7 +110,7 @@ def jobs_list_data(request):
                                                                            job.activity_text.lower(),
                                                                            job.activity_text)
         data.append([
-            job.permalink(),
+            'Job #%d' % job.id,
             job.state,
             job.id,
             job.order.permalink(shop=False),
