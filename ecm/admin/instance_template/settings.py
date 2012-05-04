@@ -72,12 +72,18 @@ def get_db_config(prefix):
         folder = config.get('database', 'sqlite_db_dir') or rel_path('db/')
         return {'ENGINE': engine, 'NAME': os.path.join(folder, prefix + '.sqlite')}
     else:
-        return {
+        db_config = {
             'ENGINE': config.get('database', prefix + '_engine'),
             'NAME': config.get('database', prefix + '_name'),
             'USER': config.get('database', prefix + '_user'),
             'PASSWORD': config.get('database', prefix + '_password'),
         }
+        if config.has_option('database', prefix + '_host') and config.get('database', prefix + '_host'):
+            db_config['HOST'] = config.get('database', prefix + '_host')
+        if config.has_option('database', prefix + '_port') and config.get('database', prefix + '_port'):
+            db_config['PORT'] = config.get('database', prefix + '_port')
+        
+        return db_config 
 
 DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
     'default': get_db_config('ecm'),

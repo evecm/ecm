@@ -52,6 +52,8 @@ def sub_command():
     db_group = OptionGroup(create_cmd.parser, 'Database options')
     db_group.add_option('--db-engine', dest='db_engine',
                         help='DB engine %s' % DB_ENGINES.keys())
+    db_group.add_option('--db-host', dest='db_host',
+                        help='Database host')
     db_group.add_option('--db-name', dest='db_name',
                         help='Database name')
     db_group.add_option('--db-user', dest='db_user',
@@ -118,6 +120,8 @@ def prompt_missing_options(options):
         options.db_engine = prompt('Database engine?', default_value='sqlite', valid_list=DB_ENGINES.keys())
         options.db_engine = DB_ENGINES.get(options.db_engine, options.db_engine)
     if options.db_engine != DB_ENGINES['sqlite']:
+        if not options.db_host:
+            options.db_host = prompt('Database host?', default_value='localhost')
         if not options.db_name:
             options.db_name = prompt('Database name?', default_value='ecm')
         if not options.db_user:
@@ -151,6 +155,7 @@ def write_settings(command, options, instance_dir):
     config.set('misc', 'external_host_name', str(options.host_name))
     config.set('database', 'ecm_engine', str(options.db_engine))
     if options.db_name:
+        config.set('database', 'ecm_host', str(options.db_host))
         config.set('database', 'ecm_name', str(options.db_name))
         config.set('database', 'ecm_user', str(options.db_user))
         config.set('database', 'ecm_password', str(options.db_pass))
