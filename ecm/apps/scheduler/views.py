@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
-from ecm.apps.common.models import Setting
 
 
 __date__ = "2011 10 26"
@@ -24,13 +22,15 @@ __author__ = "diabeteman"
 import time
 import httplib as http
 import logging
-import multiprocessing
 
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template.context import RequestContext as Ctx
 from django.http import HttpResponse, HttpResponseBadRequest, Http404
+from django.utils import timezone
 
 from ecm import apps, plugins
+from ecm.apps.scheduler import process
+from ecm.apps.common.models import Setting
 from ecm.utils.format import print_time_min
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access, basic_auth_required
@@ -51,13 +51,7 @@ def trigger_scheduler(request):
         tasks_list = list(tasks_to_execute)
         tasks_to_execute.update(is_scheduled=True)
         
-        def _run(tasks):
-            for task in tasks:
-                task.run()
-        
-        proc = multiprocessing.Process(target=_run, args=[tasks_list])
-        proc.daemon = True
-        proc.start()
+        process.run_async(*tasks_list)
         
         return HttpResponse(status=http.ACCEPTED)
     else:
@@ -120,9 +114,8 @@ def launch_task(request, task_id):
         message = ''
         task.is_scheduled = True
         task.save()
-        proc = multiprocessing.Process(target=task.run)
-        proc.daemon = True
-        proc.start()
+        
+        process.run_async(task)
 
     if message:
         LOG.warning(message)

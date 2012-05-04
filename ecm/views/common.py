@@ -16,19 +16,19 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-import multiprocessing
 
 __date__ = '2010-05-16'
 __author__ = 'diabeteman'
 
 import re
 
+from django import forms
 from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.template.context import RequestContext as Ctx
-from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from ecm.apps.scheduler import process
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.common.models import Setting, Motd
 from ecm.apps.eve.validators import validate_director_api_key
@@ -96,13 +96,7 @@ def edit_apikey(request):
             tasks_to_execute = ScheduledTask.objects.filter(is_active=True).order_by("-priority")
             tasks_to_execute.update(is_scheduled=True)
             
-            def _run(tasks):
-                for task in tasks:
-                    task.run()
-            
-            proc = multiprocessing.Process(target=_run, args=[tasks_to_execute])
-            proc.daemon = True
-            proc.start()
+            process.run_async(*tasks_to_execute)
             
             return redirect('/scheduler/tasks/')
     else:
