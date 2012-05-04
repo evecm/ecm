@@ -16,6 +16,12 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
+if sys.version_info < (2, 5) or sys.version_info > (3,):
+    sys.stderr.write('ERROR: ecm requires Python versions between >= 2.5 and < 3.0')
+    sys.exit(1)
+
 from setuptools import setup, find_packages
 from distutils.command.install import INSTALL_SCHEMES
 
@@ -34,6 +40,9 @@ dependencies = [
     'pytz',
     'PIL',
 ]
+
+if sys.version_info < (2, 6):
+    dependencies.append('multiprocessing')
 
 setup(
     # GENERAL INFO
