@@ -408,12 +408,7 @@ class Order(models.Model):
         return Order.STATES[self.state]
 
     def __unicode__(self):
-        return u'Order #%d from %s [%s]' % (self.id, str(self.originator), Order.STATES[self.state])
-
-    def __repr__(self):
-        return unicode(self) + '\n  ' + '\n  '.join(map(unicode, list(self.rows.all())))
-
-
+        return unicode(self.id)
 
 
 #------------------------------------------------------------------------------
@@ -444,7 +439,7 @@ class OrderLog(models.Model):
             return str(self.state)
 
     def __unicode__(self):
-        return u'%s: [%s] (%s) %s' % (self.date, self.state_text, self.user, self.text)
+        return u'%s [%s]' % (self.date, self.state_text())
 
 
 #------------------------------------------------------------------------------
@@ -508,7 +503,7 @@ class OrderRow(models.Model):
         return cost, missing_prices
 
     def __unicode__(self):
-        return '%s x%d : %f' % (self.catalog_entry.typeName, self.quantity, self.cost)
+        return '%s x%d' % (self.catalog_entry.typeName, self.quantity)
 
 
 
