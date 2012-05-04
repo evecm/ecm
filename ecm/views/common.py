@@ -36,7 +36,6 @@ from ecm.apps.eve import api
 from ecm.apps.hr.models import Member
 from ecm.apps.corp.models import Corp
 from ecm.views.decorators import check_user_access
-from ecm.apps.common.models import UrlPermission
 
 #------------------------------------------------------------------------------
 SHOWINFO_PATTERN = re.compile(r'showinfo:13\d\d//(\d+)')
@@ -56,19 +55,8 @@ def corp(request):
         corp.memberCount = Member.objects.filter(corped=True).count()
     except Corp.DoesNotExist:
         corp = Corp(corporationName='No Corporation info')
-    #{{motd|safe}} to escape html markup
-    button = UrlPermission.user_has_access(request.user, '/editmotd/')
-    try:
-        motd = Motd.objects.latest()
-    except Motd.DoesNotExist:
-        motd = None
-    data = { 
-            'corp'    : corp, 
-            'motd'    : motd,
-            'button'  : button,
-    }
-
-    return render_to_response('common/corp.html', data, Ctx(request))
+    
+    return render_to_response('common/corp.html', {'corp': corp}, Ctx(request))
 
 
 #------------------------------------------------------------------------------

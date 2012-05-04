@@ -1,29 +1,27 @@
-{%if menus%}<div class="span2" id="main-menu">
-  <div class="sidebar-nav well">
-    <ul class="nav nav-list">
-    {% for menu in menus %}
-      <li class="step-1 {%if menu.url in path%}child-active{%if menu.url == path%} active{%endif%}{%endif%} {% if menu.items %}has-child{%endif%}">
-        <a href="{{menu.url}}">{{menu.title}}</a>
-        {% if menu.items %}
-        <ul class="nav nav-list">
-          {% for item in menu.items %}
-          <li class="step-2 {%if item.url in path%}child-active{%if item.url == path%} active{%endif%}{%endif%} {% if item.items %}has-child{%endif%}">
-            <a href="{{item.url}}">{{item.title}}</a>
-            {% if item.items %}
-            <ul class="nav nav-list">
-              {% for subitem in item.items %}
-              <li class="step-3 {% if subitem.url == path %}active{% endif %}">
-                <a href="{{subitem.url}}">{{subitem.title}}</a>
-              </li>
-              {% endfor %}
-            </ul>
-            {% endif %}
-          </li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-      </li>
-    {% endfor %}
-    </ul>
-  </div>
-</div>{%endif%}
+{% if menus %}<div class="sidebar-nav well">
+  <ul class="nav nav-list">
+  {% for menu in menus %}
+    <li class="step-1 {%if menu.url in path%}child-active{%if menu.url == path%} active{%endif%}{%endif%} {% if menu.items %}has-child{%endif%}">
+      <a href="{{menu.url}}">{{menu.title}}</a>
+      {% if menu.items %}
+      <ul class="nav nav-list">
+        {% for item in menu.items %}
+        <li class="step-2 {%if item.url in path%}child-active{%if item.url == path%} active{%endif%}{%endif%} {% if item.items %}has-child{%endif%}">
+          <a href="{{item.url}}">{{item.title}}</a>
+          {% if item.items %}
+          <ul class="nav nav-list">
+            {% for subitem in item.items %}
+            <li class="step-3 {% if subitem.url == path %}active{% endif %}">
+              <a href="{{subitem.url}}">{{subitem.title}}</a>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+</div>{% endif %}

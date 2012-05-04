@@ -7,14 +7,16 @@
 <li>Edit MOTD</li>
 {% endblock %}
 
-
 {% block main_content %}
+<div class="page-header">
+    <h1>Edit the <em>Message Of The Day</em></h1>
+</div>
+
 <form class="well form-horizontal" target="/editapi/" method="post">
 	{% csrf_token %}
-	<label><h2>Edit MOTD</h2></label>
-	<label>MOTD Text</label>
-	<textarea rows="10" class="span5" name="message">{{motd.message}}</textarea>
 	
+	<label>MOTD Text</label>
+	<textarea rows="10" class="span5 code" name="message">{{motd.message}}</textarea>
 	<br>
 	<label>Select Markup</label>
 	<select name="markup">
@@ -22,7 +24,7 @@
 		<option value="{{markup_id}}" {% if motd.markup = markup_id %}selected="selected"{% endif %}>{{markup}}</option>
 		{% endfor %}
 	</select>
-	<button type="submit" class="btn">Save Changes</button>
+	<button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
 
 {% endblock %}

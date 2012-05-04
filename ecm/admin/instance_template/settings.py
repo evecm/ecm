@@ -171,6 +171,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'ecm.views.context_processors.corporation_name',
     'ecm.views.context_processors.menu',
     'ecm.views.context_processors.version',
+    'ecm.views.context_processors.motd',
 )
 
 ########

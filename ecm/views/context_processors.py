@@ -21,7 +21,7 @@ __author__ = 'diabeteman'
 from django.template.loader import render_to_string
 
 import ecm
-from ecm.apps.common.models import UrlPermission
+from ecm.apps.common.models import UrlPermission, Motd
 from ecm.menu import ECM_MENUS
 from ecm.apps.corp.models import Corp
 
@@ -59,3 +59,15 @@ def menu(request):
         'path': str(request.get_full_path())
     }
     return {'user_menu': render_to_string('menu.html', data), 'request_path': data['path']}
+
+#------------------------------------------------------------------------------
+def motd(request):
+    
+    try:
+        motd = Motd.objects.latest()
+    except Motd.DoesNotExist:
+        motd = None
+    can_edit = request.user.is_superuser or UrlPermission.user_has_access(request.user, '/editmotd/')
+        
+    #{{motd|safe}} to escape html markup
+    return {'motd': motd, 'can_edit_motd': can_edit}

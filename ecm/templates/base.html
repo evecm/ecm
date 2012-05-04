@@ -23,6 +23,7 @@
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/dataTables.bootstrap.css" />
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.cluetip.css" />
   <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/bootstrap-ecm.css" />
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/classes.css" />
 {% block stylesheets %}{% endblock %}
 {% endcompress %}
   <link rel="icon" type="image/ico" href="{{ STATIC_URL }}ecm/img/favicon.ico" />
@@ -69,8 +70,24 @@
   <div class="container-fluid">
     <div class="row-fluid">
       <!-- MENU -->
-      {{ user_menu|safe }}
-      <div class="{%if user_menu%}span10{%else%}span12{%endif%}">
+      {% if user_menu %}
+      <div class="span2" id="main-menu">
+	      {{ user_menu|safe }}
+          {% if motd %}
+          <h4>Message Of The Day</h4>
+          <div id="ecm-motd">
+          {{motd.render_html|safe|truncatewords:5}}
+          <a href="/">read more</a>
+          </div>
+          {% endif %}
+          {% if can_edit_motd %}
+          <a class="btn btn-mini" href="/editmotd/">Edit MOTD</a>
+          {% endif %}
+      </div>
+      <div class="span10">
+      {% else %} <!-- NO MENU -->
+      <div class="span12">
+      {% endif %}
         {% block breadcrumbs_wrapper %}<ul class="breadcrumb">{% block breadcrumbs %}{% endblock %}</ul>{% endblock %}
       <!-- PAGE CONTENT -->
         {% block main_content %}
