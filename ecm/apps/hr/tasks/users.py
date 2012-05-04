@@ -21,10 +21,7 @@ __author__ = "diabeteman"
 import logging
 
 from django.db import transaction
-
 from django.contrib.auth.models import User, Group
-from django.conf import settings
-from django.db.models import Max
 
 from ecm.apps.eve import api
 from ecm.lib import eveapi
@@ -105,10 +102,6 @@ def update_all_users_accesses():
                                  "Skipping user access update.")
     except ScheduledTask.DoesNotExist:
         pass
-    #refernce: http://stackoverflow.com/questions/5342440/reset-auto-increment-counter-in-postgres
-    if 'postgresql' in settings.DATABASES['default']['ENGINE']:
-        maxid = Group.objects.all().aggregate(Max('id'))['id__max'] + 1
-        Group.objects.raw('ALTER SEQUENCE auth_group_id_seq RESTART WITH %s;', (maxid))
         
     corp_members_group = get_members_group()
     directors_group = get_directors_group()

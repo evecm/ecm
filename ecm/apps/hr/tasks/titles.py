@@ -18,10 +18,12 @@
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
-
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
+from django import db
 from django.db import transaction
+from django.db.models import Max
 
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.hr.models import TitleComposition, Title, Role, TitleCompoDiff, RoleType
@@ -124,6 +126,18 @@ def parseOneTitle(titleApi):
         # the group doesn't exist yet, we create it
         logger.info('Group "%s" does not exist. Creating...' % name)
         Group.objects.create(id=titleID, name=name)
+        
+        # Bugfix for postgres. 
+        # When inserting entries in a table which has a auto-incrementing serial,
+        # if the id is forced manually, the serial is not automatically updated by the db
+        # This leads to bug somewhere else in the application so we force the serial
+        # to max_id + 1 here.
+        if 'postgresql' in settings.DATABASES['default']['ENGINE']:
+            maxid = Group.objects.all().aggregate(Max('id'))['id__max']
+            
+            cursor = db.connection.cursor()
+            # reference: http://stackoverflow.com/questions/5342440/reset-auto-increment-counter-in-postgres
+            cursor.execute('ALTER SEQUENCE auth_group_id_seq RESTART WITH %s;', [maxid + 1])
 
     for roleType in RoleType.objects.all():
         # for each role category, we extend the role composition list for the current title
