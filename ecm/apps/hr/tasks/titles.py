@@ -102,6 +102,9 @@ def parseOneTitle(titleApi):
     titleID   = titleApi["titleID"]
     name = titleApi["titleName"]
 
+    if name.strip() == '':
+        name = 'Title #%d' % titleID
+
     try:
         # retrieval of the title from the database
         title = Title.objects.get(titleID=titleID)
