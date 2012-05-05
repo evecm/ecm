@@ -18,8 +18,8 @@
 
 import sys
 
-if sys.version_info < (2, 5) or sys.version_info > (3,):
-    sys.stderr.write('ERROR: ecm requires Python versions between >= 2.5 and < 3.0')
+if sys.version_info < (2, 5) or sys.version_info >= (3,):
+    sys.stderr.write('ERROR: ecm requires Python versions >= 2.5 and < 3.0\n')
     sys.exit(1)
 
 from setuptools import setup, find_packages
@@ -65,6 +65,8 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.5',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
         'Topic :: Games/Entertainment',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ),
