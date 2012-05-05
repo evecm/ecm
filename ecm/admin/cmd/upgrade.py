@@ -126,7 +126,7 @@ def upgrade_instance_files(instance_dir, config):
     template_dir = path.abspath(path.dirname(instance_template.__file__))
     shutil.copy(path.join(template_dir, 'settings.py'), instance_dir)
     shutil.copy(path.join(template_dir, 'manage.py'), instance_dir)
-    dir_util.copy_tree(path.join(template_dir, 'apache'), path.join(instance_dir, 'apache'))
+    dir_util.copy_tree(path.join(template_dir, 'wsgi'), path.join(instance_dir, 'wsgi'))
     dir_util.copy_tree(path.join(template_dir, 'examples'), path.join(instance_dir, 'examples'))
     if hasattr(os, 'chmod'):
         os.chmod(path.join(instance_dir, 'manage.py'), 00755)
