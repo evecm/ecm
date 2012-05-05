@@ -18,4 +18,4 @@
 __author__ = 'diabeteman'
 __date__ = '2011-05-17'
 
-VERSION = '2.0.5.1'
+VERSION = '2.1.0.dev'
