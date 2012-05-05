@@ -19,7 +19,7 @@
         Options -Indexes
     </Directory>
     
-    WSGIScriptAlias / "%(instance_dir)s/apache/apache_mod_wsgi.py"
+    WSGIScriptAlias / "%(instance_dir)s/wsgi/ecm.wsgi"
 
     <Directory "%(instance_dir)s/apache">
         Order deny,allow
