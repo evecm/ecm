@@ -75,10 +75,8 @@
 	      {{ user_menu|safe }}
           {% if motd %}
           <h4>Message Of The Day</h4>
-          <div id="ecm-motd">
-          {{motd.render_html|safe|truncatewords:5}}
-          <a href="/">read more</a>
-          </div>
+          <p>{{motd.render_html|safe|truncatewords:5}}<a href="/">read more</a></p>
+          <span class="pull-right faded"><em>&mdash;{{motd.date|ecm_date}} by <strong>{{motd.user}}</strong></em></span>
           {% endif %}
       </div>
       <div class="span10">

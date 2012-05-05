@@ -12,9 +12,12 @@
 		<div class="page-header">
 		  <h1>Message Of The Day</h1>
 		</div>
-		{{motd.render_html|safe}}
+		
+		<p>{{motd.render_html|safe}}</p>
+        <p class="pull-right faded"><em>&mdash;{{motd.date|ecm_datetime}} by <strong>{{motd.user}}</strong></em></p>
+		
 		{% if can_edit_motd %}
-		<br><br><a class="btn btn-mini" href="/editmotd/">Edit</a>
+		<br><br><a class="pull-right btn btn-mini" href="/editmotd/">Edit</a><br>
 		{% endif %}
 		<hr>
 		

@@ -366,19 +366,19 @@ class Motd(models.Model):
     MARKUPS = {0: 'Plain Text'}
     MARKUP_FUNCTIONS = {0: unicode}
     try:
-        from docutils.core import publish_parts
+        from docutils.core import publish_parts #@UnusedImport
         MARKUPS[1] = 'reStructured Text'
         MARKUP_FUNCTIONS[1] = markup.restructuredtext
     except ImportError:
         pass
     try:
-        import markdown
+        import markdown #@UnusedImport
         MARKUPS[2] = 'Markdown'
         MARKUP_FUNCTIONS[2] = markup.markdown
     except ImportError:
         pass
     try:
-        import textile
+        import textile #@UnusedImport
         MARKUPS[3] = 'Textile'
         MARKUP_FUNCTIONS[3] = markup.textile
     except ImportError:
@@ -393,6 +393,7 @@ class Motd(models.Model):
     message = models.TextField(default='MOTD Text')
     date = models.DateTimeField(auto_now_add=True)
     markup = models.SmallIntegerField(default=0, choices=MARKUPS.items())
+    user = models.ForeignKey(User, default=1)
     
     def __unicode__(self):
         return self.message[:50]

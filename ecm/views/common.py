@@ -68,16 +68,14 @@ def edit_motd(request):
         motd = None
     if request.user.is_superuser:
         if request.method == 'POST':
-            motd = Motd(
-                        message = request.POST['message'],
-                        markup  = request.POST['markup'],
-            )
-            motd.save()
+            Motd.objects.create(message=request.POST['message'],
+                                markup=int(request.POST['markup']),
+                                user=request.user)
             return redirect('/')
             
     data = {
-            'motd'    : motd,
-            'markups' : Motd.MARKUPS,
+        'motd'    : motd,
+        'markups' : Motd.MARKUPS,
     }
     return render_to_response('common/edit_motd.html', data, Ctx(request))
 
