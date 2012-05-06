@@ -22,7 +22,7 @@ from django.conf.urls.defaults import patterns, include
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-from ecm.views.auth.forms import PasswordChangeForm, PasswordResetForm, PasswordSetForm
+from ecm.views.account.forms import PasswordChangeForm, PasswordResetForm, PasswordSetForm
 
 admin.autodiscover()
 
@@ -59,19 +59,18 @@ urlpatterns += patterns('django.contrib.auth.views',
                                              'set_password_form' : PasswordSetForm}),
     (r'^account/passwordreset/complete/$','password_reset_complete',
                                             {'template_name' : 'auth/password_reset_complete.html'}),
-
 )
 
-urlpatterns += patterns('ecm.views.auth',
+urlpatterns += patterns('ecm.views.account',
     ###########################################################################
     # ECM AUTH + USER PROFILE VIEWS
-    (r'^account/$',                       'account.account'),
-    (r'^account/addapi/$',                'account.add_api'),
-    (r'^account/deleteapi/(\d+)/$',       'account.delete_api'),
-    (r'^account/deletecharacter/(\d+)/$', 'account.delete_character'),
-    (r'^account/editapi/(\d+)/$',         'account.edit_api'),
-    (r'^account/binding/add/(\d+)/$',     'account.add_binding'),
-    (r'^account/binding/delete/(\d+)/$',  'account.delete_binding'),
+    (r'^account/$',                       'home.account'),
+    (r'^account/addapi/$',                'home.add_api'),
+    (r'^account/deleteapi/(\d+)/$',       'home.delete_api'),
+    (r'^account/deletecharacter/(\d+)/$', 'home.delete_character'),
+    (r'^account/editapi/(\d+)/$',         'home.edit_api'),
+    (r'^account/binding/add/(\d+)/$',     'home.add_binding'),
+    (r'^account/binding/delete/(\d+)/$',  'home.delete_binding'),
 
     (r'^account/create/$',                'signup.create_account'),
     (r'^account/activate/(\w+)/$',        'signup.activate_account'),
