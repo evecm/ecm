@@ -17,9 +17,15 @@
 
 
 NAME = 'corp'
+
 MENUS = [ 
-         {'title': 'Standings',    'url': '/standings/',      'items': []},
-         ]
+    {'title': 'Standings',    'url': '/standings/',      'items': []},
+]
+
+URL_PERMISSIONS = [
+    r'^/standings/$',
+]
+
 TASKS = [
     {
         'function' : 'ecm.apps.corp.tasks.corp.update',
