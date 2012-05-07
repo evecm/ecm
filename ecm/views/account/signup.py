@@ -30,7 +30,7 @@ from django.core.mail.message import EmailMultiAlternatives
 from ecm.apps.hr.tasks.users import update_user_accesses
 from ecm.apps.common.models import UserAPIKey, RegistrationProfile
 from ecm.apps.hr.models import Member
-from ecm.views.auth.forms import AccountCreationForm
+from ecm.views.account.forms import AccountCreationForm
 from ecm.apps.eve.validators import user_access_mask
 
 logger = logging.getLogger(__name__)

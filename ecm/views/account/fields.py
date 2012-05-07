@@ -14,13 +14,14 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.conf import settings
 
 __date__ = "2011 4 6"
 __author__ = "diabeteman"
 
 
 import string
+
+from django.conf import settings
 from django import forms
 from django.core.exceptions import ValidationError
 
