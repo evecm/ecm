@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.utils.format import print_float
 
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
@@ -28,7 +29,7 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
-from ecm.plugins.accounting.views import wallet_journal_permalink
+from ecm.plugins.accounting.views import wallet_journal_permalink, WALLET_LINK
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.corp.models import Wallet
 from ecm.views.decorators import check_user_access
@@ -74,16 +75,22 @@ def wallets_data(request):
         sort_key = lambda e: e[1]
 
     entries.sort(key=sort_key, reverse=not params.asc)
-
+    total_balance = 0
     for wallet in entries:
+        total_balance += wallet[1]
         wallet[1] = wallet_journal_permalink(wallet[0], wallet[1])
         wallet[0] = wallet[0].name
+        
+    # Append total amount
+    value = WALLET_LINK % ("/accounting/journal/",
+                          "Click to access this wallet's journal", print_float(total_balance))
+    entries.append(['<b>Total</b>', "<b>%s</b>" % value])
 
     json_data = {
         "sEcho" : params.sEcho,
         "iTotalRecords" : total_entries,
         "iTotalDisplayRecords" : filtered_entries,
-        "aaData" : entries
+        "aaData" : entries,
     }
 
     return HttpResponse(json.dumps(json_data))
