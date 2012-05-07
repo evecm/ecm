@@ -55,7 +55,7 @@
   </tbody>
   <tfoot>
     <tr>{% for name, width, sortable, css, type in columns %}
-      <th>{{name}}</th>
+      <th id="footer-{{name|slugify}}">{{name}}</th>
     {% endfor %}</tr>
   </tfoot>
 
@@ -92,6 +92,25 @@ $(document).ready(function() {
                 fnCallback(json)
             } );
         },
+	fnFooterCallback: function( nFoot, aData, iStart, iEnd, aiDisplay ) {
+	    var iPageTotal = 0;
+	    for ( var i=0 ; i<aData.length ; i++ )
+            {
+		var tmp = aData[ i ][4]
+		var formatted = tmp.replace(/,/g, "").replace(/\./g, ".")
+                iPageTotal += parseFloat(formatted);
+            }
+	    iPageTotal += '';
+	    x = iPageTotal.split('.');
+	    x1 = x[0];
+	    x2 = x.length > 1 ? '.' + x[1] : '';
+	    var rgx = /(\d+)(\d{3})/;
+	    while (rgx.test(x1)) {
+		x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	    }
+	    result = x1 + x2;
+   	    nFoot.getElementsByTagName('th')[4].innerHTML = "Total: " + result + " ISK";
+    	}
     }));
 
   /* trigger the search when pressing return in the text field */

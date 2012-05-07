@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+import json
 
 __date__ = '2012 04 06'
 __author__ = 'tash'
@@ -21,7 +22,7 @@ __author__ = 'tash'
 import logging
 
 from django.db.models import Q
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
@@ -31,7 +32,7 @@ from ecm.apps.common.models import UpdateDate
 from ecm.plugins.accounting.models import MarketOrder
 from ecm.utils.format import print_float, print_integer
 from ecm.views.decorators import check_user_access
-from ecm.views import extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params
 
 LOG = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ COLUMNS = [
     ['Char',        '2%',   'true',     '',         'html' ],
     ['Item',        '5%',   'true',     '',         'string' ],
     ['Price',       '1%',   'true',     'right',    'html'],
+    ['Total',       '3%',   'true',     'right',    'html'],
     ['Duration',    '1%',   'false',    'right',    'numeric'],
     ['Station',     '5%',   'false',    '',         'string' ],
     ['Vol. Ent.',   '1%',   'false',    'right',    'numeric'],
@@ -137,7 +139,7 @@ def marketorders_data(request):
     
     query = query[params.first_id:params.last_id]
     entries = []
-
+    page_total = 0 # The total sell order sum for the current page (params.first_id:params.last_id)
     for entry in query:
         # Get the Type Name from Type
         eve_type = Type.objects.get(typeID=entry.typeID)
@@ -152,7 +154,9 @@ def marketorders_data(request):
             station = CelestialObject.objects.get(itemID=entry.stationID).itemName
         except CelestialObject.DoesNotExist:
             station = str(entry.stationID)
-
+        
+        page_total += entry.price * entry.volRemaining
+        
         # Build the entry list
         entries.append([
             entry.get_type,
@@ -160,6 +164,7 @@ def marketorders_data(request):
             owner,
             eve_type.typeName,
             print_float(entry.price),
+            print_float(entry.price * entry.volRemaining),
             '%d days' % entry.duration,
             station,
             print_integer(entry.volEntered),
@@ -168,7 +173,16 @@ def marketorders_data(request):
             entry.state_html,
             entry.map_range
         ])
-    return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
+    
+    #return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
+    json_data = {
+        'sEcho' : params.sEcho,
+        'iTotalRecords' : total_entries,
+        'iTotalDisplayRecords' : filtered_entries,
+        'aaData' : entries,
+    }
+    JSON = 'text/json'
+    return HttpResponse(json.dumps(json_data), mimetype=JSON)
 
 #------------------------------------------------------------------------------
 def _get_types(typeName):
