@@ -16,7 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-from ecm.utils import tools
+from ecm.lib import eveapi
 
 __date__ = "2010-03-23"
 __author__ = "diabeteman"
@@ -30,10 +30,11 @@ from ecm.apps.eve import api
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants as cst
 from ecm.plugins.assets.models import Asset, AssetDiff
+from ecm.utils import tools
 
 LOG = logging.getLogger(__name__)
-IGNORE_CAN_VOLUMES = True
 
+IGNORE_CONTAINERS_VOLUMES = True
 
 #------------------------------------------------------------------------------
 def update():
@@ -42,7 +43,7 @@ def update():
 
     If there's an error, nothing is written in the database
     """
-    global IGNORE_CAN_VOLUMES
+    global IGNORE_CONTAINERS_VOLUMES
 
     LOG.info("fetching /corp/AssetList.xml.aspx...")
     api_conn = api.connect()
@@ -62,7 +63,7 @@ def update():
     new_items = {}
     LOG.debug("%d assets fetched", len(old_items.keys()))
 
-    IGNORE_CAN_VOLUMES = Setting.get('assets_ignore_containers_volumes')
+    IGNORE_CONTAINERS_VOLUMES = Setting.get('assets_ignore_containers_volumes')
 
     # we store the itemIDs of all the assets we want to locate
     # then query /corp/Locations.xml with the list
@@ -338,7 +339,7 @@ def fill_contents(container, item, items_dic, flag=None):
 def make_asset_from_row(row):
     item = Type.objects.get(pk=row.typeID)
 
-    if IGNORE_CAN_VOLUMES and item.category == cst.CELESTIAL_CATEGORYID:
+    if IGNORE_CONTAINERS_VOLUMES and item.category == cst.CELESTIAL_CATEGORYID:
         volume = 0.0
     else:
         volume = item.volume * row.quantity
@@ -386,9 +387,14 @@ def update_assets_locations(assets_to_locate):
     for sub_list in tools.sublists(assets_to_locate, sub_length=50): # max 50 items per request
         LOG.debug('fetching /corp/Locations.xml.aspx...')
         ids = ','.join(map(str, sub_list))
-        locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
-        for loc in locations_api.locations:
-            located_assets.append( (loc.itemID, loc.itemName, loc.x, loc.y, loc.z) )
+        try:
+            locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
+            for loc in locations_api.locations:
+                located_assets.append( (loc.itemID, loc.itemName, loc.x, loc.y, loc.z) )
+        except eveapi.Error, err:
+            # error can happen if a ship/asset found in a SMA/CHA does not belong to the corp
+            LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).', 
+                        err.code, str(err), sub_list)
 
     LOG.debug('Computing positions...')
     for itemID, itemName, X, Y, Z in located_assets:
@@ -430,9 +436,14 @@ def update_assets_names():
     for sub_list in tools.sublists(assets_to_name, sub_length=50): # max 50 items per request
         LOG.debug('fetching /corp/Locations.xml.aspx...')
         ids = ','.join(map(str, sub_list))
-        locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
-        for loc in locations_api.locations:
-            named_assets.append( (loc.itemID, loc.itemName) )
+        try:
+            locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
+            for loc in locations_api.locations:
+                named_assets.append( (loc.itemID, loc.itemName) )
+        except eveapi.Error, err:
+            # error can happen if a ship/asset found in a SMA/CHA does not belong to the corp
+            LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).', 
+                        err.code, str(err), sub_list)
 
     LOG.debug('Writing to DB...')
     for itemID, itemName in named_assets:
