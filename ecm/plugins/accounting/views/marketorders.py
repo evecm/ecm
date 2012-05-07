@@ -14,15 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-import json
-
 __date__ = '2012 04 06'
 __author__ = 'tash'
 
 import logging
 
 from django.db.models import Q
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
@@ -32,7 +30,7 @@ from ecm.apps.common.models import UpdateDate
 from ecm.plugins.accounting.models import MarketOrder
 from ecm.utils.format import print_float, print_integer
 from ecm.views.decorators import check_user_access
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, datatable_ajax_data
 
 LOG = logging.getLogger(__name__)
 
@@ -174,15 +172,7 @@ def marketorders_data(request):
             entry.map_range
         ])
     
-    #return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
-    json_data = {
-        'sEcho' : params.sEcho,
-        'iTotalRecords' : total_entries,
-        'iTotalDisplayRecords' : filtered_entries,
-        'aaData' : entries,
-    }
-    JSON = 'text/json'
-    return HttpResponse(json.dumps(json_data), mimetype=JSON)
+    return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
 
 #------------------------------------------------------------------------------
 def _get_types(typeName):
