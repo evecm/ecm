@@ -41,9 +41,6 @@ dependencies = [
     'PIL',
 ]
 
-if sys.version_info < (2, 6):
-    dependencies.append('multiprocessing')
-
 setup(
     # GENERAL INFO
     name = 'ecm',
