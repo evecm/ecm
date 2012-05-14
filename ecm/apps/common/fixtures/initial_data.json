@@ -1,66 +1,679 @@
 [
-  {
-    "pk": 1,
-    "model": "common.colorthreshold",
-    "fields": {
-      "color": "white",
-      "threshold": 0
+    {
+        "pk": 1,
+        "model": "common.colorthreshold",
+        "fields": {
+            "color": "white",
+            "threshold": 0
+        }
+    },
+    {
+        "pk": 2,
+        "model": "common.colorthreshold",
+        "fields": {
+            "color": "blue",
+            "threshold": 4000
+        }
+    },
+    {
+        "pk": 3,
+        "model": "common.colorthreshold",
+        "fields": {
+            "color": "green",
+            "threshold": 12000
+        }
+    },
+    {
+        "pk": 4,
+        "model": "common.colorthreshold",
+        "fields": {
+            "color": "yellow",
+            "threshold": 30000
+        }
+    },
+    {
+        "pk": 5,
+        "model": "common.colorthreshold",
+        "fields": {
+            "color": "orange",
+            "threshold": 200000
+        }
+    },
+    {
+        "pk": 6,
+        "model": "common.colorthreshold",
+        "fields": {
+            "color": "red",
+            "threshold": 600000
+        }
+    },
+    {
+        "pk": 7,
+        "model": "common.colorthreshold",
+        "fields": {
+            "color": "purple",
+            "threshold": 3000000
+        }
+    },
+    {
+        "pk": 8,
+        "model": "common.colorthreshold",
+        "fields": {
+            "color": "black",
+            "threshold": 999999999999
+        }
+    },
+    {
+        "pk": 1,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 1,
+            "name": "AccountBalance",
+            "group": 1,
+            "description": "Current balance of all corporation accounts."
+        }
+    },
+    {
+        "pk": 2,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 2,
+            "name": "AssetList",
+            "required": true,
+            "group": 3,
+            "description": "List of all corporation assets."
+        }
+    },
+    {
+        "pk": 3,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 4,
+            "name": "MemberMedals",
+            "group": 5,
+            "description": "List of medals awarded to corporation members."
+        }
+    },
+    {
+        "pk": 4,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 8,
+            "name": "CorporationSheet",
+            "required": true,
+            "group": 3,
+            "description": "Exposes basic 'Show Info' information as well as Member Limit and basic division and wallet info."
+        }
+    },
+    {
+        "pk": 5,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 16,
+            "name": "ContactList",
+            "required": true,
+            "group": 7,
+            "description": "Corporate contact list and relationships."
+        }
+    },
+    {
+        "pk": 6,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 32,
+            "name": "ContainerLog",
+            "group": 3,
+            "description": "Corporate secure container acess log."
+        }
+    },
+    {
+        "pk": 7,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 64,
+            "name": "FacWarStats",
+            "group": 4,
+            "description": "Corporations Factional Warfare Statistics."
+        }
+    },
+    {
+        "pk": 8,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 128,
+            "name": "IndustryJobs",
+            "group": 2,
+            "description": "Corporation jobs, completed and active."
+        }
+    },
+    {
+        "pk": 9,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 256,
+            "name": "KillLog",
+            "group": 4,
+            "description": "Corporation kill log."
+        }
+    },
+    {
+        "pk": 10,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 512,
+            "name": "MemberSecurity",
+            "required": true,
+            "group": 5,
+            "description": "Member roles and titles."
+        }
+    },
+    {
+        "pk": 11,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 1024,
+            "name": "MemberSecurityLog",
+            "group": 5,
+            "description": "Member role and title change log."
+        }
+    },
+    {
+        "pk": 12,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 2048,
+            "name": "MemberTrackingLimited",
+            "required": true,
+            "group": 5,
+            "description": "Limited Member information."
+        }
+    },
+    {
+        "pk": 13,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 4096,
+            "name": "MarketOrders",
+            "required": true,
+            "group": 1,
+            "description": "List of all corporate market orders."
+        }
+    },
+    {
+        "pk": 14,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 8192,
+            "name": "Medals",
+            "group": 4,
+            "description": "List of all medals created by the corporation."
+        }
+    },
+    {
+        "pk": 15,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 16384,
+            "name": "OutpostList",
+            "required": true,
+            "group": 6,
+            "description": "List of all outposts controlled by the corporation."
+        }
+    },
+    {
+        "pk": 16,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 32768,
+            "name": "OutpostServiceDetail",
+            "group": 6,
+            "description": "List of all service settings of corporate outposts."
+        }
+    },
+    {
+        "pk": 17,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 65536,
+            "name": "Shareholders",
+            "group": 1,
+            "description": "Shareholders of the corporation."
+        }
+    },
+    {
+        "pk": 18,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 131072,
+            "name": "StarbaseDetail",
+            "required": true,
+            "group": 6,
+            "description": "List of all settings of corporate starbases."
+        }
+    },
+    {
+        "pk": 19,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 262144,
+            "name": "Standings",
+            "group": 4,
+            "description": "NPC Standings towards corporation."
+        }
+    },
+    {
+        "pk": 20,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 524288,
+            "name": "StarbaseList",
+            "required": true,
+            "group": 6,
+            "description": "List of all corporate starbases."
+        }
+    },
+    {
+        "pk": 21,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 1048576,
+            "name": "WalletJournal",
+            "required": true,
+            "group": 1,
+            "description": "Wallet journal for all corporate accounts."
+        }
+    },
+    {
+        "pk": 22,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 2097152,
+            "name": "WalletTransactions",
+            "required": true,
+            "group": 1,
+            "description": "Market transactions of all corporate accounts."
+        }
+    },
+    {
+        "pk": 23,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 4194304,
+            "name": "Titles",
+            "required": true,
+            "group": 5,
+            "description": "Titles of corporation and the roles they grant."
+        }
+    },
+    {
+        "pk": 24,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 8388608,
+            "name": "Contracts",
+            "required": true,
+            "group": 3,
+            "description": "List of recent Contracts the corporation is involved in."
+        }
+    },
+    {
+        "pk": 25,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 16777216,
+            "name": "Locations",
+            "required": true,
+            "group": 3,
+            "description": "Allows the fetching of coordinate and name data for items owned by the corporation."
+        }
+    },
+    {
+        "pk": 26,
+        "model": "common.apicall",
+        "fields": {
+            "type": 2,
+            "mask": 33554432,
+            "name": "MemberTrackingExtended",
+            "required": true,
+            "group": 5,
+            "description": "Extensive Member information. Time of last logoff, last known location and ship."
+        }
+    },
+    {
+        "pk": 27,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 1,
+            "name": "AccountBalance",
+            "group": 1,
+            "description": "Current balance of characters wallet."
+        }
+    },
+    {
+        "pk": 28,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 2,
+            "name": "AssetList",
+            "group": 3,
+            "description": "Entire asset list of character."
+        }
+    },
+    {
+        "pk": 29,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 4,
+            "name": "CalendarEventAttendees",
+            "group": 3,
+            "description": "Event attendee responses. Requires UpcomingCalendarEvents to function."
+        }
+    },
+    {
+        "pk": 30,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 8,
+            "name": "CharacterSheet",
+            "required": true,
+            "group": 3,
+            "description": "Character Sheet information. Contains basic 'Show Info' information along with clones, account balance, implants, attributes, skills, certificates and corporation roles."
+        }
+    },
+    {
+        "pk": 31,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 16,
+            "name": "ContactList",
+            "group": 7,
+            "description": "List of character contacts and relationship levels."
+        }
+    },
+    {
+        "pk": 32,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 32,
+            "name": "ContactNotifications",
+            "group": 7,
+            "description": "Most recent contact notifications for the character."
+        }
+    },
+    {
+        "pk": 33,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 64,
+            "name": "FacWarStats",
+            "group": 4,
+            "description": "Characters Factional Warfare Statistics."
+        }
+    },
+    {
+        "pk": 34,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 128,
+            "name": "IndustryJobs",
+            "group": 2,
+            "description": "Character jobs, completed and active."
+        }
+    },
+    {
+        "pk": 35,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 256,
+            "name": "KillLog",
+            "group": 4,
+            "description": "Characters kill log."
+        }
+    },
+    {
+        "pk": 36,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 512,
+            "name": "MailBodies",
+            "group": 7,
+            "description": "EVE Mail bodies. Requires MailMessages as well to function."
+        }
+    },
+    {
+        "pk": 37,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 1024,
+            "name": "MailingLists",
+            "group": 7,
+            "description": "List of all Mailing Lists the character subscribes to."
+        }
+    },
+    {
+        "pk": 38,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 2048,
+            "name": "MailMessages",
+            "group": 7,
+            "description": "List of all messages in the characters EVE Mail Inbox."
+        }
+    },
+    {
+        "pk": 39,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 4096,
+            "name": "MarketOrders",
+            "group": 1,
+            "description": "List of all Market Orders the character has made."
+        }
+    },
+    {
+        "pk": 40,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 8192,
+            "name": "Medals",
+            "group": 4,
+            "description": "Medals awarded to the character."
+        }
+    },
+    {
+        "pk": 41,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 16384,
+            "name": "Notifications",
+            "group": 7,
+            "description": "List of recent notifications sent to the character."
+        }
+    },
+    {
+        "pk": 42,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 32768,
+            "name": "NotificationTexts",
+            "group": 7,
+            "description": "Actual body of notifications sent to the character. Requires Notification access to function."
+        }
+    },
+    {
+        "pk": 43,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 65536,
+            "name": "Research",
+            "group": 2,
+            "description": "List of all Research agents working for the character and the progress of the research."
+        }
+    },
+    {
+        "pk": 44,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 131072,
+            "name": "SkillInTraining",
+            "group": 3,
+            "description": "Skill currently in training on the character. Subset of entire Skill Queue."
+        }
+    },
+    {
+        "pk": 45,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 262144,
+            "name": "SkillQueue",
+            "group": 3,
+            "description": "Entire skill queue of character."
+        }
+    },
+    {
+        "pk": 46,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 524288,
+            "name": "Standings",
+            "group": 4,
+            "description": "NPC Standings towards the character."
+        }
+    },
+    {
+        "pk": 47,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 1048576,
+            "name": "UpcomingCalendarEvents",
+            "group": 3,
+            "description": "Upcoming events on characters calendar."
+        }
+    },
+    {
+        "pk": 48,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 2097152,
+            "name": "WalletJournal",
+            "group": 1,
+            "description": "Wallet journal of character."
+        }
+    },
+    {
+        "pk": 49,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 4194304,
+            "name": "WalletTransactions",
+            "group": 1,
+            "description": "Market transaction journal of character."
+        }
+    },
+    {
+        "pk": 50,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 8388608,
+            "name": "CharacterInfo",
+            "required": true,
+            "group": 4,
+            "description": "Character information, exposes skill points and current ship information on top of 'Show Info' information."
+        }
+    },
+    {
+        "pk": 51,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 16777216,
+            "name": "CharacterInfo",
+            "required": true,
+            "group": 3,
+            "description": "Sensitive Character Information, exposes account balance and last known location on top of the other Character Information call."
+        }
+    },
+    {
+        "pk": 52,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 33554432,
+            "name": "AccountStatus",
+            "required": true,
+            "group": 3,
+            "description": "EVE player account status."
+        }
+    },
+    {
+        "pk": 53,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 67108864,
+            "name": "Contracts",
+            "group": 3,
+            "description": "List of all Contracts the character is involved in."
+        }
+    },
+    {
+        "pk": 54,
+        "model": "common.apicall",
+        "fields": {
+            "type": 1,
+            "mask": 134217728,
+            "name": "Locations",
+            "group": 3,
+            "description": "Allows the fetching of coordinate and name data for items owned by the character."
+        }
     }
-  },
-  {
-    "pk": 2,
-    "model": "common.colorthreshold",
-    "fields": {
-      "color": "blue",
-      "threshold": 4000
-    }
-  },
-  {
-    "pk": 3,
-    "model": "common.colorthreshold",
-    "fields": {
-      "color": "green",
-      "threshold": 12000
-    }
-  },
-  {
-    "pk": 4,
-    "model": "common.colorthreshold",
-    "fields": {
-      "color": "yellow",
-      "threshold": 30000
-    }
-  },
-  {
-    "pk": 5,
-    "model": "common.colorthreshold",
-    "fields": {
-      "color": "orange",
-      "threshold": 200000
-    }
-  },
-  {
-    "pk": 6,
-    "model": "common.colorthreshold",
-    "fields": {
-      "color": "red",
-      "threshold": 600000
-    }
-  },
-  {
-    "pk": 7,
-    "model": "common.colorthreshold",
-    "fields": {
-      "color": "purple",
-      "threshold": 3000000
-    }
-  },
-  {
-    "pk": 8,
-    "model": "common.colorthreshold",
-    "fields": {
-      "color": "black",
-      "threshold": 999999999999
-    }
-  }
 ]

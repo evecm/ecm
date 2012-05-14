@@ -284,9 +284,7 @@ class UrlPermission(models.Model):
         return False
 
 #------------------------------------------------------------------------------
-
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
-
 class RegistrationManager(models.Manager):
     def activate_user(self, activation_key):
         # Make sure the key we're trying conforms to the pattern of a
@@ -327,7 +325,7 @@ class RegistrationManager(models.Manager):
         activation_key = sha_constructor(salt+username).hexdigest()
         return self.create(user=user, activation_key=activation_key)
 
-
+#------------------------------------------------------------------------------
 class RegistrationProfile(models.Model):
 
     ACTIVATED = u"ALREADY_ACTIVATED"
@@ -356,6 +354,7 @@ class RegistrationProfile(models.Model):
                (self.user.date_joined + expiration_date <= timezone.now())
     activation_key_expired.boolean = True
 
+#------------------------------------------------------------------------------
 class Motd(models.Model):
     #softdeps
     #  PyTextile       : Textile 
@@ -403,3 +402,44 @@ class Motd(models.Model):
             return self.MARKUP_FUNCTIONS[self.markup](self.message)
         except KeyError:
             return self.message
+
+#------------------------------------------------------------------------------
+class APICall(models.Model):
+    
+    class Meta:
+        verbose_name = 'API Call'
+        verbose_name_plural = 'API Calls'
+    
+    CHARACTER = 1
+    CORPORATION = 2
+    
+    TYPE = {
+        CHARACTER: 'Character',
+        CORPORATION: 'Corporation',
+    }
+    
+    GROUP = {
+        1: 'Account and Market',
+        2: 'Science and Industry',
+        3: 'Private Information',
+        4: 'Public Information',
+        5: 'Corporation Members',
+        6: 'Outposts and Starbases',
+        7: 'Communications',
+    }
+    
+    name = models.CharField(max_length=64)
+    description = models.CharField(max_length=1024)
+    mask = models.IntegerField()
+    type = models.SmallIntegerField(choices=TYPE.items()) #@ReservedAssignment
+    group = models.SmallIntegerField(choices=GROUP.items())
+    required = models.BooleanField(default=False)
+    
+    def __unicode__(self):
+        return self.name
+    
+    def __eq__(self, other):
+        return self.type == other.type and self.mask == other.mask
+    
+    
+    

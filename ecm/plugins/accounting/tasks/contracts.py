@@ -24,7 +24,7 @@ import logging
 from django.db import transaction
 
 from ecm.lib import eveapi
-from ecm.apps.eve import api
+from ecm.apps.common import api
 from ecm.apps.corp.models import Corp
 from ecm.apps.common.models import UpdateDate
 from ecm.utils import tools

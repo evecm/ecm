@@ -23,7 +23,7 @@ __author__ = "diabeteman"
 import logging
 from django.db import transaction
 
-from ecm.apps.eve import api
+from ecm.apps.common import api
 from ecm.lib import eveapi
 
 from ecm.apps.corp.models import Wallet

@@ -28,7 +28,7 @@ from django.db import transaction
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import CelestialObject, ControlTowerResource, Type
 from ecm.plugins.pos import constants
-from ecm.apps.eve import api
+from ecm.apps.common import api
 from ecm.apps.corp.models import Corp
 
 logger = logging.getLogger(__name__)

@@ -23,7 +23,7 @@ from django.db import transaction
 
 from ecm.apps.corp.models import Standings
 from ecm.apps.common.models import UpdateDate
-from ecm.apps.eve import api
+from ecm.apps.common import api
 
 import logging
 LOG = logging.getLogger(__name__)

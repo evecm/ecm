@@ -24,7 +24,7 @@ from django.db import transaction
 
 from ecm.utils import tools
 from ecm.apps.common.models import UpdateDate
-from ecm.apps.eve import api
+from ecm.apps.common import api
 from ecm.apps.hr.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff, Member, RoleType, Role
 

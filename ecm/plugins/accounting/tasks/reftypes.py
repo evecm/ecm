@@ -22,7 +22,7 @@ import logging
 
 from django.db import transaction
 
-from ecm.apps.eve import api
+from ecm.apps.common import api
 from ecm.plugins.accounting.models import EntryType
 
 LOG = logging.getLogger(__name__)

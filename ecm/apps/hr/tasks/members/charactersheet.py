@@ -23,7 +23,7 @@ import logging
 from django.contrib.auth.models import User
 from django.db import transaction
 
-from ecm.apps.eve import api
+from ecm.apps.common import api
 from ecm.apps.common.auth import alert_user_for_invalid_apis
 from ecm.apps.hr.models.member import Skill, Member
 from ecm.apps.common.models import UserAPIKey

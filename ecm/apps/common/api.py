@@ -6,7 +6,7 @@
 # modify it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-
+#
 # EVE Corporation Management is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
@@ -15,17 +15,17 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2010-03-23"
-__author__ = "diabeteman"
+__date__ = '2012 5 15'
+__author__ = 'diabeteman'
+
+from django.core.exceptions import ValidationError
 
 from ecm.lib import eveapi
-from ecm.apps.eve.validators import check_user_access_mask
-from ecm.apps.common.models import Setting
+from ecm.apps.common.models import Setting, APICall
 from ecm.apps.corp.models import Corp
 
-EVE_API_VERSION = '2'
-
 #------------------------------------------------------------------------------
+EVE_API_VERSION = '2'
 def check_version(version):
     if version != EVE_API_VERSION:
         raise DeprecationWarning("Wrong EVE API version. "
@@ -71,6 +71,39 @@ def connect_user(user_api, proxy=None):
     conn = eveapi.EVEAPIConnection(scheme="http", proxy=proxy)
     return conn.auth(keyID=user_api.keyID, vCode=user_api.vCode)
 
+#------------------------------------------------------------------------------
+def required_access_mask(character=True):
+    accessMask = 0
+    key_type = character and APICall.CHARACTER or APICall.CORPORATION
+    for call in APICall.objects.filter(type=key_type, required=True):
+        accessMask |= call.mask
+    return accessMask
+
+#------------------------------------------------------------------------------
+def check_access_mask(accessMask, character):
+    missing = []
+    key_type = character and APICall.CHARACTER or APICall.CORPORATION
+    for call in APICall.objects.filter(type=key_type, required=True):
+        if not accessMask & call.mask:
+            missing.append(call)
+    if missing:
+        raise eveapi.Error(0, "This API Key misses mandatory accesses: "
+                           + ', '.join([ call.name for call in missing ]))
+
+#------------------------------------------------------------------------------
+def validate_director_api_key(keyID, vCode):
+    try:
+        connection = eveapi.EVEAPIConnection().auth(keyID=keyID, vCode=vCode)
+        response = connection.account.APIKeyInfo()
+        if response.key.type.lower() != "corporation":
+            raise ValidationError("Wrong API Key type '%s'. Please provide a Corporation API Key." % response.key.type)
+        check_access_mask(response.key.accessMask, character=False)
+    except eveapi.Error, e:
+        raise ValidationError(str(e))
+
+    keyCharIDs = [ char.characterID for char in response.key.characters ]
+    return keyCharIDs[0]
+
 
 #------------------------------------------------------------------------------
 class Character:
@@ -89,7 +122,7 @@ def get_account_characters(user_api):
         raise eveapi.Error(0, "Wrong API Key type '" + response.key.type + "'. " +
                            "Please provide an API Key working for all characters of your account.")
 
-    check_user_access_mask(response.key.accessMask)
+    check_access_mask(response.key.accessMask, character=True)
 
     for char in response.key.characters:
         c = Character()

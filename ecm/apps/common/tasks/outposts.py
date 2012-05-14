@@ -23,7 +23,8 @@ import logging
 from django.db import transaction
 
 from ecm.apps.eve.models import CelestialObject
-from ecm.apps.eve import api, constants
+from ecm.apps.common import api
+from ecm.apps.eve import constants
 
 LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------

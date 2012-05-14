@@ -31,7 +31,7 @@ from ecm.apps.hr.tasks.users import update_user_accesses
 from ecm.apps.common.models import UserAPIKey, RegistrationProfile
 from ecm.apps.hr.models import Member
 from ecm.views.account.forms import AccountCreationForm
-from ecm.apps.eve.validators import user_access_mask
+from ecm.apps.common.api import required_access_mask
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ def create_account(request):
     else: # request.method == 'GET'
         form = AccountCreationForm()
 
-    accessMask = user_access_mask()
+    accessMask = required_access_mask(character=True)
 
     return render_to_response('auth/create_account.html',
                               { 'form': form, 'accessMask': accessMask },

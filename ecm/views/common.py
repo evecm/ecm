@@ -31,8 +31,8 @@ from django.utils.translation import ugettext_lazy as _
 from ecm.apps.scheduler import process
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.common.models import Setting, Motd
-from ecm.apps.eve.validators import validate_director_api_key
-from ecm.apps.eve import api
+from ecm.apps.common.api import validate_director_api_key
+from ecm.apps.common import api
 from ecm.apps.hr.models import Member
 from ecm.apps.corp.models import Corp
 from ecm.views.decorators import check_user_access

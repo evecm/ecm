@@ -27,7 +27,7 @@ from django.db.models import Max
 
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.hr.models import TitleComposition, Title, Role, TitleCompoDiff, RoleType
-from ecm.apps.eve import api
+from ecm.apps.common import api
 
 import logging
 logger = logging.getLogger(__name__)

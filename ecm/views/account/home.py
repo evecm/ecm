@@ -28,7 +28,7 @@ from ecm.apps.hr.tasks.users import update_user_accesses
 from ecm.views.account.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import UserAPIKey, ExternalApplication, UserBinding, Motd
-from ecm.apps.eve.validators import user_access_mask
+from ecm.apps.common.api import required_access_mask
 
 import logging
 logger = logging.getLogger(__name__)
@@ -88,7 +88,7 @@ def add_api(request):
 
     data = {
         'form': form,
-        'accessMask': user_access_mask()
+        'accessMask': required_access_mask(character=True)
     }
 
     return render_to_response('auth/add_api.html', data, Ctx(request))
@@ -140,7 +140,7 @@ def edit_api(request, keyID):
     data = {
         'form': form,
         'request_path' : request.get_full_path(),
-        'accessMask': user_access_mask()
+        'accessMask': required_access_mask(character=True)
     }
     return render_to_response('auth/edit_api.html', data, Ctx(request))
 

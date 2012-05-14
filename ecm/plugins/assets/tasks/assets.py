@@ -16,7 +16,6 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-from ecm.lib import eveapi
 
 __date__ = "2010-03-23"
 __author__ = "diabeteman"
@@ -25,8 +24,9 @@ import logging
 
 from django.db import transaction
 
+from ecm.lib import eveapi
 from ecm.apps.common.models import Setting, UpdateDate
-from ecm.apps.eve import api
+from ecm.apps.common import api
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants as cst
 from ecm.plugins.assets.models import Asset, AssetDiff

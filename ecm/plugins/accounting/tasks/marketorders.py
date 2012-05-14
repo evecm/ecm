@@ -25,7 +25,7 @@ from django.db import transaction
 
 from ecm.utils import tools
 from ecm.apps.common.models import UpdateDate
-from ecm.apps.eve import api
+from ecm.apps.common import api
 from ecm.plugins.accounting.models import MarketOrder
 
 LOG = logging.getLogger(__name__)

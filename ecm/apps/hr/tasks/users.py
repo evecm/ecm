@@ -23,7 +23,7 @@ import logging
 from django.db import transaction
 from django.contrib.auth.models import User, Group
 
-from ecm.apps.eve import api
+from ecm.apps.common import api
 from ecm.lib import eveapi
 from ecm.apps.common.auth import get_members_group, get_directors_group, alert_user_for_invalid_apis
 from ecm.apps.hr.models import Title, Member
