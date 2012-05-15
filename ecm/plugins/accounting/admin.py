@@ -22,12 +22,16 @@ __author__ = "diabeteman"
 from django.contrib import admin
 
 from ecm.plugins.accounting.models import JournalEntry, EntryType, Contract, ContractItem, MarketOrder,\
-    Report
+    Report, TransactionEntry
 
 class JournalEntryAdmin(admin.ModelAdmin):
     list_display  = ['wallet', 'date', 'type', 'ownerName1', 'ownerName2', 'amount', 'balance', 'reason']
     search_fields = ['ownerName1', 'ownerName2', 'date']
     list_filter   = ['wallet', 'type']
+class TransactionEntryAdmin(admin.ModelAdmin):
+    list_display  = ['date', 'typeName', 'transactionType', 'price', 'quantity', 'clientName', 'stationName', 'transactionFor', 'wallet']
+    search_fields = ['date', 'typeName', 'stationName']
+    list_filter   = ['wallet', 'transactionType']
 class EntryTypeAdmin(admin.ModelAdmin):
     list_display  = ['refTypeID', 'refTypeName']
     search_fields = ['refTypeName']
@@ -49,6 +53,7 @@ class ReportAdmin(admin.ModelAdmin):
     filter_horizontal = ['entry_types']
 
 admin.site.register(JournalEntry, JournalEntryAdmin)
+admin.site.register(TransactionEntry, TransactionEntryAdmin)
 admin.site.register(EntryType, EntryTypeAdmin)
 admin.site.register(Contract, ContractAdmin)
 admin.site.register(ContractItem, ContractItemAdmin)

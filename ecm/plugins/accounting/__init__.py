@@ -26,6 +26,7 @@ DEPENDS_ON = {
 MENUS = [
      {'title': 'Accounting',    'url': '',      'items': [
         {'title': 'Wallets Journal', 'url': 'journal/', 'items': []},
+        {'title': 'Wallets Transactions', 'url': 'transactions/', 'items': []},
         {'title': 'Tax Contributions', 'url': 'contributions/', 'items': []},
         {'title': 'Contracts', 'url': 'contracts/', 'items': []},
         {'title': 'Market Orders', 'url': 'marketorders/', 'items': []},

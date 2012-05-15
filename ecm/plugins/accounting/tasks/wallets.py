@@ -29,7 +29,7 @@ from ecm.lib import eveapi
 from ecm.apps.corp.models import Wallet
 from ecm.apps.common.models import UpdateDate
 from ecm.plugins.accounting.tasks import fix_encoding
-from ecm.plugins.accounting.models import JournalEntry
+from ecm.plugins.accounting.models import JournalEntry, TransactionEntry
 
 LOG = logging.getLogger(__name__)
 
@@ -39,23 +39,35 @@ def update():
     Updates all wallets with the missing accounting entries since last scan.
     """
     for wallet in Wallet.objects.all():
-        update_wallet(wallet)
+        update_journal_wallet(wallet)
+    for wallet in Wallet.objects.all():
+        update_transaction_wallet(wallet)
 
     UpdateDate.mark_updated(model=JournalEntry, date=timezone.now())
+    UpdateDate.mark_updated(model=TransactionEntry, date=timezone.now())
     LOG.debug("wallets journal updated")
 
 #------------------------------------------------------------------------------
-def update_wallet(wallet):
+def update_journal_wallet(wallet):
     try:
         lastKnownID = JournalEntry.objects.filter(wallet=wallet).latest().refID
     except JournalEntry.DoesNotExist:
         lastKnownID = 0
-    entries = fetch_entries(wallet, lastKnownID)
-    write_results(wallet, entries)
+    entries = fetch_journal_entries(wallet, lastKnownID)
+    write_journal_results(wallet, entries)
+
+#------------------------------------------------------------------------------
+def update_transaction_wallet(wallet):
+    try:
+        lastKnownID = TransactionEntry.objects.filter(wallet=wallet).latest().id
+    except TransactionEntry.DoesNotExist:
+        lastKnownID = 0
+    entries = fetch_transaction_entries(wallet, lastKnownID)
+    write_transaction_results(wallet, entries)
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
-def write_results(wallet, entries):
+def write_journal_results(wallet, entries):
     LOG.debug("Writing results...")
     for e in entries:
         if e.reason.startswith('DESC:'):
@@ -81,7 +93,39 @@ def write_results(wallet, entries):
     LOG.info("%d entries added in journal" % len(entries))
 
 #------------------------------------------------------------------------------
-def fetch_entries(wallet, lastKnownID):
+@transaction.commit_on_success
+def write_transaction_results(wallet, entries):
+    LOG.debug("Writing results...")
+    for e in entries:
+        for t in TransactionEntry.TYPES:
+            if TransactionEntry.TYPES[t].lower() == e.transactionType.lower():
+                transactionType = t
+        for f in TransactionEntry.FOR:
+            if TransactionEntry.FOR[f].lower() == e.transactionFor.lower():
+                transactionFor = f
+        try:
+            journal = JournalEntry.objects.get(refID = e.journalTransactionID)
+        except JournalEntry.DoesNotExist:
+            journal = JournalEntry.objects.get(argName1 = e.transactionID)
+        TransactionEntry.objects.create(
+                                        id = e.transactionID,
+                                        date = e.transactionDateTime,
+                                        quantity = e.quantity,
+                                        typeID = e.typeID,
+                                        price = e.price,
+                                        clientID = e.clientID,
+                                        clientName = e.clientName,
+                                        stationID = e.stationID,
+                                        transactionType = transactionType,
+                                        transactionFor = transactionFor,
+                                        journal = journal,
+                                        wallet = wallet,
+                                        )
+    LOG.info("%d entries added in Transactions" % len(entries))
+
+
+#------------------------------------------------------------------------------
+def fetch_journal_entries(wallet, lastKnownID):
     api_conn = api.connect()
 
     LOG.info("fetching /corp/WalletJournal.xml.aspx "
@@ -128,5 +172,56 @@ def fetch_entries(wallet, lastKnownID):
         return entries
     except eveapi.Error, e:
         LOG.error("API returned: %s. WalletJournal for account key %s might be empty."
+                  % (str(e), wallet.walletID))
+        return ''
+
+#------------------------------------------------------------------------------
+def fetch_transaction_entries(wallet, lastKnownID):
+    api_conn = api.connect()
+
+    LOG.info("fetching /corp/WalletTransactions.xml.aspx "
+                "(accountKey=%d)..." % wallet.walletID)
+    charID = api.get_charID()
+
+    # In Iceland an empty wallet causes errors....
+    try:
+        walletsApi = api_conn.corp.WalletTransactions(characterID=charID,
+                                                      accountKey=wallet.walletID,
+                                                      rowCount=256)
+        api.check_version(walletsApi._meta.version)
+
+        transactions = list(walletsApi.transactions)
+        if len(transactions) > 0:
+            minID = min([e.transactionID for e in walletsApi.transactions])
+        else:
+            minID = 0
+
+        # after the first fetch, we perform "journal walking"
+        # only if we got 256 transactions in the response (meaning more to come)
+        # or if the lastKnownID is in the current 256 transactions
+        # (transactions are supposed to be sorted by decreasing refIDs)
+        while len(walletsApi.transactions) == 256 and minID > lastKnownID:
+            LOG.info("fetching /corp/WalletTransactions.xml.aspx "
+                        "(accountKey=%d, fromID=%d)..." % (wallet.walletID, minID))
+            walletsApi = api_conn.corp.WalletTransactions(characterID=charID,
+                                                          accountKey=wallet.walletID,
+                                                          fromID=minID,
+                                                          rowCount=256)
+            api.check_version(walletsApi._meta.version)
+            transactions.extend(list(walletsApi.transactions))
+            if len(walletsApi.transactions) > 0:
+                minID = min([e.transactionID for e in walletsApi.transactions])
+
+        # we sort the transactions by increasing refIDs in order to remove
+        # the ones we already have in the database
+        transactions.sort(key=lambda e: e.transactionID)
+
+        while len(transactions) != 0 and transactions[0].transactionID <= lastKnownID:
+            # we already have this entry, no need to keep it
+            del transactions[0]
+
+        return transactions
+    except eveapi.Error, e:
+        LOG.error("API returned: %s. WalletTransactions for account key %s might be empty."
                   % (str(e), wallet.walletID))
         return ''

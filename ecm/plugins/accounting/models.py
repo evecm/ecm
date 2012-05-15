@@ -24,6 +24,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ecm.lib import bigintpatch
 from ecm.apps.corp.models import Wallet
+from ecm.apps.eve.models import Type, CelestialObject
 
 
 #------------------------------------------------------------------------------
@@ -71,6 +72,48 @@ class JournalEntry(models.Model):
     def __unicode__(self):
         return unicode(self.id)
 
+#------------------------------------------------------------------------------
+class TransactionEntry(models.Model):
+    
+    class Meta:
+        verbose_name = 'Transaction'
+        verbose_name_plural = 'Transactions'
+        ordering = ['date']
+        get_latest_by = 'date'
+    
+    TYPES = {
+             0: 'Buy',
+             1: 'Sell',
+            }
+    FOR = {
+           0: 'Personal',
+           1: 'Corporation',
+          }
+    id                   = models.BigIntegerField   (primary_key = True) #@ReservedAssignment
+    date                 = models.DateTimeField     ()
+    quantity             = models.BigIntegerField   (default = 0)
+    typeID               = models.IntegerField      (default = 0)
+    price                = models.FloatField        (default = 0.0)
+    clientID             = models.BigIntegerField   (default = 0)
+    clientName           = models.CharField         (max_length = 128)
+    stationID            = models.BigIntegerField   (default = 0)
+    transactionType      = models.SmallIntegerField (default = 0, choices=TYPES.items())
+    transactionFor       = models.SmallIntegerField (default = 0, choices=FOR.items())
+    journal              = models.ForeignKey        (JournalEntry, related_name = 'JournalEntry')
+    wallet               = models.ForeignKey        (Wallet, db_index=True)
+    
+    @property
+    def typeName(self):
+        item_name = Type.objects.get(typeID = self.typeID).typeName
+        return item_name
+    
+    @property
+    def stationName(self):
+        station_name = CelestialObject.objects.get(itemID = self.stationID).itemName
+        return station_name
+    
+    def __unicode__(self):
+        return unicode(self.id)
 #------------------------------------------------------------------------------
 class Contract(models.Model):
     """
