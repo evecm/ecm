@@ -27,8 +27,7 @@ from ecm.apps.eve.formulas import apply_production_level, apply_material_level
 class Category(models.Model):
 
     class Meta:
-        db_table = 'invCategories'
-        managed = False
+        app_label = 'eve'
         get_latest_by = 'categoryID'
         ordering = ['categoryID']
 
@@ -51,8 +50,7 @@ class Category(models.Model):
 class Group(models.Model):
 
     class Meta:
-        db_table = 'invGroups'
-        managed = False
+        app_label = 'eve'
         get_latest_by = 'groupID'
         ordering = ['groupID']
 
@@ -87,20 +85,20 @@ class Group(models.Model):
 class ControlTowerResource(models.Model):
 
     class Meta:
-        db_table = 'invControlTowerResources'
-        managed = False
+        app_label = 'eve'
         get_latest_by = 'control_tower'
         ordering = ['control_tower', 'resource']
         unique_together = ('control_tower', 'resource')
 
+    id = models.BigIntegerField(primary_key=True) #@ReservedAssignment
     control_tower = models.ForeignKey('Type', db_column='controlTowerTypeID',
-                                      related_name='tower_resources_t', primary_key=True)
+                                      related_name='tower_resources_t')
     resource = models.ForeignKey('Type', db_column='resourceTypeID',
                                  related_name='tower_resources_r')
     purpose = models.SmallIntegerField()
     quantity = models.SmallIntegerField()
-    minSecurityLevel = models.FloatField()
-    factionID = models.SmallIntegerField()
+    minSecurityLevel = models.FloatField(null=True, blank=True)
+    factionID = models.SmallIntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return '%s: %d / hour' % (self.resource.typeName, self.quantity)
@@ -117,8 +115,7 @@ class ControlTowerResource(models.Model):
 class MarketGroup(models.Model):
 
     class Meta:
-        db_table = 'invMarketGroups'
-        managed = False
+        app_label = 'eve'
         get_latest_by = 'marketGroupID'
         ordering = ['marketGroupID']
 
@@ -144,8 +141,7 @@ class MarketGroup(models.Model):
 class BlueprintType(models.Model):
 
     class Meta:
-        db_table = 'invBlueprintTypes'
-        managed = False
+        app_label = 'eve'
         get_latest_by = 'blueprintTypeID'
         ordering = ['blueprintTypeID']
 
@@ -296,13 +292,12 @@ class BlueprintReq(models.Model):
     """
 
     class Meta:
-        db_table = 'ramBlueprintReqs'
-        managed = False
+        app_label = 'eve'
         ordering = ['blueprint', 'activityID', 'required_type']
-        unique_together = ('blueprint', 'activityID', 'required_type')
 
+    id = models.BigIntegerField(primary_key=True) #@ReservedAssignment
     blueprint = models.ForeignKey('BlueprintType', db_column='blueprintTypeID',
-                                  related_name='requirements', primary_key=True)
+                                  related_name='requirements')
     activityID = models.SmallIntegerField(default=BlueprintType.Activity.MANUFACTURING,
                                           choices=BlueprintType.Activity.NAMES.items())
     required_type = models.ForeignKey('Type', db_column='requiredTypeID')
@@ -345,8 +340,7 @@ class BlueprintReq(models.Model):
 class Type(models.Model):
 
     class Meta:
-        db_table = 'invTypes'
-        managed = False
+        app_label = 'eve'
         get_latest_by = 'typeID'
         ordering = ['typeID']
 
@@ -409,17 +403,16 @@ class Type(models.Model):
 class CelestialObject(models.Model):
 
     class Meta:
-        db_table = 'mapCelestialObjects'
-        managed = False
+        app_label = 'eve'
         get_latest_by = 'itemID'
         ordering = ['itemID']
 
     itemID = models.IntegerField(primary_key=True)
     type = models.ForeignKey('Type', db_column='typeID') #@ReservedAssignment
-    group =  models.ForeignKey('Group', db_column='groupID', db_index=True)
-    solarSystemID = models.IntegerField(db_index=True)
-    regionID = models.IntegerField(db_index=True)
-    itemName = models.CharField(max_length=100)
+    group =  models.ForeignKey('Group', db_column='groupID', db_index=True, null=True, blank=True)
+    solarSystemID = models.IntegerField(db_index=True, null=True, blank=True)
+    regionID = models.IntegerField(db_index=True, null=True, blank=True)
+    itemName = models.CharField(max_length=100, null=True, blank=True)
     security = models.FloatField(null=True, blank=True)
     x = models.FloatField(null=True, blank=True)
     y = models.FloatField(null=True, blank=True)

@@ -27,8 +27,7 @@ from optparse import OptionParser
 
 from ecm.admin.util import run_python_cmd, log
 from ecm.lib.subcommand import Subcommand
-from ecm.admin.cmd import collect_static_files, download_patched_eve_db, PATCHED_EVE_DB_URL,\
-    CCP_EVE_DB_URL, patch_ccp_dump
+from ecm.admin.cmd import collect_static_files, CCP_EVE_DB_URL, patch_ccp_dump, import_eve_data_dump
 
 #-------------------------------------------------------------------------------
 def sub_command():
@@ -41,15 +40,6 @@ def sub_command():
         init_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
                                    help='Create symbolic links instead of copying static files.',
                                    default=False, action='store_true')
-    init_cmd.parser.add_option('--eve-db-url',
-                               dest='eve_db_url', default=PATCHED_EVE_DB_URL,
-                               help='URL where to download EVE database archive.')
-    init_cmd.parser.add_option('--eve-db-zip-archive',
-                               dest='eve_zip_archive',
-                               help='Local path to EVE database archive (skips download).')
-    init_cmd.parser.add_option('--skip-eve-db-download',
-                               dest='skip_eve_db_download', action='store_true',
-                               help='Do NOT download EVE db (use with care).')
     init_cmd.parser.add_option('--from-ccp-dump',
                                dest='from_ccp_dump', action='store_true', default=False,
                                help='Update EVE database from CCP official dump (can take a long time).')
@@ -93,14 +83,8 @@ def run(command, global_options, options, args):
     init_ecm_db(instance_dir)
 
     # download eve db
-    if not options.skip_eve_db_download:
-        if options.from_ccp_dump:
-            patch_ccp_dump(ccp_dump_url=options.ccp_dump_url,
-                           ccp_dump_archive=options.ccp_dump_archive,
-                           eve_db_dir=sqlite_db_dir)
-        else:
-            download_patched_eve_db(eve_db_url=options.eve_db_url,
-                                    eve_zip_archive=options.eve_zip_archive,
-                                    eve_db_dir=sqlite_db_dir)
-
-
+    if options.from_ccp_dump and 'sqlite' in ecm_db_engine:
+        patch_ccp_dump(ccp_dump_url=options.ccp_dump_url,
+                       ccp_dump_archive=options.ccp_dump_archive,
+                       eve_db_dir=sqlite_db_dir)
+        import_eve_data_dump(sqlite_db_dir)

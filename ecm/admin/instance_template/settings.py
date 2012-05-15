@@ -66,33 +66,28 @@ USE_HTTPS = config.get('misc', 'use_https')
 
 DEBUG = config.getboolean('misc', 'debug')
 
-def get_db_config(prefix):
-    engine = config.get('database', prefix + '_engine')
+def get_db_config():
+    engine = config.get('database', 'ecm_engine')
     if engine == 'django.db.backends.sqlite3':
         folder = config.get('database', 'sqlite_db_dir') or rel_path('db/')
-        return {'ENGINE': engine, 'NAME': os.path.join(folder, prefix + '.sqlite')}
+        return {'ENGINE': engine, 'NAME': os.path.join(folder, 'ecm.sqlite')}
     else:
         db_config = {
-            'ENGINE': config.get('database', prefix + '_engine'),
-            'NAME': config.get('database', prefix + '_name'),
-            'USER': config.get('database', prefix + '_user'),
-            'PASSWORD': config.get('database', prefix + '_password'),
+            'ENGINE': config.get('database', 'ecm_engine'),
+            'NAME': config.get('database', 'ecm_name'),
+            'USER': config.get('database', 'ecm_user'),
+            'PASSWORD': config.get('database', 'ecm_password'),
         }
-        if config.has_option('database', prefix + '_host') and config.get('database', prefix + '_host'):
-            db_config['HOST'] = config.get('database', prefix + '_host')
-        if config.has_option('database', prefix + '_port') and config.get('database', prefix + '_port'):
-            db_config['PORT'] = config.get('database', prefix + '_port')
+        if config.has_option('database', 'ecm_host') and config.get('database', 'ecm_host'):
+            db_config['HOST'] = config.get('database', 'ecm_host')
+        if config.has_option('database', 'ecm_port') and config.get('database', 'ecm_port'):
+            db_config['PORT'] = config.get('database', 'ecm_port')
         
         return db_config 
 
 DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
-    'default': get_db_config('ecm'),
-    'eve': get_db_config('eve'),
+    'default': get_db_config(),
 }
-
-DATABASE_ROUTERS = (
-    'ecm.db_routers.ECMDatabaseRouter',
-)
 
 SITE_ID = 1
 

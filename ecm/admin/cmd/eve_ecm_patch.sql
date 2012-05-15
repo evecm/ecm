@@ -22,6 +22,7 @@ BEGIN;
 -- CUSTOM blueprints requirements table --
 ------------------------------------------
 CREATE TABLE "ramBlueprintReqs" (
+    "id" INT(13),                      -- primary key
     "blueprintTypeID" SMALLINT,       -- id of blueprint using this material
     "activityID" TINYINT UNSIGNED,    -- building, copying, etc
     "requiredTypeID" SMALLINT,        -- id of resource used for this activity
@@ -29,7 +30,7 @@ CREATE TABLE "ramBlueprintReqs" (
     "damagePerJob" DOUBLE,            -- how much of the resource is expended
     "baseMaterial" INT,               -- how much is the base material.
                                     -- 0 means unaffected by waste, >=quantity means entirely affected
-    CONSTRAINT "materials_PK" PRIMARY KEY ("blueprintTypeID", "activityID", "requiredTypeID")
+    PRIMARY KEY ("id")
 );
 
 CREATE INDEX "ramBlueprintReqs_IX_blueprintTypeID" ON "ramBlueprintReqs" ("blueprintTypeID");
@@ -41,7 +42,8 @@ CREATE INDEX "ramBlueprintReqs_IX_requiredTypeID" on "ramBlueprintReqs" ("requir
 -- material is affected by waste when building.
 -------------------------------------------------------
 INSERT INTO "ramBlueprintReqs"
-    SELECT  rtr."typeID",
+    SELECT  rtr."typeID" * 100000000 + rtr."requiredTypeID" * 100 + rtr."activityID",
+            rtr."typeID",
             rtr."activityID",
             rtr."requiredTypeID",
             (rtr."quantity" + IFNULL(itm."quantity", 0)),
@@ -58,7 +60,8 @@ INSERT INTO "ramBlueprintReqs"
 ;
 ----------------------------------------------------------
 INSERT INTO "ramBlueprintReqs"
-    SELECT  b."blueprintTypeID",
+    SELECT  b."blueprintTypeID" * 100000000 + itm."materialTypeID" * 100 + 1,
+            b."blueprintTypeID",
             1,  -- manufacturing activityID
             itm."materialTypeID",   -- requiredTypeID
             (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)),  -- quantity
@@ -87,12 +90,14 @@ INSERT INTO "ramBlueprintReqs"
     AND (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)) > 0 -- ignore negative quantities
 ;
 ----------------------------------------------------------
-INSERT INTO ramBlueprintReqs("blueprintTypeID",
+INSERT INTO ramBlueprintReqs("id",
+                             "blueprintTypeID",
                              "activityID",
                              "requiredTypeID",
                              "quantity",
                              "damagePerJob")
-    SELECT  rtr."typeID",
+    SELECT  rtr."typeID" * 100000000 + rtr."requiredTypeID" * 100 + rtr."activityID",
+            rtr."typeID",
             rtr."activityID",
             rtr."requiredTypeID",
             rtr."quantity",
@@ -106,18 +111,14 @@ UPDATE "ramBlueprintReqs" SET "baseMaterial" = 0 WHERE "baseMaterial" IS NULL;
 ----------------------------------------------------------
 -- Add noctis blueprint requirements
 INSERT INTO "ramBlueprintReqs"
-    SELECT 2864 AS "blueprintTypeID", 
-              1 AS "activityID", 
-             34 AS "requiredTypeID", 
-        3349410 AS "quantity", 
-            1.0 AS "damagePerJob",
-        3349410 AS "baseMaterial" -- Tritanium
-UNION SELECT 2864, 1, 35, 936043, 1.0, 936043 -- Pyerite
-UNION SELECT 2864, 1, 36, 276936, 1.0, 276936 -- Mexallon
-UNION SELECT 2864, 1, 37,  50713, 1.0,  50713 -- Isogen
-UNION SELECT 2864, 1, 38,  24630, 1.0,  24630 -- Nocxium
-UNION SELECT 2864, 1, 39,   3438, 1.0,   3438 -- Zydrine
-UNION SELECT 2864, 1, 40,   1580, 1.0,   1580 -- Megacyte
+      --     id             bpTypeID activityID reqTypeID   qty    dmg    base
+      SELECT 286400003401, 2864,    1,         34,       3349410, 1.0, 936043 -- Tritanium
+UNION SELECT 286400003501, 2864,    1,         35,        936043, 1.0, 936043 -- Pyerite
+UNION SELECT 286400003601, 2864,    1,         36,        276936, 1.0, 276936 -- Mexallon
+UNION SELECT 286400003701, 2864,    1,         37,         50713, 1.0,  50713 -- Isogen
+UNION SELECT 286400003801, 2864,    1,         38,         24630, 1.0,  24630 -- Nocxium
+UNION SELECT 286400003901, 2864,    1,         39,          3438, 1.0,   3438 -- Zydrine
+UNION SELECT 286400004001, 2864,    1,         40,          1580, 1.0,   1580 -- Megacyte
 ;
 
 --------------------
@@ -352,6 +353,46 @@ SET "parentBlueprintTypeID" =
 -- this way, when manufacturing a tech 2 item,
 -- we can easily know on which blueprint we need to run an invention job
 -- in order to obtain the item's tech 2 BPC
+
+---------------------------------------------------------
+-- add a unique primary key to the invControlTowerResources table
+---------------------------------------------------------
+CREATE TABLE "invControlTowerResources_temp" (
+  "controlTowerTypeID" int(11) NOT NULL,
+  "resourceTypeID" int(11) NOT NULL,
+  "purpose" tinyint(4) DEFAULT NULL,
+  "quantity" int(11) DEFAULT NULL,
+  "minSecurityLevel" double DEFAULT NULL,
+  "factionID" int(11) DEFAULT NULL,
+  PRIMARY KEY ("controlTowerTypeID","resourceTypeID")
+);
+INSERT INTO "invControlTowerResources_temp" SELECT * FROM "invControlTowerResources";
+DROP TABLE "invControlTowerResources";
+
+CREATE TABLE "invControlTowerResources" (
+  "id" INT(11) NOT NULL,
+  "controlTowerTypeID" int(11) NOT NULL,
+  "resourceTypeID" int(11) NOT NULL,
+  "purpose" tinyint(4) DEFAULT NULL,
+  "quantity" int(11) DEFAULT NULL,
+  "minSecurityLevel" double DEFAULT NULL,
+  "factionID" int(11) DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE INDEX "invControlTowerResources_IX_factionID" ON "invControlTowerResources" ("factionID");
+CREATE INDEX "invControlTowerResources_IX_purpose" ON "invControlTowerResources" ("purpose");
+CREATE INDEX "invControlTowerResources_IX_resourceTypeID" ON "invControlTowerResources" ("resourceTypeID");
+
+INSERT INTO "invControlTowerResources" 
+    SELECT  1000000 * "controlTowerTypeID" + "resourceTypeID", 
+            "controlTowerTypeID",
+            "resourceTypeID",
+            "purpose",
+            "quantity",
+            "minSecurityLevel",
+            "factionID"
+    FROM "invControlTowerResources_temp";
 
 ----------------------------------------------------------
 -- DROP UNWANTED TABLES

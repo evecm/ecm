@@ -33,8 +33,7 @@ from ConfigParser import SafeConfigParser
 from ecm.lib.subcommand import Subcommand
 from ecm.admin import instance_template
 from ecm.admin.util import run_python_cmd, log, pipe_to_django_shell
-from ecm.admin.cmd import collect_static_files, download_patched_eve_db, patch_ccp_dump,\
-    PATCHED_EVE_DB_URL, CCP_EVE_DB_URL
+from ecm.admin.cmd import collect_static_files, patch_ccp_dump, CCP_EVE_DB_URL, import_eve_data_dump
 
 #-------------------------------------------------------------------------------
 def sub_command():
@@ -49,15 +48,6 @@ def sub_command():
     upgrade_cmd.parser.add_option('-u', '--upgrade-from-1.4.9',
                                   dest='upgrade_from_149', action='store_true', default=False,
                                   help='Upgrade from ECM-1.4.9.')
-    upgrade_cmd.parser.add_option('--eve-db-url',
-                                  dest='eve_db_url', default=PATCHED_EVE_DB_URL,
-                                  help='URL where to download EVE database archive.')
-    upgrade_cmd.parser.add_option('--eve-db-zip-archive',
-                                  dest='eve_zip_archive',
-                                  help='Local path to EVE database archive (skips download).')
-    upgrade_cmd.parser.add_option('--skip-eve-db-download',
-                                  dest='skip_eve_db_download', action='store_true',
-                                  help='Do NOT download EVE db (use with care).')
     upgrade_cmd.parser.add_option('--from-ccp-dump',
                                   dest='from_ccp_dump', action='store_true', default=False,
                                   help='Update EVE database from CCP official dump (can take a long time).')
@@ -164,6 +154,7 @@ def run(command, global_options, options, args):
     config = SafeConfigParser()
     if config.read([path.join(instance_dir, 'settings.ini')]):
         sqlite_db_dir = config.get('database', 'sqlite_db_dir')
+        db_engine = config.get('database', 'ecm_engine')
     if not sqlite_db_dir:
         sqlite_db_dir = path.join(instance_dir, 'db')
     
@@ -177,15 +168,12 @@ def run(command, global_options, options, args):
     if not options.no_syncdb:
         migrate_ecm_db(instance_dir, options.upgrade_from_149)
 
-    # download eve db
-    if not options.skip_eve_db_download:
-        if options.from_ccp_dump:
-            patch_ccp_dump(ccp_dump_url=options.ccp_dump_url,
-                           ccp_dump_archive=options.ccp_dump_archive,
-                           eve_db_dir=sqlite_db_dir)
-        else:
-            download_patched_eve_db(eve_db_url=options.eve_db_url,
-                                    eve_zip_archive=options.eve_zip_archive,
-                                    eve_db_dir=sqlite_db_dir)
+    # update eve datadump
+    if options.from_ccp_dump and 'sqlite' in db_engine:
+        patch_ccp_dump(ccp_dump_url=options.ccp_dump_url,
+                       ccp_dump_archive=options.ccp_dump_archive,
+                       eve_db_dir=sqlite_db_dir)
+        import_eve_data_dump(sqlite_db_dir)
+
 
 

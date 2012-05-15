@@ -79,7 +79,7 @@ def download_patched_eve_db(eve_db_url, eve_zip_archive, eve_db_dir):
             log('done')
 
 #-------------------------------------------------------------------------------
-CCP_EVE_DB_URL = 'http://zofu.no-ip.de/cru110/cru110-sqlite3-v1.db.bz2'
+CCP_EVE_DB_URL = 'http://zofu.no-ip.de/esc10/esc10-sqlite3-v1.db.bz2'
 def patch_ccp_dump(ccp_dump_url, eve_db_dir, ccp_dump_archive=None):
     sql_script = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'eve_ecm_patch.sql')
     with open(sql_script, 'r') as f:
@@ -120,6 +120,21 @@ def patch_ccp_dump(ccp_dump_url, eve_db_dir, ccp_dump_archive=None):
             shutil.rmtree(tempdir)
             log('done')
 
+#------------------------------------------------------------------------------
+def import_eve_data_dump(sqlite_db_dir):
+    log('Importing EVE data into ECM database...')
+    sql_script = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'copy_eve_tables.sql')
+    with open(sql_script, 'r') as f:
+        sql_patch = f.read()
+        
+    ecm_db_file = os.path.join(sqlite_db_dir, 'ecm.sqlite')
+    eve_db_file = os.path.join(sqlite_db_dir, 'eve.sqlite')
+    conn = sqlite3.connect(ecm_db_file)
+    conn.execute('ATTACH DATABASE ? AS "eve";', [eve_db_file])
+    conn.executescript(sql_patch)
+    conn.commit()
+    conn.close()
+    log('EVE data successfully imported.')
 
 #------------------------------------------------------------------------------
 def run_server(instance_dir, address, port, access_log=False):
