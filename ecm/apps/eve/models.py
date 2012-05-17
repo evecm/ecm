@@ -98,18 +98,16 @@ class ControlTowerResource(models.Model):
     purpose = models.SmallIntegerField()
     quantity = models.SmallIntegerField()
     minSecurityLevel = models.FloatField(null=True, blank=True)
-    factionID = models.SmallIntegerField(null=True, blank=True)
+    factionID = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return '%s: %d / hour' % (self.resource.typeName, self.quantity)
 
     def __eq__(self, other):
-        return (isinstance(other, ControlTowerResource)
-                and other.controlTowerTypeID == self.controlTowerTypeID
-                and other.resourceTypeID == self.resourceTypeID)
+        return isinstance(other, ControlTowerResource) and other.id == self.id
 
     def __hash__(self):
-        return self.controlTowerTypeID * 1000000 + self.resourceTypeID
+        return self.id
 
 #------------------------------------------------------------------------------
 class MarketGroup(models.Model):
@@ -124,7 +122,7 @@ class MarketGroup(models.Model):
                                       db_column='parentGroupID', null=True, blank=True)
     marketGroupName = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    iconID = models.SmallIntegerField(null=True, blank=True)
+    iconID = models.IntegerField(null=True, blank=True)
     hasTypes = models.SmallIntegerField(null=True, blank=True)
 
     def __unicode__(self):
@@ -325,13 +323,10 @@ class BlueprintReq(models.Model):
         return '%s x%d' % (self.required_type, self.quantity)
 
     def __eq__(self, other):
-        return (isinstance(other, BlueprintReq)
-                and other.blueprintTypeID == self.blueprintTypeID
-                and other.activityID == self.activityID
-                and other.requiredTypeID == self.requiredTypeID)
+        return isinstance(other, BlueprintReq) and other.id == self.id
 
     def __hash__(self):
-        return self.blueprintTypeID * 100000000 + self.requiredTypeID * 10 + self.activityID
+        return self.id
 
 
 

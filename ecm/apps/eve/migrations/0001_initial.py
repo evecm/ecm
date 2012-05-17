@@ -43,7 +43,7 @@ class Migration(SchemaMigration):
             ('purpose', self.gf('django.db.models.fields.SmallIntegerField')()),
             ('quantity', self.gf('django.db.models.fields.SmallIntegerField')()),
             ('minSecurityLevel', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
-            ('factionID', self.gf('django.db.models.fields.SmallIntegerField')(null=True, blank=True)),
+            ('factionID', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
         ))
         db.send_create_signal('eve', ['ControlTowerResource'])
 
@@ -56,7 +56,7 @@ class Migration(SchemaMigration):
             ('parent_group', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='children_groups', null=True, db_column='parentGroupID', to=orm['eve.MarketGroup'])),
             ('marketGroupName', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
             ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('iconID', self.gf('django.db.models.fields.SmallIntegerField')(null=True, blank=True)),
+            ('iconID', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('hasTypes', self.gf('django.db.models.fields.SmallIntegerField')(null=True, blank=True)),
         ))
         db.send_create_signal('eve', ['MarketGroup'])
@@ -207,7 +207,7 @@ class Migration(SchemaMigration):
         'eve.controltowerresource': {
             'Meta': {'ordering': "['control_tower', 'resource']", 'unique_together': "(('control_tower', 'resource'),)", 'object_name': 'ControlTowerResource'},
             'control_tower': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'tower_resources_t'", 'db_column': "'controlTowerTypeID'", 'to': "orm['eve.Type']"}),
-            'factionID': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'factionID': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
             'minSecurityLevel': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'purpose': ('django.db.models.fields.SmallIntegerField', [], {}),
@@ -233,7 +233,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "['marketGroupID']", 'object_name': 'MarketGroup'},
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'hasTypes': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'iconID': ('django.db.models.fields.SmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'iconID': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'marketGroupID': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
             'marketGroupName': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'parent_group': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'children_groups'", 'null': 'True', 'db_column': "'parentGroupID'", 'to': "orm['eve.MarketGroup']"})
