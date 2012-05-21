@@ -21,6 +21,7 @@ __author__ = 'diabeteman'
 
 import os
 import sys
+import shutil
 import signal
 import subprocess
 from subprocess import PIPE
@@ -86,7 +87,7 @@ def run_command(command_line, run_dir, exit_on_failure=True):
 #-------------------------------------------------------------------------------
 def pipe_to_django_shell(python_code, run_dir, exit_on_failure=True):
     
-    log('Piping code to django shell: "%s"' % python_code)
+    log('Piping code to django shell: %r' % python_code)
     
     command_line = [sys.executable, 'manage.py', 'shell']
     proc = None
@@ -95,13 +96,42 @@ def pipe_to_django_shell(python_code, run_dir, exit_on_failure=True):
                                 cwd=run_dir, universal_newlines=True)
         (_, stderr) = proc.communicate(python_code)
         exitcode = proc.wait()
-        if exitcode != 0 and exit_on_failure:
+        if (exitcode != 0 or stderr) and exit_on_failure:
             print >>sys.stderr, stderr
             sys.exit(exitcode)
     except KeyboardInterrupt:
         if proc is not None:
             os.kill(proc.pid, signal.SIGTERM)
 
+#-------------------------------------------------------------------------------
+def pipe_to_dbshell(sql_file, run_dir, password=None, exit_on_failure=True):
+    
+    log('Piping SQL file to dbshell: %r' % sql_file)
+    
+    command_line = [sys.executable, 'manage.py', 'dbshell']
+    proc = None
+    try:
+        if password is not None:
+            # workaround for postgres, 
+            # cannot pass password through command line options
+            os.environ['PGPASSWORD'] = password
+        
+        proc = subprocess.Popen(command_line, stdin=PIPE, stdout=PIPE, stderr=PIPE, 
+                                cwd=run_dir, universal_newlines=True, bufsize=-1)
+        
+        sql_fd = open(sql_file, 'rb')
+        sql = sql_fd.read()
+        sql_fd.close()
+        
+        (_, stderr) = proc.communicate(sql)
+            
+        exitcode = proc.wait()
+        if exitcode != 0 and exit_on_failure:
+            print >>sys.stderr, stderr
+            sys.exit(exitcode)
+    except KeyboardInterrupt:
+        if proc is not None:
+            os.kill(proc.pid, signal.SIGTERM)
 
 #-------------------------------------------------------------------------------
 def log(message, *args):

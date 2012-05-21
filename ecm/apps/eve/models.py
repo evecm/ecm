@@ -357,7 +357,6 @@ class Type(models.Model):
                                      db_column='marketGroupID',
                                      null=True, blank=True, db_index=True)
     metaGroupID = models.SmallIntegerField(null=True, blank=True)
-    icon = models.CharField(max_length=32, null=True, blank=True)
     published = models.SmallIntegerField(null=True, blank=True, db_index=True)
 
     @property

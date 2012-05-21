@@ -22,7 +22,7 @@ import os
 
 import ecm
 from ecm.lib.subcommand import SubcommandsOptionParser
-from ecm.admin.cmd import create, upgrade, daemon, init, manage, run
+from ecm.admin.cmd import create, upgrade, daemon, init, manage, run, load, dump
 
 #------------------------------------------------------------------------------
 def init_options():
@@ -31,8 +31,10 @@ def init_options():
     upgrade_cmd = upgrade.sub_command()
     manage_cmd = manage.sub_command()
     run_cmd = run.sub_command()
+    load_cmd = load.sub_command()
+    dump_cmd = dump.sub_command()
     
-    subcommands = [create_cmd, init_cmd, upgrade_cmd, manage_cmd, run_cmd]
+    subcommands = [create_cmd, init_cmd, upgrade_cmd, manage_cmd, run_cmd, load_cmd, dump_cmd]
     if not os.name == 'nt':
         # daemonizing processes cannot be done on windows
         subcommands.append(daemon.sub_command())
