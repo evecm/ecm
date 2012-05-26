@@ -5,8 +5,8 @@
 EAPI=3
 
 DESCRIPTION="ECM is a management and decision-making helper-application for the game EVE Online."
-HOMEPAGE="http://code.google.com/p/eve-corp-management/"
-EHG_REPO_URI="https://code.google.com/p/eve-corp-management/"
+HOMEPAGE="http://eve-corp-management.org/"
+EHG_REPO_URI="http://hg.eve-corp-management.org/ecm/"
 
 PYTHON_DEPEND="2:2.5"
 SUPPORT_PYTHON_ABIS="1"
