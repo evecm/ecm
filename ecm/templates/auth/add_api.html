@@ -1,13 +1,13 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-
-{% block headtitle %}Add API Key{% endblock %}
+{% block headtitle %}{% trans 'Add API Key' %}{% endblock %}
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/account/">Account</a></li>
-<li class="active"><a href="/account/addapi/">Add API Key</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/account/">{% trans 'Account' %}</a></li>
+<li class="active"><a href="/account/addapi/">{% trans 'Add API Key' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -16,7 +16,7 @@
 </div>
 
 <a href="https://support.eveonline.com/api/Key/CreatePredefined/{{accessMask}}"
-   target="_blank">Create a new API Key on EVE-Online support website</a>
+   target="_blank">{% trans 'Create a new API Key on EVE-Online support website' %}</a>
 
 <form action="/account/addapi/" method="post" class="form-inline">{% csrf_token %}
 
@@ -28,7 +28,7 @@
     {{ form.vCode }}<br>
 
     <br>
-    <button type="submit" class="btn btn-primary">Submit Information</button>
+    <button type="submit" class="btn btn-primary">{% trans 'Submit Information' %}</button>
 </form>
 
 {% endblock %}

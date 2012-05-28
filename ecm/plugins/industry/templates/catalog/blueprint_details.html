@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block headtitle %}{{blueprint.typeName}}{% endblock %}
 
 {% block stylesheets %}
@@ -7,10 +7,10 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/industry">Industry</a></li>
-<li><a href="/industry/catalog/">Catalog</a></li>
-<li><a href="/industry/catalog/blueprints/">Blueprints</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/industry">{% trans 'Industry' %}</a></li>
+<li><a href="/industry/catalog/">{% trans 'Catalog' %}</a></li>
+<li><a href="/industry/catalog/blueprints/">{% trans 'Blueprints' %}</a></li>
 <li class="active"><a href="/industry/catalog/blueprints/{{ blueprint.typeID }}/">{{ blueprint.typeName }}</a></li>
 {% endblock %}
 

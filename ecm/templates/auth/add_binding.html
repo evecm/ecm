@@ -1,18 +1,18 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-
-{% block headtitle %}Create Binding to External Application{% endblock %}
+{% block headtitle %}{% trans 'Create Binding to External Application' %}{% endblock %}
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/account/">Account</a></li>
-<li class="active"><a href="{{ request_path }}">Create Binding to External Application</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/account/">{% trans 'Account' %%}</a></li>
+<li class="active"><a href="{{ request_path }}">{% trans 'Create Binding to External Application' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-    <h1>Create Binding to External Application <i>{{app}}</i></h1>
+    <h1>{% trans 'Create Binding to External Application' %} <i>{{app}}</i></h1>
 </div>
 <form action="{{ request_path }}" method="post"  class="form-inline">{% csrf_token %}
     {% if form.non_field_errors %}
@@ -24,7 +24,7 @@
     {{ form.password.label_tag }}{{ form.password.errors }}<br>
     {{ form.password }}<br>
     <br>
-    <button type="submit" class="btn btn-primary">Bind</button>
+    <button type="submit" class="btn btn-primary">{% trans 'Bind' %}</button>
 </form>
 
 {% endblock %}

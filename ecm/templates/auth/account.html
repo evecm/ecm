@@ -1,29 +1,29 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-
-{% block headtitle %}User Profile{% endblock %}
+{% block headtitle %}{% trans 'User Profile' %}{% endblock %}
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li class="active"><a href="/account/">User Profile</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li class="active"><a href="/account/">{% trans 'User Profile' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Hello <em>{{ user.username }}</em></h1>
+  <h1>{% trans 'Hello' %} <em>{{ user.username }}</em></h1>
 </div>
 
-<p>Click <a href="/account/passwordchange/">here</a> to change your password.</p>
+<p>{% trans 'Click <a href="/account/passwordchange/">here</a> to change your password.' %}</p>
 
 <div class="row-fluid">
   <div class="span6">
-    <h2>EVE API Keys</h2>
+    <h2>{% trans 'EVE API Keys' %}</h2>
     <table class="table">
     <thead>
       <tr>
-        <th>KeyID</th>
-        <th>State</th>
+        <th>{% trans 'KeyID' %}</th>
+        <th>{% trans 'State' %}</th>
         <th></th>
       </tr>
     </thead>
@@ -32,7 +32,7 @@
       <td><strong>#{{ key.keyID }}</strong></td>
       <td><strong>{{ key.is_valid_html|safe }}</strong></td>
       <td><a class="edit_api btn btn-mini" href="/account/editapi/{{ key.keyID }}/">Edit</a></td>
-      <td><a class="del_api btn btn-mini btn-danger" href="/account/deleteapi/{{ key.keyID }}/">Delete</a></td>
+      <td><a class="del_api btn btn-mini btn-danger" href="/account/deleteapi/{{ key.keyID }}/">{% trans 'Delete' %}</a></td>
     </tr>
     {% endfor %}
     </table>
@@ -44,7 +44,7 @@
     <table class="table" id="owned_characters">
     <thead>
       <tr>
-        <th>Name</th>
+        <th>{% trans 'Name' %}</th>
         <th></th>
       </tr>
     </thead>
@@ -53,7 +53,7 @@
       <td>{{ owned.permalink|safe }}</td>
       <td><a class="btn btn-mini btn-danger"
              href="/account/deletecharacter/{{ owned.characterID }}/"
-             name="{{ owned.name }}">Delete</a></td>
+             name="{{ owned.name }}">{% trans 'Delete' %}</a></td>
     </tr>
     {% endfor %}
     </table>
@@ -66,8 +66,8 @@
 <table class="table">
 <thead>
   <tr>
-    <th>Application</th>
-    <th>External Username</th>
+    <th>{% trans 'Application' %}</th>
+    <th>{% trans 'External Username' %}</th>
     <th></th>
   </tr>
 </thead>
@@ -75,9 +75,9 @@
   {% for app in external_apps %}
   <tr>
     <td><strong>{{ app.app.name }}</strong></td>
-    <td>{% if app.binding %}<strong class="ok">{{ app.binding.external_name }}</strong>{% else %}None{% endif %}</td>
-    <td>{% if app.binding %}<a class="del_binding btn btn-mini btn-danger" href="/account/binding/delete/{{app.binding.id}}/">Delete</a>
-                  {% else %}<a class="add_binding btn btn-mini btn-success" href="/account/binding/add/{{app.app.id}}/">Bind</a>{%endif%}</td>
+    <td>{% if app.binding %}<strong class="ok">{{ app.binding.external_name }}</strong>{% else %}{% trans 'None' %}{% endif %}</td>
+    <td>{% if app.binding %}<a class="del_binding btn btn-mini btn-danger" href="/account/binding/delete/{{app.binding.id}}/">{% trans 'Delete' %}</a>
+                  {% else %}<a class="add_binding btn btn-mini btn-success" href="/account/binding/add/{{app.app.id}}/">{% trans 'Bind' %}</a>{%endif%}</td>
   </tr>
 {% endfor %}
 </tbody>
@@ -89,20 +89,20 @@
 <script type="text/javascript">
 $(document).ready(function () {
     $("#owned_characters a").click(function (event) {
-        var alert_text = "Are you sure you want to get rid of " + this.name + "?\n\n";
-        alert_text += "If this character is still attached to one of your registered API Keys, it will be associated with your profile again at next scan.";
+        var alert_text = "{% trans 'Are you sure you want to get rid of' %} " + this.name + "?\n\n";
+        alert_text += "{% trans 'If this character is still attached to one of your registered API Keys, it will be associated with your profile again at next scan.' %}";
         if (!confirm(alert_text)) {
             event.preventDefault();
         }
     });
     $("a.del_api").click(function (event) {
-        var alert_text = "Are you sure you want to delete this API Key?";
+        var alert_text = "{% trans 'Are you sure you want to delete this API Key?' %}";
         if (!confirm(alert_text)) {
             event.preventDefault();
         }
     });
     $(".del_binding").click(function () {
-        var alert_text = "Are you sure you want to delete this binding?";
+        var alert_text = "{% trans 'Are you sure you want to delete this binding?' %}";
         if (!confirm(alert_text)) {
             event.preventDefault();
         }

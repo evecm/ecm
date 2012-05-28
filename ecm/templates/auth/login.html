@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Login{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Login.' %}{% endblock %}
 
 {% block breadcrumbs_wrapper %}{% endblock %}
 
@@ -8,7 +8,7 @@
 
 <div class="row">
   <div class="span4 offset4">
-	  <h1>Please login</h1>
+	  <h1>{% trans 'Please login' %}</h1>
 	  
 	  <form method="post" action="/account/login/" class="well">
 	    {% csrf_token %}
@@ -20,13 +20,13 @@
 	    <input type="password" name="password" placeholder="password" />
 	    <label class="checkbox">
 	       <input type="checkbox" id="rememberme" name="rememberme" value="0" />
-	       Remember Me
+	       {% trans 'Remember Me' %}
 	    </label>
 	    <input type="submit" name="cmdweblogin" class="btn btn-primary" value="Login" />
 	  
 	  </form>
-	  <p class="center">Not a member yet, you can <a href="/account/create/">create an acount</a>.</p>
-	  <p class="center">Forgot your password? Click <a href="/account/passwordreset/">here to reset it</a>.</p>
+	  <p class="center">{% trans 'Not a member yet, you can' %} <a href="/account/create/"> {% trans 'create an account' %} </a>.</p>
+	  <p class="center">{% trans 'Forgot your password? Click' %} <a href="/account/passwordreset/"> {% trans 'here to reset it' %} </a>.</p>
   
   </div>
 </div>

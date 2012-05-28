@@ -1,17 +1,24 @@
-{% extends "base.html" %} {% block headtitle %}{% if contract.title %}{{contract.title|safe}}{% else %}&lt;No Title&gt;{% endif	%}{%endblock %} {% block stylesheets %}
+{% extends "base.html" %}
+{% load i18n %}
+{% block headtitle %}
+{% if contract.title %}{{contract.title|safe}}
+{% else %}{% trans '&lt;No Title&gt;' %}
+{% endif	%}
+{%endblock %} 
+{% block stylesheets %}
 <link rel="stylesheet" type="text/css"
 	href="{{ STATIC_URL }}accounting/css/classes.css" />
 <link rel="stylesheet" type="text/css"
 	href="{{ STATIC_URL }}hr/css/classes.css" />
 {% endblock %} {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/accounting">Accounting</a></li>
-<li><a href="/accounting/contracts/">Contracts</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/accounting">{% trans 'Accounting' %}</a></li>
+<li><a href="/accounting/contracts/">{% trans 'Contracts' %}</a></li>
 <li class="active"><a
-	href="/accounting/contracts/{{ contract.contractID }}/">{% if contract.title %}{{contract.title|safe}}{% else %}&lt;No Title&gt;{% endif	%}</a></li>
+	href="/accounting/contracts/{{ contract.contractID }}/">{% if contract.title %}{{contract.title|safe}}{% else %}{% trans '&lt;No Title&gt;' %}{% endif	%}</a></li>
 {% endblock %} {% block main_content %}
 <div class="page-header">
-	<h1>Contract Details</h1>
+	<h1>{% trans 'Contract Details' %}</h1>
 </div>
 
 <div class="row-fluid">
@@ -20,61 +27,61 @@
 	</div>
 	<div class="span2">
 		<dl>
-			<dt>Title</dt>
-			<dd id="contract-title">{% if contract.title %}{{contract.title|safe}}{% else %}&lt;No Title&gt;{% endif	%}</dd>
-			<dt>Type</dt>
+			<dt>{% trans 'Title' %}</dt>
+			<dd id="contract-title">{% if contract.title %}{{contract.title|safe}}{% else %}{% trans '&lt;No Title&gt;' %}{% endif	%}</dd>
+			<dt>{% trans 'Type' %}</dt>
 			<dd id="contract-type">{{contract.permalink_type|safe}}</dd>
-			<dt>Status</dt>
+			<dt>{% trans 'Status' %}</dt>
 			<dd class="contract-{{contract.status|lower}}">{{contract.status_html|safe}}</dd>
-			<dt>Availability</dt>
+			<dt>{% trans 'Availability' %}</dt>
 			<dd id="contract-availability">{{contract.availability_string}}</dd>
-			<dt>Date Issued</dt>
+			<dt>{% trans 'Date Issued' %}</dt>
 			<dd id="contract-dateissued">{{contract.dateIssued|ecm_datetime}}</dd>
-			<dt>Date Expired</dt>
+			<dt>{% trans 'Date Expired' %}</dt>
 			<dd id="contract-dateexpired">{{contract.dateExpired|ecm_datetime}}</dd>
-			<dt>Date Accepted</dt>
+			<dt>{% trans 'Date Accepted' %}</dt>
 			<dd id="contract-dateaccepted">{{contract.dateAccepted|ecm_datetime}}</dd>
-			<dt>Date Completed</dt>
+			<dt>{% trans 'Date Completed' %}</dt>
 			<dd id="contract-datecompleted">{{contract.dateCompleted|ecm_datetime}}</dd>
-			<dt>Station (start)</dt>
+			<dt>{% trans 'Station (start)' %}</dt>
 			<dd id="contract-startstation">{{startStation}}</dd>
-			<dt>Station (end)</dt>
+			<dt>{% trans 'Station (end)' %}</dt>
 			<dd id="contract-endstation">{{endStation}}</dd>
 		</dl>
 	</div>
 	<div class="span2">
 		<dl>
-				<dt>Time left</dt>
-				<dd id="contract-numdays">{{contract.numDays}} days</dd>
-				<dt>Price</dt>
+				<dt>{% trans 'Time left' %}</dt>
+				<dd id="contract-numdays">{{contract.numDays}} {% trans 'days' %}</dd>
+				<dt>{% trans 'Price' %}</dt>
 				<dd id="contract-price">{{contract.price|ecm_price}} ISK</dd>
-				<dt>Reward</dt>
+				<dt>{% trans 'Reward' %}</dt>
 				<dd id="contract-reward">{{contract.reward|ecm_price}} ISK</dd>
-				<dt>Collateral</dt>
+				<dt>{% trans 'Collateral' %}</dt>
 				<dd id="contract-price">{{contract.collateral|ecm_price}} ISK</dd>
-				<dt>Buyout</dt>
+				<dt>{% trans 'Buyout' %}</dt>
 				<dd id="contract-price">{{contract.buyout|ecm_price}} ISK</dd>
-				<dt>Volume</dt>
+				<dt>{% trans 'Volume' %}</dt>
 				<dd id="contract-price">{{contract.volume}} m&sup3;</dd>
-				<dt>Issuer</dt>
+				<dt>{% trans 'Issuer' %}</dt>
 				<dd id="contract-issuer">{{issuer|safe}}</dd>
-				<dt>Assignee</dt>
+				<dt>{% trans 'Assignee' %}</dt>
 				<dd id="contract-assignee">{{assignee|safe}}</dd>
-				<dt>Acceptor</dt>
+				<dt>{% trans 'Acceptor' %}</dt>
 				<dd id="contract-acceptor">{{acceptor|safe}}</dd>
 		</dl>
 	</div>
 </div>
 
-<h3>Contract Items</h3>
+<h3>{% trans 'Contract Items' %}</h3>
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
-    <a class="btn btn-small" data-toggle="button" id="toggle_grouped">Group</a>
+    <a class="btn btn-small" data-toggle="button" id="toggle_grouped">{% trans 'Group' %}</a>
   </div>
 </form>
 <div class="span10">
@@ -87,8 +94,8 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td colspan="{{columns|length}}" class="dataTables_empty">Loading
-					data from server...</td>
+				<td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading
+					data from server...' %}</td>
 			</tr>
 		</tbody>
 	</table>

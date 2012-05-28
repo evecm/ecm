@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block headtitle %}{{supply.typeName}}{% endblock %}
 
 {% block stylesheets %}
@@ -7,10 +7,10 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/industry">Industry</a></li>
-<li><a href="/industry/catalog/">Catalog</a></li>
-<li><a href="/industry/catalog/supplies/">Supplies</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/industry">{% trans 'Industry' %}</a></li>
+<li><a href="/industry/catalog/">{% trans 'Catalog' %}</a></li>
+<li><a href="/industry/catalog/supplies/">{% trans 'Supplies' %}</a></li>
 <li class="active"><a href="/industry/catalog/supplies/{{ supply.typeID }}/">{{ supply.typeName }}</a></li>
 {% endblock %}
 
@@ -21,11 +21,11 @@
   <div class="span1"><img src="http://image.eveonline.com/Type/{{supply.typeID}}_64.png" /></div>
   <div class="span11">
     <dl>
-      <dt>Price</dt>
+      <dt>{% trans 'Price' %}</dt>
         <dd id="price">{{supply.price|ecm_price}}</dd>
-      <dt>Auto-Update</dt>
+      <dt>{% trans 'Auto-Update' %}</dt>
         <dd><input type="checkbox" id="update_checkbox" {% if supply.auto_update %}checked{% endif %}/></dd>
-      <dt>Supply Source</dt>
+      <dt>{% trans 'Supply Source' %}</dt>
         <dd>
           <select id="supply_source" class="input-medium">{% for source in supply_sources %}
             <option value="{{source.location_id}}" {%if supply.supply_source == source%}selected{%endif%}>{{source.name}}</option>
@@ -36,7 +36,7 @@
   </div>
 </div>
 
-<h3>Price History</h3>
+<h3>{% trans 'Price History' %}</h3>
 
 <div class="span6">
 <table class="table table-bordered table-condensed" id="pricehistory_table">
@@ -49,7 +49,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
 </table>

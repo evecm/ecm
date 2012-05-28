@@ -1,35 +1,35 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Blueprints Catalog{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Blueprints Catalog' %}{% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
 {% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/industry/">Industry</a></li>
-<li><a href="/industry/catalog/">Catalog</a></li>
-<li class="active"><a href="/industry/catalog/blueprints/">Blueprints</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/industry/">{% trans 'Industry' %}</a></li>
+<li><a href="/industry/catalog/">{% trans 'Catalog' %}</a></li>
+<li class="active"><a href="/industry/catalog/blueprints/">{% trans 'Blueprints' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<div class="page-header"><h1>Blueprints Catalog</h1></div>
+<div class="page-header"><h1>{% trans 'Blueprints Catalog' %}</h1></div>
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
-    <span class="label label-info">Display</span>
+    <span class="label label-info">{% trans 'Display' %}</span>
     <div class="btn-group" data-toggle="buttons-radio" id="display_buttons">
-      <button class="btn btn-small btn-info" id="display_all">All Blueprints</button>
-      <button class="btn btn-small btn-info" id="display_originals">Only Originals</button>
-      <button class="btn btn-small btn-info" id="display_copies">Only Copies</button>
+      <button class="btn btn-small btn-info" id="display_all">{% trans 'All Blueprints' %}</button>
+      <button class="btn btn-small btn-info" id="display_originals">{% trans 'Only Originals' %}</button>
+      <button class="btn btn-small btn-info" id="display_copies">{% trans 'Only Copies' %}</button>
     </div>
-    <a class="btn btn-small btn-danger" href="/industry/catalog/blueprints/import/">Import blueprints from corp assets</a>
+    <a class="btn btn-small btn-danger" href="/industry/catalog/blueprints/import/">{% trans 'Import blueprints from corp assets' %}</a>
   </div>
 </form>
 
@@ -43,7 +43,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>

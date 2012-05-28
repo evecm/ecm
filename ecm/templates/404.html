@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Resource not found{% endblock %}
+{% block headtitle %}{% trans 'Resource not found' %}{% endblock %}
 
 {% block main_content %}
 <div class="center">
-<h1 class="error">Resource not found</h1>
+<h1 class="error">{% trans 'Resource not found' %}</h1>
 
-<p>Sorry but the page you requested:</p>
+<p>{% trans 'Sorry but the page you requested:' %}</p>
 
 <p><a href="{{ request_path }}">{{ request_path }}</a></p>
 
-<p>cannot be found on the server.</p>
+<p>{% trans 'cannot be found on the server.' %}</p>
 </div>
 {% endblock %}

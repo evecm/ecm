@@ -1,22 +1,14 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Assets{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Assets' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/assets/" >Assets</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/assets/" >{% trans 'Assets' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div>
-    <h1 class="pagetitle">Assets - &lt;no data&gt;</h1>
+    <h1 class="pagetitle">{% trans 'Assets - &lt;no data&gt;' %}</h1>
 </h1>
 {% endblock %}
-
-
-
-
-
-
-
-

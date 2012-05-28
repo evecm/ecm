@@ -1,16 +1,16 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Catalog{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Catalog' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/industry/">Industry</a></li>
-<li class="active"><a href="/industry/catalog/">Catalog</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/industry/">{% trans 'Industry' %}</a></li>
+<li class="active"><a href="/industry/catalog/">{% trans 'Catalog' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Industry Catalog Management</h1>
+  <h1>{% trans 'Industry Catalog Management' %}</h1>
 </div>
 
 <div class="row-fluid links">
@@ -18,19 +18,19 @@
      class="btn btn-large children-block"
      title="Prices and availability of items in the shop.">
     <img src="{{ STATIC_URL }}industry/img/barcode-128.png">
-    <strong>Items catalog</strong>
+    <strong>{% trans 'Items catalog' %}</strong>
   </a>
   <a href="/industry/catalog/supplies/"
      class="btn btn-large children-block"
      title="Prices and supply sources for raw materials.">
     <img src="{{ STATIC_URL }}industry/img/supplies-128.png">
-    <strong>Supplies</strong>
+    <strong>{% trans 'Supplies' %}</strong>
   </a>
   <a href="/industry/catalog/blueprints/"
      class="btn btn-large children-block"
      title="Blueprints owned by the corporation.">
     <img src="{{ STATIC_URL }}industry/img/blueprint-128.png">
-    <strong>Owned blueprints</strong>
+    <strong>{% trans 'Owned blueprints' %}</strong>
   </a>
 </div>
 {% endblock %}

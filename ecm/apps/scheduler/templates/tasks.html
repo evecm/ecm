@@ -1,33 +1,33 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block headtitle %}Scheduled Tasks{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li class="active"><a href="/scheduler/">Scheduled Tasks</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li class="active"><a href="/scheduler/">{% trans 'Scheduled Tasks' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Scheduled Tasks</h1>
+  <h1>{% trans 'Scheduled Tasks' %}</h1>
 </div>
 
 <table class="table table-bordered table-condensed" id="tasks_table">
   <thead>
     <tr>
-      <th>Task Description</th>
-      <th>Next Auto Execution</th>
-      <th>Frequency</th>
-      <th>Last Execution</th>
-      <th>Last Result</th>
-      <th>Is Running</th>
-      <th>Is Scheduled</th>
-      <th>Force Execution</th>
+      <th>{% trans 'Task Description' %}</th>
+      <th>{% trans 'Next Auto Execution' %}</th>
+      <th>{% trans 'Frequency' %}</th>
+      <th>{% trans 'Last Execution' %}</th>
+      <th>{% trans 'Last Result' %}</th>
+      <th>{% trans 'Is Running' %}</th>
+      <th>{% trans 'Is Scheduled' %}</th>
+      <th>{% trans 'Force Execution' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="8" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
 </table>

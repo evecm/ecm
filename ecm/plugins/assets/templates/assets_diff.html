@@ -1,17 +1,17 @@
 {% extends "assets.html" %}
-
-{% block headtitle %}Asset Changes on {{ date }}{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Asset Changes on' %} {{ date }}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/assets/" >Assets</a></li>
-<li><a href="/assets/changes/" >Changes</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/assets/" >{% trans 'Assets' %}</a></li>
+<li><a href="/assets/changes/" >{% trans 'Changes' %}</a></li>
 <li><a href="/assets/changes/{{ date_str }}" >{{ date|ecm_datetime }}</a></li>
 {% endblock %}
 
 {% block title %}
 <div>
-  <h1 class="pagetitle">Asset Changes on
+  <h1 class="pagetitle">{% trans 'Asset Changes on' %}
     <small>
       <select id="date_selector" class="date_selector">{% for d in dates %}
         <option value="{{ d.value }}" {% if d.value == date_str %}selected="selected"{% endif %}>{{ d.show|ecm_datetime }}</option>
@@ -98,6 +98,3 @@ $(document).ready(function () {
 });
 </script>
 {% endblock %}
-
-
-

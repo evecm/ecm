@@ -22,7 +22,7 @@ __author__ = "diabeteman"
 import logging
 from datetime import timedelta
 
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
 from django.utils.encoding import force_unicode
 from django.utils import timezone
 from django.db import models
@@ -36,11 +36,11 @@ LOG = logging.getLogger(__name__)
 class ScheduledTask(models.Model):
 
     FREQUENCY_UNIT_CHOICES = (
-        (1, _("seconds")),
-        (60, _("minutes")),
-        (3600, _("hours")),
-        (3600 * 24, _("days")),
-        (3600 * 24 * 7, _("weeks"))
+        (1, tr("seconds")),
+        (60, tr("minutes")),
+        (3600, tr("hours")),
+        (3600 * 24, tr("days")),
+        (3600 * 24 * 7, tr("weeks"))
     )
 
     function = models.CharField(max_length=256, validators=[FunctionValidator()])
@@ -57,19 +57,21 @@ class ScheduledTask(models.Model):
     is_last_exec_success = models.BooleanField(default=False)
 
     class Meta:
-        verbose_name = _("scheduled task")
-        verbose_name_plural = _("scheduled tasks")
+        verbose_name = tr("scheduled task")
+        verbose_name_plural = tr("scheduled tasks")
 
     def __unicode__(self):
         return force_unicode(self.function)
 
     def frequency_admin_display(self):
-        return ugettext("Every %s %s") % (self.frequency, self.get_frequency_units_display())
-    frequency_admin_display.short_description = "frequency"
+        freq = self.frequency
+        frequnits = self.get_frequency_units_display()
+        return tr("Every "+freq+" "+frequnits)
+    frequency_admin_display.short_description = tr("frequency")
 
     def function_admin_display(self):
         return self.get_function_display()
-    function_admin_display.short_description = "Function"
+    function_admin_display.short_description = tr("Function")
 
     def permalink(self, next_page=None):
         url = "/scheduler/tasks/%d/launch/" % self.id
@@ -77,12 +79,12 @@ class ScheduledTask(models.Model):
         return url
 
     def as_html(self, next_page=None):
-        return '<a class="task" href="%s">Launch</a>' % self.permalink(next_page)
+        return '<a class="task" href="%s">{% trans "Launch" %}</a>' % self.permalink(next_page)
 
     def launch_task_admin_display(self):
         return self.as_html(next_page="/admin/scheduler/scheduledtask/")
     launch_task_admin_display.allow_tags = True
-    launch_task_admin_display.short_description = "Launch"
+    launch_task_admin_display.short_description = tr("Launch")
 
     def next_execution_admin_display(self):
         from ecm.utils.format import print_delta
@@ -90,7 +92,7 @@ class ScheduledTask(models.Model):
         if delta < timedelta(0):
             delta = timedelta(0)
         return print_delta(delta)
-    next_execution_admin_display.short_description = "Next execution"
+    next_execution_admin_display.short_description = tr("Next execution")
 
     def get_function(self):
         return extract_function(self.function)
@@ -128,9 +130,9 @@ class ScheduledTask(models.Model):
 class GarbageCollector(models.Model):
 
     AGE_UNIT_CHOICES = (
-        (3600 * 24, _("days")),
-        (3600 * 24 * 7, _("weeks")),
-        (3600 * 24 * 7 * 30, _("months"))
+        (3600 * 24, tr("days")),
+        (3600 * 24 * 7, tr("weeks")),
+        (3600 * 24 * 7 * 30, tr("months"))
     )
 
     db_table = models.CharField(max_length=255, primary_key=True,
@@ -141,11 +143,13 @@ class GarbageCollector(models.Model):
 
     def db_table_admin_display(self):
         return self.get_db_table_display()
-    db_table_admin_display.short_description = "DB Table"
+    db_table_admin_display.short_description = tr("DB Table")
 
     def max_age_threshold_admin_display(self):
-        return ugettext("%d %s") % (self.max_age_threshold, self.get_age_units_display())
-    max_age_threshold_admin_display.short_description = "Max Age Threshold"
+        max_age_thres = self.max_age_threshold
+        age_unit_disp = self.get_age_units_display()
+        return str(max_age_thres+" "+age_unit_disp)
+    max_age_threshold_admin_display.short_description = tr("Max Age Threshold")
 
     def get_expiration_date(self):
         return timezone.now() + timedelta(seconds=self.max_age_threshold * self.age_units)

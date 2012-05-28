@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery-ui-1.8.13.custom.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
 {% endblock %}
 
-{% block headtitle %}Market Orders{% endblock %}
+{% block headtitle %}{% trans 'Market Orders' %}{% endblock %}
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/accounting/">Accounting</a></li>
-<li class="active"><a href="/accounting/marketorders/">Market Orders</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/accounting/">{% trans 'Accounting' %}</a></li>
+<li class="active"><a href="/accounting/marketorders/">{% trans 'Market Orders' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -24,17 +24,17 @@
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
     <div class="control-group success" style="display: inline;">
-      <span class="label label-success">State</span>
+      <span class="label label-success">{% trans 'State' %}</span>
       <select id="state_selector">{% for s in states %}
             <option value="{{ s.stateID }}"{% if s.selected %} selected{% endif %}>{{ s.name }}</option>
       {% endfor %}</select>
     </div>
     <div class="control-group success" style="display: inline;">
-      <span class="label label-success">Type</span>
+      <span class="label label-success">{% trans 'Type' %}</span>
       <select id="type_selector">{% for t in types %}
             <option value="{{ t.typeID }}"{% if t.selected %} selected{% endif %}>{{ t.name }}</option>
       {% endfor %}</select>
@@ -50,7 +50,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="12" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="12" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>

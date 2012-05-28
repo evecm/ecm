@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block headtitle %}Server Internal Error{% endblock %}
+{% block headtitle %}{% trans 'Server Internal Error' %}{% endblock %}
 
 {% block main_content %}
 <div class="center">
-<h1 class="error">Server Internal Error</h1>
+<h1 class="error">{% trans 'Server Internal Error' %}</h1>
 
-<p>Ooops, the server just failed in computing your request.</p>
+<p>{% trans 'Ooops, the server just failed in computing your request.' %}</p>
 
-<p>The administrators have been notified.</p>
+<p>{% trans 'The administrators have been notified.' %}</p>
 </div>
 {% endblock %}

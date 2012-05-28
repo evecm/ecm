@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block headtitle %}{{item.typeName}}{% endblock %}
 
 {% block stylesheets %}
@@ -9,10 +9,10 @@
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/industry">Industry</a></li>
-<li><a href="/industry/catalog/">Catalog</a></li>
-<li><a href="/industry/catalog/items/">Items</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/industry">{% trans 'Industry' %}</a></li>
+<li><a href="/industry/catalog/">{% trans 'Catalog' %}</a></li>
+<li><a href="/industry/catalog/items/">{% trans 'Items' %}</a></li>
 <li class="active"><a href="/industry/catalog/items/{{ item.typeID }}/">{{ item.typeName }}</a></li>
 {% endblock %}
 
@@ -26,36 +26,36 @@
   </div>
   <div class="span3">
   <dl class="table">
-    <dt>Available in catalog</dt>
+    <dt>{% trans 'Available in catalog' %}</dt>
       <dd><input type="checkbox" id="availability_checkbox" {% if item.is_available %}checked{% endif %}/></dd>
-    <dt>Fixed Price</dt>
+    <dt>{% trans 'Fixed Price' %}</dt>
       <dd id="fixed_price" class="editable">{{item.fixed_price|ecm_price}}</dd>
-    <dt>Production Cost</dt>
+    <dt>{% trans 'Production Cost' %}</dt>
       <dd id="production_cost" class="editable">{{item.production_cost|ecm_price}}</dd>
-    <dt>Public Price</dt>
+    <dt>{% trans 'Public Price' %}</dt>
       <dd id="public_price" class="editable">{{item.public_price|ecm_price}}</dd>
   </dl>
 
   </div>
 </div>
 
-<h3>Owned Blueprints</h3>
+<h3>{% trans 'Owned Blueprints' %}</h3>
 
 <table class="blueprints_table">
   <thead>
     <tr>
       <th class="center"></th>
-      <th class="center">ME</th>
-      <th class="center">PE</th>
-      <th class="center">Copy</th>
-      <th class="center">Runs</th>
+      <th class="center">{% trans 'ME' %}</th>
+      <th class="center">{% trans 'PE' %}</th>
+      <th class="center">{% trans 'Copy' %}</th>
+      <th class="center">{% trans 'Runs' %}</th>
       <th class="center"></th>
     </tr>
   </thead>
   <tbody id="blueprints">
   {% for bp in item.blueprints.all %}
     <tr id="{{bp.id}}">
-      <td><a href="{{bp.url}}" title="Blueprint details">
+      <td><a href="{{bp.url}}" title="{% trans 'Blueprint details' %}">
         <img src="http://image.eveonline.com/Type/{{bp.typeID}}_32.png"/>
       </a></td>
       <td class="me editable center" id="{{bp.id}}">{{bp.me}}</td>
@@ -63,19 +63,19 @@
       <td class="center"><input class="copy" id="{{bp.id}}" type="checkbox" {% if bp.copy %}checked{% endif %}/></td>
       <td class="runs editable center" id="{{bp.id}}">{{bp.runs}}</td>
       <td>
-        <a class="btn btn-danger btn-small" title="Delete blueprint"
+        <a class="btn btn-danger btn-small" title="{% trans 'Delete blueprint' %}"
           onClick="deleteBlueprint({{bp.id}});"><i class="icon-trash icon-white"></i></a>
       </td>
     </tr>
   {% empty %}
-    <tr id="empty"><td colspan="4" class="center">None</td></tr>
+    <tr id="empty"><td colspan="4" class="center">{% trans 'None' %}</td></tr>
   {% endfor %}
   </tbody>
 </table>
 
 <a class="btn btn-success"
    onClick="addBlueprint({{item.typeID}});"><i class="icon-plus icon-white"></i>
-   Add New Blueprint
+   {% trans 'Add New Blueprint' %}
 </a>
 {% endblock %}
 
@@ -100,7 +100,7 @@ $(document).ready(function() {
       };
       $.post('/industry/catalog/items/{{item.typeID}}/availability/', params)
        .error(function () {
-        alert('Failed to change availability!');
+        alert("{% trans 'Failed to change availability!' %}");
       });
     });
 
@@ -108,7 +108,7 @@ $(document).ready(function() {
         loadurl: '/industry/catalog/items/{{item.typeID}}/fixed_price/',
         cssclass: 'edited',
         style: 'inherit',
-        tooltip: 'Click to edit',
+        tooltip: "{% trans 'Click to edit' %}",
         placeholder: '',
     });
 
@@ -121,7 +121,7 @@ $(document).ready(function() {
              _this.html(data);
          })
          .error(function (jqXHR) {
-             $('#error-text').html('<strong>Error!</strong> ' + jqXHR.responseText);
+             $('#error-text').html("<strong>{% trans 'Error' %}!</strong> " + jqXHR.responseText);
              $('#error-box').show();
              _this.html(oldPrice);
          });
@@ -136,7 +136,7 @@ $(document).ready(function() {
              _this.html(data);
          })
          .error(function (jqXHR) {
-             $('#error-text').html('<strong>Error!</strong> ' + jqXHR.responseText);
+             $('#error-text').html("<strong>{% trans 'Error' %}!</strong> " + jqXHR.responseText);
              $('#error-box').show();
              _this.html(oldPrice);
          });
@@ -149,13 +149,13 @@ function setEditableHandlers() {
     $('#blueprints td.me').editable('/industry/catalog/blueprints/me/', {
         cssclass: 'edited',
         style: 'inherit',
-        tooltip: 'Click to edit',
+        tooltip: "{% trans 'Click to edit' %}",
         placeholder: '',
     });
     $('#blueprints td.pe').editable('/industry/catalog/blueprints/pe/', {
         cssclass: 'edited',
         style: 'inherit',
-        tooltip: 'Click to edit',
+        tooltip: "{% trans 'Click to edit' %}",
         placeholder: '',
     });
     $('#blueprints input.copy').click(function () {
@@ -163,23 +163,23 @@ function setEditableHandlers() {
         var checked = $(this).is(':checked');
         $.post('/industry/catalog/blueprints/copy/', {id: thisId, value: checked})
         .error(function () {
-            alert('Failed to change copy!');
+            alert("{% trans 'Failed to change copy' %}!");
         });
     });
     $('#blueprints td.runs').editable('/industry/catalog/blueprints/runs/', {
         cssclass: 'edited',
         style: 'inherit',
-        tooltip: 'Click to edit',
+        tooltip: "{% trans 'Click to edit' %}",
         placeholder: '',
     });
 }
 
 
-EMPTY = '<tr id="empty"><td colspan="4" class="center">None</td></tr>';
+EMPTY = '<tr id="empty"><td colspan="4" class="center">{% trans 'None' %}</td></tr>';
 
 function deleteBlueprint(blueprintID) {
     var row = $('#blueprints tr#' + blueprintID);
-    if (confirm('Are you sure you want to delete this blueprint?')) {
+    if (confirm("{% trans 'Are you sure you want to delete this blueprint' %}?")) {
         $.get('/industry/catalog/blueprints/' + blueprintID + '/delete/')
             .success(function () {
                 $(row).remove();
@@ -189,7 +189,7 @@ function deleteBlueprint(blueprintID) {
                 }
             })
             .error(function () {
-                alert('Failed to delete blueprint.');
+                alert("{% trans 'Failed to delete blueprint' %}.");
             });
     }
 }
@@ -214,7 +214,7 @@ function addBlueprint(itemID) {
             $(row).appendTo("#blueprints")
             setEditableHandlers();
         }).error(function () {
-            alert('Failed to add blueprint.');
+            alert("{% trans 'Failed to add blueprint.' %}");
         });
 }
 </script>

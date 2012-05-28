@@ -1,23 +1,23 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery-ui-1.8.13.custom.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
 {% endblock %}
 
-{% block headtitle %}Wallet Transactions{% endblock %}
+{% block headtitle %}{% trans 'Wallet Transactions' %}{% endblock %}
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/accounting/">Accounting</a></li>
-<li class="active"><a href="/accounting/transactions/">Transactions</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/accounting/">{% trans 'Accounting' %}</a></li>
+<li class="active"><a href="/accounting/transactions/">{% trans 'Transactions' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-	<h1>Wallet Transactions <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+	<h1>{% trans 'Wallet Transactions' %} <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small></h1>
 </div>
 
 <form id="search_form" class="form-search form-inline btn-toolbar center">
@@ -26,7 +26,7 @@
     	<input type="text" id="search_text" class="input-small search-query" value="" />
 	</div>
     <div style="display: inline;">
-	  	<span class="label label-info">Amount</span>
+	  	<span class="label label-info">{% trans 'Amount' %}</span>
 	  	<select id="comp_selector" class="span1">
 		   	<option value="eq">==</option>
 		   	<option value="neq">&lt;&gt;</option>
@@ -38,44 +38,44 @@
 	  	<input type="number" id="amount_text" class="input-small search-query" value="" />
     </div>
     <div style="display: inline;">
-		<span class="label label-info"><i class="icon-calendar icon-white"></i>Period</span>
+		<span class="label label-info"><i class="icon-calendar icon-white"></i>{% trans 'Period' %}</span>
 		<select id="period_selector" class="input-small">
-			<option value="all" selected="selected">All Time</option>
-			<option value="thismonth">This Month</option>
-			<option value="week">Last Week</option>
-			<option value="month">Last Month</option>
-			<option value="year">Last Year</option>
+			<option value="all" selected="selected">{% trans 'All Time' %}</option>
+			<option value="thismonth">{% trans 'This Month' %}</option>
+			<option value="week">{% trans 'Last Week' %}</option>
+			<option value="month">{% trans 'Last Month' %}</option>
+			<option value="year">{% trans 'Last Year' %}</option>
 		</select>
 	</div>
 	<div style="display: inline;">
-		<span class="label label-info">From</span>
+		<span class="label label-info">{% trans 'From' %}</span>
 		<input type="text" id="from_date" name="from_date" value="{{ from_date }}" class="input-small" />
 	</div>
 	<div style="display: inline;">
-		<span class="label label-info">To</span>
+		<span class="label label-info">{% trans 'To' %}</span>
 		<input type="text" id="to_date" name="to_date" value="{{ to_date }}" class="input-small" />
 	</div>
 	<div class="btn-group">
-    	<button type="submit" id="search_button" class="btn btn-small"><i class="icon-search"></i> Search</button>
-    	<button type="submit" id="clear_search" class="btn btn-small">Reset</button>
+    	<button type="submit" id="search_button" class="btn btn-small"><i class="icon-search"></i>{% trans 'Search' %}</button>
+    	<button type="submit" id="clear_search" class="btn btn-small">{% trans 'Reset' %}</button>
 	</div>
 </form>
 
 <div class="btn-toolbar center form-inline">
     <div style="display: inline;">
-	    <span class="label label-important">Wallet</span>
+	    <span class="label label-important">{% trans 'Wallet' %}</span>
 	    <select id="wallet_selector" class="error">{% for w in wallets %}
 	      <option value="{{ w.walletID }}"{% if w.selected %} selected{% endif %}>{{ w.name }}</option>
 	    {% endfor %}</select>
 	</div>
 	<div style="display: inline;">
-	    <span class="label label-important">Operation</span>
+	    <span class="label label-important">{% trans 'Operation' %}</span>
 	    <select id="type_selector" class="error">{% for et in entryTypes %}
 	      <option value="{{ et.refTypeID }}"{% if et.selected %} selected{% endif %}>{{ et.refTypeName }}</option>
 	    {% endfor %}</select>
 	</div>
 	<div style="display: inline;">
-	    <span class="label label-important">For</span>
+	    <span class="label label-important">{% trans 'For' %}</span>
 	    <select id="for_selector" class="error">{% for ef in entryFor %}
 	      <option value="{{ ef.refTypeID }}"{% if ef.selected %} selected{% endif %}>{{ ef.refTypeName }}</option>
 	    {% endfor %}</select>
@@ -85,31 +85,31 @@
 <table class="table table-bordered table-condensed" id="transaction_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Date</th>
-      <th class="top" scope="col" >Type</th>
-      <th class="top" scope="col" >Price</th>
-      <th class="top" scope="col" >Quantity</th>
-      <th class="top" scope="col" >Amount</th>
-      <th class="top" scope="col" >Balance</th>
-      <th class="top" scope="col" >Location</th>
-      <th class="top" scope="col" >Wallet</th>
+      <th class="top" scope="col" >{% trans 'Date' %}</th>
+      <th class="top" scope="col" >{% trans 'Type' %}</th>
+      <th class="top" scope="col" >{% trans 'Price' %}</th>
+      <th class="top" scope="col" >{% trans 'Quantity' %}</th>
+      <th class="top" scope="col" >{% trans 'Amount' %}</th>
+      <th class="top" scope="col" >{% trans 'Balance' %}</th>
+      <th class="top" scope="col" >{% trans 'Location' %}</th>
+      <th class="top" scope="col" >{% trans 'Wallet' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="7" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="7" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Date</th>
-      <th>Type</th>
-      <th>Price</th>
-      <th>Quantity</th>
-      <th>Amount</th>
-      <th>Balance</th>
-      <th>Location</th>
-      <th>Wallet</th>
+      <th>{% trans 'Date' %}</th>
+      <th>{% trans 'Type' %}</th>
+      <th>{% trans 'Price' %}</th>
+      <th>{% trans 'Quantity' %}</th>
+      <th>{% trans 'Amount' %}</th>
+      <th>{% trans 'Balance' %}</th>
+      <th>{% trans 'Location' %}</th>
+      <th>{% trans 'Wallet' %}</th>
     </tr>
   </tfoot>
 

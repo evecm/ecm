@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Report{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Report' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/balance_sheet/">Report</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/balance_sheet/">{% trans 'Report' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -12,9 +12,9 @@
   <h1>Report</h1>
 </div>
 <ul class="nav nav-tabs" id="myTab">
-	<li class="active"><a href="#summary" data-toggle="tab">Summary</a></li>
-	<li><a href="#income" data-toggle="tab">Income</a></li>
-	<li><a href="#expenditure" data-toggle="tab">Expenditure</a></li>
+	<li class="active"><a href="#summary" data-toggle="tab">{% trans 'Summary' %}</a></li>
+	<li><a href="#income" data-toggle="tab">{% trans 'Income' %}</a></li>
+	<li><a href="#expenditure" data-toggle="tab">{% trans 'Expenditure' %}</a></li>
 	{% for custom_report in custom_reports %}
 	<li><a href="#{{ custom_report.name|slugify }}" data-toggle="tab">{{ custom_report.name }}</a></li>
 	{% endfor %}
@@ -32,17 +32,17 @@
 			  </thead>
 			<tbody>
 			    <tr>
-				<td>Income total</td>
+				<td>{% trans 'Income total' %}</td>
 				<td style="text-align: right;">{{income_total|ecm_amount}}</td>
 			    </tr>
 			<tr>
-				<td>Expenditure total</td>
+				<td>{% trans 'Expenditure total' %}</td>
 				<td style="text-align: right;">{{expenditure_total|ecm_amount}}</td>
 			</tr>
 			</tbody>
 			<tfoot>
 			    <tr>
-				<th>Net cash inflow</th>
+				<th>{% trans 'Net cash inflow' %}</th>
 				<th style="text-align: right;">{{cashflow|ecm_amount}}</th>
 			    </tr>
 			</tfoot>
@@ -70,7 +70,7 @@
 			  </tbody>
 			<tfoot>
 			    <tr>
-			      <th>Total:</th>
+			      <th>{% trans 'Total' %}:</th>
 			      <th style="text-align: right;">100 %</th>
 			      <th style="text-align: right;">{{income_total|ecm_amount}}</th>
 			    </tr>
@@ -100,7 +100,7 @@
 			  </tbody>
 			<tfoot>
 			    <tr>
-			      <th>Total:</th>
+			      <th>{% trans 'Total' %}:</th>
 			      <th style="text-align: right;">100 %</th>
 			      <th style="text-align: right;">{{expenditure_total|ecm_amount}}</th>
 			    </tr>
@@ -125,13 +125,13 @@
 				<td>{{item.type__refTypeName}}</td>
 				<td style="text-align: right;">{{item.amount|ecm_amount}}</td>
 			    </tr>
-			{% endfor %}{% else %}<td>No data.</td>
+			{% endfor %}{% else %}<td>{% trans 'No data' %}.</td>
 				<td style="text-align: right;"></td>
 			    </tr>{% endif %}
 			  </tbody>
 			<tfoot>
 			    <tr>
-			      <th>Total:</th>
+			      <th>{% trans 'Total' %}:</th>
 			      <th style="text-align: right;">{{ custom_report.total|ecm_amount}}</th>
 			    </tr>
 			</tfoot>
@@ -187,7 +187,7 @@ google.load("visualization", "1", {packages:["corechart"]});
 	]);
 
         var options = {
-          title: 'Income over time (w/o Corporation Account Withdrawal)',
+          title: "{% trans 'Income over time (w/o Corporation Account Withdrawal)' %}",
 	  width:  800, 
           height: 550,
 	  hAxis: {title: 'Last 30 Days', slantedText: true, slantedTextAngle: '30'},
@@ -212,7 +212,7 @@ google.load("visualization", "1", {packages:["corechart"]});
 	]);
 
         var options = {
-          title: 'Expenditures over time (w/o Corporation Account Withdrawal)',
+          title: "{% trans 'Expenditures over time (w/o Corporation Account Withdrawal' %})",
 	  width:  800, 
           height: 550,
 	  hAxis: {title: 'Last 30 Days', slantedText: true, slantedTextAngle: '30'},
@@ -235,7 +235,7 @@ google.load("visualization", "1", {packages:["corechart"]});
         ]);
 
         var options = {
-          title: 'Expenditure',
+          title: '{% trans 'Expenditure' %}',
           width: 550, 
           height: 350,
   	  	  colors: ['#ff9900','#ffa928','#ffba51','#ffca7a','#ffdba3'],

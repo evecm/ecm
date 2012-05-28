@@ -1,1 +1,3 @@
-[{{ corp_name }}] New account activation
+{% load i18n %}
+
+[{{ corp_name }}] {% trans 'New account activation' %}

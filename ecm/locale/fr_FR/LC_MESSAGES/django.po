@@ -1,0 +1,609 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# johnfoo <johnfoo@eve-corp-management.org>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 2.0.5.2.dev\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-28 11:53+0200\n"
+"PO-Revision-Date: 2012-05-27 23:37+0200\n"
+"Last-Translator: johnfoo <johnfoo@eve-corp-management.org>\n"
+"Language-Team: Français <translation@eve-corp-management.org>\n"
+"Language: Français\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bits\n"
+"Plural-Forms: \n"
+
+#: apps/scheduler/templates/tasks.html:6 templates/auth/account.html:8
+#: templates/auth/add_api.html:8 templates/auth/add_binding.html:8
+#: templates/auth/edit_api.html:8 templates/auth/password_change_done.html:7
+#: templates/auth/password_reset.html:9
+#: templates/auth/password_reset_complete.html:9
+#: templates/auth/password_reset_confirm.html:9
+#: templates/auth/password_reset_done.html:9
+msgid "Home"
+msgstr "Accueil"
+
+#: apps/scheduler/templates/tasks.html:7
+#: apps/scheduler/templates/tasks.html:12
+#, fuzzy
+msgid "Scheduled Tasks"
+msgstr "tache planifiées"
+
+#: apps/scheduler/templates/tasks.html:18
+msgid "Task Description"
+msgstr ""
+
+#: apps/scheduler/templates/tasks.html:19
+msgid "Next Auto Execution"
+msgstr ""
+
+#: apps/scheduler/templates/tasks.html:20
+msgid "Frequency"
+msgstr ""
+
+#: apps/scheduler/templates/tasks.html:21
+msgid "Last Execution"
+msgstr ""
+
+#: apps/scheduler/templates/tasks.html:22
+msgid "Last Result"
+msgstr ""
+
+#: apps/scheduler/templates/tasks.html:23
+msgid "Is Running"
+msgstr ""
+
+#: apps/scheduler/templates/tasks.html:24
+#, fuzzy
+msgid "Is Scheduled"
+msgstr "taches planifiée"
+
+#: apps/scheduler/templates/tasks.html:25
+msgid "Force Execution"
+msgstr ""
+
+#: apps/scheduler/templates/tasks.html:30
+msgid "Loading data from server..."
+msgstr ""
+
+#: plugins/accounting/models.py:69
+msgid "Journal Entry"
+msgstr "Entrée du journal"
+
+#: plugins/accounting/models.py:70
+msgid "Journal Entries"
+msgstr "Entrées du journal"
+
+#: templates/404.html:3 templates/404.html.py:7
+msgid "Resource not found"
+msgstr "Ressource introuvable"
+
+#: templates/404.html:9
+msgid "Sorry but the page you requested:"
+msgstr "Desolé, mais la page que vous avez demandé:"
+
+#: templates/404.html:13
+msgid "cannot be found on the server."
+msgstr "ne peut etre trouvée sur le serveur"
+
+#: templates/500.html:3 templates/500.html.py:7
+msgid "Server Internal Error"
+msgstr "Erreur Interne Serveur"
+
+#: templates/500.html:9
+msgid "Ooops, the server just failed in computing your request."
+msgstr "Oups, le serveur a échoué a traiter votre requete"
+
+#: templates/500.html:11
+msgid "The administrators have been notified."
+msgstr "Les administrateurs ont été prévenus"
+
+#: templates/base.html:50 templates/auth/add_api.html:9
+#: templates/auth/add_binding.html:9
+#: templates/auth/password_change_done.html:8
+#: templates/auth/password_reset.html:10
+#: templates/auth/password_reset_complete.html:10
+#: templates/auth/password_reset_confirm.html:10
+#: templates/auth/password_reset_done.html:10
+msgid "Account"
+msgstr "Compte"
+
+#: templates/base.html:51
+msgid "Log out from ECM"
+msgstr "Se déconnecter d'ECM"
+
+#: templates/base.html:51
+msgid "Logout"
+msgstr "Deconnexion"
+
+#: templates/base.html:53
+msgid "Login"
+msgstr "Connexion"
+
+#: templates/base.html:54 templates/auth/create_account.html:10
+msgid "Create Account"
+msgstr "Créer un compte"
+
+#: templates/base.html:57
+msgid "Restricted area :-)"
+msgstr "Zone Restreinte :-)"
+
+#: templates/base.html:57
+msgid "Administration"
+msgstr "Administration"
+
+#: templates/base.html:61
+msgid "Logged in as"
+msgstr "Connecté en tant que"
+
+#: templates/base.html:62
+msgid "Please log in."
+msgstr "Connectez vous s'il vous plait"
+
+#: templates/base.html:78
+msgid "Message Of The Day"
+msgstr "Message du jour"
+
+#: templates/base.html:79
+msgid "read more"
+msgstr "Lire plus"
+
+#: templates/base.html:115
+msgid "Powered by"
+msgstr "Propulsé par"
+
+#: templates/auth/account.html:4 templates/auth/account.html.py:9
+msgid "User Profile"
+msgstr ""
+
+#: templates/auth/account.html:14
+msgid "Hello"
+msgstr ""
+
+#: templates/auth/account.html:17
+msgid ""
+"Click <a href=\"/account/passwordchange/\">here</a> to change your password."
+msgstr ""
+
+#: templates/auth/account.html:21
+#, fuzzy
+msgid "EVE API Keys"
+msgstr "ID Clef API"
+
+#: templates/auth/account.html:25
+msgid "KeyID"
+msgstr ""
+
+#: templates/auth/account.html:26
+msgid "State"
+msgstr ""
+
+#: templates/auth/account.html:35 templates/auth/account.html.py:56
+#: templates/auth/account.html:79
+msgid "Delete"
+msgstr ""
+
+#: templates/auth/account.html:47
+msgid "Name"
+msgstr ""
+
+#: templates/auth/account.html:69
+msgid "Application"
+msgstr ""
+
+#: templates/auth/account.html:70 views/account/forms.py:294
+msgid "External Username"
+msgstr "Nom d'utilisateur externe"
+
+#: templates/auth/account.html:78
+msgid "None"
+msgstr ""
+
+#: templates/auth/account.html:80 templates/auth/add_binding.html:27
+msgid "Bind"
+msgstr ""
+
+#: templates/auth/account.html:92
+msgid "Are you sure you want to get rid of"
+msgstr ""
+
+#: templates/auth/account.html:93
+msgid ""
+"If this character is still attached to one of your registered API Keys, it "
+"will be associated with your profile again at next scan."
+msgstr ""
+
+#: templates/auth/account.html:99
+msgid "Are you sure you want to delete this API Key?"
+msgstr ""
+
+#: templates/auth/account.html:105
+msgid "Are you sure you want to delete this binding?"
+msgstr ""
+
+#: templates/auth/account_activated.html:4
+#: templates/auth/account_created.html:5
+#: templates/auth/account_created.html:10
+#, fuzzy
+msgid "Account Created"
+msgstr "Compte"
+
+#: templates/auth/account_activated.html:9
+msgid "Account Activated"
+msgstr ""
+
+#: templates/auth/account_activated.html:11
+#: templates/auth/account_created.html:12
+msgid "Congratulations"
+msgstr ""
+
+#: templates/auth/account_mail_fail.html:3
+#: templates/auth/account_mail_fail.html:7
+#: templates/auth/activation_error.html:3
+#: templates/auth/activation_error.html:7
+msgid "Activation Error"
+msgstr ""
+
+#: templates/auth/account_mail_fail.html:9
+msgid "Sorry"
+msgstr ""
+
+#: templates/auth/account_mail_fail.html:9
+msgid "but the server was not able to send an email"
+msgstr ""
+
+#: templates/auth/account_mail_fail.html:11
+#: templates/auth/activation_error.html:11
+msgid "Reason"
+msgstr ""
+
+#: templates/auth/account_mail_fail.html:12
+msgid "Please contact the administrator"
+msgstr ""
+
+#: templates/auth/activation_email.html:6
+#: templates/auth/password_reset_email.txt:5
+msgid "Greetings"
+msgstr "Bonjour"
+
+#: templates/auth/activation_email.html:8
+#, fuzzy
+msgid "You created a new account on"
+msgstr "Créer un compte"
+
+#: templates/auth/activation_email.html:9
+msgid "Please click on the following link in order to activate your account."
+msgstr ""
+
+#: templates/auth/activation_email.html:13
+msgid "N.B.: You have"
+msgstr ""
+
+#: templates/auth/activation_email.html:13
+#, fuzzy
+msgid "to activate your account."
+msgstr "Créer un compte"
+
+#: templates/auth/activation_email.html:15
+#: templates/auth/password_reset_email.txt:15
+msgid "Thank you and see you in space :-)"
+msgstr "Merci, et a plus tard dans l'espace :-)"
+
+#: templates/auth/activation_error.html:9
+msgid ""
+"Sorry, but the server was not able to activate this account with the "
+"following activation key:"
+msgstr ""
+
+#: templates/auth/add_api.html:4 templates/auth/add_api.html.py:10
+#, fuzzy
+msgid "Add API Key"
+msgstr "ID Clef API"
+
+#: templates/auth/add_api.html:19 templates/auth/create_account.html:31
+msgid "Create a new API Key on EVE-Online support website"
+msgstr ""
+
+#: templates/auth/add_api.html:31 templates/auth/create_account.html:44
+msgid "Submit Information"
+msgstr ""
+
+#: templates/auth/add_binding.html:4 templates/auth/add_binding.html.py:10
+#: templates/auth/add_binding.html:15
+msgid "Create Binding to External Application"
+msgstr ""
+
+#: templates/auth/create_account.html:3
+msgid "User Signup"
+msgstr ""
+
+#: templates/auth/create_account.html:28
+#, fuzzy
+msgid "EVE-Online API Key"
+msgstr "ID Clef API"
+
+#: templates/auth/create_account.html:39
+msgid "Anti-Robot Security"
+msgstr ""
+
+#: templates/auth/edit_api.html:4
+#, fuzzy
+msgid "Edit API Key"
+msgstr "ID Clef API"
+
+#: templates/auth/login.html:3
+msgid "Login."
+msgstr "Connexion."
+
+#: templates/auth/login.html:11
+msgid "Please login"
+msgstr "Connectez vous s'il vous plaît."
+
+#: templates/auth/login.html:23
+msgid "Remember Me"
+msgstr "Mémorise moi"
+
+#: templates/auth/login.html:28
+msgid "Not a member yet, you can"
+msgstr "Pas encore un membre, vous pouvez"
+
+#: templates/auth/login.html:28
+msgid "create an account"
+msgstr "Créer un compte"
+
+#: templates/auth/login.html:29
+msgid "Forgot your password? Click"
+msgstr "Mot de passe oublié ? cliquez "
+
+#: templates/auth/login.html:29
+msgid "here to reset it"
+msgstr "ici pour le remettre a zéro"
+
+#: templates/auth/password_change_done.html:4
+#: templates/auth/password_change_done.html:14
+msgid "Password Change Successful"
+msgstr "Modification du mot de passe réussie"
+
+#: templates/auth/password_change_done.html:9
+msgid "Password Change"
+msgstr "Modification du mot de passe"
+
+#: templates/auth/password_change_done.html:17
+msgid "Your password was changed."
+msgstr "Votre mot de passe a été modifié"
+
+#: templates/auth/password_change_done.html:18
+msgid "Go back to your"
+msgstr "Retournez a votre"
+
+#: templates/auth/password_reset.html:5 templates/auth/password_reset.html:11
+#: templates/auth/password_reset.html:17
+#: templates/auth/password_reset_complete.html:11
+#: templates/auth/password_reset_confirm.html:5
+#: templates/auth/password_reset_confirm.html:11
+#: templates/auth/password_reset_done.html:5
+#: templates/auth/password_reset_done.html:11
+#: templates/auth/password_reset_done.html:16
+msgid "Password Reset"
+msgstr "Remise a zéro du mot de passe"
+
+#: templates/auth/password_reset.html:20
+msgid ""
+"Forgotten your password? Enter your e-mail address below, and we'll e-mail "
+"instructions for setting a new one."
+msgstr ""
+"Vous avez oublié votre mot de passe ? entrez votre E-mail ci dessous et nous "
+"vous transmettrons des instructions pour en créer un nouveau."
+
+#: templates/auth/password_reset.html:32
+msgid "Reset my password"
+msgstr "Remise a zéro de mon mot de passe"
+
+#: templates/auth/password_reset_complete.html:5
+#: templates/auth/password_reset_complete.html:16
+msgid "Password Reset Complete"
+msgstr "Remise a zéro du mot de passe réussie"
+
+#: templates/auth/password_reset_complete.html:19
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr ""
+"votre mot de passe a été défini. vous pouvez des a présent vous connecter"
+
+#: templates/auth/password_reset_complete.html:21
+msgid "Log in"
+msgstr "Connection"
+
+#: templates/auth/password_reset_confirm.html:18
+msgid "Enter new password"
+msgstr "Entrez un nouveau mot de passe"
+
+#: templates/auth/password_reset_confirm.html:21
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Entrez votre mot de passe deux fois que nous puissions vérifier que vous "
+"l'avez tapé correctement s'il vous plait"
+
+#: templates/auth/password_reset_confirm.html:33
+msgid "Change my password"
+msgstr "Modification de mon mot de passe"
+
+#: templates/auth/password_reset_confirm.html:38
+msgid "Password reset unsuccessful"
+msgstr "Remise a zéro du mot de passe échouée"
+
+#: templates/auth/password_reset_confirm.html:41
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used. Please request a new password reset."
+msgstr ""
+"Le lien de remise a zéro du mot de passe était invalide, peut être a t'il "
+"déjà été utilisé. merci de redemander une remise a zéro de votre mot de "
+"passe."
+
+#: templates/auth/password_reset_done.html:19
+msgid ""
+"We've e-mailed you instructions for setting your password to the e-mail "
+"address you submitted. You should be receiving it shortly."
+msgstr ""
+"nous vous avons transmis des instructions pour modifier votre mot de passe a "
+"l'adresse e-mail que vous nous avez donné. vous devriez les recevoir "
+"rapidement."
+
+#: templates/auth/password_reset_email.txt:7
+#, python-format
+msgid ""
+"You're receiving this e-mail because you requested a password reset for your "
+"user account at %(host_name)s."
+msgstr ""
+"Vous recevez cet e-mail car vous avez demandé une remise a zéro de votre "
+"compte utilisateur sur %(host_name)s"
+
+#: templates/auth/password_reset_email.txt:9
+msgid "Please go to the following page and choose a new password:"
+msgstr "Visitez la page suivante et choisissez un nouveau mot de passe"
+
+#: templates/auth/password_reset_email.txt:13
+msgid "Your username, in case you've forgotten:"
+msgstr "Votre nom d'utilisateur, au cas ou vous l'auriez oublié"
+
+#: views/common.py:119 views/account/forms.py:212 views/account/forms.py:258
+msgid "API Key ID"
+msgstr "ID Clef API"
+
+#: views/common.py:120 views/account/forms.py:54 views/account/forms.py:213
+#: views/account/forms.py:259
+msgid "Verification Code"
+msgstr "Code de Verification"
+
+#: views/account/forms.py:44
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: views/account/forms.py:45
+msgid "Required. Less 30 characters. Letters, digits and @/./+/-/_ only."
+msgstr ""
+"Requis, moins de 30 caractères. Lettres, chiffres, et @/./+/-/_ seulement."
+
+#: views/account/forms.py:47
+msgid "This field may contain only letters, numbers and @/./+/-/_ characters."
+msgstr ""
+"ce champ ne peut contenir que des lettres, des chiffres et les caractères "
+"@/./+/-/_"
+
+#: views/account/forms.py:49
+msgid "E-Mail address"
+msgstr "Adresse E-mail"
+
+#: views/account/forms.py:50
+msgid "Password"
+msgstr "Mot de passe"
+
+#: views/account/forms.py:51
+msgid "Password (confirmation)"
+msgstr "Mot de passe (confirmation)"
+
+#: views/account/forms.py:52 views/account/forms.py:171
+msgid "Enter the same password as above, for verification."
+msgstr "Entrez a nouveau le mot de passe pour vérification"
+
+#: views/account/forms.py:65
+msgid "A user with that username already exists."
+msgstr "Un utilisateur du même nom existe déjà "
+
+#: views/account/forms.py:74
+msgid "This email address is already in use."
+msgstr "Cette adresse e-mail est déja utilisée"
+
+#: views/account/forms.py:82
+msgid "This EVE account is already registered."
+msgstr "Ce compte EVE est déjà enregistré"
+
+#: views/account/forms.py:98
+msgid "Passwords don't match"
+msgstr "Les mots de passe ne correspondent pas"
+
+#: views/account/forms.py:112 views/account/forms.py:243
+#: views/account/forms.py:281
+msgid "A character from this account is already registered by another player"
+msgstr "Un personnage de ce compte est déjà enregistré par un autre joueur"
+
+#: views/account/forms.py:127
+msgid "E-mail"
+msgstr "E-Mail"
+
+#: views/account/forms.py:140
+msgid ""
+"That e-mail address doesn't have an associated user account. Are you sure "
+"you've registered?"
+msgstr ""
+"Cette adresse e-mail n'a pas de compte utilisateur associé, êtes vous sur "
+"d’être enregistré ?"
+
+#: views/account/forms.py:160
+#, python-format
+msgid "Password reset on %s"
+msgstr "Remise a zéro du mot de passe sur %s"
+
+#: views/account/forms.py:169
+msgid "New password"
+msgstr "Nouveau mot de passe"
+
+#: views/account/forms.py:170
+msgid "New Password (confirmation)"
+msgstr "Nouveau mot de passe (confirmation)"
+
+#: views/account/forms.py:182
+msgid "The two password fields didn't match."
+msgstr "Les deux champs mots de passe ne correspondent pas."
+
+#: views/account/forms.py:197
+msgid "Old Password"
+msgstr "Ancien mot de passe"
+
+#: views/account/forms.py:205
+msgid "Your old password was entered incorrectly. Please enter it again."
+msgstr ""
+"Votre ancien mot de passe a été entré incorrectement. entrez le a nouveau "
+"s'il vous plait"
+
+#: views/account/forms.py:222
+msgid "This API Key is already registered."
+msgstr "Cette clef API est déjà enregistrée"
+
+#: views/account/forms.py:295
+msgid "External Password"
+msgstr "Mot de passe externe"
+
+#~ msgid "seconds"
+#~ msgstr "secondes"
+
+#~ msgid "minutes"
+#~ msgstr "minutes"
+
+#~ msgid "hours"
+#~ msgstr "heures"
+
+#~ msgid "days"
+#~ msgstr "jours"
+
+#~ msgid "weeks"
+#~ msgstr "semaines"
+
+#~ msgid "Every "
+#~ msgstr "Chaque"
+
+#~ msgid "months"
+#~ msgstr "mois"
+
+#~ msgid "Password reset complete"
+#~ msgstr "Remise a zéro du mot de passe réussie"
+
+#~ msgid "Password reset"
+#~ msgstr "Remise a zéro du mot de passe"

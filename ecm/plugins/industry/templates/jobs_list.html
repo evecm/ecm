@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Jobs list{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Jobs list' %}{% endblock %}
 
 
 {% block stylesheets %}
@@ -13,44 +13,44 @@
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/industry/">Industry</a></li>
-<li class="active"><a href="/industry/jobs/">Jobs</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/industry/">{% trans 'Industry' %}</a></li>
+<li class="active"><a href="/industry/jobs/">{% trans 'Jobs' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-    <h1>Jobs list</h1>
+    <h1>{% trans 'Jobs list' %}</h1>
 </div>
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
 
     <div class="control-group inline" style="display: inline;">
-      <span class="label">Activity</span>
+      <span class="label">{% trans 'Activity' %}</span>
       <select id="activity_selector" class="input-medium">
-        <option value="all">All</option>
+        <option value="all">{% trans 'All' %}</option>
         {% for activityID, name in activities %}
         <option value="{{activityID}}">{{name}}</option>
         {% endfor %}
       </select>
-      <span class="label">State</span>
+      <span class="label">{% trans 'State' %}</span>
       <select id="state_selector" class="input-medium">
-        <option value="all">All</option>
+        <option value="all">{% trans 'All' %}</option>
         {% for id, name in states.items %}
         <option value="{{id}}">{{name}}</option>
         {% endfor %}
       </select>
-      <span class="label">Assignment</span>
+      <span class="label">{% trans 'Assignment' %}</span>
       <select id="assignment_selector" class="input-medium">
-        <option value="unassigned">Unassigned</option>
-        <option value="me">Me</option>
-        <option value="all">All</option>
+        <option value="unassigned">{% trans 'Unassigned' %}</option>
+        <option value="me">{% trans 'Me' %}</option>
+        <option value="all">{% trans 'All' %}</option>
       </select>
     </div>
   </div>
@@ -71,7 +71,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>

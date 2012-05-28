@@ -1,17 +1,18 @@
+{% load i18n % }
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
 <body>
-	<p>Greetings {{ user_name }},</p>
+	<p>{% trans 'Greetings' %} {{ user_name }},</p>
 	
-	<p>You created a new account on <b>{{ corp_name }}</b> <i>EVE Corporation Management</i>. 
-	Please click on the following link in order to activate your account.</p>
+	<p>{% trans 'You created a new account on' %} <b>{{ corp_name }}</b> <i>EVE Corporation Management</i>. 
+	{% trans 'Please click on the following link in order to activate your account.' %}</p>
 	
 	<p><a href="http{% if use_https %}s{% endif %}://{{ host_name }}/account/activate/{{ activation_key }}">
 	            http{% if use_https %}s{% endif %}://{{ host_name }}/account/activate/{{ activation_key }}</a></p>
-	<p><i>N.B.: You have {{ expiration_days }} day{{ expiration_days|pluralize }} to activate your account.</i></p>
+	<p><i>{% trans 'N.B.: You have' %}{{ expiration_days }} day{{ expiration_days|pluralize }} {% trans 'to activate your account.' %}</i></p>
 	
-	<p>Thank you and see you in space :-)</p>
+	<p>{% trans 'Thank you and see you in space :-)' %}</p>
 	
 	<p><i>{{ corp_name }}</i></p>
 </body>

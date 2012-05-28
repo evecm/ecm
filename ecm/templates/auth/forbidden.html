@@ -1,16 +1,16 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Forbidden Access{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Forbidden Access' %}{% endblock %}
 
 {% block main_content %}
 <div class="center">
-<h1 class="pagetitle error">Forbidden Access</h1>
+<h1 class="pagetitle error">{% trans 'Forbidden Access' %}</h1>
 
-<p>Your don't have permission to get URL </p>
+<p>{% trans 'You don't have permission to get URL ' %}</p>
 
 <p><a href="{{ request_path }}">{{ request_path }}</a></p>
 
-<p>from this server.</p>
+<p>{% trans 'from this server.' %}</p>
 
 </div>
 {% endblock %}

@@ -1,15 +1,16 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 
-{% block headtitle %}Account Created{% endblock %}
+{% block headtitle %}{% trans 'Account Created' %}{% endblock %}
 
 
 {% block main_content %}
 
-<h1 class="pagetitle">Account Created</h1>
+<h1 class="pagetitle">{% trans 'Account Created' %}</h1>
 
-<p>Congratulations {{ form.cleaned_data.username }},</p>
-<p>You successfuly created an account. An activation email has been sent to 
-<b>{{ form.cleaned_data.email }}</b>. You should receive it within minutes from now.</p>
+<p>{% trans 'Congratulations' %} {{ form.cleaned_data.username }},</p>
+<p>{% trans 'You successfuly created an account. An activation email has been sent to 
+<b>{{ form.cleaned_data.email }}</b>. You should receive it witin minutes from now.' %}</p>
 
 {% endblock %}

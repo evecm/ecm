@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Corporation Wallets{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Corporation Wallets' %}{% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />
@@ -8,31 +8,31 @@
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/accounting/">Accounting</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/accounting/">{% trans 'Accounting' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Corporation Wallets <small>last update {{ scan_date }}</small></h1>
+  <h1>{% trans 'Corporation Wallets' %} <small>{% trans 'last update' %} {{ scan_date }}</small></h1>
 </div>
 
 <table class="table table-bordered" id="wallets_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Wallet</th>
-      <th class="top" scope="col" >Balance</th>
+      <th class="top" scope="col" >{% trans 'Wallet' %}</th>
+      <th class="top" scope="col" >{% trans 'Balance' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="2" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="2" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Wallet</th>
-      <th>Balance</th>
+      <th>{% trans 'Wallet' %}</th>
+      <th>{% trans 'Balance' %}</th>
     </tr>
   </tfoot>
 

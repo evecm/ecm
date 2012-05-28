@@ -1,12 +1,14 @@
-Greetings {{ user_name }},
+{% load i18n %}
+
+{% trans 'Greetings' %} {{ user_name }},
 	
-You created a new account on {{ corp_name }}'s EVE Corporation Management. 
-Please click on the following link in order to activate your account.
+{% trans 'You created a new account on' %} {{ corp_name }}'s EVE Corporation Management. 
+{% trans 'Please click on the following link in order to activate your account.' %}
 	
 http{% if use_https %}s{% endif %}://{{ host_name }}/account/activate/{{ activation_key }}
 
-N.B.: You have {{ expiration_days }} day{{ expiration_days|pluralize }} to activate your account.
-	
-Thank you and see you in space :-)
+{% trans 'N.B.: You have' %} {{ expiration_days }} day{{ expiration_days|pluralize }} {% trans 'to activate your account.
+' %}	
+{% trans 'Thank you and see you in space :-)' %}
 	
 {{ corp_name }}

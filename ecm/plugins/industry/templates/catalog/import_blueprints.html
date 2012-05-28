@@ -1,35 +1,35 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-
-{% block headtitle %}Bpo's in Assets{% endblock %}
+{% block headtitle %}{% trans 'Bpo's in Assets' %}{% endblock %}
 
 
 {% block breadcrumbs %}
-    <li><a href="/">Home</a></li>
-  <li><a href="/industry/">Industry</a></li>
-  <li><a href="/industry/catalog/">Catalog</a></li>
-  <li><a href="/industry/catalog/blueprints/">Blueprints</a></li>
-  <li class="active"><a href="/industry/catalog/blueprints/import/">Import from corp assets</a></li>
+    <li><a href="/">{% trans 'Home' %}</a></li>
+  <li><a href="/industry/">{% trans 'Industry' %}</a></li>
+  <li><a href="/industry/catalog/">{% trans 'Catalog' %}</a></li>
+  <li><a href="/industry/catalog/blueprints/">{% trans 'Blueprints' %}</a></li>
+  <li class="active"><a href="/industry/catalog/blueprints/import/">{% trans 'Import from corp assets' %}</a></li>
 {% endblock %}
 
 
 {% block main_content %}
 <div class="page-header">
-    <h1>Blueprints found in corporation assets</h1>
+    <h1>{% trans 'Blueprints found in corporation assets' %}</h1>
 </div>
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
-    <span class="label label-info">Display</span>
+    <span class="label label-info">{% trans 'Display' %}</span>
     <div class="btn-group" data-toggle="buttons-radio" id="display_buttons">
-      <button class="btn btn-small btn-info" id="display_all">All Blueprints</button>
-      <button class="btn btn-small btn-info" id="display_originals">Only Originals</button>
-      <button class="btn btn-small btn-info" id="display_copies">Only Copies</button>
+      <button class="btn btn-small btn-info" id="display_all">{% trans 'All Blueprints' %}</button>
+      <button class="btn btn-small btn-info" id="display_originals">{% trans 'Only Originals' %}</button>
+      <button class="btn btn-small btn-info" id="display_copies">{% trans 'Only Copies' %}</button>
     </div>
   </div>
 </form>
@@ -37,13 +37,13 @@
 {% if error %}
 <div class="alert alert-error">
   <a class="close" data-dismiss="alert">&times;</a>
-  <strong>Error!</strong> {{error}}
+  <strong>{% trans 'Error' %}!</strong> {{error}}
 </div>
 {% endif %}
 {% if imported %}
 <div class="alert alert-success">
   <a class="close" data-dismiss="alert">&times;</a>
-  <strong>Success!</strong> {{imported}} blueprints imported.
+  <strong>{% trans 'Success' %}!</strong> {{imported}} {% trans 'blueprints imported' %}.
 </div>
 {% endif %}
 
@@ -57,7 +57,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
@@ -71,9 +71,9 @@
 </table>
 
 <form action="/industry/catalog/blueprints/import/" method="POST" id="import_form">{% csrf_token %}
-    <a class="btn btn-danger btn-large">Import All BPOs</a>
+    <a class="btn btn-danger btn-large">{% trans 'Import All BPOs' %}</a>
     <input type="hidden" name="blueprints" value="" />
-    <button class="btn btn-danger btn-large">Import Selected Blueprints</button>
+    <button class="btn btn-danger btn-large">{% trans 'Import Selected Blueprints' %}</button>
 </form>
 {% endblock %}
 {% block post_javascripts %}

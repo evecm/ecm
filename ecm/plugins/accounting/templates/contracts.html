@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
 {% endblock %}
 
-{% block headtitle %}Contracts{% endblock %}
+{% block headtitle %}{% trans 'Contracts' %}{% endblock %}
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/accounting/">Accounting</a></li>
-<li class="active"><a href="/accounting/contracts/">Contracts</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/accounting/">{% trans 'Accounting' %}</a></li>
+<li class="active"><a href="/accounting/contracts/">{% trans 'Contracts' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -23,17 +23,17 @@
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
     <div class="control-group success" style="display: inline;">
-      <span class="label label-success">Type</span>
+      <span class="label label-success">{% trans 'Type' %}</span>
       <select id="type_selector">{% for id, name, selected in types %}
             <option value="{{ id }}"{% if selected %} selected{% endif %}>{{ name }}</option>
       {% endfor %}</select>
     </div>
     <div class="control-group error" style="display: inline;">
-      <span class="label label-important">Status</span>
+      <span class="label label-important">{% trans 'Status' %}</span>
       <select id="status_selector">{% for id, name, selected in statuses %}
             <option value="{{ id }}"{% if selected %} selected{% endif %}>{{ name }}</option>
       {% endfor %}</select>
@@ -49,7 +49,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="12" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="12" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>

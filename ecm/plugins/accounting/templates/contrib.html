@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Contributions to Corp tax{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Contributions to Corp tax' %}{% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery-ui-1.8.13.custom.css" />
@@ -11,29 +11,29 @@
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/accounting/">Accounting</a></li>
-<li><a href="/accounting/contributions/">Contributions</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/accounting/">{% trans 'Accounting' %}</a></li>
+<li><a href="/accounting/contributions/">{% trans 'Contributions' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<h1>Contributions to Corp tax <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+<h1>{% trans 'Contributions to Corp tax' %} <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small></h1>
 
 <form id="search_form" class="form-search form-inline btn-toolbar center">
   <div class="control-group info" style="display: inline;">
-    <span class="label label-info">Period</span>
+    <span class="label label-info">{% trans 'Period' %}</span>
     <select id="period_selector" class="input-small">
-      <option value="all" selected="selected">All Time</option>
-      <option value="thismonth">This Month</option>
-      <option value="week">Last Week</option>
-      <option value="month">Last Month</option>
-      <option value="year">Last Year</option>
+      <option value="all" selected="selected">{% trans 'All Time' %}</option>
+      <option value="thismonth">{% trans 'This Month' %}</option>
+      <option value="week">{% trans 'Last Week' %}</option>
+      <option value="month">{% trans 'Last Month' %}</option>
+      <option value="year">{% trans 'Last Year' %}</option>
     </select>
-    <span class="label label-info">From</span>
+    <span class="label label-info">{% trans 'From' %}</span>
     <input type="text" id="from_date" name="from_date" value="{{ from_date }}" class="input-small"/>
-    <span class="label label-info">To</span>
+    <span class="label label-info">{% trans 'To' %}</span>
     <input type="text" id="to_date" name="to_date" value="{{ to_date }}" class="input-small"/>
-    <a class="btn btn-info btn-small" id="refresh_table"><i class="icon-refresh icon-white"></i> Refresh</a>
+    <a class="btn btn-info btn-small" id="refresh_table"><i class="icon-refresh icon-white"></i>{% trans 'Refresh' %}</a>
   </div>
 </form>
 
@@ -46,19 +46,19 @@
     <table class="table table-bordered table-condensed" id="member_contrib_table">
       <thead>
         <tr>
-          <th class="top" scope="col" >Member</th>
-          <th class="top" scope="col" >Contributions</th>
+          <th class="top" scope="col" >{% trans 'Member' %}</th>
+          <th class="top" scope="col" >{% trans 'Contributions' %}</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td colspan="2" class="dataTables_empty">Loading data from server...</td>
+          <td colspan="2" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
         </tr>
       </tbody>
       <tfoot>
         <tr>
-          <th>Member</th>
-          <th>Contributions</th>
+          <th>{% trans 'Member' %}</th>
+          <th>{% trans 'Contributions' %}</th>
         </tr>
       </tfoot>
     </table>
@@ -67,19 +67,19 @@
     <table class="table table-bordered table-condensed" id="system_contrib_table">
       <thead>
         <tr>
-          <th class="top" scope="col" >Solar System</th>
-          <th class="top" scope="col" >Contributions</th>
+          <th class="top" scope="col" >{% trans 'Solar System' %}</th>
+          <th class="top" scope="col" >{% trans 'Contributions' %}</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td colspan="2" class="dataTables_empty">Loading data from server...</td>
+          <td colspan="2" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
         </tr>
       </tbody>
       <tfoot>
         <tr>
-          <th>Solar System</th>
-          <th>Contributions</th>
+          <th>{% trans 'Solar System' %}</th>
+          <th>{% trans 'Contributions' %}</th>
         </tr>
       </tfoot>
     </table>

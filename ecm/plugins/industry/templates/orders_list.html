@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Order list{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Order list' %}{% endblock %}
 
 
 {% block stylesheets %}
@@ -10,25 +10,25 @@
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/industry/">Industry</a></li>
-<li class="active"><a href="/industry/orders/">Orders</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/industry/">{% trans 'Industry' %}</a></li>
+<li class="active"><a href="/industry/orders/">{% trans 'Orders' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-    <h1>Orders list</h1>
+    <h1>{% trans 'Orders list' %}</h1>
 </div>
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
     <div class="control-group inline error" style="display: inline;">
-      <span class="label label-important">Display</span>
+      <span class="label label-important">{% trans 'Display' %}</span>
       <select id="display_mode_selector" class="input-medium">
         {% for mode_id, name in display_modes %}
         <option value="{{mode_id}}">{{name}}</option>
@@ -48,7 +48,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>

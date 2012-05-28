@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block headtitle %}Items Catalog{% endblock %}
+{% block headtitle %}{% trans 'Items Catalog' %}{% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
@@ -10,28 +11,28 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/industry/">Industry</a></li>
-<li><a href="/industry/catalog/">Catalog</a></li>
-<li class="active"><a href="/industry/catalog/items/">Items</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/industry/">{% trans 'Industry' %}</a></li>
+<li><a href="/industry/catalog/">{% trans 'Catalog' %}</a></li>
+<li class="active"><a href="/industry/catalog/items/">{% trans 'Items' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
-<div class="page-header"><h1>Items Catalog</h1></div>
+<div class="page-header"><h1>{% trans 'Items Catalog' %}</h1></div>
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
-    <span class="label label-info">Display</span>
+    <span class="label label-info">{% trans 'Display' %}</span>
     <div class="btn-group" data-toggle="buttons-radio">
       <button class="btn btn-small btn-info" id="show_unavailable_button"
-              title="Show all items">All Items</button>
+              title="Show all items">{% trans 'All Items' %}</button>
       <button class="btn btn-small btn-info" id="hide_unavailable_button"
-              title="Show only available items">Available Items</button>
+              title="Show only available items">{% trans 'Available Items' %}</button>
     </div>
   </div>
 </form>
@@ -51,7 +52,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
@@ -97,7 +98,7 @@ $(document).ready(function() {
               };
               $.post('/industry/catalog/items/' + item_id + '/availability/', params)
                .error(function () {
-                 alert('Failed to change availability!');
+                 alert("{% trans 'Failed to change availability!' %}");
                });
             });
 
@@ -106,7 +107,7 @@ $(document).ready(function() {
             $('td:eq(2)', nRow).editable( '/industry/catalog/items/' + item_id + '/fixed_price/', {
                 cssclass: 'edited',
                 style: 'inherit',
-                tooltip: 'Click to edit',
+                tooltip: "{% trans 'Click to edit' %}",
                 placeholder: '',
                 callback: function( sValue, y ) {
                     var aPos = TABLE.fnGetPosition( this );
@@ -117,7 +118,7 @@ $(document).ready(function() {
 
             $('td:eq(3)', nRow).addClass('right editable');
             $('td:eq(3)', nRow).attr('id', item_id);
-            $('td:eq(3)', nRow).attr('title', 'Click to update');
+            $('td:eq(3)', nRow).attr('title', "{% trans 'Click to update' %}");
             $('td:eq(3)', nRow).click(function () {
                 var _this = $(this);
                 var id = _this.attr('id');
@@ -128,7 +129,7 @@ $(document).ready(function() {
                      _this.html(data);
                  })
                  .error(function (jqXHR) {
-                     $('#error-text').html('<strong>Error!</strong> ' + jqXHR.responseText);
+                     $('#error-text').html("<strong>{% trans 'Error' %}!</strong> " + jqXHR.responseText);
                      $('#error-box').show();
                      _this.html(oldPrice);
                  });
@@ -136,7 +137,7 @@ $(document).ready(function() {
 
             $('td:eq(4)', nRow).addClass('right editable');
             $('td:eq(4)', nRow).attr('id', item_id);
-            $('td:eq(4)', nRow).attr('title', 'Click to update');
+            $('td:eq(4)', nRow).attr('title', "{% trans 'Click to update' %}");
             $('td:eq(4)', nRow).click(function () {
                 var _this = $(this);
                 var id = _this.attr('id');
@@ -147,7 +148,7 @@ $(document).ready(function() {
                      _this.html(data);
                  })
                  .error(function (jqXHR) {
-                     $('#error-text').html('<strong>Error!</strong> ' + jqXHR.responseText);
+                     $('#error-text').html("<strong>{% trans 'Error' %}!</strong> " + jqXHR.responseText);
                      $('#error-box').show();
                      _this.html(oldPrice);
                  });

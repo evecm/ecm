@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 {% load compress %}
+{% load i18n %}
 <!--  EVE Corp. Management     -->
 <!--  Date:    May 14, 2010       -->
 <!--  Author:  diabeteman         -->
@@ -46,19 +47,19 @@
         <div class="nav-collapse">
           <ul class="nav pull-right">
             {% if user.is_authenticated %}
-            <li {%if '/account/' in request_path%}class="active"{%endif%} ><a href="/account/" ></i>Account</a></li>
-            <li><a href="/account/logout/" title="Log out from ECM">Logout</a></li>
+            <li {%if '/account/' in request_path%}class="active"{%endif%} ><a href="/account/" ></i>{% trans 'Account' %}</a></li>
+            <li><a href="/account/logout/" title="{% trans 'Log out from ECM' %}">{% trans 'Logout' %}</a></li>
             {% else %}
-            <li><a href="/account/login/?next=/account/" >Login</a></li>
-            <li><a href="/account/create/" >Create Account</a></li>
+            <li><a href="/account/login/?next=/account/" >{% trans 'Login' %}</a></li>
+            <li><a href="/account/create/" >{% trans 'Create Account' %}</a></li>
             {% endif %}
             {% if user.is_staff and user.is_superuser %}
-            <li><a href="/admin/" title="Restricted area :-)">Administration</a></li>
+            <li><a href="/admin/" title="{% trans 'Restricted area :-)' %}">{% trans 'Administration' %}</a></li>
             {% endif %}
           </ul>
           <p class="navbar-text pull-right">
-            {% if user.is_authenticated %}Logged in as <a href="/account/">{{ user.username }}</a>
-            {% else %}Please log in.
+            {% if user.is_authenticated %}{% trans 'Logged in as' %}<a href="/account/">{{ user.username }}</a>
+            {% else %}{% trans 'Please log in.' %}
             {% endif %}
           </p>
         </div><!--/.nav-collapse -->
@@ -74,8 +75,8 @@
       <div class="span2" id="main-menu">
 	      {{ user_menu|safe }}
           {% if motd %}
-          <h4>Message Of The Day</h4>
-          <p>{{motd.render_html|safe|truncatewords:5}}<a href="/">read more</a></p>
+          <h4>{% trans 'Message Of The Day' %}</h4>
+          <p>{{motd.render_html|safe|truncatewords:5}}<a href="/">{% trans 'read more' %}</a></p>
           <span class="pull-right faded"><em>&mdash;{{motd.date|ecm_date}} by <strong>{{motd.user}}</strong></em></span>
           {% endif %}
       </div>
@@ -109,9 +110,9 @@
         </a>
       </span>
       <span class="pull-right">
-        <a href="http://eve-corp-management.org/">Project website</a>
+        <a href="http://eve-corp-management.org/">{% trans 'Project website' %}</a>
         &bull;
-        Powered by <a href="http://www.python.org/">Python</a> and
+        {% trans 'Powered by' %} <a href="http://www.python.org/">Python</a> and
         <a href="http://www.djangoproject.com/">Django</a>
       </span>
     </div>

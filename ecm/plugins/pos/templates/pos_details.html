@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-
-{% block headtitle %}POS Details - {{ pos }}{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'POS Details' %} - {{ pos }}{% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}pos/css/classes.css" />
 {% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/pos">POS</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/pos">{% trans 'POS' %}</a></li>
 <li class="active"><a href="/pos/{{ pos.item_id }}/">{{ pos.moon }}</a></li>
 {% endblock %}
 
@@ -25,16 +25,16 @@
   <div class="span4">
     <h3>General Info</h3>
     <dl class="table">
-      <dt{%if pos.state == 3%} class="error"{%endif%}>State</dt>
+      <dt{%if pos.state == 3%} class="error"{%endif%}>{% trans 'State' %}</dt>
         <dd>{{pos.state_text}}{%if pos.state == 3%} until {{pos.state_timestamp|ecm_datetime}}{%endif%}</dd>
-      <dt>Online since</dt>
+      <dt>{% trans 'Online since' %}</dt>
         <dd>{{pos.online_timestamp|ecm_datetime}}</dd>
-      <dt>POS type</dt>
+      <dt>{% trans 'POS type' %}</dt>
         <dd>{{pos.type_name}}</dd>
     </dl>
   </div>
   <div class="span6">
-    <h3><span class="dotlan">dotlan &copy;</span> Links</h3>
+    <h3><span class="dotlan">dotlan &copy;</span>{% trans 'Links' %}</h3>
     <ul>
       <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}" target="_blank">{{pos.location}}</a></li>
       <li><a href="http://evemaps.dotlan.net/system/{{pos.location}}/{{dotlanPOSLocation}}" target="_blank">{{pos.moon}}</a></li>
@@ -44,54 +44,54 @@
 
 <div class="row-fluid">
   <div class="span5">
-      <h3>Access Control</h3>
+      <h3>{% trans 'Access Control' %}</h3>
       <dl class="table">
-        <dt>Allow corp members in force field</dt>
+        <dt>{% trans 'Allow corp members in force field' %}</dt>
           <dd>{{pos.allow_corporation_members}}</dd>
-        <dt>Allow ally members in force field</dt>
+        <dt>{% trans 'Allow ally members in force field' %}</dt>
           <dd>{{pos.allow_alliance_members}}</dd>
-        <dt>Can view fuel bay</dt>
+        <dt>{% trans 'Can view fuel bay' %}</dt>
           <dd>{{pos.fuel_bay_view_access|safe}}</dd>
-        <dt>Can take in fuel bay</dt>
+        <dt>{% trans 'Can take in fuel bay' %}</dt>
           <dd>{{pos.fuel_bay_take_access|safe}}</dd>
-        <dt>Can anchor modules</dt>
+        <dt>{% trans 'Can anchor modules' %}</dt>
           <dd>{{pos.anchor_access|safe}}</dd>
-        <dt>Can unanchor modules</dt>
+        <dt>{% trans 'Can unanchor modules' %}</dt>
           <dd>{{pos.unanchor_access|safe}}</dd>
-        <dt>Can online modules</dt>
+        <dt>{% trans 'Can online modules' %}</dt>
           <dd>{{pos.online_access|safe}}</dd>
-        <dt>Can offline modules</dt>
+        <dt>{% trans 'Can offline modules' %}</dt>
           <dd>{{pos.offline_access|safe}}</dd>
       </dl>
   </div>
   <div class="span4">
-      <h3>Combat Settings</h3>
+      <h3>{% trans 'Combat Settings' %}</h3>
       <dl class="table">
         {%if pos.standings_threshold != 0.0%}
-        <dt>Attack when standing is bellow</dt>
-          <dd>{{pos.standings_threshold}} (use standings from {{use_standings_from}})</dd>
+        <dt>{% trans 'Attack when standing is below' %}</dt>
+          <dd>{{pos.standings_threshold}} ({% trans 'use standings from' %} {{use_standings_from}})</dd>
         {%else%}
-        <dt>Attack on bad standing</dt>
+        <dt>{% trans 'Attack on bad standing' %}</dt>
           <dd>False</dd>
         {%endif%}
         {%if pos.security_status_threshold != 0.0%}
-        <dt>Attack when security status is bellow</dt>
+        <dt>{% trans 'Attack when security status is below' %}</dt>
           <dd>{{pos.security_status_threshold}}</dd>
         {%else%}
-        <dt>Attack when security status is bad</dt>
+        <dt>{% trans 'Attack when security status is bad' %}</dt>
           <dd>False</dd>
         {%endif%}
-        <dt>Attack on concord flag</dt>
+        <dt>{% trans 'Attack on concord flag' %}</dt>
           <dd>{{pos.attack_on_concord_flag}}</dd>
-        <dt>Attack on aggression</dt>
+        <dt>{% trans 'Attack on aggression' %}</dt>
           <dd>{{pos.attack_on_aggression}}</dd>
-        <dt>Attack war targets</dt>
+        <dt>{% trans 'Attack war targets' %}</dt>
           <dd>{{pos.attack_on_corp_war}}</dd>
       </dl>
   </div>
 </div>
 
-<h2>Fuel Levels</h2>
+<h2>{% trans 'Fuel Levels' %}</h2>
 
 <table class="table table-bordered" id="fuel_table">
   <thead>
@@ -103,7 +103,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
 </table>
@@ -120,7 +120,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
 </table>
@@ -139,7 +139,7 @@
 		<option value="{{ user.id }}">{{ user.username }}</option>
 		{% endfor %}
 	</select>
-	<button class="btn" type="submit" autocomplete="off" data-loading-text="Chargin ma lazers" id="btn_addremove_op"><i class="icon-plus"></i><i class="icon-minus"></i>Add/Remove</button>
+	<button class="btn" type="submit" autocomplete="off" data-loading-text="imma Chargin mah laz0rs" id="btn_addremove_op"><i class="icon-plus"></i><i class="icon-minus"></i>{% trans 'Add/Remove' %}</button>
 </form>
 
 <table class="table table-bordered" id="oper_table">
@@ -152,7 +152,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
 </table>
@@ -248,7 +248,7 @@ $(document).ready(function() {
 
     /* Apply a jEditable handler to the "Name" section */
     $('#custom_name').editable( '/pos/{{ pos.item_id }}/update_name/', {
-        placeholder: 'Click to Change Name...',
+        placeholder: '{% trans 'Click to Change Name...' %}',
         style: 'inherit',
         cssClass: 'edited',
         callback: function( sValue, y ) {
