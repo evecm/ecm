@@ -1,13 +1,13 @@
 {% extends "hr_base.html" %}
-
-{% block headtitle %}Player Details - {{ player.username }}{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Player Details' %} - {{ player.username }}{% endblock %}
 
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li><a href="/hr/players/">Players</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li><a href="/hr/players/">{% trans 'Players' %}</a></li>
 <li class="active"><a href="/hr/players/{{ player.id }}/">{{ player.username }}</a></li>
 {% endblock %}
 
@@ -17,14 +17,14 @@
 <div class="page-header">
   <h1 class="pagetitle">Player &quot;{{player.username}}&quot;</h1>
 </div>
-{% if player.is_staff and player.is_superuser %}<h1 class="pagetitle error">ECM Administrator</h1>{% endif %}
+{% if player.is_staff and player.is_superuser %}<h1 class="pagetitle error">{% trans 'ECM Administrator' %}</h1>{% endif %}
 
 <h2>Player Details</h2>
 
-<p><b>Account created:</b> {{player.date_joined|date:"Y F d - H:i"}}</p>
-<p><b>Last login in ECM:</b> {{player.last_login|date:"Y F d - H:i"}}</p>
-<p><b>Owned EVE Accounts:</b> {{eve_accounts}}</p>
-<p><b>Owned Characters:</b> {{characters}}</p>
+<p><b>{% trans 'Account created' %}:</b> {{player.date_joined|date:"Y F d - H:i"}}</p>
+<p><b>{% trans 'Last login in ECM' %}:</b> {{player.last_login|date:"Y F d - H:i"}}</p>
+<p><b>{% trans 'Owned EVE Accounts' %}:</b> {{eve_accounts}}</p>
+<p><b>{% trans 'Owned Characters' %}:</b> {{characters}}</p>
 
 <h2>Groups</h2>
 
@@ -32,7 +32,7 @@
 {% for g in groups %}
   <li>{{ g }}</li>
 {% empty %}
-  <p>None</p>
+  <p>{% trans 'None' %}</p>
 {% endfor %}
 </ul>
 
@@ -43,8 +43,8 @@
     <i class="icon-search"></i>
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <button class="btn btn-small" type="submit" id="search_button">Search</button>
-      <button class="btn btn-small" id="clear_search">Reset</button>
+      <button class="btn btn-small" type="submit" id="search_button">{% trans 'Search' %}</button>
+      <button class="btn btn-small" id="clear_search">{% trans 'Reset' %}</button>
     </div>
   </div>
 </form>
@@ -52,19 +52,19 @@
 <table class="table table-bordered table-condensed" id="members_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Name</th>
-      <th class="top" scope="col" >Nickname</th>
-      <th class="top" scope="col" >Player</th>
-      <th class="top" scope="col" >Access Level</th>
-      <th class="top" scope="col" >Last Login</th>
-      <th class="top" scope="col" >Location</th>
-      <th class="top" scope="col" >Ships</th>
-      <th class="top" scope="col" style="display:none;">Titles</th>
+      <th class="top" scope="col" >{% trans 'Name' %}</th>
+      <th class="top" scope="col" >{% trans 'Nickname' %}</th>
+      <th class="top" scope="col" >{% trans 'Player' %}</th>
+      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
+      <th class="top" scope="col" >{% trans 'Last Login' %}</th>
+      <th class="top" scope="col" >{% trans 'Location' %}</th>
+      <th class="top" scope="col" >{% trans 'Ships' %}</th>
+      <th class="top" scope="col" style="display:none;">{% trans 'Titles' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="8" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
 </table>

@@ -1,20 +1,20 @@
 {% extends "hr_base.html" %}
-
+{% load i18n %}
 {% block hr_stylesheets %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />{% endblock %}
 
-{% block headtitle %}Member Details - {{ member.name }}{% endblock %}
+{% block headtitle %}{% trans 'Member Details' %} - {{ member.name }}{% endblock %}
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li><a href="/hr/members/">Members</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li><a href="/hr/members/">{% trans 'Members' %}</a></li>
 <li class="active"><a href="/hr/members/{{ member.characterID }}">{{ member.name }}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1 {%if not member.corped %}class="error"{% endif %}>{{ member.name }}{%if not member.corped %} NOT CORPED{% endif %}
+  <h1 {%if not member.corped %}class="error"{% endif %}>{{ member.name }}{%if not member.corped %} {% trans 'NOT CORPED' %}{% endif %}
   <small>{{ member.nickname }}</small>
   </h1>
 </div>
@@ -23,21 +23,21 @@
   <div class="span4">
     <img src="http://image.eveonline.com/Character/{{ member.characterID }}_256.jpg"></img>
     {% if killboardUrl %}
-    <a class="kill" href="{{killboardUrl}}?a=search&searchtype=pilot&searchphrase={{member.name|iriencode}}">Link to killboard</a>
+    <a class="kill" href="{{killboardUrl}}?a=search&searchtype=pilot&searchphrase={{member.name|iriencode}}">{% trans 'Link to killboard' %}</a>
     {%endif%}
   </div>
   <div class="span8">
     <dl>
-      <dt>Corp Date</dt><dd>{{ member.corpDate|ecm_datetime }}</dd>
-      <dt>Last Login</dt><dd>{{ member.lastLogin|ecm_datetime }}</dd>
-      <dt>Last Logoff</dt><dd>{{ member.lastLogoff|ecm_datetime }}</dd>
-      <dt>Avg. Session Duration (30 Days)</dt><dd>{{ sessiondata.sessionlength|ecm_time }}</dd>
-      <dt>Logged in (last 30 Days)</dt><dd>{{ sessiondata.30days|ecm_time }}</dd>
-      <dt>Logged in (last 7 Days)</dt><dd>{{ sessiondata.7days|ecm_time }}</dd>
-      <dt>Base Office</dt><dd>{% if member.baseID %}{{ member.base }}{% else %}None{% endif %}</dd>
-      <dt>Owned by</dt><dd>{{ member.owner_permalink|safe }}</dd>
-      <dt>Latest location</dt><dd>{{ member.location }} <em>({%if member.ship %}{{ member.ship }}{% else %}Docked{% endif %})</em> on {{ member.date|ecm_datetime }}</dd>
-      <dt>Links</dt><dd><a class="kill" href="http://eve-kill.net/?a=pilot_detail&plt_external_id={{member.characterID|iriencode}}">EVE-Kill</a></dd>
+      <dt>{% trans 'Corp Date' %}</dt><dd>{{ member.corpDate|ecm_datetime }}</dd>
+      <dt>{% trans 'Last Login' %}</dt><dd>{{ member.lastLogin|ecm_datetime }}</dd>
+      <dt>{% trans 'Last Logoff' %}</dt><dd>{{ member.lastLogoff|ecm_datetime }}</dd>
+      <dt>{% trans 'Avg. Session Duration (30 Days)' %}</dt><dd>{{ sessiondata.sessionlength|ecm_time }}</dd>
+      <dt>{% trans 'Logged in (last 30 Days)' %}</dt><dd>{{ sessiondata.30days|ecm_time }}</dd>
+      <dt>{% trans 'Logged in (last 7 Days)' %}</dt><dd>{{ sessiondata.7days|ecm_time }}</dd>
+      <dt>{% trans 'Base Office' %}</dt><dd>{% if member.baseID %}{{ member.base }}{% else %}None{% endif %}</dd>
+      <dt>{% trans 'Owned by' %}</dt><dd>{{ member.owner_permalink|safe }}</dd>
+      <dt>{% trans 'Latest location' %}</dt><dd>{{ member.location }} <em>({%if member.ship %}{{ member.ship }}{% else %}{% trans 'Docked' %}{% endif %})</em> {% trans 'on' %} {{ member.date|ecm_datetime }}</dd>
+      <dt>{% trans 'Links' %}</dt><dd><a class="kill" href="http://eve-kill.net/?a=pilot_detail&plt_external_id={{member.characterID|iriencode}}">EVE-Kill</a></dd>
       <dd><a class="evewho" href="http://evewho.com/pilot/{{member.name|iriencode}}">EVE WHO</a></dd>
       <dd><a class="eveboard" href="http://eveboard.com/pilot/{{member.name|iriencode}}">EVEBoard</a></dd>
       <dd><a class="evesearch" href="http://eve-search.com/search/author/{{member.name|iriencode}}">EVE-Search</a></dd>
@@ -53,7 +53,7 @@
 <div class="row-fluid row-{{ member.color }}">
   <strong>
     {% if member.is_director %}
-    DIRECTOR
+    {% trans 'DIRECTOR' %}
     {% else %}
     {{ member.accessLvl }}
     {% endif %}
@@ -66,7 +66,7 @@
     <ul>{% for title in member.titles.all %}
       <li>{{ title.permalink|safe }}</li>
       {% empty %}
-      <p>No titles</p>
+      <p>{% trans 'No titles' %}</p>
     {% endfor %}</ul>
   </div>
   <div class="span6">
@@ -74,7 +74,7 @@
     <ul>{% for role in member.roles_no_director %}
       <li>{{ role.permalink|safe }}</li>
       {% empty %}
-      <p>No extra roles</p>
+      <p>{% trans 'No extra roles' %}</p>
     {% endfor %}</ul>
   </div>
 </div>
@@ -84,9 +84,9 @@
 <table class="table table-bordered table-condensed">
   <thead>
   <tr>
-    <th class="top" scope="col">Login</th>
-    <th class="top" scope="col">Logout</th>
-    <th class="top" scope="col">Duration</th>
+    <th class="top" scope="col">{% trans 'Login' %}</th>
+    <th class="top" scope="col">{% trans 'Logout' %}</th>
+    <th class="top" scope="col">{% trans 'Duration' %}</th>
   </tr>
   </thead>
   <tbody>
@@ -97,38 +97,38 @@
       <td>{{ login.session_seconds|ecm_time }}</td>
   </tr>
     {% empty %}
-    <tr><td colspan="3">No Data.</td></tr>
+    <tr><td colspan="3">{% trans 'No Data.' %}</td></tr>
   {% endfor %}
   </tbody>
   <tfoot>
   	<tr>
-	  <th>Last Week: {{ lastWeek|ecm_time }}</th>
-	  <th>Last Month: {{ lastMonth|ecm_time }}</th>
-	  <th>Total: {{ total|ecm_time }}</th>
+	  <th>{% trans 'Last Week' %}: {{ lastWeek|ecm_time }}</th>
+	  <th>{% trans 'Last Month' %}: {{ lastMonth|ecm_time }}</th>
+	  <th>{% trans 'Total' %}: {{ total|ecm_time }}</th>
 	</tr>
   </tfoot>
 </table>
 
 
-<h3>Security Access Changes</h3>
+<h3>{% trans 'Security Access Changes' %}</h3>
 <table class="table table-bordered table-condensed" id="access_changes_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Change</th>
-      <th class="top" scope="col" >Title/Role</th>
-      <th class="top" scope="col" >Date</th>
+      <th class="top" scope="col" >{% trans 'Change' %}</th>
+      <th class="top" scope="col" >{% trans 'Title/Role' %}</th>
+      <th class="top" scope="col" >{% trans 'Date' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="3" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Change</th>
-      <th>Title/Role</th>
-      <th>Date</th>
+      <th>{% trans 'Change' %}</th>
+      <th>{% trans 'Title/Role' %}</th>
+      <th>{% trans 'Date' %}</th>
     </tr>
   </tfoot>
 </table>
@@ -212,7 +212,7 @@ $('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {
     callback: function( sValue, y ) {
         $('#notes').html(sValue);
     },
-    tooltip   : 'Click to edit...'
+    tooltip   : '{% trans 'Click to edit...' %}'
 });
 </script>
 {% endblock %}

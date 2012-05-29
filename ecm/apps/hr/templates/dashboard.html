@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Human Resources Dashboard{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Human Resources Dashboard' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Human Resources Dashboard</h1>
+  <h1>{% trans 'Human Resources Dashboard' %}</h1>
 </div>
 <div class="row-fluid">
   <div class="span6" id="distibution_chart"></div>
@@ -20,13 +20,13 @@
 	<div class="span6" id="online_chart"></div>	
 </div>
 <dl>
-  <dt><a href="/hr/players/">Registered Players</a></dt>
+  <dt><a href="/hr/players/">{% trans 'Registered Players' %}</a></dt>
     <dd>{{playerCount}}</dd>
-  <dt>Average number of accounts by player</dt>
-    <dd>{{accountsByPlayer|floatformat:2}} account / player</dd>
-  <dt>Average number of characters by player</dt>
-    <dd>{{chraractersByPlayer|floatformat:2}} character / player</dd>
-  <dt><a href="/hr/members/unassociated/">Unassociated Characters</a></dt>
+  <dt>{% trans 'Average number of accounts by player' %}</dt>
+    <dd>{{accountsByPlayer|floatformat:2}} {% trans 'account / player' %}</dd>
+  <dt>{% trans 'Average number of characters by player' %}</dt>
+    <dd>{{chraractersByPlayer|floatformat:2}} {% trans 'character / player' %}</dd>
+  <dt><a href="/hr/members/unassociated/">{% trans 'Unassociated Characters' %}</a></dt>
     <dd>{{unassociatedCharacters}} / {{memberCount}}</dd>
 </dl>
 {% endblock %}
@@ -66,11 +66,11 @@ function extractData() {
     var members = 0;
     for (var i=0 ; i < DISTRIBUTION.length ; i++) {
         if (DISTRIBUTION[i].threshold == 0) {
-            legend = 'No Roles';
+            legend = "{% trans 'No Roles' %}";
         } else if (DISTRIBUTION[i].threshold == DIRECTOR_ACCESS_LVL) {
-            legend = 'Directors';
+            legend = "{% trans 'Directors' %}";
         } else {
-            legend = 'level < ' + DISTRIBUTION[i].threshold;
+            legend = "{% trans 'level' %} < " + DISTRIBUTION[i].threshold;
         }
         data[i] = [legend, DISTRIBUTION[i].members];
     }
@@ -87,7 +87,7 @@ function drawAccessLvls() {
       width: 450, 
       height: 350,
       //colors: extractColors(),
-      title: 'Security access level distribution'
+      title: '{% trans 'Security access level distribution' %}'
     };
     
     var chart = new google.visualization.PieChart(document.getElementById('distibution_chart'));
@@ -108,7 +108,7 @@ function drawPositions() {
       width: 450, 
       height: 350,
       //colors: ['60FC60', 'FCAF3B', 'FD5353'],
-      title: 'Position of members'
+      title: "{% trans 'Position of members' %}"
     };
     
     var chart = new google.visualization.PieChart(document.getElementById('positions_chart'));
@@ -134,9 +134,9 @@ function drawPlaytimes(){
       width: 350, 
       height: 350,
       //colors: ['60FC60', 'FCAF3B', 'FD5353'],
-      title: 'Avg. Playtime',
-      vAxis: {title: 'Hours'},
-      hAxis: {title: 'Last 30 Days', direction: -1}
+      title: "{% trans 'Avg. Playtime' %}",
+      vAxis: {title: "{% trans 'Hours' %}"},
+      hAxis: {title: "{% trans 'Last 30 Days' %}", direction: -1}
     };
     
     var chart = new google.visualization.AreaChart(document.getElementById('playtimes_chart'));
@@ -162,9 +162,9 @@ function drawOnline(){
       width: 350, 
       height: 350,
       //colors: ['60FC60', 'FCAF3B', 'FD5353'],
-      title: 'Online Players',
-      vAxis: {title: 'Players'},
-      hAxis: {title: 'Last 30 Days', direction: -1}
+      title: "{% trans 'Online Players' %}",
+      vAxis: {title: "{% trans 'Players' %}"},
+      hAxis: {title: "{% trans 'Last 30 Days' %}", direction: -1}
     };
     
     var chart = new google.visualization.ColumnChart(document.getElementById('online_chart'));

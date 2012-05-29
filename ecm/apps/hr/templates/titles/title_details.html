@@ -1,22 +1,22 @@
 {% extends "hr_base.html" %}
-
-{% block headtitle %}Title Details - {{ title.titleName }}{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Title Details' %} - {{ title.titleName }}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li><a href="/hr/titles/">Titles</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li><a href="/hr/titles/">{% trans 'Titles' %}</a></li>
 <li class="active"><a href="/hr/titles/{{ title.titleID }}">{{ title.titleName }}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
   <h1>{{ title.titleName }}
-  {% if title.lastModified %}<small>last modification {{ title.lastModified|ecm_datetime }}</small>{% endif %}
+  {% if title.lastModified %}<small>{% trans 'last modification' %} {{ title.lastModified|ecm_datetime }}</small>{% endif %}
   </h1>
 </div>
 
-<a href="/hr/titles/{{ title.titleID }}/members/">Show all {{ member_count }} members having this title</a>
+<a href="/hr/titles/{{ title.titleID }}/members/">{% trans 'Show all' %} {{ member_count }} {% trans 'members having this title' %}</a>
 
 <h2>Access Level</h2>
 <div class="row-fluid row-{{ title.color }}"><strong>{{ title.accessLvl }}</strong></div>
@@ -25,21 +25,21 @@
 <table class="table table-bordered table-condensed" id="title_composition_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Role</th>
-      <th class="top" scope="col" >Category</th>
-      <th class="top" scope="col" >Access Level</th>
+      <th class="top" scope="col" >{% trans 'Role' %}</th>
+      <th class="top" scope="col" >{% trans 'Category' %}</th>
+      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="3" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Role</th>
-      <th>Category</th>
-      <th>Access Level</th>
+      <th>{% trans 'Role' %}</th>
+      <th>{% trans 'Category' %}</th>
+      <th>{% trans 'Access Level' %}</th>
     </tr>
   </tfoot>
 </table>
@@ -50,28 +50,28 @@
 <table class="table table-bordered table-condensed" id="title_compo_diff_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Change</th>
-      <th class="top" scope="col" >Role</th>
-      <th class="top" scope="col" >Category</th>
-      <th class="top" scope="col" >Modification Date</th>
+      <th class="top" scope="col" >{% trans 'Change' %}</th>
+      <th class="top" scope="col" >{% trans 'Role' %}</th>
+      <th class="top" scope="col" >{% trans 'Category' %}</th>
+      <th class="top" scope="col" >{% trans 'Modification Date' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="4" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="4" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Change</th>
-      <th>Role</th>
-      <th>Category</th>
-      <th>Modification Date</th>
+      <th>{% trans 'Change' %}</th>
+      <th>{% trans 'Role' %}</th>
+      <th>{% trans 'Category' %}</th>
+      <th>{% trans 'Modification Date' %}</th>
     </tr>
   </tfoot>
 </table>
 {% else %}
-<p>No changes</p>
+<p>{% trans 'No changes' %}</p>
 {% endif %}
 {% endblock %}
 

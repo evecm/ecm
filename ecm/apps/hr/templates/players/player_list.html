@@ -1,24 +1,24 @@
 {% extends "hr_base.html" %}
-
-{% block headtitle %}Player List{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Player List' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li class="active"><a href="/hr/players/">Player List</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li class="active"><a href="/hr/players/">{% trans 'Player List' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-<h1>Player List</h1>
+<h1>{% trans 'Player List' %}</h1>
 </div>
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" placeholder="Search"/>
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
   </div>
 </form>
@@ -26,29 +26,29 @@
 <table class="table table-bordered table-condensed" id="players_table">
   <thead>
     <tr>
-      <th>Username</th>
-      <th>Admin</th>
-      <th>EVE Accounts</th>
-      <th>Characters</th>
-      <th>Groups</th>
-      <th>Last Login</th>
-      <th>Joined Date</th>
+      <th>{% trans 'Username' %}</th>
+      <th>{% trans 'Admin' %}</th>
+      <th>{% trans 'EVE Accounts' %}</th>
+      <th>{% trans 'Characters' %}</th>
+      <th>{% trans 'Groups' %}</th>
+      <th>{% trans 'Last Login' %}</th>
+      <th>{% trans 'Joined Date' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="6" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="6" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Username</th>
-      <th>Admin</th>
-      <th>EVE Accounts</th>
-      <th>Characters</th>
-      <th>Groups</th>
-      <th>Last Login</th>
-      <th>Joined Date</th>
+      <th>{% trans 'Username' %}</th>
+      <th>{% trans 'Admin' %}</th>
+      <th>{% trans 'EVE Accounts' %}</th>
+      <th>{% trans 'Characters' %}</th>
+      <th>{% trans 'Groups' %}</th>
+      <th>{% trans 'Last Login' %}</th>
+      <th>{% trans 'Joined Date' %}</th>
     </tr>
   </tfoot>
 </table>

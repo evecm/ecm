@@ -1,25 +1,25 @@
 {% extends "hr_base.html" %}
-
-{% block headtitle %}Members History{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Members History' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li><a href="/hr/members/">Members</a></li>
-<li class="active"><a href="/hr/members/access_changes/">Security Access Changes</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li><a href="/hr/members/">{% trans 'Members' %}</a></li>
+<li class="active"><a href="/hr/members/access_changes/">{% trans 'Security Access Changes' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Security Access Changes <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+  <h1>{% trans 'Security Access Changes' %} <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small></h1>
 </div>
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
   </div>
 </form>
@@ -27,23 +27,23 @@
 <table class="table table-bordered table-condensed" id="access_changes_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Change</th>
-      <th class="top" scope="col" >Member</th>
-      <th class="top" scope="col" >Title/Role</th>
-      <th class="top" scope="col" >Date</th>
+      <th class="top" scope="col" >{% trans 'Change' %}</th>
+      <th class="top" scope="col" >{% trans 'Member' %}</th>
+      <th class="top" scope="col" >{% trans 'Title/Role' %}</th>
+      <th class="top" scope="col" >{% trans 'Date' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="3" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="3" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Change</th>
-      <th>Member</th>
-      <th>Title/Role</th>
-      <th>Date</th>
+      <th>{% trans 'Change' %}</th>
+      <th>{% trans 'Member' %}</th>
+      <th>{% trans 'Title/Role' %}</th>
+      <th>{% trans 'Date' %}</th>
     </tr>
   </tfoot>
 </table>

@@ -1,40 +1,40 @@
 {% extends "hr_base.html" %}
-
-{% block headtitle %}Titles{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Titles' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li class="active"><a href="/hr/titles/">Titles</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li class="active"><a href="/hr/titles/">{% trans 'Titles' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-    <h1>Corporation Titles <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+    <h1>{% trans 'Corporation Titles' %} <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small></h1>
 </div>
 
 <table class="table table-bordered table-condensed" id="titles_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Title Name</th>
-      <th class="top" scope="col" >Access Level</th>
-      <th class="top" scope="col" >Members</th>
-      <th class="top" scope="col" >Role Count</th>
-      <th class="top" scope="col" >Last Modified</th>
+      <th class="top" scope="col" >{% trans 'Title Name' %}</th>
+      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
+      <th class="top" scope="col" >{% trans 'Members' %}</th>
+      <th class="top" scope="col" >{% trans 'Role Count' %}</th>
+      <th class="top" scope="col" >{% trans 'Last Modified' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="5" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="5" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Title Name</th>
-      <th>Access Level</th>
-      <th>Members</th>
-      <th>Role Count</th>
-      <th>Last Modified</th>
+      <th>{% trans 'Title Name' %}</th>
+      <th>{% trans 'Access Level' %}</th>
+      <th>{% trans 'Members' %}</th>
+      <th>{% trans 'Role Count' %}</th>
+      <th>{% trans 'Last Modified' %}</th>
     </tr>
   </tfoot>
 </table>

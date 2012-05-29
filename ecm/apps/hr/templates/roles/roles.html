@@ -1,13 +1,13 @@
 {% extends "hr_base.html" %}
-
-{% block headtitle %}Roles{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Roles' %}{% endblock %}
 
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li class="active"><a href="/hr/roles/">Roles</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li class="active"><a href="/hr/roles/">{% trans 'Roles' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -16,7 +16,7 @@
 </div>
 
 <div class="btn-toolbar form-search form-inline" >
-  <span class="label label-info">Role Category</span>
+  <span class="label label-info">{% trans 'Role Category' %}</span>
   <div class="btn-group" data-toggle="buttons-radio" id="buttons">
   {% for rt in role_types %}
     <button class="btn btn-small btn-info" value="{{ rt.id }}">{{ rt.dispName }}</button>
@@ -27,11 +27,11 @@
 <table class="table table-bordered table-condensed" id="roles_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Role Name</th>
-      <th class="top" scope="col" >Description</th>
-      <th class="top" scope="col" >Access Level</th>
-      <th class="top" scope="col" >Members</th>
-      <th class="top" scope="col" >Titles</th>
+      <th class="top" scope="col" >{% trans 'Role Name' %}</th>
+      <th class="top" scope="col" >{% trans 'Description' %}</th>
+      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
+      <th class="top" scope="col" >{% trans 'Members' %}</th>
+      <th class="top" scope="col" >{% trans 'Titles' %}</th>
       <th class="top" scope="col" style="display:none;"></th>
       <th class="top" scope="col" style="display:none;"></th>
       <th class="top" scope="col" style="display:none;"></th>
@@ -39,16 +39,16 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="5" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="5" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Role Name</th>
-      <th>Description</th>
-      <th>Access Level</th>
-      <th>Members</th>
-      <th>Titles</th>
+      <th>{% trans 'Role Name' %}</th>
+      <th>{% trans 'Description' %}</th>
+      <th>{% trans 'Access Level' %}</th>
+      <th>{% trans 'Members' %}</th>
+      <th>{% trans 'Titles' %}</th>
       <th style="display:none;"></th>
       <th style="display:none;"></th>
       <th style="display:none;"></th>

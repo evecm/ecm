@@ -1,13 +1,13 @@
 {% extends "hr_base.html" %}
-
-{% block headtitle %}Role Details - {{ role }}{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Role Details' %} - {{ role }}{% endblock %}
 
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li><a href="/hr/roles/">Roles</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li><a href="/hr/roles/">{% trans 'Roles' %}</a></li>
 <li class="active"><a href="/hr/roles/{{ role.id }}/">{{ role.name }} <em>({{ role.roleType.dispName }})</em></a></li>
 {% endblock %}
 
@@ -24,19 +24,19 @@
 <h2>Members having the role <small>{{ role.name }} <em>{{ role.roleType.dispName }}</em></small></h2>
 <ul>
   <li>
-    <b>Assigned directly:</b>
+    <b>{% trans 'Assigned directly' %}:</b>
     {% if direct_member_count %}
     {{ direct_member_count }} member{{ direct_member_count|pluralize }}
     {% else %}
-    None
+    {% trans 'None' %}
     {% endif %}
   </li>
   <li>
-    <b>Assigned through titles:</b>
+    <b>{% trans 'Assigned through titles' %}:</b>
     {% if total_member_count %}
     {{ total_member_count }} member{{ total_member_count|pluralize }}
     {% else %}
-    None
+    {% trans 'None' %}
     {% endif %}
   </li>
 </ul>
@@ -46,8 +46,8 @@
     <i class="icon-search"></i>
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <button class="btn btn-small" type="submit" id="search_button">Search</button>
-      <button class="btn btn-small" id="clear_search">Reset</button>
+      <button class="btn btn-small" type="submit" id="search_button">{% trans 'Search' %}</button>
+      <button class="btn btn-small" id="clear_search">{% trans 'Reset' %}</button>
     </div>
   </div>
 </form>
@@ -55,31 +55,31 @@
 <table class="table table-bordered table-condensed" id="members_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Name</th>
-      <th class="top" scope="col" >Nickname</th>
-      <th class="top" scope="col" >Player</th>
-      <th class="top" scope="col" >Access Level</th>
-      <th class="top" scope="col" >Last Login</th>
-      <th class="top" scope="col" >Location</th>
-      <th class="top" scope="col" >Ship</th>
-      <th class="top" scope="col" style="display:none;">Titles</th>
+      <th class="top" scope="col" >{% trans 'Name' %}</th>
+      <th class="top" scope="col" >{% trans 'Nickname' %}</th>
+      <th class="top" scope="col" >{% trans 'Player' %}</th>
+      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
+      <th class="top" scope="col" >{% trans 'Last Login' %}</th>
+      <th class="top" scope="col" >{% trans 'Location' %}</th>
+      <th class="top" scope="col" >{% trans 'Ship' %}</th>
+      <th class="top" scope="col" style="display:none;">{% trans 'Titles' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="8" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Name</th>
-      <th>Nickname</th>
-      <th>Player</th>
-      <th>Access Level</th>
-      <th>Last Login</th>
-      <th>Location</th>
-      <th>Ship</th>
-      <th style="display:none;">Titles</th>
+      <th>{% trans 'Name' %}</th>
+      <th>{% trans 'Nickname' %}</th>
+      <th>{% trans 'Player' %}</th>
+      <th>{% trans 'Access Level' %}</th>
+      <th>{% trans 'Last Login' %}</th>
+      <th>{% trans 'Location' %}</th>
+      <th>{% trans 'Ship' %}</th>
+      <th style="display:none;">{% trans 'Titles' %}</th>
     </tr>
   </tfoot>
 
@@ -108,7 +108,7 @@ $(document).ready(function() {
             var color = getAccessColor(parseInt(sValue), COLOR_THRESHOLDS);
             $('div#{{role.id}}').attr('class', 'row-fluid editable bold row-' + color);
         },
-        tooltip: 'Click to edit...'
+        tooltip: '{% trans 'Click to edit...' %}'
     } );
 
     var color = getAccessColor(parseInt($('div#{{role.id}}').text()), COLOR_THRESHOLDS);

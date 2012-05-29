@@ -1,14 +1,14 @@
 {% extends "hr_base.html" %}
-
-{% block headtitle %}Members History{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Members History' %}{% endblock %}
 
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li><a href="/hr/members/">Members</a></li>
-<li class="active"><a href="/hr/members/history/">History</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li><a href="/hr/members/">{% trans 'Members' %}</a></li>
+<li class="active"><a href="/hr/members/history/">{% trans 'History' %}</a></li>
 {% endblock %}
 
 
@@ -21,8 +21,8 @@
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
   </div>
 </form>
@@ -30,23 +30,23 @@
 <table class="table table-bordered table-condensed" id="history_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Corped/Leaved</th>
-      <th class="top" scope="col" >Name</th>
-      <th class="top" scope="col" >Nickname</th>
-      <th class="top" scope="col" >Date</th>
+      <th class="top" scope="col" >{% trans 'Corped/Leaved' %}</th>
+      <th class="top" scope="col" >{% trans 'Name' %}</th>
+      <th class="top" scope="col" >{% trans 'Nickname' %}</th>
+      <th class="top" scope="col" >{% trans 'Date' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="4" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="4" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Corped/Leaved</th>
-      <th>Name</th>
-      <th>Nickname</th>
-      <th>Date</th>
+      <th>{% trans 'Corped/Leaved' %}</th>
+      <th>{% trans 'Name' %}</th>
+      <th>{% trans 'Nickname' %}</th>
+      <th>{% trans 'Date' %}</th>
     </tr>
   </tfoot>
 </table>

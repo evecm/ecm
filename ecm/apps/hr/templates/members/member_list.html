@@ -1,13 +1,13 @@
 {% extends "hr_base.html" %}
-
-{% block headtitle %}Members{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Members' %}{% endblock %}
 
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/hr/">Human Resources</a></li>
-<li class="active"><a href="/hr/members/">Members</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li class="active"><a href="/hr/members/">{% trans 'Members' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -20,13 +20,13 @@
     <i class="icon-search"></i>
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <button class="btn btn-small" type="submit" id="search_button">Search</button>
-      <button class="btn btn-small" id="clear_search">Reset</button>
+      <button class="btn btn-small" type="submit" id="search_button">{% trans 'Search' %}</button>
+      <button class="btn btn-small" id="clear_search">{% trans 'Reset' %}</button>
     </div>
-    <span class="label label-info">Display</span>
+    <span class="label label-info">{% trans 'Display' %}</span>
     <div class="btn-group" data-toggle="buttons-radio" id="ships_selector">
-      <button class="btn btn-small btn-info active" id="all">All Ships</button>
-      <button class="btn btn-small btn-info" id="supers">Supers Only</button>
+      <button class="btn btn-small btn-info active" id="all">{% trans 'All Ships' %}</button>
+      <button class="btn btn-small btn-info" id="supers">{% trans 'Supers Only' %}</button>
     </div>
   </div>
 </form>
@@ -34,31 +34,31 @@
 <table class="table table-bordered table-condensed" id="members_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Name</th>
-      <th class="top" scope="col" >Nickname</th>
-      <th class="top" scope="col" >Player</th>
-      <th class="top" scope="col" >Access Level</th>
-      <th class="top" scope="col" >Last Login</th>
-      <th class="top" scope="col" >Location</th>
-      <th class="top" scope="col" >Ship</th>
-      <th class="top" scope="col" style="display:none;">Titles</th>
+      <th class="top" scope="col" >{% trans 'Name' %}</th>
+      <th class="top" scope="col" >{% trans 'Nickname' %}</th>
+      <th class="top" scope="col" >{% trans 'Player' %}</th>
+      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
+      <th class="top" scope="col" >{% trans 'Last Login' %}</th>
+      <th class="top" scope="col" >{% trans 'Location' %}</th>
+      <th class="top" scope="col" >{% trans 'Ship' %}</th>
+      <th class="top" scope="col" style="display:none;">{% trans 'Titles' %}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td colspan="8" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="8" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <th>Name</th>
-      <th>Nickname</th>
-      <th>Player</th>
-      <th>Access Level</th>
-      <th>Last Login</th>
-      <th>Location</th>
-      <th>Ship</th>
-      <th style="display:none;">Titles</th>
+      <th>{% trans 'Name' %}</th>
+      <th>{% trans 'Nickname' %}</th>
+      <th>{% trans 'Player' %}</th>
+      <th>{% trans 'Access Level' %}</th>
+      <th>{% trans 'Last Login' %}</th>
+      <th>{% trans 'Location' %}</th>
+      <th>{% trans 'Ship' %}</th>
+      <th style="display:none;">{% trans 'Titles' %}</th>
     </tr>
   </tfoot>
 </table>
