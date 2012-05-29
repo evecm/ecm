@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Edit MOTD{% endblock %}
+{% i18n %}
+{% block headtitle %}{% trans 'Edit MOTD' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li>Edit MOTD</li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li>{% trans 'Edit MOTD' %}</li>
 {% endblock %}
 
 {% block main_content %}
@@ -15,16 +15,16 @@
 <form class="well form-horizontal" target="/editapi/" method="post">
 	{% csrf_token %}
 	
-	<label>MOTD Text</label>
+	<label>{% trans 'MOTD Text' %}</label>
 	<textarea rows="10" class="span5 code" name="message">{{motd.message}}</textarea>
 	<br>
-	<label>Select Markup</label>
+	<label>{% trans 'Select Markup' %}</label>
 	<select name="markup">
 		{% for markup_id, markup in markups.items %}
 		<option value="{{markup_id}}" {% if motd.markup = markup_id %}selected="selected"{% endif %}>{{markup}}</option>
 		{% endfor %}
 	</select>
-	<button type="submit" class="btn btn-primary">Save Changes</button>
+	<button type="submit" class="btn btn-primary">{% trans 'Save Changes' %}</button>
 </form>
 
 {% endblock %}

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Standings{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Standings' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li>Standings</li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li>{% trans 'Standings' %}</li>
 {% endblock %}
 
 {% block stylesheets %}
@@ -19,7 +19,7 @@
 		<table class="table table-bordered table-condensed">
 			<thead>
 				<tr>
-					<th>Entity</th><th class="center">Standing</th>
+					<th>{% trans 'Entity' %}</th><th class="center">{% trans 'Standing' %}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -39,7 +39,7 @@
 		<table class="table table-bordered table-condensed">
 			<thead>
 				<tr>
-					<th>Entity</th><th class="center">Standing</th>
+					<th>{% trans 'Entity' %}</th><th class="center">{% trans 'Standing' %}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -66,12 +66,12 @@
         <form class="well form-inline" action='/standings/' method="post">
             {% csrf_token %}
             <select name="standings_public">
-                <option value="none" {% if not standings_public %}selected="selected"{% endif %}>None</option>
-                <option value="alliance" {% if standings_public == 'alliance' %}selected="selected"{% endif %}>Alliance</option>
-                <option value="corporation"{% if standings_public == 'corporation' %}selected="selected"{% endif %}>Corp</option>
-                <option value="both"{% if standings_public == 'both' %}selected="selected"{% endif %}>Both</option>
+                <option value="none" {% if not standings_public %}selected="selected"{% endif %}>{% trans 'None' %}</option>
+                <option value="alliance" {% if standings_public == 'alliance' %}selected="selected"{% endif %}>{% trans 'Alliance' %}</option>
+                <option value="corporation"{% if standings_public == 'corporation' %}selected="selected"{% endif %}>{% trans 'Corp' %}</option>
+                <option value="both"{% if standings_public == 'both' %}selected="selected"{% endif %}>{% trans 'Both' %}</option>
             </select>
-            <button type="submit" class="btn">Set Access</button>
+            <button type="submit" class="btn">{% trans 'Set Access' %}</button>
         </form>
     </div>
 </div>

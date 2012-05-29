@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.5.2.dev\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-29 21:08+0200\n"
+"POT-Creation-Date: 2012-05-29 22:40+0200\n"
 "PO-Revision-Date: 2012-05-29 21:08+0200\n"
 "Last-Translator: johnfoo <edouard.chamillard@gmail.com>\n"
 "Language-Team: fr_FR <translate@eve-corp-management.org>\n"
@@ -91,7 +91,9 @@ msgstr "Panneau des Ressources Humaines"
 #: templates/auth/password_reset.html:9
 #: templates/auth/password_reset_complete.html:9
 #: templates/auth/password_reset_confirm.html:9
-#: templates/auth/password_reset_done.html:9
+#: templates/auth/password_reset_done.html:9 templates/common/corp.html:3
+#: templates/common/corp.html.py:6 templates/common/edit_motd.html:6
+#: templates/common/standings.html:6
 msgid "Home"
 msgstr "Accueil"
 
@@ -635,7 +637,7 @@ msgstr "Personnages possédés"
 #: plugins/industry/templates/order_details.html:155
 #: plugins/industry/templates/catalog/item_details.html:71
 #: plugins/industry/templates/catalog/item_details.html:178
-#: templates/auth/account.html:78
+#: templates/auth/account.html:78 templates/common/standings.html:69
 msgid "None"
 msgstr "Aucun"
 
@@ -705,6 +707,7 @@ msgid "Role Name"
 msgstr "Nom du role"
 
 #: apps/hr/templates/roles/roles.html:31 apps/hr/templates/roles/roles.html:48
+#: templates/common/corp.html:29
 msgid "Description"
 msgstr "Description"
 
@@ -1765,7 +1768,7 @@ msgstr "Connecté en tant que"
 msgid "Please log in."
 msgstr "Connectez vous s'il vous plait"
 
-#: templates/base.html:78
+#: templates/base.html:78 templates/common/corp.html:13
 msgid "Message Of The Day"
 msgstr "Message du jour"
 
@@ -1926,7 +1929,7 @@ msgid "Create a new API Key on EVE-Online support website"
 msgstr "Créer une nouvelle clef API sur le site de support de EVE-Online"
 
 #: templates/auth/add_api.html:31 templates/auth/create_account.html:44
-#: templates/auth/edit_api.html:31
+#: templates/auth/edit_api.html:31 templates/common/edit_director_api.html:24
 msgid "Submit Information"
 msgstr "Soumettre les informations"
 
@@ -2103,6 +2106,78 @@ msgstr "Visitez la page suivante et choisissez un nouveau mot de passe"
 msgid "Your username, in case you've forgotten:"
 msgstr "Votre nom d'utilisateur, au cas ou vous l'auriez oublié"
 
+#: templates/common/corp.html:17
+msgid "by"
+msgstr ""
+
+#: templates/common/corp.html:26
+msgid "CEO"
+msgstr ""
+
+#: templates/common/corp.html:27
+msgid "Tax Rate"
+msgstr ""
+
+#: templates/common/corp.html:28
+#, fuzzy
+msgid "Member Count"
+msgstr "Membre"
+
+#: templates/common/edit_director_api.html:4
+#: templates/common/edit_director_api.html:10
+#, fuzzy
+msgid "Enter a Director API Key"
+msgstr "Éditer clef API"
+
+#: templates/common/edit_motd.html:3 templates/common/edit_motd.html.py:7
+msgid "Edit MOTD"
+msgstr ""
+
+#: templates/common/edit_motd.html:18
+msgid "MOTD Text"
+msgstr ""
+
+#: templates/common/edit_motd.html:21
+msgid "Select Markup"
+msgstr ""
+
+#: templates/common/edit_motd.html:27
+#, fuzzy
+msgid "Save Changes"
+msgstr "Changements"
+
+#: templates/common/standings.html:3 templates/common/standings.html.py:7
+msgid "Standings"
+msgstr ""
+
+#: templates/common/standings.html:22 templates/common/standings.html.py:42
+#, fuzzy
+msgid "Entity"
+msgstr "Quantité"
+
+#: templates/common/standings.html:22 templates/common/standings.html.py:42
+msgid "Standing"
+msgstr ""
+
+#: templates/common/standings.html:70
+#, fuzzy
+msgid "Alliance"
+msgstr "Solde"
+
+#: templates/common/standings.html:71
+#, fuzzy
+msgid "Corp"
+msgstr "Date Corporation"
+
+#: templates/common/standings.html:72
+msgid "Both"
+msgstr ""
+
+#: templates/common/standings.html:74
+#, fuzzy
+msgid "Set Access"
+msgstr "Succes"
+
 #: views/common.py:119 views/account/forms.py:212 views/account/forms.py:258
 msgid "API Key ID"
 msgstr "ID Clef API"
@@ -2206,6 +2281,9 @@ msgstr "Cette clef API est déjà enregistrée"
 #: views/account/forms.py:295
 msgid "External Password"
 msgstr "Mot de passe externe"
+#: apps/scheduler/models.py:84
+msgid "Launch"
+msgstr "Lancer"
 
 #~ msgid "seconds"
 #~ msgstr "secondes"

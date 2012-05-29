@@ -1,20 +1,20 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Home{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Home' %}{% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="row-fluid">
 	<div class="span8">
 		<div class="page-header">
-		  <h1>Message Of The Day</h1>
+		  <h1>{% trans 'Message Of The Day' %}</h1>
 		</div>
 		
 		<p>{{motd.render_html|safe}}</p>
-        <p class="pull-right faded"><em>&mdash;{{motd.date|ecm_datetime}} by <strong>{{motd.user}}</strong></em></p>
+        <p class="pull-right faded"><em>&mdash;{{motd.date|ecm_datetime}} {% trans 'by' %} <strong>{{motd.user}}</strong></em></p>
 		
 		{% if can_edit_motd %}
 		<br><br><a class="pull-right btn btn-mini" href="/editmotd/">Edit</a><br>
@@ -23,10 +23,10 @@
 		
 		<h2>Corporation Details</h2>
 		<dl>
-	        <dt>CEO</dt><dd><a href="/hr/members/{{ corp.ceoID }}">{{ corp.ceoName }}</a></dd>
-	        <dt>Tax Rate</dt><dd>{{ corp.taxRate }}%</dd>
-	        <dt>Member Count</dt><dd>{{ corp.memberCount }} (max. {{ corp.memberLimit }})</dd>
-	        <dt>Description</dt><dd>{{ corp.description|safe }}</dd>
+	        <dt>{% trans 'CEO' %}</dt><dd><a href="/hr/members/{{ corp.ceoID }}">{{ corp.ceoName }}</a></dd>
+	        <dt>{% trans 'Tax Rate' %}</dt><dd>{{ corp.taxRate }}%</dd>
+	        <dt>{% trans 'Member Count' %}</dt><dd>{{ corp.memberCount }} (max. {{ corp.memberLimit }})</dd>
+	        <dt>{% trans 'Description' %}</dt><dd>{{ corp.description|safe }}</dd>
         </dl>
 	</div>
 	<div class="span4">

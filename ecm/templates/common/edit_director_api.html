@@ -1,13 +1,13 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-
-{% block headtitle %}Enter a Director API Key{% endblock %}
+{% block headtitle %}{% trans 'Enter a Director API Key' %}{% endblock %}
 
 {% block breadcrumbs_wrapper %}{% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-    <h1>Enter a Director API Key</h1>
+    <h1>{% trans 'Enter a Director API Key' %}</h1>
 </div>
 
 <form method="post" action="{{ request_path }}" class="form-inline">
@@ -21,6 +21,6 @@
     {{ form.vCode }}<br>
 
     <br>
-    <button type="submit" class="btn btn-primary">Submit Information</button>
+    <button type="submit" class="btn btn-primary">{% trans 'Submit Information' %}</button>
 </form>
 {% endblock %}
