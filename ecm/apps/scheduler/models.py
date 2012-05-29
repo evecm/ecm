@@ -22,6 +22,8 @@ __author__ = "diabeteman"
 import logging
 from datetime import timedelta
 
+from django.template import Template, Context
+from django.http import HttpResponse
 from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
 from django.utils.encoding import force_unicode
 from django.utils import timezone
@@ -66,7 +68,7 @@ class ScheduledTask(models.Model):
     def frequency_admin_display(self):
         freq = self.frequency
         frequnits = self.get_frequency_units_display()
-        return tr("Every "+freq+" "+frequnits)
+        return tr("Every "+str(freq)+" "+str(frequnits))
     frequency_admin_display.short_description = tr("frequency")
 
     def function_admin_display(self):
@@ -77,9 +79,11 @@ class ScheduledTask(models.Model):
         url = "/scheduler/tasks/%d/launch/" % self.id
         if next_page: url += "?next=%s" % next_page
         return url
-
+    #FIXIT: this function as been seriously uglified with the addition of i18n code.  
     def as_html(self, next_page=None):
-        return '<a class="task" href="%s">{% trans "Launch" %}</a>' % self.permalink(next_page)
+        t = Template('{% load i18n %} <a class="task" href="'+str(self.permalink(next_page))+'">{% trans "Launch" %}</a>')
+        html = t.render(Context())
+        return html
 
     def launch_task_admin_display(self):
         return self.as_html(next_page="/admin/scheduler/scheduledtask/")
