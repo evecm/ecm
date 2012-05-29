@@ -16,6 +16,8 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 
+from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
+
 NAME = 'accounting'
 VERSION = '2.0'
 
@@ -24,13 +26,13 @@ DEPENDS_ON = {
 }
 
 MENUS = [
-     {'title': 'Accounting',    'url': '',      'items': [
-        {'title': 'Wallets Journal', 'url': 'journal/', 'items': []},
-        {'title': 'Wallets Transactions', 'url': 'transactions/', 'items': []},
-        {'title': 'Tax Contributions', 'url': 'contributions/', 'items': []},
-        {'title': 'Contracts', 'url': 'contracts/', 'items': []},
-        {'title': 'Market Orders', 'url': 'marketorders/', 'items': []},
-        {'title': 'Report', 'url': 'report/', 'items': []},
+     {'title': tr_lazy('Accounting'),    'url': '',      'items': [
+        {'title': tr_lazy('Wallets Journal'), 'url': 'journal/', 'items': []},
+        {'title': tr_lazy('Wallets Transactions'), 'url': 'transactions/', 'items': []},
+        {'title': tr_lazy('Tax Contributions'), 'url': 'contributions/', 'items': []},
+        {'title': tr_lazy('Contracts'), 'url': 'contracts/', 'items': []},
+        {'title': tr_lazy('Market Orders'), 'url': 'marketorders/', 'items': []},
+        {'title': tr_lazy('Report'), 'url': 'report/', 'items': []},
     ]},
 ]
 

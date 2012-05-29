@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.5.2.dev\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-29 22:40+0200\n"
-"PO-Revision-Date: 2012-05-29 21:08+0200\n"
+"POT-Creation-Date: 2012-05-29 23:23+0200\n"
+"PO-Revision-Date: 2012-05-29 23:08+0200\n"
 "Last-Translator: johnfoo <edouard.chamillard@gmail.com>\n"
 "Language-Team: fr_FR <translate@eve-corp-management.org>\n"
 "Language: Français\n"
@@ -2108,75 +2108,68 @@ msgstr "Votre nom d'utilisateur, au cas ou vous l'auriez oublié"
 
 #: templates/common/corp.html:17
 msgid "by"
-msgstr ""
+msgstr "par"
 
 #: templates/common/corp.html:26
 msgid "CEO"
-msgstr ""
+msgstr "PDG"
 
 #: templates/common/corp.html:27
 msgid "Tax Rate"
-msgstr ""
+msgstr "Taxation"
 
 #: templates/common/corp.html:28
-#, fuzzy
 msgid "Member Count"
-msgstr "Membre"
+msgstr "Nombre de membres"
 
 #: templates/common/edit_director_api.html:4
 #: templates/common/edit_director_api.html:10
-#, fuzzy
 msgid "Enter a Director API Key"
-msgstr "Éditer clef API"
+msgstr "Entrez une clef API directeur"
 
 #: templates/common/edit_motd.html:3 templates/common/edit_motd.html.py:7
 msgid "Edit MOTD"
-msgstr ""
+msgstr "Éditer le message du jour"
 
 #: templates/common/edit_motd.html:18
 msgid "MOTD Text"
-msgstr ""
+msgstr "Texte du message du jour"
 
 #: templates/common/edit_motd.html:21
 msgid "Select Markup"
-msgstr ""
+msgstr "Selectionnez les indications typographiques"
 
 #: templates/common/edit_motd.html:27
-#, fuzzy
 msgid "Save Changes"
-msgstr "Changements"
+msgstr "Sauvegarder les Changements"
 
 #: templates/common/standings.html:3 templates/common/standings.html.py:7
 msgid "Standings"
-msgstr ""
+msgstr "Relations"
 
 #: templates/common/standings.html:22 templates/common/standings.html.py:42
-#, fuzzy
 msgid "Entity"
-msgstr "Quantité"
+msgstr "Entité"
 
 #: templates/common/standings.html:22 templates/common/standings.html.py:42
 msgid "Standing"
-msgstr ""
+msgstr "Relation"
 
 #: templates/common/standings.html:70
-#, fuzzy
 msgid "Alliance"
-msgstr "Solde"
+msgstr "Alliance"
 
 #: templates/common/standings.html:71
-#, fuzzy
 msgid "Corp"
-msgstr "Date Corporation"
+msgstr "Corporation"
 
 #: templates/common/standings.html:72
 msgid "Both"
-msgstr ""
+msgstr "Les deux"
 
 #: templates/common/standings.html:74
-#, fuzzy
 msgid "Set Access"
-msgstr "Succes"
+msgstr "Définir acces"
 
 #: views/common.py:119 views/account/forms.py:212 views/account/forms.py:258
 msgid "API Key ID"
@@ -2281,9 +2274,9 @@ msgstr "Cette clef API est déjà enregistrée"
 #: views/account/forms.py:295
 msgid "External Password"
 msgstr "Mot de passe externe"
-#: apps/scheduler/models.py:84
-msgid "Launch"
-msgstr "Lancer"
+
+#~ msgid "Launch"
+#~ msgstr "Lancer"
 
 #~ msgid "seconds"
 #~ msgstr "secondes"

@@ -18,6 +18,7 @@
 __date__ = "2011 8 17"
 __author__ = "diabeteman"
 
+from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
 
 NAME = 'industry'
 VERSION = '1.0'
@@ -27,13 +28,13 @@ DEPENDS_ON = {
 }
 
 MENUS = [
-    {'title': 'Industry',    'url': '',      'items': [
-        {'title': 'Orders', 'url': 'orders/', 'items': []},
-        {'title': 'Jobs', 'url': 'jobs/', 'items': []},
-        {'title': 'Catalog', 'url': 'catalog/', 'items': [
-            {'title': 'Items',         'url': 'catalog/items/'},
-            {'title': 'Supplies',      'url': 'catalog/supplies/'},
-            {'title': 'Blueprints',    'url': 'catalog/blueprints/'},
+    {'title': tr_lazy('Industry'),    'url': '',      'items': [
+        {'title': tr_lazy('Orders'), 'url': 'orders/', 'items': []},
+        {'title': tr_lazy('Jobs'), 'url': 'jobs/', 'items': []},
+        {'title': tr_lazy('Catalog'), 'url': 'catalog/', 'items': [
+            {'title': tr_lazy('Items'),         'url': 'catalog/items/'},
+            {'title': tr_lazy('Supplies'),      'url': 'catalog/supplies/'},
+            {'title': tr_lazy('Blueprints'),    'url': 'catalog/blueprints/'},
         ]},
     ]},
 ]

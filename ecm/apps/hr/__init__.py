@@ -15,21 +15,22 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
 
 NAME = 'hr'
 
 MENUS = [
-    {'title': 'Human Resources',   'url': '',     'items': [
-        {'title': 'Members',   'url': 'members/', 'items': [
-            {'title': 'History',               'url': 'members/history/'},
-            {'title': 'Access Changes',        'url': 'members/accesschanges/'},
-            {'title': 'Unassociated Members',  'url': 'members/unassociated/'},
+    {'title': tr_lazy('Human Resources'),   'url': '',     'items': [
+        {'title': tr_lazy('Members'),   'url': 'members/', 'items': [
+            {'title': tr_lazy('History'),               'url': 'members/history/'},
+            {'title': tr_lazy('Access Changes'),        'url': 'members/accesschanges/'},
+            {'title': tr_lazy('Unassociated Members'),  'url': 'members/unassociated/'},
         ]},
-        {'title': 'Titles',    'url': 'titles/',      'items': [
-            {'title': 'Changes',               'url': 'titles/changes/'},
+        {'title': tr_lazy('Titles'),    'url': 'titles/',      'items': [
+            {'title': tr_lazy('Changes'),               'url': 'titles/changes/'},
         ]},
-        {'title': 'Roles',     'url': 'roles/',       'items': []},
-        {'title': 'Players',   'url': 'players/',     'items': []},
+        {'title': tr_lazy('Roles'),     'url': 'roles/',       'items': []},
+        {'title': tr_lazy('Players'),   'url': 'players/',     'items': []},
     ]},
 ]
 
