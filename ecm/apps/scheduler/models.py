@@ -79,11 +79,9 @@ class ScheduledTask(models.Model):
         url = "/scheduler/tasks/%d/launch/" % self.id
         if next_page: url += "?next=%s" % next_page
         return url
-    #FIXIT: this function as been seriously uglified with the addition of i18n code.  
+
     def as_html(self, next_page=None):
-        t = Template('{% load i18n %} <a class="task" href="'+str(self.permalink(next_page))+'">{% trans "Launch" %}</a>')
-        html = t.render(Context())
-        return html
+        return '<a class="task" href="%s">"%s"</a>' % (self.permalink(next_page), tr('Launch'))
 
     def launch_task_admin_display(self):
         return self.as_html(next_page="/admin/scheduler/scheduledtask/")
