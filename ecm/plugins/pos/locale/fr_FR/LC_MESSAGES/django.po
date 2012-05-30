@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.5.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-30 23:23+0200\n"
+"POT-Creation-Date: 2012-05-30 23:42+0200\n"
 "PO-Revision-Date: 2012-05-30 23:26+0200\n"
 "Last-Translator: johnfoo <edouard.chamillard@gmail.com>\n"
 "Language-Team: fr_FR <translate@eve-corp-management.org>\n"
@@ -134,6 +134,11 @@ msgstr "Ajouter/Retirer"
 
 #: templates/pos_details.html:251
 msgid "Click to Change Name..."
+msgstr "Cliquez pour changer le nom"
+
+#: templates/pos_details.html:257
+#, fuzzy
+msgid "Click to edit..."
 msgstr "Cliquez pour changer le nom"
 
 #: templates/pos_list.html:25

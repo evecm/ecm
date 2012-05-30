@@ -23,6 +23,8 @@ try:
 except ImportError:
     import django.utils.simplejson as json
 
+from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
+
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
@@ -54,14 +56,14 @@ POS_CSS_STATUS = {
 #------------------------------------------------------------------------------
 COLUMNS = [
     # Name              Tooltip                 db_field
-    ['Location',        'Location',             'moon'],
-    ['Name',            'Name',                 'custom_name'],
-    ['Type',            'Type',                 'type_id'],
-    ['Status',          'Status',               'state'],
-    ['Next Cycle',      'Next Cycle',           'online_timestamp'],
-    ['Fuel Blocks',     'Fuel Blocks',          None],
-    ['Strontium',       'Strontium Clathrates', None],
-    ['Name',            None,                   None],
+    [tr_lazy('Location'),        tr_lazy('Location'),             'moon'],
+    [tr_lazy('Name'),            tr_lazy('Name'),                 'custom_name'],
+    [tr_lazy('Type'),            tr_lazy('Type'),                 'type_id'],
+    [tr_lazy('Status'),          tr_lazy('Status'),               'state'],
+    [tr_lazy('Next Cycle'),      tr_lazy('Next Cycle'),           'online_timestamp'],
+    [tr_lazy('Fuel Blocks'),     tr_lazy('Fuel Blocks'),          None],
+    [tr_lazy('Strontium'),       tr_lazy('Strontium Clathrates'), None],
+    [tr_lazy('Name'),            None,                   None],
     ['hours_int',       None,                   None],
 ]
 @check_user_access()

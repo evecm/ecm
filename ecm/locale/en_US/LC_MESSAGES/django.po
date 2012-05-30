@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.5.2.dev\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-30 16:41+0200\n"
+"POT-Creation-Date: 2012-05-30 23:22+0200\n"
 "PO-Revision-Date: 2012-05-27 21:47+0200\n"
 "Last-Translator: johnfoo <johnfoo@eve-corp-management.org>\n"
 "Language-Team: Translate Team <translation@eve-corp-management.org>\n"
@@ -86,7 +86,7 @@ msgstr ""
 #: plugins/industry/templates/catalog/supplies.html:12
 #: plugins/industry/templates/catalog/supply_details.html:10
 #: plugins/pos/templates/pos_details.html:10
-#: plugins/shop/templates/shop.html:12
+#: plugins/pos/templates/pos_list.html:12 plugins/shop/templates/shop.html:12
 #: plugins/shop/templates/shop_myorders.html:13
 #: plugins/shop/templates/shop_order.html:16
 #: plugins/shop/templates/shop_order_details.html:14
@@ -168,7 +168,7 @@ msgstr ""
 msgid "Avg. Playtime"
 msgstr ""
 
-#: apps/hr/templates/dashboard.html:138
+#: apps/hr/templates/dashboard.html:138 plugins/pos/templates/pos_list.html:35
 #, fuzzy
 msgid "Hours"
 msgstr "hours"
@@ -240,6 +240,7 @@ msgstr ""
 #: plugins/industry/templates/catalog/import_blueprints.html:25
 #: plugins/industry/templates/catalog/items.html:27
 #: plugins/industry/templates/catalog/supplies.html:25
+#: plugins/pos/templates/pos_list.html:25
 #: plugins/shop/templates/shop_myorders.html:28
 msgid "Search"
 msgstr ""
@@ -265,6 +266,7 @@ msgstr ""
 #: plugins/industry/templates/catalog/import_blueprints.html:26
 #: plugins/industry/templates/catalog/items.html:28
 #: plugins/industry/templates/catalog/supplies.html:26
+#: plugins/pos/templates/pos_list.html:26
 #: plugins/shop/templates/shop_myorders.html:29
 msgid "Reset"
 msgstr ""
@@ -344,6 +346,7 @@ msgstr ""
 #: plugins/pos/templates/pos_details.html:106
 #: plugins/pos/templates/pos_details.html:123
 #: plugins/pos/templates/pos_details.html:155
+#: plugins/pos/templates/pos_list.html:50
 #: plugins/shop/templates/shop_myorders.html:44
 msgid "Loading data from server..."
 msgstr ""
@@ -1654,6 +1657,8 @@ msgid "POS Details"
 msgstr ""
 
 #: plugins/pos/templates/pos_details.html:11
+#: plugins/pos/templates/pos_list.html:4
+#: plugins/pos/templates/pos_list.html:13
 msgid "POS"
 msgstr ""
 
@@ -1747,6 +1752,30 @@ msgstr ""
 
 #: plugins/pos/templates/pos_details.html:251
 msgid "Click to Change Name..."
+msgstr ""
+
+#: plugins/pos/templates/pos_list.html:28
+msgid "Display mode"
+msgstr ""
+
+#: plugins/pos/templates/pos_list.html:31
+msgid "Show remaining fuel quantities"
+msgstr ""
+
+#: plugins/pos/templates/pos_list.html:31
+msgid "Quantities"
+msgstr ""
+
+#: plugins/pos/templates/pos_list.html:33
+msgid "Show remaining fuel time (in days)"
+msgstr ""
+
+#: plugins/pos/templates/pos_list.html:33
+msgid "Days"
+msgstr ""
+
+#: plugins/pos/templates/pos_list.html:35
+msgid "Show remaining fuel time (in hours)"
 msgstr ""
 
 #: plugins/shop/templates/shop.html:3 plugins/shop/templates/shop.html:13

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.5.2.dev\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-30 16:41+0200\n"
-"PO-Revision-Date: 2012-05-30 16:42+0200\n"
+"POT-Creation-Date: 2012-05-30 23:22+0200\n"
+"PO-Revision-Date: 2012-05-30 23:20+0200\n"
 "Last-Translator: johnfoo <edouard.chamillard@gmail.com>\n"
 "Language-Team: fr_FR <translate@eve-corp-management.org>\n"
 "Language: Français\n"
@@ -85,7 +85,7 @@ msgstr "Panneau des Ressources Humaines"
 #: plugins/industry/templates/catalog/supplies.html:12
 #: plugins/industry/templates/catalog/supply_details.html:10
 #: plugins/pos/templates/pos_details.html:10
-#: plugins/shop/templates/shop.html:12
+#: plugins/pos/templates/pos_list.html:12 plugins/shop/templates/shop.html:12
 #: plugins/shop/templates/shop_myorders.html:13
 #: plugins/shop/templates/shop_order.html:16
 #: plugins/shop/templates/shop_order_details.html:14
@@ -167,7 +167,7 @@ msgstr "Position des membres"
 msgid "Avg. Playtime"
 msgstr "Temps de jeu moyen"
 
-#: apps/hr/templates/dashboard.html:138
+#: apps/hr/templates/dashboard.html:138 plugins/pos/templates/pos_list.html:35
 msgid "Hours"
 msgstr "Heures"
 
@@ -238,6 +238,7 @@ msgstr "derniere mise a jour"
 #: plugins/industry/templates/catalog/import_blueprints.html:25
 #: plugins/industry/templates/catalog/items.html:27
 #: plugins/industry/templates/catalog/supplies.html:25
+#: plugins/pos/templates/pos_list.html:25
 #: plugins/shop/templates/shop_myorders.html:28
 msgid "Search"
 msgstr "Rechercher"
@@ -263,6 +264,7 @@ msgstr "Rechercher"
 #: plugins/industry/templates/catalog/import_blueprints.html:26
 #: plugins/industry/templates/catalog/items.html:28
 #: plugins/industry/templates/catalog/supplies.html:26
+#: plugins/pos/templates/pos_list.html:26
 #: plugins/shop/templates/shop_myorders.html:29
 msgid "Reset"
 msgstr "Remise a zéro"
@@ -342,6 +344,7 @@ msgstr "Date"
 #: plugins/pos/templates/pos_details.html:106
 #: plugins/pos/templates/pos_details.html:123
 #: plugins/pos/templates/pos_details.html:155
+#: plugins/pos/templates/pos_list.html:50
 #: plugins/shop/templates/shop_myorders.html:44
 msgid "Loading data from server..."
 msgstr "Chargement des données du serveur..."
@@ -1650,6 +1653,8 @@ msgid "POS Details"
 msgstr "Détail SPJ"
 
 #: plugins/pos/templates/pos_details.html:11
+#: plugins/pos/templates/pos_list.html:4
+#: plugins/pos/templates/pos_list.html:13
 msgid "POS"
 msgstr "SPJ"
 
@@ -1744,6 +1749,32 @@ msgstr "Ajouter/Retirer"
 #: plugins/pos/templates/pos_details.html:251
 msgid "Click to Change Name..."
 msgstr "Cliquez pour changer le nom"
+
+#: plugins/pos/templates/pos_list.html:28
+#, fuzzy
+msgid "Display mode"
+msgstr "Montrer"
+
+#: plugins/pos/templates/pos_list.html:31
+msgid "Show remaining fuel quantities"
+msgstr "Montre la quantité de carburant restante"
+
+#: plugins/pos/templates/pos_list.html:31
+#, fuzzy
+msgid "Quantities"
+msgstr "Quantité"
+
+#: plugins/pos/templates/pos_list.html:33
+msgid "Show remaining fuel time (in days)"
+msgstr "Montre la quantité de carburant restante (en jours)"
+
+#: plugins/pos/templates/pos_list.html:33
+msgid "Days"
+msgstr "Jours"
+
+#: plugins/pos/templates/pos_list.html:35
+msgid "Show remaining fuel time (in hours)"
+msgstr "Montre la quantité de carburant restante (en heures)"
 
 #: plugins/shop/templates/shop.html:3 plugins/shop/templates/shop.html:13
 #: plugins/shop/templates/shop_myorders.html:14

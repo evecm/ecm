@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block headtitle %}POS - {{ posViewMode }}{% endblock %}
+{% block headtitle %}{% trans 'POS' %} - {{ posViewMode }}{% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}pos/css/classes.css" />
@@ -8,8 +9,8 @@
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li class="active"><a href="/pos/">POS</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li class="active"><a href="/pos/">{% trans 'POS' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
@@ -21,17 +22,17 @@
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i> Search</a>
-      <a class="btn btn-small" id="clear_search">Reset</a>
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
-    <span class="label label-info">Display mode</span>
+    <span class="label label-info">{% trans 'Display mode' %}</span>
     <div class="btn-group" data-toggle="buttons-radio">
       <button class="btn btn-small btn-info" id="quantities_button"
-              title="Show remaining fuel quantities">Quantities</button>
+              title="{% trans 'Show remaining fuel quantities' %}">{% trans 'Quantities' %}</button>
       <button class="btn btn-small btn-info" id="days_button"
-              title="Show remaining fuel time (in days)">Days</button>
+              title="{% trans 'Show remaining fuel time (in days)' %}">{% trans 'Days' %}</button>
       <button class="btn btn-small btn-info" id="hours_button"
-              title="Show remaining fuel time (in hours)">Hours</button>
+              title="{% trans 'Show remaining fuel time (in hours)' %}">{% trans 'Hours' %}</button>
     </div>
   </div>
 </form>
@@ -46,7 +47,7 @@
   </thead>
   <tbody>
     <tr>
-      <td colspan="{{columns|length}}" class="dataTables_empty">Loading data from server...</td>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
   <tfoot>
