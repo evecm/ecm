@@ -100,8 +100,8 @@ def parseOneTitle(titleApi):
     roleList = []
 
     titleID   = titleApi["titleID"]
-    name = str(titleApi["titleName"])
 
+    name = titleApi["titleName"]
     if name.strip() == '':
         name = 'Title #%d' % titleID
 
