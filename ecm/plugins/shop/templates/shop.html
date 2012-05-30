@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Shop{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Shop' %}{% endblock %}
 
 
 {% block stylesheets %}
@@ -9,27 +9,27 @@
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li class="active"><a href="/shop/">Shop</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li class="active"><a href="/shop/">{% trans 'Shop' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Welcome to our EVE-Online shop</h1>
+  <h1>{% trans 'Welcome to our EVE-Online shop' %}</h1>
 </div>
 
 <div class="row-fluid links">
   <a href="/shop/orders/create/"
      class="btn btn-large children-block"
-     title="Go buy some stuff.">
+     title="{% trans 'Go buy some stuff.' %}">
     <img src="{{ STATIC_URL }}industry/img/cart-128.png">
-    <strong>Create a new order</strong>
+    <strong>{% trans 'Create a new order' %}</strong>
   </a>
   <a href="/shop/orders/"
      class="btn btn-large children-block"
-     title="Here, you can track the progress of your current orders or consult old ones.">
+     title="{% trans 'Here, you can track the progress of your current orders or consult old ones.' %}">
     <img src="{{ STATIC_URL }}industry/img/invoice-128.png">
-    <strong>See/follow my orders</strong>
+    <strong>{% trans 'See/follow my orders' %}</strong>
   </a>
 </div>
 {% endblock %}

@@ -293,3 +293,9 @@ LOGGING = {
     }
 
 }
+
+LOCALE_PATHS = (
+    #don't strip the comma. for some reason i can't fathom, django won't take into account the LOCALE_PATHS tuple (which
+    #isn't really one ftm, since we don't have yet per app/plugins locale/ directories)
+    rel_path('locale', root=ECM_PACKAGE),
+    )

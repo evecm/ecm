@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Order #{{ order.id }} Details{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Order #' %}{{ order.id }}{% trans ' Details' %}{% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
@@ -11,9 +11,9 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/shop/">Shop</a></li>
-<li><a href="/shop/orders/">My Orders</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/shop/">{% trans 'Shop' %}</a></li>
+<li><a href="/shop/orders/">{% trans 'My Orders' %}</a></li>
 <li class="active"><a href="/shop/orders/{{ order.id }}/">#{{ order.id }}</a></li>
 {% endblock %}
 
@@ -29,13 +29,13 @@
 {% if error %}
 <div class="alert alert-error">
   <a class="close" data-dismiss="alert">&times;</a>
-  <strong>Error!</strong> {{error|safe}}
+  <strong>{% trans 'Error' %}!</strong> {{error|safe}}
 </div>
 {% endif %}
 
 {%if valid_transitions%}
 <div class="btn-toolbar">
-  <span class="label label-important">Actions</span>
+  <span class="label label-important">{% trans 'Actions' %}</span>
   {% for transition, name in valid_transitions %}
   <a class="btn btn-danger" id="{{transition}}" href="/shop/orders/{{order.id}}/{{transition}}/">{{name}}</a>
 {% endfor %}
@@ -44,8 +44,8 @@
 <div class="alert alert-error" id="cancel-form" >
   <form method="post" action="/shop/orders/{{order.id}}/cancel/" class="form-inline">{%csrf_token%}
       <input class="span8" name="comment" id="cancel-comment" value="" placeholder="Please explain why you are cancelling..."/>
-      <button type="submit" class="btn btn-danger btn-small" disabled="disabled"><i class="icon-exclamation-sign icon-white"></i> Cancel Order</button>
-      <button id="abort-cancel" class="btn btn-small"><i class="icon-remove"></i> Abort</button>
+      <button type="submit" class="btn btn-danger btn-small" disabled="disabled"><i class="icon-exclamation-sign icon-white"></i>{% trans 'Cancel Order' %}</button>
+      <button id="abort-cancel" class="btn btn-small"><i class="icon-remove"></i>{% trans 'Abort' %}</button>
   </form>
 </div>
 {%endif%}
@@ -56,23 +56,23 @@
   <div class="span4">
     <h2>Order details</h2>
     <dl class="table">
-      <dt>Total Quote</dt><dd><h4>{%if order.quote == 0.0%}N/A{%else%}{{order.quote|ecm_price}} ISK{%endif%}</h4></dd>
-      <dt>Creation Date</dt><dd>{{order.creation_date|ecm_datetime}}</dd>
-      <dt>Last Modified</dt><dd>{{order.last_modified|ecm_datetime}}</dd>
-      <dt>Manufactured by</dt><dd>{{order.responsible_permalink|safe}}</dd>
-      <dt>Delivered by</dt><dd>{{order.delivery_boy_permalink|safe}}</dd>
-      <dt>Delivery Date</dt><dd>{{order.delivery_date|ecm_datetime}}</dd>
+      <dt>{% trans 'Total Quote' %}</dt><dd><h4>{%if order.quote == 0.0%}N/A{%else%}{{order.quote|ecm_price}} ISK{%endif%}</h4></dd>
+      <dt>{% trans 'Creation Date' %}</dt><dd>{{order.creation_date|ecm_datetime}}</dd>
+      <dt>{% trans 'Last Modified' %}</dt><dd>{{order.last_modified|ecm_datetime}}</dd>
+      <dt>{% trans 'Manufactured by' %}</dt><dd>{{order.responsible_permalink|safe}}</dd>
+      <dt>{% trans 'Delivered by' %}</dt><dd>{{order.delivery_boy_permalink|safe}}</dd>
+      <dt>{% trans 'Delivery Date' %}</dt><dd>{{order.delivery_date|ecm_datetime}}</dd>
     </dl>
   </div>
   <div class="span8">
-    <h2>Ordered items</h2>
+    <h2>{% trans 'Ordered items' %}</h2>
     <table class="table table-striped table-bordered table-condensed table-centered">
       <thead>
         <tr>
-          <th>Icon</th>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Price</th>
+          <th>{% trans 'Icon' %}</th>
+          <th>{% trans 'Item' %}</th>
+          <th>{% trans 'Quantity' %}</th>
+          <th>{% trans 'Price' %}</th>
         </tr>
       </thead>
       <tbody>{% for row in order.rows.all %}
@@ -82,7 +82,7 @@
           <td>{{row.quantity|ecm_quantity}}</td>
           <td {%if row.quote %}class="right"{%endif%}>{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>
         </tr>{% empty %}<tr id="empty">
-          <td colspan="4" class="order_cart_empty" >No items in order.</td>
+          <td colspan="4" class="order_cart_empty" >{% trans 'No items in order.' %}</td>
         </tr>{% endfor %}
       </tbody>
     </table>
@@ -91,21 +91,21 @@
 
 <hr>
 
-<h2>History</h2>
+<h2>{% trans 'History' %}</h2>
 
 <form method="post" action="/shop/orders/{{order.id}}/comment/" class="form-inline" id="add-comment-form">
 {%csrf_token%}
-    <input class="span8" name="comment" id="new-comment" value="" placeholder="Please type some text..."/>
-    <button type="submit" class="btn btn-small" disabled="disabled"><i class="icon-comment"></i> Add comment</button>
+    <input class="span8" name="comment" id="new-comment" value="" placeholder="{% trans 'Please type some text...' %}"/>
+    <button type="submit" class="btn btn-small" disabled="disabled"><i class="icon-comment"></i>{% trans 'Add comment' %}</button>
 </form>
 
 <table class="table table-striped table-bordered table-condensed">
   <thead>
     <tr>
-      <th style="width: 15%;">Date</th>
-      <th style="width: 15%;">Order Status</th>
-      <th style="width: 15%;">User</th>
-      <th style="width: 55%;">Comment</th>
+      <th style="width: 15%;">{% trans 'Date' %}</th>
+      <th style="width: 15%;">{% trans 'Order Status' %}</th>
+      <th style="width: 15%;">{% trans 'User' %}</th>
+      <th style="width: 55%;">{% trans 'Comment' %}</th>
     </tr>
   </thead>
   <tbody>{% for log in logs %}
@@ -115,7 +115,7 @@
       <td>{{log.user}}</td>
       <td>{{log.text}}</td>
     </tr>{% empty %}<tr>
-      <td colspan="4" >None.</td>
+      <td colspan="4" >{% trans 'None' %}.</td>
     </tr>{% endfor %}
   </tbody>
 </table>

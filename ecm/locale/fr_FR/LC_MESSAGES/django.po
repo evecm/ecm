@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.5.2.dev\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-29 23:23+0200\n"
-"PO-Revision-Date: 2012-05-29 23:08+0200\n"
+"POT-Creation-Date: 2012-05-30 16:41+0200\n"
+"PO-Revision-Date: 2012-05-30 16:42+0200\n"
 "Last-Translator: johnfoo <edouard.chamillard@gmail.com>\n"
 "Language-Team: fr_FR <translate@eve-corp-management.org>\n"
 "Language: Français\n"
@@ -84,9 +84,14 @@ msgstr "Panneau des Ressources Humaines"
 #: plugins/industry/templates/catalog/items.html:14
 #: plugins/industry/templates/catalog/supplies.html:12
 #: plugins/industry/templates/catalog/supply_details.html:10
-#: plugins/pos/templates/pos_details.html:10 templates/auth/account.html:8
-#: templates/auth/add_api.html:8 templates/auth/add_binding.html:8
-#: templates/auth/edit_api.html:8 templates/auth/password_change.html:7
+#: plugins/pos/templates/pos_details.html:10
+#: plugins/shop/templates/shop.html:12
+#: plugins/shop/templates/shop_myorders.html:13
+#: plugins/shop/templates/shop_order.html:16
+#: plugins/shop/templates/shop_order_details.html:14
+#: templates/auth/account.html:8 templates/auth/add_api.html:8
+#: templates/auth/add_binding.html:8 templates/auth/edit_api.html:8
+#: templates/auth/password_change.html:7
 #: templates/auth/password_change_done.html:7
 #: templates/auth/password_reset.html:9
 #: templates/auth/password_reset_complete.html:9
@@ -233,6 +238,7 @@ msgstr "derniere mise a jour"
 #: plugins/industry/templates/catalog/import_blueprints.html:25
 #: plugins/industry/templates/catalog/items.html:27
 #: plugins/industry/templates/catalog/supplies.html:25
+#: plugins/shop/templates/shop_myorders.html:28
 msgid "Search"
 msgstr "Rechercher"
 
@@ -257,6 +263,7 @@ msgstr "Rechercher"
 #: plugins/industry/templates/catalog/import_blueprints.html:26
 #: plugins/industry/templates/catalog/items.html:28
 #: plugins/industry/templates/catalog/supplies.html:26
+#: plugins/shop/templates/shop_myorders.html:29
 msgid "Reset"
 msgstr "Remise a zéro"
 
@@ -299,6 +306,7 @@ msgstr "Titre/Role"
 #: plugins/accounting/templates/wallet_transactions.html:88
 #: plugins/accounting/templates/wallet_transactions.html:105
 #: plugins/industry/templates/order_details.html:142
+#: plugins/shop/templates/shop_order_details.html:105
 msgid "Date"
 msgstr "Date"
 
@@ -334,6 +342,7 @@ msgstr "Date"
 #: plugins/pos/templates/pos_details.html:106
 #: plugins/pos/templates/pos_details.html:123
 #: plugins/pos/templates/pos_details.html:155
+#: plugins/shop/templates/shop_myorders.html:44
 msgid "Loading data from server..."
 msgstr "Chargement des données du serveur..."
 
@@ -467,6 +476,7 @@ msgstr "Cliquez pour éditer"
 
 #: apps/hr/templates/members/member_history.html:11
 #: plugins/industry/templates/order_details.html:131
+#: plugins/shop/templates/shop_order_details.html:94
 msgid "History"
 msgstr "Historique"
 
@@ -637,6 +647,7 @@ msgstr "Personnages possédés"
 #: plugins/industry/templates/order_details.html:155
 #: plugins/industry/templates/catalog/item_details.html:71
 #: plugins/industry/templates/catalog/item_details.html:178
+#: plugins/shop/templates/shop_order_details.html:118
 #: templates/auth/account.html:78 templates/common/standings.html:69
 msgid "None"
 msgstr "Aucun"
@@ -787,6 +798,7 @@ msgstr "Nombre de roles"
 #: apps/hr/templates/titles/titles.html:23
 #: apps/hr/templates/titles/titles.html:37
 #: plugins/industry/templates/order_details.html:65
+#: plugins/shop/templates/shop_order_details.html:61
 msgid "Last Modified"
 msgstr "Derniere modification"
 
@@ -915,6 +927,7 @@ msgstr "jours"
 #: plugins/accounting/templates/wallet_transactions.html:107
 #: plugins/industry/templates/order_details.html:89
 #: plugins/industry/templates/catalog/supply_details.html:24
+#: plugins/shop/templates/shop_order_details.html:75
 msgid "Price"
 msgstr "Prix"
 
@@ -1141,6 +1154,9 @@ msgstr "Pour"
 #: plugins/accounting/templates/wallet_transactions.html:108
 #: plugins/industry/templates/order_details.html:88
 #: plugins/industry/templates/order_details.html:109
+#: plugins/shop/templates/shop_order.html:62
+#: plugins/shop/templates/shop_order.html:107
+#: plugins/shop/templates/shop_order_details.html:74
 msgid "Quantity"
 msgstr "Quantité"
 
@@ -1283,6 +1299,7 @@ msgid "Me"
 msgstr "Moi"
 
 #: plugins/industry/templates/order_details.html:3
+#: plugins/shop/templates/shop_order_details.html:3
 msgid "Order #"
 msgstr "Commande #"
 
@@ -1292,6 +1309,7 @@ msgstr "Détails"
 
 #: plugins/industry/templates/order_details.html:16
 #: plugins/industry/templates/orders_list.html:15
+#: plugins/shop/templates/shop_order.html:18
 msgid "Orders"
 msgstr "Commandes"
 
@@ -1301,10 +1319,14 @@ msgstr "Commandes"
 #: plugins/industry/templates/catalog/item_details.html:139
 #: plugins/industry/templates/catalog/items.html:132
 #: plugins/industry/templates/catalog/items.html:151
+#: plugins/shop/templates/shop_order.html:178
+#: plugins/shop/templates/shop_order.html:286
+#: plugins/shop/templates/shop_order_details.html:32
 msgid "Error"
 msgstr "Erreur"
 
 #: plugins/industry/templates/order_details.html:38
+#: plugins/shop/templates/shop_order_details.html:38
 msgid "Actions"
 msgstr "Actions"
 
@@ -1313,6 +1335,7 @@ msgid "Reject Order"
 msgstr "Rejeter Commande"
 
 #: plugins/industry/templates/order_details.html:48
+#: plugins/shop/templates/shop_order_details.html:48
 msgid "Abort"
 msgstr "Annuler"
 
@@ -1321,6 +1344,7 @@ msgid "Order details"
 msgstr "Détails Commande"
 
 #: plugins/industry/templates/order_details.html:59
+#: plugins/shop/templates/shop_order_details.html:59
 msgid "Total Quote"
 msgstr "Devis total"
 
@@ -1330,6 +1354,7 @@ msgid "Production Cost"
 msgstr "Couts de production"
 
 #: plugins/industry/templates/order_details.html:63
+#: plugins/shop/templates/shop_order_details.html:60
 msgid "Creation Date"
 msgstr "Date de création"
 
@@ -1338,10 +1363,12 @@ msgid "Responsible"
 msgstr "Responsable"
 
 #: plugins/industry/templates/order_details.html:69
+#: plugins/shop/templates/shop_order_details.html:63
 msgid "Delivered by"
 msgstr "Livré par"
 
 #: plugins/industry/templates/order_details.html:71
+#: plugins/shop/templates/shop_order_details.html:64
 msgid "Delivery Date"
 msgstr "Date de livraison"
 
@@ -1358,10 +1385,14 @@ msgid "Jobs Breakdown"
 msgstr "Décomposition des taches"
 
 #: plugins/industry/templates/order_details.html:86
+#: plugins/shop/templates/shop_order.html:59
+#: plugins/shop/templates/shop_order_details.html:72
 msgid "Icon"
 msgstr "Icone"
 
 #: plugins/industry/templates/order_details.html:87
+#: plugins/shop/templates/shop_order.html:60
+#: plugins/shop/templates/shop_order_details.html:73
 msgid "Item"
 msgstr "Objet"
 
@@ -1378,22 +1409,27 @@ msgid "No supplies"
 msgstr "Pas de fournitures"
 
 #: plugins/industry/templates/order_details.html:136
+#: plugins/shop/templates/shop_order_details.html:99
 msgid "Add comment"
 msgstr "Ajouter commentaire"
 
 #: plugins/industry/templates/order_details.html:143
+#: plugins/shop/templates/shop_order_details.html:106
 msgid "Order Status"
 msgstr "Status commande"
 
 #: plugins/industry/templates/order_details.html:144
+#: plugins/shop/templates/shop_order_details.html:107
 msgid "User"
 msgstr "Utilisateur"
 
 #: plugins/industry/templates/order_details.html:145
+#: plugins/shop/templates/shop_order_details.html:108
 msgid "Comment"
 msgstr "Commentaire"
 
 #: plugins/industry/templates/orders_list.html:3
+#: plugins/shop/templates/shop_myorders.html:3
 msgid "Order list"
 msgstr "Liste Commande"
 
@@ -1708,6 +1744,133 @@ msgstr "Ajouter/Retirer"
 #: plugins/pos/templates/pos_details.html:251
 msgid "Click to Change Name..."
 msgstr "Cliquez pour changer le nom"
+
+#: plugins/shop/templates/shop.html:3 plugins/shop/templates/shop.html:13
+#: plugins/shop/templates/shop_myorders.html:14
+#: plugins/shop/templates/shop_order.html:17
+#: plugins/shop/templates/shop_order_details.html:15
+msgid "Shop"
+msgstr "Boutique"
+
+#: plugins/shop/templates/shop.html:18
+msgid "Welcome to our EVE-Online shop"
+msgstr "Bienvenue dans notre boutique EVE-Online"
+
+#: plugins/shop/templates/shop.html:24
+msgid "Go buy some stuff."
+msgstr "Acheter des choses."
+
+#: plugins/shop/templates/shop.html:26
+msgid "Create a new order"
+msgstr "Créer une commande"
+
+#: plugins/shop/templates/shop.html:30
+msgid ""
+"Here, you can track the progress of your current orders or consult old ones."
+msgstr ""
+"Ici vous pouvez suivre les progres de vos commandes courantes ou consulter "
+"les anciennes"
+
+#: plugins/shop/templates/shop.html:32
+msgid "See/follow my orders"
+msgstr "Voir/Suivre les ordres"
+
+#: plugins/shop/templates/shop_myorders.html:15
+#: plugins/shop/templates/shop_myorders.html:20
+#: plugins/shop/templates/shop_order_details.html:16
+msgid "My Orders"
+msgstr "Mes Commandes"
+
+#: plugins/shop/templates/shop_order.html:3
+#: plugins/shop/templates/shop_order.html:23
+msgid "Create New Order"
+msgstr "Créer Nouvelle Commande"
+
+#: plugins/shop/templates/shop_order.html:21
+msgid "Modify"
+msgstr "Modifier"
+
+#: plugins/shop/templates/shop_order.html:30
+msgid "Click here to view the orders life-cycle"
+msgstr "Cliquez ici pour voir le cycle de vie d'une commande"
+
+#: plugins/shop/templates/shop_order.html:34
+msgid "Start typing to search items..."
+msgstr "Commencez a taper pour rechercher des objets..."
+
+#: plugins/shop/templates/shop_order.html:35
+msgid "Add item to my order"
+msgstr "Ajouter objet dans ma commande"
+
+#: plugins/shop/templates/shop_order.html:36
+#: plugins/shop/templates/shop_order.html:109
+msgid "Import EFT Fitting"
+msgstr "Importer un équipement EFT"
+
+#: plugins/shop/templates/shop_order.html:49
+#: plugins/shop/templates/shop_order.html:94
+msgid "Loading..."
+msgstr "Chargement..."
+
+#: plugins/shop/templates/shop_order.html:61
+msgid "Unit Price"
+msgstr "Prix unitaire"
+
+#: plugins/shop/templates/shop_order.html:63
+msgid "Remove"
+msgstr "Retirer"
+
+#: plugins/shop/templates/shop_order.html:77
+msgid "Your shopping cart is empty."
+msgstr "Votre panier est vide."
+
+#: plugins/shop/templates/shop_order.html:86
+msgid "Estimated Total Price"
+msgstr "Prix total estimé"
+
+#: plugins/shop/templates/shop_order.html:90
+msgid ""
+"Once your order is created, you will be able to modify it before confirming "
+"it. See the orders life-cycle for more info."
+msgstr ""
+"Une fois la commande crée, vous pourrez la modifier avant de la confirmer. "
+"voir le cycle de vie des commandes pour plus d'info"
+
+#: plugins/shop/templates/shop_order.html:92
+msgid "Submit Order"
+msgstr "Soumettre commande"
+
+#: plugins/shop/templates/shop_order.html:280
+msgid "Warning"
+msgstr "Attention"
+
+#: plugins/shop/templates/shop_order.html:281
+msgid "Those items are not available in the shop"
+msgstr "Ces objets ne sont pas disponible dans la boutique"
+
+#: plugins/shop/templates/shop_order_details.html:3
+msgid " Details"
+msgstr "Détails"
+
+#: plugins/shop/templates/shop_order_details.html:47
+msgid "Cancel Order"
+msgstr "Annuler commande"
+
+#: plugins/shop/templates/shop_order_details.html:62
+msgid "Manufactured by"
+msgstr "Fabriqué par"
+
+#: plugins/shop/templates/shop_order_details.html:68
+msgid "Ordered items"
+msgstr "Objets commandés"
+
+#: plugins/shop/templates/shop_order_details.html:85
+msgid "No items in order."
+msgstr "Pas d'objets dans la commande"
+
+#: plugins/shop/templates/shop_order_details.html:98
+msgid "Please type some text..."
+msgstr "Entrez du texte..."
 
 #: templates/404.html:3 templates/404.html.py:7
 msgid "Resource not found"
@@ -2274,6 +2437,10 @@ msgstr "Cette clef API est déjà enregistrée"
 #: views/account/forms.py:295
 msgid "External Password"
 msgstr "Mot de passe externe"
+
+#, fuzzy
+#~ msgid "Create new Order"
+#~ msgstr "Ordres Marché"
 
 #~ msgid "Launch"
 #~ msgstr "Lancer"

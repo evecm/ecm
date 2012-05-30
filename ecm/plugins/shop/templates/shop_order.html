@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block headtitle %}Create new Order{% endblock %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Create New Order' %}{% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.autocomplete.css" />
@@ -13,27 +13,27 @@
 
 
 {% block breadcrumbs %}
-<li><a href="/">Home</a></li>
-<li><a href="/shop/">Shop</a></li>
-<li><a href="/shop/orders/">Orders</a></li>
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/shop/">{% trans 'Shop' %}</a></li>
+<li><a href="/shop/orders/">{% trans 'Orders' %}</a></li>
 {% if order %}
 <li><a href="/shop/orders/{{ order.id }}/">#{{ order.id }}</a></li>
-<li class="active"><a href="/shop/orders/{{ order.id }}/modify/">Modify</a></li>
+<li class="active"><a href="/shop/orders/{{ order.id }}/modify/">{% trans 'Modify' %}</a></li>
 {% else %}
-<li class="active"><a href="/shop/orders/create/">Create New Order</a></li>
+<li class="active"><a href="/shop/orders/create/">{% trans 'Create New Order' %}</a></li>
 {% endif %}
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
   <h1>Please add items to your basket</h1>
-  <a class="pull-right" data-toggle="modal" data-target="#lifecycle-modal">Click here to view the orders' life-cycle</a>
+  <a class="pull-right" data-toggle="modal" data-target="#lifecycle-modal">{% trans 'Click here to view the orders life-cycle' %}</a>
 </div>
 
 <form class="well form-inline" id="search_form">
-    <input type="text" id="search_box" placeholder="Start typing to search items..."/>
-    <button type="submit" class="btn btn-small"><i class="icon-plus"></i> Add item to my order</button>
-    <a class="btn btn-primary pull-right" data-toggle="modal" data-target="#eft-modal" ><i class="icon-plane icon-white"></i> Import EFT Fitting</a>
+    <input type="text" id="search_box" placeholder="{% trans 'Start typing to search items...' %}"/>
+    <button type="submit" class="btn btn-small"><i class="icon-plus"></i>{% trans 'Add item to my order' %}</button>
+    <a class="btn btn-primary pull-right" data-toggle="modal" data-target="#eft-modal" ><i class="icon-plane icon-white"></i>{% trans 'Import EFT Fitting' %}</a>
 </form>
 
 <div class="alert alert-error" id="error-box">
@@ -46,7 +46,7 @@
     <span id="warning-text"></span>
 </div>
 
-<img id="throbber-eft" class="throbber" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
+<img id="throbber-eft" class="throbber" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="{% trans 'Loading...' %}" title="{% trans 'Loading...' %}"/>
 
 {% if order %}
 <form method="post" action="/shop/orders/{{order.id}}/modify/" id="items_form" >{% else %}
@@ -56,11 +56,11 @@
   <table class="table table-striped table-condensed table-centered">
     <thead>
       <tr>
-        <th>Icon</th>
-        <th>Item</th>
-        <th>Unit Price</th>
-        <th>Quantity</th>
-        <th>Remove</th>
+        <th>{% trans 'Icon' %}</th>
+        <th>{% trans 'Item' %}</th>
+        <th>{% trans 'Unit Price' %}</th>
+        <th>{% trans 'Quantity' %}</th>
+        <th>{% trans 'Remove' %}</th>
       </tr>
     </thead>
     <tbody id="items">
@@ -74,7 +74,7 @@
       </tr>
       {% empty %}
       <tr id="empty">
-          <td colspan="5" class="order_cart_empty" >Your shopping cart is empty.</td>
+          <td colspan="5" class="order_cart_empty" >{% trans 'Your shopping cart is empty.' %}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -83,15 +83,15 @@
   <hr>
 
   <div class="right">
-    <span class="label label-success">Estimated Total Price</span>
+    <span class="label label-success">{% trans 'Estimated Total Price' %}</span>
     <strong id="total_price">0.0 ISK</strong>
     <button class="btn btn-success btn-large"
             type="submit"
-            title="Once your order is created, you will be able to modify it before confirming it. See the orders' life-cycle for more info.">
+            title="{% trans 'Once your order is created, you will be able to modify it before confirming it. See the orders life-cycle for more info.' %}">
       <i class="icon-shopping-cart icon-white"></i>
-      Submit Order
+      {% trans 'Submit Order' %}
     </button>
-    <img id="throbber-submit" class="throbber right" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="Loading..." title="Loading..."/>
+    <img id="throbber-submit" class="throbber right" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="{% trans 'Loading...' %}" title="{% trans 'Loading...' %}"/>
   </div>
 </form>
 
@@ -104,9 +104,9 @@
     <textarea id="eft-block" style="width:100%;" rows="10"></textarea>
   </div>
   <div class="modal-footer form-inline">
-    <label for="eft-quantity">Quantity</label>
+    <label for="eft-quantity">{% trans 'Quantity' %}</label>
     <input id="eft-quantity" name="eft-quantity" class="span2" value="1"/>
-    <a id="eft-submit" class="btn btn-primary" data-dismiss="modal">Import EFT Fitting</a>
+    <a id="eft-submit" class="btn btn-primary" data-dismiss="modal">{% trans 'Import EFT Fitting' %}</a>
   </div>
 </div>
 
@@ -175,7 +175,7 @@ function addItem(name) {
         $("#search_box").val("");
         updateTotal();
     }).error(function (jqXHR) {
-        $('#error-text').html('<strong>Error!</strong> ' + jqXHR.responseText);
+        $('#error-text').html('<strong>{% trans 'Error' %}!</strong> ' + jqXHR.responseText);
         $('#error-box').show();
     });
 }
@@ -277,13 +277,13 @@ $(document).ready(function() {
                      items += '<em>' + unavaiableItems[j] + '</em>, ';
                  }
                  items = items.substring(0, items.length - 2);
-                 $('#warning-text').html('<strong>Warning!</strong> ' +
-                         'Those items are not available in the shop: ' + items);
+                 $('#warning-text').html('<strong>{% trans 'Warning' %}!</strong> ' +
+                         '{% trans 'Those items are not available in the shop' %}: ' + items);
                  $('#warning-box').show();
              }
          })
          .error(function (jqXHR) {
-             $('#error-text').html('<strong>Error!</strong> ' + jqXHR.responseText);
+             $('#error-text').html('<strong>{% trans 'Error' %}!</strong> ' + jqXHR.responseText);
              $('#error-box').show();
          })
          .complete(function () {
