@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# johnfoo <edouard.chamillard@gmail.com>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 2.0.5.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-30 23:23+0200\n"
+"PO-Revision-Date: 2012-05-30 23:26+0200\n"
+"Last-Translator: johnfoo <edouard.chamillard@gmail.com>\n"
+"Language-Team: fr_FR <translate@eve-corp-management.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bits\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+
+#: templates/pos_details.html:3
+msgid "POS Details"
+msgstr "Détail SPJ"
+
+#: templates/pos_details.html:10 templates/pos_list.html:12
+msgid "Home"
+msgstr "Accueil"
+
+#: templates/pos_details.html:11 templates/pos_list.html:4
+#: templates/pos_list.html.py:13
+msgid "POS"
+msgstr "SPJ"
+
+#: templates/pos_details.html:28
+msgid "State"
+msgstr "État"
+
+#: templates/pos_details.html:30
+msgid "Online since"
+msgstr "En ligne depuis"
+
+#: templates/pos_details.html:32
+msgid "POS type"
+msgstr "Type SPJ"
+
+#: templates/pos_details.html:37
+msgid "Links"
+msgstr "Liens"
+
+#: templates/pos_details.html:47
+msgid "Access Control"
+msgstr "Controle d'acces"
+
+#: templates/pos_details.html:49
+msgid "Allow corp members in force field"
+msgstr "Autoriser les membres de la corporation dans le champ de force"
+
+#: templates/pos_details.html:51
+msgid "Allow ally members in force field"
+msgstr "Autoriser les alliés dans le champ de force"
+
+#: templates/pos_details.html:53
+msgid "Can view fuel bay"
+msgstr "Peut voir la soute a carburant"
+
+#: templates/pos_details.html:55
+msgid "Can take in fuel bay"
+msgstr "Peut prendre dans la soute a carburant"
+
+#: templates/pos_details.html:57
+msgid "Can anchor modules"
+msgstr "Peut ancrer des modules"
+
+#: templates/pos_details.html:59
+msgid "Can unanchor modules"
+msgstr "peut désancrer des modules"
+
+#: templates/pos_details.html:61
+msgid "Can online modules"
+msgstr "Peut activer des modules"
+
+#: templates/pos_details.html:63
+msgid "Can offline modules"
+msgstr "peut désactiver des modules"
+
+#: templates/pos_details.html:68
+msgid "Combat Settings"
+msgstr "Configuration de combat"
+
+#: templates/pos_details.html:71
+msgid "Attack when standing is below"
+msgstr "Attaquer quand la relation est sous"
+
+#: templates/pos_details.html:72
+msgid "use standings from"
+msgstr "utiliser la relation de"
+
+#: templates/pos_details.html:74
+msgid "Attack on bad standing"
+msgstr "Attaquer sur mauvaise relation"
+
+#: templates/pos_details.html:78
+msgid "Attack when security status is below"
+msgstr "Attaquer quand le status de sécurité est sous"
+
+#: templates/pos_details.html:81
+msgid "Attack when security status is bad"
+msgstr "Attaquer quand le statut de sécurité est mauvais"
+
+#: templates/pos_details.html:84
+msgid "Attack on concord flag"
+msgstr "Attaquer sur signalement CONCORD"
+
+#: templates/pos_details.html:86
+msgid "Attack on aggression"
+msgstr "Attaquer sur aggréssion"
+
+#: templates/pos_details.html:88
+msgid "Attack war targets"
+msgstr "Attaquer les cibles en guerre"
+
+#: templates/pos_details.html:94
+msgid "Fuel Levels"
+msgstr "Niveau de carburant"
+
+#: templates/pos_details.html:106 templates/pos_details.html.py:123
+#: templates/pos_details.html:155 templates/pos_list.html:50
+msgid "Loading data from server..."
+msgstr "Chargement des données du serveur..."
+
+#: templates/pos_details.html:142
+msgid "Add/Remove"
+msgstr "Ajouter/Retirer"
+
+#: templates/pos_details.html:251
+msgid "Click to Change Name..."
+msgstr "Cliquez pour changer le nom"
+
+#: templates/pos_list.html:25
+msgid "Search"
+msgstr "Rechercher"
+
+#: templates/pos_list.html:26
+msgid "Reset"
+msgstr "Remise a zéro"
+
+#: templates/pos_list.html:28
+msgid "Display mode"
+msgstr "Mode d'affichage"
+
+#: templates/pos_list.html:31
+msgid "Show remaining fuel quantities"
+msgstr "Montre la quantité de carburant restante"
+
+#: templates/pos_list.html:31
+msgid "Quantities"
+msgstr "Quantités"
+
+#: templates/pos_list.html:33
+msgid "Show remaining fuel time (in days)"
+msgstr "Montre la quantité de carburant restante (en jours)"
+
+#: templates/pos_list.html:33
+msgid "Days"
+msgstr "Jours"
+
+#: templates/pos_list.html:35
+msgid "Show remaining fuel time (in hours)"
+msgstr "Montre la quantité de carburant restante (en heures)"
+
+#: templates/pos_list.html:35
+msgid "Hours"
+msgstr "Heures"
