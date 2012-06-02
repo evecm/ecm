@@ -1,0 +1,26 @@
+{% load i18n %}
+<table class="{{css_class}}" id="{{table_id}}">
+  {% if show_header %}<thead>
+    <tr>{% for col in columns %}
+      <th>{{col.sTitle}}</th>{% endfor %}
+    </tr>
+  </thead>{% endif %}
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="{{empty_css_class}}">{% trans 'Loading data from server...' %}</td>
+    </tr>
+  </tbody>{% if show_footer %}
+  <tfoot>
+    <tr>{% for col in columns %}
+      <th>{{col.sTitle}}</th>{% endfor %}
+    </tr>
+  </tfoot>{% endif %}
+</table>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#{{table_id}}').dataTable({ {% for key, value in datatables_params %}
+    	{{key}}: {{value|safe}},{% endfor %}
+    }));
+});
+</script>

@@ -173,6 +173,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'ecm.views.context_processors.menu',
     'ecm.views.context_processors.version',
     'ecm.views.context_processors.motd',
+    'ecm.views.context_processors.datatables_defaults',
 )
 
 ########

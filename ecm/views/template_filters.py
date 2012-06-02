@@ -18,6 +18,7 @@
 __date__ = "2011 9 10"
 __author__ = "diabeteman"
 
+import json
 from datetime import timedelta
 
 from django.template.defaultfilters import register
@@ -100,3 +101,53 @@ def absolute_format(value):
         return unicode(abs(value))
     except:
         return unicode(value)
+
+#------------------------------------------------------------------------------
+@register.inclusion_tag('datatables.html')
+def datatable(table_id, columns, css_class=None, defaults=None, **kwargs):
+    """
+    table_id
+        the html id attribute of the generated table
+    columns
+        a list of python dicts which should at least contain a 'sTitle' field
+        which is the column title.
+    defaults
+        a dictionary containing default settings for the produced datatables
+        those settings can be overwritten by kwargs
+    kwargs
+        a dictionary containing settings for the produced datatables
+        those settings will be outputted as follows:
+        
+            setting1Name: setting1Value,
+            setting2Name: setting2Value,
+            setting3Name: setting3Value,
+        
+    """
+    
+    params_dict = defaults or {}
+    params_dict.update(kwargs)
+    show_header = params_dict.pop('show_header', True)
+    show_footer = params_dict.pop('show_footer', True)
+    
+    datatables_params = [ ('aoColumns', json.dumps(columns)) ]
+    
+    for key, value in params_dict.items():
+        if not key.startswith('fn'):
+            # params starting with fn expect function identifiers 
+            # and must not be casted to json
+            value = json.dumps(value)
+        datatables_params.append( (key, value) )
+    
+    datatables_options = {
+        'table_id': table_id,
+        'css_class': css_class,
+        'columns': columns,
+        'show_header': show_header,
+        'show_footer': show_footer,
+        'empty_css_class': params_dict.get('empty_css_class', 'dataTables_empty'),
+        'datatables_params': datatables_params,
+    }
+
+    return datatables_options
+
+
