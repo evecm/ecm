@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
 
 __date__ = '2010-12-25'
 __author__ = 'diabeteman'
@@ -26,6 +25,7 @@ except ImportError:
     import django.utils.simplejson as json
 from datetime import datetime, timedelta
 
+from django.utils import timezone
 from django.shortcuts import render_to_response, redirect
 from django.template.context import RequestContext as Ctx
 from django.template.defaultfilters import pluralize
@@ -62,7 +62,7 @@ def last_date(request):
         date_str = datetime.strftime(last_date, DATE_PATTERN)
         return redirect('/assets/changes/%s/?since_weeks=%d&to_weeks=%d' % (date_str, since_weeks, to_weeks))
     except IndexError:
-        return render_to_response('assets_no_data.html', context_instance=Ctx(request))
+        return render_to_response('ecm/assets/assets_no_data.html', context_instance=Ctx(request))
 
 
 def get_dates(request):
@@ -152,9 +152,9 @@ def root(request, date_str):
         date_asked = datetime.strptime(date_str, DATE_PATTERN)
         if AssetDiff.objects.filter(date=date_asked).exists():
             data['date'] = date_asked
-            return render_to_response('assets_diff.html', data, Ctx(request))
+            return render_to_response('ecm/assets/assets_diff.html', data, Ctx(request))
         else:
-            return render_to_response('assets_no_data.html', Ctx(request))
+            return render_to_response('ecm/assets/assets_no_data.html', Ctx(request))
     except:
         return redirect('/assets/changes/')
 
@@ -326,27 +326,22 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def get_hangar_content_data(request, date_str, solarSystemID, stationID, hangarID):
-    date = datetime.strptime(date_str, DATE_PATTERN)
-    solarSystemID = int(solarSystemID)
-    stationID = int(stationID)
-    hangarID = int(hangarID)
 
-    query = AssetDiff.objects.filter(solarSystemID=solarSystemID,
-                                     stationID=stationID, hangarID=hangarID,
-                                     date=date)
+    assets_query = AssetDiff.objects.filter(solarSystemID=int(solarSystemID),
+                                            stationID=int(stationID), hangarID=int(hangarID),
+                                            date=datetime.strptime(date_str, DATE_PATTERN))
     jstree_data = []
-    for item in query:
-        name = Type.objects.get(typeID = item.typeID).typeName
+    for a in assets_query.select_related(depth=1):
 
-        if item.quantity < 0:
+        if a.quantity < 0:
             icon = 'removed'
         else:
             icon = 'added'
 
         jstree_data.append({
-            'data': '%s <i>(%s)</i>' % (name, print_integer(item.quantity)),
+            'data': '%s <i>(%s)</i>' % (a.eve_type.typeName, print_integer(a.quantity)),
             'attr' : {
-                'sort_key' : name.lower(),
+                'sort_key' : a.eve_type.typeName.lower(),
                 'rel' : icon,
                 'class' : '%s-row' % icon
             }
@@ -362,11 +357,9 @@ def search_items(request, date_str):
     divisions = extract_divisions(request)
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
-    search_string = request.GET.get('search_string', 'no-item')
+    search_string = request.GET.get('search_string', None)
 
-    matchingIDs = [x.typeID for x in Type.objects.filter(typeName__contains = search_string)]
-
-    query = AssetDiff.objects.filter(typeID__in=matchingIDs, date=date)
+    query = AssetDiff.objects.filter(eve_type__typeName__icontains=search_string, date=date)
 
     if divisions is not None:
         query = query.filter(hangarID__in=divisions)

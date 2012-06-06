@@ -57,7 +57,7 @@ CATEGORY_ICONS = { 2 : 'can' ,
 def root(request):
     scan_date = UpdateDate.get_latest(Asset)
     if scan_date == '<no data>':
-        return render_to_response('assets_no_data.html', Ctx(request))
+        return render_to_response('ecm/assets/assets_no_data.html', Ctx(request))
 
     all_hangars = Hangar.objects.all().order_by('hangarID')
     try:
@@ -79,7 +79,7 @@ def root(request):
                    'hangars' : all_hangars,
                  'scan_date' : scan_date }
 
-    return render_to_response('assets.html', data, Ctx(request))
+    return render_to_response('ecm/assets/assets.html', data, Ctx(request))
 
 
 
@@ -251,7 +251,7 @@ def get_stations_data(request, solarSystemID, closest_obj_id):
             icon = 'station'
         else:
             # it is an inspace anchorable array
-            type_name = Type.objects.get(typeID = flag).typeName
+            type_name = Type.objects.get(typeID=flag).typeName
 
             name = type_name
             if item_name and type_name != item_name:
@@ -342,33 +342,30 @@ def get_hangar_content_data(request, solarSystemID, closest_obj_id, stationID, h
     stationID = int(stationID)
     hangarID = int(hangarID)
 
-    query = Asset.objects.filter(solarSystemID=solarSystemID,
-                                 stationID=stationID, hangarID=hangarID,
-                                 container1=None, container2=None)
+    assets_query = Asset.objects.filter(solarSystemID=solarSystemID,
+                                        stationID=stationID, hangarID=hangarID,
+                                        container1=None, container2=None)
 
     jstree_data = []
-    for item in query:
-        i = Type.objects.get(typeID=item.typeID)
-        type_name = i.typeName
-        category = i.category
+    for a in assets_query.select_related(depth=1):
 
         try:
-            icon = CATEGORY_ICONS[category]
+            icon = CATEGORY_ICONS[a.eve_type.categoryID]
         except KeyError:
             icon = 'item'
 
-        if item.hasContents:
-            data = type_name
-            if item.name and item.name != type_name:
-                data += ' "%s"' % item.name
-            ID = '%d_%d_%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID, hangarID, item.itemID)
+        if a.hasContents:
+            data = a.eve_type.typeName
+            if a.name and a.name != a.eve_type.typeName:
+                data += ' "%s"' % a.name
+            ID = '%d_%d_%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID, hangarID, a.itemID)
             state = 'closed'
-        elif item.singleton:
-            data = type_name
+        elif a.singleton:
+            data = a.eve_type.typeName
             ID = ''
             state = ''
         else:
-            data = '%s <i>- (x %s)</i>' % (type_name, print_integer(item.quantity))
+            data = '%s <i>- (x %s)</i>' % (a.eve_type.typeName, print_integer(a.quantity))
             ID = ''
             state = ''
 
@@ -376,7 +373,7 @@ def get_hangar_content_data(request, solarSystemID, closest_obj_id, stationID, h
             'data': data,
             'attr' : {
                 'id' : ID,
-                'sort_key' : type_name.lower(),
+                'sort_key' : a.eve_type.typeName.lower(),
                 'rel' : icon
             },
             'state' : state
@@ -394,29 +391,25 @@ def get_can1_content_data(request, solarSystemID, closest_obj_id, stationID, han
     hangarID = int(hangarID)
     container1 = int(container1)
 
-    item_list = Asset.objects.filter(solarSystemID=solarSystemID,
-                                     stationID=stationID, hangarID=hangarID,
-                                     container1=container1, container2=None)
+    assets_query = Asset.objects.filter(solarSystemID=solarSystemID,
+                                        stationID=stationID, hangarID=hangarID,
+                                        container1=container1, container2=None)
     json_data = []
-    for i in item_list:
+    for a in assets_query.select_related(depth=1):
         item = {}
-        x = Type.objects.get(typeID=i.typeID)
-        name = x.typeName
-        category = x.category
-        #name, category = db.get_type_name(i.typeID)
-        try:    icon = CATEGORY_ICONS[category]
+        try:    icon = CATEGORY_ICONS[a.eve_type.categoryID]
         except: icon = 'item'
 
-        if i.hasContents:
-            item['data'] = name
-            ID = '%d_%d_%d_%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID, hangarID, container1, i.itemID)
+        if a.hasContents:
+            item['data'] = a.eve_type.typeName
+            ID = '%d_%d_%d_%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID, hangarID, container1, a.itemID)
             item['attr'] = { 'id' : ID , 'rel' : icon , 'href' : '', 'class' : '%s-row' % icon  }
             item['state'] = 'closed'
-        elif i.singleton:
-            item['data'] = name
+        elif a.singleton:
+            item['data'] = a.eve_type.typeName
             item['attr'] = { 'rel' : icon , 'href' : ''  }
         else:
-            item['data'] = '%s <i>- (x %s)</i>' % (name, print_integer(i.quantity))
+            item['data'] = '%s <i>- (x %s)</i>' % (a.eve_type.typeName, print_integer(a.quantity))
             item['attr'] = { 'rel' : icon , 'href' : ''  }
 
         json_data.append(item)
@@ -427,28 +420,20 @@ def get_can1_content_data(request, solarSystemID, closest_obj_id, stationID, han
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def get_can2_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID, container1, container2):
-    solarSystemID = int(solarSystemID)
-    closest_obj_id = int(closest_obj_id)
-    stationID = int(stationID)
-    hangarID = int(hangarID)
-    container1 = int(container1)
-    container2 = int(container2)
-    item_list = Asset.objects.filter(solarSystemID=solarSystemID,
-                                     stationID=stationID, hangarID=hangarID,
-                                     container1=container1, container2=container2)
+    assets_query = Asset.objects.filter(solarSystemID=int(solarSystemID),
+                                        stationID=int(stationID), 
+                                        hangarID=int(hangarID),
+                                        container1=int(container1), 
+                                        container2=int(container2))
     json_data = []
-    for i in item_list:
+    for a in assets_query.select_related(depth=1):
         item = {}
-        x = Type.objects.get(typeID=i.typeID)
-        name = x.typeName
-        category = x.category
-        #name, category = db.get_type_name(i.typeID)
-        try:    icon = CATEGORY_ICONS[category]
+        try:    icon = CATEGORY_ICONS[a.eve_type.category]
         except: icon = 'item'
-        if i.singleton:
-            item['data'] = name
+        if a.singleton:
+            item['data'] = a.eve_type.typeName
         else:
-            item['data'] = '%s <i>- (x %s)</i>' % (name, print_integer(i.quantity))
+            item['data'] = '%s <i>- (x %s)</i>' % (a.eve_type.typeName, print_integer(a.quantity))
         item['attr'] = { 'rel' : icon , 'href' : ''  }
         json_data.append(item)
 
@@ -462,13 +447,13 @@ def search_items(request):
     divisions = extract_divisions(request)
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
-    search_string = request.GET.get('search_string', 'no-item')
+    search_string = request.GET.get('search_string', None)
 
-    # note: we need to render the list as real integers here. If not, django will try to
-    #       make a SQL join between two tables that are not in the same DB...
-    matchingIDs = [t.typeID for t in Type.objects.filter(typeName__contains = search_string)]
+    filter_args = Q(name__icontains=search_string)
+    if search_string:
+        filter_args |= Q(eve_type__typeName__icontains=search_string)
 
-    query = Asset.objects.filter(Q(typeID__in=matchingIDs) | Q(name__icontains=search_string))
+    query = Asset.objects.filter(filter_args)
 
     if divisions is not None:
         query = query.filter(hangarID__in=divisions)

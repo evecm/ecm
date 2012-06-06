@@ -24,10 +24,10 @@ from ecm.plugins.assets.models import Asset, AssetDiff
 
 class AssetAdmin(admin.ModelAdmin):
     list_display = ['itemID', 'solarSystemID', 'stationID', 'hangarID', 'container1', 'container2', 
-                    'typeID', 'quantity', 'flag', 'singleton', 'hasContents']
+                    'eve_type', 'quantity', 'flag', 'singleton', 'hasContents']
 
 class AssetDiffAdmin(admin.ModelAdmin):
-    list_display = ['solarSystemID', 'stationID', 'hangarID', 'typeID', 'quantity', 'date', 'new']
+    list_display = ['solarSystemID', 'stationID', 'hangarID', 'eve_type', 'quantity', 'date', 'new']
     
 
 

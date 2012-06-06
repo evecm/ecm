@@ -147,7 +147,7 @@ def calc_assets_diff(old_items, new_items, date):
             diffs.append(AssetDiff(solarSystemID=remasset.solarSystemID,
                                        stationID=remasset.stationID,
                                         hangarID=remasset.hangarID,
-                                          typeID=remasset.typeID,
+                                        eve_type=remasset.eve_type,
                                             flag=remasset.flag,
                                         quantity=added_qty - remasset.quantity,
                                             date=date,
@@ -158,7 +158,7 @@ def calc_assets_diff(old_items, new_items, date):
             diffs.append(AssetDiff(solarSystemID=addasset.solarSystemID,
                                        stationID=addasset.stationID,
                                         hangarID=addasset.hangarID,
-                                          typeID=addasset.typeID,
+                                        eve_type=addasset.eve_type,
                                             flag=addasset.flag,
                                         quantity=addasset.quantity,
                                             date=date,
@@ -353,12 +353,12 @@ def make_asset_from_row(row):
         is_bpc = None
 
     return Asset(itemID      = row.itemID,
-                 typeID      = row.typeID,
+                 eve_type    = item,
                  quantity    = row.quantity,
                  flag        = row.flag,
                  singleton   = row.singleton,
                  volume      = volume,
-                 is_bpc=is_bpc)
+                 is_bpc      = is_bpc)
 
 #------------------------------------------------------------------------------
 def locationid_to_stationid(locationID):
@@ -394,7 +394,7 @@ def update_assets_locations(assets_to_locate):
         except eveapi.Error, err:
             # error can happen if a ship/asset found in a SMA/CHA does not belong to the corp
             LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).', 
-                        err.code, str(err), sub_list)
+                        err.code, str(err), ids)
 
     LOG.debug('Computing positions...')
     for itemID, itemName, X, Y, Z in located_assets:
@@ -443,7 +443,7 @@ def update_assets_names():
         except eveapi.Error, err:
             # error can happen if a ship/asset found in a SMA/CHA does not belong to the corp
             LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).', 
-                        err.code, str(err), sub_list)
+                        err.code, str(err), ids)
 
     LOG.debug('Writing to DB...')
     for itemID, itemName in named_assets:

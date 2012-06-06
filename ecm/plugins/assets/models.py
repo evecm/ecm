@@ -14,15 +14,14 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
 
 __date__ = "2010-03-18"
 __author__ = "diabeteman"
 
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
-from ecm.lib import bigintpatch
-from ecm.apps.eve.models import Type
+from ecm.lib import bigintpatch, softfk
 
 #------------------------------------------------------------------------------
 class Asset(models.Model):
@@ -36,7 +35,7 @@ class Asset(models.Model):
     hangarID = models.PositiveIntegerField() # hangar division
     container1 = models.BigIntegerField(null=True, blank=True) # first container or ship
     container2 = models.BigIntegerField(null=True, blank=True) # second container or ship
-    typeID = models.PositiveIntegerField(default=0) # item typeID from the EVE database
+    eve_type = softfk.SoftForeignKey(to='eve.Type') #@ReservedAssignment
     quantity = models.BigIntegerField(default=0)
     flag = models.BigIntegerField() # used to determine the state or path of the asset
     singleton = models.BooleanField(default=False) # true if assembled
@@ -50,16 +49,11 @@ class Asset(models.Model):
     # added for identifying blueprints (True -> Copy, False -> Original, NULL -> not a bp)
     is_bpc = models.NullBooleanField(null=True, blank=True, default=None)
     
-    __item = None
-
-    def __repr__(self):
-        return str(self)
-
     def __unicode__(self):
         try:
-            return u"<%s x%d>" % (Type.objects.get(pk=self.typeID).typeName, self.quantity)
-        except Type.DoesNotExist:
-            return u"<Asset instance at %x>" % id(self)
+            return u'%s x%d' % (self.eve_type.typeName, self.quantity)
+        except ObjectDoesNotExist:
+            return unicode(id(self))
 
     def __hash__(self):
         return self.itemID
@@ -68,14 +62,14 @@ class Asset(models.Model):
         return (self.solarSystemID == other.solarSystemID
                 and self.stationID == other.stationID
                 and self.hangarID == other.hangarID
-                and self.typeID == other.typeID
+                and self.eve_type_id == other.eve_type_id
                 and self.quantity == other.quantity)
 
     def __cmp__(self, other):
         return (cmp(self.solarSystemID, other.solarSystemID)
                 or cmp(self.stationID, other.stationID)
                 or cmp(self.hangarID, other.hangarID)
-                or cmp(self.typeID, other.typeID))
+                or cmp(self.eve_type_id, other.eve_type_id))
 
     def lookslike(self, other):
         """
@@ -84,15 +78,15 @@ class Asset(models.Model):
         return (self.solarSystemID == other.solarSystemID
                 and self.stationID == other.stationID
                 and self.hangarID == other.hangarID
-                and self.typeID == other.typeID)
+                and self.eve_type_id == other.eve_type_id)
 
     def __getattr__(self, attr):
+        from ecm.apps.eve.models import Type
         try:
-            if self.__item is None:
-                self.__item = Type.objects.get(pk=self.typeID)
-            return getattr(self.__item, attr)
+            return Type.__getattr__(self.eve_type, attr) #@UndefinedVariable
         except AttributeError:
             return models.Model.__getattribute__(self, attr)
+        
 
 #------------------------------------------------------------------------------
 class AssetDiff(models.Model):
@@ -104,10 +98,23 @@ class AssetDiff(models.Model):
     solarSystemID = models.BigIntegerField()
     stationID = models.BigIntegerField()
     hangarID = models.PositiveIntegerField() # hangar division
-    typeID = models.PositiveIntegerField(default=0) # item typeID from the EVE database
+    eve_type = softfk.SoftForeignKey(to='eve.Type') #@ReservedAssignment
     quantity = models.IntegerField(default=0)
-    date = models.DateTimeField(db_index=True, default=timezone.now())
+    date = models.DateTimeField(db_index=True, auto_now_add=True)
     new = models.BooleanField()
     flag = models.BigIntegerField() # used to determine the state or path of the asset
     volume = models.BigIntegerField(default=0)
-
+    
+    def __unicode__(self):
+        try:
+            return u'%s x%d' % (self.eve_type.typeName, self.quantity)
+        except ObjectDoesNotExist:
+            return unicode(id(self))
+        
+    
+    def __getattr__(self, attr):
+        from ecm.apps.eve.models import Type
+        try:
+            return Type.__getattr__(self.eve_type, attr) #@UndefinedVariable
+        except AttributeError:
+            return models.Model.__getattribute__(self, attr)
