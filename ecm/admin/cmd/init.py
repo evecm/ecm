@@ -27,28 +27,21 @@ from optparse import OptionParser
 
 from ecm.admin.util import run_python_cmd, log
 from ecm.lib.subcommand import Subcommand
-from ecm.admin.cmd import collect_static_files, CCP_EVE_DB_URL, patch_ccp_dump, import_eve_data_dump
+from ecm.admin.cmd import collect_static_files
 
 #-------------------------------------------------------------------------------
 def sub_command():
     # INIT
+    description = 'Initialize an instance\'s database and files.'
+    
     init_cmd = Subcommand('init',
                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                          help='Initialize an instance\'s database and files.',
-                          callback=run)
+                          help=description, callback=run)
+    init_cmd.parser.description = description
     if not os.name == 'nt':
         init_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
                                    help='Create symbolic links instead of copying static files.',
                                    default=False, action='store_true')
-    init_cmd.parser.add_option('--from-ccp-dump',
-                               dest='from_ccp_dump', action='store_true', default=False,
-                               help='Update EVE database from CCP official dump (can take a long time).')
-    init_cmd.parser.add_option('--ccp-dump-url',
-                               dest='ccp_dump_url', default=CCP_EVE_DB_URL,
-                               help='URL where to download CCP official dump.')
-    init_cmd.parser.add_option('--ccp-dump-archive',
-                               dest='ccp_dump_archive',
-                               help='Local archive of CCP official dump (skips download).')
     return init_cmd
 
 
@@ -82,9 +75,3 @@ def run(command, global_options, options, args):
         os.makedirs(sqlite_db_dir)
     init_ecm_db(instance_dir)
 
-    # download eve db
-    if options.from_ccp_dump and 'sqlite' in ecm_db_engine:
-        patch_ccp_dump(ccp_dump_url=options.ccp_dump_url,
-                       ccp_dump_archive=options.ccp_dump_archive,
-                       eve_db_dir=sqlite_db_dir)
-        import_eve_data_dump(sqlite_db_dir)

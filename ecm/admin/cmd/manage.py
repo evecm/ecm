@@ -23,11 +23,11 @@ from ecm.lib.subcommand import Subcommand, PassThroughOptionParser
 
 #-------------------------------------------------------------------------------
 def sub_command():
-
+    description = 'Manage an instance (proxy for manage.py).'
     manage_cmd = Subcommand('manage',
                             parser=PassThroughOptionParser(usage='%prog [OPTIONS] instance_dir'),
-                            help='Manage an instance (proxy for manage.py).',
-                            callback=run)
+                            help=description, callback=run)
+    manage_cmd.parser.description = description
     return manage_cmd
 
 #-------------------------------------------------------------------------------

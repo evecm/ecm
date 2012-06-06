@@ -40,11 +40,13 @@ DB_ENGINES = {
 #------------------------------------------------------------------------------
 def sub_command():
     # CREATE
+    description = 'Create a new ECM instance in the given directory.'
+    
     create_cmd = Subcommand('create',
                             parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
                             help='Create a new ECM instance in the given directory.',
                             callback=run)
-
+    create_cmd.parser.description = description
     create_cmd.parser.add_option('-q', '--quiet', dest='quiet',
                                  help='Do not prompt user (use default values).',
                                  default=False, action='store_true')

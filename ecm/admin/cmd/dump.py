@@ -21,20 +21,30 @@ __author__ = 'diabeteman'
 
 import os
 import sys
-import subprocess
+import shutil
+import sqlite3
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
 
+from ecm.admin.util import pipe_to_dbshell, log, run_command
 from ecm.lib.subcommand import Subcommand
-from ecm.admin.cmd.load import CCP_DATA_DUMPS
+
+SUPPORTED_ENGINES = [
+    'django.db.backends.postgresql_psycopg2',
+    'django.db.backends.mysql',
+    'django.db.backends.sqlite3',
+]
 
 #-------------------------------------------------------------------------------
 def sub_command():
     # INIT
     dump_cmd = Subcommand('dump',
-                          parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                          help='Dump patched EVE data to standard output.',
+                          parser=OptionParser(usage='%prog [OPTIONS] instance_dir dump_file'),
+                          help='Dump patched EVE data to a file.',
                           callback=run)
+    dump_cmd.parser.add_option('-o', '--overwrite',
+                               dest='overwrite', default=False, action='store_true',
+                               help='Force overwrite any existing file.')
     return dump_cmd
 
 #-------------------------------------------------------------------------------
@@ -43,6 +53,12 @@ def run(command, global_options, options, args):
     if not args:
         command.parser.error('Missing instance directory.')
     instance_dir = args.pop(0)
+    if not args:
+        command.parser.error('Missing dump file.')
+    dump_file = args.pop(0)
+    
+    if not options.overwrite and os.path.exists(dump_file):
+        command.parser.error('Dump file already exists.')
     
     config = SafeConfigParser()
     if config.read([os.path.join(instance_dir, 'settings.ini')]):
@@ -52,31 +68,98 @@ def run(command, global_options, options, args):
         db_password = config.get('database', 'ecm_password')
     else:
         command.parser.error('Could not read "settings.ini" in instance dir.')
-    try:
-        sql = CCP_DATA_DUMPS[db_engine]
-    except KeyError:
-        command.parser.error('Cannot dump patched EVE data with database engine %r. '
-                             'Supported engines: %r' % (db_engine, CCP_DATA_DUMPS.keys()))
     
-    sys.stdout.write("""BEGIN;
+    if not db_engine in SUPPORTED_ENGINES:
+        command.parser.error('Cannot dump patched EVE data with database engine %r. '
+                             'Supported engines: %r' % (db_engine, SUPPORTED_ENGINES))
+    
+    # remove existing file
+    if os.path.exists(dump_file):
+        os.remove(dump_file)
+    
+    log('Dumping EVE data to %r...' % dump_file)
+    if 'postgresql' in db_engine:
+        dump_psql(instance_dir, dump_file, db_user, db_password, db_name)
+    elif 'mysql' in db_engine:
+        dump_mysql(instance_dir, dump_file, db_user, db_password, db_name)
+    elif 'sqlite' in db_engine:
+        dump_sqlite(instance_dir, dump_file)
+    log('EVE data successfully exported')
 
--- reset existing data
-DELETE FROM eve_celestialobject WHERE x IS NOT NULL; -- to keep conquerable outposts
-DELETE FROM eve_blueprintreq;
-DELETE FROM eve_blueprinttype;
-DELETE FROM eve_controltowerresource;
-DELETE FROM eve_marketgroup;
-DELETE FROM eve_type;
-DELETE FROM eve_group;
-DELETE FROM eve_category;
-
-""")
-    sys.stdout.flush()
+#-------------------------------------------------------------------------------
+def dump_psql(instance_dir, dump_file,  db_user, db_password, db_name):
+    
+    os.environ['PGDATABASE'] = db_name
+    os.environ['PGUSER'] = db_user
+    os.environ['PGPASSWORD'] = db_password
+    
+    tables = [ t for t in pipe_to_dbshell(r"\dt eve_*", instance_dir).split() if t.startswith('eve_') ]
+    
+    f = open(dump_file, 'w')
     try:
-        cmd = sql['DUMP'] % { 'user': db_user, 'password': db_password, 'name': db_name }
-        os.environ['PGPASSWORD'] = db_password
-        subprocess.call(cmd.split(), cwd=os.path.abspath(instance_dir))
-    except KeyboardInterrupt:
-        sys.stdout.write('\n')
-        sys.exit(1)
-    sys.stdout.write('COMMIT;\n\n')
+        try:
+            dump_cmd = 'pg_dump --format=p --encoding=utf-8 --no-owner --no-privileges '\
+                       '--quote-all-identifiers --data-only --disable-triggers --table eve_*'
+            
+            f.write('BEGIN;\n\n')
+            for t in tables:
+                f.write('TRUNCATE TABLE `%s`;\n' % t)
+            f.write('\n')
+            f.flush()
+            run_command(dump_cmd.split(), os.path.abspath(instance_dir), stdout=f)
+            f.flush()
+            f.write('COMMIT;\n\n')
+        except KeyboardInterrupt:
+            f.close()
+            sys.exit(1)
+    finally:
+        f.close()
+
+#-------------------------------------------------------------------------------
+MYSQL_DUMP_CMD = 'mysqldump --no-create-info --default-character-set=utf8 --disable-keys '\
+                 '--user=%(user)s --password=%(password)s %(database)s %(tables)s'
+def dump_mysql(instance_dir, dump_file,  db_user, db_password, db_name):
+    
+    tables = [ t for t in pipe_to_dbshell(r"SHOW TABLES LIKE 'eve\_%';", instance_dir).split() if t.startswith('eve_') ]
+    
+    f = open(dump_file, 'w')
+    try:
+        try:
+            dump_cmd = MYSQL_DUMP_CMD % {
+                'user': db_user, 
+                'password': db_password, 
+                'database': db_name, 
+                'tables': ' '.join(tables)
+            }
+            f.write('BEGIN;\n\n')
+            f.write('SET FOREIGN_KEY_CHECKS = 0;\n\n')
+            for t in tables:
+                f.write('TRUNCATE TABLE `%s`;\n' % t)
+            f.write('\n')
+            f.flush()
+            run_command(dump_cmd.split(), os.path.abspath(instance_dir), stdout=f)
+            f.flush()
+            f.write('SET FOREIGN_KEY_CHECKS = 1;\n\n')
+            f.write('COMMIT;\n\n')
+        except KeyboardInterrupt:
+            f.close()
+            sys.exit(1)
+    finally:
+        f.close()
+
+#-------------------------------------------------------------------------------
+def dump_sqlite(instance_dir, dump_file):
+    
+    shutil.copy(os.path.join(instance_dir, 'db/ecm.sqlite'), dump_file)
+    
+    tables = [ (t,) for t in pipe_to_dbshell('.tables', instance_dir).split() if not t.startswith('eve_') ]
+    
+    connection = sqlite3.connect(dump_file)
+    cursor = connection.cursor()
+    for table in tables:
+        cursor.execute('DROP TABLE "%s";' % table)
+    cursor.execute('VACUUM;')
+    cursor.close()
+    connection.commit()
+    connection.close()
+    

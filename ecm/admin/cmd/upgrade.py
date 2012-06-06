@@ -33,30 +33,22 @@ from ConfigParser import SafeConfigParser
 from ecm.lib.subcommand import Subcommand
 from ecm.admin import instance_template
 from ecm.admin.util import run_python_cmd, log, pipe_to_django_shell
-from ecm.admin.cmd import collect_static_files, patch_ccp_dump, CCP_EVE_DB_URL, import_eve_data_dump
+from ecm.admin.cmd import collect_static_files
 
 #-------------------------------------------------------------------------------
 def sub_command():
     # UPGRADE
+    description = 'Synchronize an instance\'s database and files.'
     upgrade_cmd = Subcommand('upgrade',
                              parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                             help='Synchronize an instance\'s database and files.',
-                             callback=run)
+                             help=description, callback=run)
+    upgrade_cmd.parser.description = description
     upgrade_cmd.parser.add_option('--no-syncdb',
                                   dest='no_syncdb', action='store_true', default=False,
                                   help='Do not modify the instance\'s database.')
     upgrade_cmd.parser.add_option('-u', '--upgrade-from-1.4.9',
                                   dest='upgrade_from_149', action='store_true', default=False,
                                   help='Upgrade from ECM-1.4.9.')
-    upgrade_cmd.parser.add_option('--from-ccp-dump',
-                                  dest='from_ccp_dump', action='store_true', default=False,
-                                  help='Update EVE database from CCP official dump (can take a long time).')
-    upgrade_cmd.parser.add_option('--ccp-dump-url',
-                                  dest='ccp_dump_url', default=CCP_EVE_DB_URL,
-                                  help='URL where to download CCP official dump.')
-    upgrade_cmd.parser.add_option('--ccp-dump-archive',
-                                  dest='ccp_dump_archive',
-                                  help='Local archive of CCP official dump (skips download).')
     if not os.name == 'nt':
         upgrade_cmd.parser.add_option('-s', '--symlink-files', dest='symlink_files',
                                       help='Create symbolic links instead of copying static files.',
@@ -154,7 +146,6 @@ def run(command, global_options, options, args):
     config = SafeConfigParser()
     if config.read([path.join(instance_dir, 'settings.ini')]):
         sqlite_db_dir = config.get('database', 'sqlite_db_dir')
-        db_engine = config.get('database', 'ecm_engine')
     if not sqlite_db_dir:
         sqlite_db_dir = path.join(instance_dir, 'db')
     
@@ -167,13 +158,4 @@ def run(command, global_options, options, args):
     # migrate ecm db
     if not options.no_syncdb:
         migrate_ecm_db(instance_dir, options.upgrade_from_149)
-
-    # update eve datadump
-    if options.from_ccp_dump and 'sqlite' in db_engine:
-        patch_ccp_dump(ccp_dump_url=options.ccp_dump_url,
-                       ccp_dump_archive=options.ccp_dump_archive,
-                       eve_db_dir=sqlite_db_dir)
-        import_eve_data_dump(sqlite_db_dir)
-
-
 

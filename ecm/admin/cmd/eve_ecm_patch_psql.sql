@@ -16,12 +16,6 @@
 -- EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 
--- /!\ IMPORTANT /!\
--- 
--- original eve column/table identifiers are not quoted. This is done one purpose 
--- because the postgresql dump has all identifiers converted to lower case.
-
-
 BEGIN;
 
 -- reset existing data
@@ -36,9 +30,9 @@ DELETE FROM "eve_category";
 
 
 
-INSERT INTO "eve_category" SELECT * FROM invCategories;
-INSERT INTO "eve_group" SELECT * FROM invGroups;
-INSERT INTO "eve_marketgroup" SELECT * FROM invMarketGroups;
+INSERT INTO "eve_category" SELECT * FROM "invCategories";
+INSERT INTO "eve_group" SELECT * FROM "invGroups";
+INSERT INTO "eve_marketgroup" SELECT * FROM "invMarketGroups";
 
 --------------------
 -- PATCH invTypes --
@@ -46,26 +40,26 @@ INSERT INTO "eve_marketgroup" SELECT * FROM invMarketGroups;
 
 -- fill the custom table
 INSERT INTO "eve_type"
-SELECT  t.typeID,
-        t.groupID,
-        gg.categoryID,
-        t.typeName,
-        b.blueprintTypeID,
-        b.techLevel,
-        t.description,
-        t.volume,
-        t.portionSize,
-        t.raceID,
-        t.basePrice,
-        t.marketGroupID,
-        COALESCE(m.metaGroupID, 0),
-        t.published
-FROM invTypes t LEFT OUTER JOIN invBlueprintTypes b ON t.typeID = b.productTypeID,
-     invTypes tt LEFT OUTER JOIN invMetaTypes m ON tt.typeID = m.typeID,
-     invGroups gg
-WHERE t.typeID = tt.typeID
-  AND t.groupID = gg.groupID
-  AND t.typeID NOT IN (23693) -- this dummy item has 4 different blueprints,
+SELECT  t."typeID",
+        t."groupID",
+        gg."categoryID",
+        t."typeName",
+        b."blueprintTypeID",
+        b."techLevel",
+        t."description",
+        t."volume",
+        t."portionSize",
+        t."raceID",
+        t."basePrice",
+        t."marketGroupID",
+        COALESCE(m."metaGroupID", 0),
+        t."published"
+FROM "invTypes" t LEFT OUTER JOIN "invBlueprintTypes" b ON t."typeID" = b."productTypeID",
+     "invTypes" tt LEFT OUTER JOIN "invMetaTypes" m ON tt."typeID" = m."typeID",
+     "invGroups" gg
+WHERE t."typeID" = tt."typeID"
+  AND t."groupID" = gg."groupID"
+  AND t."typeID" NOT IN (23693) -- this dummy item has 4 different blueprints,
                                 -- if we do not ignore it, the SQL command fails...
 ;
 
@@ -88,20 +82,20 @@ INSERT INTO "eve_blueprinttype"(
          "materialModifier",
          "wasteFactor",
          "maxProductionLimit") 
-  SELECT blueprintTypeID,
-         parentBlueprintTypeID,
-         productTypeID,
-         productionTime,
-         techLevel,
-         researchProductivityTime,
-         researchMaterialTime,
-         researchCopyTime, 
-         researchTechTime,
-         productivityModifier,
-         materialModifier,
-         wasteFactor,
-         maxProductionLimit
-  FROM invBlueprintTypes
+  SELECT "blueprintTypeID",
+         "parentBlueprintTypeID",
+         "productTypeID",
+         "productionTime",
+         "techLevel",
+         "researchProductivityTime",
+         "researchMaterialTime",
+         "researchCopyTime", 
+         "researchTechTime",
+         "productivityModifier",
+         "materialModifier",
+         "wasteFactor",
+         "maxProductionLimit"
+  FROM "invBlueprintTypes"
 ;
 
 -- fill the dataInterfaceID field
@@ -132,10 +126,10 @@ UPDATE "eve_blueprinttype"
 SET "parentBlueprintTypeID" =
     (SELECT b."blueprintTypeID"
      FROM "eve_blueprinttype" AS b,
-          invMetaTypes AS m
-     WHERE "eve_blueprinttype"."productTypeID" = m.typeID
-       AND b."productTypeID" = m.parentTypeID
-       AND m.metaGroupID = 2 /* only tech2 items are concerned with invention */)
+          "invMetaTypes" AS m
+     WHERE "eve_blueprinttype"."productTypeID" = m."typeID"
+       AND b."productTypeID" = m."parentTypeID"
+       AND m."metaGroupID" = 2 /* only tech2 items are concerned with invention */)
 ;
 
 -- this way, when manufacturing a tech 2 item,
@@ -151,52 +145,52 @@ SET "parentBlueprintTypeID" =
 -- material is affected by waste when building.
 -------------------------------------------------------
 INSERT INTO "eve_blueprintreq"
-    SELECT  CAST(rtr.typeID AS bigint) * 100000000 + CAST(rtr.requiredTypeID AS bigint) * 100 + CAST(rtr.activityID AS bigint),
-            rtr.typeID,
-            rtr.activityID,
-            rtr.requiredTypeID,
-            rtr.quantity + COALESCE(itm.quantity, 0),
-            rtr.damagePerJob,
-            COALESCE(itm.quantity, 0)
-    FROM invBlueprintTypes AS b
-       INNER JOIN ramTypeRequirements AS rtr
-           ON rtr.typeID = b.blueprintTypeID
-          AND rtr.activityID = 1 -- manufacturing
-       LEFT OUTER JOIN invTypeMaterials AS itm
-           ON itm.typeID = b.productTypeID
-          AND itm.materialTypeID = rtr.requiredTypeID
-    WHERE rtr.quantity > 0
+    SELECT  CAST(rtr."typeID" AS bigint) * 100000000 + CAST(rtr."requiredTypeID" AS bigint) * 100 + CAST(rtr."activityID" AS bigint),
+            rtr."typeID",
+            rtr."activityID",
+            rtr."requiredTypeID",
+            rtr."quantity" + COALESCE(itm."quantity", 0),
+            rtr."damagePerJob",
+            COALESCE(itm."quantity", 0)
+    FROM "invBlueprintTypes" AS b
+       INNER JOIN "ramTypeRequirements" AS rtr
+           ON rtr."typeID" = b."blueprintTypeID"
+          AND rtr."activityID" = 1 -- manufacturing
+       LEFT OUTER JOIN "invTypeMaterials" AS itm
+           ON itm."typeID" = b."productTypeID"
+          AND itm."materialTypeID" = rtr."requiredTypeID"
+    WHERE rtr."quantity" > 0
 ;
 ----------------------------------------------------------
 INSERT INTO "eve_blueprintreq"
-    SELECT  CAST(b.blueprintTypeID AS bigint) * 100000000 + CAST(itm.materialTypeID AS bigint) * 100 + 1,
-            b.blueprintTypeID,
+    SELECT  CAST(b."blueprintTypeID" AS bigint) * 100000000 + CAST(itm."materialTypeID" AS bigint) * 100 + 1,
+            b."blueprintTypeID",
             1,  -- manufacturing activityID
-            itm.materialTypeID,   -- requiredTypeID
-            (itm.quantity - COALESCE(sub.quantity * sub.recycledQuantity, 0)),  -- quantity
+            itm."materialTypeID",   -- requiredTypeID
+            (itm."quantity" - COALESCE(sub."quantity" * sub."recycledQuantity", 0)),  -- quantity
             1,   -- damagePerJob
-            (itm.quantity - COALESCE(sub.quantity * sub.recycledQuantity, 0))  -- baseMaterial
-    FROM invBlueprintTypes b
-       INNER JOIN invTypeMaterials itm
-           ON itm.typeID = b.productTypeID
+            (itm."quantity" - COALESCE(sub."quantity" * sub."recycledQuantity", 0))  -- baseMaterial
+    FROM "invBlueprintTypes" b
+       INNER JOIN "invTypeMaterials" itm
+           ON itm."typeID" = b."productTypeID"
        LEFT OUTER JOIN "eve_blueprintreq" m
-           ON b.blueprintTypeID = m."blueprintTypeID"
-           AND m."requiredTypeID" = itm.materialTypeID
+           ON b."blueprintTypeID" = m."blueprintTypeID"
+           AND m."requiredTypeID" = itm."materialTypeID"
        LEFT OUTER JOIN (
-           SELECT srtr.typeID AS blueprintTypeID, -- tech 2 items recycle into their materials
-                  sitm.materialTypeID AS recycledTypeID,   -- plus the t1 item's materials
-                  srtr.quantity AS recycledQuantity,
-                  sitm.quantity AS quantity
-           FROM ramTypeRequirements AS srtr
-               INNER JOIN invTypeMaterials AS sitm
-                   ON srtr.requiredTypeID = sitm.typeID
-           WHERE srtr.recycle = 1   -- the recycle flag determines whether or not this requirement's materials are added
-             AND srtr.activityID = 1
+           SELECT srtr."typeID" AS "blueprintTypeID", -- tech 2 items recycle into their materials
+                  sitm."materialTypeID" AS "recycledTypeID",   -- plus the t1 item's materials
+                  srtr."quantity" AS "recycledQuantity",
+                  sitm."quantity" AS "quantity"
+           FROM "ramTypeRequirements" AS srtr
+               INNER JOIN "invTypeMaterials" AS sitm
+                   ON srtr."requiredTypeID" = sitm."typeID"
+           WHERE srtr."recycle" = 1   -- the recycle flag determines whether or not this requirement's materials are added
+             AND srtr."activityID" = 1
        ) AS sub
-           ON sub.blueprintTypeID = b.blueprintTypeID
-           AND sub.recycledTypeID = itm.materialTypeID
+           ON sub."blueprintTypeID" = b."blueprintTypeID"
+           AND sub."recycledTypeID" = itm."materialTypeID"
     WHERE m."blueprintTypeID" IS NULL -- partially waste-affected materials already added
-    AND (itm.quantity - COALESCE(sub.quantity * sub.recycledQuantity, 0)) > 0 -- ignore negative quantities
+    AND (itm."quantity" - COALESCE(sub."quantity" * sub."recycledQuantity", 0)) > 0 -- ignore negative quantities
 ;
 ----------------------------------------------------------
 INSERT INTO "eve_blueprintreq"("id",
@@ -205,15 +199,15 @@ INSERT INTO "eve_blueprintreq"("id",
                              "requiredTypeID",
                              "quantity",
                              "damagePerJob")
-    SELECT  CAST(rtr.typeID AS bigint) * 100000000 + CAST(rtr.requiredTypeID AS bigint) * 100 + CAST(rtr.activityID AS bigint),
-            rtr.typeID,
-            rtr.activityID,
-            rtr.requiredTypeID,
-            rtr.quantity,
-            rtr.damagePerJob
-    FROM ramTypeRequirements AS rtr
-    WHERE rtr.activityID NOT IN (1)
-      AND rtr.typeID IN (SELECT "blueprintTypeID" FROM "eve_blueprinttype") 
+    SELECT  CAST(rtr."typeID" AS bigint) * 100000000 + CAST(rtr."requiredTypeID" AS bigint) * 100 + CAST(rtr."activityID" AS bigint),
+            rtr."typeID",
+            rtr."activityID",
+            rtr."requiredTypeID",
+            rtr."quantity",
+            rtr."damagePerJob"
+    FROM "ramTypeRequirements" AS rtr
+    WHERE rtr."activityID" NOT IN (1)
+      AND rtr."typeID" IN (SELECT "blueprintTypeID" FROM "eve_blueprinttype") 
 ;
 ----------------------------------------------------------
 UPDATE "eve_blueprintreq" SET "baseMaterial" = 0 WHERE "baseMaterial" IS NULL;
@@ -237,25 +231,25 @@ UNION SELECT 286400004001, 2864,    1,         40,          1580, 1.0,   1580 --
 -- CREATE A SPECIAL SYSTEMS, MOONS & PLANETS TABLE for quick name resolution
 
 INSERT INTO "eve_celestialobject"
-SELECT  itemID,
-        typeID,
-        groupID,
-        solarSystemID,
-        regionID,
-        itemName,
-        security,
-        x,
-        y,
-        z
-FROM mapDenormalize
-WHERE groupID IN (5 /*Solar System*/, 7 /*Planet*/, 8 /*Moon*/, 15 /*Station*/)
+SELECT  "itemID",
+        "typeID",
+        "groupID",
+        "solarSystemID",
+        "regionID",
+        "itemName",
+        "security",
+        "x",
+        "y",
+        "z"
+FROM "mapDenormalize"
+WHERE "groupID" IN (5 /*Solar System*/, 7 /*Planet*/, 8 /*Moon*/, 15 /*Station*/)
 ;
 
 UPDATE "eve_celestialobject"
 SET "security" =
-    (SELECT mapSolarSystems.security
-       FROM mapSolarSystems
-      WHERE "eve_celestialobject"."itemID" = mapSolarSystems.solarSystemID)
+    (SELECT "mapSolarSystems"."security"
+       FROM "mapSolarSystems"
+      WHERE "eve_celestialobject"."itemID" = "mapSolarSystems"."solarSystemID")
 WHERE "security" IS NULL
 ;
 
@@ -264,14 +258,14 @@ WHERE "security" IS NULL
 -- add a unique primary key to the invControlTowerResources table
 ---------------------------------------------------------
 INSERT INTO "eve_controltowerresource" 
-    SELECT  1000000 * CAST(controlTowerTypeID AS bigint) + CAST(resourceTypeID AS bigint), 
-            controlTowerTypeID,
-            resourceTypeID,
-            purpose,
-            quantity,
-            minSecurityLevel,
-            factionID
-    FROM invControlTowerResources;
+    SELECT  1000000 * CAST("controlTowerTypeID" AS bigint) + CAST("resourceTypeID" AS bigint), 
+            "controlTowerTypeID",
+            "resourceTypeID",
+            "purpose",
+            "quantity",
+            "minSecurityLevel",
+            "factionID"
+    FROM "invControlTowerResources";
 
 ----------------------------------------------------------
 

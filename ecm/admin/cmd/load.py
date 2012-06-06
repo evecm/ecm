@@ -21,30 +21,30 @@ __date__ = '2012 5 18'
 __author__ = 'diabeteman'
 
 import os
-import bz2
 import shutil
 import urllib2
+import sqlite3
 import tempfile
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
 
 from ecm.lib.subcommand import Subcommand
-from ecm.admin.util import pipe_to_dbshell
+from ecm.admin.util import pipe_to_dbshell, expand
 from ecm.admin.util import log
 
 
 CCP_DATA_DUMPS = {
     'django.db.backends.postgresql_psycopg2': {
-        'URL': 'http://zofu.no-ip.de/esc10/esc10-pgsql-v1.sql.bz2',
         'PATCH': 'eve_ecm_patch_psql.sql',
         'DROP': 'drop_eve_tables_psql.sql',
-        'DUMP': 'pg_dump --user %(user)s --data-only --disable-triggers --table eve_* %(name)s',
     },
     'django.db.backends.mysql': {
-        'URL': 'http://zofu.no-ip.de/esc10/esc10-sqlite3-v1.db.bz2',
+        'PATCH': 'eve_ecm_patch_mysql.sql',
+        'DROP': 'drop_eve_tables_mysql.sql',
+    },
+    'django.db.backends.sqlite3': {
         'PATCH': 'eve_ecm_patch_sqlite.sql',
         'DROP': None,
-        'DUMP': 'drop_non_eve_tables.sql',
     },
 }
 
@@ -52,28 +52,27 @@ CCP_DATA_DUMPS = {
 #-------------------------------------------------------------------------------
 def sub_command():
     # INIT
+    description = 'Load official EVE data dump into the instance database.'
+    
     load_cmd = Subcommand('load',
-                          parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                          help='Load official EVE data dump into the instance database.',
+                          parser=OptionParser(usage='%prog [OPTIONS] instance_dir datadump'),
+                          help=description,
                           callback=run)
-    load_cmd.parser.add_option('-u', '--ccp-dump-url',
-                               dest='ccp_dump_url',
-                               help='URL where to download CCP official dump.')
-    load_cmd.parser.add_option('-a', '--ccp-dump-archive',
-                               dest='ccp_dump_archive',
-                               help='Local archive of CCP official dump (skips download).')
-    load_cmd.parser.add_option('-s', '--ccp-dump-sql',
-                               dest='ccp_dump_sql',
-                               help='Local SQL file of CCP official dump (skips decompression).')
+    load_cmd.parser.description = description + ' "datadump" can be either a URL or a local path. '\
+                                 'It can also be an archive file (bz2, gz, zip).'
+
     return load_cmd
 
 #-------------------------------------------------------------------------------
 SQL_ROOT = os.path.abspath(os.path.dirname(__file__))
-def run(command, global_options, options, args):
+def run(command, global_options, optionsd, args):
     
     if not args:
         command.parser.error('Missing instance directory.')
     instance_dir = args.pop(0)
+    if not args:
+        command.parser.error('Missing datadump.')
+    datadump = args.pop(0)
     
     config = SafeConfigParser()
     if config.read([os.path.join(instance_dir, 'settings.ini')]):
@@ -89,34 +88,47 @@ def run(command, global_options, options, args):
 
     try:
         tempdir = tempfile.mkdtemp()
-        if not options.ccp_dump_sql:
-            if not options.ccp_dump_archive:
-                # download from URL
-                url = options.ccp_dump_url or sql['URL']
-                options.ccp_dump_archive = os.path.join(tempdir, os.path.basename(url))
-                log('Downloading EVE original dump from %s to %s...', url, options.ccp_dump_archive)
-                req = urllib2.urlopen(url)
-                with open(options.ccp_dump_archive, 'wb') as fp:
-                    shutil.copyfileobj(req, fp)
-                req.close()
-                log('Download complete.')
-            # decompress archive
-            options.ccp_dump_sql, _ = os.path.splitext(options.ccp_dump_archive)
-            options.ccp_dump_sql = os.path.join(tempdir, os.path.basename(options.ccp_dump_sql))
-            log('Expanding %s to %s...', options.ccp_dump_archive, options.ccp_dump_sql)
-            bz_file_desc = bz2.BZ2File(options.ccp_dump_archive, 'rb')
-            with open(options.ccp_dump_sql, 'wb') as db_file_desc:
-                shutil.copyfileobj(bz_file_desc, db_file_desc)
-            bz_file_desc.close()
-            log('Expansion complete.')
         
-        pipe_to_dbshell(options.ccp_dump_sql, instance_dir, password=db_password)
-        pipe_to_dbshell(os.path.join(SQL_ROOT, sql['PATCH']), instance_dir, password=db_password)
-        pipe_to_dbshell(os.path.join(SQL_ROOT, sql['DROP']), instance_dir, password=db_password)
+        if not os.path.exists(datadump):
+            # download from URL
+            dump_archive = os.path.join(tempdir, os.path.basename(datadump))
+            log('Downloading EVE original dump from %r to %r...', datadump, dump_archive)
+            req = urllib2.urlopen(datadump)
+            with open(dump_archive, 'wb') as fp:
+                shutil.copyfileobj(req, fp)
+            req.close()
+            log('Download complete.')
+        else:
+            dump_archive = datadump
+        
+        extension = os.path.splitext(dump_archive)[-1]
+        if extension in ('.bz2', '.gz', '.zip'):
+            # decompress archive
+            log('Expanding %r to %r...', dump_archive, tempdir)
+            dump_file = expand(dump_archive, tempdir)
+            log('Expansion complete to %r.' % dump_file)
+        else:
+            dump_file = dump_archive
+        
+        log('Patching and importing data (this can be long)...')
+        if 'sqlite' in db_engine:
+            with open(os.path.join(SQL_ROOT, sql['PATCH'])) as f:
+                sql_script = f.read() 
+            connection = sqlite3.connect(os.path.join(instance_dir, 'db/ecm.sqlite'))
+            cursor = connection.cursor()
+            cursor.execute('ATTACH DATABASE \'%s\' AS "eve";' % dump_file)
+            cursor.executescript(sql_script)
+            cursor.execute('DETACH DATABASE "eve";')
+            cursor.close()
+            connection.commit()
+        else:
+            pipe_to_dbshell(dump_file, instance_dir, password=db_password)
+            pipe_to_dbshell(os.path.join(SQL_ROOT, sql['PATCH']), instance_dir, password=db_password)
+            pipe_to_dbshell(os.path.join(SQL_ROOT, sql['DROP']), instance_dir, password=db_password)
         
         log('EVE data successfully imported.')
     finally:
         log('Removing temp files...')
         shutil.rmtree(tempdir)
         log('done')
-    
+

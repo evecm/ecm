@@ -35,10 +35,11 @@ from ecm.lib.daemon import Daemon
 
 #------------------------------------------------------------------------------
 def sub_command():
+    description = 'Control the embedded daemon server of an existing ECM instance.'
     cmd = Subcommand('start', aliases=('stop', 'restart', 'status'),
                      parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                     help='Control the embedded daemon server of an existing ECM instance.',
-                     callback=run)
+                     help=description, callback=run)
+    cmd.parser.description = description
     cmd.parser.add_option('-l', '--log-file',
                           dest='logfile', metavar='FILE',
                           help='Write server access log to FILE. Default is "/dev/null".')

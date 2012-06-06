@@ -30,10 +30,11 @@ from ecm.admin.cmd import run_server
 
 #-------------------------------------------------------------------------------
 def sub_command():
+    description = 'Run the embedded server (in the current shell).'
     cmd = Subcommand('run',
                      parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
-                     help='Run the embedded server (in the current shell).',
-                     callback=run)
+                     help=description, callback=run)
+    cmd.parser.description = description
     cmd.parser.add_option('-a', '--access-log',
                           dest='access_log', default=False, action='store_true',
                           help='Display HTTP access log.')

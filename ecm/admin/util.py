@@ -15,14 +15,15 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import with_statement
+
 __date__ = '2012 3 25'
 __author__ = 'diabeteman'
 
-
 import os
 import sys
-import shutil
 import signal
+import shutil
 import subprocess
 from subprocess import PIPE
 
@@ -59,6 +60,44 @@ def prompt(message, default_value=None, valid_list=None):
     return value
 
 #-------------------------------------------------------------------------------
+def expand(archive_file, target_dir):
+    
+    base, extension = os.path.splitext(archive_file)
+    output_file = os.path.join(target_dir, os.path.basename(base))
+    
+    if extension == '.bz2':
+        import bz2
+        output_file = os.path.join(target_dir, os.path.basename(base))
+        source = bz2.BZ2File(archive_file, 'rb')
+        target = open(output_file, 'wb')
+        shutil.copyfileobj(source, target)
+        source.close()
+        target.close()
+    
+    elif extension == '.gz':
+        import gzip
+        output_file = os.path.join(target_dir, os.path.basename(base))
+        source = gzip.GzipFile(archive_file, 'rb')
+        target = open(output_file, 'wb')
+        shutil.copyfileobj(source, target)
+        source.close()
+        target.close()
+        
+    elif extension == '.zip':
+        import zipfile
+        zip_file = zipfile.ZipFile(archive_file, 'r')
+        source = zip_file.open(zip_file.namelist()[0]) # take first name from zip file
+        target = open(output_file, 'wb')
+        shutil.copyfileobj(source, target)
+        source.close()
+        target.close()
+    else:
+        raise NotImplementedError('Unsupported archive format "%s"' % archive_file)
+    
+    return output_file
+
+
+#-------------------------------------------------------------------------------
 def run_python_cmd(command_line, run_dir, exit_on_failure=True):
     if isinstance(command_line, basestring):
         command_line = command_line.strip().split()
@@ -68,14 +107,14 @@ def run_python_cmd(command_line, run_dir, exit_on_failure=True):
     run_command(command_line, run_dir)
 
 #-------------------------------------------------------------------------------
-def run_command(command_line, run_dir, exit_on_failure=True):
+def run_command(command_line, run_dir, exit_on_failure=True, **kwargs):
     if isinstance(command_line, basestring):
         command_line = command_line.strip().split()
 
     log('$ ' + ' '.join(command_line))
     proc = None
     try:
-        proc = subprocess.Popen(command_line, cwd=run_dir, universal_newlines=True)
+        proc = subprocess.Popen(command_line, cwd=run_dir, universal_newlines=True, **kwargs)
         exitcode = proc.wait()
         if exitcode != 0 and exit_on_failure:
             sys.exit(exitcode)
@@ -106,7 +145,14 @@ def pipe_to_django_shell(python_code, run_dir, exit_on_failure=True):
 #-------------------------------------------------------------------------------
 def pipe_to_dbshell(sql_file, run_dir, password=None, exit_on_failure=True):
     
-    log('Piping SQL file to dbshell: %r' % sql_file)
+    if os.path.exists(sql_file):
+        log('Piping SQL file to dbshell: %r' % sql_file)
+        sql_fd = open(sql_file, 'rb')
+        sql = sql_fd.read()
+        sql_fd.close()
+    else:
+        log('Piping SQL code to dbshell...')
+        sql = sql_file
     
     command_line = [sys.executable, 'manage.py', 'dbshell']
     proc = None
@@ -119,16 +165,22 @@ def pipe_to_dbshell(sql_file, run_dir, password=None, exit_on_failure=True):
         proc = subprocess.Popen(command_line, stdin=PIPE, stdout=PIPE, stderr=PIPE, 
                                 cwd=run_dir, universal_newlines=True, bufsize=-1)
         
-        sql_fd = open(sql_file, 'rb')
-        sql = sql_fd.read()
-        sql_fd.close()
+        if os.path.exists(sql_file):
+            sql_fd = open(sql_file, 'rb')
+            sql = sql_fd.read()
+            sql_fd.close()
+        else:
+            sql = sql_file
         
-        (_, stderr) = proc.communicate(sql)
+        stdout, stderr = proc.communicate(sql)
             
         exitcode = proc.wait()
         if exitcode != 0 and exit_on_failure:
             print >>sys.stderr, stderr
             sys.exit(exitcode)
+        
+        return stdout
+    
     except KeyboardInterrupt:
         if proc is not None:
             os.kill(proc.pid, signal.SIGTERM)
