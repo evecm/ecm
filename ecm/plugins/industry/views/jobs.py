@@ -59,7 +59,7 @@ def jobs_list(request):
         'state': 'all',
         'assignment': 'unassigned',
     }
-    return render_to_response('jobs_list.html', data, Ctx(request))
+    return render_to_response('ecm/industry/jobs_list.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

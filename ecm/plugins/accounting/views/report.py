@@ -122,7 +122,7 @@ def report(request):
             }
     
     # Add custom report data
-    return render_to_response("report.html", data, RequestContext(request))
+    return render_to_response("ecm/accounting/report.html", data, RequestContext(request))
 
 def _load_custom_reports(end=timezone.now(), period=30):
     custom_reports = []

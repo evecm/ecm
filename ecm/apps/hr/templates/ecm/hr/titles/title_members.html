@@ -1,24 +1,19 @@
-{% extends "hr_base.html" %}
+{% extends "ecm/hr/hr_base.html" %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Title Members' %} - {{ title.titleName }}{% endblock %}
 
-{% block headtitle %}{% trans 'Unassociated Members' %}{% endblock %}
-
-
-{% block hr_stylesheets %}
-<style type="text/css">
-#copy-modal {display: none;}
-</style>
-{% endblock %}
 
 {% block breadcrumbs %}
 <li><a href="/">{% trans 'Home' %}</a></li>
 <li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
-<li><a href="/hr/members/">{% trans 'Members' %}</a></li>
-<li class="active"><a href="/hr/members/unassociated/">{% trans 'Unassociated' %}</a></li>
+<li><a href="/hr/titles/">{% trans 'Titles' %}</a></li>
+<li><a href="/hr/titles/{{ title.titleID }}/">{{ title.titleName }}</a></li>
+<li class="active"><a href="/hr/titles/{{ title.titleID }}/members/">{% trans 'Members' %}</a></li>
 {% endblock %}
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Unassociated Member List <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+  <h1>Members <small>having the title <em>{{ title.titleName }}</em></small></h1>
 </div>
 
 <form id="search_form" class="form-search form-inline">
@@ -29,7 +24,6 @@
       <button class="btn btn-small" type="submit" id="search_button">{% trans 'Search' %}</button>
       <button class="btn btn-small" id="clear_search">{% trans 'Reset' %}</button>
     </div>
-    <a class="btn btn-small btn-primary" data-toggle="modal" data-target="#copy-modal" id="copy_to_clip">{% trans 'Copy to clipboard' %}</a>
   </div>
 </form>
 
@@ -40,9 +34,9 @@
       <th class="top" scope="col" >{% trans 'Nickname' %}</th>
       <th class="top" scope="col" >{% trans 'Player' %}</th>
       <th class="top" scope="col" >{% trans 'Access Level' %}</th>
+      <th class="top" scope="col" >{% trans 'Corp Date' %}</th>
       <th class="top" scope="col" >{% trans 'Last Login' %}</th>
       <th class="top" scope="col" >{% trans 'Location' %}</th>
-      <th class="top" scope="col" >{% trans 'Ship' %}</th>
       <th class="top" scope="col" style="display:none;">{% trans 'Titles' %}</th>
     </tr>
   </thead>
@@ -57,23 +51,13 @@
       <th>{% trans 'Nickname' %}</th>
       <th>{% trans 'Player' %}</th>
       <th>{% trans 'Access Level' %}</th>
+      <th>{% trans 'Corp Date' %}</th>
       <th>{% trans 'Last Login' %}</th>
       <th>{% trans 'Location' %}</th>
-      <th>{% trans 'Ship' %}</th>
       <th style="display:none;">{% trans 'Titles' %}</th>
     </tr>
   </tfoot>
 </table>
-
-<div class="modal" id="copy-modal">
-  <div class="modal-header">
-    <a class="close" data-dismiss="modal">&times;</a>
-    <h3>{% trans 'Copy to clipboard: Ctrl+C, Escape' %}</h3>
-  </div>
-  <div class="modal-body">
-    <textarea id="text-block" style="width:100%;" rows="10"></textarea>
-  </div>
-</div>
 {% endblock %}
 
 
@@ -81,30 +65,10 @@
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = '/hr/members/unassociated/data/';
-COOKIE_NAME = 'ecm_unassociated_table_';
+AJAX_URL = "/hr/titles/{{ title.titleID }}/members/data/";
+COOKIE_NAME = 'ecm_title_members_table_';
 </script>
 {% endblock %}
-
 {% block compressed_javascripts %}
 <script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
-{% endblock %}
-
-{% block post_javascripts %}
-<script type="text/javascript">
-$(document).ready(function() {
-    $('#copy_to_clip').click(function (event) {
-        $.get('/hr/members/unassociated/clip/')
-         .success(function (data) {
-             $('#text-block').val(data);
-             $('#text-block').focus();
-             $('#text-block').select();
-         });
-    });
-    
-    $('#copy-modal').on('hidden', function () {
-        $('#text-block').val('');
-    });
-});
-</script>
 {% endblock %}

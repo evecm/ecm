@@ -42,7 +42,7 @@ def wallets(request):
     data = {
         'scan_date' : UpdateDate.get_latest(JournalEntry)
     }
-    return render_to_response("wallets.html", data, Ctx(request))
+    return render_to_response("ecm/accounting/wallets.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

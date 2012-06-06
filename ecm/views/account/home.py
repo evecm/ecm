@@ -53,7 +53,7 @@ def account(request):
         'external_apps' : external_apps,
         'motd'          : motd
     }
-    return render_to_response('auth/account.html', data, Ctx(request))
+    return render_to_response('ecm/auth/account.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -91,7 +91,7 @@ def add_api(request):
         'accessMask': required_access_mask(character=True)
     }
 
-    return render_to_response('auth/add_api.html', data, Ctx(request))
+    return render_to_response('ecm/auth/add_api.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -142,7 +142,7 @@ def edit_api(request, keyID):
         'request_path' : request.get_full_path(),
         'accessMask': required_access_mask(character=True)
     }
-    return render_to_response('auth/edit_api.html', data, Ctx(request))
+    return render_to_response('ecm/auth/edit_api.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required
@@ -177,7 +177,7 @@ def add_binding(request, app_id):
         form = AddBindingForm(app=app)
 
     data = {'form': form, 'request_path' : request.get_full_path(), 'app': app}
-    return render_to_response('auth/add_binding.html', data, Ctx(request))
+    return render_to_response('ecm/auth/add_binding.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @login_required

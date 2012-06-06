@@ -46,7 +46,7 @@ def standings(request):
     data['allaince_standings'] = allaince_standings
     data['corp_standings'] = corp_standings
     
-    return render_to_response("common/standings.html",
+    return render_to_response("ecm/common/standings.html",
                               data,
                               RequestContext(request),
                               )

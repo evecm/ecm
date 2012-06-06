@@ -67,13 +67,13 @@ def create_account(request):
             try:
                 send_activation_email(request, profile)
                 logger.info('activation email sent to "%s" for account "%s"' % (user.email, user))
-                return render_to_response('auth/account_created.html',
+                return render_to_response('ecm/auth/account_created.html',
                                           { 'form': form },
                                           context_instance=Ctx(request))
             except Exception, err:
                 logger.error('Sending an activation email failed. Address: %s Account: %s'
                              % (user.email, user))
-                return render_to_response('auth/account_mail_fail.html',
+                return render_to_response('ecm/auth/account_mail_fail.html',
                                           { 'form': form,
                                             'error_reason' : str(err)},
                                           context_instance=Ctx(request))
@@ -83,7 +83,7 @@ def create_account(request):
 
     accessMask = required_access_mask(character=True)
 
-    return render_to_response('auth/create_account.html',
+    return render_to_response('ecm/auth/create_account.html',
                               { 'form': form, 'accessMask': accessMask },
                               context_instance=Ctx(request))
 
@@ -93,12 +93,12 @@ def activate_account(request, activation_key):
         user = RegistrationProfile.objects.activate_user(activation_key)
         update_user_accesses(user)
         logger.info('account "%s" activated' % (user.username))
-        return render_to_response('auth/account_activated.html',
+        return render_to_response('ecm/auth/account_activated.html',
                                   { 'activated_user' : user },
                                   context_instance=Ctx(request))
     except (ValueError, UserWarning), err:
         logger.info('could not use activation key "%s": %s' % (activation_key, str(err)))
-        return render_to_response('auth/activation_error.html',
+        return render_to_response('ecm/auth/activation_error.html',
                                   { 'activation_key': activation_key,
                                    'error_reason': str(err) },
                                   context_instance=Ctx(request))
@@ -112,13 +112,13 @@ def send_activation_email(request, user_profile):
                 'user_name': user_profile.user.username,
                 'activation_key': user_profile.activation_key,
                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS}
-    subject = render_to_string('auth/activation_email_subject.txt',
+    subject = render_to_string('ecm/auth/activation_email_subject.txt',
                                ctx_dict, context_instance=Ctx(request))
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
 
-    txt_content = render_to_string('auth/activation_email.txt', ctx_dict, Ctx(request))
-    html_content = render_to_string('auth/activation_email.html', ctx_dict, Ctx(request))
+    txt_content = render_to_string('ecm/auth/activation_email.txt', ctx_dict, Ctx(request))
+    html_content = render_to_string('ecm/auth/activation_email.html', ctx_dict, Ctx(request))
     msg = EmailMultiAlternatives(subject,
                                  body=txt_content,
                                  to=[user_profile.user.email])

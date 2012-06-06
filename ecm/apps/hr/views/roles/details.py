@@ -46,7 +46,7 @@ def role(request, role_id):
         'direct_member_count' : role.members.count(),
         'total_member_count' : role.members_through_titles().count()
     }
-    return render_to_response("roles/role_details.html", data, Ctx(request))
+    return render_to_response("ecm/hr/roles/role_details.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

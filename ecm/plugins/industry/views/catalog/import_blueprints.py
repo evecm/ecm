@@ -74,7 +74,7 @@ def blueprints(request):
         'error': error,
         'imported': imported,
     }
-    return render_to_response('catalog/import_blueprints.html', data, Ctx(request))
+    return render_to_response('ecm/industry/catalog/import_blueprints.html', data, Ctx(request))
 
 
 #------------------------------------------------------------------------------

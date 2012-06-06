@@ -39,7 +39,7 @@ def members(request, titleID):
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
     }
-    return render_to_response("titles/title_members.html", data, Ctx(request))
+    return render_to_response("ecm/hr/titles/title_members.html", data, Ctx(request))
 
 
 #------------------------------------------------------------------------------

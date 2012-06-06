@@ -56,7 +56,7 @@ def corp(request):
     except Corp.DoesNotExist:
         corp = Corp(corporationName='No Corporation info')
     
-    return render_to_response('common/corp.html', {'corp': corp}, Ctx(request))
+    return render_to_response('ecm/common/corp.html', {'corp': corp}, Ctx(request))
 
 
 #------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ def edit_motd(request):
         'motd'    : motd,
         'markups' : Motd.MARKUPS,
     }
-    return render_to_response('common/edit_motd.html', data, Ctx(request))
+    return render_to_response('ecm/common/edit_motd.html', data, Ctx(request))
 
 
 #------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ def edit_apikey(request):
             'keyID': keyID,
             'vCode': vCode,
         })
-    return render_to_response('common/edit_director_api.html',
+    return render_to_response('ecm/common/edit_director_api.html',
                               {'form': form}, Ctx(request))
 
 

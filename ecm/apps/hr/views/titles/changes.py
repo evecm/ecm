@@ -36,7 +36,7 @@ def changes(request):
     data = {
         'scan_date' : UpdateDate.get_latest(TitleComposition)
     }
-    return render_to_response("titles/changes.html", data, Ctx(request))
+    return render_to_response("ecm/hr/titles/changes.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @cache_page(60 * 60) # 1 hour cache

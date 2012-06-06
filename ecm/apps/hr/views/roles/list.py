@@ -42,7 +42,7 @@ def roles(request):
         'role_types': RoleType.objects.all().order_by('id'),
         'role_type': request.GET.get('role_type', 1),
     }
-    return render_to_response("roles/roles.html", data, Ctx(request))
+    return render_to_response("ecm/hr/roles/roles.html", data, Ctx(request))
 
 
 

@@ -49,7 +49,7 @@ def details(request, titleID):
         "colorThresholds" : ColorThreshold.as_json()
     }
 
-    return render_to_response("titles/title_details.html", data, Ctx(request))
+    return render_to_response("ecm/hr/titles/title_details.html", data, Ctx(request))
 
 
 

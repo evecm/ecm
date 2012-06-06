@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 def home(request):
-    return render_to_response('industry_home.html', {}, Ctx(request))
+    return render_to_response('ecm/industry/industry_home.html', {}, Ctx(request))
 
 
 #------------------------------------------------------------------------------

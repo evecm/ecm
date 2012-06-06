@@ -48,7 +48,7 @@ def titles(request):
         'scan_date' : UpdateDate.get_latest(TitleComposition),
         'colorThresholds' : json.dumps(colorThresholds)
     }
-    return render_to_response("titles/titles.html", data, Ctx(request))
+    return render_to_response("ecm/hr/titles/titles.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 all_columns = [ "titleName", "accessLvl" ]

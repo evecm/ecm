@@ -39,7 +39,7 @@ def history(request):
     data = {
         'scan_date' : UpdateDate.get_latest(Member)
     }
-    return render_to_response("members/member_history.html", data, Ctx(request))
+    return render_to_response("ecm/hr/members/member_history.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 COLUMNS = ['change', 'name', 'nickname', 'id']

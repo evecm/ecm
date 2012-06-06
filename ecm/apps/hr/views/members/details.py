@@ -139,7 +139,7 @@ def details(request, characterID):
         'skill_count'       : skill_count,
         'skillpoint_count'  : print_integer(skillpoint_count),
     }
-    return render_to_response("members/member_details.html", data, Ctx(request))
+    return render_to_response("ecm/hr/members/member_details.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

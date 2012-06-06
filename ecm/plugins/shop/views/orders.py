@@ -47,7 +47,7 @@ def myorders(request):
     Serves URL /shop/orders/
     """
     columns = [ col[0] for col in COLUMNS ]
-    return render_to_response('shop_myorders.html', {'columns' : columns}, Ctx(request))
+    return render_to_response('ecm/shop/shop_myorders.html', {'columns' : columns}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -104,7 +104,7 @@ def create(request):
     else:
         items = []
 
-    return render_to_response('shop_order.html', {'items': items}, Ctx(request))
+    return render_to_response('ecm/shop/shop_order.html', {'items': items}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -189,7 +189,7 @@ def _order_details(request, order, error=None):
         'error': error,
     }
 
-    return render_to_response('shop_order_details.html', data, Ctx(request))
+    return render_to_response('ecm/shop/shop_order_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 def _modify(request, order):
@@ -201,5 +201,5 @@ def _modify(request, order):
         if valid_order:
             order.modify(items)
             return redirect('/shop/orders/%d/' % order.id)
-    return render_to_response('shop_order.html', {'order': order}, Ctx(request))
+    return render_to_response('ecm/shop/shop_order.html', {'order': order}, Ctx(request))
 

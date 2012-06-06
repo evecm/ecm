@@ -83,7 +83,7 @@ def journal(request):
         'from_date' : datetime.strftime(from_date, DATE_PATTERN),
         'to_date' : datetime.strftime(to_date, DATE_PATTERN),
     }
-    return render_to_response("wallet_journal.html", data, Ctx(request))
+    return render_to_response("ecm/accounting/wallet_journal.html", data, Ctx(request))
 
 
 

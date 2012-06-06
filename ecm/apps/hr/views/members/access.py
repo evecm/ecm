@@ -37,7 +37,7 @@ def access_changes(request):
     data = {
         'scan_date' : UpdateDate.get_latest(TitleMembership)
     }
-    return render_to_response("members/access_changes.html", data, Ctx(request))
+    return render_to_response("ecm/hr/members/access_changes.html", data, Ctx(request))
 
 
 #------------------------------------------------------------------------------

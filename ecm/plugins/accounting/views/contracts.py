@@ -70,7 +70,7 @@ def contracts(request):
         'scan_date': UpdateDate.get_latest(Contract),
         'columns': COLUMNS,
     }
-    return render_to_response('contracts.html', data, Ctx(request))
+    return render_to_response('ecm/accounting/contracts.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -174,7 +174,7 @@ def details(request, contract_id):
         'columns'      : DETAILS_COLUMNS,
         'grouped'      : 0,
     }
-    return render_to_response('contract_details.html', data, Ctx(request))
+    return render_to_response('ecm/accounting/contract_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

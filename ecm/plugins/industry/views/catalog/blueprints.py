@@ -53,7 +53,7 @@ def blueprints(request):
     """
     Serves URL /industry/catalog/blueprints/
     """
-    return render_to_response('catalog/blueprints.html', {'columns' : COLUMNS}, Ctx(request))
+    return render_to_response('ecm/industry/catalog/blueprints.html', {'columns' : COLUMNS}, Ctx(request))
 #------------------------------------------------------------------------------
 @check_user_access()
 def blueprints_data(request):
@@ -109,7 +109,7 @@ def details(request, blueprint_id):
     except ValueError:
         raise Http404()
 
-    return render_to_response('catalog/blueprint_details.html', {'blueprint': bp}, Ctx(request))
+    return render_to_response('ecm/industry/catalog/blueprint_details.html', {'blueprint': bp}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

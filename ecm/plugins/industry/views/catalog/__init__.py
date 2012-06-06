@@ -22,4 +22,4 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
 def home(request):
-    return render_to_response('catalog/catalog_home.html', {}, Ctx(request))
+    return render_to_response('ecm/industry/catalog/catalog_home.html', {}, Ctx(request))

@@ -74,7 +74,7 @@ def poses(request):
         'posCSSStatus' : json.dumps(POS_CSS_STATUS),
         'posTextStatus' : json.dumps(POS.STATES),
     }
-    return render_to_response("pos_list.html", data, RequestContext(request))
+    return render_to_response("ecm/pos/pos_list.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @cache_page(60 * 60) # 1 hour cache

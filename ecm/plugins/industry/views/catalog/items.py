@@ -62,7 +62,7 @@ def items(request):
     Serves URL /industry/catalog/items/
     """
     columns = [ col[0] for col in COLUMNS ]
-    return render_to_response('catalog/items.html', {'columns' : columns}, Ctx(request))
+    return render_to_response('ecm/industry/catalog/items.html', {'columns' : columns}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -128,7 +128,7 @@ def details(request, item_id):
     except ValueError:
         raise Http404()
 
-    return render_to_response('catalog/item_details.html', {'item': item}, Ctx(request))
+    return render_to_response('ecm/industry/catalog/item_details.html', {'item': item}, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

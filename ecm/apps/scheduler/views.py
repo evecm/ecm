@@ -60,7 +60,7 @@ def trigger_scheduler(request):
 #------------------------------------------------------------------------------
 @check_user_access()
 def task_list(request):
-    return render_to_response('tasks.html', Ctx(request))
+    return render_to_response('ecm/scheduler/tasks.html', Ctx(request))
 
 #------------------------------------------------------------------------------
 FUNCTIONS = []

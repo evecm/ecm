@@ -66,7 +66,7 @@ def supplies(request):
         'columns': COLUMNS,
         'filters': FILTERS,
     }
-    return render_to_response('catalog/supplies.html', data, Ctx(request))
+    return render_to_response('ecm/industry/catalog/supplies.html', data, Ctx(request))
 
 
 #------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ def details(request, supply_id):
         'supply_sources': SupplySource.objects.all(),
         'columns': DETAILS_COLUMNS,
     }
-    return render_to_response('catalog/supply_details.html', data, Ctx(request))
+    return render_to_response('ecm/industry/catalog/supply_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

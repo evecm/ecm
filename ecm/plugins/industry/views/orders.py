@@ -64,7 +64,7 @@ def orders(request):
         'display_modes': DISPLAY_MODES,
         'selected_mode': request.GET.get('display_mode', 'open')
     }
-    return render_to_response('orders_list.html', data, Ctx(request))
+    return render_to_response('ecm/industry/orders_list.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -218,7 +218,7 @@ def _order_details(request, order, error=None):
         'jobs_tree': json.dumps(_build_jobs_tree(jobs)),
     }
 
-    return render_to_response('order_details.html', data, Ctx(request))
+    return render_to_response('ecm/industry/order_details.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 JOB_SPAN = '<span class="industry-job" title="%s"><strong>%s</strong> - x <i>%s</i></span>'

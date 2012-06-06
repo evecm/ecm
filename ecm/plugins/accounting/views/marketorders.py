@@ -95,7 +95,7 @@ def marketorders(request):
         'columns': COLUMNS,
         'scan_date': UpdateDate.get_latest(MarketOrder),
     }
-    return render_to_response('marketorders.html', data, Ctx(request))
+    return render_to_response('ecm/accounting/marketorders.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

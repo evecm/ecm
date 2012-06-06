@@ -1,0 +1,52 @@
+{% extends "ecm/hr/hr_base.html" %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Members' %}{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+</script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li class="active"><a href="/hr/members/">{% trans 'Members' %}</a></li>
+{% endblock %}
+
+{% block main_content %}
+<div class="page-header">
+<h1>Member List <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+</div>
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <i class="icon-search"></i>
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <button class="btn btn-small" type="submit" id="search_button">{% trans 'Search' %}</button>
+      <button class="btn btn-small" id="clear_search">{% trans 'Reset' %}</button>
+    </div>
+    <span class="label label-info">{% trans 'Display' %}</span>
+    <div class="btn-group" data-toggle="buttons-radio" id="ships_selector">
+      <button class="btn btn-small btn-info active" id="all">{% trans 'All Ships' %}</button>
+      <button class="btn btn-small btn-info" id="supers">{% trans 'Supers Only' %}</button>
+    </div>
+  </div>
+</form>
+
+{% datatable 'members_table' columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource='/hr/members/data/' 
+             sCookiePrefix='ecm_members_table_' 
+             fnRowCallback='membersRowCallback' 
+             fnServerData='membersServerData' 
+             fnStateSaveParams='membersStateSaveParams' 
+             fnStateLoadParams='membersStateLoadParams' %}
+
+<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_datatable.js">
+{% include "ecm/hr/members_datatable.js" %}
+</script>
+{% endblock %}

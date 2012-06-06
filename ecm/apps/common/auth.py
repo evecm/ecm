@@ -59,11 +59,11 @@ def alert_user_for_invalid_apis(user, invalid_apis):
     dummy_request = HttpRequest()
     dummy_request.user = AnonymousUser()
 
-    subject = render_to_string('email/invalid_api_subject.txt', ctx_dict, Ctx(dummy_request))
+    subject = render_to_string('ecm/common/email/invalid_api_subject.txt', ctx_dict, Ctx(dummy_request))
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
-    txt_content = render_to_string('email/invalid_api.txt', ctx_dict, Ctx(dummy_request))
-    html_content = render_to_string('email/invalid_api.html', ctx_dict, Ctx(dummy_request))
+    txt_content = render_to_string('ecm/common/email/invalid_api.txt', ctx_dict, Ctx(dummy_request))
+    html_content = render_to_string('ecm/common/email/invalid_api.html', ctx_dict, Ctx(dummy_request))
 
     msg = EmailMultiAlternatives(subject, body=txt_content, to=[user.email])
     msg.attach_alternative(html_content, mimetype=HTML)

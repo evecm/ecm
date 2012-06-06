@@ -21,6 +21,6 @@
 $(document).ready(function() {
     $('#{{table_id}}').dataTable({ {% for key, value in datatables_params %}
     	{{key}}: {{value|safe}},{% endfor %}
-    }));
+    });
 });
 </script>

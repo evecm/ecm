@@ -108,7 +108,7 @@ def one_pos(request, pos_id):
         'oper_columns'      : [ col for col, _ in OPERATOR_COLUMNS],
         'use_standings_from': use_standings_from,
     }
-    return render_to_response("pos_details.html", data, RequestContext(request))
+    return render_to_response("ecm/pos/pos_details.html", data, RequestContext(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

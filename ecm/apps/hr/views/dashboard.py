@@ -71,7 +71,7 @@ def dashboard(request):
         'online_member_count' : online_member_count,
     }
     
-    return render_to_response("dashboard.html", data, Ctx(request))
+    return render_to_response("ecm/hr/dashboard.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 def avg_chraracters_by_player():

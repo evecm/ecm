@@ -71,7 +71,7 @@ def member_contrib(request):
         'to_date' : datetime.strftime(to_date, DATE_PATTERN),
         'total_contribs' : total_contribs,
     }
-    return render_to_response("contrib.html", data, Ctx(request))
+    return render_to_response("ecm/accounting/contrib.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 columns = ['LOWER("name")', '"tax_contrib"']
