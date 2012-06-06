@@ -52,55 +52,23 @@
   </div>
 </form>
 
-<table class="table table-bordered table-condensed" id="members_table">
-  <thead>
-    <tr>
-      <th class="top" scope="col" >{% trans 'Name' %}</th>
-      <th class="top" scope="col" >{% trans 'Nickname' %}</th>
-      <th class="top" scope="col" >{% trans 'Player' %}</th>
-      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
-      <th class="top" scope="col" >{% trans 'Last Login' %}</th>
-      <th class="top" scope="col" >{% trans 'Location' %}</th>
-      <th class="top" scope="col" >{% trans 'Ship' %}</th>
-      <th class="top" scope="col" style="display:none;">{% trans 'Titles' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="8" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Name' %}</th>
-      <th>{% trans 'Nickname' %}</th>
-      <th>{% trans 'Player' %}</th>
-      <th>{% trans 'Access Level' %}</th>
-      <th>{% trans 'Last Login' %}</th>
-      <th>{% trans 'Location' %}</th>
-      <th>{% trans 'Ship' %}</th>
-      <th style="display:none;">{% trans 'Titles' %}</th>
-    </tr>
-  </tfoot>
 
-</table>
+{% datatable 'members_table' columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource=ajax_url
+             sCookiePrefix='ecm_role_members_table_' 
+             fnRowCallback='membersRowCallback' 
+             fnServerParams='membersServerParams' 
+             fnStateSaveParams='membersStateSaveParams' 
+             fnStateLoadParams='membersStateLoadParams' %}
 
-{% endblock %}
-
-
-
-{% block javascripts %}
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = "/hr/roles/{{ role.id }}/data/";
-COOKIE_NAME = 'ecm_role_members_table_';
-</script>
-{% endblock %}
 
-{% block post_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
-<script type="text/javascript">
+{% include "ecm/hr/members_datatable.js" %}
+
 $(document).ready(function() {
     $('div#{{role.id}}').editable( '/hr/roles/update/', {
         callback: function( sValue, y ) {
@@ -115,6 +83,5 @@ $(document).ready(function() {
     $('div#{{role.id}}').addClass('row-' + color);
 });
 </script>
+
 {% endblock %}
-
-

@@ -2,13 +2,6 @@
 {% load i18n %}
 {% block headtitle %}{% trans 'Members' %}{% endblock %}
 
-{% block javascripts %}
-<script type="text/javascript">
-DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
-COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-</script>
-{% endblock %}
-
 {% block breadcrumbs %}
 <li><a href="/">{% trans 'Home' %}</a></li>
 <li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
@@ -42,11 +35,16 @@ COLOR_THRESHOLDS = {{ colorThresholds|safe }};
              sAjaxSource='/hr/members/data/' 
              sCookiePrefix='ecm_members_table_' 
              fnRowCallback='membersRowCallback' 
-             fnServerData='membersServerData' 
+             fnServerParams='membersServerParams' 
              fnStateSaveParams='membersStateSaveParams' 
              fnStateLoadParams='membersStateLoadParams' %}
 
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_datatable.js">
+<script type="text/javascript">
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+
 {% include "ecm/hr/members_datatable.js" %}
 </script>
+
+
 {% endblock %}

@@ -37,7 +37,7 @@ function membersRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
     return nRow;
 }
         
-function membersServerData( sSource, aoData, fnCallback ) {
+function membersServerParams( aoData ) {
     /* Add some extra variables to the url */
 	if ($('#ships_selector button').length) {
 		aoData.push( {
@@ -45,9 +45,6 @@ function membersServerData( sSource, aoData, fnCallback ) {
 			value: SHOW_SHIPS,
 		} );
 	}
-    $.getJSON( sSource, aoData, function (json) {
-        fnCallback(json);
-    } );
 }
         
 function membersStateSaveParams (oSettings, oData) {

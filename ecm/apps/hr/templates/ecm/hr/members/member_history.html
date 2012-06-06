@@ -27,76 +27,40 @@
   </div>
 </form>
 
-<table class="table table-bordered table-condensed" id="history_table">
-  <thead>
-    <tr>
-      <th class="top" scope="col" >{% trans 'Corped/Leaved' %}</th>
-      <th class="top" scope="col" >{% trans 'Name' %}</th>
-      <th class="top" scope="col" >{% trans 'Nickname' %}</th>
-      <th class="top" scope="col" >{% trans 'Date' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="4" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Corped/Leaved' %}</th>
-      <th>{% trans 'Name' %}</th>
-      <th>{% trans 'Nickname' %}</th>
-      <th>{% trans 'Date' %}</th>
-    </tr>
-  </tfoot>
-</table>
-{% endblock %}
+{% datatable 'history_table' columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource=ajax_url 
+             sCookiePrefix='ecm_history_table_' 
+             fnRowCallback='rowCallback' %}
 
-
-{% block compressed_javascripts %}
 <script type="text/javascript">
-// dataTable setup
-$(document).ready(function() {
-  var table = $('#history_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sCookiePrefix: "ecm_history_table_",
-        sAjaxSource: "/hr/members/history/data/",
-        aoColumns: [
-            { sTitle: "Corped/Leaved",sWidth: "15%", sType: "html" ,  bSortable: false },
-            { sTitle: "Name",         sWidth: "30%", sType: "html" },
-            { sTitle: "Nickname",     sWidth: "30%", sType: "string" },
-            { sTitle: "Corp/Leave Date",    sWidth: "25%", sType: "string" }
-        ],
-        aaSorting: [[3, 'desc']],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            if (aData[0]) {
-                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/plus.png"/>');
-            } else {
-                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"/>');
-            }
-            return nRow;
-        }
-    }));
+function rowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+    if (aData[0]) {
+        $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/plus.png"/>');
+    } else {
+        $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"/>');
+    }
+    return nRow;
+}
 
+$(document).ready(function() {
     $("#search_form").submit(function(event) {
         event.preventDefault();
-        table.fnFilter($("#search_text").val());
+        $('#history_table').dataTable().fnFilter($("#search_text").val());
     });
-
     $("#search_button").click(function() {
-        table.fnFilter($("#search_text").val());
+    	$('#history_table').dataTable().fnFilter($("#search_text").val());
     });
-
     $("#clear_search").click(function() {
         $("#search_text").val("");
-        table.fnFilter("");
+        $('#history_table').dataTable().fnFilter("");
     });
-
     $('#history_table thead th').click(function(event) {
         if (!$(event.target).hasClass('sorthandle')) {
             event.shiftKey = false;
         }
     });
-    
-} );
+});
 </script>
 {% endblock %}

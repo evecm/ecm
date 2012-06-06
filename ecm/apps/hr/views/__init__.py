@@ -23,6 +23,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.utils.text import truncate_words
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext as tr
 
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import UpdateDate
@@ -33,28 +34,27 @@ from ecm.utils import db
 import logging
 logger = logging.getLogger(__name__)
 
-
-
 #------------------------------------------------------------------------------
-member_table_columns = [
-    "name", # default
-    "nickname",
-    "owner__username",
-    "accessLvl",
-    "lastLogin",
-    "location",
-    "ship",
+MEMBERS_COLUMNS = [
+    {'sTitle': tr('Name'),         'sWidth': '15%',   'db_field': 'name', },
+    {'sTitle': tr('Nickname'),     'sWidth': '15%',   'db_field': 'nickname', },
+    {'sTitle': tr('Player'),       'sWidth': '15%',   'db_field': 'owner__username', },
+    {'sTitle': tr('Access Level'), 'sWidth':  '5%',   'db_field': 'accessLvl', },
+    {'sTitle': tr('Last Login'),   'sWidth': '10%',   'db_field': 'lastLogin', },
+    {'sTitle': tr('Location'),     'sWidth': '20%',   'db_field': 'location', },
+    {'sTitle': tr('Ship'),         'sWidth': '15%',   'db_field': 'ship', },
+    {'sTitle': tr('Titles'),       'bVisible': False, 'db_field': None, },
 ]
 
 def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
 
     query = query.select_related(depth=2) # improve performance
 
-    sort_col = member_table_columns[sort_by]
+    sort_col = MEMBERS_COLUMNS[sort_by]['db_field']
     # SQL hack for making a case insensitive sort
     if sort_by in (0, 1):
         sort_col = sort_col + "_nocase"
-        sort_val = db.fix_mysql_quotes('LOWER("%s")' % member_table_columns[sort_by])
+        sort_val = db.fix_mysql_quotes('LOWER("%s")' % MEMBERS_COLUMNS[sort_by]['db_field'])
         query = query.extra(select={ sort_col : sort_val })
 
     

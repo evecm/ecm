@@ -29,6 +29,17 @@
 {% endcompress %}
   <link rel="icon" type="image/ico" href="{{ STATIC_URL }}ecm/img/favicon.ico" />
   <link rel="shortcut icon" type="image/ico" href="{{ STATIC_URL }}ecm/img/favicon.ico" />
+  {% block javascripts %}{% endblock %}
+  {% compress js %}<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/bootstrap.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/csrf.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/ecm_lib.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/dataTables.bootstrap.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.cluetip.js"></script>
+  {% block compressed_javascripts %}{% endblock %}{% endcompress %}
+  {% block post_javascripts %}{% endblock %}
 </head>
 <body>
   <!-- NAVBAR -->
@@ -117,18 +128,5 @@
       </span>
     </div>
   </footer><!-- /FOOTER -->
-
-<!-- all javascript at the end to load pages faster -->
-{% block javascripts %}{% endblock %}
-{% compress js %}<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/bootstrap.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/csrf.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/ecm_lib.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/dataTables.bootstrap.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.cluetip.js"></script>
-{% block compressed_javascripts %}{% endblock %}{% endcompress %}
-{% block post_javascripts %}{% endblock %}
 </body>
 </html>

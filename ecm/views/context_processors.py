@@ -19,7 +19,6 @@ __date__ = '2011-02-19'
 __author__ = 'diabeteman'
 
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as tr_lazy
 
 import ecm
 from ecm.apps.common.models import UrlPermission, Motd
@@ -59,7 +58,7 @@ def menu(request):
         'menus': user_menus, 
         'path': str(request.get_full_path())
     }
-    return {'user_menu': render_to_string('menu.html', data), 'request_path': data['path']}
+    return {'user_menu': render_to_string('ecm/menu.html', data), 'request_path': data['path']}
 
 #------------------------------------------------------------------------------
 def motd(request):
@@ -72,26 +71,5 @@ def motd(request):
         
     #{{motd|safe}} to escape html markup
     return {'motd': motd, 'can_edit_motd': can_edit}
-
-#------------------------------------------------------------------------------
-DATATABLES_DEFAULTS = {
-        'sPaginationType': 'bootstrap',
-        'bProcessing': True,
-        'bServerSide': True,
-        'bAutoWidth': False,
-        'iDisplayLength': 25,
-        'bStateSave': True,
-        'iCookieDuration': 60 * 60, # 1 hour
-        'sDom': "<'row-fluid'<'span5'l><'span7'p>>rt<'row-fluid'<'span5'i><'span7'p>>",
-        'oLanguage': {
-            'sLengthMenu': tr_lazy('_MENU_ lines per page'),
-            'sZeroRecords': tr_lazy('Nothing found to display - sorry.'),
-            'sInfo': tr_lazy('Showing _START_ to _END_ of _TOTAL_ records'),
-            'sInfoEmpty': tr_lazy('Showing 0 to 0 of 0 records'),
-            'sInfoFiltered': tr_lazy('(filtered from _MAX_ total records)'),
-        }
-    }
-def datatables_defaults(request):
-    return {'datatables_defaults': DATATABLES_DEFAULTS}
 
     

@@ -28,14 +28,14 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.utils.text import truncate_words
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext as tr
 
 from ecm import apps, plugins
 from ecm.apps.hr.models import Member
-
 from ecm.apps.common.models import UpdateDate, UrlPermission, Setting
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.views import template_filters
-
+from ecm.lib import templatepatch
 
 
 import logging
@@ -49,12 +49,25 @@ HTML = 'text/html'
 DATE_PATTERN = "%Y-%m-%d_%H-%M-%S"
 
 #------------------------------------------------------------------------------
-#def UpdateDate.get_latest(model):
-#    try:
-#        date = UpdateDate.objects.get(model_name=model.__name__)
-#        return date.update_date
-#    except UpdateDate.DoesNotExist:
-#        return "<no data>"
+DATATABLES_DEFAULTS = {
+    'sPaginationType': 'bootstrap',
+    'bProcessing': True,
+    'bServerSide': True,
+    'bAutoWidth': False,
+    'iDisplayLength': 25,
+    'bStateSave': True,
+    'iCookieDuration': 60 * 60, # 1 hour
+    'sDom': "<'row-fluid'<'span5'l><'span7'p>>rt<'row-fluid'<'span5'i><'span7'p>>",
+    'fnStateLoadParams': 'function (oSettings, oData) { oData.sFilter = $("#search_text").val(); }',
+    'fnStateSaveParams': 'function (oSettings, oData) { $("#search_text").val(oData.sFilter); return true; }',
+    'oLanguage': {
+        'sLengthMenu': tr('_MENU_ lines per page'),
+        'sZeroRecords': tr('Nothing found to display - sorry.'),
+        'sInfo': tr('Showing _START_ to _END_ of _TOTAL_ records'),
+        'sInfoEmpty': tr('Showing 0 to 0 of 0 records'),
+        'sInfoFiltered': tr('(filtered from _MAX_ total records)'),
+    }
+}
 
 #------------------------------------------------------------------------------
 class DatatableParams: pass

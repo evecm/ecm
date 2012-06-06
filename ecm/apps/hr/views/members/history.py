@@ -24,25 +24,37 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponseBadRequest
 from django.utils.text import truncate_words
 from django.template.context import RequestContext as Ctx
+from django.utils.translation import ugettext as tr
 
 from ecm.utils import db
 from ecm.apps.common.models import UpdateDate
 from ecm.utils.format import print_time_min
 from ecm.views.decorators import check_user_access
-from ecm.views import extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.apps.hr.models import Member, MemberDiff
 
-
+COLUMNS = [
+    {'sTitle': tr('In/Out'),   'sWidth': '15%', 'db_field': 'change', 'bSortable': False },
+    {'sTitle': tr("Name"),     'sWidth': "30%", 'db_field': 'name', },
+    {'sTitle': tr("Nickname"), 'sWidth': "30%", 'db_field': 'nickname', },
+    {'sTitle': tr("Date"),     'sWidth': "25%", 'db_field': 'id', }
+    
+]
 #------------------------------------------------------------------------------
 @check_user_access()
 def history(request):
+    defaults = DATATABLES_DEFAULTS.copy()
+    defaults['aaSorting'] = [[3, "desc"]]
     data = {
-        'scan_date' : UpdateDate.get_latest(Member)
+        'scan_date' : UpdateDate.get_latest(Member),
+        'ajax_url': '/hr/members/history/data/',
+        'datatables_defaults': defaults,
+        'columns': COLUMNS,
+        
     }
     return render_to_response("ecm/hr/members/member_history.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
-COLUMNS = ['change', 'name', 'nickname', 'id']
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def history_data(request):
@@ -57,11 +69,11 @@ def history_data(request):
         params.column = 3
         params.asc = False
 
-    sort_col = COLUMNS[params.column]
+    sort_col = COLUMNS[params.column]['db_field']
     # SQL hack for making a case insensitive sort
     if params.column in (1, 2):
         sort_col = sort_col + "_nocase"
-        sort_val = db.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column])
+        sort_val = db.fix_mysql_quotes('LOWER("%s")' % COLUMNS[params.column]['db_field'])
         query = query.extra(select={ sort_col : sort_val })
 
     if not params.asc: sort_col = "-" + sort_col

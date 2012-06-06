@@ -23,13 +23,13 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
+
+from ecm.views import DATATABLES_DEFAULTS
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import ColorThreshold, UpdateDate
-from ecm.apps.hr.views import get_members
-
-
+from ecm.apps.hr.views import get_members, MEMBERS_COLUMNS
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -37,9 +37,12 @@ def members(request):
     data = {
         'scan_date' : UpdateDate.get_latest(Member),
         'colorThresholds' : ColorThreshold.as_json(),
-        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
+        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
+        'datatables_defaults': DATATABLES_DEFAULTS,
+        'columns': MEMBERS_COLUMNS,
+        'ajax_url': '/hr/members/data/',
     }
-    return render_to_response("members/member_list.html", data, Ctx(request))
+    return render_to_response("ecm/hr/members/member_list.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 SUPER_CAPITALS = [
@@ -82,9 +85,12 @@ def unassociated(request):
     data = {
         'scan_date' : UpdateDate.get_latest(Member),
         'colorThresholds' : ColorThreshold.as_json(),
-        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
+        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
+        'datatables_defaults': DATATABLES_DEFAULTS,
+        'columns': MEMBERS_COLUMNS,
+        'ajax_url': '/hr/members/unassociated/data/',
     }
-    return render_to_response("members/unassociated.html", data, Ctx(request))
+    return render_to_response("ecm/hr/members/unassociated.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
