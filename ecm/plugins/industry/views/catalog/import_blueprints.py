@@ -137,7 +137,7 @@ def get_missing_blueprints(display_mode='originals'):
 
     not_imported = []
     for asset in query:
-        key = asset.typeID, asset.is_bpc
+        key = asset.eve_type.typeID, asset.is_bpc
         if already_imported.has_key(key):
             already_imported[key] -= 1
             if already_imported[key] == 0:
