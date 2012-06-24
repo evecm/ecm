@@ -24,5 +24,5 @@ from ecm.views.decorators import check_user_access
 #------------------------------------------------------------------------------
 @check_user_access()
 def home(request):
-    return render_to_response('shop.html', {}, Ctx(request))
+    return render_to_response('ecm/shop/shop.html', {}, Ctx(request))
 
