@@ -19,3 +19,5 @@ syntax: regexp
 ^ecm/plugins/pos/anonymizers\.py$
 syntax: regexp
 ^ecm/plugins/accounting/anonymizers\.py$
+syntax: regexp
+\.mo$
