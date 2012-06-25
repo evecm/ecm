@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{{supply.typeName}}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'industry/css/industry.css' %}" />
 {% endblock %}
 
 {% block breadcrumbs %}

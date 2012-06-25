@@ -1,5 +1,8 @@
 {% extends "ecm/hr/hr_base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'Members History' %}{% endblock %}
 
 {% block breadcrumbs %}
@@ -65,9 +68,9 @@ $(document).ready(function() {
         aaSorting: [[3, 'desc']],
         fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
             if (aData[0]) {
-                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/plus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
             } else {
-                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
             }
             return nRow;
         }

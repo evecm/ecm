@@ -1,10 +1,13 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'Create New Order' %}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.autocomplete.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery.autocomplete.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'industry/css/industry.css' %}" />
 <style type="text/css">
 #eft-modal, #lifecycle-modal, .throbber, #error-box, #warning-box {display: none;}
 </style>
@@ -46,7 +49,7 @@
     <span id="warning-text"></span>
 </div>
 
-<img id="throbber-eft" class="throbber" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="{% trans 'Loading...' %}" title="{% trans 'Loading...' %}"/>
+<img id="throbber-eft" class="throbber" src="{% static 'ecm/img/throbber.gif' %}" alt="{% trans 'Loading...' %}" title="{% trans 'Loading...' %}"/>
 
 {% if order %}
 <form method="post" action="/shop/orders/{{order.id}}/modify/" id="items_form" >{% else %}
@@ -91,7 +94,7 @@
       <i class="icon-shopping-cart icon-white"></i>
       {% trans 'Submit Order' %}
     </button>
-    <img id="throbber-submit" class="throbber right" src="{{ STATIC_URL }}ecm/img/throbber.gif" alt="{% trans 'Loading...' %}" title="{% trans 'Loading...' %}"/>
+    <img id="throbber-submit" class="throbber right" src="{% static 'ecm/img/throbber.gif' %}" alt="{% trans 'Loading...' %}" title="{% trans 'Loading...' %}"/>
   </div>
 </form>
 
@@ -115,7 +118,7 @@
     <a class="close" data-dismiss="modal">&times;</a>
   </div>
   <div class="modal-body">
-  <img alt="Order life-cyle" src="{{ STATIC_URL }}industry/img/order_life_cycle.png">
+  <img alt="Order life-cyle" src="{% static 'industry/img/order_life_cycle.png' %}">
   </div>
 </div>
 
@@ -124,7 +127,7 @@
 
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="{% static 'ecm/js/lib/jquery.autocomplete.js' %}"></script>
 {% endblock %}
 {% block post_javascripts %}
 <script>

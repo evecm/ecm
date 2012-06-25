@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'POS Details' %} - {{ pos }}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}pos/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'pos/css/classes.css' %}" />
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -159,7 +162,7 @@
 {% endblock %}
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jstree.js"></script>
+<script type="text/javascript" src="{% static 'ecm/js/lib/jquery.jstree.js' %}"></script>
 <script>
 /*************************
  * "POS" table setup *

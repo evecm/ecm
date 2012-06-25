@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'Assets' %}{% endblock %}
 
 {% block breadcrumbs %}
@@ -65,7 +68,7 @@ PARAMS = {
 
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jstree.js"></script>
+<script type="text/javascript" src="{% static 'ecm/js/lib/jquery.jstree.js' %}"></script>
 {% endblock %}
 {% block post_javascripts %}
 <script type="text/javascript">

@@ -1,5 +1,8 @@
 {% extends "ecm/hr/hr_base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'Title Members' %} - {{ title.titleName }}{% endblock %}
 
 
@@ -70,5 +73,5 @@ COOKIE_NAME = 'ecm_title_members_table_';
 </script>
 {% endblock %}
 {% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}hr/js/members_table.js"></script>
+<script type="text/javascript" src="{% static 'hr/js/members_table.js' %}"></script>
 {% endblock %}

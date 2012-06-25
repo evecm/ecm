@@ -1,15 +1,19 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}
 {% if contract.title %}{{contract.title|safe}}
 {% else %}{% trans '&lt;No Title&gt;' %}
 {% endif	%}
-{%endblock %} 
+{%endblock %}
+
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css"
-	href="{{ STATIC_URL }}accounting/css/classes.css" />
+	href="{% static 'accounting/css/classes.css' %}" />
 <link rel="stylesheet" type="text/css"
-	href="{{ STATIC_URL }}hr/css/classes.css" />
+	href="{% static 'hr/css/classes.css' %}" />
 {% endblock %} {% block breadcrumbs %}
 <li><a href="/">{% trans 'Home' %}</a></li>
 <li><a href="/accounting">{% trans 'Accounting' %}</a></li>
@@ -23,7 +27,7 @@
 
 <div class="row-fluid">
 	<div class="span1">
-		<img src="{{ STATIC_URL }}accounting/img/{{contract.type|lower}}.png" />
+		<img src="{% static 'accounting/img/{{contract.type|lower}}.png' %}" />
 	</div>
 	<div class="span2">
 		<dl>

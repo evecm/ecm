@@ -1,10 +1,13 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'Shop' %}{% endblock %}
 
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}shop/css/shop.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'shop/css/shop.css' %}" />
 {% endblock %}
 
 
@@ -22,13 +25,13 @@
   <a href="/shop/orders/create/"
      class="btn btn-large children-block"
      title="{% trans 'Go buy some stuff.' %}">
-    <img src="{{ STATIC_URL }}industry/img/cart-128.png">
+    <img src="{% static 'industry/img/cart-128.png' %}">
     <strong>{% trans 'Create a new order' %}</strong>
   </a>
   <a href="/shop/orders/"
      class="btn btn-large children-block"
      title="{% trans 'Here, you can track the progress of your current orders or consult old ones.' %}">
-    <img src="{{ STATIC_URL }}industry/img/invoice-128.png">
+    <img src="{% static 'industry/img/invoice-128.png' %}">
     <strong>{% trans 'See/follow my orders' %}</strong>
   </a>
 </div>

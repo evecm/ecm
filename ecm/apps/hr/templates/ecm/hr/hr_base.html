@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
+{% load static from staticfiles %}
+
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'hr/css/classes.css' %}" />
 {% block hr_stylesheets %}{% endblock %}
 {% endblock %}
 

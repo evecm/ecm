@@ -2,6 +2,7 @@
 <html>
 {% load compress %}
 {% load i18n %}
+{% load static from staticfiles %}
 <!--  EVE Corp. Management     -->
 <!--  Date:    May 14, 2010       -->
 <!--  Author:  diabeteman         -->
@@ -19,25 +20,25 @@
   <![endif]-->
   <title>ECM - {% block headtitle %}{% endblock %}</title>
 {% compress css %}
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/bootstrap.css" />
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/bootstrap-responsive.css" />
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/dataTables.bootstrap.css" />
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery.cluetip.css" />
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/bootstrap-ecm.css" />
-  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/classes.css" />
+  <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/bootstrap.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/bootstrap-responsive.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/dataTables.bootstrap.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery.cluetip.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/bootstrap-ecm.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/classes.css' %}" />
 {% block stylesheets %}{% endblock %}
 {% endcompress %}
-  <link rel="icon" type="image/ico" href="{{ STATIC_URL }}ecm/img/favicon.ico" />
-  <link rel="shortcut icon" type="image/ico" href="{{ STATIC_URL }}ecm/img/favicon.ico" />
+  <link rel="icon" type="image/ico" href="{% static 'ecm/img/favicon.ico' %}" />
+  <link rel="shortcut icon" type="image/ico" href="{% static 'ecm/img/favicon.ico' %}" />
   {% block javascripts %}{% endblock %}
-  {% compress js %}<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/bootstrap.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/csrf.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/ecm_lib.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.dataTables.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jeditable.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/dataTables.bootstrap.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.cluetip.js"></script>
+  {% compress js %}<script type="text/javascript" src="{% static 'ecm/js/lib/jquery.js' %}"></script>
+  <script type="text/javascript" src="{% static 'ecm/js/bootstrap.js' %}"></script>
+  <script type="text/javascript" src="{% static 'ecm/js/csrf.js' %}"></script>
+  <script type="text/javascript" src="{% static 'ecm/js/ecm_lib.js' %}"></script>
+  <script type="text/javascript" src="{% static 'ecm/js/lib/jquery.dataTables.js' %}"></script>
+  <script type="text/javascript" src="{% static 'ecm/js/lib/jquery.jeditable.js' %}"></script>
+  <script type="text/javascript" src="{% static 'ecm/js/dataTables.bootstrap.js' %}"></script>
+  <script type="text/javascript" src="{% static 'ecm/js/lib/jquery.cluetip.js' %}"></script>
   {% block compressed_javascripts %}{% endblock %}{% endcompress %}
   {% block post_javascripts %}{% endblock %}
 </head>
@@ -52,7 +53,7 @@
           <span class="icon-bar"></span>
         </a>
         <a class="brand" href="/" title="Eve Corp. Management" style="padding: 0px;">
-            <img src="{{ STATIC_URL }}ecm/img/logo.png" />
+            <img src="{% static 'ecm/img/logo.png' %}" />
         </a>
         <span class="navbar-text pull-left"><em>{{corp_name}}</em></span>
         <div class="nav-collapse">

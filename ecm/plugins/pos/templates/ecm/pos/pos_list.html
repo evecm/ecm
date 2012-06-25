@@ -1,10 +1,13 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 
 {% block headtitle %}{% trans 'POS' %} - {{ posViewMode }}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}pos/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'pos/css/classes.css' %}" />
 {% endblock %}
 
 

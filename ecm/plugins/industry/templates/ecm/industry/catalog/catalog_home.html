@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'Catalog' %}{% endblock %}
 
 {% block breadcrumbs %}
@@ -17,19 +20,19 @@
   <a href="/industry/catalog/items/"
      class="btn btn-large children-block"
      title="Prices and availability of items in the shop.">
-    <img src="{{ STATIC_URL }}industry/img/barcode-128.png">
+    <img src="{% static 'industry/img/barcode-128.png' %}">
     <strong>{% trans 'Items catalog' %}</strong>
   </a>
   <a href="/industry/catalog/supplies/"
      class="btn btn-large children-block"
      title="Prices and supply sources for raw materials.">
-    <img src="{{ STATIC_URL }}industry/img/supplies-128.png">
+    <img src="{% static 'industry/img/supplies-128.png' %}">
     <strong>{% trans 'Supplies' %}</strong>
   </a>
   <a href="/industry/catalog/blueprints/"
      class="btn btn-large children-block"
      title="Blueprints owned by the corporation.">
-    <img src="{{ STATIC_URL }}industry/img/blueprint-128.png">
+    <img src="{% static 'industry/img/blueprint-128.png' %}">
     <strong>{% trans 'Owned blueprints' %}</strong>
   </a>
 </div>

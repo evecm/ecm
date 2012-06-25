@@ -1,10 +1,13 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 
 {% block headtitle %}{% trans 'Items Catalog' %}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'industry/css/industry.css' %}" />
 <style type="text/css">
 #error-box {display: none;}
 </style>
@@ -123,7 +126,7 @@ $(document).ready(function() {
                 var _this = $(this);
                 var id = _this.attr('id');
                 var oldPrice = _this.html();
-                _this.html('<img src="{{ STATIC_URL }}ecm/img/throbber.gif"/>');
+                _this.html('<img src="{% static 'ecm/img/throbber.gif' %}"/>');
                 $.get('/industry/catalog/items/' + id + '/production_cost/')
                  .success(function (data) {
                      _this.html(data);
@@ -142,7 +145,7 @@ $(document).ready(function() {
                 var _this = $(this);
                 var id = _this.attr('id');
                 var oldPrice = _this.html();
-                _this.html('<img src="{{ STATIC_URL }}ecm/img/throbber.gif"/>');
+                _this.html('<img src="{% static 'ecm/img/throbber.gif' %}"/>');
                 $.get('/industry/catalog/items/' + id + '/public_price/')
                  .success(function (data) {
                      _this.html(data);

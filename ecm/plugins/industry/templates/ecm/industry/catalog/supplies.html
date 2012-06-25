@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'Supplies Catalog' %}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'industry/css/industry.css' %}" />
 {% endblock %}
 
 
@@ -139,7 +142,7 @@ $(document).ready(function() {
                 _this.attr('disabled', 'disabled');
                 var id = _this.attr('id');
                 var oldPrice = $('#' + id + '.price').html();
-                $('#' + id + '.price').html('<img src="{{ STATIC_URL }}ecm/img/throbber.gif"/>');
+                $('#' + id + '.price').html('<img src="{% static 'ecm/img/throbber.gif' %}"/>');
                 $.get('/industry/catalog/supplies/' + id + '/updateprice/')
                  .success(function (data) {
                     $('#' + id + '.price').html(data);

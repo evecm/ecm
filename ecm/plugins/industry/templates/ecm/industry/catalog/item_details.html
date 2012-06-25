@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{{item.typeName}}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}industry/css/industry.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'industry/css/industry.css' %}" />
 {% endblock %}
 
 
@@ -115,7 +118,7 @@ $(document).ready(function() {
     $('#public_price').click(function () {
         var _this = $(this);
         var oldPrice = _this.html();
-        _this.html('<img src="{{ STATIC_URL }}ecm/img/throbber.gif"/>');
+        _this.html('<img src="{% static 'ecm/img/throbber.gif' %}"/>');
         $.get('/industry/catalog/items/{{item.typeID}}/public_price/')
          .success(function (data) {
              _this.html(data);
@@ -130,7 +133,7 @@ $(document).ready(function() {
     $('#production_cost').click(function () {
         var _this = $(this);
         var oldPrice = _this.html();
-        _this.html('<img src="{{ STATIC_URL }}ecm/img/throbber.gif"/>');
+        _this.html('<img src="{% static 'ecm/img/throbber.gif' %}"/>');
         $.get('/industry/catalog/items/{{item.typeID}}/production_cost/')
          .success(function (data) {
              _this.html(data);

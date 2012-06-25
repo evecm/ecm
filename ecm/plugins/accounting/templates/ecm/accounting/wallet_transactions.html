@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecm/css/jquery-ui-1.8.13.custom.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}hr/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery-ui-1.8.13.custom.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'accounting/css/classes.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'hr/css/classes.css' %}" />
 {% endblock %}
 
 {% block headtitle %}{% trans 'Wallet Transactions' %}{% endblock %}
@@ -118,7 +121,7 @@
 
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.ui.js"></script>
+<script type="text/javascript" src="{% static 'ecm/js/lib/jquery.ui.js' %}"></script>
 {% endblock %}
 
 

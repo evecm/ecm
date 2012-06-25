@@ -1,5 +1,8 @@
 {% extends "ecm/hr/hr_base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'Members History' %}{% endblock %}
 
 
@@ -37,9 +40,9 @@
 <script type="text/javascript">
 function rowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
     if (aData[0]) {
-        $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/plus.png"/>');
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"/>');
     } else {
-        $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"/>');
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"/>');
     }
     return nRow;
 }

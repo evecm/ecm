@@ -1,6 +1,9 @@
 {% extends "ecm/hr/hr_base.html" %}
+
 {% load i18n %}
-{% block hr_stylesheets %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />{% endblock %}
+{% load static from staticfiles %}
+
+{% block hr_stylesheets %}<link rel="stylesheet" type="text/css" href="{% static 'accounting/css/classes.css' %}" />{% endblock %}
 
 {% block headtitle %}{% trans 'Member Details' %} - {{ member.name }}{% endblock %}
 
@@ -146,7 +149,7 @@
 {% endblock %}
 
 {% block compressed_javascripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecm/js/lib/jquery.jstree.js"></script>
+<script type="text/javascript" src="{% static 'ecm/js/lib/jquery.jstree.js' %}"></script>
 {% endblock %}
 
 {% block post_javascripts %}
@@ -196,9 +199,9 @@ $(document).ready(function() {
         ],
         fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
             if (aData[0]) {
-                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/plus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
             } else {
-                $('td:eq(0)', nRow).html('<img src="{{ STATIC_URL }}ecm/img/minus.png"></img>');
+                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
             }
             return nRow;
         },

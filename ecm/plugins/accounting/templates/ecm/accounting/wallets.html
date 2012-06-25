@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+
 {% load i18n %}
+{% load static from staticfiles %}
+
 {% block headtitle %}{% trans 'Corporation Wallets' %}{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}accounting/css/classes.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'accounting/css/classes.css' %}" />
 {% endblock %}
 
 
