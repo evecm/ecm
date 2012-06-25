@@ -112,7 +112,7 @@ def check_user_access():
 
 #------------------------------------------------------------------------------
 def forbidden(request):
-    response = render(request, 'auth/forbidden.html',
+    response = render(request, 'ecm/auth/forbidden.html',
                       {'request_path' : request.get_full_path()},
                       context_instance=Ctx(request))
     response.status_code = http.FORBIDDEN
