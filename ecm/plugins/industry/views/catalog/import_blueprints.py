@@ -29,6 +29,7 @@ from ecm.plugins.assets.models import Asset
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access
 
+
 COLUMNS = [
           ['#'        , 'id'],
           ['Name'     , 'name'],
@@ -57,14 +58,14 @@ def blueprints(request):
 
             imported = len(bps_to_import)
             for bp in bps_to_import:
-                productTypeID = BlueprintType.objects.get(pk=bp.typeID).productTypeID
+                productTypeID = BlueprintType.objects.get(pk=bp.eve_type_id).productTypeID
                 try:
                     catalog_entry = CatalogEntry.objects.get(typeID=productTypeID)
                 except CatalogEntry.DoesNotExist:
                     catalog_entry = CatalogEntry.objects.create(typeID=productTypeID,
-                                                                typeName=bp.typeName,
+                                                                typeName=str(bp.eve_type),
                                                                 is_available=False)
-                catalog_entry.blueprints.create(typeID=bp.typeID)
+                catalog_entry.blueprints.create(typeID=bp.eve_type_id)
         except ValueError, err:
             error = err
 
@@ -95,7 +96,7 @@ def blueprints_data(request):
     if params.search:
         matching_items = Type.objects.filter(typeName__icontains=params.search)
         matching_ids = matching_items.values_list('typeID', flat=True)
-        not_imported = [ bp for bp in not_imported if bp.typeID in matching_ids ]
+        not_imported = [ bp for bp in not_imported if bp.eve_type_id in matching_ids ]
     filtered_count = len(not_imported)
 
     celestial_objects = CelestialObject.objects.all()
@@ -110,7 +111,7 @@ def blueprints_data(request):
 
         prints.append([
            bp.itemID,
-           bp.typeName,
+           str(bp.eve_type),
            location_name,
            not bp.is_bpc,
         ])
@@ -137,7 +138,7 @@ def get_missing_blueprints(display_mode='originals'):
 
     not_imported = []
     for asset in query:
-        key = asset.eve_type.typeID, asset.is_bpc
+        key = asset.eve_type_id, asset.is_bpc
         if already_imported.has_key(key):
             already_imported[key] -= 1
             if already_imported[key] == 0:

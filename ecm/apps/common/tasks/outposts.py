@@ -28,7 +28,7 @@ from ecm.apps.eve import constants
 
 LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
-@transaction.commit_on_success(using='eve')
+@transaction.commit_on_success()
 def update():
     """
     Retrieve all corp owned stations and update their name in the EVE database.
@@ -36,6 +36,7 @@ def update():
 
     If there's an error, nothing is written in the database
     """
+
     LOG.info("fetching /eve/ConquerableStationList.xml.aspx...")
     api_conn = api.connect()
     apiOutposts = api_conn.eve.ConquerableStationList()
@@ -51,7 +52,7 @@ def update():
         except CelestialObject.DoesNotExist:
             system = CelestialObject.objects.get(itemID = outpost.solarSystemID)
             station = CelestialObject(itemID=outpost.stationID,
-                                      typeID=outpost.stationTypeID,
+                                      type_id=outpost.stationTypeID,
                                       groupID=constants.STATIONS_GROUPID,
                                       solarSystemID=outpost.solarSystemID,
                                       regionID=system.regionID,
