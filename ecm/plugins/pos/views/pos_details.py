@@ -173,7 +173,7 @@ def silo_data(request, pos_id):
                                  flag = constants.SILO_TYPEID)
     silo_table = []
     for silo in silos:
-        mineral = Type.objects.get(typeID = silo.typeID)
+        mineral = Type.objects.get(typeID = silo.eve_type_id)
         if pos.fuel_type_id == constants.GALLENTE_FUEL_BLOCK_TYPEID:
             remaining_vol = (constants.SILO_VOLUME * 2.0) - silo.volume
             remaining_per = int((1.0 * silo.volume / (constants.SILO_VOLUME * 2.0)) * 100)
@@ -190,7 +190,7 @@ def silo_data(request, pos_id):
         silo_div += print_duration(seconds=hours_to_full * 3600, verbose=False)
         silo_div += '</span></div></div>'
         silo_table.append([
-            silo.typeID,
+            silo.eve_type_id,
             mineral.typeName,
             silo.quantity,
             silo_div,
