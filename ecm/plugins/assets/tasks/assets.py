@@ -337,28 +337,31 @@ def fill_contents(container, item, items_dic, flag=None):
 
 #------------------------------------------------------------------------------
 def make_asset_from_row(row):
-    item = Type.objects.get(pk=row.typeID)
+    try:
+        item = Type.objects.get(pk=row.typeID)
 
-    if IGNORE_CONTAINERS_VOLUMES and item.category == cst.CELESTIAL_CATEGORYID:
-        volume = 0.0
-    else:
-        volume = item.volume * row.quantity
-
-    if item.categoryID == cst.BLUEPRINTS_CATEGORYID:
-        try:
-            is_bpc = row.rawQuantity == -2 # -2 <=> blueprint copy (-1 are originals)
-        except AttributeError:
+        if IGNORE_CONTAINERS_VOLUMES and item.category == cst.CELESTIAL_CATEGORYID:
+            volume = 0.0
+        else:
+            volume = item.volume * row.quantity
+    
+        if item.categoryID == cst.BLUEPRINTS_CATEGORYID:
+            try:
+                is_bpc = row.rawQuantity == -2 # -2 <=> blueprint copy (-1 are originals)
+            except AttributeError:
+                is_bpc = None
+        else:
             is_bpc = None
-    else:
-        is_bpc = None
-
-    return Asset(itemID      = row.itemID,
-                 eve_type    = item,
-                 quantity    = row.quantity,
-                 flag        = row.flag,
-                 singleton   = row.singleton,
-                 volume      = volume,
-                 is_bpc      = is_bpc)
+    
+        return Asset(itemID      = row.itemID,
+                     eve_type    = item,
+                     quantity    = row.quantity,
+                     flag        = row.flag,
+                     singleton   = row.singleton,
+                     volume      = volume,
+                     is_bpc      = is_bpc)
+    except Type.DoesNotExist:
+        pass
 
 #------------------------------------------------------------------------------
 def locationid_to_stationid(locationID):
