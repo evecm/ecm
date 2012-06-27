@@ -101,7 +101,7 @@ def parseOneTitle(titleApi):
 
     titleID   = titleApi["titleID"]
 
-    name = str(titleApi["titleName"])
+    name = unicode(titleApi["titleName"])
     if name.strip() == '':
         name = 'Title #%d' % titleID
 
