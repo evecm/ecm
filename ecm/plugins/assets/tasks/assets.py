@@ -261,8 +261,11 @@ def row_is_in_hangar(item, items_dic, solarSystemID=None, stationID=None, hangar
     """
     'item' represents an asset located in a hangar division.
     """
-    asset = make_asset_from_row(item)
-
+    try:
+        asset = make_asset_from_row(item)
+    except Type.DoesNotExist:
+        return
+    
     if solarSystemID is None and stationID is None:
         # we come from the update() method and the item has a locationID attribute
         asset.stationID = locationid_to_stationid(item.locationID)
@@ -305,7 +308,10 @@ def fill_contents(container, item, items_dic, flag=None):
     for _item in item.contents:
         if _item.typeID == cst.BOOKMARK_TYPEID:
             continue # we don't give a flying @#!$ about the bookmarks...
-        _asset = make_asset_from_row(_item)
+        try:
+            _asset = make_asset_from_row(_item)
+        except Type.DoesNotExist:
+            continue
         _asset.solarSystemID = container.solarSystemID
         _asset.stationID = container.stationID
         _asset.hangarID = container.hangarID
@@ -318,7 +324,10 @@ def fill_contents(container, item, items_dic, flag=None):
             for __item in _item.contents:
                 if __item.typeID == cst.BOOKMARK_TYPEID:
                     continue # we don't give a flying @#!$ about the bookmarks...
-                __asset = make_asset_from_row(__item)
+                try:
+                    __asset = make_asset_from_row(__item)
+                except Type.DoesNotExist:
+                    continue
                 __asset.solarSystemID = container.solarSystemID
                 __asset.stationID = container.stationID
                 __asset.hangarID = container.hangarID
@@ -337,31 +346,28 @@ def fill_contents(container, item, items_dic, flag=None):
 
 #------------------------------------------------------------------------------
 def make_asset_from_row(row):
-    try:
-        item = Type.objects.get(pk=row.typeID)
+    item = Type.objects.get(pk=row.typeID)
 
-        if IGNORE_CONTAINERS_VOLUMES and item.category == cst.CELESTIAL_CATEGORYID:
-            volume = 0.0
-        else:
-            volume = item.volume * row.quantity
-    
-        if item.categoryID == cst.BLUEPRINTS_CATEGORYID:
-            try:
-                is_bpc = row.rawQuantity == -2 # -2 <=> blueprint copy (-1 are originals)
-            except AttributeError:
-                is_bpc = None
-        else:
+    if IGNORE_CONTAINERS_VOLUMES and item.category == cst.CELESTIAL_CATEGORYID:
+        volume = 0.0
+    else:
+        volume = item.volume * row.quantity
+
+    if item.categoryID == cst.BLUEPRINTS_CATEGORYID:
+        try:
+            is_bpc = row.rawQuantity == -2 # -2 <=> blueprint copy (-1 are originals)
+        except AttributeError:
             is_bpc = None
-    
-        return Asset(itemID      = row.itemID,
-                     eve_type    = item,
-                     quantity    = row.quantity,
-                     flag        = row.flag,
-                     singleton   = row.singleton,
-                     volume      = volume,
-                     is_bpc      = is_bpc)
-    except Type.DoesNotExist:
-        pass
+    else:
+        is_bpc = None
+
+    return Asset(itemID      = row.itemID,
+                 eve_type    = item,
+                 quantity    = row.quantity,
+                 flag        = row.flag,
+                 singleton   = row.singleton,
+                 volume      = volume,
+                 is_bpc      = is_bpc)
 
 #------------------------------------------------------------------------------
 def locationid_to_stationid(locationID):
