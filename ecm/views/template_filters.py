@@ -123,7 +123,10 @@ def datatable(table_id, columns, css_class=None, defaults=None, **kwargs):
             setting3Name: setting3Value,
         
     """
-    params_dict = defaults or {}
+    if defaults:
+        params_dict = defaults.copy()
+    else:
+        params_dict = {}
     params_dict.update(kwargs)
     show_header = params_dict.pop('show_header', True)
     show_footer = params_dict.pop('show_footer', True)
