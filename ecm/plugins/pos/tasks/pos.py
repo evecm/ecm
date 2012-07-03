@@ -16,7 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = "2010 04 23"
-__author__ = "JerryKhan"
+__author__ = "Ajurna"
 
 import logging
 import calendar

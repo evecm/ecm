@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block headtitle %}{% trans 'POS Fuel summary' %}{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/pos">{% trans 'POS' %}</a></li>
+<li class="active"><a href="/pos/fuel_summary/">Fuel Summary</a></li>
+{% endblock %}
+
+{% block main_content %}
+
+<table class="table table-bordered" id="silo_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Fuel Type</th>
+      <th class="top" scope="col" >1 Hour</th>
+      <th class="top" scope="col" >24 Hours</th>
+      <th class="top" scope="col" >7 Days</th>
+      <th class="top" scope="col" >14 Days</th>
+      <th class="top" scope="col" >28 Days</th>
+    </tr>
+  </thead>
+  <tbody>
+  	{% for fuel_name, quantitys in fuels.items %}
+    <tr>
+        <td>{{ fuel_name }}'s</td>
+        {% for value in quantitys %}
+        <td>{{ value }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
