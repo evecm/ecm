@@ -106,21 +106,26 @@ def write_transaction_results(wallet, entries):
         try:
             journal = JournalEntry.objects.get(refID = e.journalTransactionID)
         except JournalEntry.DoesNotExist:
-            journal = JournalEntry.objects.get(argName1 = e.transactionID)
-        TransactionEntry.objects.create(
-                                        id = e.transactionID,
-                                        date = e.transactionDateTime,
-                                        quantity = e.quantity,
-                                        typeID = e.typeID,
-                                        price = e.price,
-                                        clientID = e.clientID,
-                                        clientName = e.clientName,
-                                        stationID = e.stationID,
-                                        transactionType = transactionType,
-                                        transactionFor = transactionFor,
-                                        journal = journal,
-                                        wallet = wallet,
-                                        )
+            try:
+                journal = JournalEntry.objects.get(argName1 = e.transactionID)
+            except JournalEntry.DoesNotExist:
+                journal = None
+        #journal is nono for very old entries. can happen at initial import -> drop fhem.
+        if journal != None:
+            TransactionEntry.objects.create(
+                                            id = e.transactionID,
+                                            date = e.transactionDateTime,
+                                            quantity = e.quantity,
+                                            typeID = e.typeID,
+                                            price = e.price,
+                                            clientID = e.clientID,
+                                            clientName = e.clientName,
+                                            stationID = e.stationID,
+                                            transactionType = transactionType,
+                                            transactionFor = transactionFor,
+                                            journal = journal,
+                                            wallet = wallet,
+                                            )
     LOG.info("%d entries added in Transactions" % len(entries))
 
 
