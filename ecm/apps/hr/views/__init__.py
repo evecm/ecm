@@ -46,6 +46,13 @@ MEMBERS_COLUMNS = [
     {'sTitle': tr('Titles'),       'bVisible': False, 'db_field': None, },
 ]
 
+ACCESS_COLUMNS = [
+        {'sTitle': tr('Change'),   'sWidth': '10%', 'db_field':'change', },
+        {'sTitle': tr('Member'),   'sWidth': '30%', 'db_field':'member', },
+        {'sTitle': tr('Title/Role'),   'sWidth': '40%', 'db_field':'title_role', },
+        {'sTitle': tr('Date'),   'sWidth': '20%', 'db_field':'date', },
+        ]
+
 def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
 
     query = query.select_related(depth=2) # improve performance

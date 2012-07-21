@@ -21,82 +21,33 @@
   <div class="btn-toolbar" >
     <input type="text" id="search_text" class="input-medium search-query" value="" />
     <div class="btn-group">
-      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
-      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
+      <button class="btn btn-small" type="submit" id="search_button">{% trans 'Search' %}</button>
+      <button class="btn btn-small" id="clear_search">{% trans 'Reset' %}</button>
     </div>
   </div>
 </form>
-
-<table class="table table-bordered table-condensed" id="access_changes_table">
-  <thead>
-    <tr>
-      <th class="top" scope="col" >{% trans 'Change' %}</th>
-      <th class="top" scope="col" >{% trans 'Member' %}</th>
-      <th class="top" scope="col" >{% trans 'Title/Role' %}</th>
-      <th class="top" scope="col" >{% trans 'Date' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="3" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Change' %}</th>
-      <th>{% trans 'Member' %}</th>
-      <th>{% trans 'Title/Role' %}</th>
-      <th>{% trans 'Date' %}</th>
-    </tr>
-  </tfoot>
-</table>
+{% datatable 'access_columns' columns
+            css_class='table table-bordered table-condensed'
+            defaults=datatable_defaults
+            sAjaxSource='/hr/members/accesschanges/data/'
+            sCookiePrefix='ecm_access_changes_table_'
+            fnRowCallback='rowCallback'
+            %}
 {% endblock %}
 
 
 {% block post_javascripts %}
 <script type="text/javascript">
-$(document).ready(function() {
-    var table = $('#access_changes_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sCookiePrefix: 'ecm_access_changes_table_',
-        sAjaxSource : '/hr/members/accesschanges/data/',
-        aoColumns : [
-            { sTitle: 'Change',     sWidth: '10%', sType: 'html' ,  bSortable: false },
-            { sTitle: 'Member',     sWidth: '30%', sType: 'html'  },
-            { sTitle: 'Title/Role', sWidth: '40%', sType: 'html' ,  bSortable: false },
-            { sTitle: 'Date',       sWidth: '20%', sType: 'string' }
-        ],
-        aaSorting: [[3, 'desc']],
-        fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-            if (aData[0]) {
-                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
-            } else {
-                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
-            }
-            return nRow;
-        }
-    }));
-
-    $('#search_form').submit(function(event) {
-        event.preventDefault();
-        table.fnFilter($('#search_text').val());
-    });
-
-    $('#search_button').click(function() {
-        table.fnFilter($('#search_text').val());
-    });
-
-    $('#clear_search').click(function() {
-        $('#search_text').val('');
-        table.fnFilter('');
-    });
-    
-    // disable multi column sorting
-    $('#history_table thead th').click(function(event) {
-        if (!$(event.target).hasClass('sorthandle')) {
-            event.shiftKey = false;
-        }
-    });
-
-});
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESTHOLDS = {{ colorThresholds|safe }};
+function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+    if (aData[0]) {
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
+    } else {
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
+    }
+    return nRow;
+} 
+{% include "ecm/hr/search_form.js" %}
 </script>
 {% endblock %}

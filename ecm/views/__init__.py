@@ -37,7 +37,7 @@ from ecm.apps.scheduler.models import ScheduledTask
 from ecm.views import template_filters
 from ecm.lib import templatepatch
 
-
+import csv
 import logging
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,11 @@ DATATABLES_DEFAULTS = {
     'iDisplayLength': 25,
     'bStateSave': True,
     'iCookieDuration': 60 * 60, # 1 hour
-    'sDom': "<'row-fluid'<'span5'l><'span7'p>>rt<'row-fluid'<'span5'i><'span7'p>>",
+    'sDom': "<'row-fluid'<'span5'l><'span7'p>>rt<'row-fluid'<'span5'i><'span7'p>>T",
+    'oTableTools': {
+        'sSwfPath': "/static/ecm/swf/copy_csv_xls.swf",
+        'aButtons': ["copy", "csv" ],
+        },
     'fnStateLoadParams': 'function (oSettings, oData) { oData.sFilter = $("#search_text").val(); }',
     'fnStateSaveParams': 'function (oSettings, oData) { $("#search_text").val(oData.sFilter); return true; }',
     'oLanguage': {
@@ -137,3 +141,4 @@ if not User.objects.filter(username=admin_username):
     except:
         logger.exception("")
         raise
+#-----------------------------------------------------------------------------

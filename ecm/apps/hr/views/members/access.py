@@ -21,26 +21,32 @@ __author__ = "diabeteman"
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse
 from django.template.context import RequestContext as Ctx
 
-from ecm.apps.common.models import UpdateDate
+from ecm.apps.common.models import UpdateDate, ColorThreshold
 from ecm.utils.format import print_time_min
-from ecm.views import extract_datatable_params, datatable_ajax_data
-from ecm.apps.hr.models import TitleMembership, RoleMemberDiff, TitleMemberDiff
+from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
+from ecm.apps.hr.models import TitleMembership, RoleMemberDiff, TitleMemberDiff, Member
 from ecm.views.decorators import check_user_access
+from ecm.apps.hr.views import ACCESS_COLUMNS
 
-
+import csv
 #------------------------------------------------------------------------------
 @check_user_access()
 def access_changes(request):
     data = {
-        'scan_date' : UpdateDate.get_latest(TitleMembership)
+        'scan_date' : UpdateDate.get_latest(TitleMembership),
+        'colorThresholds' : ColorThreshold.as_json(),
+        'directorAccessLvl': Member.DIRECTOR_ACCESS_LVL,
+        'datatable_defaults': DATATABLES_DEFAULTS,
+        'columns' : ACCESS_COLUMNS,
+        'ajax_url': '/hr/members/accesschanges/data/',
     }
+
     return render_to_response("ecm/hr/members/access_changes.html", data, Ctx(request))
 
-
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def access_changes_data(request):

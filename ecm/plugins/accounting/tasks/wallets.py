@@ -106,6 +106,7 @@ def write_transaction_results(wallet, entries):
         try:
             journal = JournalEntry.objects.get(refID = e.journalTransactionID)
         except JournalEntry.DoesNotExist:
+            print e
             journal = JournalEntry.objects.get(argName1 = e.transactionID)
         TransactionEntry.objects.create(
                                         id = e.transactionID,
