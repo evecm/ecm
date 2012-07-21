@@ -16,14 +16,15 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __date__ = '2010-12-25'
-__author__ = 'diabeteman'
+__author__ = ['diabeteman','sdressel']
 
 try:
     import json
 except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
+import logging
 
 from django.utils import timezone
 from django.shortcuts import render_to_response, redirect
@@ -127,7 +128,7 @@ def root(request, date_str):
     oldest_date = timezone.now() - timedelta(weeks=since_weeks)
     newest_date = timezone.now() - timedelta(weeks=to_weeks)
 
-    query = AssetDiff.objects.values_list('date', flat=True).distinct().order_by('-date')
+    query = AssetDiff.objects.dates('date', 'day', order='DESC').distinct()
     query = query.filter(date__gte=oldest_date)
     query = query.filter(date__lte=newest_date)
 
@@ -148,20 +149,19 @@ def root(request, date_str):
                   'date_str' : date_str,
                      'dates' : dates }
 
-    try:
-        date_asked = datetime.strptime(date_str, DATE_PATTERN)
-        if AssetDiff.objects.filter(date=date_asked).exists():
-            data['date'] = date_asked
-            return render_to_response('ecm/assets/assets_diff.html', data, Ctx(request))
-        else:
-            return render_to_response('ecm/assets/assets_no_data.html', Ctx(request))
-    except:
-        return redirect('/assets/changes/')
+    date_asked = datetime.strptime(date_str, DATE_PATTERN)
+    logging.getLogger(__name__).debug(date_str)
+    logging.getLogger(__name__).debug(data)
+    #if AssetDiff.objects.filter(date=date_asked).exists():
+    data['date'] = date_asked
+    return render_to_response('ecm/assets/assets_diff.html', data, Ctx(request))
+    #else:
+    #    return render_to_response('ecm/assets/assets_no_data.html', Ctx(request))
 
 
 #------------------------------------------------------------------------------
 @check_user_access()
-@cache_page(3 * 60 * 60) # 3 hours cache
+@cache_page(2 * 60 * 60) # 2 hours cache
 def get_systems_data(request, date_str):
     date = datetime.strptime(date_str, DATE_PATTERN)
     divisions = extract_divisions(request)
@@ -179,7 +179,7 @@ def get_systems_data(request, date_str):
     # TODO: fix this sql into an object
     sql = 'SELECT "solarSystemID", COUNT(*) AS "items", SUM("volume") AS "volume" '
     sql += 'FROM "assets_assetdiff" '
-    sql += 'WHERE date=%s'
+    sql += 'WHERE CAST("date" as date)=CAST(%s as date)'
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "solarSystemID";'
     sql = db.fix_mysql_quotes(sql)
@@ -217,7 +217,7 @@ def get_systems_data(request, date_str):
 
 #------------------------------------------------------------------------------
 @check_user_access()
-@cache_page(3 * 60 * 60) # 3 hours cache
+@cache_page(2 * 60 * 60) # 2 hours cache
 def get_stations_data(request, date_str, solarSystemID):
     date = datetime.strptime(date_str, DATE_PATTERN)
     solarSystemID = int(solarSystemID)
@@ -236,7 +236,7 @@ def get_stations_data(request, date_str, solarSystemID):
 
     sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items", SUM("volume") AS "volume" '
     sql += 'FROM "assets_assetdiff" '
-    sql += 'WHERE "solarSystemID"=%s AND "date"=%s '
+    sql += 'WHERE "solarSystemID"=%s AND CAST("date" as date)=CAST(%s as date) '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "stationID";'
     sql = db.fix_mysql_quotes(sql)
@@ -277,7 +277,7 @@ def get_stations_data(request, date_str, solarSystemID):
 
 #------------------------------------------------------------------------------
 @check_user_access()
-@cache_page(3 * 60 * 60) # 3 hours cache
+@cache_page(2 * 60 * 60) # 2 hours cache
 def get_hangars_data(request, date_str, solarSystemID, stationID):
 
     date = datetime.strptime(date_str, DATE_PATTERN)
@@ -292,7 +292,7 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
 
     sql = 'SELECT "hangarID", COUNT(*) AS "items", SUM("volume") AS "volume" '
     sql += 'FROM "assets_assetdiff" '
-    sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s AND "date"=%s '
+    sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s AND CAST("date" as date)=CAST(%s as date) '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "hangarID";'
     sql = db.fix_mysql_quotes(sql)
@@ -324,12 +324,16 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
 
 #------------------------------------------------------------------------------
 @check_user_access()
-@cache_page(3 * 60 * 60) # 3 hours cache
+@cache_page(2 * 60 * 60) # 2 hours cache
 def get_hangar_content_data(request, date_str, solarSystemID, stationID, hangarID):
 
+    #compare on a day-basis - not on a microsecond-basis.
+    qrydate = datetime.date(datetime.strptime(date_str, DATE_PATTERN))
+    datefrom = datetime.combine(qrydate, time.min)
+    dateto = datetime.combine(qrydate, time.max)
     assets_query = AssetDiff.objects.filter(solarSystemID=int(solarSystemID),
                                             stationID=int(stationID), hangarID=int(hangarID),
-                                            date=datetime.strptime(date_str, DATE_PATTERN))
+                                            date__range=(datefrom,dateto))
     jstree_data = []
     for a in assets_query.select_related(depth=1):
 
