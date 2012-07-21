@@ -45,7 +45,7 @@ def update_one_user_extended_characters_info(user):
     for user_api in UserAPIKey.objects.filter(user=user):
         try:
             api_chars = api.get_account_characters(user_api)
-            character_ids = [ char.characterID for char in api_chars if char.is_corped ]
+            character_ids = [ char.characterID for char in api_chars ]
             conn = api.connect_user(user_api)
             for char_id in character_ids: #@ReservedAssignment
                 try:

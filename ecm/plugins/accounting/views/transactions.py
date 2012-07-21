@@ -112,7 +112,6 @@ def transactions_data(request):
         params.to_date     = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
     except:
         return HttpResponseBadRequest()
-    print REQ
     query = TransactionEntry.objects.select_related(depth=1).all().order_by('-date')
 
     if params.search or params.walletID or params.entryTypeID or params.amount or (params.from_date and params.to_date):

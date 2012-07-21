@@ -84,8 +84,11 @@ def details(request, characterID):
         if member.corped:
             member.date = UpdateDate.get_latest(Member)
         else:
-            d = MemberDiff.objects.filter(member=member, new=False).order_by("-id")[0]
-            member.date = d.date
+            try:
+                d = MemberDiff.objects.filter(member=member, new=False).order_by("-id")[0]
+                member.date = d.date
+            except IndexError:
+                member.date = 0
         skill_count = member.skills.filter(character = characterID).count()
         if skill_count > 0:
             skill_groups = Group.objects.filter(category = 16, published = 1).order_by('groupName')
