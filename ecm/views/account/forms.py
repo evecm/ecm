@@ -53,7 +53,7 @@ class AccountCreationForm(forms.Form):
     keyID = forms.IntegerField(label="API Key ID")
     vCode = forms.CharField(label=_("Verification Code"),
                             widget=forms.TextInput(attrs={'size':'100'}))
-    captcha = CaptchaField()
+    #captcha = CaptchaField()
     characters = []
 
     def clean_username(self):

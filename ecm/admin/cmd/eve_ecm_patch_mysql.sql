@@ -107,7 +107,17 @@ INSERT INTO `eve_blueprinttype`(
   FROM `invBlueprintTypes`
 ;
 
--- dataInterfaceID is filled below (needs initialization of further tables!)
+-- fill the dataInterfaceID field
+UPDATE `eve_blueprinttype`
+SET `dataInterfaceID` =
+  (SELECT r.`requiredTypeID`
+     FROM `eve_blueprintreq` AS r,
+          `eve_type` AS t
+    WHERE `eve_blueprinttype`.`blueprintTypeID` = r.`blueprintTypeID`
+      AND r.`requiredTypeID` = t.`typeID`
+      AND r.`activityID` = 8 /* invention */
+      AND t.`groupID` = 716 /* data interfaces */)
+;
 
 --
 -- UPDATE THE parentBlueprintID FIELD IN THE invBlueprintTypes TABLE
@@ -225,17 +235,7 @@ UNION SELECT 286400003901, 2864,    1,         39,          3438, 1.0,   3438 --
 UNION SELECT 286400004001, 2864,    1,         40,          1580, 1.0,   1580 -- Megacyte
 ;
 
--- fill the dataInterfaceID field in the blueprinttype table from the data we just created
-UPDATE `eve_blueprinttype`
-SET `dataInterfaceID` =
-  (SELECT r.`requiredTypeID`
-     FROM `eve_blueprintreq` AS r,
-          `eve_type` AS t
-    WHERE `eve_blueprinttype`.`blueprintTypeID` = r.`blueprintTypeID`
-      AND r.`requiredTypeID` = t.`typeID`
-      AND r.`activityID` = 8 /* invention */
-      AND t.`groupID` = 716 /* data interfaces */)
-;
+
 
 --
 -- CREATE A SPECIAL SYSTEMS, MOONS & PLANETS TABLE for quick name resolution
