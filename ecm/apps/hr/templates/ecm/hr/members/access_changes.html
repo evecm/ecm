@@ -26,13 +26,12 @@
     </div>
   </div>
 </form>
-{% datatable 'access_columns' columns
+{% datatable 'access_changes_columns' columns
             css_class='table table-bordered table-condensed'
             defaults=datatable_defaults
             sAjaxSource='/hr/members/accesschanges/data/'
             sCookiePrefix='ecm_access_changes_table_'
-            fnRowCallback='rowCallback'
-            %}
+            fnRowCallback='membersAccessRowCallback' %}
 {% endblock %}
 
 
@@ -40,14 +39,7 @@
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESTHOLDS = {{ colorThresholds|safe }};
-function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-    if (aData[0]) {
-        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
-    } else {
-        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
-    }
-    return nRow;
-} 
+{% include "ecm/hr/members_access_datatable.js" %}
 {% include "ecm/hr/search_form.js" %}
 </script>
 {% endblock %}
