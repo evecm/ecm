@@ -48,22 +48,6 @@ def access_changes(request):
 
 #-----------------------------------------------------------------------------
 @check_user_access()
-def export(request):
-    response = HttpResponse(mimetype='text/scv')
-    response['Content-Disposition'] = 'attachment; filename=export.csv'
-
-    column_names = []
-    for k in ACCESS_COLUMNS:
-        column_names.append(k['sTitle'])
-
-    writer = csv.writer(response)
-    writer.writerow('First row', column_names)
-    print request.POST
-    #writer.writerow('Second row', )
-
-
-#------------------------------------------------------------------------------
-@check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def access_changes_data(request):
     try:

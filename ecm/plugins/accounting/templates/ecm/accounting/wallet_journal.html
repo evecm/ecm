@@ -78,7 +78,17 @@
 	    {% endfor %}</select>
 	</div>
 </div>
+woop woop break it down!
+{% datatable 'wallet_journal_columns' columns
+        css_class='table table-bordered table-condensed'
+        defaults=datatable_defaults
+        sAjaxSource='/accounting/journal/data/'
+        sCookiePrefix='ecm_wallet_journal_table_'
+        fnRowCallback='rowCallback'
 
+        %}
+end the broken down.
+Start the working.
 <table class="table table-bordered table-condensed" id="journal_table">
   <thead>
     <tr>
@@ -121,6 +131,7 @@
 
 {% block post_javascripts %}
 <script type="text/javascript">
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 
 FROM_DATE = "{{ from_date }}";
 TO_DATE = "{{ to_date }}";
@@ -129,20 +140,7 @@ WEEK = DAY * 7;
 MONTH = DAY * 30;
 YEAR = DAY * 365;
 
-$(document).ready(function() {
-    var table = $('#journal_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource: "/accounting/journal/data/",
-        aoColumns: [
-            { /* Date */       sWidth: "14%",   sType: "string" },
-            { /* Wallet */     sWidth: "15%",   sType: "html"    },
-            { /* Operation */  sWidth: "10%",   sType: "string",    bSortable: false },
-            { /* From */       sWidth: "15%",    sType: "html",  bSortable: false },
-            { /* To */         sWidth: "15%",   sType: "html",  bSortable: false  },
-            { /* Amount */     sWidth: "15%",   sType: "string" , sClass : "right" },
-            { /* Balance */    sWidth: "15%",   sType: "string",  bSortable: false,  sClass : "right" },
-            { /* reason -> HIDDEN */ bVisible: false }
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+function rowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             if (aData[5].charAt(0) == '+') {
                 $('td:eq(5)', nRow).addClass('journal-credit');
             } else {
@@ -165,7 +163,20 @@ $(document).ready(function() {
             }
 
             return nRow;
-        },
+        }
+$(document).ready(function() {
+    var table = $('#journal_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: "/accounting/journal/data/",
+        aoColumns: [
+            { /* Date */       sWidth: "14%",   sType: "string" },
+            { /* Wallet */     sWidth: "15%",   sType: "html"    },
+            { /* Operation */  sWidth: "10%",   sType: "string",    bSortable: false },
+            { /* From */       sWidth: "15%",    sType: "html",  bSortable: false },
+            { /* To */         sWidth: "15%",   sType: "html",  bSortable: false  },
+            { /* Amount */     sWidth: "15%",   sType: "string" , sClass : "right" },
+            { /* Balance */    sWidth: "15%",   sType: "string",  bSortable: false,  sClass : "right" },
+            { /* reason -> HIDDEN */ bVisible: false }
+        ],
 
         /* this function will be called when the table has to query data to be displayed */
         fnServerData: function ( sSource, aoData, fnCallback ) {

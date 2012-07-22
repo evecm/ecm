@@ -17,9 +17,19 @@
 
 
 from ecm.utils.format import print_float
+from django.utils.translation import gettext as tr
 
 WALLET_LINK = '<a href="%s" class="wallet" title="%s">%s</a>'
-
+WALLET_JOURNAL_COLUMNS = [
+        {'sTitle':tr('Date'),    'sWidth':'14%', 'db_field':'date', },
+        {'sTitle':tr('Wallet'),    'sWidth':'15%', 'db_field':'wallets', },
+        {'sTitle':tr('Operation'),    'sWidth':'10%', 'db_field':'entryTypeID', },
+        {'sTitle':tr('From'),    'sWidth':'15%', 'db_field':'from', },
+        {'sTitle':tr('To'),    'sWidth':'15%', 'db_field':'to', },
+        {'sTitle':tr('Amount'),    'sWidth':'15%', 'db_field':'amount', },
+        {'sTitle':tr('Balance'),    'sWidth':'15%', 'db_field':'balance', },
+        {'sTitle':tr('Reason'),    'bVisible':False, 'db_field':'reason', },
+        ]
 #------------------------------------------------------------------------------
 def wallet_url(wallet):
     return "/accounting/wallet/%d/" % wallet.walletID

@@ -35,13 +35,14 @@ from django.db.models.aggregates import Min, Max
 
 from ecm.utils.format import print_time_min, print_float
 from ecm.utils import is_number
-from ecm.apps.common.models import UpdateDate
+from ecm.apps.common.models import UpdateDate, ColorThreshold
 from ecm.apps.eve.models import Type
 from ecm.apps.corp.models import Wallet, Corp
 from ecm.apps.hr.models import Member
 from ecm.views.decorators import check_user_access
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, DATATABLES_DEFAULTS, datatable_ajax_data
 from ecm.plugins.accounting.models import JournalEntry, EntryType
+from ecm.plugins.accounting.views import WALLET_JOURNAL_COLUMNS
 
 DATE_PATTERN = "%Y-%m-%d"
 
@@ -82,6 +83,10 @@ def journal(request):
         'scan_date' : UpdateDate.get_latest(JournalEntry),
         'from_date' : datetime.strftime(from_date, DATE_PATTERN),
         'to_date' : datetime.strftime(to_date, DATE_PATTERN),
+        'datatable_defaults': DATATABLES_DEFAULTS,
+        'columns': WALLET_JOURNAL_COLUMNS,
+        'colorThresholds': ColorThreshold.as_json(),
+        'ajax_url':'/accounting/journal/data/',
     }
     return render_to_response("ecm/accounting/wallet_journal.html", data, Ctx(request))
 
