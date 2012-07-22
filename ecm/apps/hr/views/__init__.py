@@ -47,19 +47,30 @@ MEMBERS_COLUMNS = [
 ]
 
 PLAYERS_COLUMNS = [
+    {'sTitle': tr('Name'),         'sWidth': '20%',   'stype': 'html', },
+    {'sTitle': tr('Nickname'),     'sWidth': '20%',   'stype': 'string', },
+    {'sTitle': tr('Player'),       'sWidth': '15%',   'stype': 'html', },
+    {'sTitle': tr('Access Level'), 'sWidth':  '5%',   'stype': 'numeric', },
+    {'sTitle': tr('Last Login'),   'sWidth': '10%',   'stype': 'string', },
+    {'sTitle': tr('Location'),     'sWidth': '10%',   'stype': 'string', },
+    {'sTitle': tr('Ships'),        'sWidth': '20%',   'stype': 'string', },
+    {'sTitle': tr('Titles'),       'bVisible': False,  },
+]
+
+PLAYER_DETAIL_COLUMNS = [
     {'sTitle': tr('Username'),      'sWidth': '20%',   'stype': 'html', },
     {'sTitle': tr('Admin'),         'sWidth': '10%',   'stype': 'html', },
-    {'sTitle': tr('EVE Accounts'),  'sWidth': '10%',   'stype': 'text', },
-    {'sTitle': tr('Characters'),    'sWidth': '10%',   'stype': 'text', },
-    {'sTitle': tr('Groups'),        'sWidth': '10%',   'stype': 'text', },
-    {'sTitle': tr('Last Login'),    'sWidth': '20%',   'stype': 'text', },
-    {'sTitle': tr('Joined Date'),   'sWidth': '20%',   'stype': 'text', },
+    {'sTitle': tr('EVE Accounts'),  'sWidth': '10%',   'stype': 'string', },
+    {'sTitle': tr('Characters'),    'sWidth': '10%',   'stype': 'string', },
+    {'sTitle': tr('Groups'),        'sWidth': '10%',   'stype': 'string', },
+    {'sTitle': tr('Last Login'),    'sWidth': '20%',   'stype': 'string', },
+    {'sTitle': tr('Joined Date'),   'sWidth': '20%',   'stype': 'string', },
 ]
 
 ACCESS_CHANGES_COLUMNS = [
-    {'sTitle': tr('Change'),         'sWidth': '15%',   'stype': 'text', },
+    {'sTitle': tr('Change'),         'sWidth': '15%',   'stype': 'string', },
     {'sTitle': tr('Title/Role'),     'sWidth': '50%',   'stype': 'html', },
-    {'sTitle': tr('Date'),           'sWidth': '25%',   'stype': 'text', },
+    {'sTitle': tr('Date'),           'sWidth': '25%',   'stype': 'string', },
 ]
 
 def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):

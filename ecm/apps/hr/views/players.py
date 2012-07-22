@@ -35,7 +35,7 @@ from ecm.utils.format import print_time_min
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import ColorThreshold
 from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
-from ecm.apps.hr.views import get_members, PLAYERS_COLUMNS
+from ecm.apps.hr.views import get_members, PLAYERS_COLUMNS, PLAYER_DETAIL_COLUMNS
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -110,11 +110,13 @@ def player_details(request, player_id):
 
     data = {
         'player': player,
-        'eve_accounts': eve_accounts,
-        'characters': characters,
-        'groups': groups,
-        'colorThresholds' : ColorThreshold.as_json(),
-        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
+        'eve_accounts'        : eve_accounts,
+        'characters'          : characters,
+        'groups'              : groups,
+        'colorThresholds'     : ColorThreshold.as_json(),
+        'directorAccessLvl'   : Member.DIRECTOR_ACCESS_LVL,
+        'player_columns'      : PLAYER_DETAIL_COLUMNS,
+        'datatables_defaults' : DATATABLES_DEFAULTS,
     }
 
     return render_to_response('ecm/hr/players/player_details.html', data, Ctx(request))
