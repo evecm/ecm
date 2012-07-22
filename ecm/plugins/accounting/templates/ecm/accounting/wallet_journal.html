@@ -78,19 +78,19 @@
 	    {% endfor %}</select>
 	</div>
 </div>
-<!--
 woop woop break it down!
 {% datatable 'wallet_journal_columns' columns
         css_class='table table-bordered table-condensed'
         defaults=datatable_defaults
-        sAjaxSource='/accounting/journal/data/'
+        sAjaxSource="/accounting/journal/data/"
         sCookiePrefix='ecm_wallet_journal_table_'
-        fnRowCallback='rowCallback'
+        fnRowCallback='walletJournalRowCallback'
+        fnServerData='fnServerData'
 
         %}
 end the broken down.
-Start the working.-->
-<table class="table table-bordered table-condensed" id="journal_table">
+Start the working. 
+<!--table class="table table-bordered table-condensed" id="journal_table">
   <thead>
     <tr>
       <th class="top" scope="col" >{% trans 'Date' %}</th>
@@ -121,7 +121,7 @@ Start the working.-->
     </tr>
   </tfoot>
 
-</table>
+</table-->
 {% endblock %}
 
 
@@ -133,6 +133,7 @@ Start the working.-->
 {% block post_javascripts %}
 <script type="text/javascript">
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+{% include "ecm/accounting/wallet_journal.js" %}
 
 FROM_DATE = "{{ from_date }}";
 TO_DATE = "{{ to_date }}";
@@ -141,46 +142,7 @@ WEEK = DAY * 7;
 MONTH = DAY * 30;
 YEAR = DAY * 365;
 
-$(document).ready(function() {
-    var table = $('#journal_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource: "/accounting/journal/data/",
-        aoColumns: [
-            { /* Date */       sWidth: "14%",   sType: "string" },
-            { /* Wallet */     sWidth: "15%",   sType: "html"    },
-            { /* Operation */  sWidth: "10%",   sType: "string",    bSortable: false },
-            { /* From */       sWidth: "15%",    sType: "html",  bSortable: false },
-            { /* To */         sWidth: "15%",   sType: "html",  bSortable: false  },
-            { /* Amount */     sWidth: "15%",   sType: "string" , sClass : "right" },
-            { /* Balance */    sWidth: "15%",   sType: "string",  bSortable: false,  sClass : "right" },
-            { /* reason -> HIDDEN */ bVisible: false }
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            if (aData[5].charAt(0) == '+') {
-                $('td:eq(5)', nRow).addClass('journal-credit');
-            } else {
-                $('td:eq(5)', nRow).addClass('journal-debit');
-            }
-            /* hide reason column */
-            $('td:eq(7)', nRow).hide()
-
-            /* set titles tooltip on each row */
-            reason = aData[7]
-            if (reason != "") {
-                $('td:eq(5)', nRow).attr("title", reason)
-                $('td:eq(5)', nRow).cluetip({
-                    splitTitle: '|',
-                    dropShadow: false,
-                    cluetipClass: 'jtip',
-                    positionBy: 'mouse',
-                    tracking: true
-                });
-            }
-
-            return nRow;
-        },
-
-        /* this function will be called when the table has to query data to be displayed */
-        fnServerData: function ( sSource, aoData, fnCallback ) {
+function fnServerData(sSource, aoData, fnCallback) {
             /* Add some extra variables to the url */
             aoData.push( {
                 name: "walletID",
@@ -205,33 +167,72 @@ $(document).ready(function() {
             $.getJSON( sSource, aoData, function (json) {
                 fnCallback(json)
             } );
-        },
-    }));
+        }
+$(document).ready(function() {
+/*    var table = $('#journal_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: "/accounting/journal/data/",
+        aoColumns: [
+            { /* Date        sWidth: "14%",   sType: "string" },
+            { /* Wallet      sWidth: "15%",   sType: "html"    },
+            { /* Operation   sWidth: "10%",   sType: "string",    bSortable: false },
+            { /* From        sWidth: "15%",    sType: "html",  bSortable: false },
+            { /* To          sWidth: "15%",   sType: "html",  bSortable: false  },
+            { /* Amount      sWidth: "15%",   sType: "string" , sClass : "right" },
+            { /* Balance     sWidth: "15%",   sType: "string",  bSortable: false,  sClass : "right" },
+            { /* reason -> HIDDEN  bVisible: false }
+        ],
+/*        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            if (aData[5].charAt(0) == '+') {
+                $('td:eq(5)', nRow).addClass('journal-credit');
+            } else {
+                $('td:eq(5)', nRow).addClass('journal-debit');
+            }
+            /* hide reason column */
+/*            $('td:eq(7)', nRow).hide()
+
+            /* set titles tooltip on each row */
+/*            reason = aData[7]
+            if (reason != "") {
+                $('td:eq(5)', nRow).attr("title", reason)
+                $('td:eq(5)', nRow).cluetip({
+                    splitTitle: '|',
+                    dropShadow: false,
+                    cluetipClass: 'jtip',
+                    positionBy: 'mouse',
+                    tracking: true
+                });
+            }
+
+            return nRow;
+        },*/
+
+        /* this function will be called when the table has to query data to be displayed */
+   /* }));
 
   /* trigger the search when pressing return in the text field */
     $("#search_form").submit(function(event) {
         event.preventDefault();
-        table.fnFilter($("#search_text").val());
+        $('table').dataTable().fnFilter($("#search_text").val());
     });
 
     /* trigger the search when clicking the "search" button */
     $("#search_button").click(function() {
-        table.fnFilter($("#search_text").val());
+        $('table').dataTable().fnFilter($("#search_text").val());
     });
 
     /* reset the search when clicking the "reset" button */
     $("#clear_search").click(function() {
         $("#search_text").val("");
         $("#amount_text").val("");
-        table.fnFilter("");
+        $('table').dataTable().fnFilter("");
     });
 
     $("#wallet_selector").change(function () {
-        table.fnDraw();
+        $('table').dataTable().fnDraw();
     });
 
     $("#type_selector").change(function () {
-        table.fnDraw();
+        $('table').dataTable().fnDraw();
     });
     
     $("#period_selector").change(function() {

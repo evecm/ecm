@@ -207,6 +207,9 @@ def journal_data(request):
         "iTotalDisplayRecords" : filtered_entries,
         "aaData" : entries
     }
-
-    return HttpResponse(json.dumps(json_data))
+    print "*" * 30
+    print datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
+    print "*" * 30
+    return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
+    #return HttpResponse(json.dumps(json_data))
 
