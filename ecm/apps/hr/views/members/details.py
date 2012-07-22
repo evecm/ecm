@@ -30,7 +30,8 @@ from django.db.models.aggregates import Avg, Sum
 
 from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
-from ecm.views import extract_datatable_params, datatable_ajax_data
+from ecm.apps.hr.views import ACCESS_CHANGES_COLUMNS
+from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import ColorThreshold, Setting, UpdateDate
 from ecm.utils.format import print_time_min
@@ -131,16 +132,19 @@ def details(request, characterID):
         killboardUrl = None
     
     data = {
-        'member'            : member,
-        'killboardUrl'      : killboardUrl,
-        'sessiondata'       : avg_session,
-        'lastWeek'          : lastWeek,
-        'lastMonth'         : lastMonth,
-        'total'             : total,
-        'logins'            : loginhistory,
-        'skills_tree'       : json.dumps(skills_json),
-        'skill_count'       : skill_count,
-        'skillpoint_count'  : print_integer(skillpoint_count),
+        'member'             : member,
+        'killboardUrl'       : killboardUrl,
+        'sessiondata'        : avg_session,
+        'lastWeek'           : lastWeek,
+        'lastMonth'          : lastMonth,
+        'total'              : total,
+        'logins'             : loginhistory,
+        'skills_tree'        : json.dumps(skills_json),
+        'skill_count'        : skill_count,
+        'skillpoint_count'   : print_integer(skillpoint_count),
+        'datatables_defaults': DATATABLES_DEFAULTS,
+        'access_columns'     : ACCESS_CHANGES_COLUMNS,
+
     }
     return render_to_response("ecm/hr/members/member_details.html", data, Ctx(request))
 

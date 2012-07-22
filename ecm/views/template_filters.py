@@ -103,6 +103,15 @@ def absolute_format(value):
         return unicode(value)
 
 #------------------------------------------------------------------------------
+@register.filter(name='concat')
+def concat(value,arg):
+    """Merge Strings"""
+    try:
+        return str(value) + str(arg)
+    except (TypeError):
+        return ''
+
+#------------------------------------------------------------------------------
 @register.inclusion_tag('ecm/datatables.html')
 def datatable(table_id, columns, css_class=None, defaults=None, **kwargs):
     """
