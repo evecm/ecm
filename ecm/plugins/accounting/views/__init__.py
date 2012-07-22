@@ -21,14 +21,14 @@ from django.utils.translation import gettext as tr
 
 WALLET_LINK = '<a href="%s" class="wallet" title="%s">%s</a>'
 WALLET_JOURNAL_COLUMNS = [
-        {'sTitle':tr('Date'),    'sWidth':'14%', 'db_field':'date', },
-        {'sTitle':tr('Wallet'),    'sWidth':'15%', 'db_field':'wallets', },
-        {'sTitle':tr('Operation'),    'sWidth':'10%', 'db_field':'entryTypeID', },
-        {'sTitle':tr('From'),    'sWidth':'15%', 'db_field':'from', },
-        {'sTitle':tr('To'),    'sWidth':'15%', 'db_field':'to', },
-        {'sTitle':tr('Amount'),    'sWidth':'15%', 'db_field':'amount', },
-        {'sTitle':tr('Balance'),    'sWidth':'15%', 'db_field':'balance', },
-        {'sTitle':tr('Reason'),    'bVisible':False, 'db_field':'reason', },
+        {'sTitle':tr('Date'),         'sWidth':'14%', 'sType':'string', },
+        {'sTitle':tr('Wallet'),       'sWidth':'15%', 'sType':'html', },
+        {'sTitle':tr('Operation'),    'sWidth':'10%', 'sType':'string'},
+        {'sTitle':tr('From'),         'sWidth':'15%', 'sType':'html', },
+        {'sTitle':tr('To'),           'sWidth':'15%', 'sType':'html', },
+        {'sTitle':tr('Amount'),       'sWidth':'15%', 'sType':'string', },
+        {'sTitle':tr('Balance'),      'sWidth':'15%', 'sType':'string', 'sClass':'right', },
+        {'sTitle':tr('Reason'),     'bVisible':False, },
         ]
 #------------------------------------------------------------------------------
 def wallet_url(wallet):

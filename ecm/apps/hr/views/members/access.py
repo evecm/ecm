@@ -29,7 +29,7 @@ from ecm.utils.format import print_time_min
 from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.apps.hr.models import TitleMembership, RoleMemberDiff, TitleMemberDiff, Member
 from ecm.views.decorators import check_user_access
-from ecm.apps.hr.views import ACCESS_COLUMNS
+from ecm.apps.hr.views import ACCESS_CHANGES_COLUMNS
 
 import csv
 #------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ def access_changes(request):
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl': Member.DIRECTOR_ACCESS_LVL,
         'datatable_defaults': DATATABLES_DEFAULTS,
-        'columns' : ACCESS_COLUMNS,
+        'columns' : ACCESS_CHANGES_COLUMNS,
         'ajax_url': '/hr/members/accesschanges/data/',
     }
 

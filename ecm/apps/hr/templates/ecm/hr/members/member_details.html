@@ -123,7 +123,29 @@
              sAjaxSource=ajaxurl 
              sCookiePrefix='ecm_member_access_changes_table_' 
              fnRowCallback='membersAccessRowCallback' %}
+<h6>{{ ajaxurl }}</h6>             
 {% endwith %}
+<!-- >table class="table table-bordered table-condensed" id="access_changes_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >{% trans 'Change' %}</th>
+      <th class="top" scope="col" >{% trans 'Title/Role' %}</th>
+      <th class="top" scope="col" >{% trans 'Date' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="3" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>{% trans 'Change' %}</th>
+      <th>{% trans 'Title/Role' %}</th>
+      <th>{% trans 'Date' %}</th>
+    </tr>
+  </tfoot>
+</table -->
 
 <!-- Skill List  -->
 <!-- ##########################################################################
