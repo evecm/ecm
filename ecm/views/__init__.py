@@ -57,7 +57,7 @@ DATATABLES_DEFAULTS = {
     'iDisplayLength': 25,
     'bStateSave': True,
     'iCookieDuration': 60 * 60, # 1 hour
-    'sDom': "<'row-fluid'<'span5'l><'span7'p>>rt<'row-fluid'<'span5'i><'span7'p>>T",
+    'sDom': "<'row-fluid'<'span5'l><'span7'p>T>rt<'row-fluid'<'span5'i><'span7'p>>",
     'oTableTools': {
         'sSwfPath': "/static/ecm/swf/copy_csv_xls.swf",
         'aButtons': ["copy", "csv" ],

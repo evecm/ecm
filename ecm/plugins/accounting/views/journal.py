@@ -201,15 +201,11 @@ def journal_data(request):
             reason,
         ])
 
-    json_data = {
-        "sEcho" : params.sEcho,
-        "iTotalRecords" : total_entries,
-        "iTotalDisplayRecords" : filtered_entries,
-        "aaData" : entries
-    }
-    print "*" * 30
-    print datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
-    print "*" * 30
+    #json_data = {
+    #    "sEcho" : params.sEcho,
+    #    "iTotalRecords" : total_entries,
+    #    "iTotalDisplayRecords" : filtered_entries,
+    #    "aaData" : entries
+    #}
     return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
-    #return HttpResponse(json.dumps(json_data))
 
