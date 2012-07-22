@@ -46,15 +46,20 @@ MEMBERS_COLUMNS = [
     {'sTitle': tr('Titles'),       'bVisible': False, 'db_field': None, },
 ]
 
+PLAYERS_COLUMNS = [
+    {'sTitle': tr('Username'),      'sWidth': '20%',   'stype': 'html', },
+    {'sTitle': tr('Admin'),         'sWidth': '10%',   'stype': 'html', },
+    {'sTitle': tr('EVE Accounts'),  'sWidth': '10%',   'stype': 'text', },
+    {'sTitle': tr('Characters'),    'sWidth': '10%',   'stype': 'text', },
+    {'sTitle': tr('Groups'),        'sWidth': '10%',   'stype': 'text', },
+    {'sTitle': tr('Last Login'),    'sWidth': '20%',   'stype': 'text', },
+    {'sTitle': tr('Joined Date'),   'sWidth': '20%',   'stype': 'text', },
+]
+
 ACCESS_CHANGES_COLUMNS = [
-    {'sTitle': tr('Name'),         'sWidth': '15%',   'db_field': 'name', },
-    {'sTitle': tr('Nickname'),     'sWidth': '15%',   'db_field': 'nickname', },
-    {'sTitle': tr('Player'),       'sWidth': '15%',   'db_field': 'owner__username', },
-    {'sTitle': tr('Access Level'), 'sWidth':  '5%',   'db_field': 'accessLvl', },
-    {'sTitle': tr('Last Login'),   'sWidth': '10%',   'db_field': 'lastLogin', },
-    {'sTitle': tr('Location'),     'sWidth': '20%',   'db_field': 'location', },
-    {'sTitle': tr('Ship'),         'sWidth': '15%',   'db_field': 'ship', },
-    {'sTitle': tr('Titles'),       'bVisible': False, 'db_field': None, },
+    {'sTitle': tr('Change'),         'sWidth': '15%',   'stype': 'text', },
+    {'sTitle': tr('Title/Role'),     'sWidth': '50%',   'stype': 'html', },
+    {'sTitle': tr('Date'),           'sWidth': '25%',   'stype': 'text', },
 ]
 
 def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):

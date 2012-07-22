@@ -34,14 +34,16 @@ from ecm.views.decorators import check_user_access
 from ecm.utils.format import print_time_min
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import ColorThreshold
-from ecm.views import extract_datatable_params, datatable_ajax_data
-from ecm.apps.hr.views import get_members
+from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
+from ecm.apps.hr.views import get_members, PLAYERS_COLUMNS
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def player_list(request):
     data = {
-        'colorThresholds' : ColorThreshold.as_json(),
+        'colorThresholds'     : ColorThreshold.as_json(),
+        'player_columns'      : PLAYERS_COLUMNS,
+        'datatables_defaults' : DATATABLES_DEFAULTS,
     }
     return render_to_response("ecm/hr/players/player_list.html", data, Ctx(request))
 

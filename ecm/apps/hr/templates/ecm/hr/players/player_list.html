@@ -23,93 +23,19 @@
   </div>
 </form>
 
-<table class="table table-bordered table-condensed" id="players_table">
-  <thead>
-    <tr>
-      <th>{% trans 'Username' %}</th>
-      <th>{% trans 'Admin' %}</th>
-      <th>{% trans 'EVE Accounts' %}</th>
-      <th>{% trans 'Characters' %}</th>
-      <th>{% trans 'Groups' %}</th>
-      <th>{% trans 'Last Login' %}</th>
-      <th>{% trans 'Joined Date' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="6" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Username' %}</th>
-      <th>{% trans 'Admin' %}</th>
-      <th>{% trans 'EVE Accounts' %}</th>
-      <th>{% trans 'Characters' %}</th>
-      <th>{% trans 'Groups' %}</th>
-      <th>{% trans 'Last Login' %}</th>
-      <th>{% trans 'Joined Date' %}</th>
-    </tr>
-  </tfoot>
-</table>
+
+{% datatable 'players_table' player_columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource='/hr/players/data/' 
+             sCookiePrefix='ecm_players_table_' 
+             fnRowCallback='playersRowCallback' %}
 
 {% endblock %}
 
 
 {% block post_javascripts %}
 <script type="text/javascript">
-$(document).ready(function() {
-      var table = $('#players_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource: "/hr/players/data/",
-        aoColumns: [
-            { /* Username */        sWidth: "30%",   sType: "html"    },
-            { /* admin */           sWidth: "10%",   sType: "html"    },
-            { /* EVE accounts */    sWidth: "10%",   sType: "string"  },
-            { /* Char count */      sWidth: "10%",   sType: "string" },
-            { /* Group count */     sWidth: "10%",   sType: "string" },
-            { /* Last login */      sWidth: "15%",   sType: "string"  },
-            { /* Joined date */     sWidth: "15%",   sType: "string"  }
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            /* if the player has no roles, display him/her in red */
-            var group_count = aData[4];
-            if (group_count == 0) {
-                $(nRow).addClass("row-red");
-            }
-            var admin = aData[1];
-            if (admin) {
-                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-yes.gif" alt="True">');
-            } else {
-                $('td:eq(1)', nRow).html('<img src="/static/admin/img/admin/icon-no.gif" alt="False">');
-            }
-            return nRow;
-        }
-    }));
-
-    /* trigger the search when pressing return in the text field */
-    $("#search_form").submit(function(event) {
-        event.preventDefault();
-        table.fnFilter($("#search_text").val());
-    });
-
-    /* trigger the search when clicking the "search" button */
-    $("#search_button").click(function() {
-        table.fnFilter($("#search_text").val());
-    });
-
-    /* reset the search when clicking the "reset" button */
-    $("#clear_search").click(function() {
-        $("#search_text").val("");
-        table.fnFilter("");
-    });
-
-    /* disable multi column sorting */
-    $('#players_table thead th').click(function(event) {
-        if (!$(event.target).hasClass('sorthandle')) {
-            event.shiftKey = false;
-        }
-    });
-
-} );
+{% include "ecm/hr/players_datatable.js" %}
 </script>
 {% endblock %}
