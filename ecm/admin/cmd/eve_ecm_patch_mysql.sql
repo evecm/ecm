@@ -25,6 +25,7 @@ ALTER TABLE `eve_marketgroup` DISABLE KEYS;
 ALTER TABLE `eve_type` DISABLE KEYS;
 ALTER TABLE `eve_group` DISABLE KEYS;
 ALTER TABLE `eve_category` DISABLE KEYS;
+ALTER TABLE `eve_skills` DISABLE KEYS;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- reset existing data
@@ -36,6 +37,7 @@ DELETE FROM `eve_marketgroup`;
 DELETE FROM `eve_type`;
 DELETE FROM `eve_group`;
 DELETE FROM `eve_category`;
+DELETE FROM `eve_skills`;
 
 
 
@@ -277,8 +279,28 @@ INSERT INTO `eve_controltowerresource`
             `factionID`
     FROM `invControlTowerResources`;
 
---
 
+----------------------------------------------------------
+--- add our enhanced skills reference.
+---------------------------------------------------------
+INSERT INTO `eve_skills`
+	SELECT 
+		inv.`typeID`,
+		sk1.`valueInt`,
+		sk2.`valueInt`,
+		sk3.`valueInt`,
+		sk1req.`valueInt`,
+		sk2req.`valueInt`,
+		sk3req.`valueInt`
+	FROM `eve`.`invTypes` inv
+		LEFT JOIN `eve`.`dgmTypeAttributes` AS sk1 ON (inv.`typeID` = sk1.`typeID` AND sk1.`attributeID` = 182)
+		LEFT JOIN `eve`.`dgmTypeAttributes` AS sk2 ON (inv.`typeID` = sk2.`typeID` AND sk2.`attributeID` = 183)
+		LEFT JOIN `eve`.`dgmTypeAttributes` AS sk3 ON (inv.`typeID` = sk3.`typeID` AND sk3.`attributeID` = 184)
+		LEFT JOIN `eve`.`dgmTypeAttributes` AS sk1req ON (inv.`typeID` = sk1req.`typeID` AND sk1req.`attributeID` = 277)
+		LEFT JOIN `eve`.`dgmTypeAttributes` AS sk2req ON (inv.`typeID` = sk2req.`typeID` AND sk2req.`attributeID` = 278)
+		LEFT JOIN `eve`.`dgmTypeAttributes` AS sk3req ON (inv.`typeID` = sk3req.`typeID` AND sk3req.`attributeID` = 279);
+
+--
 ALTER TABLE `eve_celestialobject` ENABLE KEYS;
 ALTER TABLE `eve_blueprintreq` ENABLE KEYS;
 ALTER TABLE `eve_blueprinttype` ENABLE KEYS;
@@ -287,6 +309,7 @@ ALTER TABLE `eve_marketgroup` ENABLE KEYS;
 ALTER TABLE `eve_type` ENABLE KEYS;
 ALTER TABLE `eve_group` ENABLE KEYS;
 ALTER TABLE `eve_category` ENABLE KEYS;
+ALTER TABLE `eve_skills` ENABLE KEYS;
 SET FOREIGN_KEY_CHECKS = 1;
 
 COMMIT;

@@ -429,3 +429,16 @@ class CelestialObject(models.Model):
     def __hash__(self):
         return self.itemID
 
+#------------------------------------------------------------------------------
+class Skills(models.Model):
+    
+    class Meta:
+        app_label = 'eve'
+        
+    item = models.ForeignKey('Type', related_name='skills', primary_key=True)
+    skill1 = models.ForeignKey('Type', related_name='+', null=True, blank=True)
+    skill2 = models.ForeignKey('Type', related_name='+', null=True, blank=True)
+    skill3 = models.ForeignKey('Type', related_name='+', null=True, blank=True)
+    skill1req = models.SmallIntegerField(null=True, blank=True)
+    skill2req = models.SmallIntegerField(null=True, blank=True)
+    skill3req = models.SmallIntegerField(null=True, blank=True)
