@@ -19,7 +19,7 @@
   <h1>{% trans 'Titles Modifications History' %} <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small></h1>
 </div>
 
-{% datatable 'title_changes_table' modifiedcolumns 
+{% datatable 'title_changes_table' columns 
              css_class='table table-bordered table-condensed' 
              defaults=datatables_defaults 
              sAjaxSource='/hr/titles/changes/data/' 

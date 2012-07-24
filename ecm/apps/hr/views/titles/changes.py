@@ -29,6 +29,7 @@ from ecm.apps.common.models import UpdateDate
 from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.utils.format import print_time_min
 from ecm.apps.hr.views import TITLES_MOD_COLUMNS
+from ecm.apps.common.models import ColorThreshold
 
 
 #------------------------------------------------------------------------------
@@ -37,7 +38,8 @@ def changes(request):
     data = {
         'scan_date' : UpdateDate.get_latest(TitleComposition),
         'columns': TITLES_MOD_COLUMNS,
-        'datatables_defaults': DATATABLES_DEFAULTS
+        'datatables_defaults': DATATABLES_DEFAULTS,
+        "colorThresholds" : ColorThreshold.as_json(),
     }
     return render_to_response("ecm/hr/titles/changes.html", data, Ctx(request))
 
