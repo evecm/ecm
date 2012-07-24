@@ -25,8 +25,9 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
-from ecm.views import datatable_ajax_data, extract_datatable_params
+from ecm.views import datatable_ajax_data, extract_datatable_params, DATATABLES_DEFAULTS
 from ecm.apps.hr.models import Role, RoleType
+from ecm.apps.hr.views import ROLES_COLUMNS
 from ecm.apps.common.models import ColorThreshold
 from ecm.views.decorators import check_user_access
 from ecm.apps.corp.models import Hangar, Wallet
@@ -41,6 +42,8 @@ def roles(request):
         'colorThresholds': ColorThreshold.as_json(),
         'role_types': RoleType.objects.all().order_by('id'),
         'role_type': request.GET.get('role_type', 1),
+        'columns': ROLES_COLUMNS,
+        'datatables_defaults': DATATABLES_DEFAULTS,
     }
     return render_to_response("ecm/hr/roles/roles.html", data, Ctx(request))
 

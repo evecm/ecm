@@ -33,8 +33,9 @@ from ecm.utils import db
 from ecm.utils.format import print_time_min
 from ecm.apps.hr.models import TitleComposition, Title, TitleCompoDiff
 from ecm.apps.common.models import ColorThreshold, UpdateDate
+from ecm.apps.hr.views import TITLES_COLUMNS
 from ecm.views.decorators import check_user_access
-from ecm.views import datatable_ajax_data, extract_datatable_params
+from ecm.views import datatable_ajax_data, extract_datatable_params, DATATABLES_DEFAULTS
 from ecm.apps.hr import NAME as app_prefix
 
 #------------------------------------------------------------------------------
@@ -46,7 +47,9 @@ def titles(request):
 
     data = {
         'scan_date' : UpdateDate.get_latest(TitleComposition),
-        'colorThresholds' : json.dumps(colorThresholds)
+        'colorThresholds' : json.dumps(colorThresholds),
+        'columns': TITLES_COLUMNS,
+        'datatables_defaults': DATATABLES_DEFAULTS
     }
     return render_to_response("ecm/hr/titles/titles.html", data, Ctx(request))
 

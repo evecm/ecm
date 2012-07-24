@@ -54,7 +54,7 @@
 
 
 {% datatable 'members_table' columns 
-             css_class='table table-bordered table-condensed' 
+             css_class='table table-bordered table-condensed searchable_table' 
              defaults=datatables_defaults 
              sAjaxSource=ajax_url
              sCookiePrefix='ecm_role_members_table_' 
@@ -68,6 +68,7 @@ DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 
 {% include "ecm/hr/members_datatable.js" %}
+{% include "ecm/hr/search_form.js" %}
 
 $(document).ready(function() {
     $('div#{{role.id}}').editable( '/hr/roles/update/', {

@@ -1,38 +1,27 @@
+{% load static from staticfiles %}
 /*************************
- * "Player Details" table setup *
+ * "Title Details" table setup *
  *************************/
 /**
  * Needs global constants to be defined:
  *      - DIRECTOR_ACCESS_LVL
  *      - COLOR_THRESHOLDS
  **/
-DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 
-function playerDetailRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-    /* apply color to all access level cells */
-    accessLvl = aData[3];
-    if (accessLvl == DIRECTOR_ACCESS_LVL) {
-        $('td:eq(3)', nRow).html('<b>DIRECTOR</b>');
+function titleCompositionRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+    // apply color to all access level cells
+    accessLvl = aData[2];
+    $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
+    return nRow;
+}
+
+function titleLastModifiedRowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+    if (aData[0]) {
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
+    } else {
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
     }
-    $('td:eq(3)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
-
-    /* hide titles column */
-    $('td:eq(7)', nRow).hide()
-
-    /* set titles tooltip on each row */
-    titles = aData[7]
-    if (titles != "") {
-        $('td:eq(3)', nRow).attr("title", titles)
-        $('td:eq(3)', nRow).cluetip({
-            splitTitle: '|',
-            dropShadow: false,
-            cluetipClass: 'jtip',
-            positionBy: 'mouse',
-            tracking: true
-        });
-    }
-
     return nRow;
 }
         

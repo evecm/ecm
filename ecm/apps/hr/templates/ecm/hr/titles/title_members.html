@@ -30,37 +30,12 @@
   </div>
 </form>
 
-<table class="table table-bordered table-condensed" id="members_table">
-  <thead>
-    <tr>
-      <th class="top" scope="col" >{% trans 'Name' %}</th>
-      <th class="top" scope="col" >{% trans 'Nickname' %}</th>
-      <th class="top" scope="col" >{% trans 'Player' %}</th>
-      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
-      <th class="top" scope="col" >{% trans 'Corp Date' %}</th>
-      <th class="top" scope="col" >{% trans 'Last Login' %}</th>
-      <th class="top" scope="col" >{% trans 'Location' %}</th>
-      <th class="top" scope="col" style="display:none;">{% trans 'Titles' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="8" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Name' %}</th>
-      <th>{% trans 'Nickname' %}</th>
-      <th>{% trans 'Player' %}</th>
-      <th>{% trans 'Access Level' %}</th>
-      <th>{% trans 'Corp Date' %}</th>
-      <th>{% trans 'Last Login' %}</th>
-      <th>{% trans 'Location' %}</th>
-      <th style="display:none;">{% trans 'Titles' %}</th>
-    </tr>
-  </tfoot>
-</table>
+{% datatable 'members_table' columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource='/hr/titles/'|concat:title.titleID|concat:'/members/data/' 
+             sCookiePrefix='ecm_title_members_table_' 
+             fnRowCallback='membersRowCallback' %}
 {% endblock %}
 
 
@@ -68,10 +43,6 @@
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = "/hr/titles/{{ title.titleID }}/members/data/";
-COOKIE_NAME = 'ecm_title_members_table_';
+{% include "ecm/hr/members_datatable.js" %}
 </script>
-{% endblock %}
-{% block compressed_javascripts %}
-<script type="text/javascript" src="{% static 'hr/js/members_table.js' %}"></script>
 {% endblock %}

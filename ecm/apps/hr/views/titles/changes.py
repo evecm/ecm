@@ -26,15 +26,18 @@ from django.template.context import RequestContext as Ctx
 from ecm.apps.hr.models import TitleComposition, TitleCompoDiff
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import UpdateDate
-from ecm.views import extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.utils.format import print_time_min
+from ecm.apps.hr.views import TITLES_MOD_COLUMNS
 
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def changes(request):
     data = {
-        'scan_date' : UpdateDate.get_latest(TitleComposition)
+        'scan_date' : UpdateDate.get_latest(TitleComposition),
+        'columns': TITLES_MOD_COLUMNS,
+        'datatables_defaults': DATATABLES_DEFAULTS
     }
     return render_to_response("ecm/hr/titles/changes.html", data, Ctx(request))
 

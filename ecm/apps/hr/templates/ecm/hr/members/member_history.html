@@ -47,23 +47,6 @@ function rowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
     return nRow;
 }
 
-$(document).ready(function() {
-    $("#search_form").submit(function(event) {
-        event.preventDefault();
-        $('#history_table').dataTable().fnFilter($("#search_text").val());
-    });
-    $("#search_button").click(function() {
-    	$('#history_table').dataTable().fnFilter($("#search_text").val());
-    });
-    $("#clear_search").click(function() {
-        $("#search_text").val("");
-        $('#history_table').dataTable().fnFilter("");
-    });
-    $('#history_table thead th').click(function(event) {
-        if (!$(event.target).hasClass('sorthandle')) {
-            event.shiftKey = false;
-        }
-    });
-});
+{% include "ecm/hr/search_form.js" %}
 </script>
 {% endblock %}

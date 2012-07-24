@@ -114,38 +114,12 @@
 
 
 <h3>{% trans 'Security Access Changes' %}</h3>
-
-{% with "/hr/members/"|concat:member.characterID|concat:"/accesschanges/data/" as ajaxurl %}
-
 {% datatable 'access_changes_table' access_columns 
              css_class='table table-bordered table-condensed' 
              defaults=datatables_defaults 
-             sAjaxSource=ajaxurl 
+             sAjaxSource="/hr/members/"|concat:member.characterID|concat:"/accesschanges/data/" 
              sCookiePrefix='ecm_member_access_changes_table_' 
              fnRowCallback='membersAccessRowCallback' %}
-<h6>{{ ajaxurl }}</h6>             
-{% endwith %}
-<!-- >table class="table table-bordered table-condensed" id="access_changes_table">
-  <thead>
-    <tr>
-      <th class="top" scope="col" >{% trans 'Change' %}</th>
-      <th class="top" scope="col" >{% trans 'Title/Role' %}</th>
-      <th class="top" scope="col" >{% trans 'Date' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="3" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Change' %}</th>
-      <th>{% trans 'Title/Role' %}</th>
-      <th>{% trans 'Date' %}</th>
-    </tr>
-  </tfoot>
-</table -->
 
 <!-- Skill List  -->
 <!-- ##########################################################################
@@ -165,7 +139,14 @@
 
 {% block post_javascripts %}
 <script type="text/javascript">
-{% include "ecm/hr/members_access_datatable.js" %}
+function membersAccessRowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+    if (aData[0]) {
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
+    } else {
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
+    }
+    return nRow;
+}
 </script>
 
 <script type="text/javascript">
@@ -205,22 +186,6 @@ $(document).ready(function() {
         },
     });
 
-/*   $('#access_changes_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource : "/hr/members/{{ member.characterID }}/accesschanges/data/",
-        aoColumns: [
-            { sTitle: "Change",     sWidth: "15%", sType: "html" ,  bSortable: false },
-            { sTitle: "Title/Role", sWidth: "60%", sType: "html" ,  bSortable: false },
-            { sTitle: "Date",       sWidth: "25%", sType: "string", bSortable: false }
-        ],
-        fnRowCallback : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-            if (aData[0]) {
-                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
-            } else {
-                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
-            }
-            return nRow;
-        },
-    }));*/
 });
 /* Apply a jEditable handler to the "notes" paragraph */
 $('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {

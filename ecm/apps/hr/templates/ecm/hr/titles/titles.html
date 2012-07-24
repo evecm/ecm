@@ -13,61 +13,21 @@
     <h1>{% trans 'Corporation Titles' %} <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small></h1>
 </div>
 
-<table class="table table-bordered table-condensed" id="titles_table">
-  <thead>
-    <tr>
-      <th class="top" scope="col" >{% trans 'Title Name' %}</th>
-      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
-      <th class="top" scope="col" >{% trans 'Members' %}</th>
-      <th class="top" scope="col" >{% trans 'Role Count' %}</th>
-      <th class="top" scope="col" >{% trans 'Last Modified' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="5" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Title Name' %}</th>
-      <th>{% trans 'Access Level' %}</th>
-      <th>{% trans 'Members' %}</th>
-      <th>{% trans 'Role Count' %}</th>
-      <th>{% trans 'Last Modified' %}</th>
-    </tr>
-  </tfoot>
-</table>
-
+{% datatable 'titles_table' columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource='/hr/titles/data/' 
+             sCookiePrefix='ecm_members_table_' 
+             fnRowCallback='titlesRowCallback' %}
 {% endblock %}
 
 
 {% block post_javascripts %}
 <script type="text/javascript">
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+{% include "ecm/hr/titles_datatable.js" %}
 // dataTable setup
 $(document).ready(function() {
-    $('#titles_table').dataTable( {
-        bProcessing: true,
-        bServerSide: true,
-        bAutoWidth: false,
-        iDisplayLength: 25,
-        sAjaxSource: "/hr/titles/data/",
-        sDom: 'rt',
-        aoColumns: [
-            { sTitle: "Title Name",    sWidth: "40%", sType: "html" },
-            { sTitle: "Access Level",  sWidth: "20%", sType: "numeric", bSearchable: false   },
-            { sTitle: "Members",       sWidth: "10%", sType: "html",    bSearchable: false, bSortable: false },
-            { sTitle: "Role Count",    sWidth: "10%", sType: "numeric", bSearchable: false, bSortable: false },
-            { sTitle: "Last Modified", sWidth: "20%", sType: "string",  bSearchable: false, bSortable: false }
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            /* apply color to all access level cells */
-            accessLvl = aData[1];
-            $('td:eq(1)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
-            return nRow;
-        }
-    });
     //disable multi column sorting
     $('#titles_table thead th').click(function(event) {
         if (!$(event.target).hasClass('sorthandle')) {

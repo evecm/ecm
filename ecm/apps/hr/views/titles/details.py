@@ -25,8 +25,9 @@ from django.template.context import RequestContext as Ctx
 
 from ecm.apps.common.models import ColorThreshold
 from ecm.apps.hr.models import TitleComposition, TitleCompoDiff, Title
+from ecm.apps.hr.views import TITLES_DETAIL_COLUMNS, TITLES_MOD_COLUMNS
 from ecm.views.decorators import check_user_access
-from ecm.views import extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.utils.format import print_time_min
 
 
@@ -46,7 +47,10 @@ def details(request, titleID):
     data = {
         "title" : title,
         "member_count" : title.members.count(),
-        "colorThresholds" : ColorThreshold.as_json()
+        "colorThresholds" : ColorThreshold.as_json(),
+        'columns': TITLES_DETAIL_COLUMNS,
+        'modifiedcolumns': TITLES_MOD_COLUMNS,
+        'datatables_defaults': DATATABLES_DEFAULTS 
     }
 
     return render_to_response("ecm/hr/titles/title_details.html", data, Ctx(request))

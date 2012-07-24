@@ -72,24 +72,24 @@ function membersStateLoadParams (oSettings, oData) {
         
 $(document).ready(function () {
 	
-    /* trigger the search when pressing return in the text field */
-    $("#search_form").on('submit', function(event) {
-        event.preventDefault();
-        $('#members_table').dataTable().fnFilter($("#search_text").val());
-    });
-
-    /* reset the search when clicking the "reset" button */
-    $("#clear_search").on('click', function() {
-        $("#search_text").val("");
-        $('#members_table').dataTable().fnFilter("");
-    });
-
-    /* disable multi column sorting */
-    $('#members_table thead th').on('click', function(event) {
-        if (!$(event.target).hasClass('sorthandle')) {
-            event.shiftKey = false;
-        }
-    });
+//    /* trigger the search when pressing return in the text field */
+//    $("#search_form").on('submit', function(event) {
+//        event.preventDefault();
+//        $('#members_table').dataTable().fnFilter($("#search_text").val());
+//    });
+//
+//    /* reset the search when clicking the "reset" button */
+//    $("#clear_search").on('click', function() {
+//        $("#search_text").val("");
+//        $('#members_table').dataTable().fnFilter("");
+//    });
+//
+//    /* disable multi column sorting */
+//    $('#members_table thead th').on('click', function(event) {
+//        if (!$(event.target).hasClass('sorthandle')) {
+//            event.shiftKey = false;
+//        }
+//    });
     
     $('#ships_selector button').on('click', function (event) {
     	event.preventDefault();

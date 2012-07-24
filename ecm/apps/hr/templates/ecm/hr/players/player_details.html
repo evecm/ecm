@@ -53,7 +53,7 @@
 </form>
 
 {% datatable 'players_table' player_columns 
-             css_class='table table-bordered table-condensed' 
+             css_class='table table-bordered table-condensed searchable_table' 
              defaults=datatables_defaults 
              sAjaxSource='/hr/players/'|concat:player.id|concat:'/data/' 
              sCookiePrefix='ecm_player_detail_table_' 
@@ -74,5 +74,6 @@ COOKIE_NAME = 'ecm_player_characters_table_';*/
 {% block post_javascripts %}
 <script type="text/javascript">
 {% include "ecm/hr/players_detail_datatable.js" %}
+{% include "ecm/hr/search_form.js" %}
 </script>
 {% endblock %}

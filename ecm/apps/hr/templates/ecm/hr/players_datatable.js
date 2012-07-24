@@ -17,31 +17,31 @@ function playersRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
     return nRow;
 }
         
-$(document).ready(function () {
-	
-    /* trigger the search when pressing return in the text field */
-    $("#search_form").submit(function(event) {
-        event.preventDefault();
-        $("#players_table").fnFilter($("#search_text").val());
-    });
-
-    /* trigger the search when clicking the "search" button */
-    $("#search_button").click(function() {
-    	$("#players_table").fnFilter($("#search_text").val());
-    });
-
-    /* reset the search when clicking the "reset" button */
-    $("#clear_search").click(function() {
-        $("#search_text").val("");
-        $("#players_table").fnFilter("");
-    });
-
-    /* disable multi column sorting */
-    $('#players_table thead th').click(function(event) {
-        if (!$(event.target).hasClass('sorthandle')) {
-            event.shiftKey = false;
-        }
-    });
-    
-});
+//$(document).ready(function () {
+//	
+//    /* trigger the search when pressing return in the text field */
+//    $("#search_form").submit(function(event) {
+//        event.preventDefault();
+//        $("#players_table").fnFilter($("#search_text").val());
+//    });
+//
+//    /* trigger the search when clicking the "search" button */
+//    $("#search_button").click(function() {
+//    	$("#players_table").fnFilter($("#search_text").val());
+//    });
+//
+//    /* reset the search when clicking the "reset" button */
+//    $("#clear_search").click(function() {
+//        $("#search_text").val("");
+//        $("#players_table").fnFilter("");
+//    });
+//
+//    /* disable multi column sorting */
+//    $('#players_table thead th').click(function(event) {
+//        if (!$(event.target).hasClass('sorthandle')) {
+//            event.shiftKey = false;
+//        }
+//    });
+//    
+//});
 

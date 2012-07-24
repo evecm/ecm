@@ -26,10 +26,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template.context import RequestContext as Ctx
 
 from ecm.views.decorators import check_user_access
-from ecm.views import extract_datatable_params, datatable_ajax_data
+from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.apps.common.models import ColorThreshold
 from ecm.apps.hr.models import Title, Member
-from ecm.apps.hr.views import get_members
+from ecm.apps.hr.views import get_members, MEMBERS_COLUMNS
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -37,7 +37,9 @@ def members(request, titleID):
     data = {
         'title' : get_object_or_404(Title, titleID=int(titleID)),
         'colorThresholds' : ColorThreshold.as_json(),
-        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL
+        'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
+        'columns': MEMBERS_COLUMNS,
+        'datatables_defaults': DATATABLES_DEFAULTS
     }
     return render_to_response("ecm/hr/titles/title_members.html", data, Ctx(request))
 

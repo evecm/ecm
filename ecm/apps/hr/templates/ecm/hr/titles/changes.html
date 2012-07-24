@@ -19,53 +19,20 @@
   <h1>{% trans 'Titles Modifications History' %} <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small></h1>
 </div>
 
-<table class="table table-bordered table-condensed" id="title_changes_table">
-  <thead>
-    <tr>
-      <th class="top" scope="col" >{% trans 'Change' %}</th>
-      <th class="top" scope="col" >{% trans 'Title' %}</th>
-      <th class="top" scope="col" >{% trans 'Role' %}</th>
-      <th class="top" scope="col" >{% trans 'Date' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="4" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Change' %}</th>
-      <th>{% trans 'Member' %}</th>
-      <th>{% trans 'Role' %}</th>
-      <th>{% trans 'Date' %}</th>
-    </tr>
-  </tfoot>
-</table>
+{% datatable 'title_changes_table' modifiedcolumns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource='/hr/titles/changes/data/' 
+             fnRowCallback='titleLastModifiedRowCallback' %}
 {% endblock %}
 
 
 {% block post_javascripts %}
 <script type="text/javascript">
+{% include "ecm/hr/titles_detail_datatable.js" %}
+
 //title_compo_diff_table dataTable setup
 $(document).ready(function() {
-    $('#title_changes_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource: "/hr/titles/changes/data/",
-        aoColumns: [
-            { sTitle: "Change",       sWidth: "5%", sType: "html"  ,    bSortable : false},
-            { sTitle: "Title",      sWidth: "25%", sType: "html"  ,     bSortable : false},
-            { sTitle: "Role",           sWidth: "45%", sType: "html"  ,     bSortable : false},
-            { sTitle: "Modification Date", sWidth: "25%", sType: "string"  ,    bSortable : false}
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            if (aData[0]) {
-                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
-            } else {
-                $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
-            }
-            return nRow;
-        },
-    }));
     $('#title_compo_diff_table thead th').click(function(event) {
         if (!$(event.target).hasClass('sorthandle')) {
             event.shiftKey = false;

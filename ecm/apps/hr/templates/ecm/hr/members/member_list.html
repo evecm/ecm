@@ -30,7 +30,7 @@
 </form>
 
 {% datatable 'members_table' columns 
-             css_class='table table-bordered table-condensed' 
+             css_class='table table-bordered table-condensed searchable_table' 
              defaults=datatables_defaults 
              sAjaxSource='/hr/members/data/' 
              sCookiePrefix='ecm_members_table_' 
@@ -44,6 +44,7 @@ DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 
 {% include "ecm/hr/members_datatable.js" %}
+{% include "ecm/hr/search_form.js" %}
 </script>
 
 

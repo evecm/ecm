@@ -24,37 +24,13 @@
   </div>
 </div>
 
-<table class="table table-bordered table-condensed" id="roles_table">
-  <thead>
-    <tr>
-      <th class="top" scope="col" >{% trans 'Role Name' %}</th>
-      <th class="top" scope="col" >{% trans 'Description' %}</th>
-      <th class="top" scope="col" >{% trans 'Access Level' %}</th>
-      <th class="top" scope="col" >{% trans 'Members' %}</th>
-      <th class="top" scope="col" >{% trans 'Titles' %}</th>
-      <th class="top" scope="col" style="display:none;"></th>
-      <th class="top" scope="col" style="display:none;"></th>
-      <th class="top" scope="col" style="display:none;"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="5" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Role Name' %}</th>
-      <th>{% trans 'Description' %}</th>
-      <th>{% trans 'Access Level' %}</th>
-      <th>{% trans 'Members' %}</th>
-      <th>{% trans 'Titles' %}</th>
-      <th style="display:none;"></th>
-      <th style="display:none;"></th>
-      <th style="display:none;"></th>
-    </tr>
-  </tfoot>
-</table>
+{% datatable 'roles_table' columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource='/hr/roles/data/' 
+             sCookiePrefix='ecm_member_access_changes_table_' 
+             fnRowCallback='rolesRowCallback'
+             fnServerData='rolesServerDataCallback' %}
 {% endblock %}
 
 
@@ -63,94 +39,13 @@
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 ROLE_TYPE = '{{ role_type }}';
 
+{% include "ecm/hr/roles_datatable.js" %}
+
 $(document).ready(function() {
-
-    oTable = $('#roles_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        iDisplayLength: 50,
-        sAjaxSource: '/hr/roles/data/',
-        sDom: 'rt',
-        aoColumns: [
-            { sTitle: "Role Name",    sWidth: "30%", sType: "html",    bSortable: false },
-            { sTitle: "Description",  sWidth: "55%", sType: "string",  bSortable: false },
-            { sTitle: "Access Level", sWidth: "5%", sType: "numeric",  bSortable: false },
-            { sTitle: "Members",      sWidth: "5%", sType: "numeric",  bSortable: false },
-            { sTitle: "Titles",       sWidth: "5%", sType: "numeric",  bSortable: false },
-            { bVisible: false },
-            { bVisible: false },
-            { bVisible: false }
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            /* apply color to all access level cells */
-            accessLvl = aData[2];
-            $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
-
-            /* hide "ID" column and set the id attribute */
-            $('td:eq(5)', nRow).hide();
-            $(nRow).attr("id", aData[5]);
-
-            /* set members tooltip on each row */
-            $('td:eq(6)', nRow).hide();
-            members = aData[6];
-            if (members != "") {
-                $('td:eq(3)', nRow).attr("title", members);
-                $('td:eq(3)', nRow).cluetip({
-                  width: 150,
-                    splitTitle: '|',
-                    dropShadow: false,
-                    cluetipClass: 'jtip',
-                    positionBy: 'mouse',
-                    tracking: true
-                });
-                /* highlight the "Members" cells where there are "direct" members */
-                $('td:eq(3)', nRow).addClass("row-red");
-            }
-
-            /* set titles tooltip on each row */
-            $('td:eq(7)', nRow).hide();
-            titles = aData[7];
-            if (titles != "") {
-                $('td:eq(4)', nRow).attr("title", titles);
-                $('td:eq(4)', nRow).cluetip({
-                  width: 170,
-                    splitTitle: '|',
-                    dropShadow: false,
-                    cluetipClass: 'jtip',
-                    positionBy: 'mouse',
-                    tracking: true
-                });
-            }
-
-            /* Apply jEditable handlers to the cells each time we redraw the table */
-            $('td:eq(2)', nRow).editable( '/hr/roles/update/', {
-                callback: function( sValue, y ) {
-                    var aPos = oTable.fnGetPosition( this );
-                    oTable.fnUpdate( sValue, aPos[0], aPos[1] );
-                },
-                submitdata: function ( value, settings ) {
-                    return { id: this.parentNode.getAttribute('id')};
-                },
-                tooltip   : 'Click to edit...'
-            } );
-
-            return nRow;
-        },
-        
-        /* this function will be called when the table has to query data to be displayed */
-        fnServerData: function ( sSource, aoData, fnCallback ) {
-            /* Add some extra variables to the url */
-            aoData.push( {
-                name: 'role_type',
-                value: ROLE_TYPE
-            } );
-            $.getJSON( sSource, aoData, function (json) {
-                fnCallback(json)
-            } );
-        },
-
-    } ));
     $('#buttons button').click(function () {
         ROLE_TYPE = this.value;
-        oTable.fnDraw();
+        foo = $('#roles_table')
+        $('#roles_table').dataTable().fnDraw();
     });
     
     updateButtons();
