@@ -74,7 +74,7 @@
             {% endif %}
           </ul>
           <p class="navbar-text pull-right">
-            {% if user.is_authenticated %}{% trans 'Logged in as' %}<a href="/account/">{{ user.username }}</a>
+            {% if user.is_authenticated %}{% trans 'Logged in as' %} <a href="/account/">{{ user.username }}</a>
             {% else %}{% trans 'Please log in.' %}
             {% endif %}
           </p>
