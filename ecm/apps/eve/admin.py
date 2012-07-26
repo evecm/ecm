@@ -21,7 +21,7 @@ __author__ = 'diabeteman'
 from django.contrib import admin
 
 from ecm.apps.eve.models import Type, BlueprintType, BlueprintReq, CelestialObject,\
-                                Category, Group, MarketGroup, ControlTowerResource
+                                Category, Group, MarketGroup, ControlTowerResource, SkillReq
 
 
 admin.site.register(Type)
@@ -32,3 +32,4 @@ admin.site.register(CelestialObject)
 admin.site.register(Category)
 admin.site.register(Group)
 admin.site.register(ControlTowerResource)
+admin.site.register(SkillReq)

@@ -430,15 +430,24 @@ class CelestialObject(models.Model):
         return self.itemID
 
 #------------------------------------------------------------------------------
-class Skills(models.Model):
+class SkillReq(models.Model):
     
     class Meta:
         app_label = 'eve'
-        
-    item = models.ForeignKey('Type', related_name='skills', primary_key=True)
-    skill1 = models.ForeignKey('Type', related_name='+', null=True, blank=True)
-    skill2 = models.ForeignKey('Type', related_name='+', null=True, blank=True)
-    skill3 = models.ForeignKey('Type', related_name='+', null=True, blank=True)
-    skill1req = models.SmallIntegerField(null=True, blank=True)
-    skill2req = models.SmallIntegerField(null=True, blank=True)
-    skill3req = models.SmallIntegerField(null=True, blank=True)
+        ordering = ['item', 'skill']
+    
+    # we must add a forged primary key because django doesn't support multi-column primary keys
+    id = models.BigIntegerField(primary_key=True)   #@ReservedAssignment
+    item = models.ForeignKey('Type', related_name='skill_reqs')
+    skill = models.ForeignKey('Type', related_name='+')
+    required_level = models.SmallIntegerField()
+
+    def __unicode__(self):
+        return u"%s -> %s = %d" % (self.item.typeName, self.skill.typeName, self.required_level) 
+
+    def __hash__(self):
+        return self.id
+    
+    def __eq__(self, other):
+        return isinstance(other, SkillReq) and other.id == self.id
+

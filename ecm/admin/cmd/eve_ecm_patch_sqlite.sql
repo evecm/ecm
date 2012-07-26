@@ -26,7 +26,7 @@ DELETE FROM "eve_marketgroup";
 DELETE FROM "eve_type";
 DELETE FROM "eve_group";
 DELETE FROM "eve_category";
-DELETE FROM "eve_skills";
+DELETE FROM "eve_skillreq";
 
 
 
@@ -270,22 +270,49 @@ INSERT INTO "eve_controltowerresource"
 ----------------------------------------------------------
 --- add our enhanced skills reference.
 ---------------------------------------------------------
-INSERT INTO "eve_skills"
-	SELECT 
-		inv."typeID",
-		sk1."valueInt",
-		sk2."valueInt",
-		sk3."valueInt",
-		sk1req."valueInt",
-		sk2req."valueInt",
-		sk3req."valueInt"
-	FROM "eve"."invTypes" inv
-		LEFT JOIN "eve"."dgmTypeAttributes" AS sk1 ON (inv."typeID" = sk1."typeID" AND sk1."attributeID" = 182)
-		LEFT JOIN "eve"."dgmTypeAttributes" AS sk2 ON (inv."typeID" = sk2."typeID" AND sk2."attributeID" = 183)
-		LEFT JOIN "eve"."dgmTypeAttributes" AS sk3 ON (inv."typeID" = sk3."typeID" AND sk3."attributeID" = 184)
-		LEFT JOIN "eve"."dgmTypeAttributes" AS sk1req ON (inv."typeID" = sk1req."typeID" AND sk1req."attributeID" = 277)
-		LEFT JOIN "eve"."dgmTypeAttributes" AS sk2req ON (inv."typeID" = sk2req."typeID" AND sk2req."attributeID" = 278)
-		LEFT JOIN "eve"."dgmTypeAttributes" AS sk3req ON (inv."typeID" = sk3req."typeID" AND sk3req."attributeID" = 279);
+INSERT INTO "eve_skillreq"
+	SELECT
+	    t."typeID" * 100000 + CAST(IFNULL(s."valueInt", s."valueFloat") AS INTEGER) AS "id",
+	    t."typeID" AS "item_id",
+	    CAST(IFNULL(s."valueInt", s."valueFloat") AS INTEGER) AS "skill_id",
+	    CAST(IFNULL(r."valueInt", r."valueFloat") AS INTEGER) AS "required_level"
+	FROM "eve_type" AS t
+	    JOIN "eve"."dgmTypeAttributes" s ON (t."typeID" = s."typeID" AND s."attributeID" = 182)
+	    JOIN "eve"."dgmTypeAttributes" r ON (t."typeID" = r."typeID" AND r."attributeID" = 277)
+	WHERE
+	    t."published" = 1
+      AND
+        CAST(IFNULL(s."valueInt", s."valueFloat") AS INTEGER) IN (SELECT "typeID" FROM "eve_type")
+  UNION
+	SELECT
+	    t."typeID" * 100000 + CAST(IFNULL(s."valueInt", s."valueFloat") AS INTEGER) AS "id",
+	    t."typeID" AS "item_id",
+	    CAST(IFNULL(s."valueInt", s."valueFloat") AS INTEGER) AS "skill_id",
+	    CAST(IFNULL(r."valueInt", r."valueFloat") AS INTEGER) AS "required_level"
+	FROM "eve_type" AS t
+	    JOIN "eve"."dgmTypeAttributes" s ON (t."typeID" = s."typeID" AND s."attributeID" = 183)
+	    JOIN "eve"."dgmTypeAttributes" r ON (t."typeID" = r."typeID" AND r."attributeID" = 278)
+	WHERE
+	    t."published" = 1
+      AND
+        CAST(IFNULL(s."valueInt", s."valueFloat") AS INTEGER) IN (SELECT "typeID" FROM "eve_type")
+  UNION
+	SELECT
+	    t."typeID" * 100000 + CAST(IFNULL(s."valueInt", s."valueFloat") AS INTEGER) AS "id",
+	    t."typeID" AS "item_id",
+	    CAST(IFNULL(s."valueInt", s."valueFloat") AS INTEGER) AS "skill_id",
+	    CAST(IFNULL(r."valueInt", r."valueFloat") AS INTEGER) AS "required_level"
+	FROM "eve_type" AS t
+	    JOIN "eve"."dgmTypeAttributes" s ON (t."typeID" = s."typeID" AND s."attributeID" = 184)
+	    JOIN "eve"."dgmTypeAttributes" r ON (t."typeID" = r."typeID" AND r."attributeID" = 279)
+	WHERE
+	    t."published" = 1
+      AND
+        CAST(IFNULL(s."valueInt", s."valueFloat") AS INTEGER) IN (SELECT "typeID" FROM "eve_type")
+;
+
+
+
 
 COMMIT;
 VACUUM;
