@@ -30,6 +30,11 @@ WALLET_JOURNAL_COLUMNS = [
         {'sTitle':tr('Balance'),      'sWidth':'15%', 'sType':'string', 'sClass':'right', },
         {'sTitle':tr('Reason'),     'bVisible':False, },
         ]
+
+TAX_CONTRIB_COLUMNS = [
+        {'sTitle':tr('Member'),    'sWidth':'50%',     'sType':'html', },
+        {'sTitle':tr('Contibutions'),    'sWidth':'50%',     'sType':'html', 'sClass':'right'},
+        ]
 #------------------------------------------------------------------------------
 def wallet_url(wallet):
     return "/accounting/wallet/%d/" % wallet.walletID

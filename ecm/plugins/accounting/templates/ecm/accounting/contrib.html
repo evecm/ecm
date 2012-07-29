@@ -46,6 +46,16 @@
 
 <div class="row-fluid">
   <div class="span6">
+      <p> Aze breaking things again</p>
+      {% datatable 'tax_contrib_columns' columns
+            css_class='table table-boredered table-condensed'
+            defaults=datatable_defaults
+            sAjaxSource="/accounting/contributions/members/data/"
+            sCookiePrefix='ecm_tax_contib_table_'
+            fnRowCallback='contribRowCallback'
+            %}
+
+      <p> end break</p>
     <table class="table table-bordered table-condensed" id="member_contrib_table">
       <thead>
         <tr>
@@ -95,6 +105,8 @@
 {% block compressed_javascripts %}
 <script type="text/javascript" src="{% static 'ecm/js/lib/jquery.ui.js' %}"></script>
 <script type="text/javascript">
+{% include "ecm/accounting/contrib.js" %}
+
 FROM_DATE = "{{ from_date }}";
 TO_DATE = "{{ to_date }}";
 DAY = 1000 * 60 * 60 * 24;

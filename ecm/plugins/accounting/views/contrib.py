@@ -38,7 +38,8 @@ from ecm.apps.common.models import UpdateDate
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
 from ecm.plugins.accounting.models import JournalEntry
-from ecm.views import extract_datatable_params
+from ecm.views import extract_datatable_params, DATATABLES_DEFAULTS, datatable_ajax_data
+from ecm.plugins.accounting.views import TAX_CONTRIB_COLUMNS
 
 DATE_PATTERN = "%Y-%m-%d"
 OPERATION_TYPES = (
@@ -70,6 +71,9 @@ def member_contrib(request):
         'from_date' : datetime.strftime(from_date, DATE_PATTERN),
         'to_date' : datetime.strftime(to_date, DATE_PATTERN),
         'total_contribs' : total_contribs,
+        'datatable_defaults': DATATABLES_DEFAULTS,
+        'columns': TAX_CONTRIB_COLUMNS,
+        
     }
     return render_to_response("ecm/accounting/contrib.html", data, Ctx(request))
 
