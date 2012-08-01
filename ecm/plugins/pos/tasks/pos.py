@@ -103,12 +103,6 @@ def get_sov_info(systems):
 
 #------------------------------------------------------------------------------
 def get_basic_info(pos, api_row):
-    #Add pydevd to the PYTHONPATH (may be skipped if that path is already added in the PyDev configurations)
-    import sys;sys.path.append(r'/home/johnfoo/Downloads/Aptana Studio 3/plugins/org.python.pydev.debug_2.4.0.2012020116/pysrc')
-
-    import pydevd
-    pydevd.patch_django_autoreload()
-    pydevd.settrace()
     """
     The XML API result of StarbaseList is
 
