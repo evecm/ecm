@@ -32,7 +32,7 @@ load-plugins=
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
-disable=C0111,C0112,W0212,W0613
+disable=C0111,C0112,W0212,W0613,E1101
 
 
 [REPORTS]
@@ -93,7 +93,7 @@ attr-rgx=[a-z_][A-Za-z0-9_]{2,30}$
 argument-rgx=[a-z_][A-Za-z0-9_]{2,30}$
 
 # Regular expression which should only match correct variable names
-#variable-rgx=[a-z_][A-Za-z0-9_]{2,30}$
+variable-rgx=[a-z_][A-Za-z0-9_]{0,30}$
 
 # Regular expression which should only match correct list comprehension /
 # generator expression variable names
@@ -148,7 +148,7 @@ ignore-mixin-members=yes
 
 # List of classes names for which member attributes should not be checked
 # (useful for classes with attributes dynamically set).
-ignored-classes=Model
+ignored-classes=
 
 # When zope mode is activated, add a predefined set of Zope acquired attributes
 # to generated-members.
