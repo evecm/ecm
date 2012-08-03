@@ -204,6 +204,7 @@ def get_details(pos, api, sov):
                                      type_id = fuel.typeID,
                                      quantity = fuel.quantity,
                                      date = api._meta.currentTime)
+
         base_fuel_cons = ControlTowerResource.objects.get(control_tower=pos.type_id, resource=fuel.typeID).quantity
         corp = Corp.objects.latest()
         # sov fuel check

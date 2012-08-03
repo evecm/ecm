@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
 
 __date__ = "2012 04 06"
 __author__ = "tash"
@@ -27,6 +26,7 @@ from ecm.utils import tools
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.common import api
 from ecm.plugins.accounting.models import MarketOrder
+from django.utils import timezone
 
 LOG = logging.getLogger(__name__)
 
@@ -75,6 +75,7 @@ def write_orders(new_orders, old_orders):
     LOG.info("%d new orders added." % len(new_orders))
 
 def create_order_fom_row(row):
+    row.issued = timezone.make_aware(row.issued, timezone.utc) # make issue date tz aware. use utc.
     return MarketOrder(orderID = row.orderID,
                        charID = row.charID,
                        stationID = row.stationID,

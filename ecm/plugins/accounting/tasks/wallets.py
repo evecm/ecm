@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (c) 2010-2012 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
@@ -14,7 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
 
 __date__ = "2011-03-27"
 __author__ = "diabeteman"
@@ -30,6 +30,7 @@ from ecm.apps.corp.models import Wallet
 from ecm.apps.common.models import UpdateDate
 from ecm.plugins.accounting.tasks import fix_encoding
 from ecm.plugins.accounting.models import JournalEntry, TransactionEntry
+from django.utils import timezone
 
 LOG = logging.getLogger(__name__)
 
@@ -77,6 +78,8 @@ def write_journal_results(wallet, entries):
             e.reason = e.reason[len('DESC: '):]
             e.reason = fix_encoding(e.reason).strip('\'" \t\n')
             e.reason = u'DESC: ' + e.reason
+        e.date = timezone.make_aware(e.date, timezone.utc) #make e.date aware, use utc
+
         JournalEntry.objects.create(refID=e.refID,
                                     wallet=wallet,
                                     date=e.date,

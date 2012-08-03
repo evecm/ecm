@@ -164,6 +164,22 @@ def populate_contract(row):
     except KeyError:
         contract_availability = -1 # unknown
     
+    try:
+        row.dateIssued = timezone.make_aware(row.dateIssued, timezone.utc)
+    except AttributeError:
+        row.dateIssued = None
+    try:
+        row.dateAccepted = timezone.make_aware(row.dateAccepted, timezone.utc)
+    except AttributeError:
+        row.dateAccepted = None
+    try:
+        row.dateCompleted = timezone.make_aware(row.dateCompleted, timezone.utc)
+    except AttributeError:
+        row.dateCompleted = None
+    try:
+        row.dateExpired = timezone.make_aware(row.dateExpired, timezone.utc)
+    except AttributeError:
+        row.dateExpired = None
     return Contract(contractID=row.contractID,
                     issuerID=row.issuerID,
                     issuerCorpID=row.issuerCorpID,
@@ -176,10 +192,10 @@ def populate_contract(row):
                     title=row.title,
                     forCorp=bool(row.forCorp),
                     availability=contract_availability,
-                    dateIssued=row.dateIssued or None,
-                    dateExpired=row.dateExpired or None,
-                    dateAccepted=row.dateAccepted or None,
-                    dateCompleted=row.dateCompleted or None,
+                    dateIssued=row.dateIssued,
+                    dateExpired=row.dateExpired,
+                    dateAccepted=row.dateAccepted,
+                    dateCompleted=row.dateCompleted,
                     numDays=row.numDays,
                     price=row.price,
                     reward=row.reward,

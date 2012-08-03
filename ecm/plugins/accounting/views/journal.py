@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
-
 __date__ = "2011 5 23"
 __author__ = "diabeteman"
 
@@ -32,6 +30,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.db.models import Q
 from django.db.models.aggregates import Min, Max
+from django.utils import timezone
 
 from ecm.utils.format import print_time_min, print_float
 from ecm.utils import is_number
@@ -105,8 +104,8 @@ def journal_data(request):
         params.entryTypeID = int(REQ.get('entryTypeID', 0))
         params.amount = request.GET.get('amount',None)
         params.comparator = request.GET.get('comparator','gt')
-        params.from_date = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
-        params.to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+        params.from_date   = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
+        params.to_date     = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
     except:
         return HttpResponseBadRequest()
 
