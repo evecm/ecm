@@ -94,7 +94,7 @@
           </thead>
           <tbody>{% for row in order.rows.all %}
             <tr>
-              <td><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
+              <td><img src="//image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
               <td><strong>{{row.catalog_entry.typeName}}</strong></td>
               <td>{{row.quantity|ecm_quantity}}</td>
               <td {%if row.quote %}class="right"{%endif%}>{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>

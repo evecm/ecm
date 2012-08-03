@@ -61,23 +61,29 @@
         </a>
         <span class="navbar-text pull-left"><em>{{corp_name}}</em></span>
         <div class="nav-collapse">
+          {% if user.is_authenticated %}
           <ul class="nav pull-right">
-            {% if user.is_authenticated %}
-            <li {%if '/account/' in request_path%}class="active"{%endif%} ><a href="/account/" ></i>{% trans 'Account' %}</a></li>
-            <li><a href="/account/logout/" title="{% trans 'Log out from ECM' %}">{% trans 'Logout' %}</a></li>
-            {% else %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" 
+                          data-toggle="dropdown">
+                <i class="icon-user icon-white"></i> {{ user.username }} <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="/account/">{% trans 'Account' %}</a></li>
+                {% if user.is_staff and user.is_superuser %}
+                <li><a href="/admin/">{% trans 'Administration' %}</a></li>
+                {% endif %}
+                <li class="divider"></li>
+                <li><a href="/account/logout/">{% trans 'Logout' %}</a></li>
+              </ul>
+            </li>
+          </ul>
+          {% else %}
+          <ul class="nav pull-right">
             <li><a href="/account/login/?next=/account/" >{% trans 'Login' %}</a></li>
             <li><a href="/account/create/" >{% trans 'Create Account' %}</a></li>
-            {% endif %}
-            {% if user.is_staff and user.is_superuser %}
-            <li><a href="/admin/" title="{% trans 'Restricted area :-)' %}">{% trans 'Administration' %}</a></li>
-            {% endif %}
           </ul>
-          <p class="navbar-text pull-right">
-            {% if user.is_authenticated %}{% trans 'Logged in as' %} <a href="/account/">{{ user.username }}</a>
-            {% else %}{% trans 'Please log in.' %}
-            {% endif %}
-          </p>
+          {% endif %}
         </div><!--/.nav-collapse -->
       </div>
     </div>
