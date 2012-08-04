@@ -78,6 +78,7 @@ setup(
     include_package_data = True,
     zip_safe = False,
     entry_points = {
-        'console_scripts': ('ecm-admin = ecm.admin.cli:main'),
+        'console_scripts': ('ecm-admin = ecm.admin.cli:main',),
+        'distutils.commands': ('compilemessages = ecm.utils.distrib:CompileMessages',),
     },
 )
