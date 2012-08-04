@@ -115,7 +115,11 @@ class Character:
 
 def get_account_characters(user_api):
     connection = connect_user(user_api)
-    response = connection.account.APIKeyInfo()
+    response = None
+    try:
+        response = connection.account.APIKeyInfo()
+    except eveapi.Error:
+        return []
     corp = Corp.objects.get(id=1)
     characters = []
     if response.key.type.lower() != "account":

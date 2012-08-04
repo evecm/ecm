@@ -24,7 +24,7 @@
 
 <div class="row-fluid">
   <div class="span1">
-    <img src="http://image.eveonline.com/Type/{{blueprint.typeID}}_64.png" />
+    <img src="//image.eveonline.com/Type/{{blueprint.typeID}}_64.png" />
   </div>
   <div class="span3">
     <dl class="table">
@@ -107,7 +107,7 @@ $(document).ready(function() {
             { /* 3 Waste */       sWidth: "10%", bSortable: false},
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            $('td:eq(0)', nRow).html('<img src="http://image.eveonline.com/Type/'+aData[0]+'_32.png"/>');
+            $('td:eq(0)', nRow).html('<img src="//image.eveonline.com/Type/'+aData[0]+'_32.png"/>');
             $('td:eq(2)', nRow).addClass('right');
             $('td:eq(3)', nRow).addClass('right');
             return nRow;

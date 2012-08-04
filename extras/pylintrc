@@ -32,7 +32,7 @@ load-plugins=
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
-disable=C0111,C0112,W0212,W0613
+disable=C0111,C0112,W0212,W0613,E1101,W0232,R0801
 
 
 [REPORTS]
@@ -84,23 +84,23 @@ class-rgx=[A-Z_][a-zA-Z0-9]+$
 function-rgx=[a-z_][a-z0-9_]{2,30}$
 
 # Regular expression which should only match correct method names
-method-rgx=[a-z_][a-z0-9_]{2,30}$
+method-rgx=[a-z_][A-Za-z0-9_]{2,30}$
 
 # Regular expression which should only match correct instance attribute names
-attr-rgx=[a-z_][A-Za-z0-9_]{2,30}$
+attr-rgx=(([a-z_][A-Za-z0-9_]{2,30})|([A-Z_][A-Z0-9_]{2,30}))$
 
 # Regular expression which should only match correct argument names
 argument-rgx=[a-z_][A-Za-z0-9_]{2,30}$
 
 # Regular expression which should only match correct variable names
-variable-rgx=[a-z_][A-Za-z0-9_]{2,30}$
+variable-rgx=[a-z_][A-Za-z0-9_]{0,30}$
 
 # Regular expression which should only match correct list comprehension /
 # generator expression variable names
 inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,x,y,z,X,Y,Z,_
+good-names=i,j,k,x,y,z,X,Y,Z,_,GET,POST
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata
@@ -113,7 +113,7 @@ no-docstring-rgx=(__.*__)|Meta
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=120
 
 # Maximum number of lines in a module
 max-module-lines=1000
@@ -177,7 +177,7 @@ additional-builtins=
 
 # List of interface methods to ignore, separated by a comma. This is used for
 # instance to not check methods defines in Zope's Interface base class.
-ignore-iface-methods=isImplementedBy,deferred,extends,names,namesAndDescriptions,queryDescriptionFor,getBases,getDescriptionFor,getDoc,getName,getTaggedValue,getTaggedValueTags,isEqualOrExtendedBy,setTaggedValue,isImplementedByInstancesOf,adaptWith,is_implemented_by
+ignore-iface-methods=isImplementedBy,deferred,extends,names,namesAndDescriptions,queryDescriptionFor,getBases,getDescriptionFor,getDoc,getName,getTaggedValue,getTaggedValueTags,isEqualOrExtendedBy,setTaggedValue,isImplementedByInstancesOf,adaptWith,is_implemented_by,Meta
 
 # List of method names used to declare (i.e. assign) instance attributes.
 defining-attr-methods=__init__,__new__,setUp

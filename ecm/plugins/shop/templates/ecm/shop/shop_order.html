@@ -69,7 +69,7 @@
     <tbody id="items">
       {% for row in order.rows.all %}
       <tr id="{{row.catalog_entry.typeID}}">
-        <td><img src="http://image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
+        <td><img src="//image.eveonline.com/Type/{{row.catalog_entry.typeID}}_32.png" /></td>
         <td><strong>{{row.catalog_entry.typeName}}</strong></td>
         <td class="right price" price="{{row.quote}}">{%if row.quote %}{{row.quote|ecm_price}} ISK{%else%}N/A{%endif%}</td>
         <td><input class="span1" type="text" name="{{row.catalog_entry.typeID}}" value="{{row.quantity}}" /></td>
@@ -133,7 +133,7 @@
 <script>
 NEW_ITEM =
 '<tr id="%typeID">' +
- '<td><img src="http://image.eveonline.com/Type/%typeID_32.png" /></td>' +
+ '<td><img src="//image.eveonline.com/Type/%typeID_32.png" /></td>' +
  '<td><strong>%typeName</strong></td>' +
  '<td class="right price" price="%price">%formattedPrice</td>' +
  '<td><input class="span1" type="text" name="%typeID" value="%quantity" /></td>' +

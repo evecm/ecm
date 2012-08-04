@@ -25,7 +25,7 @@
 </div>
 <div class="row-fluid">
   <div class="span1">
-    <img src="http://image.eveonline.com/Type/{{item.typeID}}_64.png" />
+    <img src="//image.eveonline.com/Type/{{item.typeID}}_64.png" />
   </div>
   <div class="span3">
   <dl class="table">
@@ -59,7 +59,7 @@
   {% for bp in item.blueprints.all %}
     <tr id="{{bp.id}}">
       <td><a href="{{bp.url}}" title="{% trans 'Blueprint details' %}">
-        <img src="http://image.eveonline.com/Type/{{bp.typeID}}_32.png"/>
+        <img src="//image.eveonline.com/Type/{{bp.typeID}}_32.png"/>
       </a></td>
       <td class="me editable center" id="{{bp.id}}">{{bp.me}}</td>
       <td class="pe editable center" id="{{bp.id}}">{{bp.pe}}</td>
@@ -86,7 +86,7 @@
 <script>
 NEW_BP = '<tr id="%id">' +
 '<td><a href="%url" title="Blueprint details">' +
-  '<img src="http://image.eveonline.com/Type/%typeID_32.png" />' +
+  '<img src="//image.eveonline.com/Type/%typeID_32.png" />' +
 '</a></td>' +
 '<td class="me editable center" id="%id">%me</td>' +
 '<td class="pe editable center" id="%id">%pe</td>' +

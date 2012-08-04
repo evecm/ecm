@@ -87,8 +87,8 @@ def member_contrib_data(request):
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
-        params.from_date = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
-        params.to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+        params.from_date = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
+        params.to_date = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
     except:
         return HttpResponseBadRequest()
 
@@ -124,8 +124,8 @@ def system_contrib_data(request):
     try:
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
-        params.from_date = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
-        params.to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+        params.from_date = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
+        params.to_date = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
         # In the database query below, we use a BETWEEN operator.
         # The upper bound 'to_date' will be excluded from the interval
         # because it is a datetime with time set to 00:00 (beginning of the day).
@@ -165,8 +165,8 @@ def total_contrib_data(request):
     """
     try:
         REQ = request.GET if request.method == 'GET' else request.POST
-        from_date = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
-        to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+        from_date = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
+        to_date = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
     except (KeyError, ValueError):
         from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
         if from_date is None: from_date = datetime.utcfromtimestamp(0)

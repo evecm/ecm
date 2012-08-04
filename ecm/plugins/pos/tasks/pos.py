@@ -129,9 +129,13 @@ def get_basic_info(pos, api_row):
     pos.location_id = api_row.locationID
     pos.moon_id = api_row.moonID
     pos.type_id = api_row.typeID
+    pos.state = api_row.state
 
     pos.location = CelestialObject.objects.get(itemID=pos.location_id).itemName
-    pos.moon = CelestialObject.objects.get(itemID=pos.moon_id).itemName
+    if pos.state != 0: #unanchored
+        pos.moon = CelestialObject.objects.get(itemID=pos.moon_id).itemName
+    else:
+        pos.moon = tr('unanchored')
 
     item = Type.objects.get(pk=pos.type_id)
     pos.type_name = item.typeName
@@ -200,6 +204,7 @@ def get_details(pos, api, sov):
                                      type_id = fuel.typeID,
                                      quantity = fuel.quantity,
                                      date = api._meta.currentTime)
+
         base_fuel_cons = ControlTowerResource.objects.get(control_tower=pos.type_id, resource=fuel.typeID).quantity
         corp = Corp.objects.latest()
         # sov fuel check

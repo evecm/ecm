@@ -17,6 +17,7 @@
 
 from __future__ import with_statement
 import os
+from django.utils.crypto import get_random_string
 
 __date__ = '2012 3 23'
 __author__ = 'diabeteman'
@@ -164,6 +165,11 @@ def write_settings(command, options, instance_dir):
     config.set('email', 'admin_email', str(options.admin_email))
     config.set('email', 'default_from_email', str(options.server_email))
     config.set('email', 'server_email', str(options.server_email))
+    
+    # Create a random SECRET_KEY hash to put it in the main settings.
+    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+    config.set('misc', 'secret_key', get_random_string(50, chars))
+    
     settings_fd = open(settings_file, 'w')
     config.write(settings_fd)
     settings_fd.close()

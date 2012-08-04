@@ -23,7 +23,7 @@
 
 <div class="row-fluid">
   <div class="span2">
-    <img src="http://image.eveonline.com/Render/{{pos.type_id}}_128.png" title="{{pos.type_name}}"/>
+    <img src="//image.eveonline.com/Render/{{pos.type_id}}_128.png" title="{{pos.type_name}}"/>
   </div>
   <div class="span4">
     <h3>General Info</h3>
@@ -191,7 +191,7 @@ $(document).ready(function() {
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             fuelTypeID = aData[0];
             fuelTypeName = aData[1];
-            fuelImgUrl = 'http://image.eveonline.com/Type/' + fuelTypeID + '_32.png';
+            fuelImgUrl = '//image.eveonline.com/Type/' + fuelTypeID + '_32.png';
             $('td:eq(0)', nRow).html('<img src="' + fuelImgUrl + '" title="' + fuelTypeName + '"/>');
             for (i=2; i<6; i++) {
                 $('td:eq(' + i + ')', nRow).addClass('right');
@@ -216,7 +216,7 @@ $(document).ready(function() {
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             fuelTypeID = aData[0];
             fuelTypeName = aData[1];
-            fuelImgUrl = 'http://image.eveonline.com/Type/' + fuelTypeID + '_32.png';
+            fuelImgUrl = '//image.eveonline.com/Type/' + fuelTypeID + '_32.png';
             $('td:eq(0)', nRow).html('<img src="' + fuelImgUrl + '" title="' + fuelTypeName + '"/>');
             for (i=2; i<6; i++) {
                 $('td:eq(' + i + ')', nRow).addClass('right');

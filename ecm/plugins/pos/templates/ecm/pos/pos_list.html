@@ -87,7 +87,7 @@ $(document).ready(function() {
         ],
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             posTypeID = aData[2];
-            posImgUrl = 'http://image.eveonline.com/Type/' + posTypeID + '_32.png';
+            posImgUrl = '//image.eveonline.com/Type/' + posTypeID + '_32.png';
             $('td:eq(2)', nRow).html('<img src="' + posImgUrl + '" title="' + aData[7] + '"/>');
 
             posState = aData[3];

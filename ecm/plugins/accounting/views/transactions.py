@@ -32,6 +32,7 @@ from django.template.context import RequestContext as Ctx
 from django.db.models import Q
 from django.db.models.aggregates import Min, Max
 from django.utils.text import truncate_words
+from django.utils import timezone
 
 from ecm.utils.format import print_time_min, print_float
 from ecm.utils import is_number
@@ -108,8 +109,8 @@ def transactions_data(request):
         params.entryForID  = int(REQ.get('entryForID', -1))
         params.amount      = request.GET.get('amount', None)
         params.comparator  = request.GET.get('comparator', 'gt')
-        params.from_date   = datetime.strptime(REQ.get('from_date', None), DATE_PATTERN)
-        params.to_date     = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+        params.from_date   = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
+        params.to_date     = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
     except:
         return HttpResponseBadRequest()
     query = TransactionEntry.objects.select_related(depth=1).all().order_by('-date')

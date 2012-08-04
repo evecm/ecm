@@ -1,0 +1,178 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# johnfoo <edouard.chamillard@gmail.com>, 2012.
+# Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>, 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: 2.0.5.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-30 23:42+0200\n"
+"PO-Revision-Date: 2012-07-31 21:31+0200\n"
+"Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
+"Language-Team: German <>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bits\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"X-Generator: Lokalize 1.4\n"
+
+#: templates/pos_details.html:3
+msgid "POS Details"
+msgstr "POS Details"
+
+#: templates/pos_details.html:10 templates/pos_list.html:12
+msgid "Home"
+msgstr "Start"
+
+#: templates/pos_details.html:11 templates/pos_list.html:4
+#: templates/pos_list.html.py:13
+msgid "POS"
+msgstr "POS"
+
+#: templates/pos_details.html:28
+msgid "State"
+msgstr "Status"
+
+#: templates/pos_details.html:30
+msgid "Online since"
+msgstr "Online seit"
+
+#: templates/pos_details.html:32
+msgid "POS type"
+msgstr "POS Typ"
+
+#: templates/pos_details.html:37
+msgid "Links"
+msgstr ""
+
+#: templates/pos_details.html:47
+msgid "Access Control"
+msgstr "Zugriffsrechte"
+
+#: templates/pos_details.html:49
+msgid "Allow corp members in force field"
+msgstr "Corpmitglieder im Force-Field erlaufen"
+
+#: templates/pos_details.html:51
+msgid "Allow ally members in force field"
+msgstr "Ally-Mitglieder im Force-Field erlauben"
+
+#: templates/pos_details.html:53
+msgid "Can view fuel bay"
+msgstr "Kann in den Treibstoffhangar sehen"
+
+#: templates/pos_details.html:55
+msgid "Can take in fuel bay"
+msgstr "Kann aus dem Traibstoffhangar nehmen"
+
+#: templates/pos_details.html:57
+msgid "Can anchor modules"
+msgstr "Kann Module verankern"
+
+#: templates/pos_details.html:59
+msgid "Can unanchor modules"
+msgstr "Kann Module entankern"
+
+#: templates/pos_details.html:61
+msgid "Can online modules"
+msgstr "Kann Module online nehmen"
+
+#: templates/pos_details.html:63
+msgid "Can offline modules"
+msgstr "Kann Module offline nehmen"
+
+#: templates/pos_details.html:68
+msgid "Combat Settings"
+msgstr "Kampfeinstellungen"
+
+#: templates/pos_details.html:71
+msgid "Attack when standing is below"
+msgstr "Angriff, wenn Standing unter"
+
+#: templates/pos_details.html:72
+msgid "use standings from"
+msgstr "Standings benutzen von"
+
+#: templates/pos_details.html:74
+msgid "Attack on bad standing"
+msgstr "Angriff auf Standing basierend"
+
+#: templates/pos_details.html:78
+msgid "Attack when security status is below"
+msgstr "Angriff, wenn Sicherheitsstatus unter"
+
+#: templates/pos_details.html:81
+msgid "Attack when security status is bad"
+msgstr "Angriff bei schlechtem Sicherheitsstatus"
+
+#: templates/pos_details.html:84
+msgid "Attack on concord flag"
+msgstr "Angriff bei CONCORD-Flag"
+
+#: templates/pos_details.html:86
+msgid "Attack on aggression"
+msgstr "Angriff bei Agressions-Flag"
+
+#: templates/pos_details.html:88
+msgid "Attack war targets"
+msgstr "Kriegsziele angreifen"
+
+#: templates/pos_details.html:94
+msgid "Fuel Levels"
+msgstr "Füllstand"
+
+#: templates/pos_details.html:106 templates/pos_details.html.py:123
+#: templates/pos_details.html:155 templates/pos_list.html:50
+msgid "Loading data from server..."
+msgstr "Lade Daten vom Server..."
+
+#: templates/pos_details.html:142
+msgid "Add/Remove"
+msgstr "Hinzufügen/Entfernen"
+
+#: templates/pos_details.html:251
+msgid "Click to Change Name..."
+msgstr "Klicken, um den Namen zu ändern..."
+
+#: templates/pos_details.html:257
+msgid "Click to edit..."
+msgstr "Klicken zum Editieren..."
+
+#: templates/pos_list.html:25
+msgid "Search"
+msgstr "Suche"
+
+#: templates/pos_list.html:26
+msgid "Reset"
+msgstr "Reset"
+
+#: templates/pos_list.html:28
+msgid "Display mode"
+msgstr "Anzeigemodus"
+
+#: templates/pos_list.html:31
+msgid "Show remaining fuel quantities"
+msgstr "Zeige verbleibende Spriteinheiten"
+
+#: templates/pos_list.html:31
+msgid "Quantities"
+msgstr "Einheiten"
+
+#: templates/pos_list.html:33
+msgid "Show remaining fuel time (in days)"
+msgstr "Zeige verbleibende Laufzeit (in Tagen)"
+
+#: templates/pos_list.html:33
+msgid "Days"
+msgstr "Tage"
+
+#: templates/pos_list.html:35
+msgid "Show remaining fuel time (in hours)"
+msgstr "Zeige verbleibende Laufzeit (in Stunden)"
+
+#: templates/pos_list.html:35
+msgid "Hours"
+msgstr "Stunden"
+
