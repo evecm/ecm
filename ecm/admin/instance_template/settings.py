@@ -57,7 +57,7 @@ if not config.read(CONFIG_FILES):
     raise RuntimeError('Could not find ECM configuration. Looked in %s.' % CONFIG_FILES)
 
 EXTERNAL_HOST_NAME = config.get('misc', 'external_host_name')
-USE_HTTPS = config.get('misc', 'use_https')
+USE_HTTPS = config.getboolean('misc', 'use_https')
 
 ###############################################################################
 ###################
@@ -185,7 +185,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 ########
 USE_I18N = config.getboolean('misc', 'use_i18n')
 TIME_ZONE = config.get('misc', 'time_zone') or None # use system default
-SECRET_KEY = 'u-lb&sszrr4z(opwaumxxt)cn*ei-m3tu3tr_iu4-8mjw+9ai^'
+SECRET_KEY = config.get('misc', 'secret_key')
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
