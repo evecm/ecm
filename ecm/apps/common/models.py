@@ -45,7 +45,7 @@ class Setting(models.Model):
         ordering = ['name']
 
     name = models.CharField(max_length=200, primary_key=True)
-    value = models.CharField(max_length=1000, default='')
+    value = models.TextField()
 
     def getValue(self):
         return eval(self.value)
