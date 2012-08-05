@@ -60,12 +60,12 @@ def root(request):
         return render_to_response('ecm/assets/assets_no_data.html', Ctx(request))
 
     my_corp = Corporation.objects.mine()
-    all_hangars = CorpHangar.objects.filter(corp=my_corp).order_by('hangarID')
+    all_hangars = CorpHangar.objects.filter(corp=my_corp).order_by('hangar')
     try:
         divisions_str = request.GET['divisions']
         divisions = [ int(div) for div in divisions_str.split(',') ]
         for h in all_hangars:
-            h.checked = h.hangarID in divisions
+            h.checked = h.hangar_id in divisions
     except:
         divisions, divisions_str = None, None
         for h in all_hangars:
@@ -309,7 +309,7 @@ def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
 
     HANGAR = {}
     for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
-        HANGAR[h.hangarID] = h.name
+        HANGAR[h.hangar_id] = h.name
 
     exact_volumes = Setting.get('assets_show_exact_volumes')
 

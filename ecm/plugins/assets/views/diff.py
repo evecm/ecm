@@ -108,12 +108,12 @@ def get_dates(request):
 def root(request, date_str):
 
     my_corp = Corporation.objects.mine()
-    all_hangars = CorpHangar.objects.filter(corp=my_corp).order_by('hangarID')
+    all_hangars = CorpHangar.objects.filter(corp=my_corp).order_by('hangar')
     try:
         divisions_str = request.GET['divisions']
         divisions = [ int(div) for div in divisions_str.split(',') ]
         for h in all_hangars:
-            h.checked = h.hangarID in divisions
+            h.checked = h.hangar_id in divisions
     except:
         divisions, divisions_str = None, None
         for h in all_hangars:
@@ -151,13 +151,14 @@ def root(request, date_str):
 
     try:
         date_asked = datetime.strptime(date_str, DATE_PATTERN)
-        if AssetDiff.objects.filter(date=date_asked).exists():
-            data['date'] = date_asked
-            return render_to_response('ecm/assets/assets_diff.html', data, Ctx(request))
-        else:
-            return render_to_response('ecm/assets/assets_no_data.html', Ctx(request))
-    except:
+    except ValueError:
         return redirect('/assets/changes/')
+
+    if AssetDiff.objects.filter(date=date_asked).exists():
+        data['date'] = date_asked
+        return render_to_response('ecm/assets/assets_diff.html', data, Ctx(request))
+    else:
+        return render_to_response('ecm/assets/assets_no_data.html', {}, Ctx(request))
 
 
 #------------------------------------------------------------------------------
@@ -306,7 +307,7 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
 
     HANGAR = {}
     for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
-        HANGAR[h.hangarID] = h.name
+        HANGAR[h.hangar_id] = h.name
 
     jstree_data = []
     for hangarID, items, volume in cursor.fetchall():
