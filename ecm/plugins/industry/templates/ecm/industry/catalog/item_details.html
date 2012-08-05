@@ -11,13 +11,6 @@
 
 
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/industry">{% trans 'Industry' %}</a></li>
-<li><a href="/industry/catalog/">{% trans 'Catalog' %}</a></li>
-<li><a href="/industry/catalog/items/">{% trans 'Items' %}</a></li>
-<li class="active"><a href="/industry/catalog/items/{{ item.typeID }}/">{{ item.typeName }}</a></li>
-{% endblock %}
 
 {% block main_content %}
 <div class="page-header">

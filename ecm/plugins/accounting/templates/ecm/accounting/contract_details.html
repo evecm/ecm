@@ -14,15 +14,16 @@
 	href="{% static 'accounting/css/classes.css' %}" />
 <link rel="stylesheet" type="text/css"
 	href="{% static 'hr/css/classes.css' %}" />
-{% endblock %} {% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/accounting">{% trans 'Accounting' %}</a></li>
-<li><a href="/accounting/contracts/">{% trans 'Contracts' %}</a></li>
-<li class="active"><a
-	href="/accounting/contracts/{{ contract.contractID }}/">{% if contract.title %}{{contract.title|safe}}{% else %}{% trans '&lt;No Title&gt;' %}{% endif	%}</a></li>
-{% endblock %} {% block main_content %}
+{% endblock %}
+
+
+
+{% block main_content %}
 <div class="page-header">
-	<h1>{% trans 'Contract Details' %}</h1>
+	<h1>
+	  {% trans 'Contract Details' %}
+	  <small>{% if contract.title %}{{contract.title|safe}}{% else %}#{{ contract.contractID }}{% endif %}</small>
+	</h1>
 </div>
 
 <div class="row-fluid">

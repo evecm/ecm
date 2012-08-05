@@ -9,13 +9,6 @@
 <link rel="stylesheet" type="text/css" href="{% static 'industry/css/industry.css' %}" />
 {% endblock %}
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/industry">{% trans 'Industry' %}</a></li>
-<li><a href="/industry/catalog/">{% trans 'Catalog' %}</a></li>
-<li><a href="/industry/catalog/supplies/">{% trans 'Supplies' %}</a></li>
-<li class="active"><a href="/industry/catalog/supplies/{{ supply.typeID }}/">{{ supply.typeName }}</a></li>
-{% endblock %}
 
 {% block main_content %}
 <div class="page-header"><h1>{{supply.typeName}}</h1></div>

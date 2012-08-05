@@ -7,14 +7,6 @@
 
 
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
-<li><a href="/hr/players/">{% trans 'Players' %}</a></li>
-<li class="active"><a href="/hr/players/{{ player.id }}/">{{ player.username }}</a></li>
-{% endblock %}
-
-
 
 {% block main_content %}
 <div class="page-header">

@@ -15,18 +15,6 @@
 
 
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/shop/">{% trans 'Shop' %}</a></li>
-<li><a href="/shop/orders/">{% trans 'Orders' %}</a></li>
-{% if order %}
-<li><a href="/shop/orders/{{ order.id }}/">#{{ order.id }}</a></li>
-<li class="active"><a href="/shop/orders/{{ order.id }}/modify/">{% trans 'Modify' %}</a></li>
-{% else %}
-<li class="active"><a href="/shop/orders/create/">{% trans 'Create New Order' %}</a></li>
-{% endif %}
-{% endblock %}
-
 {% block main_content %}
 <div class="page-header">
   <h1>Please add items to your basket</h1>

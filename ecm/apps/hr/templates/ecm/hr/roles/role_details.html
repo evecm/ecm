@@ -3,14 +3,6 @@
 {% block headtitle %}{% trans 'Role Details' %} - {{ role }}{% endblock %}
 
 
-
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
-<li><a href="/hr/roles/">{% trans 'Roles' %}</a></li>
-<li class="active"><a href="/hr/roles/{{ role.id }}/">{{ role.name }} <em>({{ role.roleType.dispName }})</em></a></li>
-{% endblock %}
-
 {% block main_content %}
 <div class="page-header">
 <h1>{{ role.name }} <small>{{ role.roleType.dispName }}</small></h1>

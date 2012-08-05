@@ -1,34 +1,41 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block headtitle %}{% trans 'Login.' %}{% endblock %}
-
-{% block breadcrumbs_wrapper %}{% endblock %}
+{% block headtitle %}{% trans 'Login' %}{% endblock %}
 
 {% block main_content %}
-
 <div class="row">
-  <div class="span4 offset4">
-	  <h1>{% trans 'Please login' %}</h1>
+  <div class="span6 offset4">
+	  <div class="page-header">
+		  <h1>{% trans 'Please login' %}</h1>
+	  </div>
 	  
 	  <form method="post" action="/account/login/" class="well">
 	    {% csrf_token %}
 	    <input type="hidden" name="next" value="{{ next }}" />
 	    {% if form.errors %}{{ form.non_field_errors }}<br>{% endif %}
 	  
-	    <input type="text" name="username" {%if form.username.value%}value="{{form.username.value}}"{%endif%}
-	           placeholder="username" />
-	    <input type="password" name="password" placeholder="password" />
+	    <input type="text" name="username"{% if form.username.value %}
+	           value="{{ form.username.value }}"{% endif %}
+	           placeholder="{% trans 'username' %}" id="id_username">
+	    <input type="password" name="password" placeholder="{% trans 'password' %}">
 	    <label class="checkbox">
-	       <input type="checkbox" id="rememberme" name="rememberme" value="0" />
+	       <input type="checkbox" id="rememberme" name="rememberme" value="0">
 	       {% trans 'Remember Me' %}
 	    </label>
-	    <input type="submit" name="cmdweblogin" class="btn btn-primary" value="Login" />
-	  
+	    
+	    <button type="submit" class="btn btn-primary">{% trans 'Login' %}</button>
+	    
 	  </form>
-	  <p class="center">{% trans 'Not a member yet, you can' %} <a href="/account/create/"> {% trans 'create an account' %} </a>.</p>
-	  <p class="center">{% trans 'Forgot your password? Click' %} <a href="/account/passwordreset/"> {% trans 'here to reset it' %} </a>.</p>
+	  
+	  <p class="center">
+	  {% trans 'Not a member yet, you can <a href="/account/create/">create an account</a>.' %}
+	  </p>
+	  <p class="center">
+      {% trans 'Forgot your password? Click <a href="/account/passwordreset/">here to reset it</a>.' %}
+      </p>
   
   </div>
 </div>
 
+<script type="text/javascript">document.getElementById("id_username").select();</script>
 {% endblock %}

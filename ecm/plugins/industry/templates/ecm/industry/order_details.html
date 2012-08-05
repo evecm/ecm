@@ -13,12 +13,6 @@
 </style>
 {% endblock %}
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/industry/">{% trans 'Industry' %}</a></li>
-<li><a href="/industry/orders/">{% trans 'Orders' %}</a></li>
-<li class="active"><a href="/industry/orders/{{ order.id }}/">#{{ order.id }}</a></li>
-{% endblock %}
 
 {% block main_content %}
 <div class="page-header">

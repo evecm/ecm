@@ -2,15 +2,12 @@
 {% load i18n %}
 {% block headtitle %}{% trans 'Report' %}{% endblock %}
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/balance_sheet/">{% trans 'Report' %}</a></li>
-{% endblock %}
 
 {% block main_content %}
 <div class="page-header">
   <h1>Report</h1>
 </div>
+
 <ul class="nav nav-tabs" id="myTab">
 	<li class="active"><a href="#summary" data-toggle="tab">{% trans 'Summary' %}</a></li>
 	<li><a href="#income" data-toggle="tab">{% trans 'Income' %}</a></li>

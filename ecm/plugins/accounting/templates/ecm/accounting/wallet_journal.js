@@ -8,7 +8,7 @@ function walletJournalRowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull)
     if (aData[5].charAt(0) == '+') {
         $('td:eq(5)', nRow).addClass('journal-credit');
     } else {
-        $('td:eq(5)', nRow).addClass('journal-dwbit');
+        $('td:eq(5)', nRow).addClass('journal-debit');
     }
     /* hide reason column */
     $('td:eq(7)', nRow).hide()

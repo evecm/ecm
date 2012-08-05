@@ -4,10 +4,12 @@
 
 {% block main_content %}
 <div class="center">
-<h1 class="pagetitle error">{% trans 'Activation Error' %}</h1>
+<div class="page-header">
+	<h1 class="pagetitle error">{% trans 'Activation Error' %}</h1>
+</div>
 
 <p>{% trans 'Sorry, but the server was not able to activate this account with the following activation key:' %} {{ activation_key }}.</p>
 
-<p>{% trans 'Reason'%}: {{ error_reason }}</p>
+<p>{% trans 'Reason:'%} {{ error_reason }}</p>
 </div>
 {% endblock %}

@@ -13,14 +13,13 @@
 
 
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/accounting/">{% trans 'Accounting' %}</a></li>
-<li><a href="/accounting/contributions/">{% trans 'Contributions' %}</a></li>
-{% endblock %}
-
 {% block main_content %}
-<h1>{% trans 'Contributions to Corp tax' %} <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small></h1>
+<div class="page-header">
+	<h1>
+	  {% trans 'Contributions to Corp tax' %}
+	  <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small>
+	</h1>
+</div>
 
 <form id="search_form" class="form-search form-inline btn-toolbar center">
   <div class="control-group info" style="display: inline;">

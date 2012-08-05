@@ -5,13 +5,6 @@
 
 {% block headtitle %}{% trans 'Members History' %}{% endblock %}
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
-<li><a href="/hr/members/">{% trans 'Members' %}</a></li>
-<li class="active"><a href="/hr/members/access_changes/">{% trans 'Security Access Changes' %}</a></li>
-{% endblock %}
-
 {% block main_content %}
 <div class="page-header">
   <h1>{% trans 'Security Access Changes' %} <small>{% trans 'last update' %} {{ scan_date|ecm_datetime }}</small></h1>
