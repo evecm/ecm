@@ -23,7 +23,7 @@ from django.template.loader import render_to_string
 import ecm
 from ecm.apps.common.models import UrlPermission, Motd
 from ecm.menu import ECM_MENUS
-from ecm.apps.corp.models import Corp
+from ecm.apps.corp.models import Corporation
 
 #------------------------------------------------------------------------------
 def corporation_name(request):
@@ -31,8 +31,8 @@ def corporation_name(request):
     Adds the variable {{ corp_name }} to all the templates.
     """
     try:
-        return { "corp_name" : Corp.objects.get(id=1).corporationName }
-    except Corp.DoesNotExist:
+        return { "corp_name" : Corporation.objects.mine().corporationName }
+    except Corporation.DoesNotExist:
         return { "corp_name" : "No Corporation" }
 
 #------------------------------------------------------------------------------

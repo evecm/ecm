@@ -25,7 +25,7 @@ from django.db import transaction
 
 from ecm.lib import eveapi
 from ecm.apps.common import api
-from ecm.apps.corp.models import Corp
+from ecm.apps.corp.models import Corporation
 from ecm.apps.common.models import UpdateDate
 from ecm.utils import tools
 from ecm.plugins.accounting.models import Contract, ContractItem
@@ -57,7 +57,7 @@ def process_contracts(contract_list, connection):
     """
     Process all contracts from the API
     """
-    alliance_id = Corp.objects.latest().allianceID
+    alliance_id = Corporation.objects.mine().allianceID
     LOG.debug("Fetching contracts from DB...")    
     # Get old contracts
     old_contracts = {}

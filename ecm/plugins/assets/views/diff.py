@@ -41,7 +41,7 @@ from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
 from ecm.plugins.assets.models import Asset, AssetDiff
-from ecm.apps.corp.models import Hangar
+from ecm.apps.corp.models import CorpHangar, Corporation
 from ecm.views import DATE_PATTERN
 
 
@@ -107,7 +107,8 @@ def get_dates(request):
 @check_user_access()
 def root(request, date_str):
 
-    all_hangars = Hangar.objects.all().order_by('hangarID')
+    my_corp = Corporation.objects.mine()
+    all_hangars = CorpHangar.objects.filter(corp=my_corp).order_by('hangarID')
     try:
         divisions_str = request.GET['divisions']
         divisions = [ int(div) for div in divisions_str.split(',') ]
@@ -304,7 +305,7 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
         cursor.execute(sql, [solarSystemID, stationID, date] + list(divisions))
 
     HANGAR = {}
-    for h in Hangar.objects.all():
+    for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
         HANGAR[h.hangarID] = h.name
 
     jstree_data = []

@@ -37,7 +37,7 @@ from ecm.views.decorators import check_user_access
 from ecm.plugins.assets.models import Asset
 from ecm.plugins.pos import constants
 from ecm.views import extract_datatable_params
-from ecm.apps.corp.models import Corp
+from ecm.apps.corp.models import Corporation
 from ecm.apps.common.models import UrlPermission, Setting
 from django.contrib.auth.models import User
 
@@ -84,14 +84,14 @@ def one_pos(request, pos_id):
         dotlanPOSLocation = None
 
     try:
-        corp = Corp.objects.latest()
+        corp = Corporation.objects.mine()
         if pos.use_standings_from == corp.corporationID:
             use_standings_from = 'Corporation'
         elif pos.use_standings_from == corp.allianceID:
             use_standings_from = 'Alliance'
         else:
             use_standings_from = pos.use_standings_from
-    except Corp.DoesNotExist:
+    except Corporation.DoesNotExist:
         use_standings_from = "???"
 
     groups = UrlPermission.objects.get(pattern='^/pos/.*$').groups.all()

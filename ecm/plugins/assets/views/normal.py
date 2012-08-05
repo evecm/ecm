@@ -40,7 +40,7 @@ from ecm.views.decorators import check_user_access
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
 from ecm.plugins.assets.models import Asset
-from ecm.apps.corp.models import Hangar
+from ecm.apps.corp.models import CorpHangar, Corporation
 from ecm.apps.common.models import Setting, UpdateDate
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 
@@ -59,7 +59,8 @@ def root(request):
     if scan_date == '<no data>':
         return render_to_response('ecm/assets/assets_no_data.html', Ctx(request))
 
-    all_hangars = Hangar.objects.all().order_by('hangarID')
+    my_corp = Corporation.objects.mine()
+    all_hangars = CorpHangar.objects.filter(corp=my_corp).order_by('hangarID')
     try:
         divisions_str = request.GET['divisions']
         divisions = [ int(div) for div in divisions_str.split(',') ]
@@ -307,7 +308,7 @@ def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
         cursor.execute(sql, [solarSystemID, closest_obj_id, stationID] + list(divisions))
 
     HANGAR = {}
-    for h in Hangar.objects.all():
+    for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
         HANGAR[h.hangarID] = h.name
 
     exact_volumes = Setting.get('assets_show_exact_volumes')

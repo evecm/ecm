@@ -29,7 +29,7 @@ from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import CelestialObject, ControlTowerResource, Type
 from ecm.plugins.pos import constants
 from ecm.apps.common import api
-from ecm.apps.corp.models import Corp
+from ecm.apps.corp.models import Corporation
 
 logger = logging.getLogger(__name__)
 
@@ -206,7 +206,7 @@ def get_details(pos, api, sov):
                                      date = api._meta.currentTime)
 
         base_fuel_cons = ControlTowerResource.objects.get(control_tower=pos.type_id, resource=fuel.typeID).quantity
-        corp = Corp.objects.latest()
+        corp = Corporation.objects.mine()
         # sov fuel check
         if sov[pos.location_id]['faction'] == 0 and \
            sov[pos.location_id]['alliance'] == corp.allianceID and \

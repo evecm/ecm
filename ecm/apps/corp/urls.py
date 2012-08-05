@@ -15,32 +15,16 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-from django.utils.translation import ugettext_lazy as tr_lazy
+__date__ = "2012 08 01"
+__author__ = "diabeteman"
 
-NAME = 'corp'
+from django.conf.urls.defaults import patterns
 
-MENUS = [ 
-    {'title': tr_lazy('Corporation'),    'url': '',      'items': [
-        {'title': tr_lazy('Standings'),   'url': 'standings/', 'items': [], },
-    ]},
-]
+urlpatterns = patterns('ecm.apps.corp.views',
+    (r'^$',                             'corp'),
+    (r'^info/$',                        'public_info'),
+    (r'^standings/$',                   'standings.standings'),
+    (r'^login/$',                       'login'),
+    (r'^toc/$',                         'list_available_data'),
+)
 
-TASKS = [
-    {
-        'function' : 'ecm.apps.corp.tasks.corp.update',
-        'priority' : 200,
-        'frequency' : 12,
-        'frequency_units' : 3600, # hour
-    },
-    {
-        'function' : 'ecm.apps.corp.tasks.standings.update',
-        'priority' : 200,
-        'frequency' : 24,
-        'frequency_units' : 3600, # hour
-    },
-]
-
-SETTINGS = {
-    'corp_killboard_url': None,
-    'standings_visibility': 'none',
-}

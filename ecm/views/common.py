@@ -15,12 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import with_statement
-
 __date__ = '2010-05-16'
 __author__ = 'diabeteman'
-
-import re
 
 from django import forms
 from django.shortcuts import render_to_response, redirect
@@ -33,14 +29,11 @@ from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.common.models import Setting, Motd
 from ecm.apps.common.api import validate_director_api_key
 from ecm.apps.common import api
-from ecm.apps.hr.models import Member
-from ecm.apps.corp.models import Corp
 from ecm.views.decorators import check_user_access
 
 #------------------------------------------------------------------------------
-SHOWINFO_PATTERN = re.compile(r'showinfo:13\d\d//(\d+)')
 @login_required
-def corp(request):
+def home(request):
 
     try:
         api.get_api()
@@ -49,15 +42,7 @@ def corp(request):
         # edit api key form.
         return redirect('/editapi/')
 
-    try:
-        corp = Corp.objects.get(id=1)
-        corp.description = SHOWINFO_PATTERN.sub(r'/hr/members/\1/', corp.description)
-        corp.memberCount = Member.objects.filter(corped=True).count()
-    except Corp.DoesNotExist:
-        corp = Corp(corporationName='No Corporation info')
-    
-    return render_to_response('ecm/common/corp.html', {'corp': corp}, Ctx(request))
-
+    return redirect('/corp/')
 
 #------------------------------------------------------------------------------
 @check_user_access()

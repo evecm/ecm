@@ -36,7 +36,7 @@ from ecm.utils.format import print_time_min, print_float
 from ecm.utils import is_number
 from ecm.apps.common.models import UpdateDate, ColorThreshold
 from ecm.apps.eve.models import Type
-from ecm.apps.corp.models import Wallet, Corp
+from ecm.apps.corp.models import Wallet, Corporation
 from ecm.apps.hr.models import Member
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, DATATABLES_DEFAULTS, datatable_ajax_data
@@ -152,8 +152,8 @@ def journal_data(request):
     entries = []
 
     # to improve performance
-    try: corporationID = Corp.objects.get(id=1).corporationID
-    except Corp.DoesNotExist: corporationID = 0
+    try: corporationID = Corporation.objects.mine().corporationID
+    except Corporation.DoesNotExist: corporationID = 0
     members = Member.objects.all()
     other_entries = JournalEntry.objects.select_related().all()
 
@@ -169,7 +169,6 @@ def journal_data(request):
             rat_list = []
             for rat_id, rat_count in rats:
                 rat_list.append('%s x%s' % (Type.objects.get(typeID=rat_id).typeName, rat_count))
-                #rat_list.append('%s x%s' % (db.get_type_name(int(rat_id))[0], rat_count))
             reason = '|'.join(rat_list)
             if reason:
                 reason = (u'Killed Rats in %s|' % entry.argName1) + reason

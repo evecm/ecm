@@ -20,8 +20,7 @@ __author__ = "ajurna"
 
 from django.db import transaction
 
-
-from ecm.apps.corp.models import Standings
+from ecm.apps.corp.models import Standing, Corporation
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.common import api
 
@@ -41,24 +40,26 @@ def update():
     api.check_version(corpApi._meta.version)
     currentTime = corpApi._meta.currentTime  
     
-    all_standings = Standings.objects.all()
-    all_standings.delete()
-
+    my_corp = Corporation.objects.mine()
+    
+    # clean existing standings first
+    Standing.objects.filter(corp=my_corp).delete()
+    
     for contact in corpApi.corporateContactList:
-        new_contact = Standings(
-            contactID = contact.contactID,
-            is_corp_contact = True,
-            contactName = contact.contactName,
-            standing = contact.standing,
-        )
-        new_contact.save()
+        Standing.objects.create(corp=my_corp,
+                                contactID=contact.contactID,
+                                is_corp_contact=True,
+                                contactName=contact.contactName,
+                                value=contact.standing,
+                                )
+    
     for contact in corpApi.allianceContactList: 
-        new_contact = Standings(
-            contactID = contact.contactID,
-            is_corp_contact = False,
-            contactName = contact.contactName,
-            standing = contact.standing,
-        )
-        new_contact.save()
-    UpdateDate.mark_updated(model=Standings, date=currentTime)
+        Standing.objects.create(corp=my_corp,
+                                contactID=contact.contactID,
+                                is_corp_contact=False,
+                                contactName=contact.contactName,
+                                value=contact.standing,
+                                )
+        
+    UpdateDate.mark_updated(model=Standing, date=currentTime)
     LOG.info("corp standings updated")

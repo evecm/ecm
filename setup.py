@@ -39,6 +39,7 @@ dependencies = [
     'django (>= 1.4)',
     'pytz',
     'PIL',
+    'pycrypto',
 ]
 
 setup(

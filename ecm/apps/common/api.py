@@ -22,7 +22,7 @@ from django.core.exceptions import ValidationError
 
 from ecm.lib import eveapi
 from ecm.apps.common.models import Setting, APICall
-from ecm.apps.corp.models import Corp
+from ecm.apps.corp.models import Corporation
 
 #------------------------------------------------------------------------------
 EVE_API_VERSION = '2'
@@ -120,7 +120,7 @@ def get_account_characters(user_api):
         response = connection.account.APIKeyInfo()
     except eveapi.Error:
         return []
-    corp = Corp.objects.get(id=1)
+    corp = Corporation.objects.mine()
     characters = []
     if response.key.type.lower() != "account":
         raise eveapi.Error(0, "Wrong API Key type '" + response.key.type + "'. " +

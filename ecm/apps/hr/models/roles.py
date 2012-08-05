@@ -14,15 +14,15 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
 
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
 
 from django.db import models
+from django.utils import timezone
 
 from ecm.lib import bigintpatch
-from ecm.apps.corp.models import Hangar, Wallet
+from ecm.apps.corp.models import Hangar, Wallet, Corporation
 from ecm.apps.hr.models.member import Member
 
 #------------------------------------------------------------------------------
@@ -94,10 +94,11 @@ class Role(models.Model):
         If the Role is related to a Hangar or Wallet division,
         returns the accessLvl of this division.
         """
+        my_corp = Corporation.objects.mine()
         if self.hangar:
-            return self.hangar.accessLvl
+            return self.hangar.get_access_lvl(my_corp)
         elif self.wallet:
-            return self.wallet.accessLvl
+            return self.wallet.get_access_lvl(my_corp)
         else:
             return self.accessLvl
 
@@ -115,15 +116,13 @@ class Role(models.Model):
         return members.distinct()
 
     def get_disp_name(self):
-        try:
-            name = self.dispName
-            if self.hangar_id :
-                name = name % Hangar.objects.get(hangarID=self.hangar_id).name
-            elif self.wallet_id :
-                name = name % Wallet.objects.get(walletID=self.wallet_id).name
-            return name
-        except:
-            return self.roleName
+        my_corp = Corporation.objects.mine()
+        name = self.dispName
+        if self.hangar :
+            name = name % self.hangar.get_name(my_corp)
+        elif self.wallet :
+            name = name % self.wallet.get_name(my_corp)
+        return name
 
     @property
     def url(self):
@@ -143,15 +142,13 @@ class Role(models.Model):
         return self.id
 
     def __unicode__(self):
-        try:
-            name = self.dispName
-            if self.hangar_id :
-                name = name % Hangar.objects.get(hangarID=self.hangar_id).name
-            elif self.wallet_id :
-                name = name % Wallet.objects.get(walletID=self.wallet_id).name
-            return "%s - %s" % (name, unicode(self.roleType))
-        except:
-            return self.roleName
+        my_corp = Corporation.objects.mine()
+        name = self.dispName
+        if self.hangar :
+            name = name % self.hangar.get_name(my_corp)
+        elif self.wallet :
+            name = name % self.wallet.get_name(my_corp)
+        return "%s - %s" % (name, unicode(self.roleType))
 
     def __getattr__(self, attr_name):
         if attr_name == "name":

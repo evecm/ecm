@@ -26,7 +26,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext as Ctx
 from django.db.models.aggregates import Count, Sum
 
-from ecm.apps.corp.models import Corp
+from ecm.apps.corp.models import Corporation
 from ecm.plugins.accounting.constants import REPACKAGED_VOLUMES
 from ecm.apps.eve.models import BlueprintType, Type, CelestialObject
 from ecm.apps.hr.models import Member
@@ -279,10 +279,10 @@ def _map_member(character_id):
     return Member.objects.get(characterID=character_id).permalink
 
 def _map_corp(corp_id):
-    return Corp.objects.get(corporationID=corp_id)
+    return Corporation.objects.get(corporationID=corp_id)
 
 def _map_alliance(alliance_id):
-    return Corp.objects.get(allianceID=alliance_id)
+    return Corporation.objects.get(allianceID=alliance_id)
 
 def _map_id(character_id):
     try:
@@ -290,9 +290,9 @@ def _map_id(character_id):
     except Member.DoesNotExist:
         try:
             member = _map_corp(character_id)
-        except Corp.DoesNotExist:
+        except Corporation.DoesNotExist:
             try:
                 member = _map_alliance(character_id).allianceName
-            except Corp.DoesNotExist:
+            except Corporation.DoesNotExist:
                 member = character_id
     return member
