@@ -1,9 +1,8 @@
-#@PydevCodeAnalysisIgnore
+
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-from django.utils import timezone
 
 class Migration(SchemaMigration):
 
@@ -36,9 +35,9 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(max_length=128, db_index=True)),
             ('nickname', self.gf('django.db.models.fields.CharField')(default='', max_length=256)),
             ('baseID', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
-            ('corpDate', self.gf('django.db.models.fields.DateTimeField')(default=timezone.make_aware(datetime.datetime(2011, 10, 22, 12, 40, 4, 203014), timezone.utc))),
-            ('lastLogin', self.gf('django.db.models.fields.DateTimeField')(default=timezone.make_aware(datetime.datetime(2011, 10, 22, 12, 40, 4, 203061), timezone.utc))),
-            ('lastLogoff', self.gf('django.db.models.fields.DateTimeField')(default=timezone.make_aware(datetime.datetime(2011, 10, 22, 12, 40, 4, 203094), timezone.utc))),
+            ('corpDate', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 12, 40, 4, 203014))),
+            ('lastLogin', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 12, 40, 4, 203061))),
+            ('lastLogoff', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 12, 40, 4, 203094))),
             ('locationID', self.gf('django.db.models.fields.IntegerField')(default=0, db_index=True)),
             ('location', self.gf('django.db.models.fields.CharField')(default='???', max_length=256, null=True, blank=True)),
             ('ship', self.gf('django.db.models.fields.CharField')(default='???', max_length=128)),
@@ -56,7 +55,7 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
             ('nickname', self.gf('django.db.models.fields.CharField')(max_length=256, db_index=True)),
             ('new', self.gf('django.db.models.fields.BooleanField')(default=True, db_index=True)),
-            ('date', self.gf('django.db.models.fields.DateTimeField')(default=timezone.make_aware(datetime.datetime(2011, 10, 22, 12, 40, 4, 204283), timezone.utc), db_index=True)),
+            ('date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 12, 40, 4, 204283), db_index=True)),
         ))
         db.send_create_signal('hr', ['MemberDiff'])
 
@@ -96,7 +95,7 @@ class Migration(SchemaMigration):
             ('member', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Member'])),
             ('role', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Role'])),
             ('new', self.gf('django.db.models.fields.BooleanField')(default=True, db_index=True)),
-            ('date', self.gf('django.db.models.fields.DateTimeField')(default=timezone.make_aware(datetime.datetime(2011, 10, 22, 12, 40, 4, 210650), timezone.utc), db_index=True)),
+            ('date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 12, 40, 4, 210650), db_index=True)),
         ))
         db.send_create_signal('hr', ['RoleMemberDiff'])
 
@@ -131,7 +130,7 @@ class Migration(SchemaMigration):
             ('title', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Title'])),
             ('role', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Role'])),
             ('new', self.gf('django.db.models.fields.BooleanField')(default=True, db_index=True)),
-            ('date', self.gf('django.db.models.fields.DateTimeField')(default=timezone.make_aware(datetime.datetime(2011, 10, 22, 12, 40, 4, 216463), timezone.utc), db_index=True)),
+            ('date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 12, 40, 4, 216463), db_index=True)),
         ))
         db.send_create_signal('hr', ['TitleCompoDiff'])
 
@@ -141,7 +140,7 @@ class Migration(SchemaMigration):
             ('member', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Member'])),
             ('title', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Title'])),
             ('new', self.gf('django.db.models.fields.BooleanField')(default=True, db_index=True)),
-            ('date', self.gf('django.db.models.fields.DateTimeField')(default=timezone.make_aware(datetime.datetime(2011, 10, 22, 12, 40, 4, 217222),timezone.utc), db_index=True)),
+            ('date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2011, 10, 22, 12, 40, 4, 217222), db_index=True)),
         ))
         db.send_create_signal('hr', ['TitleMemberDiff'])
 
@@ -198,7 +197,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'timezone.now'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 10, 22, 12, 40, 4, 203014)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -206,7 +205,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'timezone.now'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2011, 10, 22, 12, 40, 4, 203014)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
