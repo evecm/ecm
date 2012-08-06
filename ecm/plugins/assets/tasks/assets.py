@@ -23,6 +23,7 @@ __author__ = "diabeteman"
 import logging
 
 from django.db import transaction
+from django.utils import timezone
 
 from ecm.lib import eveapi
 from ecm.apps.common.models import Setting, UpdateDate
@@ -50,8 +51,8 @@ def update():
     apiAssets = api_conn.corp.AssetList(characterID=api.get_charID())
     api.check_version(apiAssets._meta.version)
 
-    currentTime = apiAssets._meta.currentTime
-    cachedUntil = apiAssets._meta.cachedUntil
+    currentTime = timezone.make_aware(apiAssets._meta.currentTime, timezone.utc)
+    cachedUntil = timezone.make_aware(apiAssets._meta.cachedUntil, timezone.utc)
     LOG.debug("current time : %s", str(currentTime))
     LOG.debug("cached util : %s", str(cachedUntil))
 

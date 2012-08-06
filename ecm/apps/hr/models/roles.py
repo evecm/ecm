@@ -201,7 +201,7 @@ class RoleMemberDiff(models.Model):
     # true if role is new for member, false if role was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
-    date = models.DateTimeField(db_index=True, default=timezone.now())
+    date = models.DateTimeField(db_index=True, auto_now_add=True)
 
     @property
     def access_permalink(self):

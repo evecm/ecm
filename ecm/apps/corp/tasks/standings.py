@@ -19,6 +19,7 @@ __date__ = "2012-04-26"
 __author__ = "ajurna"
 
 from django.db import transaction
+from django.utils import timezone
 
 from ecm.apps.corp.models import Standing, Corporation
 from ecm.apps.common.models import UpdateDate
@@ -38,7 +39,7 @@ def update():
     api_conn = api.connect()
     corpApi = api_conn.corp.ContactList(characterID=api.get_charID())
     api.check_version(corpApi._meta.version)
-    currentTime = corpApi._meta.currentTime  
+    currentTime = timezone.make_aware(corpApi._meta.currentTime, timezone.utc)
     
     my_corp = Corporation.objects.mine()
     

@@ -21,6 +21,7 @@ __author__ = "diabeteman"
 import logging
 
 from django.db import transaction
+from django.utils import timezone
 
 from ecm.utils import tools
 from ecm.apps.common.models import UpdateDate
@@ -46,8 +47,8 @@ def update():
     memberSecuApi = api_conn.corp.MemberSecurity(characterID=api.get_charID())
     api.check_version(memberSecuApi._meta.version)
 
-    currentTime = memberSecuApi._meta.currentTime
-    cachedUntil = memberSecuApi._meta.cachedUntil
+    currentTime = timezone.make_aware(memberSecuApi._meta.currentTime, timezone.utc)
+    cachedUntil = timezone.make_aware(memberSecuApi._meta.cachedUntil, timezone.utc)
     LOG.debug("current time : %s", str(currentTime))
     LOG.debug("cached util : %s", str(cachedUntil))
 

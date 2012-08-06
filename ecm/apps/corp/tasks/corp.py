@@ -22,6 +22,7 @@ __author__ = "diabeteman"
 import re
 import logging
 
+from django.utils import timezone
 from django.conf import settings
 from django.db import transaction
 
@@ -46,7 +47,7 @@ def update():
     corpApi = api_conn.corp.CorporationSheet(characterID=api.get_charID())
     api.check_version(corpApi._meta.version)
 
-    currentTime = corpApi._meta.currentTime
+    currentTime = timezone.make_aware(corpApi._meta.currentTime, timezone.utc)
 
     LOG.debug("parsing api response...")
     corp = update_corp_info(corpApi, currentTime)

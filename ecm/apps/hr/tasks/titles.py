@@ -23,6 +23,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django import db
 from django.db import transaction
+from django.utils import timezone
 from django.db.models import Max
 
 from ecm.apps.common.models import UpdateDate
@@ -49,8 +50,8 @@ def update():
     titlesApi = api_conn.corp.Titles(characterID=api.get_charID())
     api.check_version(titlesApi._meta.version)
 
-    currentTime = titlesApi._meta.currentTime
-    cachedUntil = titlesApi._meta.cachedUntil
+    currentTime = timezone.make_aware(titlesApi._meta.currentTime, timezone.utc)
+    cachedUntil = timezone.make_aware(titlesApi._meta.cachedUntil, timezone.utc)
     logger.debug("current time : %s", str(currentTime))
     logger.debug("cached util : %s", str(cachedUntil))
 

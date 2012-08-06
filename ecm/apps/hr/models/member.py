@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
 
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
@@ -47,9 +46,9 @@ class Member(models.Model):
     name = models.CharField(max_length=128, db_index=True)
     nickname = models.CharField(max_length=256, default="")
     baseID = models.BigIntegerField(default=0)
-    corpDate = models.DateTimeField(default=timezone.now())
-    lastLogin = models.DateTimeField(default=timezone.now())
-    lastLogoff = models.DateTimeField(default=timezone.now())
+    corpDate = models.DateTimeField(auto_now_add=True)
+    lastLogin = models.DateTimeField(auto_now_add=True)
+    lastLogoff = models.DateTimeField(auto_now_add=True)
     locationID = models.IntegerField(db_index=True, default=0)
     location = models.CharField(max_length=256, default="???", null=True, blank=True)
     ship = models.CharField(max_length=128, default="???")
@@ -168,7 +167,7 @@ class MemberDiff(models.Model):
     # true if member has been corped. False if he/she has leaved the corporation
     new = models.BooleanField(db_index=True, default=True)
     # date of change
-    date = models.DateTimeField(db_index=True, default=timezone.now())
+    date = models.DateTimeField(db_index=True, auto_now_add=True)
 
     @property
     def url(self):
