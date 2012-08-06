@@ -19,7 +19,6 @@ __date__ = "2011 9 6"
 __author__ = "diabeteman"
 
 from django.db import models
-from django.utils import timezone
 
 from ecm.lib import bigintpatch
 from ecm.apps.corp.models import Hangar, Wallet, Corporation

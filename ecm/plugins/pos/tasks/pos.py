@@ -22,6 +22,7 @@ import logging
 
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import ugettext as tr
 
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import CelestialObject, ControlTowerResource, Type

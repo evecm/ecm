@@ -8,50 +8,47 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Deleting field 'Member.corporationID'
+        db.delete_column('hr_member', 'corporationID')
 
-        # Changing field 'RoleMemberDiff.date'
-        db.alter_column('hr_rolememberdiff', 'date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
+        # Deleting field 'Member.allianceName'
+        db.delete_column('hr_member', 'allianceName')
 
-        # Changing field 'Member.lastLogin'
-        db.alter_column('hr_member', 'lastLogin', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
+        # Deleting field 'Member.corporationName'
+        db.delete_column('hr_member', 'corporationName')
 
-        # Changing field 'Member.corpDate'
-        db.alter_column('hr_member', 'corpDate', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
+        # Deleting field 'Member.allianceID'
+        db.delete_column('hr_member', 'allianceID')
 
-        # Changing field 'Member.lastLogoff'
-        db.alter_column('hr_member', 'lastLogoff', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
-
-        # Changing field 'MemberDiff.date'
-        db.alter_column('hr_memberdiff', 'date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
-
-        # Changing field 'TitleCompoDiff.date'
-        db.alter_column('hr_titlecompodiff', 'date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
-
-        # Changing field 'TitleMemberDiff.date'
-        db.alter_column('hr_titlememberdiff', 'date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True))
-
+        # Adding field 'Member.corp'
+        db.add_column('hr_member', 'corp',
+                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='members', null=True, to=orm['corp.Corporation']),
+                      keep_default=False)
+        
     def backwards(self, orm):
+        # Adding field 'Member.corporationID'
+        db.add_column('hr_member', 'corporationID',
+                      self.gf('django.db.models.fields.IntegerField')(null=True, blank=True),
+                      keep_default=False)
 
-        # Changing field 'RoleMemberDiff.date'
-        db.alter_column('hr_rolememberdiff', 'date', self.gf('django.db.models.fields.DateTimeField')())
+        # Adding field 'Member.allianceName'
+        db.add_column('hr_member', 'allianceName',
+                      self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True),
+                      keep_default=False)
 
-        # Changing field 'Member.lastLogin'
-        db.alter_column('hr_member', 'lastLogin', self.gf('django.db.models.fields.DateTimeField')())
+        # Adding field 'Member.corporationName'
+        db.add_column('hr_member', 'corporationName',
+                      self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True),
+                      keep_default=False)
 
-        # Changing field 'Member.corpDate'
-        db.alter_column('hr_member', 'corpDate', self.gf('django.db.models.fields.DateTimeField')())
+        # Adding field 'Member.allianceID'
+        db.add_column('hr_member', 'allianceID',
+                      self.gf('django.db.models.fields.IntegerField')(null=True, blank=True),
+                      keep_default=False)
 
-        # Changing field 'Member.lastLogoff'
-        db.alter_column('hr_member', 'lastLogoff', self.gf('django.db.models.fields.DateTimeField')())
+        # Deleting field 'Member.corp'
+        db.delete_column('hr_member', 'corp_id')
 
-        # Changing field 'MemberDiff.date'
-        db.alter_column('hr_memberdiff', 'date', self.gf('django.db.models.fields.DateTimeField')())
-
-        # Changing field 'TitleCompoDiff.date'
-        db.alter_column('hr_titlecompodiff', 'date', self.gf('django.db.models.fields.DateTimeField')())
-
-        # Changing field 'TitleMemberDiff.date'
-        db.alter_column('hr_titlememberdiff', 'date', self.gf('django.db.models.fields.DateTimeField')())
 
     models = {
         'auth.group': {
@@ -90,6 +87,29 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        'corp.corporation': {
+            'Meta': {'object_name': 'Corporation'},
+            'allianceID': ('django.db.models.fields.BigIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'allianceName': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'allianceTicker': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
+            'ceoID': ('django.db.models.fields.BigIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'ceoName': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'corporationID': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
+            'corporationName': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'ecm_url': ('django.db.models.fields.URLField', [], {'unique': 'True', 'max_length': '200'}),
+            'is_my_corp': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_trusted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'key_fingerprint': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '1024', 'blank': 'True'}),
+            'last_update': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'memberLimit': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'private_key': ('django.db.models.fields.TextField', [], {'unique': 'True', 'null': 'True', 'blank': 'True'}),
+            'public_key': ('django.db.models.fields.TextField', [], {'unique': 'True', 'blank': 'True'}),
+            'stationID': ('django.db.models.fields.BigIntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'stationName': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'taxRate': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'ticker': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'})
+        },
         'corp.hangar': {
             'Meta': {'ordering': "['hangarID']", 'object_name': 'Hangar'},
             'hangarID': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'})
@@ -102,8 +122,6 @@ class Migration(SchemaMigration):
             'DoB': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'Meta': {'ordering': "['name']", 'object_name': 'Member'},
             'accessLvl': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
-            'allianceID': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'allianceName': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'ancestry': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'balance': ('django.db.models.fields.FloatField', [], {'default': '0.0'}),
             'baseID': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
@@ -114,10 +132,9 @@ class Migration(SchemaMigration):
             'charismaBonusValue': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'cloneName': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'cloneSkillPoints': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'corp': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'members'", 'null': 'True', 'to': "orm['corp.Corporation']"}),
             'corpDate': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'corped': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'corporationID': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'corporationName': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'gender': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'intelligence': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'intelligenceBonusName': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),

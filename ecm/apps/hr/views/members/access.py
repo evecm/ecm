@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
 from ecm.apps.common.models import UpdateDate, ColorThreshold
@@ -31,7 +31,6 @@ from ecm.apps.hr.models import TitleMembership, RoleMemberDiff, TitleMemberDiff,
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.views import ACCESS_CHANGES_COLUMNS
 
-import csv
 #------------------------------------------------------------------------------
 @check_user_access()
 def access_changes(request):

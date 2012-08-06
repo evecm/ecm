@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.corp.models import Corporation
 
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
@@ -57,16 +58,14 @@ class Member(models.Model):
     owner = models.ForeignKey(User, related_name='characters', null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
 
+    corp = models.ForeignKey(Corporation, related_name='members', null=True, blank=True)
+
     #Character Sheet
     DoB = models.CharField(max_length=128, null=True, blank=True)
     race = models.CharField(max_length=128, null=True, blank=True)
     bloodLine = models.CharField(max_length=128, null=True, blank=True)
     ancestry = models.CharField(max_length=128, null=True, blank=True)
     gender = models.CharField(max_length=128, null=True, blank=True)
-    corporationName = models.CharField(max_length=128, null=True, blank=True)
-    corporationID = models.IntegerField(null=True, blank=True)
-    allianceName = models.CharField(max_length=128, null=True, blank=True)
-    allianceID = models.IntegerField(blank=True, null=True)
     cloneName = models.CharField(max_length=128, null=True, blank=True)
     cloneSkillPoints = models.IntegerField(null=True, blank=True)
     balance = models.FloatField(default=0.0)
@@ -224,15 +223,20 @@ class MemberSession(models.Model):
 
 #------------------------------------------------------------------------------
 class Skill(models.Model):
+    
     class Meta:
         app_label = 'hr'
+    
     character = models.ForeignKey(Member, related_name = 'skills')
     typeID = models.IntegerField(default=0)
     skillpoints = models.IntegerField(default=0)
     level = models.IntegerField(default=0)
+    
     def __unicode__(self):
         return self.name
+    
     @property
     def name(self):
         name = Type.objects.get(typeID=self.typeID).typeName
         return unicode(name)
+    

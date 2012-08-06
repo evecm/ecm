@@ -19,15 +19,11 @@ __date__ = "2012 06 29"
 __author__ = "Ajurna"
 
 
-import pytz
-
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-
 
 from ecm.plugins.pos.models import POS
 from ecm.apps.eve.models import Type
-from ecm.plugins.pos import constants
 from ecm.views.decorators import check_user_access
 
 @check_user_access()

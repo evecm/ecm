@@ -21,7 +21,7 @@ __author__ = 'diabeteman'
 from ecm.apps.hr.tasks.members import tracking, security, noncorp
 
 def update():
-    noncorp.update()
+    #noncorp.update()
     tracking.update()
     security.update()
     
