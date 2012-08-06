@@ -22,7 +22,7 @@ from django.conf.urls.defaults import patterns
 
 urlpatterns = patterns('ecm.apps.corp.views',
     (r'^$',                             'corp'),
-    (r'^info/$',                        'public_info'),
+    (r'^contact/$',                        'contact'),
     (r'^standings/$',                   'standings.standings'),
     (r'^login/$',                       'login'),
     (r'^toc/$',                         'list_available_data'),

@@ -19,13 +19,20 @@ __date__ = '2012 08 01'
 __author__ = 'diabeteman'
 
 import re
+import httplib
+import logging
 try:
     import json
 except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
-from django.http import HttpResponse
+from django.db import transaction
+from django.db.utils import IntegrityError
+from django.core.mail import mail_admins
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
@@ -36,6 +43,7 @@ from ecm.apps.hr.models.member import Member
 from ecm.apps.corp.views import auth
 from ecm.apps.corp.models import Corporation
 
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 SHOWINFO_PATTERN = re.compile(r'showinfo:13\d\d//(\d+)')
@@ -52,20 +60,70 @@ def corp(request):
 
 
 #------------------------------------------------------------------------------
-def public_info(request):
+WRONG_FINGERPRINT_MSG = '''The corporation "%s" (id: %s) tried to obtain our public info.
+We already are in contact with this corporation, but the public key fingerprint they 
+provided does not match the one we have in the database.'''
+@transaction.commit_on_success
+def contact(request):
     
-    my_corp = Corporation.objects.mine()
+    if request.method == 'POST':
+        public_info = Corporation.objects.mine().get_public_info()
+        
+        try:
+            corp_info = json.loads(request.body)
+            ecm_url = corp_info['ecm_url']
+            corporationID = corp_info['corporationID']
+            corporationName = corp_info['corporationName']
+            ticker = corp_info['ticker']
+            allianceID = corp_info['allianceID']
+            allianceName = corp_info['allianceName']
+            allianceTicker = corp_info['allianceTicker']
+            public_key = corp_info['public_key']
+            key_fingerprint = corp_info['key_fingerprint']
+            
+            if Corporation.objects.filter(corporationID=corporationID).exists():
+                corp = Corporation.objects.get(corporationID=corporationID)
+                if corp.key_fingerprint != key_fingerprint:
+                    # tentative of hack? return an error
+                    LOG.error(WRONG_FINGERPRINT_MSG % (corporationName, corporationID))
+                    raise ValueError('wrong key_fingerprint')
+            else:
+                # create the corp in our db
+                corp = Corporation.objects.create(corporationID=corporationID,
+                                                  corporationName=corporationName,
+                                                  ticker=ticker,
+                                                  allianceID=allianceID,
+                                                  allianceName=allianceName,
+                                                  allianceTicker=allianceTicker,
+                                                  ecm_url=ecm_url,
+                                                  public_key=public_key,
+                                                  key_fingerprint=key_fingerprint,
+                                                  is_trusted=False,
+                                                  )
+                
+                # notify the admins that a new corp tried to contact us
+                subject = tr('%s wants to exchange data with us') % corp.corporationName
+                ctx_dict = {
+                    'host_name': settings.EXTERNAL_HOST_NAME,
+                    'use_https': settings.USE_HTTPS,
+                }
+                txt_content = render_to_string('ecm/corp/email/notify_contact.txt', 
+                                               ctx_dict, Ctx(request))
+                html_content = render_to_string('ecm/corp/email/notify_contact.html', 
+                                                ctx_dict, Ctx(request))
+                mail_admins(subject, txt_content, html_message=html_content)
+            
+            # if everything went well, return back our public info
+            return HttpResponse(json.dumps(public_info))
+            
+        except (ValueError, KeyError), e:
+            # invalid field value
+            return HttpResponseBadRequest(str(e))
+        
+    else:
+        # just reply with an empty response that will carry the CSRF token
+        return HttpResponse()
     
-    data = {
-        'public_key': my_corp.public_key,
-        'key_fingerprint': my_corp.key_fingerprint,
-        'corp_id': my_corp.corporationID,
-        'corp_name': my_corp.corporationName,
-        'alliance_id': my_corp.allianceID,
-        'alliance_name': my_corp.allianceName,
-    }
-    
-    return HttpResponse(json.dumps(data))
 
 #------------------------------------------------------------------------------
 def login(request):
