@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-import httplib
 
 __date__ = "2010-02-08"
 __author__ = "diabeteman"
@@ -25,7 +24,6 @@ except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
-import cookielib
 import logging
 import urlparse
 import urllib2
@@ -33,6 +31,7 @@ import urllib2
 from django.db import models
 from django.core.exceptions import ValidationError
 
+from ecm.utils.http import HttpClient
 
 LOG = logging.getLogger(__name__)
 
@@ -117,7 +116,7 @@ class Corporation(models.Model):
     objects = CorpManager()
     
     ecm_url         = models.URLField(unique=True)
-    is_my_corp      = models.BooleanField(default=False, editable=False)
+    is_my_corp      = models.BooleanField(default=False)
     is_trusted      = models.BooleanField(default=False)
 
     corporationID   = models.BigIntegerField(primary_key=True, blank=True)
@@ -142,25 +141,23 @@ class Corporation(models.Model):
     
     #override
     def clean(self):
-        if self.key_fingerprint is None:
+        if not (self.key_fingerprint and self.public_key):
             self.contact_corp(self.ecm_url)
+        else:
+            if self.corporationID is None:
+                raise ValidationError('Missing corporationID    ')
     
     def contact_corp(self, corp_url):
         try:
             my_corp = Corporation.objects.mine()
-            cj = cookielib.CookieJar()
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
             url = urlparse.urljoin(corp_url, '/corp/contact/')
         
+            client = HttpClient()
             LOG.info('Sending our public info to %s...' % url)
             # first GET request to fetch CSRF cookie
-            opener.open(url)
-            
-            # second POST request to send our public info    
-            request = urllib2.Request(url)
-            request.add_header('X-CSRFToken', cj['csrftoken'])
-            request.add_data(json.dumps(my_corp.get_public_info()))
-            response = opener.open(request)
+            response = client.get(url)
+            # second POST request to send our public info
+            response = client.post(url, json.dumps(my_corp.get_public_info()))
             
             LOG.info('Fetching public info from %s...' % url)
             # the response should contain the corp's public info
@@ -168,8 +165,8 @@ class Corporation(models.Model):
             self.corporationID = public_info['corporationID']
             self.corporationName = public_info['corporationName']
             self.ticker = public_info['ticker']
-            self.allianceID = public_info['alliance_id']
-            self.allianceName = public_info['alliance_name']
+            self.allianceID = public_info['allianceID']
+            self.allianceName = public_info['allianceName']
             self.allianceTicker = public_info['allianceTicker']
             self.public_key = public_info['public_key']
             self.key_fingerprint = public_info['key_fingerprint']

@@ -29,6 +29,7 @@ except ImportError:
 
 from django.db import transaction
 from django.db.utils import IntegrityError
+from django.middleware import csrf
 from django.core.mail import mail_admins
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -36,6 +37,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
+from django.utils.translation import ugettext as tr
 
 from ecm.utils import crypto
 from ecm.apps.common import api
@@ -81,26 +83,44 @@ def contact(request):
             public_key = corp_info['public_key']
             key_fingerprint = corp_info['key_fingerprint']
             
+            new_request = False
             if Corporation.objects.filter(corporationID=corporationID).exists():
                 corp = Corporation.objects.get(corporationID=corporationID)
-                if corp.key_fingerprint != key_fingerprint:
-                    # tentative of hack? return an error
-                    LOG.error(WRONG_FINGERPRINT_MSG % (corporationName, corporationID))
-                    raise ValueError('wrong key_fingerprint')
+                if not corp.key_fingerprint:
+                    # This corp was created by some internal task but we don't know their 
+                    # public info yet.
+                    corp.corporationName = corporationName
+                    corp.ticker = ticker
+                    corp.allianceID = allianceID
+                    corp.allianceName = allianceName
+                    corp.allianceTicker = allianceTicker
+                    corp.ecm_url = ecm_url
+                    corp.public_key = public_key
+                    corp.key_fingerprint = key_fingerprint
+                    corp.is_trusted = False
+                    new_request = True
+                else:
+                    if corp.key_fingerprint != key_fingerprint:
+                        # tentative of hack? return an error
+                        LOG.error(WRONG_FINGERPRINT_MSG % (corporationName, corporationID))
+                        raise ValueError('wrong key_fingerprint')
             else:
                 # create the corp in our db
-                corp = Corporation.objects.create(corporationID=corporationID,
-                                                  corporationName=corporationName,
-                                                  ticker=ticker,
-                                                  allianceID=allianceID,
-                                                  allianceName=allianceName,
-                                                  allianceTicker=allianceTicker,
-                                                  ecm_url=ecm_url,
-                                                  public_key=public_key,
-                                                  key_fingerprint=key_fingerprint,
-                                                  is_trusted=False,
-                                                  )
+                corp = Corporation(corporationID=corporationID,
+                                   corporationName=corporationName,
+                                   ticker=ticker,
+                                   allianceID=allianceID,
+                                   allianceName=allianceName,
+                                   allianceTicker=allianceTicker,
+                                   ecm_url=ecm_url,
+                                   public_key=public_key,
+                                   key_fingerprint=key_fingerprint,
+                                   is_trusted=False,
+                                   )
+                new_request = True
                 
+            if new_request:
+                corp.save()
                 # notify the admins that a new corp tried to contact us
                 subject = tr('%s wants to exchange data with us') % corp.corporationName
                 ctx_dict = {
@@ -122,7 +142,7 @@ def contact(request):
         
     else:
         # just reply with an empty response that will carry the CSRF token
-        return HttpResponse()
+        return HttpResponse(csrf.get_token(request))
     
 
 #------------------------------------------------------------------------------

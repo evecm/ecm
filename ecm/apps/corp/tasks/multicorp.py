@@ -21,8 +21,8 @@ __author__ = 'diabeteman'
 import logging
 import urllib2
 import urlparse
-import cookielib
 
+from ecm.utils.http import HttpClient
 from ecm.utils import crypto
 from ecm.apps.corp.models import Corporation
 
@@ -42,29 +42,21 @@ def update_all():
 def update_one_corp(corp):
     
     my_corp = Corporation.objects.mine()
-    cj = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     
     auth_url = urlparse.urljoin(corp.ecm_url, '/corp/login/')
+    client = HttpClient()
     
-    request = urllib2.Request(auth_url)
-    request.add_header('Authorization', 'RSA %s' % my_corp.key_fingerprint)
-    
-    response = opener.open(request)
+    response = client.get(auth_url, headers={'Authorization': 'RSA %s' % my_corp.key_fingerprint})
     cipher_txt_in = response.read()
-    response.close()
     
     # we decrypt the response with our private key
-    secret = crypto.rsa_decrypt(my_corp.private_key, cipher_txt_in)
+    session_secret = crypto.rsa_decrypt(my_corp.private_key, cipher_txt_in)
     # and encrypt it back with the corp's public key
-    cipher_txt_out = crypto.rsa_encrypt(corp.public_key, secret)
+    cipher_txt_out = crypto.rsa_encrypt(corp.public_key, session_secret)
     
     # then send it to the server
-    request = urllib2.Request(auth_url)
-    request.add_header('X-CSRFToken', cj['csrftoken']) # to prevent hacking :-)
-    request.add_data(cipher_txt_out)
-    response = opener.open(request)
-    pass
+    response = client.post(auth_url, cipher_txt_out)
+    
     
     
     
