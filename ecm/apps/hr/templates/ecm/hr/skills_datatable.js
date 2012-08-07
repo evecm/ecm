@@ -39,43 +39,10 @@ function membersRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
         
 function membersServerParams( aoData ) {
     /* Add some extra variables to the url */
-	if ($('#ships_selector button').length) {
-		aoData.push( {
-			name: 'show_ships',
-			value: SHOW_SHIPS,
-		} );
-	}
+	aoData.push(
+			{
+				name: "skills",
+				value: $.toJSON(window.SKILLS),
+			}
+	);
 }
-        
-function membersStateSaveParams (oSettings, oData) {
-    oData.sFilter = $("#search_text").val();
-    if ($('#ships_selector button').length) {
-    	oData.show_ships = SHOW_SHIPS;
-    }
-}
-        
-function membersStateLoadParams (oSettings, oData) {
-    $("#search_text").val(oData.sFilter);
-    if ('show_ships' in oData) {
-    	var buttons = $('#ships_selector button');
-    	SHOW_SHIPS = oData.show_ships;
-        for (var i = 0; i < buttons.length; i++) {
-            if (buttons[i].id == SHOW_SHIPS) {
-                $(buttons[i]).addClass('active');
-            } else {
-                $(buttons[i]).removeClass('active');
-            }
-        }
-    }
-    return true;
-}
-        
-$(document).ready(function () {
-    $('#ships_selector button').on('click', function (event) {
-    	event.preventDefault();
-    	SHOW_SHIPS = this.id;
-    	$('#members_table').dataTable().fnDraw();
-	});
-
-});
-

@@ -49,7 +49,7 @@ def skills_search(request):
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
         'datatables_defaults': DATATABLES_DEFAULTS,
         'columns': MEMBERS_COLUMNS,
-        'ajax_url': '/hr/members/data/',
+        'ajax_url': '/hr/members/skills/data/',
     }
     return render_to_response('ecm/hr/members/member_skills.html', data, Ctx(request))
 
@@ -63,12 +63,14 @@ def skilled_list(request):
     corp = Corporation.objects.get(is_my_corp=True)
     query = Member.objects.filter(corp=corp)
     
+    skills = json.loads(request.GET.get("skills", ""))
+    print skills
+    
     total_members,\
     filtered_members,\
     members = get_members(query=query,
                           first_id=params.first_id,
                           last_id=params.last_id,
-                          search_str=params.search,
                           sort_by=params.column,
                           asc=params.asc)
 
@@ -124,8 +126,8 @@ def parse_eft(request):
 def get_item_id(request):
     querystring = request.GET.get('q', None)
     if querystring is not None:
-        query = Type.objects.filter(typeName__iexact=querystring)
-        if query.filter(category__in = [6, 7, 16]).exists():
+        query = Type.objects.filter(typeName__iexact=querystring).filter(category__in = [6, 7, 16])
+        if query.exists():
             item = query[0]
             out = []
             for i in item.skill_reqs.all():

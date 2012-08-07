@@ -60,28 +60,15 @@
     </tbody>
   </table>
 
-  <hr>
-
-  <div class="right">
-    <button class="btn btn-success btn-large"
-            type="submit"
-            title="{% trans 'Once you click this your filter will be applied.' %}">
-      <i class="icon-ok-sign icon-white"> </i>
-      {% trans 'Set Filter' %}
-    </button>
-    <img id="throbber-submit" class="throbber right" src="{% static 'ecm/img/throbber.gif' %}" alt="{% trans 'Loading...' %}" title="{% trans 'Loading...' %}"/>
-  </div>
 </form>
 
 {% datatable 'members_table' columns 
              css_class='table table-bordered table-condensed searchable_table' 
              defaults=datatables_defaults 
-             sAjaxSource='/hr/members/skills/data/' 
+             sAjaxSource=ajax_url 
              sCookiePrefix='ecm_members_table_' 
              fnRowCallback='membersRowCallback' 
-             fnServerParams='membersServerParams' 
-             fnStateSaveParams='membersStateSaveParams' 
-             fnStateLoadParams='membersStateLoadParams' %}
+             fnServerParams='membersServerParams' %}
 
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
@@ -121,6 +108,11 @@ NEW_ITEM =
 '</tr>';
 EMPTY = '<tr id="empty"><td colspan="5" class="order_cart_empty" >Your shopping cart is empty.</td></tr>';
 CONFIRM_DELETE_BUTTONS = '<span><a class="btn btn-mini btn-danger">I\'m Sure</a><a class="btn btn-mini">Cancel</a></span>';
+//global var
+window.SKILLS = [];
+
+{% include "ecm/hr/skills_datatable.js" %}
+
 function removeItem() {
     var row = this.parentNode.parentNode;
     var typeName = $('td:eq(1)', row).text();
@@ -132,10 +124,11 @@ function removeItem() {
     }
 
     $('span a:eq(0)', td).on('click', function () {
+    	removeSkill(row.id);
         $(row).remove();
         var rows =  $('#items tr');
         if (rows.length == 0) {
-            $('#items').html(EMPTY);
+        	$('#items').html(EMPTY);
         }
     });
 
@@ -179,6 +172,23 @@ function appendItemToOrder(typeID, typeName, level) {
 
     $(row).appendTo("#items");
     $('#' + typeID + ' td:eq(3) a').on('click', removeItem);
+    window.SKILLS.push({id:typeID, lvl:level});
+    updateSkillsCallback.call(window.SKILLS);
+}
+
+function removeSkill(id) {
+	var newskills = [];
+	$.each(window.SKILLS, function(k,v) {
+		if (v.id != id) {
+			newskills.push(v);
+		}
+	});
+	window.SKILLS = newskills;
+	updateSkillsCallback.call(window.SKILLS);
+}
+
+function updateSkillsCallback() {
+	$('#members_table').dataTable().fnDraw();
 }
 
 $(document).ready(function() {
