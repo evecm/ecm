@@ -37,7 +37,7 @@ from ecm.utils.format import print_time_min, print_float
 from ecm.utils import is_number
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.eve.models import Type, CelestialObject
-from ecm.apps.corp.models import Wallet
+from ecm.apps.corp.models import Corporation
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params
 from ecm.plugins.accounting.models import TransactionEntry
@@ -63,11 +63,11 @@ def transactions(request):
     
     
     wallets = [{ 'walletID' : 0, 'name' : 'All', 'selected' : walletID == 0 }]
-    for w in Wallet.objects.all().order_by('walletID'):
+    for w in Corporation.objects.mine().wallets.all().order_by('wallet'):
         wallets.append({
-            'walletID' : w.walletID,
+            'walletID' : w.wallet_id,
             'name' : w.name,
-            'selected' : w.walletID == walletID
+            'selected' : w.wallet_id == walletID
         })
     entryTypes = [{ 'refTypeID' : -1, 'refTypeName' : 'Both', 'selected' : entryTypeID == -1 }]
     for tet in TransactionEntry.TYPES:
@@ -157,6 +157,8 @@ def transactions_data(request):
     query = query[params.first_id:params.last_id]
     entries = []
     
+    my_corp = Corporation.objects.mine()
+    
     for entry in query:
         try:
             amount = print_float(entry.journal.amount, force_sign=True)
@@ -166,6 +168,7 @@ def transactions_data(request):
             balance = print_float(entry.journal.balance)
         except AttributeError:
             balance = ''
+        
         entries.append([
             print_time_min(entry.date),
             entry.typeName,
@@ -174,7 +177,7 @@ def transactions_data(request):
             amount,
             balance,
             truncate_words(entry.stationName, 6),
-            entry.wallet.name,
+            entry.wallet.corp_wallets.get(corp=my_corp).name,
         ])
 
     json_data = {

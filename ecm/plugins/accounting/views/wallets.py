@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.utils.format import print_float
 
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
@@ -31,9 +30,10 @@ from django.template.context import RequestContext as Ctx
 
 from ecm.plugins.accounting.views import wallet_journal_permalink, WALLET_LINK
 from ecm.apps.common.models import UpdateDate
-from ecm.apps.corp.models import Wallet
+from ecm.apps.corp.models import Corporation
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params
+from ecm.utils.format import print_float
 from ecm.plugins.accounting.models import JournalEntry
 
 #------------------------------------------------------------------------------
@@ -51,8 +51,10 @@ def wallets_data(request):
         params = extract_datatable_params(request)
     except:
         return HttpResponseBadRequest()
-
-    query = Wallet.objects.all()
+    
+    my_corp = Corporation.objects.mine()
+    
+    query = my_corp.wallets.all()
     total_entries = filtered_entries = query.count()
 
     entries = []
@@ -69,7 +71,7 @@ def wallets_data(request):
 
     if params.column == 0:
         # sort by walletID
-        sort_key = lambda e: e[0].walletID
+        sort_key = lambda e: e[0].wallet.walletID
     else:
         # sort by balance
         sort_key = lambda e: e[1]

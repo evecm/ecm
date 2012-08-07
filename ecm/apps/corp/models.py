@@ -92,7 +92,7 @@ class CorpWallet(models.Model):
         unique_together = ('corp', 'wallet')
         ordering = ('corp', 'wallet')
     
-    corp = models.ForeignKey('Corporation', related_name='wallet')    
+    corp = models.ForeignKey('Corporation', related_name='wallets')    
     wallet = models.ForeignKey('Wallet', related_name='corp_wallets')
     
     name = models.CharField(max_length=128)

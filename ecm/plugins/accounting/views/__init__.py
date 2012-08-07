@@ -31,11 +31,11 @@ WALLET_JOURNAL_COLUMNS = [
         {'sTitle':tr('Reason'),     'bVisible':False, },
         ]
 #------------------------------------------------------------------------------
-def wallet_url(wallet):
-    return "/accounting/wallet/%d/" % wallet.walletID
+def wallet_url(wallet_id):
+    return "/accounting/wallet/%d/" % wallet_id
 #------------------------------------------------------------------------------
-def wallet_journal_url(wallet):
-    return "/accounting/journal?walletID=%d" % wallet.walletID
+def wallet_journal_url(wallet_id):
+    return "/accounting/journal?walletID=%d" % wallet_id
 #------------------------------------------------------------------------------
 def wallet_permalink(wallet):
     return WALLET_LINK % (wallet_url(wallet), "Click for details on this wallet",
@@ -46,5 +46,5 @@ def wallet_journal_permalink(wallet, balance=None):
         name = wallet.name
     else:
         name = print_float(balance)
-    return WALLET_LINK % (wallet_journal_url(wallet),
+    return WALLET_LINK % (wallet_journal_url(wallet.wallet_id),
                           "Click to access this wallet's journal", name)

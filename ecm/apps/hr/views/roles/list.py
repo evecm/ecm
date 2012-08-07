@@ -30,7 +30,7 @@ from ecm.apps.hr.models import Role, RoleType
 from ecm.apps.hr.views import ROLES_COLUMNS
 from ecm.apps.common.models import ColorThreshold
 from ecm.views.decorators import check_user_access
-from ecm.apps.corp.models import Hangar, Wallet
+from ecm.apps.corp.models import CorpHangar, CorpWallet
 
 import logging
 logger = logging.getLogger(__name__)
@@ -95,17 +95,17 @@ def update_access_level(request):
         new_access_level = int(request.POST["value"])
         role = Role.objects.get(id=role_id)
 
-        if role.hangar_id:
+        if role.hangar:
             # Here, the access level is related to a hangar division
             # we must modify the access level of the related hangar
             #
             # note: this will propagate the change of access level
             #       through all roles that depend on that hangar division
-            Hangar.objects.filter(hangarID=role.hangar_id).update(accessLvl=new_access_level)
+            CorpHangar.objects.filter(hangar=role.hangar).update(access_lvl=new_access_level)
 
-        elif role.wallet_id:
+        elif role.wallet:
             # Same as above, but with wallet divisions
-            Wallet.objects.filter(walletID=role.wallet_id).update(accessLvl=new_access_level)
+            CorpWallet.objects.filter(wallet=role.wallet).update(access_lvl=new_access_level)
 
         elif role.roleID == 1:
             # the "director" role is specific, it is redundant in 4 role categories
