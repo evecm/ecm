@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block headtitle %}{% trans 'Search for Skills' %}{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery.autocomplete.css' %}" />
+<style type="text/css">
+#eft-modal, #lifecycle-modal, .throbber, #error-box, #warning-box {display: none;}
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<li><a href="/">{% trans 'Home' %}</a></li>
+<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
+<li class="active"><a href="/hr/members/">{% trans 'Skills' %}</a></li>
+{% endblock %}
+
+
+
+{% block main_content %}
+<div class="page-header">
+  <h1>Please select a ship, skill or module to add it to the filter.</h1>
+</div>
+
+<form class="well form-inline" id="search_form">
+    <input type="text" id="search_box" placeholder="{% trans 'Start typing to search items...' %}"/>
+    <button type="submit" class="btn btn-small"><i class="icon-plus"> </i>{% trans 'Add item to filter' %}</button>
+    <a class="btn btn-primary pull-right" data-toggle="modal" data-target="#eft-modal" ><i class="icon-plane icon-white"> </i>{% trans 'Import EFT Fitting' %}</a>
+
+
+<div class="alert alert-error" id="error-box">
+    <a class="close">&times;</a>
+    <span id="error-text"></span>
+</div>
+
+<div class="alert" id="warning-box">
+    <a class="close">&times;</a>
+    <span id="warning-text"></span>
+</div>
+
+<img id="throbber-eft" class="throbber" src="{% static 'ecm/img/throbber.gif' %}" alt="{% trans 'Loading...' %}" title="{% trans 'Loading...' %}"/>
+
+{% csrf_token %}
+  <table class="table table-striped table-condensed table-centered">
+    <thead>
+      <tr>
+        <th>{% trans 'Icon' %}</th>
+        <th>{% trans 'Item' %}</th>
+        <th>{% trans 'Level' %}</th>
+        <th width="20%">{% trans 'Remove' %}</th>
+      </tr>
+    </thead>
+    <tbody id="items">
+      <tr id="empty">
+          <td colspan="4" class="order_cart_empty" >{% trans 'Your filter list is empty.' %}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <div class="right">
+    <button class="btn btn-success btn-large"
+            type="submit"
+            title="{% trans 'Once you click this your filter will be applied.' %}">
+      <i class="icon-ok-sign icon-white"> </i>
+      {% trans 'Set Filter' %}
+    </button>
+    <img id="throbber-submit" class="throbber right" src="{% static 'ecm/img/throbber.gif' %}" alt="{% trans 'Loading...' %}" title="{% trans 'Loading...' %}"/>
+  </div>
+</form>
+
+{% datatable 'members_table' columns 
+             css_class='table table-bordered table-condensed searchable_table' 
+             defaults=datatables_defaults 
+             sAjaxSource='/hr/members/skills/data/' 
+             sCookiePrefix='ecm_members_table_' 
+             fnRowCallback='membersRowCallback' 
+             fnServerParams='membersServerParams' 
+             fnStateSaveParams='membersStateSaveParams' 
+             fnStateLoadParams='membersStateLoadParams' %}
+
+<script type="text/javascript">
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+COLOR_THRESHOLDS = {{ colorThresholds|safe }};
+
+{% include "ecm/hr/skills_datatable.js" %}
+
+</script>
+
+<div class="modal" id="eft-modal">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">&times;</a>
+    <h3>Please paste a fitting export from EFT</h3>
+  </div>
+  <div class="modal-body">
+    <textarea id="eft-block" style="width:98%;" rows="10"></textarea>
+  </div>
+  <div class="modal-footer form-inline">
+    <a id="eft-submit" class="btn btn-primary" data-dismiss="modal">{% trans 'Import EFT Fitting' %}</a>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="{% static 'ecm/js/lib/jquery.autocomplete.js' %}"></script>
+{% endblock %}
+{% block post_javascripts %}
+<script>
+NEW_ITEM =
+'<tr id="%typeID">' +
+ '<td><img src="http://image.eveonline.com/Type/%typeID_32.png" /></td>' +
+ '<td><strong>%typeName</strong></td>' +
+ '<td><input class="span1" type="text" name="%typeID" value="%level" /></td>' +
+ '<td><a class="btn btn-small btn-danger"><i class="icon-trash icon-white"></i></a></td>' +
+'</tr>';
+EMPTY = '<tr id="empty"><td colspan="5" class="order_cart_empty" >Your shopping cart is empty.</td></tr>';
+CONFIRM_DELETE_BUTTONS = '<span><a class="btn btn-mini btn-danger">I\'m Sure</a><a class="btn btn-mini">Cancel</a></span>';
+function removeItem() {
+    var row = this.parentNode.parentNode;
+    var typeName = $('td:eq(1)', row).text();
+
+    var td = this.parentNode;
+
+    if ($('span', td).length == 0) {
+        $(td).append(CONFIRM_DELETE_BUTTONS);
+    }
+
+    $('span a:eq(0)', td).on('click', function () {
+        $(row).remove();
+        var rows =  $('#items tr');
+        if (rows.length == 0) {
+            $('#items').html(EMPTY);
+        }
+    });
+
+    $('span a:eq(1)', td).on('click', function () {
+        $('span', td).remove();
+    });
+}
+
+
+function addItem(name) {
+    if (name == '') {
+        return;
+    }
+    $.getJSON("/hr/members/skills/itemid/", {q: name}, function(json) {
+        for (var i = 0 ; i < json.length ; i++){
+            var typeID = json[i][0];
+            var typeName = json[i][1];
+            var level = json[i][2];
+            appendItemToOrder(typeID, typeName, level);
+        }
+        $("#search_box").val("");
+    }).error(function (jqXHR) {
+        $('#error-text').html('<strong>{% trans 'Error' %}!</strong> ' + jqXHR.responseText);
+        $('#error-box').show();
+    });
+}
+
+function appendItemToOrder(typeID, typeName, level) {
+    $('#empty').remove();
+    var rows =  $('#items tr');
+    for (var i = 0 ; i < rows.length ; i++) {
+        if (parseInt(rows[i].id) == parseInt(typeID)) {
+            var qty = parseInt($('td:eq(3) input', rows[i]).val());
+            $('td:eq(2) input', rows[i]).val(level);
+            return;
+        }
+    }
+    var row = NEW_ITEM.replace(/%typeID/g, typeID)
+                      .replace(/%typeName/g, typeName)
+                      .replace(/%level/g, level);
+
+    $(row).appendTo("#items");
+    $('#' + typeID + ' td:eq(3) a').on('click', removeItem);
+}
+
+$(document).ready(function() {
+    $("#search_box").autocomplete("/hr/members/skills/search/", {
+        minChars: 3,
+        selectFirst: true,
+    });
+
+    /* add item on search form submission */
+    $("#search_form").on('submit', function(event) {
+        event.preventDefault();
+        addItem($("#search_box").val());
+    });
+
+    /* avoid submitting empty orders */
+    $("#items_form").submit(function(event) {
+        if ($('#empty').length > 0) {
+            event.preventDefault();
+        } else {
+            $('#throbber-submit').show();
+        }
+    });
+
+
+    /* when eft modal dialog is submited */
+    $('a#eft-submit').click(function () {
+        $('#throbber').show();
+        $.post('/hr/members/skills/parseeft/', {
+            'eft_block': $('#eft-block').val(),
+            'quantity': $('#eft-quantity').val()
+         })
+         .success(function (data) {
+             var unavaiableItems = [];
+             for (var i=0; i < data.length; i++) {
+                appendItemToOrder(data[i].typeID,
+                                  data[i].typeName,
+                                  data[i].level);
+             }
+             $('#eft-block').val('');
+         })
+         .error(function (jqXHR) {
+             $('#error-text').html('<strong>{% trans 'Error' %}!</strong> ' + jqXHR.responseText);
+             $('#error-box').show();
+         })
+         .complete(function () {
+             $('#throbber').hide();
+         });
+    });
+
+    $('#error-box a.close').on('click', function () {
+        $('#error-box').hide();
+    });
+    $('#warning-box a.close').on('click', function () {
+        $('#warning-box').hide();
+    });
+
+    $('#items tr').each(function () {
+        $(this).find('td:eq(4) a').on('click', removeItem);
+    });
+});
+
+</script>
+{% endblock %}

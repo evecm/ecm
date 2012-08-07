@@ -25,6 +25,7 @@ MENUS = [
             {'title': tr_lazy('History'),               'url': 'members/history/'},
             {'title': tr_lazy('Access Changes'),        'url': 'members/accesschanges/'},
             {'title': tr_lazy('Unassociated Members'),  'url': 'members/unassociated/'},
+            {'title': tr_lazy('Skills'),                'url': 'members/skills/'},
         ]},
         {'title': tr_lazy('Titles'),    'url': 'titles/',      'items': [
             {'title': tr_lazy('Changes'),               'url': 'titles/changes/'},
