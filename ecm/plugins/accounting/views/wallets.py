@@ -60,7 +60,7 @@ def wallets_data(request):
     entries = []
     for wallet in query:
         try:
-            balance = JournalEntry.objects.filter(wallet=wallet).latest().balance
+            balance = JournalEntry.objects.filter(wallet=wallet.wallet).latest().balance
         except JournalEntry.DoesNotExist:
             # no journal information, we assume the balance is 0.0
             balance = 0.0
