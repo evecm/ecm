@@ -84,6 +84,7 @@ def skilled_list(request):
     return datatable_ajax_data(members, params.sEcho, total_members, filtered_members)
 
 #------------------------------------------------------------------------------
+@check_user_access()
 def extract_filter_items(request):
     items = []
     valid_item = True
