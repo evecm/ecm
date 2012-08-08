@@ -104,10 +104,10 @@ COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 <script>
 NEW_ITEM =
 '<tr id="%typeID">' +
- '<td><img src="http://image.eveonline.com/Type/%typeID_32.png" /></td>' +
+ '<td><img src="{% static "assets/img/skill.png" %}" /></td>' +
  '<td><strong>%typeName</strong></td>' +
  '<td>%radio</td>' +
- '<td><a class="btn btn-small btn-danger"><i class="icon-trash icon-white"></i></a></td>' +
+ '<td><a class="btn btn-mini btn-danger"><i class="icon-trash icon-white"></i></a></td>' +
 '</tr>';
 EMPTY = '<tr id="empty"><td colspan="5" class="order_cart_empty" >Your shopping cart is empty.</td></tr>';
 CONFIRM_DELETE_BUTTONS = '<span><a class="btn btn-mini btn-danger">I\'m Sure</a><a class="btn btn-mini">Cancel</a></span>';
