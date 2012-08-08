@@ -152,6 +152,7 @@ function addItem(name) {
             var level = json[i][2];
             appendItemToOrder(typeID, typeName, level);
         }
+        $('#members_table').dataTable().fnDraw();
         $("#search_box").val("");
     }).error(function (jqXHR) {
         $('#error-text').html('<strong>{% trans 'Error' %}!</strong> ' + jqXHR.responseText);
@@ -203,7 +204,6 @@ function appendItemToOrder(typeID, typeName, level) {
     $('#' + typeID + ' td:eq(3) a').on('click', removeItem);
     $('#' + typeID + ' td:eq(2) button').on('click', updateLevel);
     window.SKILLS.push({id:typeID, lvl:level});
-    updateSkillsCallback.call(window.SKILLS);
 }
 
 function removeSkill(id) {
@@ -214,10 +214,6 @@ function removeSkill(id) {
 		}
 	});
 	window.SKILLS = newskills;
-	updateSkillsCallback.call(window.SKILLS);
-}
-
-function updateSkillsCallback() {
 	$('#members_table').dataTable().fnDraw();
 }
 
