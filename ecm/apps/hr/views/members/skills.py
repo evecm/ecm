@@ -33,7 +33,7 @@ from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access
 from ecm.views import JSON
 from ecm.apps.common.models import ColorThreshold, UpdateDate
-from ecm.apps.hr.models import Member
+from ecm.apps.hr.models import Member, Skill
 from ecm.views import DATATABLES_DEFAULTS
 from ecm.apps.hr.views import get_members, MEMBERS_COLUMNS
 from ecm.views import extract_datatable_params, datatable_ajax_data
@@ -61,11 +61,18 @@ def skilled_list(request):
     except KeyError:
         return HttpResponseBadRequest()
     corp = Corporation.objects.get(is_my_corp=True)
-    query = Member.objects.filter(corp=corp)
+    members = Member.objects.filter(corp=corp)
     
     skills = json.loads(request.GET.get("skills", ""))
-    print skills
-    
+    filtered = []
+    for member in members:
+        try:
+            for skill in skills:
+                member.skills.get(typeID = skill['id'], level__gte = skill['lvl'])
+            filtered.append(member.characterID)
+        except Skill.DoesNotExist:
+            pass
+    query = Member.objects.filter(characterID__in = filtered)
     total_members,\
     filtered_members,\
     members = get_members(query=query,
