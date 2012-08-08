@@ -9,6 +9,9 @@
 <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery.autocomplete.css' %}" />
 <style type="text/css">
 #eft-modal, #lifecycle-modal, .throbber, #error-box, #warning-box {display: none;}
+.btn-group.center > .btn {
+    float: inherit;
+}
 </style>
 {% endblock %}
 
@@ -103,7 +106,7 @@ NEW_ITEM =
 '<tr id="%typeID">' +
  '<td><img src="http://image.eveonline.com/Type/%typeID_32.png" /></td>' +
  '<td><strong>%typeName</strong></td>' +
- '<td><input class="span1" type="text" name="%typeID" value="%level" /></td>' +
+ '<td>%radio</td>' +
  '<td><a class="btn btn-small btn-danger"><i class="icon-trash icon-white"></i></a></td>' +
 '</tr>';
 EMPTY = '<tr id="empty"><td colspan="5" class="order_cart_empty" >Your shopping cart is empty.</td></tr>';
@@ -156,6 +159,20 @@ function addItem(name) {
     });
 }
 
+function updateLevel() {      
+	                         /* btn-group     td         tr */
+    var typeID = parseInt(this.parentNode.parentNode.parentNode.id);
+    var newLevel = $(this).val();
+    
+    for (var i = 0; i < window.SKILLS.length; i++) {
+        if (window.SKILLS[i].id == typeID && window.SKILLS[i].lvl != newLevel) {
+            window.SKILLS[i].lvl = newLevel;
+            $('#members_table').dataTable().fnDraw();
+        }
+    }
+}
+
+
 function appendItemToOrder(typeID, typeName, level) {
     $('#empty').remove();
     var rows =  $('#items tr');
@@ -169,9 +186,22 @@ function appendItemToOrder(typeID, typeName, level) {
     var row = NEW_ITEM.replace(/%typeID/g, typeID)
                       .replace(/%typeName/g, typeName)
                       .replace(/%level/g, level);
-
+    
+    level = parseInt(level);
+    var radio = '<div class="btn-group center skills-radio" data-toggle="buttons-radio" >';
+    for (i = 1; i <= 5; i++) {
+    	var css = 'btn btn-mini btn-info';
+    	if (i == level) {
+    		css = css + ' active';
+    	}
+    	var radio = radio + '<button class="' + css + '" value="' + i + '">' + i + '</button>';
+    }
+    var radio = radio + '</div>';
+    row = row.replace(/%radio/g, radio);
+    
     $(row).appendTo("#items");
     $('#' + typeID + ' td:eq(3) a').on('click', removeItem);
+    $('#' + typeID + ' td:eq(2) button').on('click', updateLevel);
     window.SKILLS.push({id:typeID, lvl:level});
     updateSkillsCallback.call(window.SKILLS);
 }
