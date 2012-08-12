@@ -26,7 +26,6 @@ except ImportError:
 import re
 import random
 import datetime
-import pytz #@UnresolvedImport
 
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
@@ -45,7 +44,7 @@ class Setting(models.Model):
         ordering = ['name']
 
     name = models.CharField(max_length=200, primary_key=True)
-    value = models.CharField(max_length=1000, default='')
+    value = models.TextField()
 
     def getValue(self):
         return eval(self.value)
@@ -206,8 +205,6 @@ class UpdateDate(models.Model):
         """
         try:
             update = UpdateDate.objects.get(model_name=model.__name__)
-            if update.update_date.tzinfo:
-                date = date.replace(tzinfo=pytz.UTC)
             if not update.update_date == date:
                 update.prev_update = update.update_date
                 update.update_date = date

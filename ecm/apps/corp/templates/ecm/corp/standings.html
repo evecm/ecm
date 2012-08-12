@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block headtitle %}{% trans 'Standings' %}{% endblock %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'ecm/css/standings.css' %}" />
+{% endblock %}
+
+{% block main_content %}
+<div class="row-fluid">
+	{% if standings_visibility == 'alliance' or standings_visibility == 'both' or user.is_superuser %}
+	<div class="span6">
+	    <h2>Alliance Standings</h2>
+		<table class="table table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th>{% trans 'Entity' %}</th><th class="center">{% trans 'Standing' %}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for standing in alliance_standings %}
+				<tr class="standing-row_{{standing.standing}}">
+					<td><a href="http://evewho.com/search/{{standing.contactName}}">{{standing.contactName}}</a></td>
+					<td class="standing-cell_{{standing.value}} center">{{standing.value}}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{% endif %}
+	{% if standings_visibility == 'corporation' or standings_visibility == 'both' or user.is_superuser %}
+	<div class="span6">
+	    <h2>Corporation Standings</h2>
+		<table class="table table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th>{% trans 'Entity' %}</th><th class="center">{% trans 'Standing' %}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for standing in corp_standings %}
+				<tr class="standing-row_{{standing.standing}}">
+					<td><a href="http://evewho.com/search/{{standing.contactName}}">{{standing.contactName}}</a></td>
+					<td class="standing-cell_{{standing.value}} center">{{standing.value}}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{% endif %}
+</div>
+
+{% if standings_visibility == 'none' or standings_visibility == '\'none\''%}
+<h2>Standings are set to Private.</h2>
+{% endif %}
+
+{% if user.is_superuser %}
+<h2>Set Public settings</h2>
+<div class="row">
+    <div class="span4">
+        <form class="well form-inline" action='/standings/' method="post">
+            {% csrf_token %}
+            <select name="standings_visibility">
+                <option value="none" {% if not standings_visibility %}selected="selected"{% endif %}>{% trans 'None' %}</option>
+                <option value="alliance" {% if standings_visibility == 'alliance' %}selected="selected"{% endif %}>{% trans 'Alliance' %}</option>
+                <option value="corporation"{% if standings_visibility == 'corporation' %}selected="selected"{% endif %}>{% trans 'Corp' %}</option>
+                <option value="both"{% if standings_visibility == 'both' %}selected="selected"{% endif %}>{% trans 'Both' %}</option>
+            </select>
+            <button type="submit" class="btn">{% trans 'Set Access' %}</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

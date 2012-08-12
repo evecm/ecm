@@ -4,11 +4,19 @@
 
 {% block main_content %}
 <div class="center">
-<h1 class="pagetitle error">{% trans 'Activation Error' %}</h1>
 
-<p>{% trans 'Sorry' %} {{ form.cleaned_data.username }}, {% trans 'but the server was not able to send an email' %} {{ form.cleaned_data.email }}.</p>
+<div class="page-header">
+	<h1 class="error">{% trans 'Activation Error' %}</h1>
+</div>
 
-<p>{% trans 'Reason' %}: {{ error_reason }}</p>
-<p>{% trans 'Please contact the administrator' %}.</p>
+<p>
+{% blocktrans %} 
+Sorry {{ form.cleaned_data.username }}, but the server was not able to send an email {{ form.cleaned_data.email }}.
+{% endblocktrans %}
+</p>
+
+<p>{% trans 'Reason:' %} {{ error_reason }}</p>
+<p>{% trans 'Please contact the administrator.' %}</p>
+
 </div>
 {% endblock %}

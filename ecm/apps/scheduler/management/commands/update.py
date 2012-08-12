@@ -108,4 +108,8 @@ class Command(BaseCommand):
                     raise CommandError('ScheduledTask "%s" is already running.' % task.function)
     
                 task.run()
-                self.stdout.write('Successfully executed "%s"\n' % task.function)
+                
+                if task.is_last_exec_success:
+                    self.stdout.write('Successfully executed "%s"\n' % task.function)
+                else:
+                    self.stdout.write('ERROR in task "%s"\n' % task.function)

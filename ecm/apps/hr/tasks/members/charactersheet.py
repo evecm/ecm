@@ -94,14 +94,6 @@ def set_extended_char_attributes(member, sheet):
     member.bloodLine = sheet.bloodLine
     member.ancestry = sheet.ancestry
     member.gender = sheet.gender
-    member.corporationName = sheet.corporationName
-    member.corporationID = sheet.corporationID
-    try:
-        member.allianceName = sheet.allianceName
-        member.allianceID = sheet.allianceID
-    except AttributeError:
-        member.allianceName = None
-        member.allianceID = 0
     member.cloneName = sheet.cloneName
     member.cloneSkillPoints = sheet.cloneSkillPoints
     member.balance = sheet.balance

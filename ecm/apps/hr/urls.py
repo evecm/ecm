@@ -45,6 +45,11 @@ urlpatterns += patterns('ecm.apps.hr.views.members',
     (r'^members/(\d+)/$',                       'details.details'),
     (r'^members/(\d+)/accesschanges/data/$',    'details.access_changes_member_data'),
     (r'^members/(\d+)/updatenotes/$',           'details.update_member_notes'),
+    (r'^members/skills/$',                      'skills.skills_search'),
+    (r'^members/skills/search/$',               'skills.search_item'),
+    (r'^members/skills/itemid/$',               'skills.get_item_id'),
+    (r'^members/skills/parseeft/$',             'skills.parse_eft'),
+    (r'^members/skills/data/$',                 'skills.skilled_list'),
 )
 
 urlpatterns += patterns('ecm.apps.hr.views.titles',

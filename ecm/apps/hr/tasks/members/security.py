@@ -21,10 +21,13 @@ __author__ = "diabeteman"
 import logging
 
 from django.db import transaction
+from django.utils import timezone
 
 from ecm.utils import tools
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.common import api
+from ecm.apps.corp.models import Corporation
+from ecm.apps.hr.models.titles import Title
 from ecm.apps.hr.models import RoleMembership, TitleMembership, RoleMemberDiff, \
     TitleMemberDiff, Member, RoleType, Role
 
@@ -46,8 +49,8 @@ def update():
     memberSecuApi = api_conn.corp.MemberSecurity(characterID=api.get_charID())
     api.check_version(memberSecuApi._meta.version)
 
-    currentTime = memberSecuApi._meta.currentTime
-    cachedUntil = memberSecuApi._meta.cachedUntil
+    currentTime = timezone.make_aware(memberSecuApi._meta.currentTime, timezone.utc)
+    cachedUntil = timezone.make_aware(memberSecuApi._meta.cachedUntil, timezone.utc)
     LOG.debug("current time : %s", str(currentTime))
     LOG.debug("cached util : %s", str(cachedUntil))
 
@@ -69,12 +72,14 @@ def update():
     allRoles = {}
     for role in Role.objects.all():
         allRoles[(role.roleID, role.roleType_id)] = role
-
+        
+    my_corp = Corporation.objects.mine()
+    
     for member in memberSecuApi.members:
         # A.update(B) works as a merge of 2 hashtables A and B in A
         # if a key is already present in A, it takes B's value
         newRoles.update(parseOneMemberRoles(member, allRoleTypes, allRoles))
-        newTitles.update(parseOneMemberTitles(member))
+        newTitles.update(parseOneMemberTitles(member, my_corp))
 
     # Store role changes
     roleDiffs = storeRoles(oldRoles, newRoles, currentTime)
@@ -107,11 +112,12 @@ def parseOneMemberRoles(member, allRoleTypes, allRoles):
     return roles
 
 #------------------------------------------------------------------------------
-def parseOneMemberTitles(member):
+def parseOneMemberTitles(member, my_corp):
     titles = {}
 
-    for title in member.titles:
-        membership = TitleMembership(member_id=member.characterID, title_id=title.titleID)
+    for t in member.titles:
+        title = Title.objects.get(corp=my_corp, titleID=t.titleID)
+        membership = TitleMembership(member_id=member.characterID, title=title)
         titles[membership] = membership
 
     return titles

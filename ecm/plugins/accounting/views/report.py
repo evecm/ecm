@@ -14,17 +14,21 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+
+
 import logging
 from datetime import timedelta
+
 from django.shortcuts import render_to_response
-from ecm.views.decorators import check_user_access
 from django.template.context import RequestContext
-from ecm.plugins.accounting.models import JournalEntry, Report
 from django.db.models.aggregates import Sum, Avg
-from ecm.apps.corp.models import Wallet
-from ecm.utils.tools import end_of_day, start_of_day
 from django.db.models.query_utils import Q
 from django.utils import timezone
+
+from ecm.utils.tools import end_of_day, start_of_day
+from ecm.plugins.accounting.models import JournalEntry, Report
+from ecm.apps.corp.models import Corporation
+from ecm.views.decorators import check_user_access
 
 __date__ = '2012 04 22'
 __author__ = 'tash'
@@ -175,7 +179,7 @@ def _extract_date(entity):
 #------------------------------------------------------------------------------
 def _get_wallet_balance_by_day(start, end):
     balances = []
-    for wallet in Wallet.objects.all():
+    for wallet in Corporation.objects.mine().wallets.all():
         try:
             balance = JournalEntry.objects.filter(date__range=(start, end)).values('type__refTypeName').annotate(average=Avg('amount'))
         except JournalEntry.DoesNotExist:

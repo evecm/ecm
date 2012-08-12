@@ -8,13 +8,6 @@
 {% block headtitle %}{% trans 'Member Details' %} - {{ member.name }}{% endblock %}
 
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
-<li><a href="/hr/members/">{% trans 'Members' %}</a></li>
-<li class="active"><a href="/hr/members/{{ member.characterID }}">{{ member.name }}</a></li>
-{% endblock %}
-
 {% block main_content %}
 <div class="page-header">
   <h1 {%if not member.corped %}class="error"{% endif %}>{{ member.name }}{%if not member.corped %} {% trans 'NOT CORPED' %}{% endif %}

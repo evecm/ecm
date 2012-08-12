@@ -40,7 +40,7 @@
   <script type="text/javascript" src="{% static 'ecm/js/lib/jquery.tableTools.js' %}"></script>
   <script type="text/javascript" src="{% static 'ecm/js/lib/ZeroClipboard.js' %}"></script>
   <script type="text/javascript" src="{% static 'ecm/js/lib/jquery.jeditable.js' %}"></script>
-  <script type="text/javascript" src="{% static 'ecm/js/lib/jquery.jeditable.js' %}"></script>
+  <script type="text/javascript" src="{% static 'ecm/js/lib/jquery.json.js' %}"></script>
   <script type="text/javascript" src="{% static 'ecm/js/dataTables.bootstrap.js' %}"></script>
   <script type="text/javascript" src="{% static 'ecm/js/lib/jquery.cluetip.js' %}"></script>
   {% block compressed_javascripts %}{% endblock %}{% endcompress %}
@@ -78,11 +78,6 @@
               </ul>
             </li>
           </ul>
-          {% else %}
-          <ul class="nav pull-right">
-            <li><a href="/account/login/?next=/account/" >{% trans 'Login' %}</a></li>
-            <li><a href="/account/create/" >{% trans 'Create Account' %}</a></li>
-          </ul>
           {% endif %}
         </div><!--/.nav-collapse -->
       </div>
@@ -106,11 +101,8 @@
       {% else %} <!-- NO MENU -->
       <div class="span12">
       {% endif %}
-        {% block breadcrumbs_wrapper %}<ul class="breadcrumb">{% block breadcrumbs %}{% endblock %}</ul>{% endblock %}
       <!-- PAGE CONTENT -->
-        {% block main_content %}
-        {# main page content here #}
-        {% endblock %}
+      {% block main_content %}{% endblock %}
       </div>
     </div>
   </div> <!-- /CONTAINER -->
@@ -120,7 +112,7 @@
     <div class="container-fluid">
       <hr>
       <span class="pull-left">
-        Eve Corp. Management v<strong>{{ecm_version}}</strong> &bull;
+        Eve Corp. Management <strong>{{ecm_version}}</strong> &bull;
         <a href="http://www.gnu.org/licenses/gpl-3.0-standalone.html">
           <em>
             <!--[if lte IE 8]><span style="filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2); display: inline-block;"><![endif]-->

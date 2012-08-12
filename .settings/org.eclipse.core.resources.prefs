@@ -1,5 +1,2 @@
 eclipse.preferences.version=1
-encoding//ecm/apps/corp/migrations/0002_auto__add_standings.py=utf-8
-encoding//ecm/plugins/accounting/migrations/0006_auto__add_report.py=utf-8
-encoding//ecm/plugins/assets/migrations/0002_auto__add_field_assetdiff_volume__add_field_asset_volume__add_field_as.py=utf-8
 encoding/<project>=UTF-8

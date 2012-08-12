@@ -20,20 +20,21 @@ __author__ = "diabeteman"
 
 
 import re
+import logging
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
+from django.conf import settings
 from django.db import transaction
 
 from ecm.lib import eveapi
+from ecm.utils import crypto
 from ecm.apps.common.models import UpdateDate
-from ecm.apps.corp.models import Corp, Hangar, Wallet
+from ecm.apps.corp.models import Corporation, Hangar, Wallet, CorpHangar, CorpWallet
 from ecm.apps.common import api
 
-import logging
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
 def update():
     """
     Fetch a /corp/CorporationSheet.xml.aspx api response, parse it and store it to
@@ -46,7 +47,7 @@ def update():
     corpApi = api_conn.corp.CorporationSheet(characterID=api.get_charID())
     api.check_version(corpApi._meta.version)
 
-    currentTime = corpApi._meta.currentTime
+    currentTime = timezone.make_aware(corpApi._meta.currentTime, timezone.utc)
 
     LOG.debug("parsing api response...")
     corp = update_corp_info(corpApi, currentTime)
@@ -59,10 +60,11 @@ def update():
 
     update_hangar_divisions(corpApi, currentTime)
     update_wallet_divisions(corpApi, currentTime)
-
+    
     LOG.info("corp info updated")
 
 #------------------------------------------------------------------------------
+@transaction.commit_on_success
 def update_corp_info(corpApi, currentTime):
     try:
         try:
@@ -76,7 +78,7 @@ def update_corp_info(corpApi, currentTime):
                     break
         except eveapi.Error:
             LOG.exception("Failed to fetch AllianceList.xml.aspx from EVE API server")
-            corp = Corp.objects.get(id=1)
+            corp = Corporation.objects.mine()
             allianceID = corp.allianceID
             allianceName = corp.allianceName
             allianceTicker = corp.allianceTicker
@@ -87,9 +89,13 @@ def update_corp_info(corpApi, currentTime):
 
     description = fix_description(corpApi.description)
 
+    # reset all other corps
+    Corporation.objects.exclude(corporationID=corpApi.corporationID).update(is_my_corp=False)
+
     try:
         # try to retrieve the db stored corp info
-        corp = Corp.objects.get(id=1)
+        corp = Corporation.objects.get(corporationID=corpApi.corporationID)
+        corp.is_my_corp      = True
         corp.corporationID   = corpApi.corporationID
         corp.corporationName = corpApi.corporationName
         corp.ticker          = corpApi.ticker
@@ -103,59 +109,80 @@ def update_corp_info(corpApi, currentTime):
         corp.description     = description
         corp.taxRate         = corpApi.taxRate
         corp.memberLimit     = corpApi.memberLimit
-    except ObjectDoesNotExist:
+    except Corporation.DoesNotExist:
+        LOG.debug('First scan, creating corp...')
         # no corp parsed yet
-        corp = Corp( id              = 1,
-                     corporationID   = corpApi.corporationID,
-                     corporationName = corpApi.corporationName,
-                     ticker          = corpApi.ticker,
-                     ceoID           = corpApi.ceoID,
-                     ceoName         = corpApi.ceoName,
-                     stationID       = corpApi.stationID,
-                     stationName     = corpApi.stationName,
-                     description     = description,
-                     allianceID      = allianceID,
-                     allianceName    = allianceName,
-                     allianceTicker  = allianceTicker,
-                     taxRate         = corpApi.taxRate,
-                     memberLimit     = corpApi.memberLimit )
+        corp = Corporation(is_my_corp      = True,
+                           corporationID   = corpApi.corporationID,
+                           corporationName = corpApi.corporationName,
+                           ticker          = corpApi.ticker,
+                           ceoID           = corpApi.ceoID,
+                           ceoName         = corpApi.ceoName,
+                           stationID       = corpApi.stationID,
+                           stationName     = corpApi.stationName,
+                           description     = description,
+                           allianceID      = allianceID,
+                           allianceName    = allianceName,
+                           allianceTicker  = allianceTicker,
+                           taxRate         = corpApi.taxRate,
+                           memberLimit     = corpApi.memberLimit
+                           )
+    
+    if settings.USE_HTTPS:
+        corp.ecm_url = 'https://' + settings.EXTERNAL_HOST_NAME
+    else:
+        corp.ecm_url = 'http://' + settings.EXTERNAL_HOST_NAME
+    
+    if not (corp.private_key and corp.public_key and corp.key_fingerprint):
+        # as this is the first time, we must generate the RSA keypair of our own corp
+        LOG.debug('Generating RSA key pair...')
+        corp.private_key = crypto.generate_rsa_keypair()
+        corp.public_key = crypto.extract_public_key(corp.private_key)
+        corp.key_fingerprint = crypto.key_fingerprint(corp.public_key) 
+        LOG.info('Generated RSA key pair for corporation ID %d.' % corpApi.corporationID)
 
     corp.save()
     # we store the update time of the table
-    UpdateDate.mark_updated(model=Corp, date=currentTime)
+    UpdateDate.mark_updated(model=Corporation, date=currentTime)
 
     return corp
 
 
 #------------------------------------------------------------------------------
+@transaction.commit_on_success
 def update_hangar_divisions(corpApi, currentTime):
     LOG.debug("HANGAR DIVISIONS:")
+    my_corp = Corporation.objects.mine()
+    hangars = CorpHangar.objects.filter(corp=my_corp)
     for hangarDiv in corpApi.divisions:
         h_id = hangarDiv.accountKey
         h_name = hangarDiv.description
         try:
-            h = Hangar.objects.get(hangarID=h_id)
+            h = hangars.get(hangar_id=h_id)
             h.name = h_name
-        except ObjectDoesNotExist:
-            h = Hangar(hangarID=h_id, name=h_name)
-        LOG.debug("  %s [%d]", h.name, h.hangarID)
+        except CorpHangar.DoesNotExist:
+            h = CorpHangar(corp=my_corp, hangar_id=h_id, name=h_name)
+        LOG.debug("  %s [%s]", h.name, h.hangar)
         h.save()
     # we store the update time of the table
     UpdateDate.mark_updated(model=Hangar, date=currentTime)
 
 
 #------------------------------------------------------------------------------
+@transaction.commit_on_success
 def update_wallet_divisions(corpApi, currentTime):
     LOG.debug("WALLET DIVISIONS:")
+    my_corp = Corporation.objects.mine()
+    wallets = CorpWallet.objects.filter(corp=my_corp)
     for walletDiv in corpApi.walletDivisions:
         w_id = walletDiv.accountKey
         w_name = walletDiv.description
         try:
-            w = Wallet.objects.get(walletID=w_id)
+            w = wallets.get(wallet_id=w_id)
             w.name = w_name
-        except ObjectDoesNotExist:
-            w = Wallet(walletID=w_id, name=w_name)
-        LOG.debug("  %s [%d]", w.name, w.walletID)
+        except CorpWallet.DoesNotExist:
+            w = CorpWallet(corp=my_corp, wallet_id=w_id, name=w_name)
+        LOG.debug("  %s [%s]", w.name, w.wallet)
         w.save()
     # we store the update time of the table
     UpdateDate.mark_updated(model=Wallet, date=currentTime)

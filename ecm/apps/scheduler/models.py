@@ -22,9 +22,7 @@ __author__ = "diabeteman"
 import logging
 from datetime import timedelta
 
-from django.template import Template, Context
-from django.http import HttpResponse
-from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
+from django.utils.translation import ugettext as tr
 from django.utils.encoding import force_unicode
 from django.utils import timezone
 from django.db import models

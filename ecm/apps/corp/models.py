@@ -18,7 +18,22 @@
 __date__ = "2010-02-08"
 __author__ = "diabeteman"
 
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
+
+import logging
+import urlparse
+import urllib2
+
 from django.db import models
+from django.core.exceptions import ValidationError
+
+from ecm.utils.http import HttpClient
+
+LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 class Hangar(models.Model):
@@ -27,9 +42,29 @@ class Hangar(models.Model):
         ordering = ['hangarID']
 
     hangarID = models.PositiveIntegerField(primary_key=True)
-    name = models.CharField(max_length=128)
-    accessLvl = models.PositiveIntegerField(default=1000)
 
+    def get_name(self, corp):
+        return self.corp_hangars.get(corp=corp, hangar=self).name
+
+    def get_access_lvl(self, corp):
+        return self.corp_hangars.get(corp=corp, hangar=self).access_lvl
+
+    def __unicode__(self):
+        return unicode(self.hangarID)
+
+#------------------------------------------------------------------------------
+class CorpHangar(models.Model):
+
+    class Meta:
+        unique_together = ('corp', 'hangar')
+        ordering = ('corp', 'hangar')
+
+    corp = models.ForeignKey('Corporation', related_name='hangars')    
+    hangar = models.ForeignKey('Hangar', related_name='corp_hangars')
+    
+    name = models.CharField(max_length=128)
+    access_lvl = models.PositiveIntegerField(default=1000)
+    
     def __unicode__(self):
         return unicode(self.name)
 
@@ -40,44 +75,144 @@ class Wallet(models.Model):
         ordering = ['walletID']
 
     walletID = models.PositiveIntegerField(primary_key=True)
-    name = models.CharField(max_length=128)
-    accessLvl = models.PositiveIntegerField(default=1000)
 
+    def get_name(self, corp):
+        return self.corp_wallets.get(corp=corp, wallet=self).name
+
+    def get_access_lvl(self, corp):
+        return self.corp_wallets.get(corp=corp, wallet=self).access_lvl
+
+    def __unicode__(self):
+        return unicode(self.walletID)
+
+#------------------------------------------------------------------------------
+class CorpWallet(models.Model):
+    
+    class Meta:
+        unique_together = ('corp', 'wallet')
+        ordering = ('corp', 'wallet')
+    
+    corp = models.ForeignKey('Corporation', related_name='wallets')    
+    wallet = models.ForeignKey('Wallet', related_name='corp_wallets')
+    
+    name = models.CharField(max_length=128)
+    access_lvl = models.PositiveIntegerField(default=1000)
+    
     def __unicode__(self):
         return unicode(self.name)
 
 #------------------------------------------------------------------------------
-class Corp(models.Model):
-    corporationID = models.BigIntegerField()
-    corporationName = models.CharField(max_length=256)
-    ticker = models.CharField(max_length=8)
-    ceoID = models.BigIntegerField()
-    ceoName = models.CharField(max_length=256)
-    stationID = models.BigIntegerField()
-    stationName = models.CharField(max_length=256)
-    allianceID = models.BigIntegerField()
-    allianceName = models.CharField(max_length=256)
-    allianceTicker = models.CharField(max_length=8)
-    description = models.TextField()
-    taxRate = models.PositiveIntegerField()
-    memberLimit = models.PositiveIntegerField()
+class CorpManager(models.Manager):
+    
+    def mine(self):
+        return self.get(is_my_corp=True) 
+    
+    def others(self):
+        return self.filter(is_my_corp=False)
 
-    class Meta:
-        get_latest_by = 'id'
-        ordering = ['id']
+    
+class Corporation(models.Model):
+    
+    objects = CorpManager()
+    
+    ecm_url         = models.URLField(unique=True)
+    is_my_corp      = models.BooleanField(default=False)
+    is_trusted      = models.BooleanField(default=False)
+
+    corporationID   = models.BigIntegerField(primary_key=True, blank=True)
+    corporationName = models.CharField(max_length=256, blank=True, null=True)
+    ticker          = models.CharField(max_length=8, blank=True, null=True)
+    ceoID           = models.BigIntegerField(blank=True, null=True)
+    ceoName         = models.CharField(max_length=256, blank=True, null=True)
+    stationID       = models.BigIntegerField(blank=True, null=True)
+    stationName     = models.CharField(max_length=256, blank=True, null=True)
+    allianceID      = models.BigIntegerField(blank=True, null=True)
+    allianceName    = models.CharField(max_length=256, blank=True, null=True)
+    allianceTicker  = models.CharField(max_length=8, blank=True, null=True)
+    description     = models.TextField(blank=True, null=True)
+    taxRate         = models.IntegerField(blank=True, null=True)
+    memberLimit     = models.IntegerField(blank=True, null=True)
+
+    private_key     = models.TextField(unique=True, blank=True, null=True)
+    public_key      = models.TextField(unique=True, blank=True)
+    key_fingerprint = models.CharField(max_length=1024, unique=True, blank=True)
+    
+    last_update     = models.DateTimeField(auto_now=True)
+    
+    #override
+    def clean(self):
+        if not (self.key_fingerprint and self.public_key):
+            self.contact_corp(self.ecm_url)
+        else:
+            if self.corporationID is None:
+                raise ValidationError('Missing corporationID    ')
+    
+    def contact_corp(self, corp_url):
+        try:
+            my_corp = Corporation.objects.mine()
+            url = urlparse.urljoin(corp_url, '/corp/contact/')
+        
+            client = HttpClient()
+            LOG.info('Sending our public info to %s...' % url)
+            # first GET request to fetch CSRF cookie
+            response = client.get(url)
+            # second POST request to send our public info
+            response = client.post(url, json.dumps(my_corp.get_public_info()))
+            
+            LOG.info('Fetching public info from %s...' % url)
+            # the response should contain the corp's public info
+            public_info = json.load(response)
+            self.corporationID = public_info['corporationID']
+            self.corporationName = public_info['corporationName']
+            self.ticker = public_info['ticker']
+            self.allianceID = public_info['allianceID']
+            self.allianceName = public_info['allianceName']
+            self.allianceTicker = public_info['allianceTicker']
+            self.public_key = public_info['public_key']
+            self.key_fingerprint = public_info['key_fingerprint']
+            self.is_my_corp = False
+            self.is_trusted = True
+            
+            LOG.info('Corp %s accepted our contact request.' % self.corporationName)
+            LOG.info('Wait until they confirm that they trust us '
+                     'before you can exchange data with them.')
+        except urllib2.HTTPError, e:
+            message = 'URL: %s, Response: %s %s "%s"' % (e.url, e.code, e.reason, e.read())
+            LOG.exception(message)
+            raise ValidationError(message)
+        except Exception, e:
+            LOG.exception('')
+            raise ValidationError(e)
+        
+    
+    def get_public_info(self):
+        public_info = {
+            'ecm_url': self.ecm_url,
+            'corporationID': self.corporationID,
+            'corporationName': self.corporationName,
+            'ticker': self.ticker,
+            'allianceID': self.allianceID,
+            'allianceName': self.allianceName,
+            'allianceTicker': self.allianceTicker,
+            'public_key': self.public_key,
+            'key_fingerprint': self.key_fingerprint,
+        }
+        return public_info
 
     def __unicode__(self):
         return unicode(self.corporationName)
 
-class Standings(models.Model):
+#------------------------------------------------------------------------------
+class Standing(models.Model):
     
     class Meta:
-        ordering = ['standing']
+        ordering = ('-value', 'contactName',)
     
+    corp = models.ForeignKey('Corporation', related_name='standings')
     contactID = models.BigIntegerField(default=0)
+    contactName = models.CharField(max_length=255)
     is_corp_contact = models.BooleanField(default=True)
-    contactName = models.CharField(max_length=50)
-    standing = models.IntegerField(default=0)
+    value = models.IntegerField(default=0)
     
     @property
     def contact_type(self):
@@ -94,5 +229,6 @@ class Standings(models.Model):
             return 'Alliance'
         else:
             return unicode(self.contactID)
+    
     def __unicode__(self):
         return unicode(self.contactName)

@@ -41,7 +41,7 @@ from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
 from ecm.plugins.assets.models import Asset, AssetDiff
-from ecm.apps.corp.models import Hangar
+from ecm.apps.corp.models import CorpHangar, Corporation
 from ecm.views import DATE_PATTERN
 
 
@@ -107,12 +107,13 @@ def get_dates(request):
 @check_user_access()
 def root(request, date_str):
 
-    all_hangars = Hangar.objects.all().order_by('hangarID')
+    my_corp = Corporation.objects.mine()
+    all_hangars = CorpHangar.objects.filter(corp=my_corp).order_by('hangar')
     try:
         divisions_str = request.GET['divisions']
         divisions = [ int(div) for div in divisions_str.split(',') ]
         for h in all_hangars:
-            h.checked = h.hangarID in divisions
+            h.checked = h.hangar_id in divisions
     except:
         divisions, divisions_str = None, None
         for h in all_hangars:
@@ -150,13 +151,14 @@ def root(request, date_str):
 
     try:
         date_asked = datetime.strptime(date_str, DATE_PATTERN)
-        if AssetDiff.objects.filter(date=date_asked).exists():
-            data['date'] = date_asked
-            return render_to_response('ecm/assets/assets_diff.html', data, Ctx(request))
-        else:
-            return render_to_response('ecm/assets/assets_no_data.html', Ctx(request))
-    except:
+    except ValueError:
         return redirect('/assets/changes/')
+
+    if AssetDiff.objects.filter(date=date_asked).exists():
+        data['date'] = date_asked
+        return render_to_response('ecm/assets/assets_diff.html', data, Ctx(request))
+    else:
+        return render_to_response('ecm/assets/assets_no_data.html', {}, Ctx(request))
 
 
 #------------------------------------------------------------------------------
@@ -304,8 +306,8 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
         cursor.execute(sql, [solarSystemID, stationID, date] + list(divisions))
 
     HANGAR = {}
-    for h in Hangar.objects.all():
-        HANGAR[h.hangarID] = h.name
+    for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
+        HANGAR[h.hangar_id] = h.name
 
     jstree_data = []
     for hangarID, items, volume in cursor.fetchall():

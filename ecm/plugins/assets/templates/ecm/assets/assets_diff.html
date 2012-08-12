@@ -1,13 +1,8 @@
-{% extends "assets.html" %}
+{% extends "ecm/assets/assets.html" %}
 {% load i18n %}
 {% block headtitle %}{% trans 'Asset Changes on' %} {{ date }}{% endblock %}
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/assets/" >{% trans 'Assets' %}</a></li>
-<li><a href="/assets/changes/" >{% trans 'Changes' %}</a></li>
-<li><a href="/assets/changes/{{ date_str }}" >{{ date|ecm_datetime }}</a></li>
-{% endblock %}
+
 
 {% block title %}
 <div>

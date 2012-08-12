@@ -19,17 +19,16 @@ __date__ = "2010 04 23"
 __author__ = "Ajurna"
 
 import logging
-import calendar
-import pytz
-from datetime import datetime
 
 from django.db import transaction
+from django.utils import timezone
+from django.utils.translation import ugettext as tr
 
 from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import CelestialObject, ControlTowerResource, Type
 from ecm.plugins.pos import constants
 from ecm.apps.common import api
-from ecm.apps.corp.models import Corp
+from ecm.apps.corp.models import Corporation
 
 logger = logging.getLogger(__name__)
 
@@ -68,16 +67,15 @@ def update():
         logger.info("fetching /corp/StarbaseDetail.xml.aspx?itemID=%d..." % row.itemID)
         apiCurPOS = conn.corp.StarbaseDetail(characterID=charID,
                                              itemID=row.itemID)
-        cached_until = apiCurPOS._meta.cachedUntil
-        if pos.cached_until.tzinfo:
-            cached_until = cached_until.replace(tzinfo=pytz.UTC)
+        
+        
+        cached_until = timezone.make_aware(apiCurPOS._meta.cachedUntil, timezone.utc)
         if cached_until != pos.cached_until:
-            pos.cached_until = cached_until # @todo: causing  RuntimeWarning: dont know why :|
+            pos.cached_until = cached_until
             get_details(pos, apiCurPOS, sov)
         else:
-            localCachedUntil = datetime.utcfromtimestamp(calendar.timegm(cached_until.timetuple()))
             logger.info("POS %s is cached until %s: no update required",
-                        row.itemID, localCachedUntil)
+                        row.itemID, pos.cached_until)
         pos.save()
 
     # if this list is not empty, it means that some POSes have disapeared since last scan.
@@ -142,7 +140,7 @@ def get_basic_info(pos, api_row):
     pos.fuel_type_id = constants.RACE_TO_FUEL[item.raceID]
 
 #------------------------------------------------------------------------------
-def get_details(pos, api, sov):
+def get_details(pos, api_resp, sov):
     """
     The XML API result of StarbaseDetail is
 
@@ -180,18 +178,20 @@ def get_details(pos, api, sov):
         <cachedUntil>2011-04-24 01:21:31</cachedUntil>
     </eveapi>
     """
-    pos.state = api.state
-    pos.state_timestamp = api.stateTimestamp
-    pos.online_timestamp = api.onlineTimestamp
-    pos.lastUpdate = api._meta.currentTime
+    current_time = timezone.make_aware(api_resp._meta.currentTime, timezone.utc)
+    
+    pos.state = api_resp.state
+    pos.state_timestamp = timezone.make_aware(api_resp.stateTimestamp, timezone.utc)
+    pos.online_timestamp = timezone.make_aware(api_resp.onlineTimestamp, timezone.utc)
+    pos.lastUpdate = current_time
 
-    gs = api.generalSettings
+    gs = api_resp.generalSettings
     pos.usage_flags = gs.usageFlags
     pos.deploy_flags = gs.deployFlags
     pos.allow_corporation_members = gs.allowCorporationMembers == 1
     pos.allow_alliance_members = gs.allowAllianceMembers == 1
 
-    cs = api.combatSettings
+    cs = api_resp.combatSettings
     pos.use_standings_from = cs.useStandingsFrom.ownerID
     pos.standings_threshold = float(cs.onStandingDrop.standing) / 100.0
     pos.attack_on_concord_flag = cs.onStatusDrop.enabled == 1
@@ -199,14 +199,14 @@ def get_details(pos, api, sov):
     pos.attack_on_aggression = cs.onAggression.enabled == 1
     pos.attack_on_corp_war = cs.onCorporationWar.enabled == 1
 
-    for fuel in api.fuel:
+    for fuel in api_resp.fuel:
         fuel_level = FuelLevel.objects.create(pos=pos,
                                      type_id = fuel.typeID,
                                      quantity = fuel.quantity,
-                                     date = api._meta.currentTime)
+                                     date = current_time)
 
         base_fuel_cons = ControlTowerResource.objects.get(control_tower=pos.type_id, resource=fuel.typeID).quantity
-        corp = Corp.objects.latest()
+        corp = Corporation.objects.mine()
         # sov fuel check
         if sov[pos.location_id]['faction'] == 0 and \
            sov[pos.location_id]['alliance'] == corp.allianceID and \
@@ -223,5 +223,5 @@ def get_details(pos, api, sov):
             fuel_level = FuelLevel.objects.create(pos = pos,
                                                  type_id = charters,
                                                  quantity = 0,
-                                                 date = api._meta.currentTime)
+                                                 date = current_time)
             fuel_level.save()

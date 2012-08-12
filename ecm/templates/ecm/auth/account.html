@@ -3,15 +3,9 @@
 
 {% block headtitle %}{% trans 'User Profile' %}{% endblock %}
 
-
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li class="active"><a href="/account/">{% trans 'User Profile' %}</a></li>
-{% endblock %}
-
 {% block main_content %}
 <div class="page-header">
-  <h1>{% trans 'Hello' %} <em>{{ user.username }}</em></h1>
+  <h1>{{user.username}} <small>{% trans 'User Account' %}</small></h1>
 </div>
 
 <p>{% trans 'Click <a href="/account/passwordchange/">here</a> to change your password.' %}</p>

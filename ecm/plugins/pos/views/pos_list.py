@@ -23,7 +23,7 @@ try:
 except ImportError:
     import django.utils.simplejson as json
 
-from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
+from django.utils.translation import ugettext_lazy as tr_lazy
 
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext

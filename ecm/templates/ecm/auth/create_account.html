@@ -2,49 +2,48 @@
 {% load i18n %}
 {% block headtitle %}{% trans 'User Signup' %}{% endblock %}
 
-{% block breadcrumbs_wrapper %}{% endblock %}
-
 {% block main_content %}
 <div class="row">
   <div class="span5 offset4">
+	
 	<h1>{% trans 'Create Account' %}</h1>
-		<form action="/account/create/" method="post" class="form-inline well" >{% csrf_token %}
-		    {% if form.errors %}{{ form.non_field_errors }}<br>{% endif %}
+	
+	<form action="/account/create/" method="post" class="form-inline well" >{% csrf_token %}
+	    {% if form.errors %}{{ form.non_field_errors }}<br>{% endif %}
+	
+	    <h3>General Information</h3>
+	    {{ form.username.label_tag }}{{ form.username.errors }}<br>
+	    {{ form.username }}<br>
+	
+	    {{ form.email.label_tag }}{{ form.email.errors }}<br>
+	    {{ form.email }}<br>
+	
+	    {{ form.password1.label_tag }}{{ form.password1.errors }}<br>
+	    {{ form.password1 }}<br>
+	
+	    {{ form.password2.label_tag }}{{ form.password2.errors }}<br>
+	    {{ form.password2 }}<br>
 		
-		    <h3>General Information</h3>
-		    {{ form.username.label_tag }}{{ form.username.errors }}<br>
-		    {{ form.username }}<br>
-		
-		    {{ form.email.label_tag }}{{ form.email.errors }}<br>
-		    {{ form.email }}<br>
-		
-		    {{ form.password1.label_tag }}{{ form.password1.errors }}<br>
-		    {{ form.password1 }}<br>
-		
-		    {{ form.password2.label_tag }}{{ form.password2.errors }}<br>
-		    {{ form.password2 }}<br>
-			
-			<br>
-		    <h3>{% trans 'EVE-Online API Key' %}</h3>
-		
-		    <a href="https://support.eveonline.com/api/Key/CreatePredefined/{{accessMask}}"
-		       target="_blank">{% trans 'Create a new API Key on EVE-Online support website' %}</a><br>
-		
-		    {{ form.keyID.label_tag }}{{ form.keyID.errors }}<br>
-		    {{ form.keyID }}<br>
-		    {{ form.vCode.label_tag }}{{ form.vCode.errors }}<br>
-		    {{ form.vCode }}<br>
-		
-			<br>
-		    <h3>{% trans 'Anti-Robot Security' %}</h3>
-		    {{ form.captcha.label_tag }}{{ form.captcha.errors }}<br>
-		    {{ form.captcha }}<br>
-		
-			<br>
-		    <button type="submit" class="btn btn-primary" >{% trans 'Submit Information' %}</button>
-		
-		</form>
+		<br>
+	    <h3>{% trans 'EVE-Online API Key' %}</h3>
+	
+	    <a href="https://support.eveonline.com/api/Key/CreatePredefined/{{accessMask}}"
+	       target="_blank">{% trans 'Create a new API Key on EVE-Online support website' %}</a><br>
+	
+	    {{ form.keyID.label_tag }}{{ form.keyID.errors }}<br>
+	    {{ form.keyID }}<br>
+	    {{ form.vCode.label_tag }}{{ form.vCode.errors }}<br>
+	    {{ form.vCode }}<br>
+	
+		<br>
+	    <h3>{% trans 'Anti-Robot Security' %}</h3>
+	    {{ form.captcha.label_tag }}{{ form.captcha.errors }}<br>
+	    {{ form.captcha }}<br>
+	
+		<br>
+	    <button type="submit" class="btn btn-primary" >{% trans 'Submit Information' %}</button>
+	</form>
+	
+  </div>
 </div>
-</div>
-
 {% endblock %}

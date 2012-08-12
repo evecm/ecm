@@ -80,7 +80,7 @@ urlpatterns += patterns('ecm.views.account',
 urlpatterns += patterns('ecm.views',
     ###########################################################################
     # COMMON VIEWS
-    (r'^$',                     'common.corp'),
+    (r'^$',                     'common.home'),
     (r'^editmotd/$',            'common.edit_motd'),
     (r'^editapi/$',             'common.edit_apikey'),
 )
@@ -93,11 +93,6 @@ urlpatterns += patterns('ecm.views.api',
     (r'^api/bindings/(\w+)/groups/$', 'group_bindings'),
 )
 
-urlpatterns += patterns('ecm.views.standings',
-    ###########################################################################
-    # STANGINGS API VIEWS
-    (r'^standings/$',               'standings'),
-)
 
 import ecm.apps
 CORE_APPS_URLS = []

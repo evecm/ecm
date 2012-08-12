@@ -15,16 +15,14 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
+from django.utils.translation import ugettext_lazy as tr_lazy
 
 NAME = 'corp'
 
 MENUS = [ 
-    {'title': tr_lazy('Standings'),    'url': '/standings/',      'items': []},
-]
-
-URL_PERMISSIONS = [
-    r'^/standings/$',
+    {'title': tr_lazy('Corporation'),    'url': '',      'items': [
+        {'title': tr_lazy('Standings'),   'url': 'standings/', 'items': [], },
+    ]},
 ]
 
 TASKS = [
@@ -44,5 +42,5 @@ TASKS = [
 
 SETTINGS = {
     'corp_killboard_url': None,
-    'standings_public': 'none',
+    'standings_visibility': 'none',
 }

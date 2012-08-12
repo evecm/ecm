@@ -1,23 +1,14 @@
 syntax: glob
 *.pyc
 *.pyo
-dist
+*.mo
 *.old
 *.log
-.metadata
 *.orig
-build
 *.swp
 *.egg-info
-dev-instance
+*~
 
-syntax: regexp
-^ecm/apps/corp/anonymizers\.py$
-syntax: regexp
-^ecm/apps/hr/anonymizers\.py$
-syntax: regexp
-^ecm/plugins/pos/anonymizers\.py$
-syntax: regexp
-^ecm/plugins/accounting/anonymizers\.py$
-syntax: regexp
-\.mo$
+.metadata
+dist
+build

@@ -45,6 +45,8 @@ def update_location(account, mem):
     conn = api.connect_user(account)
     ci = conn.eve.CharacterInfo(characterID = mem.characterID)
     mem.location = ci.lastKnownLocation
+    mem.ship = ci.shipTypeName
+    mem.owner = account.user
     mem.save()
     
 #------------------------------------------------------------------------------

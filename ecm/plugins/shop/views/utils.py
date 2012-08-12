@@ -28,7 +28,7 @@ from django.http import HttpResponseNotAllowed, HttpResponseBadRequest, HttpResp
     HttpResponseNotFound
 
 from ecm.views import JSON
-from ecm.plugins.shop import eft
+from ecm.apps.common import eft
 from ecm.views.decorators import check_user_access
 from ecm.plugins.industry.models import CatalogEntry, PricingPolicy
 

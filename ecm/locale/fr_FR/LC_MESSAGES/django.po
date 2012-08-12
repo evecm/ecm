@@ -27,11 +27,11 @@ msgstr "Bonjour"
 #: apps/common/templates/email/invalid_api.html:8
 #: apps/common/templates/email/invalid_api.txt:5
 msgid "The following API Keys are invalid"
-msgstr "Les clefs API suivantes sont invalide"
+msgstr "Les clés API suivantes sont invalides"
 
 #: apps/common/templates/email/invalid_api.html:14
 msgid " and make sure that these API Keys are valid"
-msgstr " et assurez vous que ces clefs API soient valide"
+msgstr " et assurez vous que ces clés API soient valides"
 
 #: apps/common/templates/email/invalid_api.html:19
 #: apps/common/templates/email/invalid_api.txt:13
@@ -40,7 +40,7 @@ msgstr "Merci d'avance"
 
 #: apps/common/templates/email/invalid_api_subject.txt:2
 msgid "Invalid API Key"
-msgstr "Clef API invalide"
+msgstr "Clé API invalide"
 
 #: apps/hr/templates/dashboard.html:3 apps/hr/templates/dashboard.html:12
 msgid "Human Resources Dashboard"
@@ -157,7 +157,7 @@ msgstr "niveau"
 
 #: apps/hr/templates/dashboard.html:90
 msgid "Security access level distribution"
-msgstr "distribution des niveaux d'acces de sécurité"
+msgstr "distribution des niveaux d'accès de sécurité"
 
 #: apps/hr/templates/dashboard.html:111
 msgid "Position of members"
@@ -206,7 +206,7 @@ msgstr "Membres"
 #: apps/hr/templates/members/access_changes.html:14
 #: apps/hr/templates/members/member_details.html:113
 msgid "Security Access Changes"
-msgstr "Changement d'acces de sécurité"
+msgstr "Changements d'accès de sécurité"
 
 #: apps/hr/templates/members/access_changes.html:14
 #: apps/hr/templates/titles/changes.html:16
@@ -216,7 +216,7 @@ msgstr "Changement d'acces de sécurité"
 #: plugins/accounting/templates/wallet_transactions.html:20
 #: plugins/accounting/templates/wallets.html:17
 msgid "last update"
-msgstr "derniere mise a jour"
+msgstr "dernière mise a jour"
 
 #: apps/hr/templates/members/access_changes.html:21
 #: apps/hr/templates/members/member_history.html:24
@@ -293,7 +293,7 @@ msgstr "Membre"
 #: apps/hr/templates/members/member_details.html:118
 #: apps/hr/templates/members/member_details.html:130
 msgid "Title/Role"
-msgstr "Titre/Role"
+msgstr "Titre/Rôle"
 
 #: apps/hr/templates/members/access_changes.html:33
 #: apps/hr/templates/members/access_changes.html:46
@@ -359,13 +359,13 @@ msgstr "NON INTÉGRÉ"
 
 #: apps/hr/templates/members/member_details.html:26
 msgid "Link to killboard"
-msgstr "Lien du tableau de chasse"
+msgstr "Lien vers le killboard"
 
 #: apps/hr/templates/members/member_details.html:31
 #: apps/hr/templates/titles/title_members.html:37
 #: apps/hr/templates/titles/title_members.html:54
 msgid "Corp Date"
-msgstr "Date Corporation"
+msgstr "Date d'incorporation"
 
 #: apps/hr/templates/members/member_details.html:32
 #: apps/hr/templates/members/member_list.html:41
@@ -380,27 +380,27 @@ msgstr "Date Corporation"
 #: apps/hr/templates/titles/title_members.html:38
 #: apps/hr/templates/titles/title_members.html:55
 msgid "Last Login"
-msgstr "Derniere Connexion"
+msgstr "Dernière Connexion"
 
 #: apps/hr/templates/members/member_details.html:33
 msgid "Last Logoff"
-msgstr "Derniere Deconnexion"
+msgstr "Dernière Déconnexion"
 
 #: apps/hr/templates/members/member_details.html:34
 msgid "Avg. Session Duration (30 Days)"
-msgstr "Durée de Session moyenne (30 jours)"
+msgstr "Durée moyenne d'une session (30 jours)"
 
 #: apps/hr/templates/members/member_details.html:35
 msgid "Logged in (last 30 Days)"
-msgstr "Connexion (30 derniers jours)"
+msgstr "Temps de connexion (30 derniers jours)"
 
 #: apps/hr/templates/members/member_details.html:36
 msgid "Logged in (last 7 Days)"
-msgstr "Connexion (7 derniers jours)"
+msgstr "Temps de connexion (7 derniers jours)"
 
 #: apps/hr/templates/members/member_details.html:37
 msgid "Base Office"
-msgstr "Bureau de base"
+msgstr "Station de base"
 
 #: apps/hr/templates/members/member_details.html:38
 msgid "Owned by"
@@ -433,7 +433,7 @@ msgstr "Pas de titres"
 
 #: apps/hr/templates/members/member_details.html:77
 msgid "No extra roles"
-msgstr "Pas de roles supplémentaires"
+msgstr "Pas de rôles supplémentaires"
 
 #: apps/hr/templates/members/member_details.html:87 templates/base.html:53
 msgid "Login"
@@ -441,7 +441,7 @@ msgstr "Connexion"
 
 #: apps/hr/templates/members/member_details.html:88 templates/base.html:51
 msgid "Logout"
-msgstr "Deconnexion"
+msgstr "Déconnexion"
 
 #: apps/hr/templates/members/member_details.html:89
 msgid "Duration"
@@ -456,7 +456,7 @@ msgstr "Pas de données"
 #: plugins/accounting/templates/wallet_journal.html:45
 #: plugins/accounting/templates/wallet_transactions.html:45
 msgid "Last Week"
-msgstr "Semaine derniere"
+msgstr "Semaine dernière"
 
 #: apps/hr/templates/members/member_details.html:106
 #: plugins/accounting/templates/contrib.html:29
@@ -532,7 +532,7 @@ msgstr "Tout les vaisseaux"
 
 #: apps/hr/templates/members/member_list.html:29
 msgid "Supers Only"
-msgstr "Supers Seuls"
+msgstr "Super-Capitaux Seuls"
 
 #: apps/hr/templates/members/member_list.html:39
 #: apps/hr/templates/members/member_list.html:56
@@ -561,7 +561,7 @@ msgstr "Joueur"
 #: apps/hr/templates/titles/titles.html:20
 #: apps/hr/templates/titles/titles.html:34
 msgid "Access Level"
-msgstr "Niveau d'acces"
+msgstr "Niveau d'accès"
 
 #: apps/hr/templates/members/member_list.html:42
 #: apps/hr/templates/members/member_list.html:59
@@ -634,7 +634,7 @@ msgstr "Compte Crée"
 
 #: apps/hr/templates/players/player_details.html:25
 msgid "Last login in ECM"
-msgstr "Derniere connexion a l'ecm"
+msgstr "Derniere connexion à ECM"
 
 #: apps/hr/templates/players/player_details.html:26
 msgid "Owned EVE Accounts"
@@ -663,7 +663,7 @@ msgstr "Vaisseaux"
 #: apps/hr/templates/players/player_list.html:8
 #: apps/hr/templates/players/player_list.html:13
 msgid "Player List"
-msgstr "List des joueurs"
+msgstr "Liste des joueurs"
 
 #: apps/hr/templates/players/player_list.html:29
 #: apps/hr/templates/players/player_list.html:45 views/account/forms.py:44
@@ -697,7 +697,7 @@ msgstr "Date d'entrée"
 
 #: apps/hr/templates/roles/role_details.html:3
 msgid "Role Details"
-msgstr "Détails du role"
+msgstr "Détails du rôle"
 
 #: apps/hr/templates/roles/role_details.html:10
 #: apps/hr/templates/roles/roles.html:3 apps/hr/templates/roles/roles.html:10
@@ -710,15 +710,15 @@ msgstr "Assigné directement"
 
 #: apps/hr/templates/roles/role_details.html:35
 msgid "Assigned through titles"
-msgstr "Assigné a travers les titre"
+msgstr "Assigné à travers des titres"
 
 #: apps/hr/templates/roles/roles.html:19
 msgid "Role Category"
-msgstr "Catégorie du role"
+msgstr "Catégorie du rôle"
 
 #: apps/hr/templates/roles/roles.html:30 apps/hr/templates/roles/roles.html:47
 msgid "Role Name"
-msgstr "Nom du role"
+msgstr "Nom du rôle"
 
 #: apps/hr/templates/roles/roles.html:31 apps/hr/templates/roles/roles.html:48
 #: templates/common/corp.html:29
@@ -746,7 +746,7 @@ msgstr "Titre"
 #: apps/hr/templates/titles/title_details.html:54
 #: apps/hr/templates/titles/title_details.html:67
 msgid "Role"
-msgstr "Role"
+msgstr "Rôle"
 
 #: apps/hr/templates/titles/title_details.html:3
 msgid "Title Details"
@@ -754,7 +754,7 @@ msgstr "Détails du titre"
 
 #: apps/hr/templates/titles/title_details.html:15
 msgid "last modification"
-msgstr "derniere modification"
+msgstr "dernière modification"
 
 #: apps/hr/templates/titles/title_details.html:19
 msgid "Show all"
@@ -796,14 +796,14 @@ msgstr "Nom du titre"
 #: apps/hr/templates/titles/titles.html:22
 #: apps/hr/templates/titles/titles.html:36
 msgid "Role Count"
-msgstr "Nombre de roles"
+msgstr "Nombre de rôles"
 
 #: apps/hr/templates/titles/titles.html:23
 #: apps/hr/templates/titles/titles.html:37
 #: plugins/industry/templates/order_details.html:65
 #: plugins/shop/templates/shop_order_details.html:61
 msgid "Last Modified"
-msgstr "Derniere modification"
+msgstr "Dernière modification"
 
 #: apps/scheduler/templates/tasks.html:7
 #: apps/scheduler/templates/tasks.html:12
@@ -816,7 +816,7 @@ msgstr "Description de tache"
 
 #: apps/scheduler/templates/tasks.html:19
 msgid "Next Auto Execution"
-msgstr "Prochaine éxecution automatique"
+msgstr "Prochaine exécution automatique"
 
 #: apps/scheduler/templates/tasks.html:20
 msgid "Frequency"
@@ -824,7 +824,7 @@ msgstr "Fréquence"
 
 #: apps/scheduler/templates/tasks.html:21
 msgid "Last Execution"
-msgstr "Derniere éxécution"
+msgstr "Derniere exécution"
 
 #: apps/scheduler/templates/tasks.html:22
 msgid "Last Result"
@@ -840,7 +840,7 @@ msgstr "Est Planifiée"
 
 #: apps/scheduler/templates/tasks.html:25
 msgid "Force Execution"
-msgstr "Forcer l'execution"
+msgstr "Forcer l'exécution"
 
 #: plugins/accounting/models.py:69
 msgid "Journal Entry"
@@ -940,7 +940,7 @@ msgstr "Récompense"
 
 #: plugins/accounting/templates/contract_details.html:60
 msgid "Collateral"
-msgstr "Collateral"
+msgstr "Caution"
 
 #: plugins/accounting/templates/contract_details.html:62
 msgid "Buyout"
@@ -988,7 +988,7 @@ msgstr "Contributions"
 #: plugins/accounting/templates/wallet_journal.html:41
 #: plugins/accounting/templates/wallet_transactions.html:41
 msgid "Period"
-msgstr "Periode"
+msgstr "Période"
 
 #: plugins/accounting/templates/contrib.html:26
 #: plugins/accounting/templates/wallet_journal.html:43
@@ -1006,7 +1006,7 @@ msgstr "Ce mois"
 #: plugins/accounting/templates/wallet_journal.html:47
 #: plugins/accounting/templates/wallet_transactions.html:47
 msgid "Last Year"
-msgstr "Derniere année"
+msgstr "Dernière année"
 
 #: plugins/accounting/templates/contrib.html:32
 #: plugins/accounting/templates/wallet_journal.html:51
@@ -1022,11 +1022,11 @@ msgstr "De"
 #: plugins/accounting/templates/wallet_journal.html:103
 #: plugins/accounting/templates/wallet_transactions.html:55
 msgid "To"
-msgstr "A"
+msgstr "À"
 
 #: plugins/accounting/templates/contrib.html:36
 msgid "Refresh"
-msgstr "Rafraichir"
+msgstr "Rafraîchir"
 
 #: plugins/accounting/templates/contrib.html:70
 #: plugins/accounting/templates/contrib.html:81
@@ -1055,12 +1055,12 @@ msgstr "Résumé"
 
 #: plugins/accounting/templates/report.html:16
 msgid "Income"
-msgstr "Revenu"
+msgstr "Revenus"
 
 #: plugins/accounting/templates/report.html:17
 #: plugins/accounting/templates/report.html:238
 msgid "Expenditure"
-msgstr "Dépense"
+msgstr "Dépenses"
 
 #: plugins/accounting/templates/report.html:35
 msgid "Income total"
@@ -1186,7 +1186,7 @@ msgstr "Arbre"
 
 #: plugins/assets/templates/assets.html:24
 msgid "Expand All"
-msgstr "Developer"
+msgstr "Déveloper"
 
 #: plugins/assets/templates/assets.html:25
 msgid "Collapse All"
@@ -1247,23 +1247,23 @@ msgstr "Accueil Gestion Industrie"
 
 #: plugins/industry/templates/industry_home.html:20
 msgid "Follow orders"
-msgstr "Suivre les ordres"
+msgstr "Suivre les commandes"
 
 #: plugins/industry/templates/industry_home.html:26
 msgid "Follow industry jobs"
-msgstr "Suivres les taches industrielles"
+msgstr "Suivres les travaux"
 
 #: plugins/industry/templates/industry_home.html:36
 #: plugins/industry/templates/catalog/catalog_home.html:21
 msgid "Items catalog"
-msgstr "Catalogue des objets"
+msgstr "Catalogue des produits"
 
 #: plugins/industry/templates/industry_home.html:42
 #: plugins/industry/templates/catalog/catalog_home.html:27
 #: plugins/industry/templates/catalog/supplies.html:15
 #: plugins/industry/templates/catalog/supply_details.html:13
 msgid "Supplies"
-msgstr "Fournitures"
+msgstr "Matières premières"
 
 #: plugins/industry/templates/industry_home.html:48
 #: plugins/industry/templates/catalog/catalog_home.html:33
@@ -1273,11 +1273,11 @@ msgstr "Plans possédés"
 #: plugins/industry/templates/jobs_list.html:3
 #: plugins/industry/templates/jobs_list.html:23
 msgid "Jobs list"
-msgstr "Liste des taches"
+msgstr "Liste des travaux"
 
 #: plugins/industry/templates/jobs_list.html:18
 msgid "Jobs"
-msgstr "Taches"
+msgstr "Travaux"
 
 #: plugins/industry/templates/jobs_list.html:35
 msgid "Activity"
@@ -1349,12 +1349,12 @@ msgstr "Détails Commande"
 #: plugins/industry/templates/order_details.html:59
 #: plugins/shop/templates/shop_order_details.html:59
 msgid "Total Quote"
-msgstr "Devis total"
+msgstr "Prix total"
 
 #: plugins/industry/templates/order_details.html:61
 #: plugins/industry/templates/catalog/item_details.html:33
 msgid "Production Cost"
-msgstr "Couts de production"
+msgstr "Coût de production"
 
 #: plugins/industry/templates/order_details.html:63
 #: plugins/shop/templates/shop_order_details.html:60
@@ -1385,13 +1385,13 @@ msgstr "Liste des matériaux"
 
 #: plugins/industry/templates/order_details.html:79
 msgid "Jobs Breakdown"
-msgstr "Décomposition des taches"
+msgstr "Décomposition des travaux"
 
 #: plugins/industry/templates/order_details.html:86
 #: plugins/shop/templates/shop_order.html:59
 #: plugins/shop/templates/shop_order_details.html:72
 msgid "Icon"
-msgstr "Icone"
+msgstr "Icône"
 
 #: plugins/industry/templates/order_details.html:87
 #: plugins/shop/templates/shop_order.html:60
@@ -1419,7 +1419,7 @@ msgstr "Ajouter commentaire"
 #: plugins/industry/templates/order_details.html:143
 #: plugins/shop/templates/shop_order_details.html:106
 msgid "Order Status"
-msgstr "Status commande"
+msgstr "État de la commande"
 
 #: plugins/industry/templates/order_details.html:144
 #: plugins/shop/templates/shop_order_details.html:107
@@ -1434,7 +1434,7 @@ msgstr "Commentaire"
 #: plugins/industry/templates/orders_list.html:3
 #: plugins/shop/templates/shop_myorders.html:3
 msgid "Order list"
-msgstr "Liste Commande"
+msgstr "Liste des commandes"
 
 #: plugins/industry/templates/orders_list.html:20
 msgid "Orders list"
@@ -1480,7 +1480,7 @@ msgstr "Seulement les copies"
 
 #: plugins/industry/templates/catalog/blueprints.html:32
 msgid "Import blueprints from corp assets"
-msgstr "Importer les plans des actifs corporatifs"
+msgstr "Importer les plans depuis les actifs corporatifs"
 
 #: plugins/industry/templates/catalog/catalog_home.html:13
 msgid "Industry Catalog Management"
@@ -1492,7 +1492,7 @@ msgstr "PO"
 
 #: plugins/industry/templates/catalog/import_blueprints.html:12
 msgid "Import from corp assets"
-msgstr "Importer des actifs corporatifs"
+msgstr "Importer depuis les actifs corporatifs"
 
 #: plugins/industry/templates/catalog/import_blueprints.html:18
 msgid "Blueprints found in corporation assets"
@@ -1500,7 +1500,7 @@ msgstr "Plans trouvés dans les actifs corporatifs"
 
 #: plugins/industry/templates/catalog/import_blueprints.html:46
 msgid "Success"
-msgstr "Succes"
+msgstr "Succès"
 
 #: plugins/industry/templates/catalog/import_blueprints.html:46
 msgid "blueprints imported"
@@ -1508,11 +1508,11 @@ msgstr "plans importés"
 
 #: plugins/industry/templates/catalog/import_blueprints.html:74
 msgid "Import All BPOs"
-msgstr "Importer tout les PO"
+msgstr "Importer tout les originaux"
 
 #: plugins/industry/templates/catalog/import_blueprints.html:76
 msgid "Import Selected Blueprints"
-msgstr "Importer les plans selectionnés"
+msgstr "Importer les plans sélectionnés"
 
 #: plugins/industry/templates/catalog/item_details.html:15
 #: plugins/industry/templates/catalog/items.html:17
@@ -1582,7 +1582,7 @@ msgstr "Echec du changement de copie"
 
 #: plugins/industry/templates/catalog/item_details.html:182
 msgid "Are you sure you want to delete this blueprint"
-msgstr "Etes vous sur de vouloir supprimer ce plan"
+msgstr "Êtes vous sur de vouloir supprimer ce plan"
 
 #: plugins/industry/templates/catalog/item_details.html:192
 msgid "Failed to delete blueprint"
@@ -1650,13 +1650,13 @@ msgstr "Historique prix"
 
 #: plugins/pos/templates/pos_details.html:3
 msgid "POS Details"
-msgstr "Détail SPJ"
+msgstr "Détail POS"
 
 #: plugins/pos/templates/pos_details.html:11
 #: plugins/pos/templates/pos_list.html:4
 #: plugins/pos/templates/pos_list.html:13
 msgid "POS"
-msgstr "SPJ"
+msgstr "POS"
 
 #: plugins/pos/templates/pos_details.html:30
 msgid "Online since"
@@ -1664,11 +1664,11 @@ msgstr "En ligne depuis"
 
 #: plugins/pos/templates/pos_details.html:32
 msgid "POS type"
-msgstr "Type SPJ"
+msgstr "Type POS"
 
 #: plugins/pos/templates/pos_details.html:47
 msgid "Access Control"
-msgstr "Controle d'acces"
+msgstr "Controle d'accès"
 
 #: plugins/pos/templates/pos_details.html:49
 msgid "Allow corp members in force field"
@@ -1684,7 +1684,7 @@ msgstr "Peut voir la soute a carburant"
 
 #: plugins/pos/templates/pos_details.html:55
 msgid "Can take in fuel bay"
-msgstr "Peut prendre dans la soute a carburant"
+msgstr "Peut prendre dans la soute à carburant"
 
 #: plugins/pos/templates/pos_details.html:57
 msgid "Can anchor modules"
@@ -1732,7 +1732,7 @@ msgstr "Attaquer sur signalement CONCORD"
 
 #: plugins/pos/templates/pos_details.html:86
 msgid "Attack on aggression"
-msgstr "Attaquer sur aggréssion"
+msgstr "Attaquer sur aggression"
 
 #: plugins/pos/templates/pos_details.html:88
 msgid "Attack war targets"
@@ -1799,12 +1799,11 @@ msgstr "Créer une commande"
 msgid ""
 "Here, you can track the progress of your current orders or consult old ones."
 msgstr ""
-"Ici vous pouvez suivre les progres de vos commandes courantes ou consulter "
-"les anciennes"
+"Ici vous pouvez suivre l'état de vos commandes en cours ou consulter les anciennes"
 
 #: plugins/shop/templates/shop.html:32
 msgid "See/follow my orders"
-msgstr "Voir/Suivre les ordres"
+msgstr "Voir/Suivre mes commandes"
 
 #: plugins/shop/templates/shop_myorders.html:15
 #: plugins/shop/templates/shop_myorders.html:20
@@ -1831,12 +1830,12 @@ msgstr "Commencez a taper pour rechercher des objets..."
 
 #: plugins/shop/templates/shop_order.html:35
 msgid "Add item to my order"
-msgstr "Ajouter objet dans ma commande"
+msgstr "Ajouter l'objet dans ma commande"
 
 #: plugins/shop/templates/shop_order.html:36
 #: plugins/shop/templates/shop_order.html:109
 msgid "Import EFT Fitting"
-msgstr "Importer un équipement EFT"
+msgstr "Importer une configuration EFT"
 
 #: plugins/shop/templates/shop_order.html:49
 #: plugins/shop/templates/shop_order.html:94
@@ -1864,8 +1863,8 @@ msgid ""
 "Once your order is created, you will be able to modify it before confirming "
 "it. See the orders life-cycle for more info."
 msgstr ""
-"Une fois la commande crée, vous pourrez la modifier avant de la confirmer. "
-"voir le cycle de vie des commandes pour plus d'info"
+"Une fois la commande créée, vous pourrez la modifier avant de la confirmer. "
+"Voir le cycle de vie des commandes pour plus d'info."
 
 #: plugins/shop/templates/shop_order.html:92
 msgid "Submit Order"
@@ -1877,7 +1876,7 @@ msgstr "Attention"
 
 #: plugins/shop/templates/shop_order.html:281
 msgid "Those items are not available in the shop"
-msgstr "Ces objets ne sont pas disponible dans la boutique"
+msgstr "Ces objets ne sont pas disponibles dans la boutique"
 
 #: plugins/shop/templates/shop_order_details.html:3
 msgid " Details"
@@ -1921,7 +1920,7 @@ msgstr "Erreur Interne Serveur"
 
 #: templates/500.html:9
 msgid "Ooops, the server just failed in computing your request."
-msgstr "Oups, le serveur a échoué a traiter votre requete"
+msgstr "Oups, le serveur a échoué lors de la réponse à votre requête."
 
 #: templates/500.html:11
 msgid "The administrators have been notified."
@@ -1992,11 +1991,11 @@ msgstr ""
 #: templates/auth/account.html:21
 #, fuzzy
 msgid "EVE API Keys"
-msgstr "ID Clef API"
+msgstr "Clés API EVE"
 
 #: templates/auth/account.html:25
 msgid "KeyID"
-msgstr "ID clef"
+msgstr "ID clé"
 
 #: templates/auth/account.html:35 templates/auth/account.html.py:56
 #: templates/auth/account.html:79
@@ -2025,16 +2024,16 @@ msgid ""
 "If this character is still attached to one of your registered API Keys, it "
 "will be associated with your profile again at next scan."
 msgstr ""
-"Si ce personnage est encore lié a une de vos clefs API enregistrées, il sera "
+"Si ce personnage est encore lié à une de vos clés API enregistrées, il sera "
 "associé de nouveau avec votre profil au prochain scan"
 
 #: templates/auth/account.html:99
 msgid "Are you sure you want to delete this API Key?"
-msgstr "Etes vous sur de vouloir effacer cette clef API ?"
+msgstr "Êtes vous sur de vouloir effacer cette clé API ?"
 
 #: templates/auth/account.html:105
 msgid "Are you sure you want to delete this binding?"
-msgstr "Etes vous sur de vouloir effacer cette liaison ?"
+msgstr "Êtes vous sur de vouloir effacer cette liaison ?"
 
 #: templates/auth/account_activated.html:4
 #: templates/auth/account_created.html:5
@@ -2064,7 +2063,7 @@ msgstr "Désolé"
 
 #: templates/auth/account_mail_fail.html:9
 msgid "but the server was not able to send an email"
-msgstr "mais le serveur n'a pu envoyer d'émail"
+msgstr "mais le serveur n'a pas pu envoyer d'e-mail"
 
 #: templates/auth/account_mail_fail.html:12
 msgid "Please contact the administrator"
@@ -2099,7 +2098,7 @@ msgstr "Pour activer votre compte"
 #: templates/auth/activation_email.txt:12
 #: templates/auth/password_reset_email.txt:15
 msgid "Thank you and see you in space :-)"
-msgstr "Merci, et a plus tard dans l'espace :-)"
+msgstr "Merci, et à plus tard dans l'espace :-)"
 
 #: templates/auth/activation_email_subject.txt:3
 msgid "New account activation"
@@ -2110,17 +2109,17 @@ msgid ""
 "Sorry, but the server was not able to activate this account with the "
 "following activation key:"
 msgstr ""
-"Désolé, mais le serveur n'a pu activer ce compte avec la clef d'activation "
+"Désolé, mais le serveur n'a pu activer ce compte avec la clé d'activation "
 "suivante"
 
 #: templates/auth/add_api.html:4 templates/auth/add_api.html.py:10
 msgid "Add API Key"
-msgstr "Ajouter clef API"
+msgstr "Ajouter clé API"
 
 #: templates/auth/add_api.html:19 templates/auth/create_account.html:31
 #: templates/auth/edit_api.html:19
 msgid "Create a new API Key on EVE-Online support website"
-msgstr "Créer une nouvelle clef API sur le site de support de EVE-Online"
+msgstr "Créer une nouvelle clé API sur le site de support de EVE-Online"
 
 #: templates/auth/add_api.html:31 templates/auth/create_account.html:44
 #: templates/auth/edit_api.html:31 templates/common/edit_director_api.html:24
@@ -2130,7 +2129,7 @@ msgstr "Soumettre les informations"
 #: templates/auth/add_binding.html:4 templates/auth/add_binding.html.py:10
 #: templates/auth/add_binding.html:15
 msgid "Create Binding to External Application"
-msgstr "Créer une liaison a une application externe"
+msgstr "Créer une liaison à une application externe"
 
 #: templates/auth/create_account.html:3
 msgid "User Signup"
@@ -2138,7 +2137,7 @@ msgstr "Enregistrement utilisateur"
 
 #: templates/auth/create_account.html:28
 msgid "EVE-Online API Key"
-msgstr "Clef API EVE-Online"
+msgstr "Clé API EVE-Online"
 
 #: templates/auth/create_account.html:39
 msgid "Anti-Robot Security"
@@ -2150,11 +2149,11 @@ msgstr "Éditer clef API"
 
 #: templates/auth/forbidden.html:3 templates/auth/forbidden.html.py:7
 msgid "Forbidden Access"
-msgstr "Acces interdit"
+msgstr "Accès interdit"
 
 #: templates/auth/forbidden.html:9
 msgid "You don't have permission to get URL"
-msgstr "Vous n'avez pas la permission d'acceder a l'URL"
+msgstr "Vous n'avez pas la permission d'accéder a l'URL"
 
 #: templates/auth/forbidden.html:13
 msgid "from this server."
@@ -2228,7 +2227,7 @@ msgid ""
 "Forgotten your password? Enter your e-mail address below, and we'll e-mail "
 "instructions for setting a new one."
 msgstr ""
-"Vous avez oublié votre mot de passe ? entrez votre E-mail ci dessous et nous "
+"Vous avez oublié votre mot de passe ? entrez votre e-mail ci dessous et nous "
 "vous transmettrons des instructions pour en créer un nouveau."
 
 #: templates/auth/password_reset.html:32
@@ -2243,7 +2242,7 @@ msgstr "Remise a zéro du mot de passe réussie"
 #: templates/auth/password_reset_complete.html:19
 msgid "Your password has been set.  You may go ahead and log in now."
 msgstr ""
-"votre mot de passe a été défini. vous pouvez des a présent vous connecter"
+"votre mot de passe a été défini. vous pouvez dès à présent vous connecter"
 
 #: templates/auth/password_reset_complete.html:21
 msgid "Log in"
@@ -2259,7 +2258,7 @@ msgid ""
 "correctly."
 msgstr ""
 "Entrez votre mot de passe deux fois que nous puissions vérifier que vous "
-"l'avez tapé correctement s'il vous plait"
+"l'avez tapé correctement"
 
 #: templates/auth/password_reset_confirm.html:38
 msgid "Password reset unsuccessful"
@@ -2270,16 +2269,16 @@ msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used. Please request a new password reset."
 msgstr ""
-"Le lien de remise a zéro du mot de passe était invalide, peut être a t'il "
-"déjà été utilisé. merci de redemander une remise a zéro de votre mot de "
-"passe."
+"Le lien de remise a zéro du mot de passe était invalide, peut être a-t'il "
+"déjà été utilisé. merci de faire une nouvelle demande de remise a zéro de "
+"votre mot de passe."
 
 #: templates/auth/password_reset_done.html:19
 msgid ""
 "We've e-mailed you instructions for setting your password to the e-mail "
 "address you submitted. You should be receiving it shortly."
 msgstr ""
-"nous vous avons transmis des instructions pour modifier votre mot de passe a "
+"nous vous avons transmis des instructions pour modifier votre mot de passe à "
 "l'adresse e-mail que vous nous avez donné. vous devriez les recevoir "
 "rapidement."
 
@@ -2289,7 +2288,7 @@ msgid ""
 "You're receiving this e-mail because you requested a password reset for your "
 "user account at %(host_name)s."
 msgstr ""
-"Vous recevez cet e-mail car vous avez demandé une remise a zéro de votre "
+"Vous recevez cet e-mail car vous avez demandé une remise à zéro de votre "
 "compte utilisateur sur %(host_name)s"
 
 #: templates/auth/password_reset_email.txt:9
@@ -2298,7 +2297,7 @@ msgstr "Visitez la page suivante et choisissez un nouveau mot de passe"
 
 #: templates/auth/password_reset_email.txt:13
 msgid "Your username, in case you've forgotten:"
-msgstr "Votre nom d'utilisateur, au cas ou vous l'auriez oublié"
+msgstr "Votre nom d'utilisateur, au cas où vous l'auriez oublié"
 
 #: templates/common/corp.html:17
 msgid "by"
@@ -2319,7 +2318,7 @@ msgstr "Nombre de membres"
 #: templates/common/edit_director_api.html:4
 #: templates/common/edit_director_api.html:10
 msgid "Enter a Director API Key"
-msgstr "Entrez une clef API directeur"
+msgstr "Entrez une clé API directeur"
 
 #: templates/common/edit_motd.html:3 templates/common/edit_motd.html.py:7
 msgid "Edit MOTD"
@@ -2331,7 +2330,7 @@ msgstr "Texte du message du jour"
 
 #: templates/common/edit_motd.html:21
 msgid "Select Markup"
-msgstr "Selectionnez les indications typographiques"
+msgstr "Sélectionnez le langage de markup"
 
 #: templates/common/edit_motd.html:27
 msgid "Save Changes"
@@ -2367,12 +2366,12 @@ msgstr "Définir acces"
 
 #: views/common.py:119 views/account/forms.py:212 views/account/forms.py:258
 msgid "API Key ID"
-msgstr "ID Clef API"
+msgstr "ID Clé API"
 
 #: views/common.py:120 views/account/forms.py:54 views/account/forms.py:213
 #: views/account/forms.py:259
 msgid "Verification Code"
-msgstr "Code de Verification"
+msgstr "Code de Vérification"
 
 #: views/account/forms.py:45
 msgid "Required. Less 30 characters. Letters, digits and @/./+/-/_ only."
@@ -2399,7 +2398,7 @@ msgstr "Mot de passe (confirmation)"
 
 #: views/account/forms.py:52 views/account/forms.py:171
 msgid "Enter the same password as above, for verification."
-msgstr "Entrez a nouveau le mot de passe pour vérification"
+msgstr "Entrez à nouveau le mot de passe pour vérification"
 
 #: views/account/forms.py:65
 msgid "A user with that username already exists."
@@ -2458,12 +2457,11 @@ msgstr "Ancien mot de passe"
 #: views/account/forms.py:205
 msgid "Your old password was entered incorrectly. Please enter it again."
 msgstr ""
-"Votre ancien mot de passe a été entré incorrectement. entrez le a nouveau "
-"s'il vous plait"
+"Votre ancien mot de passe a été entré incorrectement. Entrez le à nouveau."
 
 #: views/account/forms.py:222
 msgid "This API Key is already registered."
-msgstr "Cette clef API est déjà enregistrée"
+msgstr "Cette clé API est déjà enregistrée"
 
 #: views/account/forms.py:295
 msgid "External Password"
@@ -2492,7 +2490,7 @@ msgstr "Mot de passe externe"
 #~ msgstr "mois"
 
 #~ msgid "Password reset complete"
-#~ msgstr "Remise a zéro du mot de passe réussie"
+#~ msgstr "Remise a zéro du mot de passe réussie"
 
 #~ msgid "Password reset"
 #~ msgstr "Remise a zéro du mot de passe"

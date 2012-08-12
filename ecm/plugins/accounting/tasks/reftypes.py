@@ -21,6 +21,7 @@ __author__ = "diabeteman"
 import logging
 
 from django.db import transaction
+from django.utils import timezone
 
 from ecm.apps.common import api
 from ecm.plugins.accounting.models import EntryType
@@ -37,8 +38,8 @@ def update():
     typesApi = api_conn.eve.RefTypes()
     api.check_version(typesApi._meta.version)
 
-    currentTime = typesApi._meta.currentTime
-    cachedUntil = typesApi._meta.cachedUntil
+    currentTime = timezone.make_aware(typesApi._meta.currentTime, timezone.utc)
+    cachedUntil = timezone.make_aware(typesApi._meta.cachedUntil, timezone.utc)
     LOG.debug("current time : %s", str(currentTime))
     LOG.debug("cached util : %s", str(cachedUntil))
     LOG.debug("parsing api response...")

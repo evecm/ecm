@@ -22,9 +22,11 @@ __author__ = "diabeteman"
 import logging
 
 from django.db import transaction
+from django.utils import timezone
 
 from ecm.utils import tools
 from ecm.apps.common import api
+from ecm.apps.corp.models import Corporation
 from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.eve.models import CelestialObject
@@ -48,8 +50,8 @@ def update():
     membersApi = api_conn.corp.MemberTracking(characterID=api.get_charID(), extended=1)
     api.check_version(membersApi._meta.version)
 
-    currentTime = membersApi._meta.currentTime
-    cachedUntil = membersApi._meta.cachedUntil
+    currentTime = timezone.make_aware(membersApi._meta.currentTime, timezone.utc)
+    cachedUntil = timezone.make_aware(membersApi._meta.cachedUntil, timezone.utc)
     LOG.debug("current time : %s", str(currentTime))
     LOG.debug("cached util : %s", str(cachedUntil))
 
@@ -69,8 +71,10 @@ def update():
         oldAccessLvls[m.characterID] = m.accessLvl
         oldOwners[m.characterID] = m.owner
 
+    my_corp = Corporation.objects.mine()
+
     for member in membersApi.members:
-        m = parseOneMember(member=member)
+        m = parseOneMember(member, my_corp)
         session = MemberSession(character_id = m.characterID,
                                 session_begin = m.lastLogin,
                                 session_end = m.lastLogoff,
@@ -128,18 +132,19 @@ def update():
 
 
 #------------------------------------------------------------------------------
-def parseOneMember(member):
+def parseOneMember(member, my_corp):
     try:
         location = CelestialObject.objects.get(itemID = member.locationID).itemName
     except CelestialObject.DoesNotExist:
         location = str(member.locationID)
-    return Member(characterID   = member.characterID,
+    return Member(corp          = my_corp,
+                  characterID   = member.characterID,
                   name          = member.name,
                   nickname      = member.title,
                   baseID        = member.baseID,
-                  corpDate      = member.startDateTime,
-                  lastLogin     = member.logonDateTime,
-                  lastLogoff    = member.logoffDateTime,
+                  corpDate      = timezone.make_aware(member.startDateTime, timezone.utc),
+                  lastLogin     = timezone.make_aware(member.logonDateTime, timezone.utc),
+                  lastLogoff    = timezone.make_aware(member.logoffDateTime, timezone.utc),
                   location      = location,
                   locationID    = member.locationID,
                   ship          = member.shipType)

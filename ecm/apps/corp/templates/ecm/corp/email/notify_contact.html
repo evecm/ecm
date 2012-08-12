@@ -1,0 +1,28 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+<body>
+<p>{% trans 'Hello' %},</p>
+
+<p>{% trans 'A new corporation contacted us and wants to exchange data.' %}</p>
+
+<p>{% trans 'Here is the information they provided about them:' %}</p>
+
+<dl>
+	<dt>{% trans 'Corporation:' %}</dt>
+	    <dd>{{corp.corporationID}} [{{corp.ticker}}]</dd>
+	<dt>{% trans 'Alliance:' %}</dt>
+	    <dd>{{corp.allianceName}} <{{corp.allianceTicker}}></dd>
+	<dt>{% trans 'URL of their ECM server:' %}</dt>
+	    <dd><a href="{{corp.ecm_url}}">{{corp.ecm_url}}</a></dd>
+</dl>
+
+<p>{% trans 'You should verify this information and choose if you trust them in return.' %}</p>
+
+<a href="http{% if use_https %}s{% endif %}://{{ host_name }}/admin/corp/corporation/{{corp.corporationID}}/">
+http{% if use_https %}s{% endif %}://{{ host_name }}/admin/corp/corporation/{{corp.corporationID}}/
+</a>
+
+<p>{% trans 'Fly Safe!' %}</p>
+</body>
+</html>

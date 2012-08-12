@@ -19,9 +19,9 @@ __date__ = "2012-04-26"
 __author__ = "ajurna"
 
 from django.db import transaction
+from django.utils import timezone
 
-
-from ecm.apps.corp.models import Standings
+from ecm.apps.corp.models import Standing, Corporation
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.common import api
 
@@ -39,26 +39,28 @@ def update():
     api_conn = api.connect()
     corpApi = api_conn.corp.ContactList(characterID=api.get_charID())
     api.check_version(corpApi._meta.version)
-    currentTime = corpApi._meta.currentTime  
+    currentTime = timezone.make_aware(corpApi._meta.currentTime, timezone.utc)
     
-    all_standings = Standings.objects.all()
-    all_standings.delete()
-
+    my_corp = Corporation.objects.mine()
+    
+    # clean existing standings first
+    Standing.objects.filter(corp=my_corp).delete()
+    
     for contact in corpApi.corporateContactList:
-        new_contact = Standings(
-            contactID = contact.contactID,
-            is_corp_contact = True,
-            contactName = contact.contactName,
-            standing = contact.standing,
-        )
-        new_contact.save()
+        Standing.objects.create(corp=my_corp,
+                                contactID=contact.contactID,
+                                is_corp_contact=True,
+                                contactName=contact.contactName,
+                                value=contact.standing,
+                                )
+    
     for contact in corpApi.allianceContactList: 
-        new_contact = Standings(
-            contactID = contact.contactID,
-            is_corp_contact = False,
-            contactName = contact.contactName,
-            standing = contact.standing,
-        )
-        new_contact.save()
-    UpdateDate.mark_updated(model=Standings, date=currentTime)
+        Standing.objects.create(corp=my_corp,
+                                contactID=contact.contactID,
+                                is_corp_contact=False,
+                                contactName=contact.contactName,
+                                value=contact.standing,
+                                )
+        
+    UpdateDate.mark_updated(model=Standing, date=currentTime)
     LOG.info("corp standings updated")

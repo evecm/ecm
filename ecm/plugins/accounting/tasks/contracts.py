@@ -14,18 +14,19 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
 
 __date__ = "2012 04 05"
 __author__ = "tash"
 
 
 import logging
+
 from django.db import transaction
+from django.utils import timezone
 
 from ecm.lib import eveapi
 from ecm.apps.common import api
-from ecm.apps.corp.models import Corp
+from ecm.apps.corp.models import Corporation
 from ecm.apps.common.models import UpdateDate
 from ecm.utils import tools
 from ecm.plugins.accounting.models import Contract, ContractItem
@@ -43,8 +44,8 @@ def update():
     LOG.debug("Fetching Contracts...")
     contractsApi = api_conn.corp.Contracts()
 
-    current_time = contractsApi._meta.currentTime
-    cached_until = contractsApi._meta.cachedUntil
+    current_time = timezone.make_aware(contractsApi._meta.currentTime, timezone.utc)
+    cached_until = timezone.make_aware(contractsApi._meta.cachedUntil, timezone.utc)
     LOG.debug("current time : %s", str(current_time))
     LOG.debug("cached util : %s", str(cached_until))
     LOG.debug("parsing api response...")
@@ -57,7 +58,7 @@ def process_contracts(contract_list, connection):
     """
     Process all contracts from the API
     """
-    alliance_id = Corp.objects.latest().allianceID
+    alliance_id = Corporation.objects.mine().allianceID
     LOG.debug("Fetching contracts from DB...")    
     # Get old contracts
     old_contracts = {}

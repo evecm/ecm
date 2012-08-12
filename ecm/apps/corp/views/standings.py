@@ -1,4 +1,4 @@
-# Copyright (c) 2011 jerome Vacher
+# Copyright (c) 2011 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
 #
@@ -20,33 +20,44 @@ __author__ = "Ajurna"
 
 
 
+from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
-from ecm.apps.corp.models import Standings
+from ecm.apps.corp.models import Corporation, Standing
 from ecm.apps.common.models import Setting
 
 #------------------------------------------------------------------------------
 def standings(request):
-    allaince_standings = Standings.objects.filter(is_corp_contact=False)
-    allaince_standings = allaince_standings.order_by('-standing', 'contactName')
-    corp_standings = Standings.objects.filter(is_corp_contact=True)
-    corp_standings = corp_standings.order_by('-standing', 'contactName')
-    data = {}
-    try: 
-        standings_public = Setting.objects.get(name='standings_public')
-    except Setting.DoesNotExist:
-        Setting.objects.create('standings_public', 'none')
-        standings_public = Setting.objects.get('standings_public')
+    corp_id = request.GET.get('corp')
+    if corp_id is not None:
+        try:
+            corp = Corporation.objects.get(corporationID=int(corp_id))
+        except (ValueError, Corporation.DoesNotExist):
+            raise Http404()
+    else:
+        corp = Corporation.objects.mine()  
+    
+    standings = Standing.objects.filter(corp=corp)
+    
+    alliance_standings = standings.filter(is_corp_contact=False)
+    alliance_standings = alliance_standings.order_by('-value', 'contactName')
+    corp_standings = standings.filter(is_corp_contact=True)
+    corp_standings = corp_standings.order_by('-value', 'contactName')
+    
     if request.user.is_superuser:
         if request.method == 'POST':
-            standings_public.value = request.POST['standings_public']
-            standings_public.save()
-    data['standings_public'] = standings_public.value
-    data['allaince_standings'] = allaince_standings
-    data['corp_standings'] = corp_standings
+            visibility = request.POST.get('standings_visibility')
+            if visibility:
+                Setting.objects.filter(name='standings_visibility').update(value=repr(visibility))
+
+    data = {
+        'standings_visibility': Setting.get('standings_visibility'),
+        'alliance_standings': alliance_standings,
+        'corp_standings': corp_standings,
+    }
     
-    return render_to_response("ecm/common/standings.html",
+    return render_to_response("ecm/corp/standings.html",
                               data,
                               RequestContext(request),
                               )

@@ -9,11 +9,6 @@
 <link rel="stylesheet" type="text/css" href="{% static 'pos/css/classes.css' %}" />
 {% endblock %}
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/pos">{% trans 'POS' %}</a></li>
-<li class="active"><a href="/pos/{{ pos.item_id }}/">{{ pos.moon }}</a></li>
-{% endblock %}
 
 {% block main_content %}
 <div class="page-header{%if pos.state != 4%} error{%endif%}">

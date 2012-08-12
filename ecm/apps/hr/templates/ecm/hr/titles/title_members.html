@@ -6,14 +6,6 @@
 {% block headtitle %}{% trans 'Title Members' %} - {{ title.titleName }}{% endblock %}
 
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
-<li><a href="/hr/titles/">{% trans 'Titles' %}</a></li>
-<li><a href="/hr/titles/{{ title.titleID }}/">{{ title.titleName }}</a></li>
-<li class="active"><a href="/hr/titles/{{ title.titleID }}/members/">{% trans 'Members' %}</a></li>
-{% endblock %}
-
 {% block main_content %}
 <div class="page-header">
   <h1>Members <small>having the title <em>{{ title.titleName }}</em></small></h1>

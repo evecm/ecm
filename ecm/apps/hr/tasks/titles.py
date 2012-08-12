@@ -23,8 +23,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django import db
 from django.db import transaction
+from django.utils import timezone
 from django.db.models import Max
 
+from ecm.apps.corp.models import Corporation
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.hr.models import TitleComposition, Title, Role, TitleCompoDiff, RoleType
 from ecm.apps.common import api
@@ -49,19 +51,21 @@ def update():
     titlesApi = api_conn.corp.Titles(characterID=api.get_charID())
     api.check_version(titlesApi._meta.version)
 
-    currentTime = titlesApi._meta.currentTime
-    cachedUntil = titlesApi._meta.cachedUntil
+    currentTime = timezone.make_aware(titlesApi._meta.currentTime, timezone.utc)
+    cachedUntil = timezone.make_aware(titlesApi._meta.cachedUntil, timezone.utc)
     logger.debug("current time : %s", str(currentTime))
     logger.debug("cached util : %s", str(cachedUntil))
 
     logger.debug("parsing api response...")
-
+    
+    my_corp = Corporation.objects.mine()
+    
     newList = []
     # we get all the old TitleComposition from the database
     oldList = list(TitleComposition.objects.all())
 
     for title in titlesApi.titles:
-        newList.extend(parseOneTitle(titleApi=title))
+        newList.extend(parse_one_title(title, my_corp))
 
     diffs = []
     if len(oldList) != 0 :
@@ -90,7 +94,7 @@ def update():
     logger.info("%d roles in titles parsed, %d changes since last scan", len(newList), len(diffs))
 
 #------------------------------------------------------------------------------
-def parseOneTitle(titleApi):
+def parse_one_title(titleApi, my_corp):
     '''
     Parse all the role for a given title
 
@@ -107,7 +111,7 @@ def parseOneTitle(titleApi):
 
     try:
         # retrieval of the title from the database
-        title = Title.objects.get(titleID=titleID)
+        title = my_corp.titles.get(titleID=titleID)
         if not title.titleName == name:
             # if the titleName has changed, we update it
             logger.info('Changing title name "%s" to "%s"...' % (title.titleName, name))
@@ -116,7 +120,7 @@ def parseOneTitle(titleApi):
     except Title.DoesNotExist:
         # the title doesn't exist yet, we create it
         logger.info('Title "%s" does not exist. Creating...' % name)
-        title = Title.objects.create(titleID=titleID, titleName=name)
+        title = Title.objects.create(corp=my_corp, titleID=titleID, titleName=name)
     try:
         # retrieval of the group corresponding to the title from de DB
         group = Group.objects.get(id=titleID)

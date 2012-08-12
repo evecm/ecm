@@ -17,15 +17,9 @@
 __date__ = "2011 5 23"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-    
 from datetime import datetime, timedelta
 
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.db.models import Q
@@ -36,7 +30,7 @@ from ecm.utils.format import print_time_min, print_float
 from ecm.utils import is_number
 from ecm.apps.common.models import UpdateDate, ColorThreshold
 from ecm.apps.eve.models import Type
-from ecm.apps.corp.models import Wallet, Corp
+from ecm.apps.corp.models import Corporation
 from ecm.apps.hr.models import Member
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, DATATABLES_DEFAULTS, datatable_ajax_data
@@ -54,16 +48,20 @@ def journal(request):
     comparator = request.GET.get('comparator','>')
     
     from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
-    if from_date is None: from_date = datetime.utcfromtimestamp(0)
+    if from_date is None: 
+        from_date = datetime.utcfromtimestamp(0)
     to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]
-    if to_date is None: to_date = timezone.now()
+    if to_date is None: 
+        to_date = timezone.now()
+    
+    my_corp = Corporation.objects.mine()
     
     wallets = [{ 'walletID' : 0, 'name' : 'All', 'selected' : walletID == 0 }]
-    for w in Wallet.objects.all().order_by('walletID'):
+    for w in my_corp.wallets.all().order_by('wallet'):
         wallets.append({
-            'walletID' : w.walletID,
+            'walletID' : w.wallet_id,
             'name' : w.name,
-            'selected' : w.walletID == walletID
+            'selected' : w.wallet_id == walletID
         })
 
     entryTypes = [{ 'refTypeID' : 0, 'refTypeName' : 'All', 'selected' : entryTypeID == 0 }]
@@ -152,8 +150,10 @@ def journal_data(request):
     entries = []
 
     # to improve performance
-    try: corporationID = Corp.objects.get(id=1).corporationID
-    except Corp.DoesNotExist: corporationID = 0
+    try: 
+        corp = Corporation.objects.mine()
+    except Corporation.DoesNotExist: 
+        corp = Corporation(corporationID=0)
     members = Member.objects.all()
     other_entries = JournalEntry.objects.select_related().all()
 
@@ -169,7 +169,6 @@ def journal_data(request):
             rat_list = []
             for rat_id, rat_count in rats:
                 rat_list.append('%s x%s' % (Type.objects.get(typeID=rat_id).typeName, rat_count))
-                #rat_list.append('%s x%s' % (db.get_type_name(int(rat_id))[0], rat_count))
             reason = '|'.join(rat_list)
             if reason:
                 reason = (u'Killed Rats in %s|' % entry.argName1) + reason
@@ -181,17 +180,19 @@ def journal_data(request):
             reason = entry.reason[len('DESC: '):].strip('\n\t\'" ')
             reason = (u'Cash transfer by %s|' % entry.argName1) + reason
             try:
-                if int(entry.ownerID1) == corporationID and int(entry.ownerID2) == corporationID:
+                if int(entry.ownerID1) == corp.corporationID and int(entry.ownerID2) == corp.corporationID:
                     related_entry = other_entries.filter(refID=entry.refID).exclude(id=entry.id)[0]
-                    owner2 = related_entry.wallet.name
+                    owner2 = related_entry.wallet.corp_wallets.get(corp=corp).name
             except:
                 pass
         else:
             reason = entry.reason
-
+        
+        wallet_name = entry.wallet.corp_wallets.get(corp=corp).name
+        
         entries.append([
             print_time_min(entry.date),
-            entry.wallet.name,
+            wallet_name,
             entry.type.refTypeName,
             owner1,
             owner2,

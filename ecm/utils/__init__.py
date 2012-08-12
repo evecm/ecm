@@ -15,6 +15,12 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
+__date__ = "2010-02-08"
+__author__ = "diabeteman"
+
+import sys
+import os
+
 #------------------------------------------------------------------------------
 def is_number(string):
     try:
@@ -23,4 +29,33 @@ def is_number(string):
     except ValueError:
         return False
 
+#------------------------------------------------------------------------------
+def log(msg, *args):
+    sys.stdout.write(msg % args)
+
+#------------------------------------------------------------------------------
+def logln(msg, *args):
+    sys.stdout.write('%s\n' % (msg % args))
+
+#------------------------------------------------------------------------------
+def error(msg, *args):
+    sys.stderr.write('ERROR: %s\n' % (msg % args))
+    sys.exit(1)
+
+#------------------------------------------------------------------------------
+def is_exe(fpath):
+    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+#------------------------------------------------------------------------------
+def which(program):
+    fpath, _ = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+    return None
 

@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
 
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
@@ -22,6 +21,7 @@ __author__ = "diabeteman"
 from django.db import models
 
 from ecm.lib import bigintpatch
+from ecm.apps.corp.models import Corporation
 from ecm.apps.hr.models.member import Member
 from ecm.apps.hr.models.roles import Role
 from ecm.apps.hr import NAME as app_prefix
@@ -35,8 +35,9 @@ class Title(models.Model):
     class Meta:
         app_label = 'hr'
         ordering = ['titleID']
-
-    titleID = models.BigIntegerField(primary_key=True)
+    
+    corp = models.ForeignKey(Corporation, related_name='titles')
+    titleID = models.BigIntegerField()
     titleName = models.CharField(max_length=256)
     tiedToBase = models.BigIntegerField(default=0)
     accessLvl = models.BigIntegerField(default=0)
@@ -134,7 +135,7 @@ class TitleCompoDiff(models.Model):
     # true if role is new in title, false if role was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
-    date = models.DateTimeField(db_index=True, default=timezone.now())
+    date = models.DateTimeField(db_index=True, auto_now_add=True)
 
     def __unicode__(self):
         if self.new: return unicode(self.title) + u' gets ' + unicode(self.role)
@@ -158,7 +159,7 @@ class TitleMemberDiff(models.Model):
     # true if title is new for member, false if title was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
-    date = models.DateTimeField(db_index=True, default=timezone.now())
+    date = models.DateTimeField(db_index=True, auto_now_add=True)
 
     @property
     def access_permalink(self):
