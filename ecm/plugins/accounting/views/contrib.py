@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
@@ -31,6 +32,7 @@ from django.db import connection
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
+from django.utils.translation import gettext as tr
 
 from ecm.utils import db
 from ecm.utils.format import print_float
@@ -39,6 +41,9 @@ from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
 from ecm.plugins.accounting.models import JournalEntry
 from ecm.views import extract_datatable_params
+from ecm.views import DATATABLES_DEFAULTS
+from ecm.plugins.accounting.views import MEMBER_CONTRIB_COLUMNS, PLAYER_CONTRIB_COLUMNS, SYSTEM_CONTRIB_COLUMNS
+
 
 DATE_PATTERN = "%Y-%m-%d"
 OPERATION_TYPES = (
@@ -70,6 +75,13 @@ def member_contrib(request):
         'from_date' : datetime.strftime(from_date, DATE_PATTERN),
         'to_date' : datetime.strftime(to_date, DATE_PATTERN),
         'total_contribs' : total_contribs,
+        'datatables_defaults': DATATABLES_DEFAULTS,
+        'member_contrib_columns': MEMBER_CONTRIB_COLUMNS,
+        'system_contrib_columns': SYSTEM_CONTRIB_COLUMNS,
+        'player_contrib_columns': PLAYER_CONTRIB_COLUMNS,
+        'member_ajax_url': '/accounting/contributions/members/data/',
+        'system_ajax_url': '/accounting/contributions/systems/data/',
+        'player_ajax_url': '/accounting/contributions/players/data/',
     }
     return render_to_response("ecm/accounting/contrib.html", data, Ctx(request))
 
@@ -101,6 +113,50 @@ def member_contrib_data(request):
             c.permalink,
             print_float(c.tax_contrib)
         ])
+
+    json_data = {
+        "sEcho" : params.sEcho,
+        "iTotalRecords" : count,
+        "iTotalDisplayRecords" : count,
+        "aaData" : contrib_list
+    }
+
+    return HttpResponse(json.dumps(json_data))
+
+#------------------------------------------------------------------------------
+columns = ['LOWER("name")', '"tax_contrib"']
+@check_user_access()
+def player_contrib_data(request):
+    """
+    View function URL : '/accounting/contributions/players/data/'
+    """
+    try:
+        params = extract_datatable_params(request)
+        REQ = request.GET if request.method == 'GET' else request.POST
+        params.from_date = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
+        params.to_date = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
+    except:
+        return HttpResponseBadRequest()
+
+    contributions = player_contributions(since=params.from_date,
+                                         until=params.to_date,
+                                         order_by=columns[params.column],
+                                         ascending=params.asc)
+    count = len(contributions[:])
+    contributions = contributions[params.first_id:params.last_id]
+
+    contrib_list = []
+    for c in contributions:
+        if c.username == None:
+            contrib_list.append([
+                tr('not associated'),
+                print_float(c.tax_contrib)
+            ])
+        else:
+            contrib_list.append([
+                '<a href="%s" class="player">%s</a>' % (c.get_absolute_url(),c.username),
+                print_float(c.tax_contrib)
+            ])
 
     json_data = {
         "sEcho" : params.sEcho,
@@ -191,6 +247,20 @@ def member_contributions(since=datetime.utcfromtimestamp(0), until=timezone.now(
     sql = MEMBER_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;")
     sql = db.fix_mysql_quotes(sql)
     return Member.objects.raw(sql, [since, until])
+
+PLAYER_CONTRIB_SQL = '''SELECT u."username" AS "username", u."id" as "id", SUM(j."amount") AS "tax_contrib"
+ FROM "accounting_journalentry" AS j left join "hr_member" AS m on (j."ownerID2" = m."characterID") left join "auth_user" u on (u."id" = m."owner_id")
+ WHERE j."type_id" IN %s
+  AND j."date" > %%s
+  AND j."date" < %%s
+ GROUP BY u."username", u."id"
+ ORDER BY ''' % str(OPERATION_TYPES)
+def player_contributions(since=datetime.utcfromtimestamp(0), until=timezone.now(),
+                         order_by="tax_contrib", ascending=False):
+
+    sql = PLAYER_CONTRIB_SQL + order_by + (" ASC;" if ascending else " DESC;")
+    sql = db.fix_mysql_quotes(sql)
+    return User.objects.raw(sql, [since, until])
 
 
 #------------------------------------------------------------------------------

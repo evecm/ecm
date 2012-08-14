@@ -9,6 +9,7 @@ syntax: glob
 *.egg-info
 *~
 
+.pydevproject
 .metadata
 dist
 build

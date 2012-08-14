@@ -45,46 +45,33 @@
 
 <div class="row-fluid">
   <div class="span6">
-    <table class="table table-bordered table-condensed" id="member_contrib_table">
-      <thead>
-        <tr>
-          <th class="top" scope="col" >{% trans 'Member' %}</th>
-          <th class="top" scope="col" >{% trans 'Contributions' %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td colspan="2" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <th>{% trans 'Member' %}</th>
-          <th>{% trans 'Contributions' %}</th>
-        </tr>
-      </tfoot>
-    </table>
+  {% datatable 'member_contrib_table' member_contrib_columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource=member_ajax_url 
+             sCookiePrefix='ecm_member_contrib_table_' 
+             fnRowCallback='ContribRowCallback' 
+             fnServerData='ContribServerData'
+             aaSorting='[[1,\'desc\']]'
+             iDisplayLength=10 %}
+  {% datatable 'player_contrib_table' player_contrib_columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource=player_ajax_url 
+             sCookiePrefix='ecm_player_contrib_table_' 
+             fnRowCallback='ContribRowCallback' 
+             fnServerData='ContribServerData'
+             iDisplayLength=10 %}
   </div>
   <div class="span6">
-    <table class="table table-bordered table-condensed" id="system_contrib_table">
-      <thead>
-        <tr>
-          <th class="top" scope="col" >{% trans 'Solar System' %}</th>
-          <th class="top" scope="col" >{% trans 'Contributions' %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td colspan="2" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <th>{% trans 'Solar System' %}</th>
-          <th>{% trans 'Contributions' %}</th>
-        </tr>
-      </tfoot>
-    </table>
+  {% datatable 'system_contrib_table' system_contrib_columns 
+             css_class='table table-bordered table-condensed' 
+             defaults=datatables_defaults 
+             sAjaxSource=system_ajax_url 
+             sCookiePrefix='ecm_system_contrib_table_' 
+             fnRowCallback='ContribRowCallback' 
+             fnServerData='ContribServerData'
+             iDisplayLength=25 %}
   </div>
 </div>
 {% endblock %}
@@ -100,73 +87,33 @@ DAY = 1000 * 60 * 60 * 24;
 WEEK = DAY * 7;
 MONTH = DAY * 30;
 YEAR = DAY * 365;
+
+function ContribRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+    $('td:eq(1)', nRow).addClass('credit');
+    return nRow;
+}
+
+/* this function will be called when the table has to query data to be displayed */
+function ContribServerData( sSource, aoData, fnCallback ) {
+    /* Add some extra variables to the url */
+    aoData.push( {
+        name: "from_date",
+        value: $("#from_date").val()
+    }, {
+        name: "to_date",
+        value: $("#to_date").val()
+    } );
+
+    $.getJSON( sSource, aoData, function (json) {
+        fnCallback(json)
+    } );
+}
+
 $(document).ready(function() {
-    var table1 = $('#member_contrib_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource: "/accounting/contributions/members/data/",
-        aaSorting: [[1,'desc']],
-        aoColumns: [
-            { /* Member */       sWidth: "50%",   sType: "html" },
-            { /* Contributions */     sWidth: "50%",   sType: "html" , sClass : "right"   }
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            $('td:eq(1)', nRow).addClass('credit');
-            return nRow;
-        },
-        /* this function will be called when the table has to query data to be displayed */
-        fnServerData: function ( sSource, aoData, fnCallback ) {
-            /* Add some extra variables to the url */
-            aoData.push( {
-                name: "from_date",
-                value: $("#from_date").val()
-            }, {
-                name: "to_date",
-                value: $("#to_date").val()
-            } );
-
-            $.getJSON( sSource, aoData, function (json) {
-                fnCallback(json)
-            } );
-        },
-
-    }));
-    
-    var table2 = $('#system_contrib_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
-        sAjaxSource: "/accounting/contributions/systems/data/",
-        aaSorting: [[1,'desc']],
-        aoColumns: [
-            { /* Solar System */       sWidth: "50%",   sType: "html" },
-            { /* Contributions */     sWidth: "50%",   sType: "html" , sClass : "right"   }
-        ],
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            $('td:eq(1)', nRow).addClass('credit');
-            return nRow;
-        },
-
-        /* this function will be called when the table has to query data to be displayed */
-        fnServerData: function ( sSource, aoData, fnCallback ) {
-            /* Add some extra variables to the url */
-            aoData.push( {
-                name: "from_date",
-                value: $("#from_date").val()
-            }, {
-                name: "to_date",
-                value: $("#to_date").val()
-            } );
-
-            $.getJSON( sSource, aoData, function (json) {
-                fnCallback(json)
-            } );
-        },
-
-    }));
-
     $("#refresh_table").click(function () {
-        table1.fnDraw();
-    });
-    $("#refresh_table").click(function () {
-        table2.fnDraw();
-    });
-    $("#refresh_table").click(function() {
+        $('#member_contrib_table').dataTable().fnDraw();
+        $('#system_contrib_table').dataTable().fnDraw();
+        $('#player_contrib_table').dataTable().fnDraw();
         var params = {
             from_date: $("#from_date").val(),
             to_date: $("#to_date").val()
