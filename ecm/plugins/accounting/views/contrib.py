@@ -82,6 +82,7 @@ def member_contrib(request):
         'member_ajax_url': '/accounting/contributions/members/data/',
         'system_ajax_url': '/accounting/contributions/systems/data/',
         'player_ajax_url': '/accounting/contributions/players/data/',
+        'sorting': [[1,'desc']],
     }
     return render_to_response("ecm/accounting/contrib.html", data, Ctx(request))
 
