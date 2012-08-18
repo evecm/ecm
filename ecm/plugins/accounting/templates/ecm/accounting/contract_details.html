@@ -28,7 +28,7 @@
 
 <div class="row-fluid">
 	<div class="span1">
-		<img src="{% static 'accounting/img/{{contract.type|lower}}.png' %}" />
+		<img src="{% static 'accounting/img/'|concat:contract.get_type_display|lower|concat:'.png' %}" />
 	</div>
 	<div class="span2">
 		<dl>
