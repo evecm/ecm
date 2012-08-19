@@ -30,6 +30,19 @@ WALLET_JOURNAL_COLUMNS = [
         {'sTitle':tr('Balance'),      'sWidth':'15%', 'sType':'string', 'sClass':'right', },
         {'sTitle':tr('Reason'),     'bVisible':False, },
         ]
+
+MEMBER_CONTRIB_COLUMNS = [
+        {'sTitle':tr('Member'),         'sWidth':'50%', 'sType':'html', },
+        {'sTitle':tr('Contributions'),  'sWidth':'50%', 'sType':'html', 'sClass': 'right', },
+        ]
+PLAYER_CONTRIB_COLUMNS = [
+        {'sTitle':tr('Player'),         'sWidth':'50%', 'sType':'html', },
+        {'sTitle':tr('Contributions'),  'sWidth':'50%', 'sType':'html', 'sClass': 'right', },
+        ]
+SYSTEM_CONTRIB_COLUMNS = [
+        {'sTitle':tr('Solar System'),         'sWidth':'50%', 'sType':'html', },
+        {'sTitle':tr('Contributions'),  'sWidth':'50%', 'sType':'html', 'sClass': 'right', },
+        ]
 #------------------------------------------------------------------------------
 def wallet_url(wallet_id):
     return "/accounting/wallet/%d/" % wallet_id

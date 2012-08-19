@@ -313,11 +313,14 @@ class BlueprintReq(models.Model):
         return self.required_type_id
 
     def __getattr__(self, attr):
-        try:
-            getattr(self.required_type, attr)
-        except AttributeError:
+        #prevent endless recursion
+        if attr not in ('required_type','_required_type_cache'):
+            try:
+                getattr(self.required_type, attr)
+            except AttributeError:
+                return models.Model.__getattribute__(self, attr)
+        else:
             return models.Model.__getattribute__(self, attr)
-
 
     def __unicode__(self):
         return '%s x%d' % (self.required_type, self.quantity)
