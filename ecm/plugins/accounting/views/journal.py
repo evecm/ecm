@@ -208,4 +208,20 @@ def journal_data(request):
     #    "aaData" : entries
     #}
     return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
+#------------------------------------------------------------------------------
+@check_user_access()
+import csv
+def export_to_csv(request):
+    # Get response object, this can be used as a stream.
+    response = HttpResponse(mimetype="text/csv")
+    # Force download
+    response['Content-Disposition'] = 'attachment;filename="journal.csv"'
 
+    # csv writer
+    writer = csv.writer(response)
+
+
+
+    return response
+    
+ 

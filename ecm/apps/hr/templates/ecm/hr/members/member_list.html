@@ -21,9 +21,11 @@
       <button class="btn btn-small btn-info active" id="all">{% trans 'All Ships' %}</button>
       <button class="btn btn-small btn-info" id="supers">{% trans 'Supers Only' %}</button>
     </div>
+    <span class="pull-right">
+        <input type="button" class="btn btn-small" onclick="window.location='export/'" value="Export All"></input>
+    </span>
   </div>
 </form>
-
 {% datatable 'members_table' columns 
              css_class='table table-bordered table-condensed searchable_table' 
              defaults=datatables_defaults 

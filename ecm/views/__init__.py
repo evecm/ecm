@@ -58,10 +58,6 @@ DATATABLES_DEFAULTS = {
     'bStateSave': True,
     'iCookieDuration': 60 * 60, # 1 hour
     'sDom': "<'row-fluid'<'span5'l><'span7'p>T>rt<'row-fluid'<'span5'i><'span7'p>>",
-    'oTableTools': {
-        'sSwfPath': "/static/ecm/swf/copy_csv_xls.swf",
-        'aButtons': ["copy", "csv" ],
-        },
     'fnStateLoadParams': 'function (oSettings, oData) { oData.sFilter = $("#search_text").val(); }',
     'fnStateSaveParams': 'function (oSettings, oData) { $("#search_text").val(oData.sFilter); return true; }',
     'oLanguage': {
