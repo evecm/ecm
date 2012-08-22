@@ -13,3 +13,7 @@ syntax: glob
 .metadata
 dist
 build
+dev-instance/*
+db/*
+ecm.komodoproject
+.hgignore
