@@ -18,12 +18,7 @@
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
+import django.utils.simplejson as json
 from datetime import timedelta
 from django.db.models.aggregates import Avg
 from django.shortcuts import render_to_response
@@ -32,6 +27,7 @@ from django.utils import timezone
 
 from ecm.apps.eve.models import CelestialObject
 from ecm.apps.eve import constants
+from ecm.apps.corp.models import Corporation
 from ecm.views.decorators import check_user_access
 from ecm.apps.hr.models import Member
 from ecm.apps.hr.models.member import MemberSession
@@ -41,9 +37,11 @@ from ecm.apps.common.models import ColorThreshold, UserAPIKey
 #------------------------------------------------------------------------------
 @check_user_access()
 def dashboard(request):
+    
     dailyplaytimes = []
     online_member_count = []
     now = timezone.now()
+    
     for day in range(30):
         start = now - timedelta(day+1)
         end = now - timedelta(day)
@@ -58,14 +56,29 @@ def dashboard(request):
         dailyplaytimes.append(dataset)
         dataset = {'date' : date, 'online' : online}
         online_member_count.append(dataset)
+    
+    corp_id = request.GET.get('corp')
+    if corp_id is not None:
+        try:
+            corp = Corporation.objects.get(corporationID=int(corp_id))
+        except (ValueError, Corporation.DoesNotExist):
+            corp = None
+    else:
+        corp = Corporation.objects.mine() 
+    
+    if corp is not None:
+        members = corp.members.all()
+    else:
+        members = Member.objects.filter(corp__null=False)
+    
     data = {
-        'unassociatedCharacters' : Member.objects.filter(corped=True, owner=None).count(),
-        'playerCount' : Member.objects.filter(corped=True).exclude(owner=None).values("owner").distinct().count(),
-        'memberCount' : Member.objects.filter(corped=True).count(),
-        'accountsByPlayer' : avg_accounts_by_player(),
-        'chraractersByPlayer' : avg_chraracters_by_player(),
-        'positions' : positions_of_members(),
-        'distribution' : access_lvl_distribution(),
+        'unassociatedCharacters' : members.filter(owner=None).count(),
+        'playerCount' : members.exclude(owner=None).values("owner").distinct().count(),
+        'memberCount' : members.count(),
+        'accountsByPlayer' : avg_accounts_by_player(corp),
+        'chraractersByPlayer' : avg_chraracters_by_player(corp),
+        'positions' : positions_of_members(corp),
+        'distribution' : access_lvl_distribution(corp),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
         'dailyplaytimes' : dailyplaytimes,
         'online_member_count' : online_member_count,
@@ -74,17 +87,29 @@ def dashboard(request):
     return render_to_response("ecm/hr/dashboard.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
-def avg_chraracters_by_player():
-    players = Member.objects.filter(corped=True).exclude(owner=None).values("owner").distinct().count()
-    characters = float(Member.objects.filter(corped=True).exclude(owner=None).count())
+def avg_chraracters_by_player(corp=None):
+    
+    if corp is None:
+        members = Member.objects.exclude(owner=None)
+    else:
+        members = corp.members.exclude(owner=None)
+    
+    players = members.values("owner").distinct().count()
+    characters = float(members.count())
     if players:
         return characters / players
     else:
         return 0.0
 
 #------------------------------------------------------------------------------
-def avg_accounts_by_player():
-    players = Member.objects.filter(corped=True).exclude(owner=None).values("owner").distinct().count()
+def avg_accounts_by_player(corp=None):
+    
+    if corp is None:
+        members = Member.objects.exclude(owner=None)
+    else:
+        members = corp.members.exclude(owner=None)
+    
+    players = members.values("owner").distinct().count()
     accounts = float(UserAPIKey.objects.all().count())
     if players:
         return accounts / players
@@ -92,9 +117,15 @@ def avg_accounts_by_player():
         return 0.0
 
 #------------------------------------------------------------------------------
-def positions_of_members():
+def positions_of_members(corp=None):
+    
+    if corp is None:
+        members = Member.objects.all()
+    else:
+        members = corp.members.all()
+    
     positions = {"hisec" : 0, "lowsec" : 0, "nullsec" : 0}
-    for m in Member.objects.filter(corped=True):
+    for m in members:
         solarSystemID = m.locationID
         if solarSystemID > constants.STATIONS_IDS:
             try:
@@ -119,11 +150,17 @@ def positions_of_members():
     return json.dumps(positions)
 
 #------------------------------------------------------------------------------
-def access_lvl_distribution():
+def access_lvl_distribution(corp=None):
+    
+    if corp is None:
+        members = Member.objects.all()
+    else:
+        members = corp.members.all()
+    
     thresholds = ColorThreshold.objects.all().order_by("threshold")
     for th in thresholds: 
         th.members = 0
-    members = Member.objects.filter(corped=True).order_by("accessLvl")
+    members = members.order_by("accessLvl")
     levels = members.values_list("accessLvl", flat=True)
     i = 0
     for level in levels:

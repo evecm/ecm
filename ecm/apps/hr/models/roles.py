@@ -94,9 +94,9 @@ class Role(models.Model):
         returns the accessLvl of this division.
         """
         my_corp = Corporation.objects.mine()
-        if self.hangar:
+        if self.hangar_id:
             return self.hangar.get_access_lvl(my_corp)
-        elif self.wallet:
+        elif self.wallet_id:
             return self.wallet.get_access_lvl(my_corp)
         else:
             return self.accessLvl
@@ -117,11 +117,15 @@ class Role(models.Model):
     def get_disp_name(self):
         my_corp = Corporation.objects.mine()
         name = self.dispName
-        if self.hangar :
+        if self.hangar_id:
             name = name % self.hangar.get_name(my_corp)
-        elif self.wallet :
+        elif self.wallet_id:
             name = name % self.wallet.get_name(my_corp)
         return name
+
+    @property
+    def name(self):
+        return self.get_disp_name()
 
     @property
     def url(self):
@@ -143,17 +147,12 @@ class Role(models.Model):
     def __unicode__(self):
         my_corp = Corporation.objects.mine()
         name = self.dispName
-        if self.hangar :
+        if self.hangar_id:
             name = name % self.hangar.get_name(my_corp)
-        elif self.wallet :
+        elif self.wallet_id:
             name = name % self.wallet.get_name(my_corp)
         return "%s - %s" % (name, unicode(self.roleType))
 
-    def __getattr__(self, attr_name):
-        if attr_name == "name":
-            return self.get_disp_name()
-        else:
-            raise AttributeError("Role has no attribute %s" % attr_name)
 
 #------------------------------------------------------------------------------
 class RoleMembership(models.Model):

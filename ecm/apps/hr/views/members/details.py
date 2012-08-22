@@ -14,20 +14,20 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils import timezone
 __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
 from datetime import timedelta
 import json
 
+from django.utils import timezone
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.core.exceptions import ObjectDoesNotExist
 from django.template.context import RequestContext as Ctx
 from django.db.models.aggregates import Avg, Sum
 
+from ecm.apps.corp.models import Corporation
 from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
 from ecm.apps.hr.views import ACCESS_CHANGES_COLUMNS
@@ -41,9 +41,50 @@ from ecm.utils.format import print_integer
 import logging
 logger = logging.getLogger(__name__)
 
-GROUP_SPAN = '<span class="industry-job" title="%s"><strong>%s</strong> - Skills: <i>%s</i>, Points <i>%s</i></span>'
-SKILL_SPAN = '<span class="industry-job" title="%s"><strong>%s</strong> - Points: <i>%s</i>, Level: <i>%s</i></span>'
+GROUP_SPAN = '<span class="industry-job"><strong>%s</strong> - Skills: <i>%s</i>, Points <i>%s</i></span>'
+SKILL_SPAN = '<span class="industry-job"><strong>%s</strong> - Points: <i>%s</i>, Level: <i>%s</i></span>'
 #------------------------------------------------------------------------------
+
+def get_skills(member):
+    all_skills = member.skills.all()
+    if all_skills:
+        skillpoint_count = all_skills.aggregate(Sum('skillpoints'))['skillpoints__sum']
+        skills_json = []
+        
+        types = Type.objects.filter(published=1)
+        
+        for group in Group.objects.filter(category=16, published=1).order_by('groupName'):
+            
+            skills_in_group = member.skills.filter(typeID__in=types.filter(group=group).values('typeID'))
+            
+            if skills_in_group:
+                group_points = skills_in_group.aggregate(Sum('skillpoints'))['skillpoints__sum']
+                
+                skillgroup = {
+                    'data': GROUP_SPAN % (group, 
+                                          skills_in_group.count(), 
+                                          print_integer(group_points),
+                                          ), 
+                    'attr': {'rel': 'group'},
+                    'children': [],
+                }
+                
+                for skill in skills_in_group.order_by('eve_type__typeName'):
+                    skillgroup['children'].append({
+                        'data': SKILL_SPAN % (skill.eve_type.typeName, 
+                                              print_integer(skill.skillpoints), 
+                                              skill.level,
+                                              ), 
+                        'attr': {'rel': 'skill'},
+                    })
+                
+                skills_json.append(skillgroup)
+    
+    else:
+        skills_json = []
+        skillpoint_count = 0
+    return skills_json, all_skills.count(), skillpoint_count
+
 @check_user_access()
 def details(request, characterID):
     avg_session = {
@@ -82,7 +123,7 @@ def details(request, characterID):
         avg_session['30days'] = timedelta(seconds=session_len_30)
         avg_session['7days'] = timedelta(seconds=session_len_7)
 
-        if member.corped:
+        if member.corp_id == Corporation.objects.mine().corporationID:
             member.date = UpdateDate.get_latest(Member)
         else:
             try:
@@ -90,40 +131,8 @@ def details(request, characterID):
                 member.date = d.date
             except IndexError:
                 member.date = 0
-        skill_count = member.skills.filter(character = characterID).count()
-        if skill_count > 0:
-            skill_groups = Group.objects.filter(category = 16, published = 1).order_by('groupName')
-            skillpoint_count = member.skills.all().aggregate(Sum('skillpoints'))['skillpoints__sum']
-            skills_json = []
-            for group in skill_groups:
-                skill_typeids = Type.objects.filter(group = group.groupID).order_by('typeName').values_list('typeID', flat=True)
-                group_points = member.skills.filter(typeID__in = list(skill_typeids)).aggregate(Sum('skillpoints'))
-                skills_in_group = member.skills.filter(typeID__in = list(skill_typeids))
-                skills_in_group = [(x.name, x.skillpoints, x.level) for x in skills_in_group]
-                skills_in_group.sort()
-                if len(skills_in_group) != 0:
-                    skillgroup = {
-                                  'data' : GROUP_SPAN % ('group', 
-                                                         group, 
-                                                         len(skills_in_group), 
-                                                         print_integer(group_points['skillpoints__sum'])),
-                                  'attr' : { 'rel' : 'group'},
-                    }
-                    skillgroup['children'] = []
-                    for skill in skills_in_group:
-                        skillskill = {
-                                  'data' : SKILL_SPAN % ('skill', 
-                                                         skill[0], 
-                                                         print_integer(skill[1]), 
-                                                         skill[2]),
-                                  'attr' : { 'rel' : 'skill'},
-                        }
-                        skillgroup['children'].append(skillskill)
-                    skills_json.append(skillgroup)
-        else:
-            skills_json = []
-            skillpoint_count = 0
-    except ObjectDoesNotExist:
+        skills, skill_count, skillpoint_count = get_skills(member)
+    except Member.DoesNotExist:
         member = Member(characterID=int(characterID), name="???")
     
     try:
@@ -139,7 +148,7 @@ def details(request, characterID):
         'lastMonth'          : lastMonth,
         'total'              : total,
         'logins'             : loginhistory,
-        'skills_tree'        : json.dumps(skills_json),
+        'skills_tree'        : json.dumps(skills),
         'skill_count'        : skill_count,
         'skillpoint_count'   : print_integer(skillpoint_count),
         'datatables_defaults': DATATABLES_DEFAULTS,

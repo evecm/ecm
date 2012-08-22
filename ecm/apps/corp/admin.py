@@ -20,8 +20,19 @@ __author__ = "diabeteman"
 
 
 from django.contrib import admin
-from ecm.apps.corp.models import Hangar, Wallet, Corporation
+from ecm.apps.corp.models import Hangar, Wallet, Corporation, CorpHangar, CorpWallet, SharedData,\
+    CorpGroup, Standing
 
-admin.site.register(Corporation)
+
+class CorpAdmin(admin.ModelAdmin):
+    list_display = ['corporationName', 'is_my_corp', 'is_trusted']
+
+
+admin.site.register(Corporation, CorpAdmin)
 admin.site.register(Hangar)
 admin.site.register(Wallet)
+admin.site.register(Standing)
+admin.site.register(CorpWallet)
+admin.site.register(CorpHangar)
+admin.site.register(SharedData)
+admin.site.register(CorpGroup)

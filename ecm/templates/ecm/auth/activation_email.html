@@ -7,7 +7,7 @@
 
 <p>
 {% blocktrans %}
-You created a new account on <b>{{ corp_name }}</b> <i>EVE Corporation Management</i>. 
+You created a new account on <b>{{ my_corp|default:'NO CORP YET' }}</b> <i>EVE Corporation Management</i>. 
 Please click on the following link in order to activate your account.
 {% endblocktrans %}
 </p>
@@ -20,7 +20,7 @@ Please click on the following link in order to activate your account.
 
 <p>{% trans 'Thank you and see you in space :-)' %}</p>
 
-<p><i>{{ corp_name }}</i></p>
+<p><i>{{ my_corp|default:'NO CORP YET' }}</i></p>
 </body>
 
 </html>

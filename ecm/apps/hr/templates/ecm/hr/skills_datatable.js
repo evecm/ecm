@@ -39,10 +39,21 @@ function membersRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
         
 function membersServerParams( aoData ) {
     /* Add some extra variables to the url */
-	aoData.push(
-			{
-				name: "skills",
-				value: $.toJSON(window.SKILLS),
-			}
-	);
+	aoData.push({
+		name: "skills",
+		value: $.toJSON(window.SKILLS),
+	}, {
+		name: 'corp',
+		value: $('#corp_selector').val(),
+	});
+}
+
+
+function membersStateSaveParams (oSettings, oData) {
+    oData.corp = $('#corp_selector').val();
+}
+
+function membersStateLoadParams (oSettings, oData) {
+    $('#corp_selector').val(oData.corp);
+    return true;
 }

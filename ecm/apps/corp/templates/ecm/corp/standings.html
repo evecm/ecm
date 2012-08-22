@@ -10,10 +10,23 @@
 {% endblock %}
 
 {% block main_content %}
+<div class="page-header">
+<h1>Standings
+<select id="corp-selector">
+<option class="bold" value="{{my_corp.corporationID}}">{{my_corp.corporationName}}</option>
+{% for corp in corporations %}
+<option value="{{corp.corporationID}}" 
+        {% if selected_corp == corp %}selected="selected"{% endif %}
+        >{{corp.corporationName}}</option>
+{% endfor %}
+</select>
+
+</h1>
+</div>
 <div class="row-fluid">
 	{% if standings_visibility == 'alliance' or standings_visibility == 'both' or user.is_superuser %}
 	<div class="span6">
-	    <h2>Alliance Standings</h2>
+	    <h2>Alliance</h2>
 		<table class="table table-bordered table-condensed">
 			<thead>
 				<tr>
@@ -33,7 +46,7 @@
 	{% endif %}
 	{% if standings_visibility == 'corporation' or standings_visibility == 'both' or user.is_superuser %}
 	<div class="span6">
-	    <h2>Corporation Standings</h2>
+	    <h2>Corporation</h2>
 		<table class="table table-bordered table-condensed">
 			<thead>
 				<tr>
@@ -58,21 +71,25 @@
 {% endif %}
 
 {% if user.is_superuser %}
-<h2>Set Public settings</h2>
-<div class="row">
-    <div class="span4">
-        <form class="well form-inline" action='/standings/' method="post">
-            {% csrf_token %}
-            <select name="standings_visibility">
-                <option value="none" {% if not standings_visibility %}selected="selected"{% endif %}>{% trans 'None' %}</option>
-                <option value="alliance" {% if standings_visibility == 'alliance' %}selected="selected"{% endif %}>{% trans 'Alliance' %}</option>
-                <option value="corporation"{% if standings_visibility == 'corporation' %}selected="selected"{% endif %}>{% trans 'Corp' %}</option>
-                <option value="both"{% if standings_visibility == 'both' %}selected="selected"{% endif %}>{% trans 'Both' %}</option>
-            </select>
-            <button type="submit" class="btn">{% trans 'Set Access' %}</button>
-        </form>
-    </div>
-</div>
+<form class="well form-inline span4" method="post">
+    <h2>Set Public settings</h2>
+    {% csrf_token %}
+    <select name="standings_visibility">
+        <option value="none" {% if not standings_visibility %}selected="selected"{% endif %}>{% trans 'None' %}</option>
+        <option value="alliance" {% if standings_visibility == 'alliance' %}selected="selected"{% endif %}>{% trans 'Alliance' %}</option>
+        <option value="corporation"{% if standings_visibility == 'corporation' %}selected="selected"{% endif %}>{% trans 'Corp' %}</option>
+        <option value="both"{% if standings_visibility == 'both' %}selected="selected"{% endif %}>{% trans 'Both' %}</option>
+    </select>
+    <button type="submit" class="btn">{% trans 'Set Access' %}</button>
+</form>
 {% endif %}
 
+<script>
+$(document).ready(function () {
+	$('#corp-selector').on('change', function () {
+		window.location = '?corp=' + this.value;
+	});
+});
+</script>
 {% endblock %}
+

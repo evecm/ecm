@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load static from staticfiles %}
 
-{% block headtitle %}{% trans 'Search for Skills' %}{% endblock %}
+{% block headtitle %}{% trans 'Member Skills' %}{% endblock %}
 
 {% block stylesheets %}
 <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery.autocomplete.css' %}" />
@@ -15,20 +15,22 @@
 </style>
 {% endblock %}
 
-{% block breadcrumbs %}
-<li><a href="/">{% trans 'Home' %}</a></li>
-<li><a href="/hr/">{% trans 'Human Resources' %}</a></li>
-<li class="active"><a href="/hr/members/">{% trans 'Skills' %}</a></li>
-{% endblock %}
-
-
 
 {% block main_content %}
 <div class="page-header">
-  <h1>Please select a ship, skill or module to add it to the filter.</h1>
+  <h1>
+    {% trans 'Member Skills' %}
+    <small class="pull-right">
+      <select id="corp_selector">
+        <option value="{{my_corp.corporationID}}" class="bold">{{my_corp}}</option>
+        <option value="all" class="italic">All</option>{% for corp in corps %}
+        <option value="{{corp.corporationID}}">{{corp}}</option>{% endfor %}
+      </select>
+    </small>
+  </h1>
 </div>
 
-<form class="well form-inline" id="search_form">
+<form class="well form-inline" id="search_form" title="{% trans 'Please select a ship, skill or module to add it to the filter.' %}">
     <input type="text" id="search_box" placeholder="{% trans 'Start typing to search items...' %}"/>
     <button type="submit" class="btn btn-small"><i class="icon-plus"> </i>{% trans 'Add item to filter' %}</button>
     <a class="btn btn-primary pull-right" data-toggle="modal" data-target="#eft-modal" ><i class="icon-plane icon-white"> </i>{% trans 'Import EFT Fitting' %}</a>
@@ -71,7 +73,9 @@
              sAjaxSource=ajax_url 
              sCookiePrefix='ecm_members_table_' 
              fnRowCallback='membersRowCallback' 
-             fnServerParams='membersServerParams' %}
+             fnServerParams='membersServerParams'
+             fnStateSaveParams='membersStateSaveParams' 
+             fnStateLoadParams='membersStateLoadParams' %}
 
 <script type="text/javascript">
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
@@ -237,7 +241,10 @@ $(document).ready(function() {
             $('#throbber-submit').show();
         }
     });
-
+    
+    $('#corp_selector').on('change', function () {
+    	$('#members_table').dataTable().fnDraw();
+    });
 
     /* when eft modal dialog is submited */
     $('a#eft-submit').click(function () {

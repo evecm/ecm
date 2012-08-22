@@ -4,7 +4,16 @@
 
 {% block main_content %}
 <div class="page-header">
-  <h1>{% trans 'Human Resources Dashboard' %}</h1>
+  <h1>
+    {% trans 'Human Resources Dashboard' %}
+    <small class="pull-right">
+      <select id="corp_selector">
+        <option value="{{my_corp.corporationID}}" class="bold"{%if selected_corp == my_corp.corporationID %} selected="selected"{% endif %}>{{my_corp}}</option>
+        <option value="all" class="italic"{%if selected_corp == 'all' %} selected="selected"{% endif %}>All</option>{% for corp in corps %}
+        <option value="{{corp.corporationID}}"{%if selected_corp == corp.corporationID %} selected="selected"{% endif %}>{{corp}}</option>{% endfor %}
+      </select>
+    </small>
+  </h1>
 </div>
 <div class="row-fluid">
   <div class="span6" id="distibution_chart"></div>
@@ -170,6 +179,13 @@ google.setOnLoadCallback(drawAccessLvls);
 google.setOnLoadCallback(drawPositions);
 google.setOnLoadCallback(drawPlaytimes);
 google.setOnLoadCallback(drawOnline);
+</script>
 
+<script type="text/javascript">
+$(document).ready(function () {
+	$('#corp_selector').on('change', function () {
+		window.location = '?corp=' + $('#corp_selector').val();
+	});
+});
 </script>
 {% endblock %}

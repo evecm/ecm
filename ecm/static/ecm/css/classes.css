@@ -10,3 +10,11 @@ textarea.code {
 .faded {
 	color: gray;
 }
+
+.bold {
+	font-weight: bold;
+}
+
+.italic {
+	font-style: italic;
+}

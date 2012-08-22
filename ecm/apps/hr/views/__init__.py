@@ -20,14 +20,10 @@ __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
 from django.db.models import Q
-from django.conf import settings
 from django.utils.text import truncate_words
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext as tr
 
 from ecm.apps.hr.models import Member
-from ecm.apps.common.models import UpdateDate
-from ecm.views import template_filters
 from ecm.utils.format import print_date
 from ecm.utils import db
 
@@ -37,7 +33,7 @@ logger = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 MEMBERS_COLUMNS = [
     {'sTitle': tr('Name'),         'sWidth': '15%',   'db_field': 'name', },
-    {'sTitle': tr('Nickname'),     'sWidth': '15%',   'db_field': 'nickname', },
+    {'sTitle': tr('Corp'),         'sWidth': '5%',    'db_field': 'corp', },
     {'sTitle': tr('Player'),       'sWidth': '15%',   'db_field': 'owner__username', },
     {'sTitle': tr('Access Level'), 'sWidth':  '5%',   'db_field': 'accessLvl', },
     {'sTitle': tr('Last Login'),   'sWidth': '10%',   'db_field': 'lastLogin', },
@@ -137,10 +133,15 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
     for member in query:
         titles = ["Titles"]
         titles.extend(member.titles.values_list("titleName", flat=True))
-
+        
+        if member.corp:
+            corp = '<span title="%s">%s</span>' % (member.corp, member.corp.ticker)
+        else:
+            corp = '-'
+        
         memb = [
             member.permalink,
-            truncate_words(member.nickname, 5),
+            corp,
             member.owner_permalink,
             member.accessLvl,
             print_date(member.lastLogin),

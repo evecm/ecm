@@ -43,7 +43,13 @@ function membersServerParams( aoData ) {
 		aoData.push( {
 			name: 'show_ships',
 			value: SHOW_SHIPS,
-		} );
+		});
+	}
+	if ($('#corp_selector').length) {
+		aoData.push({
+			name: 'corp',
+			value: $('#corp_selector').val(),
+		});
 	}
 }
         
@@ -52,8 +58,11 @@ function membersStateSaveParams (oSettings, oData) {
     if ($('#ships_selector button').length) {
     	oData.show_ships = SHOW_SHIPS;
     }
+    if ($('#corp_selector').length) {
+    	oData.corp = $('#corp_selector').val();
+    }
 }
-        
+
 function membersStateLoadParams (oSettings, oData) {
     $("#search_text").val(oData.sFilter);
     if ('show_ships' in oData) {
@@ -67,6 +76,9 @@ function membersStateLoadParams (oSettings, oData) {
             }
         }
     }
+    if ('corp' in oData) {
+    	$('#corp_selector').val(oData.corp);
+    }
     return true;
 }
         
@@ -76,6 +88,9 @@ $(document).ready(function () {
     	SHOW_SHIPS = this.id;
     	$('#members_table').dataTable().fnDraw();
 	});
-
+    
+    $('#corp_selector').on('change', function () {
+    	$('#members_table').dataTable().fnDraw();
+    });
 });
 
