@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.corp.models import Corporation
 
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
@@ -23,10 +22,10 @@ __author__ = "diabeteman"
 from django.contrib.auth.models import User
 from django.db import models
 
+from ecm.apps.corp.models import Corporation
 from ecm.apps.eve.models import Type
-#from ecm.core.eve.db import get_type_name
 
-from ecm.lib import bigintpatch
+from ecm.lib import bigintpatch, softfk
 from ecm.apps.hr import NAME as app_prefix
 
 # little trick to change the Users' absolute urls
@@ -54,10 +53,10 @@ class Member(models.Model):
     location = models.CharField(max_length=256, default="???", null=True, blank=True)
     ship = models.CharField(max_length=128, default="???")
     accessLvl = models.BigIntegerField(default=0)
-    corped = models.BooleanField(default=True)
-    owner = models.ForeignKey(User, related_name='characters', null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
 
+    owner = models.ForeignKey(User, related_name='characters', null=True, blank=True, 
+                              on_delete=models.SET_NULL)
     corp = models.ForeignKey(Corporation, related_name='members', null=True, blank=True)
 
     #Character Sheet
@@ -138,8 +137,23 @@ class Member(models.Model):
         else:
             return '<span class="error bold">no owner</span>'
 
+    def get_shared_info(self):
+        info = {
+            'characterID': self.characterID,
+            'name': self.name,
+            'nickname': self.nickname,
+            'baseID': self.baseID,
+            'corpDate': self.corpDate,
+            'lastLogin': self.lastLogin,
+            'lastLogoff': self.lastLogoff,
+            'locationID': self.locationID,
+            'location': self.location,
+            'ship': self.ship,
+        }
+        return info
+
     def __eq__(self, other):
-        return self.characterID == other.characterID
+        return isinstance(other, Member) and self.characterID == other.characterID
 
     def __hash__(self):
         return self.characterID
@@ -227,8 +241,8 @@ class Skill(models.Model):
     class Meta:
         app_label = 'hr'
     
-    character = models.ForeignKey(Member, related_name = 'skills')
-    typeID = models.IntegerField(default=0)
+    character = models.ForeignKey(Member, related_name='skills')
+    eve_type = softfk.SoftForeignKey(to='eve.Type', null=True, blank=True)
     skillpoints = models.IntegerField(default=0)
     level = models.IntegerField(default=0)
     
@@ -237,6 +251,5 @@ class Skill(models.Model):
     
     @property
     def name(self):
-        name = Type.objects.get(typeID=self.typeID).typeName
-        return unicode(name)
+        return Type.objects.get(typeID=self.typeID).typeName
     

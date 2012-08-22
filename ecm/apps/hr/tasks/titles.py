@@ -19,7 +19,6 @@ __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
 from django.contrib.auth.models import Group
-from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django import db
 from django.db import transaction
@@ -173,9 +172,9 @@ def parseRoleType(title, roleType, roles):
         try:
             # we get the concerned role
             role = Role.objects.get(roleID=r_id, roleType=roleType.id)
-        except ObjectDoesNotExist:
-            # if the role does not exist, the database might be corrupted (or API changed?)
-            raise ValueError("role with id=%s does not exist" % r_id)
+        except Role.DoesNotExist:
+            msg = 'roleID %s not found in category %s. Database corrupted or new role?'
+            raise Role.DoesNotExist(msg % (r_id, roleType))
 
         # we create a new TitleComposition for the current title
         subList.append(TitleComposition(title=title, role=role))

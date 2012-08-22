@@ -82,7 +82,7 @@ def update_one_user_extended_characters_info(user):
 #-----------------------------------------------------------------------------
 def set_character_skills(member, sheet):
     for skill in sheet.skills:
-        sk, _ = Skill.objects.get_or_create(character=member, typeID=skill.typeID)
+        sk, _ = Skill.objects.get_or_create(character=member, eve_type_id=skill.typeID)
         sk.skillpoints = skill.skillpoints
         sk.level = skill.level
         sk.save()

@@ -23,8 +23,9 @@ import logging
 from django.db import transaction
 from django.contrib.auth.models import User, Group
 
-from ecm.apps.common import api
 from ecm.lib import eveapi
+from ecm.apps.common import api
+from ecm.apps.corp.models import Corporation
 from ecm.apps.common.auth import get_members_group, get_directors_group, alert_user_for_invalid_apis
 from ecm.apps.hr.models import Title, Member
 from ecm.apps.scheduler.models import ScheduledTask
@@ -105,17 +106,19 @@ def update_all_users_accesses():
         
     corp_members_group = get_members_group()
     directors_group = get_directors_group()
+    my_corp = Corporation.objects.mine()
     
     LOG.info("Updating user accesses from their in-game roles...")
     for user in User.objects.filter(is_active=True):
-        update_user_accesses(user, corp_members_group, directors_group)
+        update_user_accesses(user, my_corp, corp_members_group, directors_group)
     LOG.info("User accesses updated")
 
 #------------------------------------------------------------------------------
-def update_user_accesses(user, corp_members_group=None, directors_group=None):
+def update_user_accesses(user, my_corp=None, corp_members_group=None, directors_group=None):
     """
     Synchronizes a user's groups with his/hers owned characters' in-game titles.
     """
+    my_corp = my_corp or Corporation.objects.mine()
     corp_members_group = corp_members_group or get_members_group()
     directors_group = directors_group or get_directors_group()
     owned_characters = user.characters.all()
@@ -126,7 +129,7 @@ def update_user_accesses(user, corp_members_group=None, directors_group=None):
         titles |= char.titles.all() # the "|" operator concatenates django QuerySets
     all_titles = titles.distinct() # to remove duplicates if the same title is assigned to multiple characters
     user.groups.clear()
-    if owned_characters.filter(corped=True):
+    if owned_characters.filter(corp=my_corp):
         user.groups.add(corp_members_group)
     for titleID in all_titles.values_list("titleID", flat=True):
         user.groups.add(Group.objects.get(id=titleID))

@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.db.models.aggregates import Count
 
 __date__ = "2012 08 02"
 __author__ = "Ajurna"
@@ -43,6 +44,7 @@ from ecm.apps.corp.models import Corporation
 #------------------------------------------------------------------------------
 @check_user_access()
 def skills_search(request):
+    other_corps = Corporation.objects.others().annotate(member_count=Count('members'))
     data = {
         'scan_date' : UpdateDate.get_latest(Member),
         'colorThresholds' : ColorThreshold.as_json(),
@@ -50,6 +52,7 @@ def skills_search(request):
         'datatables_defaults': DATATABLES_DEFAULTS,
         'columns': MEMBERS_COLUMNS,
         'ajax_url': '/hr/members/skills/data/',
+        'corps': other_corps.filter(member_count__gt=0),
     }
     return render_to_response('ecm/hr/members/member_skills.html', data, Ctx(request))
 
@@ -58,29 +61,37 @@ def skills_search(request):
 def skilled_list(request):
     try:
         params = extract_datatable_params(request)
+        selected_corp = json.loads(request.GET.get('corp', 'null'))
+        skills = json.loads(request.GET.get("skills", ""))
     except KeyError:
         return HttpResponseBadRequest()
-    corp = Corporation.objects.get(is_my_corp=True)
-    members = Member.objects.filter(corp=corp)
     
-    skills = json.loads(request.GET.get("skills", ""))
-    filtered = []
-    for member in members:
+    if selected_corp is None:
+        corp = Corporation.objects.mine()
+    else:
         try:
-            for skill in skills:
-                member.skills.get(typeID = skill['id'], level__gte = skill['lvl'])
-            filtered.append(member.characterID)
-        except Skill.DoesNotExist:
-            pass
-    query = Member.objects.filter(characterID__in = filtered)
+            corp = Corporation.objects.get(corporationID=selected_corp)
+        except Corporation.DoesNotExist:
+            corp = None
+
+    if corp is not None:
+        members = corp.members.all()
+    else:
+        members = Member.objects.all()
+    
+    query = members
+    for skill in skills:
+        query &= members.filter(skills__eve_type_id=skill['id'], 
+                                skills__level__gte=skill['lvl'])
+    
     total_members,\
     filtered_members,\
-    members = get_members(query=query,
+    members = get_members(query=query.distinct(),
                           first_id=params.first_id,
                           last_id=params.last_id,
                           sort_by=params.column,
                           asc=params.asc)
-
+    
     return datatable_ajax_data(members, params.sEcho, total_members, filtered_members)
 
 #------------------------------------------------------------------------------

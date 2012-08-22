@@ -58,7 +58,7 @@ def members_data(request, titleID):
 
     total_members,\
     filtered_members,\
-    members = get_members(query=title.members.filter(corped=True),
+    members = get_members(query=title.members.all(),
                           first_id=params.first_id,
                           last_id=params.last_id,
                           search_str=params.search,

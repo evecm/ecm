@@ -61,17 +61,16 @@ def update():
     notCorped  = {}
     oldAccessLvls = {}
     oldOwners = {}
+    my_corp = Corporation.objects.mine()
 
     # we get the old member list from the database
     for m in Member.objects.all():
-        if m.corped:
+        if m.corp == my_corp:
             oldMembers[m] = m
         else:
             notCorped[m] = m
         oldAccessLvls[m.characterID] = m.accessLvl
         oldOwners[m.characterID] = m.owner
-
-    my_corp = Corporation.objects.mine()
 
     for member in membersApi.members:
         m = parseOneMember(member, my_corp)
@@ -90,7 +89,7 @@ def update():
     # If we delete the old members each time, then all the diffs in roles/titles will not match
     # as the foreign keys will be gone from the members table...
     for L in leaved:
-        L.corped = False
+        L.corp = None
         newMembers[L] = L
 
     LOG.info("%d members parsed, %d changes since last scan", len(newMembers), len(diffs))
@@ -115,9 +114,8 @@ def update():
             # we leave it to the default value '0'
             continue
 
-    # to be sure to store the nicknames change, etc.
-    # even if there are no diff, we always overwrite the members
-    for m in newMembers.values():
+        # to be sure to store the nicknames change, etc.
+        # even if there are no diff, we always overwrite the members
         m.save()
 
     if len(oldMembers) > 0 and len(diffs) > 0 :

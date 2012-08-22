@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.db.models.aggregates import Count
 
 __date__ = "2010-05-16"
 __author__ = "diabeteman"
@@ -24,6 +25,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
 
+from ecm.apps.corp.models import Corporation
 from ecm.views import DATATABLES_DEFAULTS
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data
@@ -34,8 +36,13 @@ from ecm.apps.hr.views import get_members, MEMBERS_COLUMNS
 #------------------------------------------------------------------------------
 @check_user_access()
 def members(request):
+    
+    corps = Corporation.objects.others().order_by('corporationName')
+    corps = corps.annotate(member_count=Count('members'))
+    
     data = {
         'scan_date' : UpdateDate.get_latest(Member),
+        'corps': corps.filter(member_count__gt=0),
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
         'datatables_defaults': DATATABLES_DEFAULTS,
@@ -61,10 +68,21 @@ def members_data(request):
     try:
         params = extract_datatable_params(request)
         ships = request.GET.get('show_ships', 'all')
+        corp_id = request.GET.get('corp')
     except KeyError:
         return HttpResponseBadRequest()
     
-    query = Member.objects.filter(corped=True)
+    if corp_id:
+        try:
+            query = Corporation.objects.get(corporationID=int(corp_id)).members.all()
+        except Corporation.DoesNotExist:
+            query = Corporation.objects.mine().members.all()
+        except ValueError:
+            # corp_id cannot be casted to int, we take all corps
+            query = Member.objects.all()
+    else:
+        query = Corporation.objects.mine().members.all()
+        
     if ships == 'supers':
         query = query.filter(ship__in=SUPER_CAPITALS)
     
@@ -103,7 +121,7 @@ def unassociated_data(request):
 
     total_members,\
     filtered_members,\
-    members = get_members(query=Member.objects.filter(corped=True, owner=None),
+    members = get_members(query=Corporation.objects.mine().members.filter(owner=None),
                           first_id=params.first_id,
                           last_id=params.last_id,
                           search_str=params.search,
@@ -116,7 +134,7 @@ def unassociated_data(request):
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def unassociated_clip(request):
-    query = Member.objects.filter(corped=True, owner=None).order_by("name")
+    query = Corporation.objects.mine().members.filter(owner=None).order_by("name")
     data = query.values_list("name", flat=True)
     return HttpResponse("\n".join(data))
 #------------------------------------------------------------------------------

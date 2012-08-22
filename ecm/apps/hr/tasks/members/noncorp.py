@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.corp.models import Corporation
+from ecm.lib import eveapi
 
 __date__ = '2012-07-18'
 __author__ = 'Ajurna'
@@ -54,7 +56,19 @@ def add_char(user, char):
     mem = Member()
     mem.characterID = char.characterID
     mem.name = char.name
-    mem.corped = False
+    mem.corp = get_corp(char)
     mem.owner = user
     return mem
-    
+
+#------------------------------------------------------------------------------
+def get_corp(char):
+    try:
+        return Corporation.objects.get(corporationID=char.corporationID)
+    except Corporation.DoesNotExist:
+        conn = eveapi.EVEAPIConnection(scheme='http')
+        api_corp = conn.corp.CorporationSheet(corporationID=char.corporationID)
+        return Corporation.objects.create(corporationID=api_corp.corporationID,
+                                          corporationName=api_corp.corporationName,
+                                          ticker=api_corp.ticker,
+                                          )
+        
