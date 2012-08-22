@@ -10,8 +10,8 @@
 
 {% block main_content %}
 <div class="page-header">
-  <h1 {%if not member.corped %}class="error"{% endif %}>{{ member.name }}{%if not member.corped %} {% trans 'NOT CORPED' %}{% endif %}
-  <small>{{ member.nickname }}</small>
+  <h1{%if member.corp_id != my_corp.corporationID %} class="error"{% endif %}>{{ member.name }}
+    <small>{{ member.corp|default:'NO CORP' }}</small>
   </h1>
 </div>
 
@@ -24,6 +24,7 @@
   </div>
   <div class="span8">
     <dl>
+      <dt>{% trans 'Nickname' %}</dt><dd>{{ member.nickname }}</dd>
       <dt>{% trans 'Corp Date' %}</dt><dd>{{ member.corpDate|ecm_datetime }}</dd>
       <dt>{% trans 'Last Login' %}</dt><dd>{{ member.lastLogin|ecm_datetime }}</dd>
       <dt>{% trans 'Last Logoff' %}</dt><dd>{{ member.lastLogoff|ecm_datetime }}</dd>

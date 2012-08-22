@@ -31,9 +31,9 @@ def corporation_name(request):
     Adds the variable {{ corp_name }} to all the templates.
     """
     try:
-        return { "corp_name" : Corporation.objects.mine().corporationName }
+        return { "my_corp": Corporation.objects.mine() }
     except Corporation.DoesNotExist:
-        return { "corp_name" : "No Corporation" }
+        return { "my_corp": None }
 
 #------------------------------------------------------------------------------
 def version(request):

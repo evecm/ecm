@@ -59,7 +59,7 @@
         <a class="brand" href="/" title="Eve Corp. Management" style="padding: 0px;">
             <img src="{% static 'ecm/img/logo.png' %}" />
         </a>
-        <span class="navbar-text pull-left"><em>{{corp_name}}</em></span>
+        <span class="navbar-text pull-left"><em>{{my_corp|default:'NO CORP YET'}}</em></span>
         <div class="nav-collapse">
           {% if user.is_authenticated %}
           <ul class="nav pull-right">
