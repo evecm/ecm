@@ -100,7 +100,7 @@ TITLES_MOD_COLUMNS = [
     {'sTitle': tr('Modification Date'), 'sWidth': '25%',   'stype': 'numeric', 'bSortable': False, },
 ]
 
-def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True):
+def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True, format=None):
 
     query = query.select_related(depth=2) # improve performance
 
@@ -126,31 +126,43 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True)
         filtered_members = query.count()
     else:
         total_members = filtered_members = query.count()
-
-    query = query[first_id:last_id]
-
+        
     member_list = []
-    for member in query:
-        titles = ["Titles"]
-        titles.extend(member.titles.values_list("titleName", flat=True))
-        
-        if member.corp:
-            corp = '<span title="%s">%s</span>' % (member.corp, member.corp.ticker)
-        else:
-            corp = '-'
-        
-        memb = [
-            member.permalink,
-            corp,
-            member.owner_permalink,
-            member.accessLvl,
-            print_date(member.lastLogin),
-            truncate_words(member.location, 5),
-            member.ship or '(docked)',
-            "|".join(titles)
-        ]
-
-        member_list.append(memb)
+    if format == 'csv':
+        for member in query:
+            member_list.append([
+                member.name,
+                member.nickname,
+                member.corp or '-',
+                member.owner,
+                member.lastLogin,
+                member.location,
+                member.ship or '(docked)',
+                member.accessLvl,
+                ' '.join([ t.titleName for t in member.titles.all() ]),
+            ])
+    else:
+        for member in query[first_id:last_id]:
+            titles = ["Titles"]
+            titles.extend(member.titles.values_list("titleName", flat=True))
+            
+            if member.corp:
+                corp = '<span title="%s">%s</span>' % (member.corp, member.corp.ticker)
+            else:
+                corp = '-'
+            
+            memb = [
+                member.permalink,
+                corp,
+                member.owner_permalink,
+                member.accessLvl,
+                print_date(member.lastLogin),
+                truncate_words(member.location, 5),
+                member.ship or '(docked)',
+                "|".join(titles)
+            ]
+    
+            member_list.append(memb)
 
     return total_members, filtered_members, member_list
 

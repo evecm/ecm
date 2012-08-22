@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db.models.aggregates import Count
 
 __date__ = "2010-05-16"
 __author__ = "diabeteman"
@@ -22,11 +21,12 @@ __author__ = "diabeteman"
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.db.models.aggregates import Count
 from django.template.context import RequestContext as Ctx
 
 
 from ecm.apps.corp.models import Corporation
-from ecm.views import DATATABLES_DEFAULTS
+from ecm.views import DATATABLES_DEFAULTS, datatable_csv_data
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.models import Member
@@ -93,9 +93,13 @@ def members_data(request):
                           last_id=params.last_id,
                           search_str=params.search,
                           sort_by=params.column,
-                          asc=params.asc)
-
-    return datatable_ajax_data(members, params.sEcho, total_members, filtered_members)
+                          asc=params.asc,
+                          format=params.format)
+    
+    if params.format == 'csv':
+        return datatable_csv_data(members, filename='members.csv')
+    else:
+        return datatable_ajax_data(members, params.sEcho, total_members, filtered_members)
 
 #------------------------------------------------------------------------------
 @check_user_access()

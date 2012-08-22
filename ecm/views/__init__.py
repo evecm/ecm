@@ -18,13 +18,18 @@
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
-import django.utils.simplejson as json
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
+import django.utils.simplejson as json
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as tr
 
 from ecm import apps, plugins
+from ecm.utils.c_s_v import CSVUnicodeWriter
 from ecm.apps.common.models import UrlPermission, Setting
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.corp.models import SharedData
@@ -48,7 +53,7 @@ DATATABLES_DEFAULTS = {
     'iDisplayLength': 25,
     'bStateSave': True,
     'iCookieDuration': 60 * 60, # 1 hour
-    'sDom': "<'row-fluid'<'span5'l><'span7'p>T>rt<'row-fluid'<'span5'i><'span7'p>>",
+    'sDom': '<"row-fluid"<"span5"l><"span7"p>>rt<"row-fluid"<"span5"i><"span7"p>>',
     'fnStateLoadParams': 'function (oSettings, oData) { oData.sFilter = $("#search_text").val(); }',
     'fnStateSaveParams': 'function (oSettings, oData) { $("#search_text").val(oData.sFilter); return true; }',
     'oLanguage': {
@@ -72,6 +77,7 @@ def extract_datatable_params(request):
     params.sEcho = int(REQ["sEcho"])
     params.column = int(REQ["iSortCol_0"])
     params.asc = REQ["sSortDir_0"] == "asc"
+    params.format = REQ.get("sFormat")
     return params
 
 #------------------------------------------------------------------------------
@@ -87,6 +93,21 @@ def datatable_ajax_data(data, echo, total=None, filtered=None):
         'aaData' : data,
     }
     return HttpResponse(json.dumps(json_data), mimetype=JSON)
+
+#------------------------------------------------------------------------------
+def datatable_csv_data(data, headers=None, filename=None):
+    
+    csv_writer = CSVUnicodeWriter(stream=StringIO())
+    
+    if headers is not None:
+        csv_writer.writerow(headers)
+    csv_writer.writerows(data)
+    
+    response = HttpResponse(csv_writer.stream.getvalue(), mimetype='text/csv')
+    if filename is not None:
+        response['Content-Disposition'] = 'attachment;filename="%s"' % filename
+        
+    return response
 
 #------------------------------------------------------------------------------
 def create_app_objects(app):

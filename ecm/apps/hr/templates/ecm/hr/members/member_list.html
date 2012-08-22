@@ -21,9 +21,14 @@
       <button class="btn btn-small btn-info active" id="all">{% trans 'All Ships' %}</button>
       <button class="btn btn-small btn-info" id="supers">{% trans 'Supers Only' %}</button>
     </div>
-    <span class="pull-right">
-        <input type="button" class="btn btn-small" onclick="window.location='export/'" value="Export All"></input>
-    </span>
+    <div class="pull-right">
+      <span class="label label-important">{% trans 'Corp' %}</span>
+      <select class="error" id="corp_selector">
+        <option value="{{my_corp.corporationID}}">{{my_corp}}</option>
+        <option value="all">{% trans 'All' %}</option>{% for corp in corps %}
+        <option value="{{corp.corporationID}}">{{corp}}</option>
+      {% endfor %}</select>
+    </div>
   </div>
 </form>
 {% datatable 'members_table' columns 
@@ -31,6 +36,7 @@
              defaults=datatables_defaults 
              sAjaxSource='/hr/members/data/' 
              sCookiePrefix='ecm_members_table_' 
+             sDom='<"row-fluid"<"span5"l><"#datatable-buttons">>rt<"row-fluid"<"span5"i><"span7"p>>' 
              fnRowCallback='membersRowCallback' 
              fnServerParams='membersServerParams' 
              fnStateSaveParams='membersStateSaveParams' 
@@ -42,7 +48,20 @@ COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 
 {% include "ecm/hr/members_datatable.js" %}
 {% include "ecm/hr/search_form.js" %}
+
+CSV_BTN = '<button class="btn pull-right" id="csv-btn"><i class="icon-download-alt"></i> {% trans "Save as CSV" %}</button>';
+$(document).ready(function () {
+    $('#datatable-buttons').html(CSV_BTN);
+    $('#csv-btn').on('click', function () {
+        var table = $('#members_table').dataTable();
+        var ajax_params = table.oApi._fnAjaxParameters(table.fnSettings());
+        table.oApi._fnServerParams(table.fnSettings(), ajax_params);
+        ajax_params.push({
+        	name: 'sFormat',
+        	value: 'csv',
+        })
+        window.location = table.fnSettings().sAjaxSource + '?' + $.param(ajax_params);
+    });
+});
 </script>
-
-
 {% endblock %}
