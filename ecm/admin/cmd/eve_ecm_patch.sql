@@ -130,8 +130,6 @@ CREATE TABLE "invTypes_temp" (
   "groupID" smallint(6) DEFAULT NULL,
   "typeName" varchar(100) DEFAULT NULL,
   "description" varchar(3000) DEFAULT NULL,
-  "graphicID" smallint(6) DEFAULT NULL,
-  "radius" double DEFAULT NULL,
   "mass" double DEFAULT NULL,
   "volume" double DEFAULT NULL,
   "capacity" double DEFAULT NULL,
@@ -144,7 +142,24 @@ CREATE TABLE "invTypes_temp" (
   "iconID" smallint(6) DEFAULT NULL,
   PRIMARY KEY ("typeID")
 );
-INSERT INTO "invTypes_temp" SELECT * FROM "invTypes";
+INSERT INTO "invTypes_temp" 
+  SELECT 
+    "typeID",
+    "groupID",
+    "typeName",
+    "description",
+    "mass",
+    "volume",
+    "capacity",
+    "portionSize",
+    "raceID",
+    "basePrice",
+    "published",
+    "marketGroupID",
+    "chanceOfDuplicating",
+    "iconID"
+  FROM "invTypes"
+;
 DROP TABLE "invTypes";
 
 -- create the new patched one
@@ -190,14 +205,12 @@ SELECT  t."typeID",
         t."basePrice",
         t."marketGroupID",
         IFNULL(m."metaGroupID", 0) AS "metaGroupID",
-        IFNULL('icon' || g."iconFile", CAST(t."typeID" AS TEXT)) AS "icon",
+        NULL AS "icon",
         t."published"
-FROM "invTypes_temp" t LEFT OUTER JOIN "eveIcons" g ON t."graphicID" = g."iconID",
-     "invTypes_temp" t2 LEFT OUTER JOIN "invBlueprintTypes" b ON t2."typeID" = b."productTypeID",
+FROM "invTypes_temp" t LEFT OUTER JOIN "invBlueprintTypes" b ON t."typeID" = b."productTypeID",
      "invTypes_temp" t3 LEFT OUTER JOIN "invMetaTypes" m ON t3."typeID" = m."typeID",
      "invGroups" gg
-WHERE t."typeID" = t2."typeID"
-  AND t."typeID" = t3."typeID"
+WHERE t."typeID" = t3."typeID"
   AND t."groupID" = gg."groupID"
   AND t."typeID" NOT IN (23693) -- this dummy item has 4 different blueprints,
                                 -- if we do not ignore it, the SQL command fails...
@@ -359,36 +372,30 @@ SET "parentBlueprintTypeID" =
 DROP TABLE "agtAgentTypes";
 DROP TABLE "agtAgents";
 DROP TABLE "agtResearchAgents";
-
 DROP TABLE "chrAncestries";
 DROP TABLE "chrAttributes";
 DROP TABLE "chrBloodlines";
 DROP TABLE "chrFactions";
 DROP TABLE "chrRaces";
-
 DROP TABLE "crpActivities";
 DROP TABLE "crpNPCCorporationDivisions";
 DROP TABLE "crpNPCCorporationResearchFields";
 DROP TABLE "crpNPCCorporationTrades";
 DROP TABLE "crpNPCCorporations";
 DROP TABLE "crpNPCDivisions";
-
 DROP TABLE "crtCategories";
 DROP TABLE "crtCertificates";
 DROP TABLE "crtClasses";
 DROP TABLE "crtRecommendations";
 DROP TABLE "crtRelationships";
-
 DROP TABLE "dgmAttributeCategories";
 DROP TABLE "dgmAttributeTypes";
 DROP TABLE "dgmEffects";
 DROP TABLE "dgmTypeAttributes";
 DROP TABLE "dgmTypeEffects";
-
 DROP TABLE "eveGraphics";
 DROP TABLE "eveIcons";
 DROP TABLE "eveUnits";
-
 -- DROP TABLE "invBlueprintTypes";
 -- DROP TABLE "invCategories";
 DROP TABLE "invContrabandTypes";
@@ -406,7 +413,6 @@ DROP TABLE "invTypeMaterials";
 DROP TABLE "invTypeReactions";
 -- DROP TABLE "invTypes";
 DROP TABLE "invUniqueNames";
-
 DROP TABLE "mapCelestialStatistics";
 DROP TABLE "mapConstellationJumps";
 DROP TABLE "mapConstellations";
@@ -420,11 +426,9 @@ DROP TABLE "mapRegions";
 DROP TABLE "mapSolarSystemJumps";
 DROP TABLE "mapSolarSystems";
 DROP TABLE "mapUniverse";
-
 DROP TABLE "planetSchematics";
 DROP TABLE "planetSchematicsPinMap";
 DROP TABLE "planetSchematicsTypeMap";
-
 DROP TABLE "ramActivities";
 DROP TABLE "ramAssemblyLineStations";
 DROP TABLE "ramAssemblyLineTypeDetailPerCategory";
@@ -433,18 +437,15 @@ DROP TABLE "ramAssemblyLineTypes";
 DROP TABLE "ramAssemblyLines";
 DROP TABLE "ramInstallationTypeContents";
 DROP TABLE "ramTypeRequirements";
-
 DROP TABLE "staOperationServices";
 DROP TABLE "staOperations";
 DROP TABLE "staServices";
 DROP TABLE "staStationTypes";
 DROP TABLE "staStations";
-
 DROP TABLE "translationTables";
 DROP TABLE "trnTranslationColumns";
 DROP TABLE "trnTranslationLanguages";
 DROP TABLE "trnTranslations";
-
 DROP TABLE "warCombatZoneSystems";
 DROP TABLE "warCombatZones";
 
