@@ -141,30 +141,4 @@ def unassociated_clip(request):
     query = Corporation.objects.mine().members.filter(owner=None).order_by("name")
     data = query.values_list("name", flat=True)
     return HttpResponse("\n".join(data))
-#------------------------------------------------------------------------------
-import csv
-@check_user_access()
-def export_to_csv(request):
-    # Get response object, this can be used as a stream.
-    response = HttpResponse(mimetype="text/csv")
-    # Force download
-    response['Content-Disposition'] = 'attachment;filename="member_export.csv"' 
 
-    # csv writer
-    writer = csv.writer(response)
-    writer.writerow(['Name','Nickname', 'Player', 'Access Level', 'Last Login', 'Location', 'Ship'])
-    for member in Member.objects.all():
-        writer.writerow([member.name, 
-                member.nickname, 
-                member.owner,
-                member.accessLvl, 
-                str(member.lastLogin).split('+')[0], 
-                member.location, 
-                member.ship,
-                ]) 
-
-
-
-    return response
-    
-   

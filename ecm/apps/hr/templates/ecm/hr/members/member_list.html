@@ -36,7 +36,7 @@
              defaults=datatables_defaults 
              sAjaxSource='/hr/members/data/' 
              sCookiePrefix='ecm_members_table_' 
-             sDom='<"row-fluid"<"span5"l><"#datatable-buttons">>rt<"row-fluid"<"span5"i><"span7"p>>' 
+             sDom='<"row-fluid"<"span5"l><"span7"C>>rt<"row-fluid"<"span5"i><"span7"p>>' 
              fnRowCallback='membersRowCallback' 
              fnServerParams='membersServerParams' 
              fnStateSaveParams='membersStateSaveParams' 
@@ -48,20 +48,5 @@ COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 
 {% include "ecm/hr/members_datatable.js" %}
 {% include "ecm/hr/search_form.js" %}
-
-CSV_BTN = '<button class="btn pull-right" id="csv-btn"><i class="icon-download-alt"></i> {% trans "Save as CSV" %}</button>';
-$(document).ready(function () {
-    $('#datatable-buttons').html(CSV_BTN);
-    $('#csv-btn').on('click', function () {
-        var table = $('#members_table').dataTable();
-        var ajax_params = table.oApi._fnAjaxParameters(table.fnSettings());
-        table.oApi._fnServerParams(table.fnSettings(), ajax_params);
-        ajax_params.push({
-        	name: 'sFormat',
-        	value: 'csv',
-        })
-        window.location = table.fnSettings().sAjaxSource + '?' + $.param(ajax_params);
-    });
-});
 </script>
 {% endblock %}

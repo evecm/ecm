@@ -62,7 +62,12 @@ DATATABLES_DEFAULTS = {
         'sInfo': tr('Showing _START_ to _END_ of _TOTAL_ records'),
         'sInfoEmpty': tr('Showing 0 to 0 of 0 records'),
         'sInfoFiltered': tr('(filtered from _MAX_ total records)'),
-    }
+    },
+    'oSaveAsCSV': {
+        'sButtonText': tr('Save as CSV'),
+        'sButtonClass': 'btn pull-right',
+        'sIconClass': 'icon-download-alt',
+    },
 }
 
 #------------------------------------------------------------------------------

@@ -57,7 +57,6 @@ urlpatterns += patterns('ecm.apps.hr.views.members',
     (r'^members/skills/itemid/$',               'skills.get_item_id'),
     (r'^members/skills/parseeft/$',             'skills.parse_eft'),
     (r'^members/skills/data/$',                 'skills.skilled_list'),
-    (r'^members/export',                        'list.export_to_csv'),
 )
 
 urlpatterns += patterns('ecm.apps.hr.views.titles',
