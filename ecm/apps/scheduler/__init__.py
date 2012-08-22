@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
+from django.utils.translation import ugettext_lazy as tr_lazy
 
 NAME = 'scheduler'
 

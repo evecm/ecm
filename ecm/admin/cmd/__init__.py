@@ -23,7 +23,6 @@ __author__ = 'diabeteman'
 
 import os
 import sys
-from os import path
 
 from ecm.admin.util import run_python_cmd, log
 

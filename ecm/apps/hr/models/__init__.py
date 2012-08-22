@@ -18,10 +18,13 @@
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
 
-from ecm.apps.hr.models.member import Member, MemberDiff, Skill
-from ecm.apps.hr.models.roles import RoleType, Role, RoleMembership, RoleMemberDiff
-from ecm.apps.hr.models.titles import Title, TitleComposition, TitleMembership, TitleCompoDiff,\
-    TitleMemberDiff
+from ecm.apps.hr.models.member import Member, MemberDiff, Skill #@UnusedImport
+from ecm.apps.hr.models.roles import RoleType, Role, RoleMembership, RoleMemberDiff #@UnusedImport
+from ecm.apps.hr.models.titles import (Title, #@UnusedImport
+                                       TitleComposition,  #@UnusedImport
+                                       TitleMembership,  #@UnusedImport
+                                       TitleCompoDiff,  #@UnusedImport
+                                       TitleMemberDiff) #@UnusedImport
 
 # How to split models in separate python modules
 # http://www.acooke.org/cute/UsingaDire0.html

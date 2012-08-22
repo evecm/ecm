@@ -7,8 +7,8 @@ from django.db import models
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        from django.core.management import call_command
-        call_command("loaddata", "0004_roles_initialdata.json")
+        pass
+        # THIS MIGRATION IS OBSOLETE, KEEPING IT HERE FOR COMPAT REASONS
 
 
     def backwards(self, orm):

@@ -18,7 +18,7 @@
 __date__ = "2011 11 12"
 __author__ = "diabeteman"
 
-from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
+from django.utils.translation import ugettext_lazy as tr_lazy
 
 NAME = 'shop'
 
