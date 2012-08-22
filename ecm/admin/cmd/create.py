@@ -16,16 +16,18 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import with_statement
-import os
-from django.utils.crypto import get_random_string
 
 __date__ = '2012 3 23'
 __author__ = 'diabeteman'
 
-import shutil
+import os
 from os import path
+import shutil
+import string
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser, OptionGroup
+
+from django.utils.crypto import get_random_string
 
 from ecm.admin import instance_template
 from ecm.admin.util import prompt, log
@@ -167,7 +169,7 @@ def write_settings(command, options, instance_dir):
     config.set('email', 'server_email', str(options.server_email))
     
     # Create a random SECRET_KEY hash to put it in the main settings.
-    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+    chars = string.ascii_letters + string.digits + '.,;:!@#$^&*(-_+)[]{}'
     config.set('misc', 'secret_key', get_random_string(50, chars))
     
     settings_fd = open(settings_file, 'w')
