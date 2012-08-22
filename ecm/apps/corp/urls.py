@@ -22,9 +22,17 @@ from django.conf.urls.defaults import patterns
 
 urlpatterns = patterns('ecm.apps.corp.views',
     (r'^$',                             'corp'),
-    (r'^contact/$',                        'contact'),
-    (r'^standings/$',                   'standings.standings'),
-    (r'^login/$',                       'login'),
-    (r'^toc/$',                         'list_available_data'),
+    (r'^standings/$',                   'standings.corp_standings'),
+
+    # multi-corp urls
+    (r'^contact/$',                     'contact.handle_contact'),
+    (r'^auth/startsession/$',           'auth.start_session'),
+    (r'^auth/endsession/$',             'auth.end_session'),
+    (r'^share/allowed/$',               'share.list_allowed_shares'),
+    
+    # shared data
+    (r'^share/details/$',               'share.details'),
+    (r'^share/standings/corp/$',        'share.corp_standings'),
+    (r'^share/standings/alliance/$',    'share.alliance_standings'),
 )
 

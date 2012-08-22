@@ -18,26 +18,17 @@
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
+import django.utils.simplejson as json
 
 from django.http import HttpResponse
-from django.db.models import Q
-from django.utils.text import truncate_words
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as tr
 
 from ecm import apps, plugins
-from ecm.apps.hr.models import Member
-from ecm.apps.common.models import UpdateDate, UrlPermission, Setting
+from ecm.apps.common.models import UrlPermission, Setting
 from ecm.apps.scheduler.models import ScheduledTask
-from ecm.views import template_filters
-from ecm.lib import templatepatch
+from ecm.apps.corp.models import SharedData
 
-import csv
 import logging
 logger = logging.getLogger(__name__)
 
@@ -113,6 +104,16 @@ def create_app_objects(app):
         if not Setting.objects.filter(name=name):
             Setting.objects.create(name=name, value=repr(value))
             logger.info("Created Setting %s=%s" % (repr(name), repr(value)))
+    for share in app.shared_data:
+        url = share['url']
+        if not url.startswith('/'):
+            url = '/%s/' % app.app_prefix + url
+        handler = share['handler']
+        if not SharedData.objects.filter(url=url):
+            SharedData.objects.create(url=url, handler=handler)
+            logger.info("Created SharedData %r" % url)
+        else:
+            SharedData.objects.filter(url=url).update(handler=handler)
 
 # The creation of the declared objects is delayed here.
 # If not, it would crash at first try of synchronizing the db
@@ -138,3 +139,7 @@ if not User.objects.filter(username=admin_username):
         logger.exception("")
         raise
 #-----------------------------------------------------------------------------
+def import_monkey_patches():
+    import ecm.lib.templatepatch #@UnusedImport for multi line template tags
+    from . import template_filters #@UnusedImport to register template tags/filters
+import_monkey_patches()

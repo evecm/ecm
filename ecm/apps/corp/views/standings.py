@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from django.db.models.aggregates import Count
 
 __date__ = "2012-04-26"
 __author__ = "Ajurna"
@@ -28,7 +29,10 @@ from ecm.apps.corp.models import Corporation, Standing
 from ecm.apps.common.models import Setting
 
 #------------------------------------------------------------------------------
-def standings(request):
+def corp_standings(request):
+    
+    my_corp = Corporation.objects.mine()
+    
     corp_id = request.GET.get('corp')
     if corp_id is not None:
         try:
@@ -36,7 +40,11 @@ def standings(request):
         except (ValueError, Corporation.DoesNotExist):
             raise Http404()
     else:
-        corp = Corporation.objects.mine()  
+        corp = my_corp
+      
+    visibility = request.POST.get('standings_visibility')
+    if request.user.is_superuser and visibility is not None:
+        Setting.objects.filter(name='standings_visibility').update(value=repr(visibility))
     
     standings = Standing.objects.filter(corp=corp)
     
@@ -45,16 +53,14 @@ def standings(request):
     corp_standings = standings.filter(is_corp_contact=True)
     corp_standings = corp_standings.order_by('-value', 'contactName')
     
-    if request.user.is_superuser:
-        if request.method == 'POST':
-            visibility = request.POST.get('standings_visibility')
-            if visibility:
-                Setting.objects.filter(name='standings_visibility').update(value=repr(visibility))
+    corporations = Corporation.objects.others().annotate(standing_cnt=Count('standings'))
 
     data = {
         'standings_visibility': Setting.get('standings_visibility'),
         'alliance_standings': alliance_standings,
         'corp_standings': corp_standings,
+        'selected_corp': corp,
+        'corporations': corporations.filter(standing_cnt__gt=0).order_by('corporationName'),
     }
     
     return render_to_response("ecm/corp/standings.html",

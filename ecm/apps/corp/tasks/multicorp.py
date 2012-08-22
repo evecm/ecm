@@ -18,34 +18,34 @@
 __date__ = '2012 08 01'
 __author__ = 'diabeteman'
 
+import zlib
 import logging
-import urllib2
 import urlparse
+
+import django.utils.simplejson as json
 
 from ecm.utils.http import HttpClient
 from ecm.utils import crypto
-from ecm.apps.corp.models import Corporation
+from ecm.apps.corp.models import Corporation, SharedData
 
 LOG = logging.getLogger(__name__)
 
+#------------------------------------------------------------------------------
 def update_all():
     
     for corp in Corporation.objects.others():
         LOG.debug('Updating info from corp: %s' % corp.ecm_url)
-        try:
-            update_one_corp(corp)
-        except urllib2.HTTPError, e:
-            msg = e.fp.read()
-            LOG.error(msg)
-        
-        
+        update_one_corp(corp)
+
+#------------------------------------------------------------------------------
 def update_one_corp(corp):
     
     my_corp = Corporation.objects.mine()
     
-    auth_url = urlparse.urljoin(corp.ecm_url, '/corp/login/')
+    auth_url = urlparse.urljoin(corp.ecm_url, '/corp/auth/startsession/')
     client = HttpClient()
     
+    LOG.debug('Establishing secure data exchange with %r...' % corp.ecm_url)
     response = client.get(auth_url, headers={'Authorization': 'RSA %s' % my_corp.key_fingerprint})
     cipher_txt_in = response.read()
     
@@ -55,11 +55,35 @@ def update_one_corp(corp):
     cipher_txt_out = crypto.rsa_encrypt(corp.public_key, session_secret)
     
     # then send it to the server
-    response = client.post(auth_url, cipher_txt_out)
+    client.post(auth_url, cipher_txt_out)
+
+    LOG.debug('Fetching which data %r is sharing with us...' % corp)
+    # now we fetch the urls we're allowed to pull from this corporation
+    response = client.get(urlparse.urljoin(corp.ecm_url, '/corp/share/allowed/'))
+    data = crypto.aes_decrypt(session_secret, response.read())
+    allowed_urls = json.loads(data)
+
+    if not allowed_urls:
+        LOG.warning('%r is not sharing any data with us' % corp.corporationName)
+    for url in allowed_urls:
+        try:
+            shared_data = SharedData.objects.get(url=url)
+            
+            LOG.debug('Fetching shared data %r...' % url)
+            response = client.get(urlparse.urljoin(corp.ecm_url, shared_data.url))
+            
+            raw_data = crypto.aes_decrypt(session_secret, response.read())
+            
+            if response.getheader('content-type') == 'application/gzip-compressed':
+                raw_data = zlib.decompress(raw_data)
+            
+            shared_data.call_handler(corp, json.loads(raw_data))
+        except SharedData.DoesNotExist:
+            LOG.error('Unknown SharedData with url=%r' % url)
+        except:
+            LOG.exception('')
     
-    
-    
-    
-    
-        
+    LOG.debug('Ending secure session with %r...' % corp.ecm_url)
+    # finally destroy our session info to be sure nobody will steal it :)
+    client.get(urlparse.urljoin(corp.ecm_url, '/corp/auth/endsession/'))
     

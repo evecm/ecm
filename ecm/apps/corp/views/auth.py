@@ -14,13 +14,17 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from functools import wraps
 
 __date__ = '2012 08 01'
 __author__ = 'diabeteman'
 
+import zlib
 import logging
 import httplib as http
 
+import django.utils.simplejson as json
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.apps.corp.models import Corporation
@@ -31,6 +35,9 @@ LOG = logging.getLogger(__name__)
 AUTH_SECRET = '_auth_secret'
 AUTH_FINGERPRINT = '_auth_fingerprint'
 SESSION_AUTHENTICATED = '_session_authenticated'
+# Max 5 minutes before session is invalidated. 
+# session time will be extended by 5 minutes each time the client makes a new request.
+SESSION_LENGTH = 300 
 
 #------------------------------------------------------------------------------
 def get_challenge(request):
@@ -63,13 +70,16 @@ def get_challenge(request):
     except Corporation.DoesNotExist:
         return HttpResponse("Key fingerprint not found, we don't know you.", status=http.UNAUTHORIZED)
     
+    if not corp.is_trusted:
+        return HttpResponse('Your corporation is not trusted by our server.', status=http.UNAUTHORIZED)
+    
     if AUTH_FINGERPRINT in request.session:
         if request.session[AUTH_FINGERPRINT] != key_fingerprint:
             # to avoid taking over another TrustedCorp's session, we flush all the data.
             request.session.flush()
     else:
         request.session.cycle_key()
-    request.session.set_expiry(600) # set expiry to 10 minutes
+    request.session.set_expiry(SESSION_LENGTH)
     
     # we store the key_fingerprint to tie this session to the TrustedCorp 
     request.session[AUTH_FINGERPRINT] = key_fingerprint
@@ -99,30 +109,69 @@ def post_response(request):
         return HttpResponse(status=http.UNAUTHORIZED)
 
 #------------------------------------------------------------------------------
-def active_session_required():
+def valid_session_required(view_function):
     """
-    Checks for a previously authenticated session
+    Decorator that checks for a previously authenticated session
+    
+    If the session is valid, it checks that the corp which is making the request
+    has access to the requested URL
     """
-    def decorator(view_function):
+    @wraps(view_function)
+    def _wrapped_view(request, *args, **kwargs):
         
-        def _wrapped_view(request, *args, **kwargs):
-            
-            key_fingerprint = request.session.get(AUTH_FINGERPRINT)
-            session_authenticated = request.session.get(SESSION_AUTHENTICATED)
-            
-            if key_fingerprint and session_authenticated:
-                try:
-                    request.corp = Corporation.objects.get(key_fingerprint=key_fingerprint)
-                except Corporation.DoesNotExist:
+        key_fingerprint = request.session.get(AUTH_FINGERPRINT)
+        session_authenticated = request.session.get(SESSION_AUTHENTICATED)
+        
+        if key_fingerprint and session_authenticated:
+            try:
+                path = request.get_full_path()
+                corp = Corporation.objects.get(key_fingerprint=key_fingerprint)
+                if corp.is_trusted and (path == '/corp/share/allowed/'
+                                        or corp.get_allowed_shares().filter(url=path)):
+                    request.corp = corp
+                else:
                     return HttpResponse(status=http.UNAUTHORIZED)
-                
-                return view_function(request, *args, **kwargs)
-            else:
+            except Corporation.DoesNotExist:
                 return HttpResponse(status=http.UNAUTHORIZED)
+            
+            # extend session time at each new request
+            request.session.set_expiry(SESSION_LENGTH)
+            
+            return view_function(request, *args, **kwargs)
+        else:
+            return HttpResponse(status=http.UNAUTHORIZED)
 
-        return _wrapped_view
-
-    return decorator
+    return _wrapped_view
 
 
+#------------------------------------------------------------------------------
+@csrf_exempt
+def start_session(request):
+    if request.method == 'POST':
+        return post_response(request)
+    else:
+        return get_challenge(request)
 
+#------------------------------------------------------------------------------
+def end_session(request):
+    if request.session.get(SESSION_AUTHENTICATED):
+        # we reset the session
+        request.session.flush()
+        # then return something to tell it's ok
+        return HttpResponse()
+    else:
+        return HttpResponseBadRequest('No valid session found')
+
+#------------------------------------------------------------------------------
+def encrypted_response(request, data, compress=False):
+    if not isinstance(data, basestring):
+        data = json.dumps(data)
+    if compress:
+        data = zlib.compress(data)
+        mime = 'application/gzip-compressed'
+    else:
+        mime = 'application/octet-stream'
+    encrypted_data = crypto.aes_encrypt(request.session[AUTH_SECRET], data)
+    return HttpResponse(encrypted_data, mimetype=mime)
+
+    

@@ -162,7 +162,7 @@ def update_hangar_divisions(corpApi, currentTime):
             h.name = h_name
         except CorpHangar.DoesNotExist:
             h = CorpHangar(corp=my_corp, hangar_id=h_id, name=h_name)
-        LOG.debug("  %s [%s]", h.name, h.hangar)
+        LOG.debug("  %s [%s]", h.name, h.hangar_id)
         h.save()
     # we store the update time of the table
     UpdateDate.mark_updated(model=Hangar, date=currentTime)
@@ -182,7 +182,7 @@ def update_wallet_divisions(corpApi, currentTime):
             w.name = w_name
         except CorpWallet.DoesNotExist:
             w = CorpWallet(corp=my_corp, wallet_id=w_id, name=w_name)
-        LOG.debug("  %s [%s]", w.name, w.wallet)
+        LOG.debug("  %s [%s]", w.name, w.wallet_id)
         w.save()
     # we store the update time of the table
     UpdateDate.mark_updated(model=Wallet, date=currentTime)

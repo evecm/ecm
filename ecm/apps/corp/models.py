@@ -18,25 +18,34 @@
 __date__ = "2010-02-08"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 
 import logging
 import urlparse
 import urllib2
 
+import django.utils.simplejson as json
 from django.db import models
 from django.core.exceptions import ValidationError
 
+from ecm.apps.scheduler.validators import extract_function
 from ecm.utils.http import HttpClient
 
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 class Hangar(models.Model):
+    
+    DEFAULT_NAMES = {
+        0: 'N/A',
+        1: 'Deliveries',
+        1000: 'Hangar division 1',
+        1001: 'Hangar division 2',
+        1002: 'Hangar division 3',
+        1003: 'Hangar division 4',
+        1004: 'Hangar division 5',
+        1005: 'Hangar division 6',
+        1006: 'Hangar division 7',
+    }
 
     class Meta:
         ordering = ['hangarID']
@@ -44,10 +53,16 @@ class Hangar(models.Model):
     hangarID = models.PositiveIntegerField(primary_key=True)
 
     def get_name(self, corp):
-        return self.corp_hangars.get(corp=corp, hangar=self).name
-
+        try:
+            return self.corp_hangars.get(corp=corp, hangar=self).name
+        except CorpHangar.DoesNotExist:
+            return Hangar.DEFAULT_NAMES[self.hangarID]
+        
     def get_access_lvl(self, corp):
-        return self.corp_hangars.get(corp=corp, hangar=self).access_lvl
+        try:
+            return self.corp_hangars.get(corp=corp, hangar=self).access_lvl
+        except CorpHangar.DoesNotExist:
+            return 1000
 
     def __unicode__(self):
         return unicode(self.hangarID)
@@ -70,17 +85,33 @@ class CorpHangar(models.Model):
 
 #------------------------------------------------------------------------------
 class Wallet(models.Model):
-
+    
+    DEFAULT_NAMES = {
+        1000: 'Wallet division 1',
+        1001: 'Wallet division 2',
+        1002: 'Wallet division 3',
+        1003: 'Wallet division 4',
+        1004: 'Wallet division 5',
+        1005: 'Wallet division 6',
+        1006: 'Wallet division 7',
+    }
+    
     class Meta:
         ordering = ['walletID']
 
     walletID = models.PositiveIntegerField(primary_key=True)
 
     def get_name(self, corp):
-        return self.corp_wallets.get(corp=corp, wallet=self).name
+        try:
+            return self.corp_wallets.get(corp=corp, wallet=self).name
+        except CorpWallet.DoesNotExist:
+            return Wallet.DEFAULT_NAMES[self.walletID]
 
     def get_access_lvl(self, corp):
-        return self.corp_wallets.get(corp=corp, wallet=self).access_lvl
+        try:
+            return self.corp_wallets.get(corp=corp, wallet=self).access_lvl
+        except CorpWallet.DoesNotExist:
+            return 1000
 
     def __unicode__(self):
         return unicode(self.walletID)
@@ -141,11 +172,17 @@ class Corporation(models.Model):
     
     #override
     def clean(self):
-        if not (self.key_fingerprint and self.public_key):
+        if self.corporationID is None and not (self.key_fingerprint and self.public_key):
             self.contact_corp(self.ecm_url)
-        else:
-            if self.corporationID is None:
-                raise ValidationError('Missing corporationID    ')
+    
+    def save(self, force_insert=False, force_update=False, using=None):
+        if not self.public_key:
+            self.public_key = str(self.corporationID)
+        if not self.key_fingerprint:
+            self.key_fingerprint = str(self.corporationID)
+        if not self.ecm_url:
+            self.ecm_url = str(self.corporationID)
+        models.Model.save(self, force_insert=force_insert, force_update=force_update, using=using)
     
     def contact_corp(self, corp_url):
         try:
@@ -184,6 +221,11 @@ class Corporation(models.Model):
             LOG.exception('')
             raise ValidationError(e)
         
+    def get_allowed_shares(self):
+        shares = SharedData.objects.none()
+        for group in self.corp_groups.all():
+            shares |= group.allowed_shares.all()
+        return shares.distinct()
     
     def get_public_info(self):
         public_info = {
@@ -198,9 +240,48 @@ class Corporation(models.Model):
             'key_fingerprint': self.key_fingerprint,
         }
         return public_info
-
+    
+    def get_corp_details(self):
+        corp_details = {
+            'corporationID': self.corporationID,
+            'corporationName': self.corporationName,
+            'ticker': self.ticker,
+            'allianceID': self.allianceID,
+            'allianceName': self.allianceName,
+            'allianceTicker': self.allianceTicker,
+            'ceoID': self.ceoID,
+            'ceoName': self.ceoName,
+            'stationID': self.stationID,
+            'stationName': self.stationName,
+            'description': self.description,
+            'taxRate': self.taxRate,
+            'memberLimit': self.memberLimit,
+        }
+        return corp_details
+    
+    def set_corp_details(self, details):
+        self.corporationName = details['corporationName']
+        self.ticker = details['ticker']
+        self.allianceID = details['allianceID']
+        self.allianceName = details['allianceName']
+        self.allianceTicker = details['allianceTicker']
+        self.ceoID = details['ceoID']
+        self.ceoName = details['ceoName']
+        self.stationID = details['stationID']
+        self.stationName = details['stationName']
+        self.description = details['description']
+        self.taxRate = details['taxRate']
+        self.memberLimit = details['memberLimit']
+        
+    
     def __unicode__(self):
         return unicode(self.corporationName)
+    
+    def __eq__(self, other):
+        return isinstance(other, Corporation) and self.corporationID == other.corporationID
+    
+    def __hash__(self):
+        return self.corporationID
 
 #------------------------------------------------------------------------------
 class Standing(models.Model):
@@ -232,3 +313,27 @@ class Standing(models.Model):
     
     def __unicode__(self):
         return unicode(self.contactName)
+
+    
+#------------------------------------------------------------------------------
+class CorpGroup(models.Model):
+    
+    name = models.CharField(primary_key=True, max_length=100)
+    corporations = models.ManyToManyField('Corporation', related_name='corp_groups')
+    allowed_shares = models.ManyToManyField('SharedData', related_name='shared_datas') 
+
+    def __unicode__(self):
+        return self.name
+    
+#------------------------------------------------------------------------------
+class SharedData(models.Model):
+    
+    url = models.CharField(primary_key=True, max_length=255, editable=False)
+    handler = models.CharField(max_length=255, editable=False)
+    
+    def call_handler(self, *args, **kwargs):
+        function = extract_function(self.handler)
+        return function(*args, **kwargs)
+    
+    def __unicode__(self):
+        return self.url

@@ -38,6 +38,21 @@ TASKS = [
         'frequency' : 24,
         'frequency_units' : 3600, # hour
     },
+    {
+        'function' : 'ecm.apps.corp.tasks.multicorp.update_all',
+        'priority' : 200,
+        'frequency' : 24,
+        'frequency_units' : 3600, # hour
+    },
+
+]
+
+SHARED_DATA = [
+    {'url': 'share/details/',   'handler': 'ecm.apps.corp.share.process_details'},
+    {'url': 'share/hangars/',   'handler': 'ecm.apps.corp.share.process_hangars'},
+    {'url': 'share/wallets/',   'handler': 'ecm.apps.corp.share.process_wallets'},
+    {'url': 'share/standings/corp/', 'handler': 'ecm.apps.corp.share.process_corp_standings'},
+    {'url': 'share/standings/alliance/', 'handler': 'ecm.apps.corp.share.process_alliance_standings'},
 ]
 
 SETTINGS = {

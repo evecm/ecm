@@ -42,17 +42,20 @@ class HttpClient(object):
         return self.opener.open(request)
     
     def post(self, url, body, headers=None):
-        csrf_token = None
-        for cookie in self.cookie_jar:
-            if cookie.name == 'csrftoken':
-                csrf_token = cookie.value
-        
         request = urllib2.Request(url)
-        if csrf_token is not None:
-            request.add_header('X-CSRFToken', csrf_token)
+        try:
+            request.add_header('X-CSRFToken', self.get_cookie('csrftoken'))
+        except KeyError:
+            pass
         
         if headers is not None:
             for key, val in headers.items():
                 request.add_header(key, val)
         
         return self.opener.open(url, body)
+    
+    def get_cookie(self, name):
+        for cookie in self.cookie_jar:
+            if cookie.name == name:
+                return cookie.value
+        raise KeyError(name)

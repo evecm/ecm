@@ -34,13 +34,13 @@ def pad(s):
 
 def aes_encrypt(secret, plain_text):
     cipher = AES.new(secret)
-    cipher_text = cipher.encrypt(plain_text)
+    cipher_text = cipher.encrypt(pad(plain_text))
     return base64.b64encode(cipher_text)
 
 def aes_decrypt(secret, cipher_text):
     cipher = AES.new(secret)
     cipher_text = base64.b64decode(cipher_text)
-    return cipher.decrypt(cipher_text)
+    return cipher.decrypt(cipher_text).strip(PADDING)
 
 def extract_public_key(private_key_str):
     private_key = RSA.importKey(private_key_str)

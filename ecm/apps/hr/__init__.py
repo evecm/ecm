@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-from django.utils.translation import ugettext as tr, ugettext_lazy as tr_lazy, ugettext_noop as tr_noop
+from django.utils.translation import ugettext_lazy as tr_lazy
 
 NAME = 'hr'
 
@@ -69,6 +69,12 @@ URL_PERMISSIONS = [
     r'^/hr/members/.*$',
     r'^/hr/roles/.*$',
     r'^/hr/titles/.*$',
+]
+
+SHARED_DATA = [
+    {'url': 'share/members/', 'handler': 'ecm.apps.hr.share.process_members'},
+    {'url': 'share/players/', 'handler': 'ecm.apps.hr.share.process_players'},
+    {'url': 'share/skills/',  'handler': 'ecm.apps.hr.share.process_skills'},
 ]
 
 SETTINGS = {

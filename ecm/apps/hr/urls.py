@@ -23,11 +23,18 @@ from django.conf.urls.defaults import patterns
 urlpatterns = patterns('ecm.apps.hr.views',
     (r'^$',                                     'dashboard.dashboard'),
 
-
     (r'^players/$',                             'players.player_list'),
     (r'^players/data/$',                        'players.player_list_data'),
     (r'^players/(\d+)/$',                       'players.player_details'),
     (r'^players/(\d+)/data/$',                  'players.player_details_data'),
+)
+
+urlpatterns += patterns('ecm.apps.hr.views.share',
+    ###########################################################################
+    # SHARED DATA VIEWS
+    (r'^share/members/$',                       'members'),
+    (r'^share/players/$',                       'players'),
+    (r'^share/skills/$',                        'skills'),
 )
 
 urlpatterns += patterns('ecm.apps.hr.views.members',

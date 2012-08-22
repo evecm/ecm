@@ -72,6 +72,12 @@ class ECMApp(object):
                 self.permissions = package_module.URL_PERMISSIONS
             except AttributeError:
                 self.permissions = []
+            
+            # get declared SharedData for each app
+            try:
+                self.shared_data = package_module.SHARED_DATA
+            except AttributeError:
+                self.shared_data = []
 
             # get this app declared urls
             try:
