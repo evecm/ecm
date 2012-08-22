@@ -3,14 +3,15 @@ from south.v2 import DataMigration
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
-        my_corp = orm['corp.Corporation'].objects.get(is_my_corp=True)
-        orm['hr.Member'].objects.filter(corped=True).update(corp=my_corp)
+        if orm['corp.Corporation'].objects.filter(is_my_corp=True):
+            my_corp = orm['corp.Corporation'].objects.get(is_my_corp=True)
+            orm['hr.Member'].objects.filter(corped=True).update(corp=my_corp)
 
     def backwards(self, orm):
-        "Write your backwards methods here."
-
+        if orm['corp.Corporation'].objects.filter(is_my_corp=True):
+            my_corp = orm['corp.Corporation'].objects.get(is_my_corp=True)
+            orm['hr.Member'].objects.filter(corp=my_corp).update(corped=True)
+    
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},
