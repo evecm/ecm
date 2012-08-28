@@ -75,11 +75,13 @@ def update():
         
     my_corp = Corporation.objects.mine()
     
+    all_members = Member.objects.all()
+    
     for member in memberSecuApi.members:
-        # A.update(B) works as a merge of 2 hashtables A and B in A
-        # if a key is already present in A, it takes B's value
-        newRoles.update(parseOneMemberRoles(member, allRoleTypes, allRoles))
-        newTitles.update(parseOneMemberTitles(member, my_corp))
+        if all_members.filter(characterID=member.characterID):
+            # only get roles/titles for existing members.
+            newRoles.update(parseOneMemberRoles(member, allRoleTypes, allRoles))
+            newTitles.update(parseOneMemberTitles(member, my_corp))
 
     # Store role changes
     roleDiffs = storeRoles(oldRoles, newRoles, currentTime)
