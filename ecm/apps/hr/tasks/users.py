@@ -28,12 +28,12 @@ from ecm.apps.common import api
 from ecm.apps.corp.models import Corporation
 from ecm.apps.common.auth import get_members_group, get_directors_group, alert_user_for_invalid_apis
 from ecm.apps.hr.models import Title, Member
+from ecm.apps.hr.tasks.charactersheet import set_extended_char_attributes, get_character_skills
 from ecm.apps.scheduler.models import ScheduledTask
 
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
 def update_all_character_associations():
     LOG.info("Updating character associations with players...")
     for user in User.objects.filter(is_active=True):
@@ -43,41 +43,75 @@ def update_all_character_associations():
 #-----------------------------------------------------------------------------
 def update_character_associations(user):
     LOG.debug("Updating character ownerships for '%s'..." % user.username)
-    invalid_apis = []
-    new_ownerships = []
+    eve_accounts = []
+    invalid_api_keys = []
+    new_characters = []
+    new_corps = set()
+    skills = []
+    
     # get all the user's registered api credentials
-    for user_api in user.eve_accounts.all():
+    for api_key in user.eve_accounts.all():
         try:
-            ids = [ char.characterID for char in api.get_account_characters(user_api) if char.is_corped ]
-            user_api.is_valid = True
-            for member in Member.objects.filter(characterID__in=ids):
-                new_ownerships.append((member, user))
+            conn = api.connect_user(api_key)
+            for char in api.get_account_characters(api_key):
+                try:
+                    member = Member.objects.get(characterID=char.characterID)
+                except Member.DoesNotExist:
+                    member = Member(characterID=char.characterID,
+                                    name=char.name)
+                
+                corp = __get_corp(char)
+                if member.corp != corp:
+                    member.corp = corp
+                    new_corps.add(corp)
+                
+                if char.is_corped:
+                    sheet = conn.char.CharacterSheet(characterID=member.characterID)
+                    set_extended_char_attributes(member, sheet)
+                    skills.extend(get_character_skills(member, sheet))
+                
+                new_characters.append(member)
+            api_key.is_valid = True
         except eveapi.Error, e:
             if e.code == 0 or 200 <= e.code < 300:
                 # authentication failure error codes.
                 # This happens if the vCode does not match the keyID
                 # or if the account is disabled
                 # or if the key does not allow to list characters from an account
-                LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, user_api.keyID))
-                user_api.is_valid = False
-                user_api.error = str(e)
-                invalid_apis.append(user_api)
+                LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, api_key.keyID))
+                api_key.is_valid = False
+                api_key.error = str(e)
+                invalid_api_keys.append(api_key)
             else:
                 # for all other errors, we abort the operation so that
                 # character associations are not deleted by mistake and
                 # therefore, that users find themselves with no access :)
-                LOG.error("%d: %s (user: '%s' keyID: %d)" % (e.code, str(e), user.username, user_api.keyID))
+                LOG.error("%d: %s (user: '%s' keyID: %d)" % (e.code, str(e), user.username, api_key.keyID))
                 raise
-        user_api.save()
-    if invalid_apis:
+        eve_accounts.append(api_key)
+    
+    if invalid_api_keys:
         # we notify the user by email
-        alert_user_for_invalid_apis(user, invalid_apis)
+        alert_user_for_invalid_apis(user, invalid_api_keys)
+    
+    # this goes in a separate function to shorten DB transactions
+    save_all(user, new_characters, eve_accounts, new_corps, skills)
+    
+#-----------------------------------------------------------------------------
+@transaction.commit_on_success
+def save_all(user, characters, eve_accounts, new_corps, skills):
+    for account in eve_accounts:
+        account.save()
+    for corp in new_corps:
+        corp.save()
     # we delete all the previous ownerships
     Member.objects.filter(owner=user).update(owner=None)
     # and save the new ones
-    for member, user in new_ownerships:
-        member.owner = user
-        member.save()
+    for char in characters:
+        char.owner = user
+        char.save()
+    for skill in skills:
+        skill.save()
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -136,3 +170,14 @@ def update_user_accesses(user, my_corp=None, corp_members_group=None, directors_
     if director:
         user.groups.add(directors_group)
 
+#------------------------------------------------------------------------------
+def __get_corp(char):
+    try:
+        return Corporation.objects.get(corporationID=char.corporationID)
+    except Corporation.DoesNotExist:
+        conn = eveapi.EVEAPIConnection(scheme='http')
+        api_corp = conn.corp.CorporationSheet(corporationID=char.corporationID)
+        return Corporation(corporationID=api_corp.corporationID,
+                           corporationName=api_corp.corporationName,
+                           ticker=api_corp.ticker,
+                           )

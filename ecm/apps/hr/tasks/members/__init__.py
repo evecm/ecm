@@ -18,10 +18,9 @@
 __date__ = '2012-04-21'
 __author__ = 'diabeteman'
 
-from ecm.apps.hr.tasks.members import tracking, security, noncorp
+
+from ecm.apps.hr.tasks.members import tracking, security
 
 def update():
-    noncorp.update()
     tracking.update()
     security.update()
-    
