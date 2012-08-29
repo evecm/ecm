@@ -42,7 +42,8 @@ def members(request):
     
     data = {
         'scan_date' : UpdateDate.get_latest(Member),
-        'corps': corps.filter(member_count__gt=0),
+        'trusted_corps': corps.filter(member_count__gt=0, is_trusted=True),
+        'other_corps': corps.filter(member_count__gt=0, is_trusted=False),
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
         'datatables_defaults': DATATABLES_DEFAULTS,
@@ -82,7 +83,9 @@ def members_data(request):
             query = Member.objects.all()
     else:
         query = Corporation.objects.mine().members.all()
-        
+    
+    query = query.exclude(corp=None)
+    
     if ships == 'supers':
         query = query.filter(ship__in=SUPER_CAPITALS)
     

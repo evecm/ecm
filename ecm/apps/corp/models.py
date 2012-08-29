@@ -146,7 +146,7 @@ class Corporation(models.Model):
     
     objects = CorpManager()
     
-    ecm_url         = models.URLField(unique=True)
+    ecm_url         = models.CharField(unique=True, max_length=255)
     is_my_corp      = models.BooleanField(default=False)
     is_trusted      = models.BooleanField(default=False)
 
@@ -178,6 +178,8 @@ class Corporation(models.Model):
     def save(self, force_insert=False, force_update=False, using=None):
         if not self.public_key:
             self.public_key = str(self.corporationID)
+        if not self.private_key:
+            self.private_key = str(self.corporationID)
         if not self.key_fingerprint:
             self.key_fingerprint = str(self.corporationID)
         if not self.ecm_url:

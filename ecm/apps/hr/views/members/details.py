@@ -55,7 +55,7 @@ def get_skills(member):
         
         for group in Group.objects.filter(category=16, published=1).order_by('groupName'):
             
-            skills_in_group = member.skills.filter(typeID__in=types.filter(group=group).values('typeID'))
+            skills_in_group = member.skills.filter(eve_type__in=types.filter(group=group))
             
             if skills_in_group:
                 group_points = skills_in_group.aggregate(Sum('skillpoints'))['skillpoints__sum']

@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.lib import make_messages
 
 __date__ = "2010-02-08"
 __author__ = "diabeteman"
@@ -28,6 +27,7 @@ from distutils.errors import DistutilsArgError
 from django.core.management import call_command
 
 from ecm import utils
+from ecm.lib import make_messages
 
 class CompileMessages(setuptools.Command):
     
