@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.apps.corp.tasks.corp import fix_description
 
 __date__ = "2011 4 18"
 __author__ = "diabeteman"
@@ -45,7 +46,7 @@ def update_character_associations(user):
     LOG.debug("Updating character ownerships for '%s'..." % user.username)
     eve_accounts = []
     invalid_api_keys = []
-    new_characters = []
+    new_characters = set()
     new_corps = set()
     skills = []
     
@@ -59,18 +60,20 @@ def update_character_associations(user):
                 except Member.DoesNotExist:
                     member = Member(characterID=char.characterID,
                                     name=char.name)
+
+                if not member in new_characters:
+                    corp = __get_corp(char)
+                    if member.corp != corp:
+                        member.corp = corp
+                        new_corps.add(corp)
+                    
+                    if char.is_corped:
+                        sheet = conn.char.CharacterSheet(characterID=member.characterID)
+                        set_extended_char_attributes(member, sheet)
+                        skills.extend(get_character_skills(member, sheet))
+                    
+                    new_characters.add(member)
                 
-                corp = __get_corp(char)
-                if member.corp != corp:
-                    member.corp = corp
-                    new_corps.add(corp)
-                
-                if char.is_corped:
-                    sheet = conn.char.CharacterSheet(characterID=member.characterID)
-                    set_extended_char_attributes(member, sheet)
-                    skills.extend(get_character_skills(member, sheet))
-                
-                new_characters.append(member)
             api_key.is_valid = True
         except eveapi.BadApiKeyError, e:
             LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, api_key.keyID))
@@ -172,7 +175,24 @@ def __get_corp(char):
     except Corporation.DoesNotExist:
         conn = eveapi.EVEAPIConnection(scheme='http')
         api_corp = conn.corp.CorporationSheet(corporationID=char.corporationID)
-        return Corporation(corporationID=api_corp.corporationID,
-                           corporationName=api_corp.corporationName,
-                           ticker=api_corp.ticker,
+        
+        if api_corp.allianceID:
+            allianceID = api_corp.allianceID
+            allianceName    = api_corp.allianceName
+        else:
+            allianceID = None
+            allianceName = None
+        
+        return Corporation(corporationID   = api_corp.corporationID,
+                           corporationName = api_corp.corporationName,
+                           ticker          = api_corp.ticker,
+                           ceoID           = api_corp.ceoID,
+                           ceoName         = api_corp.ceoName,
+                           stationID       = api_corp.stationID,
+                           stationName     = api_corp.stationName,
+                           description     = fix_description(api_corp.description),
+                           allianceID      = allianceID,
+                           allianceName    = allianceName,
+                           allianceTicker  = '',
+                           taxRate         = api_corp.taxRate,
                            )

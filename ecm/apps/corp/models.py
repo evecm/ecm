@@ -146,7 +146,7 @@ class Corporation(models.Model):
     
     objects = CorpManager()
     
-    ecm_url         = models.CharField(unique=True, max_length=255)
+    ecm_url         = models.CharField(unique=True, max_length=255, blank=True, null=True)
     is_my_corp      = models.BooleanField(default=False)
     is_trusted      = models.BooleanField(default=False)
 
@@ -165,23 +165,17 @@ class Corporation(models.Model):
     memberLimit     = models.IntegerField(blank=True, null=True)
 
     private_key     = models.TextField(unique=True, blank=True, null=True)
-    public_key      = models.TextField(unique=True, blank=True)
-    key_fingerprint = models.CharField(max_length=1024, unique=True, blank=True)
+    public_key      = models.TextField(unique=True, blank=True, null=True)
+    key_fingerprint = models.CharField(max_length=1024, unique=True, blank=True, null=True)
     
     last_update     = models.DateTimeField(auto_now=True)
     
     #override
     def clean(self):
-        if self.corporationID is None and not (self.key_fingerprint and self.public_key):
+        if self.ecm_url is not None and not (self.key_fingerprint and self.public_key):
             self.contact_corp(self.ecm_url)
     
     def save(self, force_insert=False, force_update=False, using=None):
-        if not self.public_key:
-            self.public_key = str(self.corporationID)
-        if not self.private_key:
-            self.private_key = str(self.corporationID)
-        if not self.key_fingerprint:
-            self.key_fingerprint = str(self.corporationID)
         if not self.ecm_url:
             self.ecm_url = str(self.corporationID)
         models.Model.save(self, force_insert=force_insert, force_update=force_update, using=using)

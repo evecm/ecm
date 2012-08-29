@@ -25,6 +25,9 @@ from ecm.apps.corp.models import Corporation, CorpHangar, CorpWallet, SharedData
 
 class CorpAdmin(admin.ModelAdmin):
     list_display = ['corporationName', 'is_my_corp', 'is_trusted']
+    ordering = ['-is_my_corp', '-is_trusted', 'corporationName']
+    list_filter = ['is_my_corp', 'is_trusted']
+    search_fields = ['corporationName']
 
 
 admin.site.register(Corporation, CorpAdmin)

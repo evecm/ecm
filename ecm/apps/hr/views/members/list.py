@@ -80,11 +80,9 @@ def members_data(request):
             query = Corporation.objects.mine().members.all()
         except ValueError:
             # corp_id cannot be casted to int, we take all corps
-            query = Member.objects.all()
+            query = Member.objects.exclude(corp=None)
     else:
         query = Corporation.objects.mine().members.all()
-    
-    query = query.exclude(corp=None)
     
     if ships == 'supers':
         query = query.filter(ship__in=SUPER_CAPITALS)

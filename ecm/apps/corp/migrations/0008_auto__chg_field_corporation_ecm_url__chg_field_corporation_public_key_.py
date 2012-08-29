@@ -8,49 +8,26 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'SharedData'
-        db.create_table('corp_shareddata', (
-            ('url', self.gf('django.db.models.fields.CharField')(max_length=255, primary_key=True)),
-            ('handler', self.gf('django.db.models.fields.CharField')(max_length=255)),
-        ))
-        db.send_create_signal('corp', ['SharedData'])
 
-        # Adding model 'CorpGroup'
-        db.create_table('corp_corpgroup', (
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100, primary_key=True)),
-        ))
-        db.send_create_signal('corp', ['CorpGroup'])
+        # Changing field 'Corporation.ecm_url'
+        db.alter_column('corp_corporation', 'ecm_url', self.gf('django.db.models.fields.CharField')(max_length=255, unique=True, null=True))
 
-        # Adding M2M table for field corporations on 'CorpGroup'
-        db.create_table('corp_corpgroup_corporations', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('corpgroup', models.ForeignKey(orm['corp.corpgroup'], null=False)),
-            ('corporation', models.ForeignKey(orm['corp.corporation'], null=False))
-        ))
-        db.create_unique('corp_corpgroup_corporations', ['corpgroup_id', 'corporation_id'])
+        # Changing field 'Corporation.public_key'
+        db.alter_column('corp_corporation', 'public_key', self.gf('django.db.models.fields.TextField')(unique=True, null=True))
 
-        # Adding M2M table for field allowed_shares on 'CorpGroup'
-        db.create_table('corp_corpgroup_allowed_shares', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('corpgroup', models.ForeignKey(orm['corp.corpgroup'], null=False)),
-            ('shareddata', models.ForeignKey(orm['corp.shareddata'], null=False))
-        ))
-        db.create_unique('corp_corpgroup_allowed_shares', ['corpgroup_id', 'shareddata_id'])
-
+        # Changing field 'Corporation.key_fingerprint'
+        db.alter_column('corp_corporation', 'key_fingerprint', self.gf('django.db.models.fields.CharField')(max_length=1024, unique=True, null=True))
 
     def backwards(self, orm):
-        # Deleting model 'SharedData'
-        db.delete_table('corp_shareddata')
 
-        # Deleting model 'CorpGroup'
-        db.delete_table('corp_corpgroup')
+        # User chose to not deal with backwards NULL issues for 'Corporation.ecm_url'
+        raise RuntimeError("Cannot reverse this migration. 'Corporation.ecm_url' and its values cannot be restored.")
 
-        # Removing M2M table for field corporations on 'CorpGroup'
-        db.delete_table('corp_corpgroup_corporations')
+        # Changing field 'Corporation.public_key'
+        db.alter_column('corp_corporation', 'public_key', self.gf('django.db.models.fields.TextField')(default='', unique=True))
 
-        # Removing M2M table for field allowed_shares on 'CorpGroup'
-        db.delete_table('corp_corpgroup_allowed_shares')
-
+        # Changing field 'Corporation.key_fingerprint'
+        db.alter_column('corp_corporation', 'key_fingerprint', self.gf('django.db.models.fields.CharField')(default='', max_length=1024, unique=True))
 
     models = {
         'corp.corpgroup': {
@@ -77,14 +54,14 @@ class Migration(SchemaMigration):
             'corporationID': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
             'corporationName': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'ecm_url': ('django.db.models.fields.URLField', [], {'unique': 'True', 'max_length': '200'}),
+            'ecm_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'is_my_corp': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_trusted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'key_fingerprint': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '1024', 'blank': 'True'}),
+            'key_fingerprint': ('django.db.models.fields.CharField', [], {'max_length': '1024', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'last_update': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'memberLimit': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'private_key': ('django.db.models.fields.TextField', [], {'unique': 'True', 'null': 'True', 'blank': 'True'}),
-            'public_key': ('django.db.models.fields.TextField', [], {'unique': 'True', 'blank': 'True'}),
+            'public_key': ('django.db.models.fields.TextField', [], {'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'stationID': ('django.db.models.fields.BigIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'stationName': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'taxRate': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),

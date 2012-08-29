@@ -20,7 +20,6 @@ __author__ = "diabeteman"
 
 from django.db import models
 
-from ecm.lib import bigintpatch
 from ecm.apps.corp.models import Corporation
 from ecm.apps.hr.models.member import Member
 from ecm.apps.hr.models.roles import Role
@@ -129,7 +128,6 @@ class TitleCompoDiff(models.Model):
         app_label = 'hr'
         ordering = ['date']
 
-    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     title = models.ForeignKey(Title)
     role = models.ForeignKey(Role)
     # true if role is new in title, false if role was removed
@@ -138,8 +136,10 @@ class TitleCompoDiff(models.Model):
     date = models.DateTimeField(db_index=True, auto_now_add=True)
 
     def __unicode__(self):
-        if self.new: return unicode(self.title) + u' gets ' + unicode(self.role)
-        else       : return unicode(self.title) + u' looses ' + unicode(self.role)
+        if self.new: 
+            return unicode(self.title) + u' gets ' + unicode(self.role)
+        else: 
+            return unicode(self.title) + u' looses ' + unicode(self.role)
 
 
 
@@ -153,7 +153,6 @@ class TitleMemberDiff(models.Model):
         app_label = 'hr'
         ordering = ['date']
 
-    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
     member = models.ForeignKey(Member)
     title = models.ForeignKey(Title)
     # true if title is new for member, false if title was removed
@@ -174,18 +173,3 @@ class TitleMemberDiff(models.Model):
             # /corp/MemberSecurity.xml.aspx but that the member has not been
             # parsed from /corp/MemberTracking.xml.aspx yet
             return '<a href="/%s/members/%d/" class="member">???</a>' % (app_prefix, self.member_id)
-
-    def __eq__(self, other):
-        return self.id == other.id
-
-    def __hash__(self):
-        return self.id
-
-    def __unicode__(self):
-        try:
-            membername = self.member.name
-        except:
-            membername = unicode(self.member_id)
-        if self.new: return u'%s got %s' % (membername, self.title.titleName)
-        else       : return u'%s lost %s' % (membername, self.title.titleName)
-

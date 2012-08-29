@@ -11,8 +11,14 @@ class Migration(SchemaMigration):
         # Deleting model 'TitleMembership'
         db.delete_table('hr_titlemembership')
 
+        # Deleting model 'TitleMemberDiff'
+        db.delete_table('hr_titlememberdiff')
+
         # Deleting model 'TitleComposition'
         db.delete_table('hr_titlecomposition')
+
+        # Deleting model 'TitleCompoDiff'
+        db.delete_table('hr_titlecompodiff')
 
         # Deleting model 'Title'
         db.delete_table('hr_title')
@@ -35,6 +41,16 @@ class Migration(SchemaMigration):
             ('title', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Title'])),
         ))
         db.send_create_signal('hr', ['TitleMembership'])
+        
+        # Adding model 'TitleMemberDiff'
+        db.create_table('hr_titlememberdiff', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('member', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Member'])),
+            ('title', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Title'])),
+            ('new', self.gf('django.db.models.fields.BooleanField')(default=True, db_index=True)),
+            ('date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, db_index=True, blank=True)),
+        ))
+        db.send_create_signal('hr', ['TitleMemberDiff'])
 
         # Adding model 'TitleComposition'
         db.create_table('hr_titlecomposition', (
@@ -43,6 +59,16 @@ class Migration(SchemaMigration):
             ('role', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Role'])),
         ))
         db.send_create_signal('hr', ['TitleComposition'])
+        
+        # Adding model 'TitleCompoDiff'
+        db.create_table('hr_titlecompodiff', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('title', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Title'])),
+            ('role', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hr.Role'])),
+            ('new', self.gf('django.db.models.fields.BooleanField')(default=True, db_index=True)),
+            ('date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, db_index=True, blank=True)),
+        ))
+        db.send_create_signal('hr', ['TitleCompoDiff'])
 
 
     def backwards(self, orm):

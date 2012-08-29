@@ -23,7 +23,6 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from ecm.apps.corp.models import Corporation
-from ecm.apps.eve.models import Type
 
 from ecm.lib import bigintpatch, softfk
 from ecm.apps.hr import NAME as app_prefix
@@ -251,5 +250,5 @@ class Skill(models.Model):
     
     @property
     def name(self):
-        return Type.objects.get(typeID=self.typeID).typeName
+        return self.eve_type.typeName
     
