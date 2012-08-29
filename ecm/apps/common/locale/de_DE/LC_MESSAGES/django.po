@@ -1,53 +1,60 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-29 02:21+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2012-08-29 17:41+0200\n"
+"Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
+"Language-Team: German <>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 1.4\n"
 
 #: templates/ecm/common/email/invalid_api.html:6
 #: templates/ecm/common/email/invalid_api.txt:3
 msgid "Hello"
-msgstr ""
+msgstr "Hallo"
 
 #: templates/ecm/common/email/invalid_api.html:8
 #: templates/ecm/common/email/invalid_api.txt:5
 msgid "The following API Keys are invalid"
-msgstr ""
+msgstr "Die folgenden API-Schlüssel sind ungültig"
 
 #: templates/ecm/common/email/invalid_api.html:13
 msgid ""
 "All the characters from the accounts related to these API Keys are not "
 "associated with your profile anymore. Please log-in to"
 msgstr ""
+"All diese Charaktere von den Accounts, die zu diesen API-Schlüsseln gehören "
+"sind nicht mehr mit deinem Profil "
+"assozieert. Bitte log dich ein"
 
 #: templates/ecm/common/email/invalid_api.html:14
 msgid " and make sure that these API Keys are valid"
-msgstr ""
+msgstr "und stelle sicher, dass diese API-Schlüssel gültig sind"
 
 #: templates/ecm/common/email/invalid_api.html:16
 msgid ""
 "NB: If you don't own the accounts related to these API Keys anymore, you can "
 "delete them from your profile to stop receiving these e-mails."
 msgstr ""
+"P.S.: Wenn du diese Accounts nicht mehr besitzt, kannst du diese aus deinem "
+"Profil löschen, damit du "
+"diese E-Mails nicht mehr erhältst."
 
 #: templates/ecm/common/email/invalid_api.html:18
 #: templates/ecm/common/email/invalid_api.txt:13
 msgid "Thank you in advance"
-msgstr ""
+msgstr "Danke im Vorraus"
 
 #: templates/ecm/common/email/invalid_api_subject.txt:2
 msgid "Invalid API Key"
-msgstr ""
+msgstr "Ungültiger API-Schlüssel"
+

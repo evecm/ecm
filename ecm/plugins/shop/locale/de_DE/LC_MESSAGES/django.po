@@ -1,231 +1,238 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-29 02:21+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2012-08-29 17:11+0200\n"
+"Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
+"Language-Team: German <>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 1.4\n"
 
 #: __init__.py:30 templates/ecm/shop/shop.html:6
 msgid "Shop"
-msgstr ""
+msgstr "Shop"
 
 #: templates/ecm/shop/shop.html:16
 msgid "Welcome to our EVE-Online shop"
-msgstr ""
+msgstr "Willkommen in unserem EVE-Online-Shop"
 
 #: templates/ecm/shop/shop.html:22
 msgid "Go buy some stuff."
-msgstr ""
+msgstr "Kauf dir etwas"
 
 #: templates/ecm/shop/shop.html:24
 msgid "Create a new order"
-msgstr ""
+msgstr "Neuen Auftrag erstellen"
 
 #: templates/ecm/shop/shop.html:28
 msgid ""
 "Here, you can track the progress of your current orders or consult old ones."
 msgstr ""
+"Hier kannst du den Fortschritt deiner neuen und die Zusammenstellung deiner "
+"alten Aufträge ansehen."
 
 #: templates/ecm/shop/shop.html:30
 msgid "See/follow my orders"
-msgstr ""
+msgstr "Meine Aufträge ansehen"
 
 #: templates/ecm/shop/shop_myorders.html:6
 msgid "Order list"
-msgstr ""
+msgstr "Auftragsliste"
 
 #: templates/ecm/shop/shop_myorders.html:16
 msgid "My Orders"
-msgstr ""
+msgstr "Meine Aufträge"
 
 #: templates/ecm/shop/shop_myorders.html:24
 msgid "Search"
-msgstr ""
+msgstr "Suche"
 
 #: templates/ecm/shop/shop_myorders.html:25
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #: templates/ecm/shop/shop_myorders.html:40
 msgid "Loading data from server..."
-msgstr ""
+msgstr "Lade Daten vom Server..."
 
 #: templates/ecm/shop/shop_order.html:6
 msgid "Create New Order"
-msgstr ""
+msgstr "Neuen Auftrag erstellen"
 
 #: templates/ecm/shop/shop_order.html:21
 msgid "Click here to view the orders life-cycle"
-msgstr ""
+msgstr "Hier klicken um den Lebenszyklus eines Auftrages zu sehen"
 
 #: templates/ecm/shop/shop_order.html:25
 msgid "Start typing to search items..."
-msgstr ""
+msgstr "Zum Suchen hier tippen..."
 
 #: templates/ecm/shop/shop_order.html:26
 msgid "Add item to my order"
-msgstr ""
+msgstr "Zu meinem Einkaufswagen hinzufügen"
 
 #: templates/ecm/shop/shop_order.html:27
 #: templates/ecm/shop/shop_order.html:100
 msgid "Import EFT Fitting"
-msgstr ""
+msgstr "EFT-Fitting importieren"
 
 #: templates/ecm/shop/shop_order.html:40 templates/ecm/shop/shop_order.html:85
 msgid "Loading..."
-msgstr ""
+msgstr "Lade..."
 
 #: templates/ecm/shop/shop_order.html:50
 #: templates/ecm/shop/shop_order_details.html:68
 msgid "Icon"
-msgstr ""
+msgstr "Icon"
 
 #: templates/ecm/shop/shop_order.html:51
 #: templates/ecm/shop/shop_order_details.html:69
 msgid "Item"
-msgstr ""
+msgstr "Gegenstand"
 
 #: templates/ecm/shop/shop_order.html:52
 msgid "Unit Price"
-msgstr ""
+msgstr "Preis pro Einheit"
 
 #: templates/ecm/shop/shop_order.html:53 templates/ecm/shop/shop_order.html:98
 #: templates/ecm/shop/shop_order_details.html:70
 msgid "Quantity"
-msgstr ""
+msgstr "Menge"
 
 #: templates/ecm/shop/shop_order.html:54
 msgid "Remove"
-msgstr ""
+msgstr "Entfernen"
 
 #: templates/ecm/shop/shop_order.html:68
 msgid "Your shopping cart is empty."
-msgstr ""
+msgstr "Der Einkaufswagen ist leer"
 
 #: templates/ecm/shop/shop_order.html:77
 msgid "Estimated Total Price"
-msgstr ""
+msgstr "Geschätzter Gesamtpreis"
 
 #: templates/ecm/shop/shop_order.html:81
 msgid ""
 "Once your order is created, you will be able to modify it before confirming "
 "it. See the orders life-cycle for more info."
 msgstr ""
+"Sobald der Auftrag erstellt wurde, wirst du die Möglichkeit haben ihn zu "
+"bearbeiten, "
+"bevor du ihn bestätigst. Betrachte den Auftrags-Lebenszyklus für weitere "
+"Details."
 
 #: templates/ecm/shop/shop_order.html:83
 msgid "Submit Order"
-msgstr ""
+msgstr "Auftrag abschicken"
 
 #: templates/ecm/shop/shop_order.html:169
 #: templates/ecm/shop/shop_order.html:277
 #: templates/ecm/shop/shop_order_details.html:28
 msgid "Error"
-msgstr ""
+msgstr "Fehler"
 
 #: templates/ecm/shop/shop_order.html:271
 msgid "Warning"
-msgstr ""
+msgstr "Achtung"
 
 #: templates/ecm/shop/shop_order.html:272
 msgid "Those items are not available in the shop"
-msgstr ""
+msgstr "Diese Gegenstände stehen im Shop nicht zur Verfügung"
 
 #: templates/ecm/shop/shop_order_details.html:6
 msgid "Order #"
-msgstr ""
+msgstr "Auftrag #"
 
 #: templates/ecm/shop/shop_order_details.html:6
 msgid " Details"
-msgstr ""
+msgstr " Details"
 
 #: templates/ecm/shop/shop_order_details.html:34
 msgid "Actions"
-msgstr ""
+msgstr "Aktionen"
 
 #: templates/ecm/shop/shop_order_details.html:43
 msgid "Cancel Order"
-msgstr ""
+msgstr "Auftrag abbrechen"
 
 #: templates/ecm/shop/shop_order_details.html:44
 msgid "Abort"
-msgstr ""
+msgstr "Abbrechen"
 
 #: templates/ecm/shop/shop_order_details.html:55
 msgid "Total Quote"
-msgstr ""
+msgstr "Insgesamt"
 
 #: templates/ecm/shop/shop_order_details.html:56
 msgid "Creation Date"
-msgstr ""
+msgstr "Erstellungsdatum"
 
 #: templates/ecm/shop/shop_order_details.html:57
 msgid "Last Modified"
-msgstr ""
+msgstr "Letzte Änderung"
 
 #: templates/ecm/shop/shop_order_details.html:58
 msgid "Manufactured by"
-msgstr ""
+msgstr "Hergestellt von"
 
 #: templates/ecm/shop/shop_order_details.html:59
 msgid "Delivered by"
-msgstr ""
+msgstr "Ausgeliefert von"
 
 #: templates/ecm/shop/shop_order_details.html:60
 msgid "Delivery Date"
-msgstr ""
+msgstr "Auslieferungsdatum"
 
 #: templates/ecm/shop/shop_order_details.html:64
 msgid "Ordered items"
-msgstr ""
+msgstr "Bestellte Gegenstände"
 
 #: templates/ecm/shop/shop_order_details.html:71
 msgid "Price"
-msgstr ""
+msgstr "Preis"
 
 #: templates/ecm/shop/shop_order_details.html:81
 msgid "No items in order."
-msgstr ""
+msgstr "Keine Gegenstände im Auftrag"
 
 #: templates/ecm/shop/shop_order_details.html:90
 msgid "History"
-msgstr ""
+msgstr "Historie"
 
 #: templates/ecm/shop/shop_order_details.html:94
 msgid "Please type some text..."
-msgstr ""
+msgstr "Bitte gib etwas Text ein..."
 
 #: templates/ecm/shop/shop_order_details.html:95
 msgid "Add comment"
-msgstr ""
+msgstr "Kommentar hinzufügen"
 
 #: templates/ecm/shop/shop_order_details.html:101
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: templates/ecm/shop/shop_order_details.html:102
 msgid "Order Status"
-msgstr ""
+msgstr "Auftragsstatus"
 
 #: templates/ecm/shop/shop_order_details.html:103
 msgid "User"
-msgstr ""
+msgstr "Benutzername"
 
 #: templates/ecm/shop/shop_order_details.html:104
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar hinzufügen"
 
 #: templates/ecm/shop/shop_order_details.html:114
 msgid "None"
-msgstr ""
+msgstr "-"
+
