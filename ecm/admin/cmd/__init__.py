@@ -53,7 +53,7 @@ def run_server(instance_dir, address, port, access_log=False):
     application = get_wsgi_application()
     
     from gevent import monkey
-    monkey.patch_all()
+    monkey.patch_all(dns=False)
     from gevent.pywsgi import WSGIServer
     
     if access_log:
