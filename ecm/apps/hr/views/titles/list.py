@@ -28,15 +28,24 @@ from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
+from django.utils.translation import ugettext as tr
 
 from ecm.utils import db
 from ecm.utils.format import print_time_min
-from ecm.apps.hr.models import TitleComposition, Title, TitleCompoDiff
+from ecm.apps.hr.models import TitleComposition, Title
 from ecm.apps.common.models import ColorThreshold, UpdateDate
-from ecm.apps.hr.views import TITLES_COLUMNS
+from ecm.apps.corp.models import Corporation
 from ecm.views.decorators import check_user_access
 from ecm.views import datatable_ajax_data, extract_datatable_params, DATATABLES_DEFAULTS
 from ecm.apps.hr import NAME as app_prefix
+
+TITLES_COLUMNS = [
+    {'sTitle': tr('Title Name'),     'sWidth': '40%', 'db_field': 'titleName', },
+    {'sTitle': tr('Access Level'),   'sWidth': '20%', 'db_field': 'accessLvl', },
+    {'sTitle': tr('Members'),        'sWidth': '10%', 'db_field': None, 'bSortable': False, },
+    {'sTitle': tr('Role Count'),     'sWidth': '10%', 'db_field': None, 'bSortable': False, },
+    {'sTitle': tr('Last Modified'),  'sWidth': '20%', 'db_field': None, 'bSortable': False, },
+]
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -54,37 +63,43 @@ def titles(request):
     return render_to_response("ecm/hr/titles/titles.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
-all_columns = [ "titleName", "accessLvl" ]
+SQL_TITLE_MEMBERS = db.fix_mysql_quotes('''SELECT COUNT(*)
+FROM "hr_titlemembership"
+WHERE "hr_titlemembership"."title_id"="hr_title"."id"''')
+SQL_ROLES_IN_TITLES = db.fix_mysql_quotes('''SELECT COUNT(*)
+FROM "hr_titlecomposition"
+WHERE "hr_titlecomposition"."title_id"="hr_title"."id"''')
+
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def titles_data(request):
     try:
         params = extract_datatable_params(request)
+        corp_id = request.GET.get('corp')
     except KeyError:
         return HttpResponseBadRequest()
 
-    titles = getTitles(sort_by=all_columns[params.column], asc=params.asc)
+    if corp_id:
+        try:
+            query = Corporation.objects.get(corporationID=int(corp_id)).titles.all()
+        except Corporation.DoesNotExist:
+            query = Corporation.objects.mine().titles.all()
+        except ValueError:
+            # corp_id cannot be casted to int, we take all corps
+            query = Title.objects.all()
+    else:
+        query = Corporation.objects.mine().titles.all()
 
-    return datatable_ajax_data(titles, params.sEcho)
-
-#------------------------------------------------------------------------------
-SQL_TITLE_MEMBERS = '''SELECT COUNT(*)
-FROM "hr_titlemembership"
-WHERE "hr_titlemembership"."title_id"="hr_title"."titleID"'''
-SQL_ROLES_IN_TITLES = '''SELECT COUNT(*)
-FROM "hr_titlecomposition"
-WHERE "hr_titlecomposition"."title_id"="hr_title"."titleID"'''
-SQL_TITLE_MEMBERS = db.fix_mysql_quotes(SQL_TITLE_MEMBERS)
-SQL_ROLES_IN_TITLES = db.fix_mysql_quotes(SQL_ROLES_IN_TITLES)
-
-def getTitles(sort_by="titleID", asc=True):
-    sort_col = "%s_nocase" % sort_by
-
-    query = Title.objects.all().order_by("titleID")
-
-    # SQL hack for making a case insensitive sort
-    query = query.extra(select={sort_col : 'LOWER("%s")' % sort_by})
-    if not asc: sort_col = "-" + sort_col
+    sort_by = TITLES_COLUMNS[params.column]['db_field']
+    if params.column == 0:
+        # SQL hack for making a case insensitive sort
+        sort_col = "%s_nocase" % sort_by
+        query = query.extra(select={sort_col: 'LOWER("%s")' % sort_by})
+    else:
+        sort_col = sort_by
+    
+    if not params.asc: 
+        sort_col = "-" + sort_col
     query = query.extra(order_by=[sort_col])
 
     # fetch the number of members having each title
@@ -92,21 +107,20 @@ def getTitles(sort_by="titleID", asc=True):
         "title_members" : SQL_TITLE_MEMBERS,
         "roles_in_title": SQL_ROLES_IN_TITLES
     })
-
+    
     titles = []
     for title in query:
-        modification_date = TitleCompoDiff.objects.filter(title=title).order_by("-id")
-        if modification_date.count():
-            modification_date = print_time_min(modification_date[0].date)
+        if title.title_compo_diffs.all():
+            modification_date = print_time_min(title.title_compo_diffs.latest('id'))
         else:
             modification_date = "-"
 
         titles.append([
             title.permalink,
             title.accessLvl,
-            '<a href="/%s/titles/%d/members/">%d</a>' % (app_prefix, title.titleID, title.title_members),
+            '<a href="/%s/titles/%d/members/">%d</a>' % (app_prefix, title.id, title.title_members),
             title.roles_in_title,
             modification_date
         ])
 
-    return titles
+    return datatable_ajax_data(titles, params.sEcho)

@@ -52,7 +52,7 @@ def history(request):
         'columns': COLUMNS,
         
     }
-    return render_to_response("ecm/hr/members/member_history.html", data, Ctx(request))
+    return render_to_response("ecm/hr/members/history.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()

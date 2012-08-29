@@ -22,7 +22,14 @@
 
 {% block post_javascripts %}
 <script type="text/javascript">
-{% include "ecm/hr/titles_detail_datatable.js" %}
+function titleLastModifiedRowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+    if (aData[0]) {
+        $('td:eq(0)', nRow).html('<img src="{% static "ecm/img/plus.png" %}"></img>');
+    } else {
+        $('td:eq(0)', nRow).html('<img src="{% static "ecm/img/minus.png" %}"></img>');
+    }
+    return nRow;
+}
 
 //title_compo_diff_table dataTable setup
 $(document).ready(function() {

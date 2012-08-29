@@ -10,7 +10,7 @@
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
-    <input type="text" id="search_text" class="input-medium search-query" value="" placeholder="Search"/>
+    <input type="text" id="search_text" class="input-medium search-query" value="" placeholder="{% trans 'Search' %}"/>
     <div class="btn-group">
       <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
       <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
@@ -31,7 +31,17 @@
 
 {% block post_javascripts %}
 <script type="text/javascript">
-{% include "ecm/hr/players_datatable.js" %}
 {% include "ecm/hr/search_form.js" %}
+
+function playersRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+    var admin = aData[1];
+    if (admin) {
+        $('td:eq(1)', nRow).html('<img src="/static/admin/img/icon-yes.gif" alt="True">');
+    } else {
+        $('td:eq(1)', nRow).html('<img src="/static/admin/img/icon-no.gif" alt="False">');
+    }
+    return nRow;
+}
+
 </script>
 {% endblock %}

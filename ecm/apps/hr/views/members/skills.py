@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db.models.aggregates import Count
 
 __date__ = "2012 08 02"
 __author__ = "Ajurna"
@@ -25,6 +24,7 @@ except ImportError:
     # fallback for python 2.5
     import django.utils.simplejson as json
 
+from django.db.models.aggregates import Count
 from django.template.context import RequestContext as Ctx
 from django.shortcuts import render_to_response
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed
@@ -34,7 +34,7 @@ from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access
 from ecm.views import JSON
 from ecm.apps.common.models import ColorThreshold, UpdateDate
-from ecm.apps.hr.models import Member, Skill
+from ecm.apps.hr.models import Member
 from ecm.views import DATATABLES_DEFAULTS
 from ecm.apps.hr.views import get_members, MEMBERS_COLUMNS
 from ecm.views import extract_datatable_params, datatable_ajax_data
@@ -44,7 +44,10 @@ from ecm.apps.corp.models import Corporation
 #------------------------------------------------------------------------------
 @check_user_access()
 def skills_search(request):
-    other_corps = Corporation.objects.others().annotate(member_count=Count('members'))
+    
+    corps = Corporation.objects.others().order_by('corporationName')
+    corps = corps.annotate(member_count=Count('members'))
+    
     data = {
         'scan_date' : UpdateDate.get_latest(Member),
         'colorThresholds' : ColorThreshold.as_json(),
@@ -52,33 +55,33 @@ def skills_search(request):
         'datatables_defaults': DATATABLES_DEFAULTS,
         'columns': MEMBERS_COLUMNS,
         'ajax_url': '/hr/members/skills/data/',
-        'corps': other_corps.filter(member_count__gt=0),
+        'trusted_corps': corps.filter(member_count__gt=0, is_trusted=True),
+        'other_corps': corps.filter(member_count__gt=0, is_trusted=False),
     }
-    return render_to_response('ecm/hr/members/member_skills.html', data, Ctx(request))
+    
+    return render_to_response('ecm/hr/members/skills.html', data, Ctx(request))
 
 #------------------------------------------------------------------------------
 @check_user_access()
 def skilled_list(request):
     try:
         params = extract_datatable_params(request)
-        selected_corp = json.loads(request.GET.get('corp', 'null'))
+        corp_id = request.GET.get('corp')
         skills = json.loads(request.GET.get("skills", ""))
     except KeyError:
         return HttpResponseBadRequest()
-    
-    if selected_corp is None:
-        corp = Corporation.objects.mine()
-    else:
-        try:
-            corp = Corporation.objects.get(corporationID=selected_corp)
-        except Corporation.DoesNotExist:
-            corp = None
 
-    if corp is not None:
-        members = corp.members.all()
+    if corp_id:
+        try:
+            members = Corporation.objects.get(corporationID=int(corp_id)).members.all()
+        except Corporation.DoesNotExist:
+            members = Corporation.objects.mine().members.all()
+        except ValueError:
+            # corp_id cannot be casted to int, we take all corps
+            members = Member.objects.exclude(corp=None)
     else:
-        members = Member.objects.all()
-    
+        members = Corporation.objects.mine().members.all()
+
     query = members
     for skill in skills:
         query &= members.filter(skills__eve_type_id=skill['id'], 

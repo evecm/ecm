@@ -6,11 +6,9 @@
 {% block headtitle %}{% trans 'Player Details' %} - {{ player.username }}{% endblock %}
 
 
-
-
 {% block main_content %}
 <div class="page-header">
-  <h1 class="pagetitle">Player &quot;{{player.username}}&quot;</h1>
+  <h1 class="pagetitle">{{player.username}} <small>Player</small></h1>
 </div>
 {% if player.is_staff and player.is_superuser %}<h1 class="pagetitle error">{% trans 'ECM Administrator' %}</h1>{% endif %}
 
@@ -49,23 +47,24 @@
              defaults=datatables_defaults 
              sAjaxSource='/hr/players/'|concat:player.id|concat:'/data/' 
              sCookiePrefix='ecm_player_detail_table_' 
-             fnRowCallback='playerDetailRowCallback' %}
+             fnRowCallback='membersRowCallback' 
+             fnServerParams='membersServerParams' 
+             fnStateSaveParams='membersStateSaveParams' 
+             fnStateLoadParams='membersStateLoadParams' %}
 
 {% endblock %}
 
 
 {% block javascripts %}
 <script type="text/javascript">
-/* DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
+DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-AJAX_URL = '/hr/players/{{player.id}}/data/';
-COOKIE_NAME = 'ecm_player_characters_table_';*/
 </script>
 {% endblock %}
 
 {% block post_javascripts %}
 <script type="text/javascript">
-{% include "ecm/hr/players_detail_datatable.js" %}
+{% include "ecm/hr/members_datatable.js" %}
 {% include "ecm/hr/search_form.js" %}
 </script>
 {% endblock %}

@@ -22,13 +22,13 @@ from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
+from django.utils.translation import ugettext as tr
 
 from ecm.apps.hr.models import TitleComposition, TitleCompoDiff
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import UpdateDate
 from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.utils.format import print_time_min
-from ecm.apps.hr.views import TITLES_MOD_COLUMNS
 from ecm.apps.common.models import ColorThreshold
 
 
@@ -37,13 +37,19 @@ from ecm.apps.common.models import ColorThreshold
 def changes(request):
     data = {
         'scan_date' : UpdateDate.get_latest(TitleComposition),
-        'columns': TITLES_MOD_COLUMNS,
+        'columns': DIFFS_COLUMNS,
         'datatables_defaults': DATATABLES_DEFAULTS,
         "colorThresholds" : ColorThreshold.as_json(),
     }
     return render_to_response("ecm/hr/titles/changes.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
+DIFFS_COLUMNS = [
+    {'sTitle': tr('Change'),            'sWidth': '5%',   'bSortable': False, },
+    {'sTitle': tr('Title'),             'sWidth': '10%',  'bSortable': False, },
+    {'sTitle': tr('Role'),              'sWidth': '40%',  'bSortable': False, },
+    {'sTitle': tr('Modification Date'), 'sWidth': '25%',  'bSortable': False, },
+]
 @cache_page(60 * 60) # 1 hour cache
 @check_user_access()
 def changes_data(request):

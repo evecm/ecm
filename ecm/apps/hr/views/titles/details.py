@@ -22,10 +22,10 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext as Ctx
+from django.utils.translation import ugettext as tr
 
 from ecm.apps.common.models import ColorThreshold
-from ecm.apps.hr.models import TitleComposition, TitleCompoDiff, Title
-from ecm.apps.hr.views import TITLES_DETAIL_COLUMNS, TITLES_MOD_COLUMNS
+from ecm.apps.hr.models import TitleCompoDiff, Title
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.utils.format import print_time_min
@@ -34,22 +34,23 @@ from ecm.utils.format import print_time_min
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def details(request, titleID):
+def details(request, title_id):
 
-    title = get_object_or_404(Title, titleID=int(titleID))
-    title.lastModified = TitleCompoDiff.objects.filter(title=title).order_by("-id")
-    if title.lastModified:
-        title.lastModified = title.lastModified[0].date
+    title = get_object_or_404(Title, pk=int(title_id))
+    
+    if title.title_compo_diffs.all():
+        title.lastModified = print_time_min(title.title_compo_diffs.latest('id'))
     else:
         title.lastModified = None
+    
     title.color = ColorThreshold.get_access_color(title.accessLvl)
 
     data = {
         "title" : title,
         "member_count" : title.members.count(),
         "colorThresholds" : ColorThreshold.as_json(),
-        'columns': TITLES_DETAIL_COLUMNS,
-        'modifiedcolumns': TITLES_MOD_COLUMNS,
+        'roles_columns': ROLES_COLUMNS,
+        'diffs_columns': DIFFS_COLUMNS,
         'datatables_defaults': DATATABLES_DEFAULTS 
     }
 
@@ -59,47 +60,58 @@ def details(request, titleID):
 
 
 #------------------------------------------------------------------------------
+ROLES_COLUMNS = [
+    {'sTitle': tr('Role'),           'sWidth': '50%',  'bSortable': False, },
+    {'sTitle': tr('Category'),       'sWidth': '30%',  'bSortable': False, },
+    {'sTitle': tr('Access Level'),   'sWidth': '20%',  'bSortable': False, },
+]
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def composition_data(request, titleID):
+def composition_data(request, title_id):
     try:
         params = extract_datatable_params(request)
     except KeyError:
         return HttpResponseBadRequest()
 
-    title = get_object_or_404(Title, titleID=int(titleID))
-    query = TitleComposition.objects.filter(title=title)
+    title = get_object_or_404(Title, pk=int(title_id))
+    query = title.roles.all()
 
     if params.asc:
-        query = query.order_by("role")
+        query = query.order_by("roleID")
     else:
-        query = query.order_by("-role")
+        query = query.order_by("-roleID")
 
     total_compos = query.count()
 
     query = query[params.first_id:params.last_id]
 
-    compo_list = []
-    for compo in query:
-        compo_list.append([
-            compo.role.permalink,
-            compo.role.roleType.permalink,
-            compo.role.get_access_lvl()
+    role_list = []
+    for role in query:
+        role_list.append([
+            role.permalink,
+            role.roleType.permalink,
+            role.get_access_lvl()
         ])
 
-    return datatable_ajax_data(compo_list, params.sEcho, total_compos)
+    return datatable_ajax_data(role_list, params.sEcho, total_compos)
 
 
 #------------------------------------------------------------------------------
+DIFFS_COLUMNS = [
+    {'sTitle': tr('Change'),            'sWidth': '10%',  'bSortable': False, },
+    {'sTitle': tr('Role'),              'sWidth': '40%',  'bSortable': False, },
+    {'sTitle': tr('Category'),          'sWidth': '25%',  'bSortable': False, },
+    {'sTitle': tr('Modification Date'), 'sWidth': '25%',  'bSortable': False, },
+]
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
-def compo_diff_data(request, titleID):
+def compo_diff_data(request, title_id):
     try:
         params = extract_datatable_params(request)
     except KeyError:
         return HttpResponseBadRequest()
 
-    title = get_object_or_404(Title, titleID=int(titleID))
+    title = get_object_or_404(Title, pk=int(title_id))
     query = TitleCompoDiff.objects.filter(title=title).order_by("-date")
     total_diffs = query.count()
 

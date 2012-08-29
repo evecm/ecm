@@ -23,13 +23,20 @@ from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response
 from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
+from django.utils.translation import ugettext as tr
 
 from ecm.apps.common.models import UpdateDate, ColorThreshold
 from ecm.utils.format import print_time_min
 from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.apps.hr.models import TitleMembership, RoleMemberDiff, TitleMemberDiff, Member
 from ecm.views.decorators import check_user_access
-from ecm.apps.hr.views import ACCESS_CHANGES_COLUMNS
+
+ACCESS_CHANGES_COLUMNS = [
+    {'sTitle': tr('Change'),         'sWidth': '5%',    'stype': 'string', },
+    {'sTitle': tr('Member'),         'sWidth': '15%',   'stype': 'string', },
+    {'sTitle': tr('Title/Role'),     'sWidth': '50%',   'stype': 'html', },
+    {'sTitle': tr('Date'),           'sWidth': '25%',   'stype': 'string', },
+]
 
 #------------------------------------------------------------------------------
 @check_user_access()
@@ -40,6 +47,7 @@ def access_changes(request):
         'directorAccessLvl': Member.DIRECTOR_ACCESS_LVL,
         'datatable_defaults': DATATABLES_DEFAULTS,
         'columns' : ACCESS_CHANGES_COLUMNS,
+        'sorting': [[3, 'desc']],
         'ajax_url': '/hr/members/accesschanges/data/',
     }
 

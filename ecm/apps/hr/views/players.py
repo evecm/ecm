@@ -29,14 +29,24 @@ from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models.aggregates import Count
 from django.template.context import RequestContext as Ctx
+from django.utils.translation import ugettext as tr
 
 from ecm.views.decorators import check_user_access
 from ecm.utils.format import print_time_min
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import ColorThreshold
 from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
-from ecm.apps.hr.views import get_members, PLAYERS_COLUMNS, PLAYER_DETAIL_COLUMNS
+from ecm.apps.hr.views import get_members, MEMBERS_COLUMNS
 
+PLAYERS_COLUMNS = [
+    {'sTitle': tr('Username'),     'sWidth': '30%',   'db_field': 'username', },
+    {'sTitle': tr('Admin'),        'sWidth': '10%',   'db_field': 'is_superuser', },
+    {'sTitle': tr('EVE Accounts'), 'sWidth': '10%',   'db_field': 'account_count', },
+    {'sTitle': tr('Characters'),   'sWidth': '10%',   'db_field': 'char_count', },
+    {'sTitle': tr('Groups'),       'sWidth': '10%',   'db_field': 'group_count', },
+    {'sTitle': tr('Last Login'),   'sWidth': '15%',   'db_field': 'last_login', },
+    {'sTitle': tr('Joined Date'),  'sWidth': '15%',   'db_field': 'date_joined', },
+]
 #------------------------------------------------------------------------------
 @check_user_access()
 def player_list(request):
@@ -48,7 +58,6 @@ def player_list(request):
     return render_to_response("ecm/hr/players/player_list.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
-USER_COLUMNS = ["username", "is_superuser", "account_count", "char_count", "group_count", "last_login", "date_joined"]
 @check_user_access()
 def player_list_data(request):
     try:
@@ -62,7 +71,7 @@ def player_list_data(request):
     query = query.annotate(group_count=Count("groups"))
     query = query.filter(eve_accounts__gt=0)
 
-    sort_by = USER_COLUMNS[params.column]
+    sort_by = PLAYERS_COLUMNS[params.column]['db_field']
     # SQL hack for making a case insensitive sort
     if sort_by == "username":
         sort_col = "%s_nocase" % sort_by
@@ -115,7 +124,7 @@ def player_details(request, player_id):
         'groups'              : groups,
         'colorThresholds'     : ColorThreshold.as_json(),
         'directorAccessLvl'   : Member.DIRECTOR_ACCESS_LVL,
-        'player_columns'      : PLAYER_DETAIL_COLUMNS,
+        'player_columns'      : MEMBERS_COLUMNS,
         'datatables_defaults' : DATATABLES_DEFAULTS,
     }
 

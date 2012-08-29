@@ -26,11 +26,11 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 from django.db.models.aggregates import Avg, Sum
+from django.utils.translation import ugettext as tr
 
 from ecm.apps.corp.models import Corporation
 from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff
-from ecm.apps.hr.views import ACCESS_CHANGES_COLUMNS
 from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.views.decorators import check_user_access
 from ecm.apps.common.models import ColorThreshold, Setting, UpdateDate
@@ -153,27 +153,17 @@ def details(request, characterID):
         'skillpoint_count'   : print_integer(skillpoint_count),
         'datatables_defaults': DATATABLES_DEFAULTS,
         'access_columns'     : ACCESS_CHANGES_COLUMNS,
-
+        'sorting'            : [[2, 'desc']],
     }
-    return render_to_response("ecm/hr/members/member_details.html", data, Ctx(request))
-
-#------------------------------------------------------------------------------
-@check_user_access()
-def update_member_notes(request, characterID):
-    try:
-        new_notes = request.POST["value"]
-        member = get_object_or_404(Member, characterID=int(characterID))
-        member.notes = new_notes
-        member.save()
-
-        logger.info('"%s" edited notes on "%s" : %s' % (request.user, member, new_notes))
-
-        return HttpResponse(new_notes)
-    except:
-        return HttpResponseBadRequest()
+    return render_to_response("ecm/hr/members/details.html", data, Ctx(request))
 
 
 #------------------------------------------------------------------------------
+ACCESS_CHANGES_COLUMNS = [
+    {'sTitle': tr('Change'),         'sWidth': '15%',   'stype': 'string', },
+    {'sTitle': tr('Title/Role'),     'sWidth': '50%',   'stype': 'html', },
+    {'sTitle': tr('Date'),           'sWidth': '25%',   'stype': 'string', },
+]
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
 def access_changes_member_data(request, characterID):
@@ -200,3 +190,18 @@ def access_changes_member_data(request, characterID):
         ])
 
     return datatable_ajax_data(change_list, params.sEcho, count)
+
+#------------------------------------------------------------------------------
+@check_user_access()
+def update_member_notes(request, characterID):
+    try:
+        new_notes = request.POST["value"]
+        member = get_object_or_404(Member, characterID=int(characterID))
+        member.notes = new_notes
+        member.save()
+
+        logger.info('"%s" edited notes on "%s" : %s' % (request.user, member, new_notes))
+
+        return HttpResponse(new_notes)
+    except:
+        return HttpResponseBadRequest()

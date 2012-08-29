@@ -22,6 +22,7 @@
 {% datatable 'access_changes_columns' columns
             css_class='table table-bordered table-condensed searchable_table'
             defaults=datatable_defaults
+            aaSorting=sorting 
             sAjaxSource='/hr/members/accesschanges/data/'
             sCookiePrefix='ecm_access_changes_table_'
             fnRowCallback='membersAccessRowCallback' %}

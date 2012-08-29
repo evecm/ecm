@@ -21,10 +21,19 @@
   <h1>
     {% trans 'Member Skills' %}
     <small class="pull-right">
-      <select id="corp_selector">
+      <select class="error" id="corp_selector">
         <option value="{{my_corp.corporationID}}" class="bold">{{my_corp}}</option>
-        <option value="all" class="italic">All</option>{% for corp in corps %}
-        <option value="{{corp.corporationID}}">{{corp}}</option>{% endfor %}
+        <option value="all" class="italic">{% trans 'All' %}</option>
+        {% if trusted_corps %}
+        <optgroup label="Trusted Corps">{% for corp in trusted_corps %}
+          <option value="{{corp.corporationID}}">{{corp}}</option>{% endfor %}
+        </optgroup>
+        {% endif %}
+        {% if other_corps %}
+        <optgroup label="Other Corps">{% for corp in other_corps %}
+          <option value="{{corp.corporationID}}">{{corp}}</option>{% endfor %}
+        </optgroup>
+        {% endif %}
       </select>
     </small>
   </h1>
@@ -73,7 +82,7 @@
              sAjaxSource=ajax_url 
              sCookiePrefix='ecm_members_table_' 
              fnRowCallback='membersRowCallback' 
-             fnServerParams='membersServerParams'
+             fnServerParams='membersSkillsServerParams'
              fnStateSaveParams='membersStateSaveParams' 
              fnStateLoadParams='membersStateLoadParams' %}
 
@@ -81,7 +90,18 @@
 DIRECTOR_ACCESS_LVL = {{ directorAccessLvl }};
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 
-{% include "ecm/hr/skills_datatable.js" %}
+{% include "ecm/hr/members_datatable.js" %}
+
+function membersSkillsServerParams( aoData ) {
+    /* Add some extra variables to the url */
+    aoData.push({
+        name: "skills",
+        value: $.toJSON(window.SKILLS),
+    }, {
+        name: 'corp',
+        value: $('#corp_selector').val(),
+    });
+}
 
 </script>
 
@@ -117,8 +137,6 @@ EMPTY = '<tr id="empty"><td colspan="5" class="order_cart_empty" >Your shopping 
 CONFIRM_DELETE_BUTTONS = '<span><a class="btn btn-mini btn-danger">I\'m Sure</a><a class="btn btn-mini">Cancel</a></span>';
 //global var
 window.SKILLS = [];
-
-{% include "ecm/hr/skills_datatable.js" %}
 
 function removeItem() {
     var row = this.parentNode.parentNode;

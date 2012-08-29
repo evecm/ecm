@@ -13,16 +13,16 @@
   </h1>
 </div>
 
-<a href="/hr/titles/{{ title.titleID }}/members/">{% trans 'Show all' %} {{ member_count }} {% trans 'members having this title' %}</a>
+<a href="/hr/titles/{{ title.id }}/members/">{% trans 'Show all' %} {{ member_count }} {% trans 'members having this title' %}</a>
 
 <h2>Access Level</h2>
 <div class="row-fluid row-{{ title.color }}"><strong>{{ title.accessLvl }}</strong></div>
 
 <h2>Roles</h2>
-{% datatable 'title_composition_table' columns 
+{% datatable 'title_composition_table' roles_columns
              css_class='table table-bordered table-condensed' 
              defaults=datatables_defaults 
-             sAjaxSource='/hr/titles/'|concat:title.titleID|concat:'/composition/data/' 
+             sAjaxSource='/hr/titles/'|concat:title.id|concat:'/composition/data/' 
              fnRowCallback='titleCompositionRowCallback'
              iDisplayLength=10 %}
 
@@ -32,7 +32,7 @@
 {% datatable 'title_compo_diff_table' modifiedcolumns 
              css_class='table table-bordered table-condensed' 
              defaults=datatables_defaults 
-             sAjaxSource='/hr/titles/'|concat:title.titleID|concat:'/compodiff/data/' 
+             sAjaxSource='/hr/titles/'|concat:title.id|concat:'/compodiff/data/' 
              fnRowCallback='titleLastModifiedRowCallback'
              iDisplayLength=10 %}
 {% else %}
@@ -43,7 +43,22 @@
 {% block post_javascripts %}
 <script type="text/javascript">
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
-{% include "ecm/hr/titles_detail_datatable.js" %}
+
+function titleCompositionRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+    // apply color to all access level cells
+    accessLvl = aData[2];
+    $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
+    return nRow;
+}
+
+function titleLastModifiedRowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+    if (aData[0]) {
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/plus.png' %}"></img>');
+    } else {
+        $('td:eq(0)', nRow).html('<img src="{% static 'ecm/img/minus.png' %}"></img>');
+    }
+    return nRow;
+}
 
 // title_composition_table dataTable setup
 $(document).ready(function() {

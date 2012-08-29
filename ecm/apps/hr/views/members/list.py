@@ -50,7 +50,7 @@ def members(request):
         'columns': MEMBERS_COLUMNS,
         'ajax_url': '/hr/members/data/',
     }
-    return render_to_response("ecm/hr/members/member_list.html", data, Ctx(request))
+    return render_to_response("ecm/hr/members/list.html", data, Ctx(request))
 
 #------------------------------------------------------------------------------
 SUPER_CAPITALS = [

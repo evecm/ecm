@@ -42,64 +42,6 @@ MEMBERS_COLUMNS = [
     {'sTitle': tr('Titles'),       'bVisible': False, 'db_field': None, },
 ]
 
-PLAYERS_COLUMNS = [
-    {'sTitle': tr('Name'),         'sWidth': '20%',   'stype': 'html', },
-    {'sTitle': tr('Nickname'),     'sWidth': '20%',   'stype': 'string', },
-    {'sTitle': tr('Player'),       'sWidth': '15%',   'stype': 'html', },
-    {'sTitle': tr('Access Level'), 'sWidth':  '5%',   'stype': 'numeric', },
-    {'sTitle': tr('Last Login'),   'sWidth': '10%',   'stype': 'string', },
-    {'sTitle': tr('Location'),     'sWidth': '10%',   'stype': 'string', },
-    {'sTitle': tr('Ships'),        'sWidth': '20%',   'stype': 'string', },
-]
-
-PLAYER_DETAIL_COLUMNS = [
-    {'sTitle': tr('Username'),      'sWidth': '20%',   'stype': 'html', },
-    {'sTitle': tr('Admin'),         'sWidth': '10%',   'stype': 'html', },
-    {'sTitle': tr('EVE Accounts'),  'sWidth': '10%',   'stype': 'string', },
-    {'sTitle': tr('Characters'),    'sWidth': '10%',   'stype': 'string', },
-    {'sTitle': tr('Groups'),        'sWidth': '10%',   'stype': 'string', },
-    {'sTitle': tr('Last Login'),    'sWidth': '20%',   'stype': 'string', },
-    {'sTitle': tr('Joined Date'),   'sWidth': '20%',   'stype': 'string', },
-]
-
-ACCESS_CHANGES_COLUMNS = [
-    {'sTitle': tr('Change'),         'sWidth': '15%',   'stype': 'string', },
-    {'sTitle': tr('Title/Role'),     'sWidth': '50%',   'stype': 'html', },
-    {'sTitle': tr('Date'),           'sWidth': '25%',   'stype': 'string', },
-]
-
-ROLES_COLUMNS = [
-    {'sTitle': tr('Role Name'),      'sWidth': '30%',   'stype': 'html',    'bSortable': False, },
-    {'sTitle': tr('Description'),    'sWidth': '55%',   'stype': 'string',  'bSortable': False, },
-    {'sTitle': tr('Access Level'),   'sWidth': ' 5%',   'stype': 'numeric', 'bSortable': False, },
-    {'sTitle': tr('Members'),        'sWidth':  '5%',   'stype': 'numeric', 'bSortable': False, },
-    {'sTitle': tr('Titles'),         'sWidth': ' 5%',   'stype': 'numeric', 'bSortable': False, },
-    {'bVisible': False, },
-    {'bVisible': False, },
-    {'bVisible': False, },
-]
-
-TITLES_COLUMNS = [
-    {'sTitle': tr('Title Name'),     'sWidth': '40%',   'stype': 'html', },
-    {'sTitle': tr('Access Level'),   'sWidth': '20%',   'stype': 'numeric', 'bSearchable': False, },
-    {'sTitle': tr('Members'),        'sWidth': '10%',   'stype': 'html',    'bSearchable': False, 'bSortable': False, },
-    {'sTitle': tr('Role Count'),     'sWidth': '10%',   'stype': 'numeric', 'bSearchable': False, 'bSortable': False, },
-    {'sTitle': tr('Last Modified'),  'sWidth': '20%',   'stype': 'string',  'bSearchable': False, 'bSortable': False, },
-]
-
-TITLES_DETAIL_COLUMNS = [
-    {'sTitle': tr('Role'),           'sWidth': '50%',   'stype': 'html',    'bSortable': False, },
-    {'sTitle': tr('Category'),       'sWidth': '30%',   'stype': 'html',    'bSortable': False, },
-    {'sTitle': tr('Access Level'),   'sWidth': '20%',   'stype': 'numeric', 'bSortable': False, },
-]
-
-TITLES_MOD_COLUMNS = [
-    {'sTitle': tr('Change'),            'sWidth': '10%',   'stype': 'html',    'bSortable': False, },
-    {'sTitle': tr('Role'),              'sWidth': '40%',   'stype': 'html',    'bSortable': False, },
-    {'sTitle': tr('Category'),          'sWidth': '25%',   'stype': 'html',    'bSortable': False, },
-    {'sTitle': tr('Modification Date'), 'sWidth': '25%',   'stype': 'numeric', 'bSortable': False, },
-]
-
 def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True, format=None):
 
     query = query.select_related(depth=2) # improve performance

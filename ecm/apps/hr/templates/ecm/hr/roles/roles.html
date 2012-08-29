@@ -19,12 +19,14 @@
 </div>
 
 {% datatable 'roles_table' columns 
-             css_class='table table-bordered table-condensed' 
              defaults=datatables_defaults 
+             css_class='table table-bordered table-condensed' 
+             sDom='rt'
+             iDisplayLength=50 
              sAjaxSource='/hr/roles/data/' 
              sCookiePrefix='ecm_member_access_changes_table_' 
              fnRowCallback='rolesRowCallback'
-             fnServerData='rolesServerDataCallback' %}
+             fnServerParams='rolesServerParams' %}
 {% endblock %}
 
 
@@ -33,7 +35,76 @@
 COLOR_THRESHOLDS = {{ colorThresholds|safe }};
 ROLE_TYPE = '{{ role_type }}';
 
-{% include "ecm/hr/roles_datatable.js" %}
+function rolesRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+    /* apply color to all access level cells */
+    accessLvl = aData[2];
+    $('td:eq(2)', nRow).addClass("row-" + getAccessColor(accessLvl, COLOR_THRESHOLDS));
+
+    /* hide "ID" column and set the id attribute */
+    $('td:eq(5)', nRow).hide();
+    $(nRow).attr("id", aData[5]);
+
+    /* set members tooltip on each row */
+    $('td:eq(6)', nRow).hide();
+    members = aData[6];
+    if (members != "") {
+        $('td:eq(3)', nRow).attr("title", members);
+        $('td:eq(3)', nRow).cluetip({
+          width: 150,
+            splitTitle: '|',
+            dropShadow: false,
+            cluetipClass: 'jtip',
+            positionBy: 'mouse',
+            tracking: true
+        });
+        /* highlight the "Members" cells where there are "direct" members */
+        $('td:eq(3)', nRow).addClass("row-red");
+    }
+
+    /* set titles tooltip on each row */
+    $('td:eq(7)', nRow).hide();
+    titles = aData[7];
+    if (titles != "") {
+        $('td:eq(4)', nRow).attr("title", titles);
+        $('td:eq(4)', nRow).cluetip({
+          width: 170,
+            splitTitle: '|',
+            dropShadow: false,
+            cluetipClass: 'jtip',
+            positionBy: 'mouse',
+            tracking: true
+        });
+    }
+
+    /* Apply jEditable handlers to the cells each time we redraw the table */
+    $('td:eq(2)', nRow).editable( '/hr/roles/update/', {
+        callback: function( sValue, y ) {
+            var aPos = $('#roles_table').fnGetPosition( this );
+            $('#roles_table').fnUpdate( sValue, aPos[0], aPos[1] );
+        },
+        submitdata: function ( value, settings ) {
+            return { id: this.parentNode.getAttribute('id')};
+        },
+        tooltip   : 'Click to edit...'
+    } );
+
+    return nRow;
+}
+        
+function rolesServerParams( aoData ) {
+    /* Add some extra variables to the url */
+    aoData.push( {
+        name: 'role_type',
+        value: ROLE_TYPE
+    } );
+}
+
+
+function updateButtons() {
+    $('#buttons button').removeClass('active');
+    $('#buttons button[value="' + ROLE_TYPE + '"]').addClass('active');
+}
+
 
 $(document).ready(function() {
     $('#buttons button').click(function () {
@@ -44,12 +115,6 @@ $(document).ready(function() {
     
     updateButtons();
 } );
-
-
-function updateButtons() {
-    $('#buttons button').removeClass('active');
-    $('#buttons button[value="' + ROLE_TYPE + '"]').addClass('active');
-}
 
 
 </script>

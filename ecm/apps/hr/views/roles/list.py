@@ -24,16 +24,27 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
+from django.utils.translation import ugettext as tr
 
 from ecm.views import datatable_ajax_data, extract_datatable_params, DATATABLES_DEFAULTS
 from ecm.apps.hr.models import Role, RoleType
-from ecm.apps.hr.views import ROLES_COLUMNS
 from ecm.apps.common.models import ColorThreshold
 from ecm.views.decorators import check_user_access
 from ecm.apps.corp.models import CorpHangar, CorpWallet
 
 import logging
 logger = logging.getLogger(__name__)
+
+ROLES_COLUMNS = [
+    {'sTitle': tr('Role Name'),      'sWidth': '30%',   'bSortable': False, },
+    {'sTitle': tr('Description'),    'sWidth': '55%',   'bSortable': False, },
+    {'sTitle': tr('Access Level'),   'sWidth': ' 5%',   'bSortable': False, },
+    {'sTitle': tr('Members'),        'sWidth':  '5%',   'bSortable': False, },
+    {'sTitle': tr('Titles'),         'sWidth': ' 5%',   'bSortable': False, },
+    {'bVisible': False, },
+    {'bVisible': False, },
+    {'bVisible': False, },
+]
 
 #------------------------------------------------------------------------------
 @check_user_access()

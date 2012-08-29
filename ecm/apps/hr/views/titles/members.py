@@ -21,8 +21,7 @@ __author__ = "diabeteman"
 
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseNotFound, HttpResponseBadRequest
-from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponseBadRequest
 from django.template.context import RequestContext as Ctx
 
 from ecm.views.decorators import check_user_access
@@ -33,9 +32,9 @@ from ecm.apps.hr.views import get_members, MEMBERS_COLUMNS
 
 #------------------------------------------------------------------------------
 @check_user_access()
-def members(request, titleID):
+def members(request, title_id):
     data = {
-        'title' : get_object_or_404(Title, titleID=int(titleID)),
+        'title' : get_object_or_404(Title, pk=int(title_id)),
         'colorThresholds' : ColorThreshold.as_json(),
         'directorAccessLvl' : Member.DIRECTOR_ACCESS_LVL,
         'columns': MEMBERS_COLUMNS,
@@ -47,14 +46,12 @@ def members(request, titleID):
 #------------------------------------------------------------------------------
 @check_user_access()
 @cache_page(60 * 60) # 1 hour cache
-def members_data(request, titleID):
+def members_data(request, title_id):
     try:
         params = extract_datatable_params(request)
-        title = Title.objects.get(titleID=int(titleID))
-    except KeyError:
+        title = get_object_or_404(Title, pk=int(title_id))
+    except (KeyError, ValueError):
         return HttpResponseBadRequest()
-    except ObjectDoesNotExist:
-        return HttpResponseNotFound()
 
     total_members,\
     filtered_members,\

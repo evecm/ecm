@@ -52,7 +52,7 @@ class Title(models.Model):
 
     @property
     def url(self):
-        return '/%s/titles/%d/' % (app_prefix, self.titleID)
+        return '/%s/titles/%d/' % (app_prefix, self.id)
 
     @property
     def permalink(self):
@@ -128,8 +128,8 @@ class TitleCompoDiff(models.Model):
         app_label = 'hr'
         ordering = ['date']
 
-    title = models.ForeignKey(Title)
-    role = models.ForeignKey(Role)
+    title = models.ForeignKey(Title, related_name='title_compo_diffs')
+    role = models.ForeignKey(Role, related_name='title_compo_diffs')
     # true if role is new in title, false if role was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
@@ -153,8 +153,8 @@ class TitleMemberDiff(models.Model):
         app_label = 'hr'
         ordering = ['date']
 
-    member = models.ForeignKey(Member)
-    title = models.ForeignKey(Title)
+    member = models.ForeignKey(Member, related_name='title_member_diffs')
+    title = models.ForeignKey(Title, related_name='title_member_diffs')
     # true if title is new for member, false if title was removed
     new = models.BooleanField(db_index=True, default=True)
     # date of change
