@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 2.0.5.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-29 02:21+0200\n"
-"PO-Revision-Date: 2012-07-31 21:31+0200\n"
+"PO-Revision-Date: 2012-08-29 17:09+0200\n"
 "Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
 "Language-Team: German <>\n"
 "Language: de\n"
@@ -24,12 +24,11 @@ msgstr "POS"
 
 #: __init__.py:28
 msgid "Fuel Summary"
-msgstr ""
+msgstr "Sprit-Zusammenfassung"
 
 #: tasks/pos.py:136
-#, fuzzy
 msgid "unanchored"
-msgstr "Kann Module entankern"
+msgstr "entankert"
 
 #: templates/ecm/pos/pos_details.html:6
 msgid "POS Details"
@@ -49,7 +48,7 @@ msgstr "POS Typ"
 
 #: templates/ecm/pos/pos_details.html:35
 msgid "Links"
-msgstr ""
+msgstr "Links"
 
 #: templates/ecm/pos/pos_details.html:45
 msgid "Access Control"
@@ -147,7 +146,7 @@ msgstr "Klicken zum Editieren..."
 
 #: templates/ecm/pos/pos_fuel.html:6
 msgid "POS Fuel summary"
-msgstr ""
+msgstr "POS-Sprit-Zusammenfassung"
 
 #: templates/ecm/pos/pos_list.html:24
 msgid "Search"
@@ -187,37 +186,35 @@ msgstr "Stunden"
 
 #: views/pos_list.py:59
 msgid "Location"
-msgstr ""
+msgstr "Ort"
 
 #: views/pos_list.py:60 views/pos_list.py:66
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: views/pos_list.py:61
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: views/pos_list.py:62
-#, fuzzy
 msgid "Status"
 msgstr "Status"
 
 #: views/pos_list.py:63
 msgid "Next Cycle"
-msgstr ""
+msgstr "Nächster Zyklus"
 
 #: views/pos_list.py:64
-#, fuzzy
 msgid "Fuel Blocks"
-msgstr "Füllstand"
+msgstr "Blöcke"
 
 #: views/pos_list.py:65
 msgid "Strontium"
-msgstr ""
+msgstr "Strontium"
 
 #: views/pos_list.py:65
 msgid "Strontium Clathrates"
-msgstr ""
+msgstr "Strontium Clatherate"
 
 #~ msgid "Home"
 #~ msgstr "Start"
