@@ -69,6 +69,7 @@
               <ul class="dropdown-menu">
                 <li><a href="/account/">{% trans 'Account' %}</a></li>
                 {% if user.is_staff and user.is_superuser %}
+                <li><a href="/editapi/">{% trans "Edit corporation API key" %}</a></li>
                 <li><a href="/admin/">{% trans 'Administration' %}</a></li>
                 {% endif %}
                 <li class="divider"></li>
