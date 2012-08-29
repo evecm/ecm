@@ -22,6 +22,7 @@ __author__ = "diabeteman"
 import logging
 from datetime import timedelta
 
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as tr
 from django.utils.encoding import force_unicode
 from django.utils import timezone
@@ -108,8 +109,13 @@ class ScheduledTask(models.Model):
                 self.is_running = True
                 self.last_execution = timezone.now()
                 self.save()
-
-            func = self.get_function()
+            
+            invalid_function = False
+            try:
+                func = self.get_function()
+            except ValidationError:
+                invalid_function = True
+                raise
             args = self.get_args()
             func(**args)
 
@@ -120,11 +126,15 @@ class ScheduledTask(models.Model):
             self.is_last_exec_success = False
             LOG.exception("")
         finally:
-            delta = self.frequency * self.frequency_units
-            self.next_execution = timezone.now() + timedelta(seconds=delta)
-            self.is_running = False
-            self.is_scheduled = False
-            self.save()
+            if invalid_function:
+                LOG.warning('Task "%s" is obsolete, deleting...' % self.function)
+                self.delete()
+            else:
+                delta = self.frequency * self.frequency_units
+                self.next_execution = timezone.now() + timedelta(seconds=delta)
+                self.is_running = False
+                self.is_scheduled = False
+                self.save()
 
 #------------------------------------------------------------------------------
 class GarbageCollector(models.Model):
