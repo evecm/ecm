@@ -80,6 +80,7 @@ setup(
     zip_safe = False,
     entry_points = {
         'console_scripts': ('ecm-admin = ecm.admin.cli:main',),
-        'distutils.commands': ('compilemessages = ecm.utils.distrib:CompileMessages',),
+        'distutils.commands': ('compilemessages = ecm.utils.distrib:CompileMessages',
+                               'makemessages = ecm.utils.distrib:MakeMessages'),
     },
 )

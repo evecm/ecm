@@ -14,17 +14,20 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm import utils
-import subprocess
-import sys
+from ecm.lib import make_messages
 
 __date__ = "2010-02-08"
 __author__ = "diabeteman"
 
 import os
+import sys
+import subprocess
 import setuptools
 from distutils.errors import DistutilsArgError
 
+from django.core.management import call_command
+
+from ecm import utils
 
 class CompileMessages(setuptools.Command):
     
@@ -109,4 +112,70 @@ class CompileMessages(setuptools.Command):
             sys.exit(e.returncode)
         
         utils.logln('[ OK ]')
+
+
+
+
+class MakeMessages(setuptools.Command):
     
+    description = 'Update the .po files with translatable strings.'
+    
+    # Here we must integrate into distutils "weird" options parser
+    # an option definition is a tuple of 3 or 4 elements:
+    #    (long_name, short_name, description[, can_be_repeated])
+    # note: options that take arguments must have '=' at the end of the long_name
+    user_options = [
+        ('all', 'a', 
+         'Update all existing locales.'),
+        ('locale=', 'l',
+         'Locale to update.'),
+    ]
+    boolean_options = ['all']
+
+    def initialize_options(self):
+        self.all = False
+        self.locale = None
+
+    def finalize_options(self):
+        if not (self.locale or self.all):
+            raise DistutilsArgError('Must set a locale or --all')
+    
+    def run(self):
+        make_messages.monkey_patch()
+        
+        self.process_app('ecm', ignore_patterns=['apps', 'plugins'])
+        
+        for path in os.listdir('ecm/apps/'):
+            path = os.path.normpath('ecm/apps/%s/' % path)
+            if os.path.isdir(path):
+                self.process_app(path)
+        
+        for path in os.listdir('ecm/plugins/'):
+            path = os.path.normpath('ecm/plugins/%s/' % path)
+            if os.path.isdir(path):
+                self.process_app(path)
+    
+    def process_app(self, app_dir, ignore_patterns=None):
+        
+        args = {'extra_keywords': ['tr', 'tr_lazy', 'tr_noop']}
+        if self.all:
+            args['all'] = True
+        else:
+            args['locale'] = self.locale
+        if ignore_patterns:
+            args['ignore_patterns'] = ignore_patterns
+        
+        prev_dir = os.path.abspath(os.curdir)
+        
+        os.chdir(app_dir)
+        
+        utils.logln('[%s]' % app_dir)
+        
+        if not os.path.exists('locale'):
+            utils.logln('Created "locale" folder')
+            os.makedirs('locale')
+        
+        call_command('makemessages', **args)
+        
+        os.chdir(prev_dir)
+        

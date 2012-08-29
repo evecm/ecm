@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.5.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-30 23:42+0200\n"
+"POT-Creation-Date: 2012-08-29 02:21+0200\n"
 "PO-Revision-Date: 2012-07-31 21:31+0200\n"
 "Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
 "Language-Team: German <>\n"
@@ -18,161 +18,206 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n>1;\n"
 "X-Generator: Lokalize 1.4\n"
 
-#: templates/pos_details.html:3
-msgid "POS Details"
-msgstr "POS Details"
-
-#: templates/pos_details.html:10 templates/pos_list.html:12
-msgid "Home"
-msgstr "Start"
-
-#: templates/pos_details.html:11 templates/pos_list.html:4
-#: templates/pos_list.html.py:13
+#: __init__.py:27 templates/ecm/pos/pos_list.html:7
 msgid "POS"
 msgstr "POS"
 
-#: templates/pos_details.html:28
+#: __init__.py:28
+msgid "Fuel Summary"
+msgstr ""
+
+#: tasks/pos.py:136
+#, fuzzy
+msgid "unanchored"
+msgstr "Kann Module entankern"
+
+#: templates/ecm/pos/pos_details.html:6
+msgid "POS Details"
+msgstr "POS Details"
+
+#: templates/ecm/pos/pos_details.html:26
 msgid "State"
 msgstr "Status"
 
-#: templates/pos_details.html:30
+#: templates/ecm/pos/pos_details.html:28
 msgid "Online since"
 msgstr "Online seit"
 
-#: templates/pos_details.html:32
+#: templates/ecm/pos/pos_details.html:30
 msgid "POS type"
 msgstr "POS Typ"
 
-#: templates/pos_details.html:37
+#: templates/ecm/pos/pos_details.html:35
 msgid "Links"
 msgstr ""
 
-#: templates/pos_details.html:47
+#: templates/ecm/pos/pos_details.html:45
 msgid "Access Control"
 msgstr "Zugriffsrechte"
 
-#: templates/pos_details.html:49
+#: templates/ecm/pos/pos_details.html:47
 msgid "Allow corp members in force field"
 msgstr "Corpmitglieder im Force-Field erlaufen"
 
-#: templates/pos_details.html:51
+#: templates/ecm/pos/pos_details.html:49
 msgid "Allow ally members in force field"
 msgstr "Ally-Mitglieder im Force-Field erlauben"
 
-#: templates/pos_details.html:53
+#: templates/ecm/pos/pos_details.html:51
 msgid "Can view fuel bay"
 msgstr "Kann in den Treibstoffhangar sehen"
 
-#: templates/pos_details.html:55
+#: templates/ecm/pos/pos_details.html:53
 msgid "Can take in fuel bay"
 msgstr "Kann aus dem Traibstoffhangar nehmen"
 
-#: templates/pos_details.html:57
+#: templates/ecm/pos/pos_details.html:55
 msgid "Can anchor modules"
 msgstr "Kann Module verankern"
 
-#: templates/pos_details.html:59
+#: templates/ecm/pos/pos_details.html:57
 msgid "Can unanchor modules"
 msgstr "Kann Module entankern"
 
-#: templates/pos_details.html:61
+#: templates/ecm/pos/pos_details.html:59
 msgid "Can online modules"
 msgstr "Kann Module online nehmen"
 
-#: templates/pos_details.html:63
+#: templates/ecm/pos/pos_details.html:61
 msgid "Can offline modules"
 msgstr "Kann Module offline nehmen"
 
-#: templates/pos_details.html:68
+#: templates/ecm/pos/pos_details.html:66
 msgid "Combat Settings"
 msgstr "Kampfeinstellungen"
 
-#: templates/pos_details.html:71
+#: templates/ecm/pos/pos_details.html:69
 msgid "Attack when standing is below"
 msgstr "Angriff, wenn Standing unter"
 
-#: templates/pos_details.html:72
+#: templates/ecm/pos/pos_details.html:70
 msgid "use standings from"
 msgstr "Standings benutzen von"
 
-#: templates/pos_details.html:74
+#: templates/ecm/pos/pos_details.html:72
 msgid "Attack on bad standing"
 msgstr "Angriff auf Standing basierend"
 
-#: templates/pos_details.html:78
+#: templates/ecm/pos/pos_details.html:76
 msgid "Attack when security status is below"
 msgstr "Angriff, wenn Sicherheitsstatus unter"
 
-#: templates/pos_details.html:81
+#: templates/ecm/pos/pos_details.html:79
 msgid "Attack when security status is bad"
 msgstr "Angriff bei schlechtem Sicherheitsstatus"
 
-#: templates/pos_details.html:84
+#: templates/ecm/pos/pos_details.html:82
 msgid "Attack on concord flag"
 msgstr "Angriff bei CONCORD-Flag"
 
-#: templates/pos_details.html:86
+#: templates/ecm/pos/pos_details.html:84
 msgid "Attack on aggression"
 msgstr "Angriff bei Agressions-Flag"
 
-#: templates/pos_details.html:88
+#: templates/ecm/pos/pos_details.html:86
 msgid "Attack war targets"
 msgstr "Kriegsziele angreifen"
 
-#: templates/pos_details.html:94
+#: templates/ecm/pos/pos_details.html:92
 msgid "Fuel Levels"
 msgstr "Füllstand"
 
-#: templates/pos_details.html:106 templates/pos_details.html.py:123
-#: templates/pos_details.html:155 templates/pos_list.html:50
+#: templates/ecm/pos/pos_details.html:104
+#: templates/ecm/pos/pos_details.html:121
+#: templates/ecm/pos/pos_details.html:153 templates/ecm/pos/pos_list.html:49
 msgid "Loading data from server..."
 msgstr "Lade Daten vom Server..."
 
-#: templates/pos_details.html:142
+#: templates/ecm/pos/pos_details.html:140
 msgid "Add/Remove"
 msgstr "Hinzufügen/Entfernen"
 
-#: templates/pos_details.html:251
+#: templates/ecm/pos/pos_details.html:249
 msgid "Click to Change Name..."
 msgstr "Klicken, um den Namen zu ändern..."
 
-#: templates/pos_details.html:257
+#: templates/ecm/pos/pos_details.html:255
 msgid "Click to edit..."
 msgstr "Klicken zum Editieren..."
 
-#: templates/pos_list.html:25
+#: templates/ecm/pos/pos_fuel.html:6
+msgid "POS Fuel summary"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:24
 msgid "Search"
 msgstr "Suche"
 
-#: templates/pos_list.html:26
+#: templates/ecm/pos/pos_list.html:25
 msgid "Reset"
 msgstr "Reset"
 
-#: templates/pos_list.html:28
+#: templates/ecm/pos/pos_list.html:27
 msgid "Display mode"
 msgstr "Anzeigemodus"
 
-#: templates/pos_list.html:31
+#: templates/ecm/pos/pos_list.html:30
 msgid "Show remaining fuel quantities"
 msgstr "Zeige verbleibende Spriteinheiten"
 
-#: templates/pos_list.html:31
+#: templates/ecm/pos/pos_list.html:30
 msgid "Quantities"
 msgstr "Einheiten"
 
-#: templates/pos_list.html:33
+#: templates/ecm/pos/pos_list.html:32
 msgid "Show remaining fuel time (in days)"
 msgstr "Zeige verbleibende Laufzeit (in Tagen)"
 
-#: templates/pos_list.html:33
+#: templates/ecm/pos/pos_list.html:32
 msgid "Days"
 msgstr "Tage"
 
-#: templates/pos_list.html:35
+#: templates/ecm/pos/pos_list.html:34
 msgid "Show remaining fuel time (in hours)"
 msgstr "Zeige verbleibende Laufzeit (in Stunden)"
 
-#: templates/pos_list.html:35
+#: templates/ecm/pos/pos_list.html:34
 msgid "Hours"
 msgstr "Stunden"
 
+#: views/pos_list.py:59
+msgid "Location"
+msgstr ""
+
+#: views/pos_list.py:60 views/pos_list.py:66
+msgid "Name"
+msgstr ""
+
+#: views/pos_list.py:61
+msgid "Type"
+msgstr ""
+
+#: views/pos_list.py:62
+#, fuzzy
+msgid "Status"
+msgstr "Status"
+
+#: views/pos_list.py:63
+msgid "Next Cycle"
+msgstr ""
+
+#: views/pos_list.py:64
+#, fuzzy
+msgid "Fuel Blocks"
+msgstr "Füllstand"
+
+#: views/pos_list.py:65
+msgid "Strontium"
+msgstr ""
+
+#: views/pos_list.py:65
+msgid "Strontium Clathrates"
+msgstr ""
+
+#~ msgid "Home"
+#~ msgstr "Start"

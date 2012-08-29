@@ -2,2495 +2,572 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# johnfoo <edouard.chamillard@gmail.com>, 2012.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 2.0.5.2.dev\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-30 23:22+0200\n"
-"PO-Revision-Date: 2012-05-30 23:20+0200\n"
-"Last-Translator: johnfoo <edouard.chamillard@gmail.com>\n"
-"Language-Team: fr_FR <translate@eve-corp-management.org>\n"
-"Language: Français\n"
+"POT-Creation-Date: 2012-08-29 02:21+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bits\n"
-"Plural-Forms: nplurals=2; plural=n>1;\n"
-
-#: apps/common/templates/email/invalid_api.html:6
-#: apps/common/templates/email/invalid_api.txt:3
-#: templates/auth/account.html:14
-msgid "Hello"
-msgstr "Bonjour"
-
-#: apps/common/templates/email/invalid_api.html:8
-#: apps/common/templates/email/invalid_api.txt:5
-msgid "The following API Keys are invalid"
-msgstr "Les clés API suivantes sont invalides"
-
-#: apps/common/templates/email/invalid_api.html:14
-msgid " and make sure that these API Keys are valid"
-msgstr " et assurez vous que ces clés API soient valides"
-
-#: apps/common/templates/email/invalid_api.html:19
-#: apps/common/templates/email/invalid_api.txt:13
-msgid "Thank you in advance"
-msgstr "Merci d'avance"
-
-#: apps/common/templates/email/invalid_api_subject.txt:2
-msgid "Invalid API Key"
-msgstr "Clé API invalide"
-
-#: apps/hr/templates/dashboard.html:3 apps/hr/templates/dashboard.html:12
-msgid "Human Resources Dashboard"
-msgstr "Panneau des Ressources Humaines"
-
-#: apps/hr/templates/dashboard.html:6
-#: apps/hr/templates/members/access_changes.html:6
-#: apps/hr/templates/members/member_details.html:9
-#: apps/hr/templates/members/member_history.html:8
-#: apps/hr/templates/members/member_list.html:8
-#: apps/hr/templates/members/unassociated.html:13
-#: apps/hr/templates/players/player_details.html:8
-#: apps/hr/templates/players/player_list.html:6
-#: apps/hr/templates/roles/role_details.html:8
-#: apps/hr/templates/roles/roles.html:8
-#: apps/hr/templates/titles/changes.html:8
-#: apps/hr/templates/titles/title_details.html:6
-#: apps/hr/templates/titles/title_members.html:7
-#: apps/hr/templates/titles/titles.html:6
-#: apps/scheduler/templates/tasks.html:6
-#: plugins/accounting/templates/contract_details.html:14
-#: plugins/accounting/templates/contracts.html:12
-#: plugins/accounting/templates/contrib.html:14
-#: plugins/accounting/templates/marketorders.html:13
-#: plugins/accounting/templates/report.html:6
-#: plugins/accounting/templates/wallet_journal.html:13
-#: plugins/accounting/templates/wallet_transactions.html:13
-#: plugins/accounting/templates/wallets.html:11
-#: plugins/assets/templates/assets.html:6
-#: plugins/assets/templates/assets_diff.html:6
-#: plugins/assets/templates/assets_no_data.html:6
-#: plugins/industry/templates/industry_home.html:6
-#: plugins/industry/templates/jobs_list.html:16
-#: plugins/industry/templates/order_details.html:14
-#: plugins/industry/templates/orders_list.html:13
-#: plugins/industry/templates/catalog/blueprint_details.html:10
-#: plugins/industry/templates/catalog/blueprints.html:10
-#: plugins/industry/templates/catalog/catalog_home.html:6
-#: plugins/industry/templates/catalog/import_blueprints.html:8
-#: plugins/industry/templates/catalog/item_details.html:12
-#: plugins/industry/templates/catalog/items.html:14
-#: plugins/industry/templates/catalog/supplies.html:12
-#: plugins/industry/templates/catalog/supply_details.html:10
-#: plugins/pos/templates/pos_details.html:10
-#: plugins/pos/templates/pos_list.html:12 plugins/shop/templates/shop.html:12
-#: plugins/shop/templates/shop_myorders.html:13
-#: plugins/shop/templates/shop_order.html:16
-#: plugins/shop/templates/shop_order_details.html:14
-#: templates/auth/account.html:8 templates/auth/add_api.html:8
-#: templates/auth/add_binding.html:8 templates/auth/edit_api.html:8
-#: templates/auth/password_change.html:7
-#: templates/auth/password_change_done.html:7
-#: templates/auth/password_reset.html:9
-#: templates/auth/password_reset_complete.html:9
-#: templates/auth/password_reset_confirm.html:9
-#: templates/auth/password_reset_done.html:9 templates/common/corp.html:3
-#: templates/common/corp.html.py:6 templates/common/edit_motd.html:6
-#: templates/common/standings.html:6
-msgid "Home"
-msgstr "Accueil"
-
-#: apps/hr/templates/dashboard.html:7
-#: apps/hr/templates/members/access_changes.html:7
-#: apps/hr/templates/members/member_details.html:10
-#: apps/hr/templates/members/member_history.html:9
-#: apps/hr/templates/members/member_list.html:9
-#: apps/hr/templates/members/unassociated.html:14
-#: apps/hr/templates/players/player_details.html:9
-#: apps/hr/templates/players/player_list.html:7
-#: apps/hr/templates/roles/role_details.html:9
-#: apps/hr/templates/roles/roles.html:9
-#: apps/hr/templates/titles/changes.html:9
-#: apps/hr/templates/titles/title_details.html:7
-#: apps/hr/templates/titles/title_members.html:8
-#: apps/hr/templates/titles/titles.html:7
-msgid "Human Resources"
-msgstr "Ressources Humaines"
-
-#: apps/hr/templates/dashboard.html:23
-msgid "Registered Players"
-msgstr "Joueurs enregistrés"
-
-#: apps/hr/templates/dashboard.html:25
-msgid "Average number of accounts by player"
-msgstr "Nombre moyens de comptes par joueur"
-
-#: apps/hr/templates/dashboard.html:26
-msgid "account / player"
-msgstr "comptes / joueurs"
-
-#: apps/hr/templates/dashboard.html:27
-msgid "Average number of characters by player"
-msgstr "Nombre moyen de personnages par joueur"
-
-#: apps/hr/templates/dashboard.html:28
-msgid "character / player"
-msgstr "personnages / joueurs"
-
-#: apps/hr/templates/dashboard.html:29
-msgid "Unassociated Characters"
-msgstr "Personnages non associés"
-
-#: apps/hr/templates/dashboard.html:69
-msgid "No Roles"
-msgstr "Pas de roles"
-
-#: apps/hr/templates/dashboard.html:71
-msgid "Directors"
-msgstr "Directeurs"
-
-#: apps/hr/templates/dashboard.html:73
-msgid "level"
-msgstr "niveau"
-
-#: apps/hr/templates/dashboard.html:90
-msgid "Security access level distribution"
-msgstr "distribution des niveaux d'accès de sécurité"
-
-#: apps/hr/templates/dashboard.html:111
-msgid "Position of members"
-msgstr "Position des membres"
-
-#: apps/hr/templates/dashboard.html:137
-msgid "Avg. Playtime"
-msgstr "Temps de jeu moyen"
-
-#: apps/hr/templates/dashboard.html:138 plugins/pos/templates/pos_list.html:35
-msgid "Hours"
-msgstr "Heures"
-
-#: apps/hr/templates/dashboard.html:139 apps/hr/templates/dashboard.html:167
-msgid "Last 30 Days"
-msgstr "30 derniers jours"
-
-#: apps/hr/templates/dashboard.html:165
-msgid "Online Players"
-msgstr "Joueurs en ligne"
-
-#: apps/hr/templates/dashboard.html:166
-#: apps/hr/templates/players/player_details.html:10
-msgid "Players"
-msgstr "Joueurs"
-
-#: apps/hr/templates/members/access_changes.html:3
-#: apps/hr/templates/members/member_history.html:3
-msgid "Members History"
-msgstr "Historique des membres"
-
-#: apps/hr/templates/members/access_changes.html:8
-#: apps/hr/templates/members/member_details.html:11
-#: apps/hr/templates/members/member_history.html:10
-#: apps/hr/templates/members/member_list.html:3
-#: apps/hr/templates/members/member_list.html:10
-#: apps/hr/templates/members/unassociated.html:15
-#: apps/hr/templates/roles/roles.html:33 apps/hr/templates/roles/roles.html:50
-#: apps/hr/templates/titles/title_members.html:11
-#: apps/hr/templates/titles/titles.html:21
-#: apps/hr/templates/titles/titles.html:35
-msgid "Members"
-msgstr "Membres"
-
-#: apps/hr/templates/members/access_changes.html:9
-#: apps/hr/templates/members/access_changes.html:14
-#: apps/hr/templates/members/member_details.html:113
-msgid "Security Access Changes"
-msgstr "Changements d'accès de sécurité"
-
-#: apps/hr/templates/members/access_changes.html:14
-#: apps/hr/templates/titles/changes.html:16
-#: apps/hr/templates/titles/titles.html:13
-#: plugins/accounting/templates/contrib.html:20
-#: plugins/accounting/templates/wallet_journal.html:20
-#: plugins/accounting/templates/wallet_transactions.html:20
-#: plugins/accounting/templates/wallets.html:17
-msgid "last update"
-msgstr "dernière mise a jour"
-
-#: apps/hr/templates/members/access_changes.html:21
-#: apps/hr/templates/members/member_history.html:24
-#: apps/hr/templates/members/member_list.html:23
-#: apps/hr/templates/members/unassociated.html:29
-#: apps/hr/templates/players/player_details.html:46
-#: apps/hr/templates/players/player_list.html:20
-#: apps/hr/templates/roles/role_details.html:49
-#: apps/hr/templates/titles/title_members.html:24
-#: plugins/accounting/templates/contract_details.html:81
-#: plugins/accounting/templates/contracts.html:26
-#: plugins/accounting/templates/marketorders.html:27
-#: plugins/accounting/templates/wallet_journal.html:59
-#: plugins/accounting/templates/wallet_transactions.html:59
-#: plugins/assets/templates/assets.html:19
-#: plugins/industry/templates/jobs_list.html:30
-#: plugins/industry/templates/orders_list.html:27
-#: plugins/industry/templates/catalog/blueprints.html:23
-#: plugins/industry/templates/catalog/import_blueprints.html:25
-#: plugins/industry/templates/catalog/items.html:27
-#: plugins/industry/templates/catalog/supplies.html:25
-#: plugins/pos/templates/pos_list.html:25
-#: plugins/shop/templates/shop_myorders.html:28
-msgid "Search"
-msgstr "Rechercher"
-
-#: apps/hr/templates/members/access_changes.html:22
-#: apps/hr/templates/members/member_history.html:25
-#: apps/hr/templates/members/member_list.html:24
-#: apps/hr/templates/members/unassociated.html:30
-#: apps/hr/templates/players/player_details.html:47
-#: apps/hr/templates/players/player_list.html:21
-#: apps/hr/templates/roles/role_details.html:50
-#: apps/hr/templates/titles/title_members.html:25
-#: plugins/accounting/templates/contract_details.html:82
-#: plugins/accounting/templates/contracts.html:27
-#: plugins/accounting/templates/marketorders.html:28
-#: plugins/accounting/templates/wallet_journal.html:60
-#: plugins/accounting/templates/wallet_transactions.html:60
-#: plugins/assets/templates/assets.html:20
-#: plugins/assets/templates/assets.html:47
-#: plugins/industry/templates/jobs_list.html:31
-#: plugins/industry/templates/orders_list.html:28
-#: plugins/industry/templates/catalog/blueprints.html:24
-#: plugins/industry/templates/catalog/import_blueprints.html:26
-#: plugins/industry/templates/catalog/items.html:28
-#: plugins/industry/templates/catalog/supplies.html:26
-#: plugins/pos/templates/pos_list.html:26
-#: plugins/shop/templates/shop_myorders.html:29
-msgid "Reset"
-msgstr "Remise a zéro"
-
-#: apps/hr/templates/members/access_changes.html:30
-#: apps/hr/templates/members/access_changes.html:43
-#: apps/hr/templates/members/member_details.html:117
-#: apps/hr/templates/members/member_details.html:129
-#: apps/hr/templates/titles/changes.html:22
-#: apps/hr/templates/titles/changes.html:35
-#: apps/hr/templates/titles/title_details.html:53
-#: apps/hr/templates/titles/title_details.html:66
-msgid "Change"
-msgstr "Changement"
-
-#: apps/hr/templates/members/access_changes.html:31
-#: apps/hr/templates/members/access_changes.html:44
-#: apps/hr/templates/titles/changes.html:36
-#: plugins/accounting/templates/contrib.html:49
-#: plugins/accounting/templates/contrib.html:60
-msgid "Member"
-msgstr "Membre"
-
-#: apps/hr/templates/members/access_changes.html:32
-#: apps/hr/templates/members/access_changes.html:45
-#: apps/hr/templates/members/member_details.html:118
-#: apps/hr/templates/members/member_details.html:130
-msgid "Title/Role"
-msgstr "Titre/Rôle"
-
-#: apps/hr/templates/members/access_changes.html:33
-#: apps/hr/templates/members/access_changes.html:46
-#: apps/hr/templates/members/member_details.html:119
-#: apps/hr/templates/members/member_details.html:131
-#: apps/hr/templates/members/member_history.html:36
-#: apps/hr/templates/members/member_history.html:49
-#: apps/hr/templates/titles/changes.html:25
-#: apps/hr/templates/titles/changes.html:38
-#: plugins/accounting/templates/wallet_journal.html:82
-#: plugins/accounting/templates/wallet_journal.html:99
-#: plugins/accounting/templates/wallet_transactions.html:88
-#: plugins/accounting/templates/wallet_transactions.html:105
-#: plugins/industry/templates/order_details.html:142
-#: plugins/shop/templates/shop_order_details.html:105
-msgid "Date"
-msgstr "Date"
-
-#: apps/hr/templates/members/access_changes.html:38
-#: apps/hr/templates/members/member_details.html:124
-#: apps/hr/templates/members/member_history.html:41
-#: apps/hr/templates/members/member_list.html:49
-#: apps/hr/templates/members/unassociated.html:51
-#: apps/hr/templates/players/player_details.html:67
-#: apps/hr/templates/players/player_list.html:40
-#: apps/hr/templates/roles/role_details.html:70
-#: apps/hr/templates/roles/roles.html:42
-#: apps/hr/templates/titles/changes.html:30
-#: apps/hr/templates/titles/title_details.html:35
-#: apps/hr/templates/titles/title_details.html:61
-#: apps/hr/templates/titles/title_members.html:45
-#: apps/hr/templates/titles/titles.html:28
-#: apps/scheduler/templates/tasks.html:30
-#: plugins/accounting/templates/contracts.html:52
-#: plugins/accounting/templates/contrib.html:55
-#: plugins/accounting/templates/contrib.html:76
-#: plugins/accounting/templates/marketorders.html:53
-#: plugins/accounting/templates/wallet_journal.html:94
-#: plugins/accounting/templates/wallet_transactions.html:100
-#: plugins/accounting/templates/wallets.html:29
-#: plugins/industry/templates/jobs_list.html:74
-#: plugins/industry/templates/orders_list.html:51
-#: plugins/industry/templates/catalog/blueprints.html:46
-#: plugins/industry/templates/catalog/import_blueprints.html:60
-#: plugins/industry/templates/catalog/items.html:55
-#: plugins/industry/templates/catalog/supplies.html:55
-#: plugins/industry/templates/catalog/supply_details.html:52
-#: plugins/pos/templates/pos_details.html:106
-#: plugins/pos/templates/pos_details.html:123
-#: plugins/pos/templates/pos_details.html:155
-#: plugins/pos/templates/pos_list.html:50
-#: plugins/shop/templates/shop_myorders.html:44
-msgid "Loading data from server..."
-msgstr "Chargement des données du serveur..."
-
-#: apps/hr/templates/members/member_details.html:5
-msgid "Member Details"
-msgstr "Détails du membre"
-
-#: apps/hr/templates/members/member_details.html:17
-msgid "NOT CORPED"
-msgstr "NON INTÉGRÉ"
-
-#: apps/hr/templates/members/member_details.html:26
-msgid "Link to killboard"
-msgstr "Lien vers le killboard"
-
-#: apps/hr/templates/members/member_details.html:31
-#: apps/hr/templates/titles/title_members.html:37
-#: apps/hr/templates/titles/title_members.html:54
-msgid "Corp Date"
-msgstr "Date d'incorporation"
-
-#: apps/hr/templates/members/member_details.html:32
-#: apps/hr/templates/members/member_list.html:41
-#: apps/hr/templates/members/member_list.html:58
-#: apps/hr/templates/members/unassociated.html:43
-#: apps/hr/templates/members/unassociated.html:60
-#: apps/hr/templates/players/player_details.html:59
-#: apps/hr/templates/players/player_list.html:34
-#: apps/hr/templates/players/player_list.html:50
-#: apps/hr/templates/roles/role_details.html:62
-#: apps/hr/templates/roles/role_details.html:79
-#: apps/hr/templates/titles/title_members.html:38
-#: apps/hr/templates/titles/title_members.html:55
-msgid "Last Login"
-msgstr "Dernière Connexion"
-
-#: apps/hr/templates/members/member_details.html:33
-msgid "Last Logoff"
-msgstr "Dernière Déconnexion"
-
-#: apps/hr/templates/members/member_details.html:34
-msgid "Avg. Session Duration (30 Days)"
-msgstr "Durée moyenne d'une session (30 jours)"
-
-#: apps/hr/templates/members/member_details.html:35
-msgid "Logged in (last 30 Days)"
-msgstr "Temps de connexion (30 derniers jours)"
-
-#: apps/hr/templates/members/member_details.html:36
-msgid "Logged in (last 7 Days)"
-msgstr "Temps de connexion (7 derniers jours)"
-
-#: apps/hr/templates/members/member_details.html:37
-msgid "Base Office"
-msgstr "Station de base"
-
-#: apps/hr/templates/members/member_details.html:38
-msgid "Owned by"
-msgstr "Possédé par"
-
-#: apps/hr/templates/members/member_details.html:39
-msgid "Latest location"
-msgstr "Dernier emplacement"
-
-#: apps/hr/templates/members/member_details.html:39
-msgid "Docked"
-msgstr "A quai"
-
-#: apps/hr/templates/members/member_details.html:39
-msgid "on"
-msgstr "le"
-
-#: apps/hr/templates/members/member_details.html:40
-#: plugins/pos/templates/pos_details.html:37
-msgid "Links"
-msgstr "Liens"
-
-#: apps/hr/templates/members/member_details.html:56
-msgid "DIRECTOR"
-msgstr "DIRECTEUR"
-
-#: apps/hr/templates/members/member_details.html:69
-msgid "No titles"
-msgstr "Pas de titres"
-
-#: apps/hr/templates/members/member_details.html:77
-msgid "No extra roles"
-msgstr "Pas de rôles supplémentaires"
-
-#: apps/hr/templates/members/member_details.html:87 templates/base.html:53
-msgid "Login"
-msgstr "Connexion"
-
-#: apps/hr/templates/members/member_details.html:88 templates/base.html:51
-msgid "Logout"
-msgstr "Déconnexion"
-
-#: apps/hr/templates/members/member_details.html:89
-msgid "Duration"
-msgstr "Durée"
-
-#: apps/hr/templates/members/member_details.html:100
-msgid "No Data."
-msgstr "Pas de données"
-
-#: apps/hr/templates/members/member_details.html:105
-#: plugins/accounting/templates/contrib.html:28
-#: plugins/accounting/templates/wallet_journal.html:45
-#: plugins/accounting/templates/wallet_transactions.html:45
-msgid "Last Week"
-msgstr "Semaine dernière"
-
-#: apps/hr/templates/members/member_details.html:106
-#: plugins/accounting/templates/contrib.html:29
-#: plugins/accounting/templates/wallet_journal.html:46
-#: plugins/accounting/templates/wallet_transactions.html:46
-msgid "Last Month"
-msgstr "Mois dernier"
-
-#: apps/hr/templates/members/member_details.html:107
-#: plugins/accounting/templates/report.html:73
-#: plugins/accounting/templates/report.html:103
-#: plugins/accounting/templates/report.html:134
-msgid "Total"
-msgstr "Total"
-
-#: apps/hr/templates/members/member_details.html:215
-#: apps/hr/templates/roles/role_details.html:111
-msgid "Click to edit..."
-msgstr "Cliquez pour éditer"
-
-#: apps/hr/templates/members/member_history.html:11
-#: plugins/industry/templates/order_details.html:131
-#: plugins/shop/templates/shop_order_details.html:94
-msgid "History"
-msgstr "Historique"
-
-#: apps/hr/templates/members/member_history.html:33
-#: apps/hr/templates/members/member_history.html:46
-msgid "Corped/Leaved"
-msgstr "Entrant/Partant"
-
-#: apps/hr/templates/members/member_history.html:34
-#: apps/hr/templates/members/member_history.html:47
-#: apps/hr/templates/members/member_list.html:37
-#: apps/hr/templates/members/member_list.html:54
-#: apps/hr/templates/members/unassociated.html:39
-#: apps/hr/templates/members/unassociated.html:56
-#: apps/hr/templates/players/player_details.html:55
-#: apps/hr/templates/roles/role_details.html:58
-#: apps/hr/templates/roles/role_details.html:75
-#: apps/hr/templates/titles/title_members.html:33
-#: apps/hr/templates/titles/title_members.html:50
-#: templates/auth/account.html:47
-msgid "Name"
-msgstr "Nom"
-
-#: apps/hr/templates/members/member_history.html:35
-#: apps/hr/templates/members/member_history.html:48
-#: apps/hr/templates/members/member_list.html:38
-#: apps/hr/templates/members/member_list.html:55
-#: apps/hr/templates/members/unassociated.html:40
-#: apps/hr/templates/members/unassociated.html:57
-#: apps/hr/templates/players/player_details.html:56
-#: apps/hr/templates/roles/role_details.html:59
-#: apps/hr/templates/roles/role_details.html:76
-#: apps/hr/templates/titles/title_members.html:34
-#: apps/hr/templates/titles/title_members.html:51
-msgid "Nickname"
-msgstr "Surnom"
-
-#: apps/hr/templates/members/member_list.html:26
-#: plugins/industry/templates/orders_list.html:31
-#: plugins/industry/templates/catalog/blueprints.html:26
-#: plugins/industry/templates/catalog/import_blueprints.html:28
-#: plugins/industry/templates/catalog/items.html:30
-#: plugins/industry/templates/catalog/supplies.html:28
-msgid "Display"
-msgstr "Montrer"
-
-#: apps/hr/templates/members/member_list.html:28
-msgid "All Ships"
-msgstr "Tout les vaisseaux"
-
-#: apps/hr/templates/members/member_list.html:29
-msgid "Supers Only"
-msgstr "Super-Capitaux Seuls"
-
-#: apps/hr/templates/members/member_list.html:39
-#: apps/hr/templates/members/member_list.html:56
-#: apps/hr/templates/members/unassociated.html:41
-#: apps/hr/templates/members/unassociated.html:58
-#: apps/hr/templates/players/player_details.html:57
-#: apps/hr/templates/roles/role_details.html:60
-#: apps/hr/templates/roles/role_details.html:77
-#: apps/hr/templates/titles/title_members.html:35
-#: apps/hr/templates/titles/title_members.html:52
-msgid "Player"
-msgstr "Joueur"
-
-#: apps/hr/templates/members/member_list.html:40
-#: apps/hr/templates/members/member_list.html:57
-#: apps/hr/templates/members/unassociated.html:42
-#: apps/hr/templates/members/unassociated.html:59
-#: apps/hr/templates/players/player_details.html:58
-#: apps/hr/templates/roles/role_details.html:61
-#: apps/hr/templates/roles/role_details.html:78
-#: apps/hr/templates/roles/roles.html:32 apps/hr/templates/roles/roles.html:49
-#: apps/hr/templates/titles/title_details.html:30
-#: apps/hr/templates/titles/title_details.html:42
-#: apps/hr/templates/titles/title_members.html:36
-#: apps/hr/templates/titles/title_members.html:53
-#: apps/hr/templates/titles/titles.html:20
-#: apps/hr/templates/titles/titles.html:34
-msgid "Access Level"
-msgstr "Niveau d'accès"
-
-#: apps/hr/templates/members/member_list.html:42
-#: apps/hr/templates/members/member_list.html:59
-#: apps/hr/templates/members/unassociated.html:44
-#: apps/hr/templates/members/unassociated.html:61
-#: apps/hr/templates/players/player_details.html:60
-#: apps/hr/templates/roles/role_details.html:63
-#: apps/hr/templates/roles/role_details.html:80
-#: apps/hr/templates/titles/title_members.html:39
-#: apps/hr/templates/titles/title_members.html:56
-#: plugins/accounting/templates/wallet_transactions.html:94
-#: plugins/accounting/templates/wallet_transactions.html:111
-msgid "Location"
-msgstr "Emplacement"
-
-#: apps/hr/templates/members/member_list.html:43
-#: apps/hr/templates/members/member_list.html:60
-#: apps/hr/templates/members/unassociated.html:45
-#: apps/hr/templates/members/unassociated.html:62
-#: apps/hr/templates/roles/role_details.html:64
-#: apps/hr/templates/roles/role_details.html:81
-msgid "Ship"
-msgstr "Vaisseau"
-
-#: apps/hr/templates/members/member_list.html:44
-#: apps/hr/templates/members/member_list.html:61
-#: apps/hr/templates/members/unassociated.html:46
-#: apps/hr/templates/members/unassociated.html:63
-#: apps/hr/templates/players/player_details.html:62
-#: apps/hr/templates/roles/role_details.html:65
-#: apps/hr/templates/roles/role_details.html:82
-#: apps/hr/templates/roles/roles.html:34 apps/hr/templates/roles/roles.html:51
-#: apps/hr/templates/titles/changes.html:10
-#: apps/hr/templates/titles/title_details.html:8
-#: apps/hr/templates/titles/title_members.html:9
-#: apps/hr/templates/titles/title_members.html:40
-#: apps/hr/templates/titles/title_members.html:57
-#: apps/hr/templates/titles/titles.html:3
-#: apps/hr/templates/titles/titles.html:8
-msgid "Titles"
-msgstr "Titres"
-
-#: apps/hr/templates/members/unassociated.html:3
-msgid "Unassociated Members"
-msgstr "Membres non associés"
-
-#: apps/hr/templates/members/unassociated.html:16
-msgid "Unassociated"
-msgstr "Non associés"
-
-#: apps/hr/templates/members/unassociated.html:32
-msgid "Copy to clipboard"
-msgstr "Copier vers le presse papier"
-
-#: apps/hr/templates/members/unassociated.html:71
-msgid "Copy to clipboard: Ctrl+C, Escape"
-msgstr "Copier vers le presse papier: Ctrl+C, échap"
-
-#: apps/hr/templates/players/player_details.html:3
-msgid "Player Details"
-msgstr "Détails joueur"
-
-#: apps/hr/templates/players/player_details.html:20
-msgid "ECM Administrator"
-msgstr "Administrateur ECM"
-
-#: apps/hr/templates/players/player_details.html:24
-msgid "Account created"
-msgstr "Compte Crée"
-
-#: apps/hr/templates/players/player_details.html:25
-msgid "Last login in ECM"
-msgstr "Derniere connexion à ECM"
-
-#: apps/hr/templates/players/player_details.html:26
-msgid "Owned EVE Accounts"
-msgstr "Comptes EVE possédés"
-
-#: apps/hr/templates/players/player_details.html:27
-msgid "Owned Characters"
-msgstr "Personnages possédés"
-
-#: apps/hr/templates/players/player_details.html:35
-#: apps/hr/templates/roles/role_details.html:31
-#: apps/hr/templates/roles/role_details.html:39
-#: plugins/industry/templates/order_details.html:155
-#: plugins/industry/templates/catalog/item_details.html:71
-#: plugins/industry/templates/catalog/item_details.html:178
-#: plugins/shop/templates/shop_order_details.html:118
-#: templates/auth/account.html:78 templates/common/standings.html:69
-msgid "None"
-msgstr "Aucun"
-
-#: apps/hr/templates/players/player_details.html:61
-msgid "Ships"
-msgstr "Vaisseaux"
-
-#: apps/hr/templates/players/player_list.html:3
-#: apps/hr/templates/players/player_list.html:8
-#: apps/hr/templates/players/player_list.html:13
-msgid "Player List"
-msgstr "Liste des joueurs"
-
-#: apps/hr/templates/players/player_list.html:29
-#: apps/hr/templates/players/player_list.html:45 views/account/forms.py:44
-msgid "Username"
-msgstr "Nom d'utilisateur"
-
-#: apps/hr/templates/players/player_list.html:30
-#: apps/hr/templates/players/player_list.html:46
-msgid "Admin"
-msgstr "Admin"
-
-#: apps/hr/templates/players/player_list.html:31
-#: apps/hr/templates/players/player_list.html:47
-msgid "EVE Accounts"
-msgstr "Comptes EVE"
-
-#: apps/hr/templates/players/player_list.html:32
-#: apps/hr/templates/players/player_list.html:48
-msgid "Characters"
-msgstr "Personnages"
-
-#: apps/hr/templates/players/player_list.html:33
-#: apps/hr/templates/players/player_list.html:49
-msgid "Groups"
-msgstr "Groupes"
-
-#: apps/hr/templates/players/player_list.html:35
-#: apps/hr/templates/players/player_list.html:51
-msgid "Joined Date"
-msgstr "Date d'entrée"
-
-#: apps/hr/templates/roles/role_details.html:3
-msgid "Role Details"
-msgstr "Détails du rôle"
-
-#: apps/hr/templates/roles/role_details.html:10
-#: apps/hr/templates/roles/roles.html:3 apps/hr/templates/roles/roles.html:10
-msgid "Roles"
-msgstr "Roles "
-
-#: apps/hr/templates/roles/role_details.html:27
-msgid "Assigned directly"
-msgstr "Assigné directement"
-
-#: apps/hr/templates/roles/role_details.html:35
-msgid "Assigned through titles"
-msgstr "Assigné à travers des titres"
-
-#: apps/hr/templates/roles/roles.html:19
-msgid "Role Category"
-msgstr "Catégorie du rôle"
-
-#: apps/hr/templates/roles/roles.html:30 apps/hr/templates/roles/roles.html:47
-msgid "Role Name"
-msgstr "Nom du rôle"
-
-#: apps/hr/templates/roles/roles.html:31 apps/hr/templates/roles/roles.html:48
-#: templates/common/corp.html:29
-msgid "Description"
-msgstr "Description"
-
-#: apps/hr/templates/titles/changes.html:3
-#: apps/hr/templates/titles/changes.html:16
-msgid "Titles Modifications History"
-msgstr "Historique des modifications du titre"
-
-#: apps/hr/templates/titles/changes.html:11
-msgid "Modifications"
-msgstr "Modifications"
-
-#: apps/hr/templates/titles/changes.html:23
-#: plugins/accounting/templates/contract_details.html:30
-msgid "Title"
-msgstr "Titre"
-
-#: apps/hr/templates/titles/changes.html:24
-#: apps/hr/templates/titles/changes.html:37
-#: apps/hr/templates/titles/title_details.html:28
-#: apps/hr/templates/titles/title_details.html:40
-#: apps/hr/templates/titles/title_details.html:54
-#: apps/hr/templates/titles/title_details.html:67
-msgid "Role"
-msgstr "Rôle"
-
-#: apps/hr/templates/titles/title_details.html:3
-msgid "Title Details"
-msgstr "Détails du titre"
-
-#: apps/hr/templates/titles/title_details.html:15
-msgid "last modification"
-msgstr "dernière modification"
-
-#: apps/hr/templates/titles/title_details.html:19
-msgid "Show all"
-msgstr "Montrer tout"
-
-#: apps/hr/templates/titles/title_details.html:19
-msgid "members having this title"
-msgstr "Membres ayant ce titre"
-
-#: apps/hr/templates/titles/title_details.html:29
-#: apps/hr/templates/titles/title_details.html:41
-#: apps/hr/templates/titles/title_details.html:55
-#: apps/hr/templates/titles/title_details.html:68
-msgid "Category"
-msgstr "Catégorie"
-
-#: apps/hr/templates/titles/title_details.html:56
-#: apps/hr/templates/titles/title_details.html:69
-msgid "Modification Date"
-msgstr "Date de modification"
-
-#: apps/hr/templates/titles/title_details.html:74
-msgid "No changes"
-msgstr "Pas de changement"
-
-#: apps/hr/templates/titles/title_members.html:3
-msgid "Title Members"
-msgstr "Membres du titre"
-
-#: apps/hr/templates/titles/titles.html:13
-msgid "Corporation Titles"
-msgstr "Titres corporatifs"
-
-#: apps/hr/templates/titles/titles.html:19
-#: apps/hr/templates/titles/titles.html:33
-msgid "Title Name"
-msgstr "Nom du titre"
-
-#: apps/hr/templates/titles/titles.html:22
-#: apps/hr/templates/titles/titles.html:36
-msgid "Role Count"
-msgstr "Nombre de rôles"
-
-#: apps/hr/templates/titles/titles.html:23
-#: apps/hr/templates/titles/titles.html:37
-#: plugins/industry/templates/order_details.html:65
-#: plugins/shop/templates/shop_order_details.html:61
-msgid "Last Modified"
-msgstr "Dernière modification"
-
-#: apps/scheduler/templates/tasks.html:7
-#: apps/scheduler/templates/tasks.html:12
-msgid "Scheduled Tasks"
-msgstr "Tache planifiées"
-
-#: apps/scheduler/templates/tasks.html:18
-msgid "Task Description"
-msgstr "Description de tache"
-
-#: apps/scheduler/templates/tasks.html:19
-msgid "Next Auto Execution"
-msgstr "Prochaine exécution automatique"
-
-#: apps/scheduler/templates/tasks.html:20
-msgid "Frequency"
-msgstr "Fréquence"
-
-#: apps/scheduler/templates/tasks.html:21
-msgid "Last Execution"
-msgstr "Derniere exécution"
-
-#: apps/scheduler/templates/tasks.html:22
-msgid "Last Result"
-msgstr "Dernier résultat"
-
-#: apps/scheduler/templates/tasks.html:23
-msgid "Is Running"
-msgstr "En cours"
-
-#: apps/scheduler/templates/tasks.html:24
-msgid "Is Scheduled"
-msgstr "Est Planifiée"
-
-#: apps/scheduler/templates/tasks.html:25
-msgid "Force Execution"
-msgstr "Forcer l'exécution"
-
-#: plugins/accounting/models.py:69
-msgid "Journal Entry"
-msgstr "Entrée du journal"
-
-#: plugins/accounting/models.py:70
-msgid "Journal Entries"
-msgstr "Entrées du journal"
-
-#: plugins/accounting/templates/contract_details.html:5
-#: plugins/accounting/templates/contract_details.html:18
-#: plugins/accounting/templates/contract_details.html:31
-msgid "&lt;No Title&gt;"
-msgstr "&lt;Pas de titres&gt;"
-
-#: plugins/accounting/templates/contract_details.html:15
-#: plugins/accounting/templates/contracts.html:13
-#: plugins/accounting/templates/contrib.html:15
-#: plugins/accounting/templates/marketorders.html:14
-#: plugins/accounting/templates/wallet_journal.html:14
-#: plugins/accounting/templates/wallet_transactions.html:14
-#: plugins/accounting/templates/wallets.html:12
-msgid "Accounting"
-msgstr "Comptabilité"
-
-#: plugins/accounting/templates/contract_details.html:16
-#: plugins/accounting/templates/contracts.html:8
-#: plugins/accounting/templates/contracts.html:14
-msgid "Contracts"
-msgstr "Contrats"
-
-#: plugins/accounting/templates/contract_details.html:21
-msgid "Contract Details"
-msgstr "Détails du contrat"
-
-#: plugins/accounting/templates/contract_details.html:32
-#: plugins/accounting/templates/contracts.html:30
-#: plugins/accounting/templates/marketorders.html:37
-#: plugins/accounting/templates/wallet_transactions.html:89
-#: plugins/accounting/templates/wallet_transactions.html:106
-msgid "Type"
-msgstr "Type"
-
-#: plugins/accounting/templates/contract_details.html:34
-#: plugins/accounting/templates/contracts.html:36
-msgid "Status"
-msgstr "Status"
-
-#: plugins/accounting/templates/contract_details.html:36
-msgid "Availability"
-msgstr "Disponibilité"
-
-#: plugins/accounting/templates/contract_details.html:38
-msgid "Date Issued"
-msgstr "Date de création"
-
-#: plugins/accounting/templates/contract_details.html:40
-msgid "Date Expired"
-msgstr "Date d'expiration"
-
-#: plugins/accounting/templates/contract_details.html:42
-msgid "Date Accepted"
-msgstr "Date d'acceptation"
-
-#: plugins/accounting/templates/contract_details.html:44
-msgid "Date Completed"
-msgstr "Date de complétion"
-
-#: plugins/accounting/templates/contract_details.html:46
-msgid "Station (start)"
-msgstr "Station (départ)"
-
-#: plugins/accounting/templates/contract_details.html:48
-msgid "Station (end)"
-msgstr "Station (arrivée)"
-
-#: plugins/accounting/templates/contract_details.html:54
-msgid "Time left"
-msgstr "Temps restant"
-
-#: plugins/accounting/templates/contract_details.html:55
-msgid "days"
-msgstr "jours"
-
-#: plugins/accounting/templates/contract_details.html:56
-#: plugins/accounting/templates/wallet_transactions.html:90
-#: plugins/accounting/templates/wallet_transactions.html:107
-#: plugins/industry/templates/order_details.html:89
-#: plugins/industry/templates/catalog/supply_details.html:24
-#: plugins/shop/templates/shop_order_details.html:75
-msgid "Price"
-msgstr "Prix"
-
-#: plugins/accounting/templates/contract_details.html:58
-msgid "Reward"
-msgstr "Récompense"
-
-#: plugins/accounting/templates/contract_details.html:60
-msgid "Collateral"
-msgstr "Caution"
-
-#: plugins/accounting/templates/contract_details.html:62
-msgid "Buyout"
-msgstr "Achat immédiat"
-
-#: plugins/accounting/templates/contract_details.html:64
-msgid "Volume"
-msgstr "Volume"
-
-#: plugins/accounting/templates/contract_details.html:66
-msgid "Issuer"
-msgstr "Créateur"
-
-#: plugins/accounting/templates/contract_details.html:68
-#, fuzzy
-msgid "Assignee"
-msgstr "Assigné"
-
-#: plugins/accounting/templates/contract_details.html:70
-msgid "Acceptor"
-msgstr "Accepteur"
-
-#: plugins/accounting/templates/contract_details.html:76
-msgid "Contract Items"
-msgstr "Objets du contrat"
-
-#: plugins/accounting/templates/contract_details.html:84
-msgid "Group"
-msgstr "Groupe"
-
-#: plugins/accounting/templates/contrib.html:3
-#: plugins/accounting/templates/contrib.html:20
-msgid "Contributions to Corp tax"
-msgstr "Contributions aux taxes corporatives"
-
-#: plugins/accounting/templates/contrib.html:16
-#: plugins/accounting/templates/contrib.html:50
-#: plugins/accounting/templates/contrib.html:61
-#: plugins/accounting/templates/contrib.html:71
-#: plugins/accounting/templates/contrib.html:82
-msgid "Contributions"
-msgstr "Contributions"
-
-#: plugins/accounting/templates/contrib.html:24
-#: plugins/accounting/templates/wallet_journal.html:41
-#: plugins/accounting/templates/wallet_transactions.html:41
-msgid "Period"
-msgstr "Période"
-
-#: plugins/accounting/templates/contrib.html:26
-#: plugins/accounting/templates/wallet_journal.html:43
-#: plugins/accounting/templates/wallet_transactions.html:43
-msgid "All Time"
-msgstr "Tout les temps"
-
-#: plugins/accounting/templates/contrib.html:27
-#: plugins/accounting/templates/wallet_journal.html:44
-#: plugins/accounting/templates/wallet_transactions.html:44
-msgid "This Month"
-msgstr "Ce mois"
-
-#: plugins/accounting/templates/contrib.html:30
-#: plugins/accounting/templates/wallet_journal.html:47
-#: plugins/accounting/templates/wallet_transactions.html:47
-msgid "Last Year"
-msgstr "Dernière année"
-
-#: plugins/accounting/templates/contrib.html:32
-#: plugins/accounting/templates/wallet_journal.html:51
-#: plugins/accounting/templates/wallet_journal.html:85
-#: plugins/accounting/templates/wallet_journal.html:102
-#: plugins/accounting/templates/wallet_transactions.html:51
-msgid "From"
-msgstr "De"
-
-#: plugins/accounting/templates/contrib.html:34
-#: plugins/accounting/templates/wallet_journal.html:55
-#: plugins/accounting/templates/wallet_journal.html:86
-#: plugins/accounting/templates/wallet_journal.html:103
-#: plugins/accounting/templates/wallet_transactions.html:55
-msgid "To"
-msgstr "À"
-
-#: plugins/accounting/templates/contrib.html:36
-msgid "Refresh"
-msgstr "Rafraîchir"
-
-#: plugins/accounting/templates/contrib.html:70
-#: plugins/accounting/templates/contrib.html:81
-msgid "Solar System"
-msgstr "Systeme Solaire"
-
-#: plugins/accounting/templates/marketorders.html:9
-#: plugins/accounting/templates/marketorders.html:15
-msgid "Market Orders"
-msgstr "Ordres Marché"
-
-#: plugins/accounting/templates/marketorders.html:31
-#: plugins/industry/templates/jobs_list.html:42
-#: plugins/pos/templates/pos_details.html:28 templates/auth/account.html:26
-msgid "State"
-msgstr "État"
-
-#: plugins/accounting/templates/report.html:3
-#: plugins/accounting/templates/report.html:7
-msgid "Report"
-msgstr "Rapport"
-
-#: plugins/accounting/templates/report.html:15
-msgid "Summary"
-msgstr "Résumé"
-
-#: plugins/accounting/templates/report.html:16
-msgid "Income"
-msgstr "Revenus"
-
-#: plugins/accounting/templates/report.html:17
-#: plugins/accounting/templates/report.html:238
-msgid "Expenditure"
-msgstr "Dépenses"
-
-#: plugins/accounting/templates/report.html:35
-msgid "Income total"
-msgstr "Total des revenus"
-
-#: plugins/accounting/templates/report.html:39
-msgid "Expenditure total"
-msgstr "Total des dépenses"
-
-#: plugins/accounting/templates/report.html:45
-msgid "Net cash inflow"
-msgstr "Entrées liquidités nettes"
-
-#: plugins/accounting/templates/report.html:128
-msgid "No data"
-msgstr "Pas de données"
-
-#: plugins/accounting/templates/report.html:190
-msgid "Income over time (w/o Corporation Account Withdrawal)"
-msgstr "Revenus dans le temps (sans les retraits de comptes corporatifs"
-
-#: plugins/accounting/templates/report.html:215
-msgid "Expenditures over time (w/o Corporation Account Withdrawal"
-msgstr "Dépenses dans le temps (sans les retraits de comptes corporatifs"
-
-#: plugins/accounting/templates/wallet_journal.html:9
-#: plugins/accounting/templates/wallet_journal.html:20
-msgid "Wallets Journal"
-msgstr "Relevés des Comptes"
-
-#: plugins/accounting/templates/wallet_journal.html:15
-#, fuzzy
-msgid "Journal"
-msgstr "Entrée du journal"
-
-#: plugins/accounting/templates/wallet_journal.html:29
-#: plugins/accounting/templates/wallet_journal.html:87
-#: plugins/accounting/templates/wallet_journal.html:104
-#: plugins/accounting/templates/wallet_transactions.html:29
-#: plugins/accounting/templates/wallet_transactions.html:92
-#: plugins/accounting/templates/wallet_transactions.html:109
-#, fuzzy
-msgid "Amount"
-msgstr "Compte"
-
-#: plugins/accounting/templates/wallet_journal.html:66
-#: plugins/accounting/templates/wallet_journal.html:83
-#: plugins/accounting/templates/wallet_journal.html:100
-#: plugins/accounting/templates/wallet_transactions.html:66
-#: plugins/accounting/templates/wallet_transactions.html:95
-#: plugins/accounting/templates/wallet_transactions.html:112
-#: plugins/accounting/templates/wallets.html:23
-#: plugins/accounting/templates/wallets.html:34
-msgid "Wallet"
-msgstr "Compte"
-
-#: plugins/accounting/templates/wallet_journal.html:72
-#: plugins/accounting/templates/wallet_journal.html:84
-#: plugins/accounting/templates/wallet_journal.html:101
-#: plugins/accounting/templates/wallet_transactions.html:72
-msgid "Operation"
-msgstr "Opération"
-
-#: plugins/accounting/templates/wallet_journal.html:88
-#: plugins/accounting/templates/wallet_journal.html:105
-#: plugins/accounting/templates/wallet_transactions.html:93
-#: plugins/accounting/templates/wallet_transactions.html:110
-#: plugins/accounting/templates/wallets.html:24
-#: plugins/accounting/templates/wallets.html:35
-msgid "Balance"
-msgstr "Solde"
-
-#: plugins/accounting/templates/wallet_journal.html:89
-#: plugins/accounting/templates/wallet_journal.html:106
-#: templates/auth/account_mail_fail.html:11
-#: templates/auth/activation_error.html:11
-msgid "Reason"
-msgstr "Raison"
-
-#: plugins/accounting/templates/wallet_transactions.html:9
-#: plugins/accounting/templates/wallet_transactions.html:20
-msgid "Wallet Transactions"
-msgstr "Transactions du compte"
-
-#: plugins/accounting/templates/wallet_transactions.html:15
-msgid "Transactions"
-msgstr "Transactions"
-
-#: plugins/accounting/templates/wallet_transactions.html:78
-msgid "For"
-msgstr "Pour"
-
-#: plugins/accounting/templates/wallet_transactions.html:91
-#: plugins/accounting/templates/wallet_transactions.html:108
-#: plugins/industry/templates/order_details.html:88
-#: plugins/industry/templates/order_details.html:109
-#: plugins/shop/templates/shop_order.html:62
-#: plugins/shop/templates/shop_order.html:107
-#: plugins/shop/templates/shop_order_details.html:74
-msgid "Quantity"
-msgstr "Quantité"
-
-#: plugins/accounting/templates/wallets.html:3
-#: plugins/accounting/templates/wallets.html:17
-msgid "Corporation Wallets"
-msgstr "Comptes Corporatifs"
-
-#: plugins/assets/templates/assets.html:3
-#: plugins/assets/templates/assets.html:7
-#: plugins/assets/templates/assets_diff.html:7
-#: plugins/assets/templates/assets_no_data.html:3
-#: plugins/assets/templates/assets_no_data.html:7
-msgid "Assets"
-msgstr "Actifs"
-
-#: plugins/assets/templates/assets.html:12
-msgid "Corporation Assets"
-msgstr "Actifs Corporatifs"
-
-#: plugins/assets/templates/assets.html:22
-msgid "Tree"
-msgstr "Arbre"
-
-#: plugins/assets/templates/assets.html:24
-msgid "Expand All"
-msgstr "Déveloper"
-
-#: plugins/assets/templates/assets.html:25
-msgid "Collapse All"
-msgstr "Éffondrer"
-
-#: plugins/assets/templates/assets.html:32
-msgid "Divisions"
-msgstr "Divisions"
-
-#: plugins/assets/templates/assets.html:39
-msgid "Locations"
-msgstr "Emplacements"
-
-#: plugins/assets/templates/assets.html:41
-msgid "In Station"
-msgstr "En station"
-
-#: plugins/assets/templates/assets.html:42
-msgid "In Space"
-msgstr "Dans l'espace"
-
-#: plugins/assets/templates/assets.html:46
-msgid "Apply Filter"
-msgstr "Appliquer filtre"
-
-#: plugins/assets/templates/assets_diff.html:3
-#: plugins/assets/templates/assets_diff.html:14
-msgid "Asset Changes on"
-msgstr "Changement d'actifs le"
-
-#: plugins/assets/templates/assets_diff.html:8
-msgid "Changes"
-msgstr "Changements"
-
-#: plugins/assets/templates/assets_no_data.html:12
-msgid "Assets - &lt;no data&gt;"
-msgstr "Actifs - &lt;pas de données&gt;"
-
-#: plugins/industry/templates/industry_home.html:3
-#: plugins/industry/templates/industry_home.html:7
-#: plugins/industry/templates/jobs_list.html:17
-#: plugins/industry/templates/order_details.html:15
-#: plugins/industry/templates/orders_list.html:14
-#: plugins/industry/templates/catalog/blueprint_details.html:11
-#: plugins/industry/templates/catalog/blueprints.html:11
-#: plugins/industry/templates/catalog/catalog_home.html:7
-#: plugins/industry/templates/catalog/import_blueprints.html:9
-#: plugins/industry/templates/catalog/item_details.html:13
-#: plugins/industry/templates/catalog/items.html:15
-#: plugins/industry/templates/catalog/supplies.html:13
-#: plugins/industry/templates/catalog/supply_details.html:11
-msgid "Industry"
-msgstr "Industrie"
-
-#: plugins/industry/templates/industry_home.html:12
-msgid "Industry Management Home"
-msgstr "Accueil Gestion Industrie"
-
-#: plugins/industry/templates/industry_home.html:20
-msgid "Follow orders"
-msgstr "Suivre les commandes"
-
-#: plugins/industry/templates/industry_home.html:26
-msgid "Follow industry jobs"
-msgstr "Suivres les travaux"
-
-#: plugins/industry/templates/industry_home.html:36
-#: plugins/industry/templates/catalog/catalog_home.html:21
-msgid "Items catalog"
-msgstr "Catalogue des produits"
-
-#: plugins/industry/templates/industry_home.html:42
-#: plugins/industry/templates/catalog/catalog_home.html:27
-#: plugins/industry/templates/catalog/supplies.html:15
-#: plugins/industry/templates/catalog/supply_details.html:13
-msgid "Supplies"
-msgstr "Matières premières"
-
-#: plugins/industry/templates/industry_home.html:48
-#: plugins/industry/templates/catalog/catalog_home.html:33
-msgid "Owned blueprints"
-msgstr "Plans possédés"
-
-#: plugins/industry/templates/jobs_list.html:3
-#: plugins/industry/templates/jobs_list.html:23
-msgid "Jobs list"
-msgstr "Liste des travaux"
-
-#: plugins/industry/templates/jobs_list.html:18
-msgid "Jobs"
-msgstr "Travaux"
-
-#: plugins/industry/templates/jobs_list.html:35
-msgid "Activity"
-msgstr "Activité"
-
-#: plugins/industry/templates/jobs_list.html:37
-#: plugins/industry/templates/jobs_list.html:44
-#: plugins/industry/templates/jobs_list.html:53
-msgid "All"
-msgstr "Tout"
-
-#: plugins/industry/templates/jobs_list.html:49
-msgid "Assignment"
-msgstr "Affectation"
-
-#: plugins/industry/templates/jobs_list.html:51
-msgid "Unassigned"
-msgstr "Non affecté"
-
-#: plugins/industry/templates/jobs_list.html:52
-msgid "Me"
-msgstr "Moi"
-
-#: plugins/industry/templates/order_details.html:3
-#: plugins/shop/templates/shop_order_details.html:3
-msgid "Order #"
-msgstr "Commande #"
-
-#: plugins/industry/templates/order_details.html:3
-msgid "Details"
-msgstr "Détails"
-
-#: plugins/industry/templates/order_details.html:16
-#: plugins/industry/templates/orders_list.html:15
-#: plugins/shop/templates/shop_order.html:18
-msgid "Orders"
-msgstr "Commandes"
-
-#: plugins/industry/templates/order_details.html:32
-#: plugins/industry/templates/catalog/import_blueprints.html:40
-#: plugins/industry/templates/catalog/item_details.html:124
-#: plugins/industry/templates/catalog/item_details.html:139
-#: plugins/industry/templates/catalog/items.html:132
-#: plugins/industry/templates/catalog/items.html:151
-#: plugins/shop/templates/shop_order.html:178
-#: plugins/shop/templates/shop_order.html:286
-#: plugins/shop/templates/shop_order_details.html:32
-msgid "Error"
-msgstr "Erreur"
-
-#: plugins/industry/templates/order_details.html:38
-#: plugins/shop/templates/shop_order_details.html:38
-msgid "Actions"
-msgstr "Actions"
-
-#: plugins/industry/templates/order_details.html:47
-msgid "Reject Order"
-msgstr "Rejeter Commande"
-
-#: plugins/industry/templates/order_details.html:48
-#: plugins/shop/templates/shop_order_details.html:48
-msgid "Abort"
-msgstr "Annuler"
-
-#: plugins/industry/templates/order_details.html:57
-msgid "Order details"
-msgstr "Détails Commande"
-
-#: plugins/industry/templates/order_details.html:59
-#: plugins/shop/templates/shop_order_details.html:59
-msgid "Total Quote"
-msgstr "Prix total"
-
-#: plugins/industry/templates/order_details.html:61
-#: plugins/industry/templates/catalog/item_details.html:33
-msgid "Production Cost"
-msgstr "Coût de production"
-
-#: plugins/industry/templates/order_details.html:63
-#: plugins/shop/templates/shop_order_details.html:60
-msgid "Creation Date"
-msgstr "Date de création"
-
-#: plugins/industry/templates/order_details.html:67
-msgid "Responsible"
-msgstr "Responsable"
-
-#: plugins/industry/templates/order_details.html:69
-#: plugins/shop/templates/shop_order_details.html:63
-msgid "Delivered by"
-msgstr "Livré par"
-
-#: plugins/industry/templates/order_details.html:71
-#: plugins/shop/templates/shop_order_details.html:64
-msgid "Delivery Date"
-msgstr "Date de livraison"
-
-#: plugins/industry/templates/order_details.html:77
-msgid "Ordered Items"
-msgstr "Objets commandés"
-
-#: plugins/industry/templates/order_details.html:78
-msgid "Bill Of Materials"
-msgstr "Liste des matériaux"
-
-#: plugins/industry/templates/order_details.html:79
-msgid "Jobs Breakdown"
-msgstr "Décomposition des travaux"
-
-#: plugins/industry/templates/order_details.html:86
-#: plugins/shop/templates/shop_order.html:59
-#: plugins/shop/templates/shop_order_details.html:72
-msgid "Icon"
-msgstr "Icône"
-
-#: plugins/industry/templates/order_details.html:87
-#: plugins/shop/templates/shop_order.html:60
-#: plugins/shop/templates/shop_order_details.html:73
-msgid "Item"
-msgstr "Objet"
-
-#: plugins/industry/templates/order_details.html:99
-msgid "No items in order"
-msgstr "Pas d'objets dans la commande"
-
-#: plugins/industry/templates/order_details.html:108
-msgid "Material"
-msgstr "Matériaux"
-
-#: plugins/industry/templates/order_details.html:117
-msgid "No supplies"
-msgstr "Pas de fournitures"
-
-#: plugins/industry/templates/order_details.html:136
-#: plugins/shop/templates/shop_order_details.html:99
-msgid "Add comment"
-msgstr "Ajouter commentaire"
-
-#: plugins/industry/templates/order_details.html:143
-#: plugins/shop/templates/shop_order_details.html:106
-msgid "Order Status"
-msgstr "État de la commande"
-
-#: plugins/industry/templates/order_details.html:144
-#: plugins/shop/templates/shop_order_details.html:107
-msgid "User"
-msgstr "Utilisateur"
-
-#: plugins/industry/templates/order_details.html:145
-#: plugins/shop/templates/shop_order_details.html:108
-msgid "Comment"
-msgstr "Commentaire"
-
-#: plugins/industry/templates/orders_list.html:3
-#: plugins/shop/templates/shop_myorders.html:3
-msgid "Order list"
-msgstr "Liste des commandes"
-
-#: plugins/industry/templates/orders_list.html:20
-msgid "Orders list"
-msgstr "Liste des commandes"
-
-#: plugins/industry/templates/catalog/blueprint_details.html:12
-#: plugins/industry/templates/catalog/blueprints.html:12
-#: plugins/industry/templates/catalog/catalog_home.html:3
-#: plugins/industry/templates/catalog/catalog_home.html:8
-#: plugins/industry/templates/catalog/import_blueprints.html:10
-#: plugins/industry/templates/catalog/item_details.html:14
-#: plugins/industry/templates/catalog/items.html:16
-#: plugins/industry/templates/catalog/supplies.html:14
-#: plugins/industry/templates/catalog/supply_details.html:12
-msgid "Catalog"
-msgstr "Catalogue"
-
-#: plugins/industry/templates/catalog/blueprint_details.html:13
-#: plugins/industry/templates/catalog/blueprints.html:13
-#: plugins/industry/templates/catalog/import_blueprints.html:11
-msgid "Blueprints"
-msgstr "Plans"
-
-#: plugins/industry/templates/catalog/blueprints.html:3
-#: plugins/industry/templates/catalog/blueprints.html:17
-msgid "Blueprints Catalog"
-msgstr "Catalogue des plans"
-
-#: plugins/industry/templates/catalog/blueprints.html:28
-#: plugins/industry/templates/catalog/import_blueprints.html:30
-msgid "All Blueprints"
-msgstr "Tout les plans"
-
-#: plugins/industry/templates/catalog/blueprints.html:29
-#: plugins/industry/templates/catalog/import_blueprints.html:31
-msgid "Only Originals"
-msgstr "Seulement les originaux"
-
-#: plugins/industry/templates/catalog/blueprints.html:30
-#: plugins/industry/templates/catalog/import_blueprints.html:32
-msgid "Only Copies"
-msgstr "Seulement les copies"
-
-#: plugins/industry/templates/catalog/blueprints.html:32
-msgid "Import blueprints from corp assets"
-msgstr "Importer les plans depuis les actifs corporatifs"
-
-#: plugins/industry/templates/catalog/catalog_home.html:13
-msgid "Industry Catalog Management"
-msgstr "Gestion du catalogue industriel"
-
-#: plugins/industry/templates/catalog/import_blueprints.html:4
-msgid "Bpo"
-msgstr "PO"
-
-#: plugins/industry/templates/catalog/import_blueprints.html:12
-msgid "Import from corp assets"
-msgstr "Importer depuis les actifs corporatifs"
-
-#: plugins/industry/templates/catalog/import_blueprints.html:18
-msgid "Blueprints found in corporation assets"
-msgstr "Plans trouvés dans les actifs corporatifs"
-
-#: plugins/industry/templates/catalog/import_blueprints.html:46
-msgid "Success"
-msgstr "Succès"
-
-#: plugins/industry/templates/catalog/import_blueprints.html:46
-msgid "blueprints imported"
-msgstr "plans importés"
-
-#: plugins/industry/templates/catalog/import_blueprints.html:74
-msgid "Import All BPOs"
-msgstr "Importer tout les originaux"
-
-#: plugins/industry/templates/catalog/import_blueprints.html:76
-msgid "Import Selected Blueprints"
-msgstr "Importer les plans sélectionnés"
-
-#: plugins/industry/templates/catalog/item_details.html:15
-#: plugins/industry/templates/catalog/items.html:17
-msgid "Items"
-msgstr "Objets"
-
-#: plugins/industry/templates/catalog/item_details.html:29
-msgid "Available in catalog"
-msgstr "Disponible au catalogue"
-
-#: plugins/industry/templates/catalog/item_details.html:31
-msgid "Fixed Price"
-msgstr "Prix fixé"
-
-#: plugins/industry/templates/catalog/item_details.html:35
-msgid "Public Price"
-msgstr "Prix public"
-
-#: plugins/industry/templates/catalog/item_details.html:42
-msgid "Owned Blueprints"
-msgstr "Plans possédés"
-
-#: plugins/industry/templates/catalog/item_details.html:48
-msgid "ME"
-msgstr "EM"
-
-#: plugins/industry/templates/catalog/item_details.html:49
-msgid "PE"
-msgstr "EP"
-
-#: plugins/industry/templates/catalog/item_details.html:50
-msgid "Copy"
-msgstr "Copie"
-
-#: plugins/industry/templates/catalog/item_details.html:51
-msgid "Runs"
-msgstr "Répétitions"
-
-#: plugins/industry/templates/catalog/item_details.html:58
-msgid "Blueprint details"
-msgstr "Détails plan"
-
-#: plugins/industry/templates/catalog/item_details.html:66
-msgid "Delete blueprint"
-msgstr "Éffacer plan"
-
-#: plugins/industry/templates/catalog/item_details.html:78
-msgid "Add New Blueprint"
-msgstr "Ajouter un nouveau plan"
-
-#: plugins/industry/templates/catalog/item_details.html:103
-#: plugins/industry/templates/catalog/items.html:101
-msgid "Failed to change availability!"
-msgstr "Echec du changement de disponibilité"
-
-#: plugins/industry/templates/catalog/item_details.html:111
-#: plugins/industry/templates/catalog/item_details.html:152
-#: plugins/industry/templates/catalog/item_details.html:158
-#: plugins/industry/templates/catalog/item_details.html:172
-#: plugins/industry/templates/catalog/items.html:110
-msgid "Click to edit"
-msgstr "Cliquez pour éditer"
-
-#: plugins/industry/templates/catalog/item_details.html:166
-msgid "Failed to change copy"
-msgstr "Echec du changement de copie"
-
-#: plugins/industry/templates/catalog/item_details.html:182
-msgid "Are you sure you want to delete this blueprint"
-msgstr "Êtes vous sur de vouloir supprimer ce plan"
-
-#: plugins/industry/templates/catalog/item_details.html:192
-msgid "Failed to delete blueprint"
-msgstr "Echec de la suppression du plan"
-
-#: plugins/industry/templates/catalog/item_details.html:217
-msgid "Failed to add blueprint."
-msgstr "Echec de l'ajout du plan"
-
-#: plugins/industry/templates/catalog/items.html:4
-#: plugins/industry/templates/catalog/items.html:21
-msgid "Items Catalog"
-msgstr "Catalogue des objets"
-
-#: plugins/industry/templates/catalog/items.html:33
-msgid "All Items"
-msgstr "Tout les objets"
-
-#: plugins/industry/templates/catalog/items.html:35
-msgid "Available Items"
-msgstr "Objets disponibles"
-
-#: plugins/industry/templates/catalog/items.html:121
-#: plugins/industry/templates/catalog/items.html:140
-msgid "Click to update"
-msgstr "Cliquez pour mettre a jour"
-
-#: plugins/industry/templates/catalog/supplies.html:3
-#: plugins/industry/templates/catalog/supplies.html:19
-msgid "Supplies Catalog"
-msgstr "Catalogue des fournitures"
-
-#: plugins/industry/templates/catalog/supplies.html:30
-msgid "All Supplies"
-msgstr "Toutes les fournitures"
-
-#: plugins/industry/templates/catalog/supplies.html:31
-msgid "Only Manual-Update"
-msgstr "Mise a jour manuelle seulement"
-
-#: plugins/industry/templates/catalog/supplies.html:32
-msgid "Only Auto-Update"
-msgstr "Mise a jour automatique seulement"
-
-#: plugins/industry/templates/catalog/supplies.html:35
-msgid "Filter"
-msgstr "Filtre"
-
-#: plugins/industry/templates/catalog/supplies.html:77
-msgid "Update price"
-msgstr "Mettre a jour le prix"
-
-#: plugins/industry/templates/catalog/supply_details.html:26
-msgid "Auto-Update"
-msgstr "Mise a jour automatique"
-
-#: plugins/industry/templates/catalog/supply_details.html:28
-#, fuzzy
-msgid "Supply Source"
-msgstr "Source de fourniture"
-
-#: plugins/industry/templates/catalog/supply_details.html:39
-msgid "Price History"
-msgstr "Historique prix"
-
-#: plugins/pos/templates/pos_details.html:3
-msgid "POS Details"
-msgstr "Détail POS"
-
-#: plugins/pos/templates/pos_details.html:11
-#: plugins/pos/templates/pos_list.html:4
-#: plugins/pos/templates/pos_list.html:13
-msgid "POS"
-msgstr "POS"
-
-#: plugins/pos/templates/pos_details.html:30
-msgid "Online since"
-msgstr "En ligne depuis"
-
-#: plugins/pos/templates/pos_details.html:32
-msgid "POS type"
-msgstr "Type POS"
-
-#: plugins/pos/templates/pos_details.html:47
-msgid "Access Control"
-msgstr "Controle d'accès"
-
-#: plugins/pos/templates/pos_details.html:49
-msgid "Allow corp members in force field"
-msgstr "Autoriser les membres de la corporation dans le champ de force"
-
-#: plugins/pos/templates/pos_details.html:51
-msgid "Allow ally members in force field"
-msgstr "Autoriser les alliés dans le champ de force"
-
-#: plugins/pos/templates/pos_details.html:53
-msgid "Can view fuel bay"
-msgstr "Peut voir la soute a carburant"
-
-#: plugins/pos/templates/pos_details.html:55
-msgid "Can take in fuel bay"
-msgstr "Peut prendre dans la soute à carburant"
-
-#: plugins/pos/templates/pos_details.html:57
-msgid "Can anchor modules"
-msgstr "Peut ancrer des modules"
-
-#: plugins/pos/templates/pos_details.html:59
-msgid "Can unanchor modules"
-msgstr "peut désancrer des modules"
-
-#: plugins/pos/templates/pos_details.html:61
-msgid "Can online modules"
-msgstr "Peut activer des modules"
-
-#: plugins/pos/templates/pos_details.html:63
-msgid "Can offline modules"
-msgstr "peut désactiver des modules"
-
-#: plugins/pos/templates/pos_details.html:68
-msgid "Combat Settings"
-msgstr "Configuration de combat"
-
-#: plugins/pos/templates/pos_details.html:71
-msgid "Attack when standing is below"
-msgstr "Attaquer quand la relation est sous"
-
-#: plugins/pos/templates/pos_details.html:72
-msgid "use standings from"
-msgstr "utiliser la relation de"
-
-#: plugins/pos/templates/pos_details.html:74
-msgid "Attack on bad standing"
-msgstr "Attaquer sur mauvaise relation"
-
-#: plugins/pos/templates/pos_details.html:78
-msgid "Attack when security status is below"
-msgstr "Attaquer quand le status de sécurité est sous"
-
-#: plugins/pos/templates/pos_details.html:81
-msgid "Attack when security status is bad"
-msgstr "Attaquer quand le statut de sécurité est mauvais"
-
-#: plugins/pos/templates/pos_details.html:84
-msgid "Attack on concord flag"
-msgstr "Attaquer sur signalement CONCORD"
-
-#: plugins/pos/templates/pos_details.html:86
-msgid "Attack on aggression"
-msgstr "Attaquer sur aggression"
-
-#: plugins/pos/templates/pos_details.html:88
-msgid "Attack war targets"
-msgstr "Attaquer les cibles en guerre"
-
-#: plugins/pos/templates/pos_details.html:94
-msgid "Fuel Levels"
-msgstr "Niveau de carburant"
-
-#: plugins/pos/templates/pos_details.html:142
-msgid "Add/Remove"
-msgstr "Ajouter/Retirer"
-
-#: plugins/pos/templates/pos_details.html:251
-msgid "Click to Change Name..."
-msgstr "Cliquez pour changer le nom"
-
-#: plugins/pos/templates/pos_list.html:28
-#, fuzzy
-msgid "Display mode"
-msgstr "Montrer"
-
-#: plugins/pos/templates/pos_list.html:31
-msgid "Show remaining fuel quantities"
-msgstr "Montre la quantité de carburant restante"
-
-#: plugins/pos/templates/pos_list.html:31
-#, fuzzy
-msgid "Quantities"
-msgstr "Quantité"
-
-#: plugins/pos/templates/pos_list.html:33
-msgid "Show remaining fuel time (in days)"
-msgstr "Montre la quantité de carburant restante (en jours)"
-
-#: plugins/pos/templates/pos_list.html:33
-msgid "Days"
-msgstr "Jours"
-
-#: plugins/pos/templates/pos_list.html:35
-msgid "Show remaining fuel time (in hours)"
-msgstr "Montre la quantité de carburant restante (en heures)"
-
-#: plugins/shop/templates/shop.html:3 plugins/shop/templates/shop.html:13
-#: plugins/shop/templates/shop_myorders.html:14
-#: plugins/shop/templates/shop_order.html:17
-#: plugins/shop/templates/shop_order_details.html:15
-msgid "Shop"
-msgstr "Boutique"
-
-#: plugins/shop/templates/shop.html:18
-msgid "Welcome to our EVE-Online shop"
-msgstr "Bienvenue dans notre boutique EVE-Online"
-
-#: plugins/shop/templates/shop.html:24
-msgid "Go buy some stuff."
-msgstr "Acheter des choses."
-
-#: plugins/shop/templates/shop.html:26
-msgid "Create a new order"
-msgstr "Créer une commande"
-
-#: plugins/shop/templates/shop.html:30
-msgid ""
-"Here, you can track the progress of your current orders or consult old ones."
-msgstr ""
-"Ici vous pouvez suivre l'état de vos commandes en cours ou consulter les anciennes"
-
-#: plugins/shop/templates/shop.html:32
-msgid "See/follow my orders"
-msgstr "Voir/Suivre mes commandes"
-
-#: plugins/shop/templates/shop_myorders.html:15
-#: plugins/shop/templates/shop_myorders.html:20
-#: plugins/shop/templates/shop_order_details.html:16
-msgid "My Orders"
-msgstr "Mes Commandes"
-
-#: plugins/shop/templates/shop_order.html:3
-#: plugins/shop/templates/shop_order.html:23
-msgid "Create New Order"
-msgstr "Créer Nouvelle Commande"
-
-#: plugins/shop/templates/shop_order.html:21
-msgid "Modify"
-msgstr "Modifier"
-
-#: plugins/shop/templates/shop_order.html:30
-msgid "Click here to view the orders life-cycle"
-msgstr "Cliquez ici pour voir le cycle de vie d'une commande"
-
-#: plugins/shop/templates/shop_order.html:34
-msgid "Start typing to search items..."
-msgstr "Commencez a taper pour rechercher des objets..."
-
-#: plugins/shop/templates/shop_order.html:35
-msgid "Add item to my order"
-msgstr "Ajouter l'objet dans ma commande"
-
-#: plugins/shop/templates/shop_order.html:36
-#: plugins/shop/templates/shop_order.html:109
-msgid "Import EFT Fitting"
-msgstr "Importer une configuration EFT"
-
-#: plugins/shop/templates/shop_order.html:49
-#: plugins/shop/templates/shop_order.html:94
-msgid "Loading..."
-msgstr "Chargement..."
-
-#: plugins/shop/templates/shop_order.html:61
-msgid "Unit Price"
-msgstr "Prix unitaire"
-
-#: plugins/shop/templates/shop_order.html:63
-msgid "Remove"
-msgstr "Retirer"
-
-#: plugins/shop/templates/shop_order.html:77
-msgid "Your shopping cart is empty."
-msgstr "Votre panier est vide."
-
-#: plugins/shop/templates/shop_order.html:86
-msgid "Estimated Total Price"
-msgstr "Prix total estimé"
-
-#: plugins/shop/templates/shop_order.html:90
-msgid ""
-"Once your order is created, you will be able to modify it before confirming "
-"it. See the orders life-cycle for more info."
-msgstr ""
-"Une fois la commande créée, vous pourrez la modifier avant de la confirmer. "
-"Voir le cycle de vie des commandes pour plus d'info."
-
-#: plugins/shop/templates/shop_order.html:92
-msgid "Submit Order"
-msgstr "Soumettre commande"
-
-#: plugins/shop/templates/shop_order.html:280
-msgid "Warning"
-msgstr "Attention"
-
-#: plugins/shop/templates/shop_order.html:281
-msgid "Those items are not available in the shop"
-msgstr "Ces objets ne sont pas disponibles dans la boutique"
-
-#: plugins/shop/templates/shop_order_details.html:3
-msgid " Details"
-msgstr "Détails"
-
-#: plugins/shop/templates/shop_order_details.html:47
-msgid "Cancel Order"
-msgstr "Annuler commande"
-
-#: plugins/shop/templates/shop_order_details.html:62
-msgid "Manufactured by"
-msgstr "Fabriqué par"
-
-#: plugins/shop/templates/shop_order_details.html:68
-msgid "Ordered items"
-msgstr "Objets commandés"
-
-#: plugins/shop/templates/shop_order_details.html:85
-msgid "No items in order."
-msgstr "Pas d'objets dans la commande"
-
-#: plugins/shop/templates/shop_order_details.html:98
-msgid "Please type some text..."
-msgstr "Entrez du texte..."
+"Content-Transfer-Encoding: 8bit\n"
 
 #: templates/404.html:3 templates/404.html.py:7
 msgid "Resource not found"
-msgstr "Ressource introuvable"
+msgstr ""
 
 #: templates/404.html:9
 msgid "Sorry but the page you requested:"
-msgstr "Desolé, mais la page que vous avez demandé:"
+msgstr ""
 
 #: templates/404.html:13
 msgid "cannot be found on the server."
-msgstr "ne peut etre trouvée sur le serveur"
+msgstr ""
 
 #: templates/500.html:3 templates/500.html.py:7
 msgid "Server Internal Error"
-msgstr "Erreur Interne Serveur"
+msgstr ""
 
 #: templates/500.html:9
 msgid "Ooops, the server just failed in computing your request."
-msgstr "Oups, le serveur a échoué lors de la réponse à votre requête."
+msgstr ""
 
 #: templates/500.html:11
 msgid "The administrators have been notified."
-msgstr "Les administrateurs ont été prévenus"
+msgstr ""
 
-#: templates/base.html:50 templates/auth/add_api.html:9
-#: templates/auth/add_binding.html:9 templates/auth/edit_api.html:9
-#: templates/auth/password_change.html:8
-#: templates/auth/password_change_done.html:8
-#: templates/auth/password_reset.html:10
-#: templates/auth/password_reset_complete.html:10
-#: templates/auth/password_reset_confirm.html:10
-#: templates/auth/password_reset_done.html:10
+#: templates/base.html:70
 msgid "Account"
-msgstr "Compte"
+msgstr ""
 
-#: templates/base.html:51
-msgid "Log out from ECM"
-msgstr "Se déconnecter d'ECM"
-
-#: templates/base.html:54 templates/auth/create_account.html:10
-msgid "Create Account"
-msgstr "Créer un compte"
-
-#: templates/base.html:57
-msgid "Restricted area :-)"
-msgstr "Zone Restreinte :-)"
-
-#: templates/base.html:57
+#: templates/base.html:72
 msgid "Administration"
-msgstr "Administration"
+msgstr ""
 
-#: templates/base.html:61
-msgid "Logged in as"
-msgstr "Connecté en tant que"
+#: templates/base.html:75
+msgid "Logout"
+msgstr ""
 
-#: templates/base.html:62
-msgid "Please log in."
-msgstr "Connectez vous s'il vous plait"
-
-#: templates/base.html:78 templates/common/corp.html:13
+#: templates/base.html:93
 msgid "Message Of The Day"
-msgstr "Message du jour"
+msgstr ""
 
-#: templates/base.html:79
+#: templates/base.html:94
 msgid "read more"
-msgstr "Lire plus"
+msgstr ""
 
-#: templates/base.html:113
+#: templates/base.html:125
 msgid "Project website"
-msgstr "Site du projet"
+msgstr ""
 
-#: templates/base.html:115
+#: templates/base.html:127
 msgid "Powered by"
-msgstr "Propulsé par"
+msgstr ""
 
-#: templates/auth/account.html:4 templates/auth/account.html.py:9
+#: templates/ecm/datatables.html:10
+msgid "Loading data from server..."
+msgstr ""
+
+#: templates/ecm/auth/account.html:4
 msgid "User Profile"
-msgstr "Profil utilisateur"
+msgstr ""
 
-#: templates/auth/account.html:17
+#: templates/ecm/auth/account.html:8
+msgid "User Account"
+msgstr ""
+
+#: templates/ecm/auth/account.html:11
 msgid ""
 "Click <a href=\"/account/passwordchange/\">here</a> to change your password."
 msgstr ""
-"cliquez <a href=\"/account/passwordchange/\">ici</a> pour changer votre mot "
-"de passe"
 
-#: templates/auth/account.html:21
-#, fuzzy
+#: templates/ecm/auth/account.html:15
 msgid "EVE API Keys"
-msgstr "Clés API EVE"
+msgstr ""
 
-#: templates/auth/account.html:25
+#: templates/ecm/auth/account.html:19
 msgid "KeyID"
-msgstr "ID clé"
+msgstr ""
 
-#: templates/auth/account.html:35 templates/auth/account.html.py:56
-#: templates/auth/account.html:79
+#: templates/ecm/auth/account.html:20
+msgid "State"
+msgstr ""
+
+#: templates/ecm/auth/account.html:29 templates/ecm/auth/account.html.py:50
+#: templates/ecm/auth/account.html:73
 msgid "Delete"
-msgstr "Effacer"
+msgstr ""
 
-#: templates/auth/account.html:69
+#: templates/ecm/auth/account.html:41
+msgid "Name"
+msgstr ""
+
+#: templates/ecm/auth/account.html:63
 msgid "Application"
-msgstr "Application"
+msgstr ""
 
-#: templates/auth/account.html:70 views/account/forms.py:294
+#: templates/ecm/auth/account.html:64 views/account/forms.py:294
 msgid "External Username"
-msgstr "Nom d'utilisateur externe"
+msgstr ""
 
-#: templates/auth/account.html:80 templates/auth/add_binding.html:27
+#: templates/ecm/auth/account.html:72
+msgid "None"
+msgstr ""
+
+#: templates/ecm/auth/account.html:74 templates/ecm/auth/add_binding.html:21
 msgid "Bind"
-msgstr "Lier"
+msgstr ""
 
-#: templates/auth/account.html:92
+#: templates/ecm/auth/account.html:86
 msgid "Are you sure you want to get rid of"
-msgstr "Etes vous sur de vouloir vous débarasser de "
+msgstr ""
 
-#: templates/auth/account.html:93
-#, fuzzy
+#: templates/ecm/auth/account.html:87
 msgid ""
 "If this character is still attached to one of your registered API Keys, it "
 "will be associated with your profile again at next scan."
 msgstr ""
-"Si ce personnage est encore lié à une de vos clés API enregistrées, il sera "
-"associé de nouveau avec votre profil au prochain scan"
 
-#: templates/auth/account.html:99
+#: templates/ecm/auth/account.html:93
 msgid "Are you sure you want to delete this API Key?"
-msgstr "Êtes vous sur de vouloir effacer cette clé API ?"
+msgstr ""
 
-#: templates/auth/account.html:105
+#: templates/ecm/auth/account.html:99
 msgid "Are you sure you want to delete this binding?"
-msgstr "Êtes vous sur de vouloir effacer cette liaison ?"
+msgstr ""
 
-#: templates/auth/account_activated.html:4
-#: templates/auth/account_created.html:5
-#: templates/auth/account_created.html:10
+#: templates/ecm/auth/account_activated.html:4
+#: templates/ecm/auth/account_created.html:5
+#: templates/ecm/auth/account_created.html:10
 msgid "Account Created"
-msgstr "Compte crée"
+msgstr ""
 
-#: templates/auth/account_activated.html:9
+#: templates/ecm/auth/account_activated.html:8
 msgid "Account Activated"
-msgstr "Compte activé"
+msgstr ""
 
-#: templates/auth/account_activated.html:11
-#: templates/auth/account_created.html:12
+#: templates/ecm/auth/account_activated.html:11
+#: templates/ecm/auth/account_created.html:13
 msgid "Congratulations"
-msgstr "Félicitations"
+msgstr ""
 
-#: templates/auth/account_mail_fail.html:3
-#: templates/auth/account_mail_fail.html:7
-#: templates/auth/activation_error.html:3
-#: templates/auth/activation_error.html:7
+#: templates/ecm/auth/account_created.html:14
+msgid ""
+"You successfuly created an account. An activation email has been sent to"
+msgstr ""
+
+#: templates/ecm/auth/account_created.html:15
+msgid "You should receive it witin minutes from now."
+msgstr ""
+
+#: templates/ecm/auth/account_mail_fail.html:3
+#: templates/ecm/auth/account_mail_fail.html:9
+#: templates/ecm/auth/activation_error.html:3
+#: templates/ecm/auth/activation_error.html:8
 msgid "Activation Error"
-msgstr "Erreur D'activation"
+msgstr ""
 
-#: templates/auth/account_mail_fail.html:9
-msgid "Sorry"
-msgstr "Désolé"
+#: templates/ecm/auth/account_mail_fail.html:13
+#, python-format
+msgid ""
+" \n"
+"Sorry %(form.cleaned_data.username)s, but the server was not able to send an "
+"email %(form.cleaned_data.email)s.\n"
+msgstr ""
 
-#: templates/auth/account_mail_fail.html:9
-msgid "but the server was not able to send an email"
-msgstr "mais le serveur n'a pas pu envoyer d'e-mail"
+#: templates/ecm/auth/account_mail_fail.html:18
+#: templates/ecm/auth/activation_error.html:13
+msgid "Reason:"
+msgstr ""
 
-#: templates/auth/account_mail_fail.html:12
-msgid "Please contact the administrator"
-msgstr "Merci de contacter l'administrateur"
+#: templates/ecm/auth/account_mail_fail.html:19
+msgid "Please contact the administrator."
+msgstr ""
 
-#: templates/auth/activation_email.html:6
-#: templates/auth/activation_email.txt:3
-#: templates/auth/password_reset_email.txt:5
+#: templates/ecm/auth/activation_email.html:6
+#: templates/ecm/auth/activation_email.txt:3
+#: templates/ecm/auth/password_reset_email.txt:5
 msgid "Greetings"
-msgstr "Bonjour"
+msgstr ""
 
-#: templates/auth/activation_email.html:8
-#: templates/auth/activation_email.txt:5
-msgid "You created a new account on"
-msgstr "Vous avez crée un nouveau compte le"
+#: templates/ecm/auth/activation_email.html:9
+#, python-format
+msgid ""
+"\n"
+"You created a new account on <b>%(my_corp|default:'NO CORP YET')s</b> <i>EVE "
+"Corporation Management</i>. \n"
+"Please click on the following link in order to activate your account.\n"
+msgstr ""
 
-#: templates/auth/activation_email.html:9
-#: templates/auth/activation_email.txt:6
-msgid "Please click on the following link in order to activate your account."
-msgstr "Merci de cliquer le lien suivant pour activer votre compte"
+#: templates/ecm/auth/activation_email.html:18
+#: templates/ecm/auth/activation_email.txt:10
+#, python-format
+msgid ""
+"N.B.: You have %(expiration_days)s day%(expiration_days|pluralize)s to "
+"activate your account"
+msgstr ""
 
-#: templates/auth/activation_email.html:13
-#: templates/auth/activation_email.txt:10
-msgid "N.B.: You have"
-msgstr "N.B: Vous avez"
-
-#: templates/auth/activation_email.html:13
-msgid "to activate your account."
-msgstr "Pour activer votre compte"
-
-#: templates/auth/activation_email.html:15
-#: templates/auth/activation_email.txt:12
-#: templates/auth/password_reset_email.txt:15
+#: templates/ecm/auth/activation_email.html:21
+#: templates/ecm/auth/activation_email.txt:12
+#: templates/ecm/auth/password_reset_email.txt:15
 msgid "Thank you and see you in space :-)"
-msgstr "Merci, et à plus tard dans l'espace :-)"
+msgstr ""
 
-#: templates/auth/activation_email_subject.txt:3
+#: templates/ecm/auth/activation_email.txt:5
+#, python-format
+msgid ""
+"You created a new account on %(corp_name)s's EVE Corporation Management. \n"
+"Please click on the following link in order to activate your account."
+msgstr ""
+
+#: templates/ecm/auth/activation_email_subject.txt:3
 msgid "New account activation"
-msgstr "Activation d'un nouveau compte"
+msgstr ""
 
-#: templates/auth/activation_error.html:9
+#: templates/ecm/auth/activation_error.html:11
 msgid ""
 "Sorry, but the server was not able to activate this account with the "
 "following activation key:"
 msgstr ""
-"Désolé, mais le serveur n'a pu activer ce compte avec la clé d'activation "
-"suivante"
 
-#: templates/auth/add_api.html:4 templates/auth/add_api.html.py:10
+#: templates/ecm/auth/add_api.html:4
 msgid "Add API Key"
-msgstr "Ajouter clé API"
+msgstr ""
 
-#: templates/auth/add_api.html:19 templates/auth/create_account.html:31
-#: templates/auth/edit_api.html:19
+#: templates/ecm/auth/add_api.html:12
+#: templates/ecm/auth/create_account.html:31
+#: templates/ecm/auth/edit_api.html:13
 msgid "Create a new API Key on EVE-Online support website"
-msgstr "Créer une nouvelle clé API sur le site de support de EVE-Online"
+msgstr ""
 
-#: templates/auth/add_api.html:31 templates/auth/create_account.html:44
-#: templates/auth/edit_api.html:31 templates/common/edit_director_api.html:24
+#: templates/ecm/auth/add_api.html:24
+#: templates/ecm/auth/create_account.html:44
+#: templates/ecm/auth/edit_api.html:25
+#: templates/ecm/common/edit_director_api.html:22
 msgid "Submit Information"
-msgstr "Soumettre les informations"
+msgstr ""
 
-#: templates/auth/add_binding.html:4 templates/auth/add_binding.html.py:10
-#: templates/auth/add_binding.html:15
+#: templates/ecm/auth/add_binding.html:4 templates/ecm/auth/add_binding.html:8
 msgid "Create Binding to External Application"
-msgstr "Créer une liaison à une application externe"
+msgstr ""
 
-#: templates/auth/create_account.html:3
+#: templates/ecm/auth/create_account.html:3
 msgid "User Signup"
-msgstr "Enregistrement utilisateur"
+msgstr ""
 
-#: templates/auth/create_account.html:28
+#: templates/ecm/auth/create_account.html:9
+msgid "Create Account"
+msgstr ""
+
+#: templates/ecm/auth/create_account.html:28
 msgid "EVE-Online API Key"
-msgstr "Clé API EVE-Online"
+msgstr ""
 
-#: templates/auth/create_account.html:39
+#: templates/ecm/auth/create_account.html:39
 msgid "Anti-Robot Security"
-msgstr "Sécurité anti-robot"
+msgstr ""
 
-#: templates/auth/edit_api.html:4 templates/auth/edit_api.html.py:10
+#: templates/ecm/auth/edit_api.html:4
 msgid "Edit API Key"
-msgstr "Éditer clef API"
+msgstr ""
 
-#: templates/auth/forbidden.html:3 templates/auth/forbidden.html.py:7
+#: templates/ecm/auth/forbidden.html:3 templates/ecm/auth/forbidden.html:8
 msgid "Forbidden Access"
-msgstr "Accès interdit"
+msgstr ""
 
-#: templates/auth/forbidden.html:9
+#: templates/ecm/auth/forbidden.html:11
 msgid "You don't have permission to get URL"
-msgstr "Vous n'avez pas la permission d'accéder a l'URL"
+msgstr ""
 
-#: templates/auth/forbidden.html:13
+#: templates/ecm/auth/forbidden.html:15
 msgid "from this server."
-msgstr "De ce serveur"
+msgstr ""
 
-#: templates/auth/login.html:3
-msgid "Login."
-msgstr "Connexion."
+#: templates/ecm/auth/login.html:3 templates/ecm/auth/login.html.py:26
+msgid "Login"
+msgstr ""
 
-#: templates/auth/login.html:11
+#: templates/ecm/auth/login.html:9
 msgid "Please login"
-msgstr "Connectez vous s'il vous plaît."
+msgstr ""
 
-#: templates/auth/login.html:23
+#: templates/ecm/auth/login.html:19
+msgid "username"
+msgstr ""
+
+#: templates/ecm/auth/login.html:20
+msgid "password"
+msgstr ""
+
+#: templates/ecm/auth/login.html:23
 msgid "Remember Me"
-msgstr "Mémorise moi"
+msgstr ""
 
-#: templates/auth/login.html:28
-msgid "Not a member yet, you can"
-msgstr "Pas encore un membre, vous pouvez"
-
-#: templates/auth/login.html:28
-msgid "create an account"
-msgstr "Créer un compte"
-
-#: templates/auth/login.html:29
-msgid "Forgot your password? Click"
-msgstr "Mot de passe oublié ? cliquez "
-
-#: templates/auth/login.html:29
-msgid "here to reset it"
-msgstr "ici pour le remettre a zéro"
-
-#: templates/auth/password_change.html:4 templates/auth/password_change.html:9
-#: templates/auth/password_change.html:14
-#: templates/auth/password_change_done.html:9
-msgid "Password Change"
-msgstr "Modification du mot de passe"
-
-#: templates/auth/password_change.html:31
-#: templates/auth/password_reset_confirm.html:33
-msgid "Change my password"
-msgstr "Modification de mon mot de passe"
-
-#: templates/auth/password_change_done.html:4
-#: templates/auth/password_change_done.html:14
-msgid "Password Change Successful"
-msgstr "Modification du mot de passe réussie"
-
-#: templates/auth/password_change_done.html:17
-msgid "Your password was changed."
-msgstr "Votre mot de passe a été modifié"
-
-#: templates/auth/password_change_done.html:18
-msgid "Go back to your"
-msgstr "Retournez a votre"
-
-#: templates/auth/password_reset.html:5 templates/auth/password_reset.html:11
-#: templates/auth/password_reset.html:17
-#: templates/auth/password_reset_complete.html:11
-#: templates/auth/password_reset_confirm.html:5
-#: templates/auth/password_reset_confirm.html:11
-#: templates/auth/password_reset_done.html:5
-#: templates/auth/password_reset_done.html:11
-#: templates/auth/password_reset_done.html:16
-msgid "Password Reset"
-msgstr "Remise a zéro du mot de passe"
-
-#: templates/auth/password_reset.html:20
+#: templates/ecm/auth/login.html:31
 msgid ""
+"Not a member yet, you can <a href=\"/account/create/\">create an account</a>."
+msgstr ""
+
+#: templates/ecm/auth/login.html:34
+msgid ""
+"Forgot your password? Click <a href=\"/account/passwordreset/\">here to "
+"reset it</a>."
+msgstr ""
+
+#: templates/ecm/auth/password_change.html:4
+#: templates/ecm/auth/password_change.html:8
+msgid "Password Change"
+msgstr ""
+
+#: templates/ecm/auth/password_change.html:11
+msgid ""
+"\n"
+"Please enter your old password, for security's sake, and then enter your \n"
+"new password twice so we can verify you typed it in correctly.\n"
+msgstr ""
+
+#: templates/ecm/auth/password_change.html:27
+#: templates/ecm/auth/password_reset_confirm.html:24
+msgid "Change my password"
+msgstr ""
+
+#: templates/ecm/auth/password_change_done.html:4
+#: templates/ecm/auth/password_change_done.html:8
+msgid "Password Change Successful"
+msgstr ""
+
+#: templates/ecm/auth/password_change_done.html:11
+msgid "Your password was changed."
+msgstr ""
+
+#: templates/ecm/auth/password_change_done.html:12
+msgid "Go back to your <a href=\"/account/\">User Account</a>"
+msgstr ""
+
+#: templates/ecm/auth/password_reset.html:5
+#: templates/ecm/auth/password_reset.html:9
+#: templates/ecm/auth/password_reset_confirm.html:4
+#: templates/ecm/auth/password_reset_done.html:5
+#: templates/ecm/auth/password_reset_done.html:10
+msgid "Password Reset"
+msgstr ""
+
+#: templates/ecm/auth/password_reset.html:13
+msgid ""
+"\n"
 "Forgotten your password? Enter your e-mail address below, and we'll e-mail "
-"instructions for setting a new one."
+"instructions for setting a new one.\n"
 msgstr ""
-"Vous avez oublié votre mot de passe ? entrez votre e-mail ci dessous et nous "
-"vous transmettrons des instructions pour en créer un nouveau."
 
-#: templates/auth/password_reset.html:32
+#: templates/ecm/auth/password_reset.html:28
 msgid "Reset my password"
-msgstr "Remise a zéro de mon mot de passe"
-
-#: templates/auth/password_reset_complete.html:5
-#: templates/auth/password_reset_complete.html:16
-msgid "Password Reset Complete"
-msgstr "Remise a zéro du mot de passe réussie"
-
-#: templates/auth/password_reset_complete.html:19
-msgid "Your password has been set.  You may go ahead and log in now."
 msgstr ""
-"votre mot de passe a été défini. vous pouvez dès à présent vous connecter"
 
-#: templates/auth/password_reset_complete.html:21
+#: templates/ecm/auth/password_reset_complete.html:5
+#: templates/ecm/auth/password_reset_complete.html:10
+msgid "Password Reset Complete"
+msgstr ""
+
+#: templates/ecm/auth/password_reset_complete.html:13
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr ""
+
+#: templates/ecm/auth/password_reset_complete.html:15
 msgid "Log in"
-msgstr "Connection"
+msgstr ""
 
-#: templates/auth/password_reset_confirm.html:18
+#: templates/ecm/auth/password_reset_confirm.html:9
 msgid "Enter new password"
-msgstr "Entrez un nouveau mot de passe"
+msgstr ""
 
-#: templates/auth/password_reset_confirm.html:21
+#: templates/ecm/auth/password_reset_confirm.html:12
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Entrez votre mot de passe deux fois que nous puissions vérifier que vous "
-"l'avez tapé correctement"
 
-#: templates/auth/password_reset_confirm.html:38
+#: templates/ecm/auth/password_reset_confirm.html:30
 msgid "Password reset unsuccessful"
-msgstr "Remise a zéro du mot de passe échouée"
+msgstr ""
 
-#: templates/auth/password_reset_confirm.html:41
+#: templates/ecm/auth/password_reset_confirm.html:34
 msgid ""
+"\n"
 "The password reset link was invalid, possibly because it has already been "
-"used. Please request a new password reset."
+"used. \n"
+"Please request a new password reset.\n"
 msgstr ""
-"Le lien de remise a zéro du mot de passe était invalide, peut être a-t'il "
-"déjà été utilisé. merci de faire une nouvelle demande de remise a zéro de "
-"votre mot de passe."
 
-#: templates/auth/password_reset_done.html:19
+#: templates/ecm/auth/password_reset_done.html:14
 msgid ""
+"\n"
 "We've e-mailed you instructions for setting your password to the e-mail "
-"address you submitted. You should be receiving it shortly."
+"address you submitted. \n"
+"You should be receiving it shortly.\n"
 msgstr ""
-"nous vous avons transmis des instructions pour modifier votre mot de passe à "
-"l'adresse e-mail que vous nous avez donné. vous devriez les recevoir "
-"rapidement."
 
-#: templates/auth/password_reset_email.txt:7
+#: templates/ecm/auth/password_reset_email.txt:7
 #, python-format
 msgid ""
 "You're receiving this e-mail because you requested a password reset for your "
 "user account at %(host_name)s."
 msgstr ""
-"Vous recevez cet e-mail car vous avez demandé une remise à zéro de votre "
-"compte utilisateur sur %(host_name)s"
 
-#: templates/auth/password_reset_email.txt:9
+#: templates/ecm/auth/password_reset_email.txt:9
 msgid "Please go to the following page and choose a new password:"
-msgstr "Visitez la page suivante et choisissez un nouveau mot de passe"
+msgstr ""
 
-#: templates/auth/password_reset_email.txt:13
+#: templates/ecm/auth/password_reset_email.txt:13
 msgid "Your username, in case you've forgotten:"
-msgstr "Votre nom d'utilisateur, au cas où vous l'auriez oublié"
+msgstr ""
 
-#: templates/common/corp.html:17
-msgid "by"
-msgstr "par"
-
-#: templates/common/corp.html:26
-msgid "CEO"
-msgstr "PDG"
-
-#: templates/common/corp.html:27
-msgid "Tax Rate"
-msgstr "Taxation"
-
-#: templates/common/corp.html:28
-msgid "Member Count"
-msgstr "Nombre de membres"
-
-#: templates/common/edit_director_api.html:4
-#: templates/common/edit_director_api.html:10
+#: templates/ecm/common/edit_director_api.html:4
+#: templates/ecm/common/edit_director_api.html:8
 msgid "Enter a Director API Key"
-msgstr "Entrez une clé API directeur"
+msgstr ""
 
-#: templates/common/edit_motd.html:3 templates/common/edit_motd.html.py:7
+#: templates/ecm/common/edit_motd.html:3
 msgid "Edit MOTD"
-msgstr "Éditer le message du jour"
+msgstr ""
 
-#: templates/common/edit_motd.html:18
+#: templates/ecm/common/edit_motd.html:13
 msgid "MOTD Text"
-msgstr "Texte du message du jour"
+msgstr ""
 
-#: templates/common/edit_motd.html:21
+#: templates/ecm/common/edit_motd.html:16
 msgid "Select Markup"
-msgstr "Sélectionnez le langage de markup"
+msgstr ""
 
-#: templates/common/edit_motd.html:27
+#: templates/ecm/common/edit_motd.html:22
 msgid "Save Changes"
-msgstr "Sauvegarder les Changements"
+msgstr ""
 
-#: templates/common/standings.html:3 templates/common/standings.html.py:7
-msgid "Standings"
-msgstr "Relations"
+#: views/__init__.py:60
+msgid "_MENU_ lines per page"
+msgstr ""
 
-#: templates/common/standings.html:22 templates/common/standings.html.py:42
-msgid "Entity"
-msgstr "Entité"
+#: views/__init__.py:61
+msgid "Nothing found to display - sorry."
+msgstr ""
 
-#: templates/common/standings.html:22 templates/common/standings.html.py:42
-msgid "Standing"
-msgstr "Relation"
+#: views/__init__.py:62
+msgid "Showing _START_ to _END_ of _TOTAL_ records"
+msgstr ""
 
-#: templates/common/standings.html:70
-msgid "Alliance"
-msgstr "Alliance"
+#: views/__init__.py:63
+msgid "Showing 0 to 0 of 0 records"
+msgstr ""
 
-#: templates/common/standings.html:71
-msgid "Corp"
-msgstr "Corporation"
+#: views/__init__.py:64
+msgid "(filtered from _MAX_ total records)"
+msgstr ""
 
-#: templates/common/standings.html:72
-msgid "Both"
-msgstr "Les deux"
+#: views/__init__.py:67
+msgid "Save as CSV"
+msgstr ""
 
-#: templates/common/standings.html:74
-msgid "Set Access"
-msgstr "Définir acces"
-
-#: views/common.py:119 views/account/forms.py:212 views/account/forms.py:258
+#: views/common.py:104 views/account/forms.py:212 views/account/forms.py:258
 msgid "API Key ID"
-msgstr "ID Clé API"
+msgstr ""
 
-#: views/common.py:120 views/account/forms.py:54 views/account/forms.py:213
+#: views/common.py:105 views/account/forms.py:54 views/account/forms.py:213
 #: views/account/forms.py:259
 msgid "Verification Code"
-msgstr "Code de Vérification"
+msgstr ""
+
+#: views/account/forms.py:44
+msgid "Username"
+msgstr ""
 
 #: views/account/forms.py:45
 msgid "Required. Less 30 characters. Letters, digits and @/./+/-/_ only."
 msgstr ""
-"Requis, moins de 30 caractères. Lettres, chiffres, et @/./+/-/_ seulement."
 
 #: views/account/forms.py:47
 msgid "This field may contain only letters, numbers and @/./+/-/_ characters."
 msgstr ""
-"ce champ ne peut contenir que des lettres, des chiffres et les caractères "
-"@/./+/-/_"
 
 #: views/account/forms.py:49
 msgid "E-Mail address"
-msgstr "Adresse E-mail"
+msgstr ""
 
 #: views/account/forms.py:50
 msgid "Password"
-msgstr "Mot de passe"
+msgstr ""
 
 #: views/account/forms.py:51
 msgid "Password (confirmation)"
-msgstr "Mot de passe (confirmation)"
+msgstr ""
 
 #: views/account/forms.py:52 views/account/forms.py:171
 msgid "Enter the same password as above, for verification."
-msgstr "Entrez à nouveau le mot de passe pour vérification"
+msgstr ""
 
 #: views/account/forms.py:65
 msgid "A user with that username already exists."
-msgstr "Un utilisateur du même nom existe déjà "
+msgstr ""
 
 #: views/account/forms.py:74
 msgid "This email address is already in use."
-msgstr "Cette adresse e-mail est déja utilisée"
+msgstr ""
 
 #: views/account/forms.py:82
 msgid "This EVE account is already registered."
-msgstr "Ce compte EVE est déjà enregistré"
+msgstr ""
 
 #: views/account/forms.py:98
 msgid "Passwords don't match"
-msgstr "Les mots de passe ne correspondent pas"
+msgstr ""
 
 #: views/account/forms.py:112 views/account/forms.py:243
 #: views/account/forms.py:281
 msgid "A character from this account is already registered by another player"
-msgstr "Un personnage de ce compte est déjà enregistré par un autre joueur"
+msgstr ""
 
 #: views/account/forms.py:127
 msgid "E-mail"
-msgstr "E-Mail"
+msgstr ""
 
 #: views/account/forms.py:140
 msgid ""
 "That e-mail address doesn't have an associated user account. Are you sure "
 "you've registered?"
 msgstr ""
-"Cette adresse e-mail n'a pas de compte utilisateur associé, êtes vous sur "
-"d’être enregistré ?"
 
 #: views/account/forms.py:160
 #, python-format
 msgid "Password reset on %s"
-msgstr "Remise a zéro du mot de passe sur %s"
+msgstr ""
 
 #: views/account/forms.py:169
 msgid "New password"
-msgstr "Nouveau mot de passe"
+msgstr ""
 
 #: views/account/forms.py:170
 msgid "New Password (confirmation)"
-msgstr "Nouveau mot de passe (confirmation)"
+msgstr ""
 
 #: views/account/forms.py:182
 msgid "The two password fields didn't match."
-msgstr "Les deux champs mots de passe ne correspondent pas."
+msgstr ""
 
 #: views/account/forms.py:197
 msgid "Old Password"
-msgstr "Ancien mot de passe"
+msgstr ""
 
 #: views/account/forms.py:205
 msgid "Your old password was entered incorrectly. Please enter it again."
 msgstr ""
-"Votre ancien mot de passe a été entré incorrectement. Entrez le à nouveau."
 
 #: views/account/forms.py:222
 msgid "This API Key is already registered."
-msgstr "Cette clé API est déjà enregistrée"
+msgstr ""
 
 #: views/account/forms.py:295
 msgid "External Password"
-msgstr "Mot de passe externe"
-
-#, fuzzy
-#~ msgid "Create new Order"
-#~ msgstr "Ordres Marché"
-
-#~ msgid "Launch"
-#~ msgstr "Lancer"
-
-#~ msgid "seconds"
-#~ msgstr "secondes"
-
-#~ msgid "minutes"
-#~ msgstr "minutes"
-
-#~ msgid "weeks"
-#~ msgstr "semaines"
-
-#~ msgid "Every "
-#~ msgstr "Chaque"
-
-#~ msgid "months"
-#~ msgstr "mois"
-
-#~ msgid "Password reset complete"
-#~ msgstr "Remise a zéro du mot de passe réussie"
-
-#~ msgid "Password reset"
-#~ msgstr "Remise a zéro du mot de passe"
+msgstr ""

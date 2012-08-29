@@ -1,0 +1,231 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-08-29 02:21+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: __init__.py:30 templates/ecm/shop/shop.html:6
+msgid "Shop"
+msgstr ""
+
+#: templates/ecm/shop/shop.html:16
+msgid "Welcome to our EVE-Online shop"
+msgstr ""
+
+#: templates/ecm/shop/shop.html:22
+msgid "Go buy some stuff."
+msgstr ""
+
+#: templates/ecm/shop/shop.html:24
+msgid "Create a new order"
+msgstr ""
+
+#: templates/ecm/shop/shop.html:28
+msgid ""
+"Here, you can track the progress of your current orders or consult old ones."
+msgstr ""
+
+#: templates/ecm/shop/shop.html:30
+msgid "See/follow my orders"
+msgstr ""
+
+#: templates/ecm/shop/shop_myorders.html:6
+msgid "Order list"
+msgstr ""
+
+#: templates/ecm/shop/shop_myorders.html:16
+msgid "My Orders"
+msgstr ""
+
+#: templates/ecm/shop/shop_myorders.html:24
+msgid "Search"
+msgstr ""
+
+#: templates/ecm/shop/shop_myorders.html:25
+msgid "Reset"
+msgstr ""
+
+#: templates/ecm/shop/shop_myorders.html:40
+msgid "Loading data from server..."
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:6
+msgid "Create New Order"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:21
+msgid "Click here to view the orders life-cycle"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:25
+msgid "Start typing to search items..."
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:26
+msgid "Add item to my order"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:27
+#: templates/ecm/shop/shop_order.html:100
+msgid "Import EFT Fitting"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:40 templates/ecm/shop/shop_order.html:85
+msgid "Loading..."
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:50
+#: templates/ecm/shop/shop_order_details.html:68
+msgid "Icon"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:51
+#: templates/ecm/shop/shop_order_details.html:69
+msgid "Item"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:52
+msgid "Unit Price"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:53 templates/ecm/shop/shop_order.html:98
+#: templates/ecm/shop/shop_order_details.html:70
+msgid "Quantity"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:54
+msgid "Remove"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:68
+msgid "Your shopping cart is empty."
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:77
+msgid "Estimated Total Price"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:81
+msgid ""
+"Once your order is created, you will be able to modify it before confirming "
+"it. See the orders life-cycle for more info."
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:83
+msgid "Submit Order"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:169
+#: templates/ecm/shop/shop_order.html:277
+#: templates/ecm/shop/shop_order_details.html:28
+msgid "Error"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:271
+msgid "Warning"
+msgstr ""
+
+#: templates/ecm/shop/shop_order.html:272
+msgid "Those items are not available in the shop"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:6
+msgid "Order #"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:6
+msgid " Details"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:34
+msgid "Actions"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:43
+msgid "Cancel Order"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:44
+msgid "Abort"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:55
+msgid "Total Quote"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:56
+msgid "Creation Date"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:57
+msgid "Last Modified"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:58
+msgid "Manufactured by"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:59
+msgid "Delivered by"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:60
+msgid "Delivery Date"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:64
+msgid "Ordered items"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:71
+msgid "Price"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:81
+msgid "No items in order."
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:90
+msgid "History"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:94
+msgid "Please type some text..."
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:95
+msgid "Add comment"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:101
+msgid "Date"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:102
+msgid "Order Status"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:103
+msgid "User"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:104
+msgid "Comment"
+msgstr ""
+
+#: templates/ecm/shop/shop_order_details.html:114
+msgid "None"
+msgstr ""
