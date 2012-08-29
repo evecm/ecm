@@ -41,6 +41,14 @@ def get_members_group():
     return get_or_create_group(Setting.get('hr_corp_members_group_name'))
 
 #------------------------------------------------------------------------------
+def get_allies_plus_5_group():
+    return get_or_create_group(Setting.get('hr_allies_plus_5_group_name'))
+
+#------------------------------------------------------------------------------
+def get_allies_plus_10_group():
+    return get_or_create_group(Setting.get('hr_allies_plus_10_group_name'))
+
+#------------------------------------------------------------------------------
 def get_or_create_group(group_name):
     try:
         return Group.objects.get(name=group_name)

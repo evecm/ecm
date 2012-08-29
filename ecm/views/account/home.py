@@ -25,6 +25,7 @@ from django.db import transaction
 
 from ecm.views.decorators import forbidden
 from ecm.apps.hr.tasks.users import update_user_accesses
+from ecm.views.account import init_characters
 from ecm.views.account.forms import AddApiKeyForm, EditApiKeyForm, AddBindingForm
 from ecm.apps.hr.models import Member
 from ecm.apps.common.models import UserAPIKey, ExternalApplication, UserBinding, Motd
@@ -69,17 +70,15 @@ def add_api(request):
             user_api.user = request.user
             user_api.save()
 
-            for char in form.characters:
-                if char.is_corped:
-                    try:
-                        character = Member.objects.get(characterID=char.characterID)
-                        character.owner = request.user
-                        character.save()
-                    except Member.DoesNotExist:
-                        continue
-
+            members, corps = init_characters(request.user, form.characters)
+            
+            for member in members:
+                member.save()
+            for corp in corps:
+                corp.save()
+            
             update_user_accesses(request.user)
-
+            
             logger.info('"%s" added new API Key %d' % (request.user, user_api.keyID))
 
             return redirect('/account/')
@@ -122,16 +121,16 @@ def edit_api(request, keyID):
             api.is_valid = True
             api.save()
 
-            for char in form.characters:
-                if char.is_corped:
-                    try:
-                        member = Member.objects.get(characterID=char.characterID)
-                        member.owner = request.user
-                        member.save()
-                    except Member.DoesNotExist:
-                        pass
-            logger.info('"%s" edited API Key %d' % (request.user, api.keyID))
+            members, corps = init_characters(request.user, form.characters)
+            
+            for member in members:
+                member.save()
+            for corp in corps:
+                corp.save()
+            
             update_user_accesses(request.user)
+            
+            logger.info('"%s" edited API Key %d' % (request.user, api.keyID))
 
             return redirect('/account/')
     else: # request.method == 'GET'

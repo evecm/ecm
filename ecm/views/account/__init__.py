@@ -14,3 +14,30 @@
 # 
 # You should have received a copy of the GNU General Public License along with 
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+
+from ecm.apps.hr.models.member import Member
+from ecm.apps.hr.tasks.users import get_corp
+
+def init_characters(user, characters):
+    
+    members = []
+    corps = []
+    
+    for char in characters:
+        try:
+            member = Member.objects.get(characterID=char.characterID)
+        except Member.DoesNotExist:
+            member = Member(characterID=char.characterID,
+                            name=char.name)
+    
+        corp = get_corp(char)
+        if corp != member.corp:
+            member.corp = corp
+            corps.append(corp)
+        
+        member.owner = user
+        
+        members.append(member)
+
+    return members, corps
+

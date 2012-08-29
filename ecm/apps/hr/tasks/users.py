@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from ecm.apps.corp.tasks.corp import fix_description
 
 __date__ = "2011 4 18"
 __author__ = "diabeteman"
@@ -26,8 +25,10 @@ from django.contrib.auth.models import User, Group
 
 from ecm.lib import eveapi
 from ecm.apps.common import api
+from ecm.apps.corp.tasks.corp import fix_description
 from ecm.apps.corp.models import Corporation
-from ecm.apps.common.auth import get_members_group, get_directors_group, alert_user_for_invalid_apis
+from ecm.apps.common.auth import get_members_group, get_directors_group, alert_user_for_invalid_apis,\
+    get_allies_plus_5_group, get_allies_plus_10_group
 from ecm.apps.hr.models import Title, Member
 from ecm.apps.hr.tasks.charactersheet import set_extended_char_attributes, get_character_skills
 from ecm.apps.scheduler.models import ScheduledTask
@@ -62,7 +63,7 @@ def update_character_associations(user):
                                     name=char.name)
 
                 if not member in new_characters:
-                    corp = __get_corp(char)
+                    corp = get_corp(char)
                     if member.corp != corp:
                         member.corp = corp
                         new_corps.add(corp)
@@ -146,30 +147,61 @@ def update_all_users_accesses():
     LOG.info("User accesses updated")
 
 #------------------------------------------------------------------------------
-def update_user_accesses(user, my_corp=None, corp_members_group=None, directors_group=None):
+def update_user_accesses(user, my_corp=None, corp_members_group=None, directors_group=None,
+                         allies_plus_5_group=None, allies_plus_10_group=None):
     """
     Synchronizes a user's groups with his/hers owned characters' in-game titles.
     """
     my_corp = my_corp or Corporation.objects.mine()
     corp_members_group = corp_members_group or get_members_group()
     directors_group = directors_group or get_directors_group()
+    allies_plus_5_group = allies_plus_5_group or get_allies_plus_5_group()
+    allies_plus_10_group = allies_plus_10_group or get_allies_plus_10_group()
     owned_characters = user.characters.all()
+    
     titles = Title.objects.none() # we start with an empty QuerySet
     director = False
+    contact_ids = set()
+    
     for char in owned_characters:
+        
+        # store all possible contacts to query standings later
+        contact_ids.add(char.characterID)
+        if char.corp:
+            contact_ids.add(char.corp_id)
+            if char.corp.allianceID:
+                contact_ids.add(char.corp.allianceID)
+        
         director = char.is_director or director
         titles |= char.titles.all() # the "|" operator concatenates django QuerySets
+        
     all_titles = titles.distinct() # to remove duplicates if the same title is assigned to multiple characters
+    
     user.groups.clear()
+    
     if owned_characters.filter(corp=my_corp):
         user.groups.add(corp_members_group)
+        
     for titleID in all_titles.values_list("titleID", flat=True):
         user.groups.add(Group.objects.get(id=titleID))
+        
     if director:
         user.groups.add(directors_group)
+    
+    standings = my_corp.standings.filter(contactID__in=contact_ids)
+    
+    # first we test if the contacts of the user do not have negative standings
+    if not standings.filter(value__lte=0):
+        
+        if standings.filter(value__gt=5):
+            # if there are contacts with standings in ]5, 10], we add the user to the +10 allies group
+            user.groups.add(allies_plus_10_group)
+        elif standings.filter(value__gt=0):
+            # if there are contacts with standings in ]0, 5], we add the user to the +5 allies group
+            user.groups.add(allies_plus_5_group)
 
 #------------------------------------------------------------------------------
-def __get_corp(char):
+def get_corp(char):
     try:
         return Corporation.objects.get(corporationID=char.corporationID)
     except Corporation.DoesNotExist:

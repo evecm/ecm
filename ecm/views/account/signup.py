@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+from ecm.views.account import init_characters
 
 __date__ = "2011 4 5"
 __author__ = "diabeteman"
@@ -29,7 +30,6 @@ from django.core.mail.message import EmailMultiAlternatives
 
 from ecm.apps.hr.tasks.users import update_user_accesses
 from ecm.apps.common.models import UserAPIKey, RegistrationProfile
-from ecm.apps.hr.models import Member
 from ecm.views.account.forms import AccountCreationForm
 from ecm.apps.common.api import required_access_mask
 
@@ -52,16 +52,14 @@ def create_account(request):
             user_api.vCode = form.cleaned_data["vCode"]
             user_api.user = user
             user_api.save()
-
-            for char in form.characters:
-                if char.is_corped:
-                    try:
-                        character = Member.objects.get(characterID=char.characterID)
-                        character.owner = user
-                        character.save()
-                    except Member.DoesNotExist:
-                        continue
-
+            
+            members, corps = init_characters(user, form.characters)
+            
+            for member in members:
+                member.save()
+            for corp in corps:
+                corp.save()
+            
             logger.info('"%s" created new account id=%d' % (user, user.id))
             # Be sure to have mail configured on your server, otherwise catch except
             try:

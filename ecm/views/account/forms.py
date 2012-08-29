@@ -98,22 +98,9 @@ class AccountCreationForm(forms.Form):
                 self._errors["password2"] = self.error_class([_("Passwords don't match")])
                 del cleaned_data["password2"]
 
-            # test if API credentials are valid and if EVE account contains
-            # characters which are members of the corporation
+            # test if API credentials are valid
             try:
                 self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
-                valid_account = False
-                for c in self.characters:
-                    exists = Member.objects.filter(characterID=c.characterID).exists()
-                    valid_account |= exists and c.is_corped
-                if valid_account:
-                    ids = [ c.characterID for c in self.characters ]
-                    if Member.objects.filter(characterID__in=ids).exclude(owner=None):
-                        self._errors["keyID"] = self.error_class([_("A character from this account is already registered by another player")])
-                        del cleaned_data["keyID"]
-            #    else:
-                    #self._errors["keyID"] = self.error_class([_("This EVE account has no character member of the corporation")])
-                    #del cleaned_data["keyID"]
             except eveapi.Error, e:
                 self._errors["keyID"] = self.error_class([str(e)])
                 self._errors["vCode"] = self.error_class([str(e)])
