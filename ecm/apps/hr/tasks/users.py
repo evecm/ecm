@@ -72,22 +72,17 @@ def update_character_associations(user):
                 
                 new_characters.append(member)
             api_key.is_valid = True
+        except eveapi.BadApiKeyError, e:
+            LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, api_key.keyID))
+            api_key.is_valid = False
+            api_key.error = str(e)
+            invalid_api_keys.append(api_key)
         except eveapi.Error, e:
-            if e.code == 0 or 200 <= e.code < 300:
-                # authentication failure error codes.
-                # This happens if the vCode does not match the keyID
-                # or if the account is disabled
-                # or if the key does not allow to list characters from an account
-                LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, api_key.keyID))
-                api_key.is_valid = False
-                api_key.error = str(e)
-                invalid_api_keys.append(api_key)
-            else:
-                # for all other errors, we abort the operation so that
-                # character associations are not deleted by mistake and
-                # therefore, that users find themselves with no access :)
-                LOG.error("%d: %s (user: '%s' keyID: %d)" % (e.code, str(e), user.username, api_key.keyID))
-                raise
+            # for all other errors, we abort the operation so that
+            # character associations are not deleted by mistake and
+            # therefore, that users find themselves with no access :)
+            LOG.error("%d: %s (user: '%s' keyID: %d)" % (e.code, str(e), user.username, api_key.keyID))
+            raise
         eve_accounts.append(api_key)
     
     if invalid_api_keys:

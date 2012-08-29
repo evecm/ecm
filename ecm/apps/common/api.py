@@ -87,8 +87,8 @@ def check_access_mask(accessMask, character):
         if not accessMask & call.mask:
             missing.append(call)
     if missing:
-        raise eveapi.Error(0, "This API Key misses mandatory accesses: "
-                           + ', '.join([ call.name for call in missing ]))
+        raise eveapi.BadApiKeyError(0, "This API Key misses mandatory accesses: "
+                                    + ', '.join([ call.name for call in missing ]))
 
 #------------------------------------------------------------------------------
 def validate_director_api_key(keyID, vCode):
@@ -98,7 +98,7 @@ def validate_director_api_key(keyID, vCode):
         if response.key.type.lower() != "corporation":
             raise ValidationError("Wrong API Key type '%s'. Please provide a Corporation API Key." % response.key.type)
         check_access_mask(response.key.accessMask, character=False)
-    except eveapi.Error, e:
+    except eveapi.BadApiKeyError, e:
         raise ValidationError(str(e))
 
     keyCharIDs = [ char.characterID for char in response.key.characters ]
@@ -115,16 +115,12 @@ class Character:
 
 def get_account_characters(user_api):
     connection = connect_user(user_api)
-    response = None
-    try:
-        response = connection.account.APIKeyInfo()
-    except eveapi.Error:
-        return []
+    response = connection.account.APIKeyInfo()
     corp = Corporation.objects.mine()
     characters = []
     if response.key.type.lower() != "account":
-        raise eveapi.Error(0, "Wrong API Key type '" + response.key.type + "'. " +
-                           "Please provide an API Key working for all characters of your account.")
+        raise eveapi.BadApiKeyError(0, "Wrong API Key type '" + response.key.type + "'. " +
+                                    "Please provide an API Key working for all characters of your account.")
 
     check_access_mask(response.key.accessMask, character=True)
 
