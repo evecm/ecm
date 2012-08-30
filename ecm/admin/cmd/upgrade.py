@@ -17,6 +17,8 @@
 
 
 from __future__ import with_statement
+from django.utils.crypto import get_random_string
+import string
 
 
 __date__ = '2012 3 23'
@@ -136,6 +138,24 @@ def upgrade_instance_files(instance_dir, config):
             buff = fd.write(buff)
     except IOError, err:
         log(err)
+    
+    if not config.has_option('misc', 'secret_key'):
+        # Create a random SECRET_KEY hash to put it in the main settings.
+        chars = string.ascii_letters + string.digits + '.,;:!@#$^&*(-_+)[]{}'
+        config.set('misc', 'secret_key', get_random_string(50, chars))
+    
+    template_dir = path.abspath(path.dirname(instance_template.__file__))
+    default_config = SafeConfigParser()
+    default_config.read([path.join(template_dir, 'settings.ini')])
+    
+    for section in default_config.sections():
+        for option in default_config.options(section):
+            if not config.has_option(section, option):
+                config.set(section, option, default_config.get(section, option))
+        
+    settings_fd = open(path.join(instance_dir, 'settings.ini'), 'w')
+    config.write(settings_fd)
+    settings_fd.close()
 
 #-------------------------------------------------------------------------------
 def run(command, global_options, options, args):
