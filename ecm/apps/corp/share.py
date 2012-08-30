@@ -19,6 +19,7 @@ __date__ = '2012 08 01'
 __author__ = 'diabeteman'
 
 import logging
+
 from django.db import transaction
 
 LOG = logging.getLogger(__name__)

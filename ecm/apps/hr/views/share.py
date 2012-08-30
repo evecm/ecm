@@ -58,4 +58,13 @@ def players(request):
 #------------------------------------------------------------------------------
 @valid_session_required
 def skills(request):
-    pass
+    my_corp = Corporation.objects.mine()
+    
+    data = []
+    for member in my_corp.members.all():
+        data.append({
+            'characterID': member.characterID,
+            'skills': list(member.skills.values('eve_type_id', 'level')),
+        })
+    
+    return encrypted_response(request, data, compress=True)
