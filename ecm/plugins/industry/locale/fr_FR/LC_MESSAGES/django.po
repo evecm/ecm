@@ -3,99 +3,97 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-30 03:28+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2012-08-30 18:07+0100\n"
+"Last-Translator: diabeteman <diab@diabeteman.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: __init__.py:31 templates/ecm/industry/industry_home.html:6
 msgid "Industry"
-msgstr ""
+msgstr "Industrie"
 
 #: __init__.py:32
 msgid "Orders"
-msgstr ""
+msgstr "Commandes"
 
 #: __init__.py:33
 msgid "Jobs"
-msgstr ""
+msgstr "Tâches"
 
 #: __init__.py:34 templates/ecm/industry/catalog/catalog_home.html:6
 msgid "Catalog"
-msgstr ""
+msgstr "Catalogue"
 
 #: __init__.py:35
 msgid "Items"
-msgstr ""
+msgstr "Objets"
 
 #: __init__.py:36 templates/ecm/industry/industry_home.html:42
 #: templates/ecm/industry/catalog/catalog_home.html:26
 msgid "Supplies"
-msgstr ""
+msgstr "Matières Premières"
 
 #: __init__.py:37
 msgid "Blueprints"
-msgstr ""
+msgstr "Plans"
 
 #: models/catalog.py:39
 msgid "Catalog Entry"
-msgstr ""
+msgstr "Entrée du Catalogue"
 
 #: models/catalog.py:40
 msgid "Catalog Entries"
-msgstr ""
+msgstr "Entrées du Catalogue"
 
 #: models/catalog.py:210
 msgid "Surcharge Policy"
-msgstr ""
+msgstr "Politique de Calcul de Marge"
 
 #: models/catalog.py:211
 msgid "Surcharge Policies"
-msgstr ""
+msgstr "Politiques de Calcul de Marge"
 
 #: models/research.py:53
 msgid "Invention Policy"
-msgstr ""
+msgstr "Politique d'Invention"
 
 #: models/research.py:54
 msgid "Invention Policies"
-msgstr ""
+msgstr "Politiques d'Invention"
 
 #: templates/ecm/industry/industry_home.html:12
 msgid "Industry Management Home"
-msgstr ""
+msgstr "Accueil Industrie"
 
 #: templates/ecm/industry/industry_home.html:20
 msgid "Follow orders"
-msgstr ""
+msgstr "Suivre les commandes"
 
 #: templates/ecm/industry/industry_home.html:26
 msgid "Follow industry jobs"
-msgstr ""
+msgstr "Suivre les tâches industrielles"
 
 #: templates/ecm/industry/industry_home.html:36
 #: templates/ecm/industry/catalog/catalog_home.html:20
 msgid "Items catalog"
-msgstr ""
+msgstr "Catalogue des objets"
 
 #: templates/ecm/industry/industry_home.html:48
 #: templates/ecm/industry/catalog/catalog_home.html:32
 msgid "Owned blueprints"
-msgstr ""
+msgstr "Plans possédés"
 
 #: templates/ecm/industry/jobs_list.html:6
 #: templates/ecm/industry/jobs_list.html:21
 msgid "Jobs list"
-msgstr ""
+msgstr "Liste des Tâches"
 
 #: templates/ecm/industry/jobs_list.html:28
 #: templates/ecm/industry/orders_list.html:24
@@ -104,7 +102,7 @@ msgstr ""
 #: templates/ecm/industry/catalog/items.html:24
 #: templates/ecm/industry/catalog/supplies.html:22
 msgid "Search"
-msgstr ""
+msgstr "Rechercher"
 
 #: templates/ecm/industry/jobs_list.html:29
 #: templates/ecm/industry/orders_list.html:25
@@ -113,33 +111,33 @@ msgstr ""
 #: templates/ecm/industry/catalog/items.html:25
 #: templates/ecm/industry/catalog/supplies.html:23
 msgid "Reset"
-msgstr ""
+msgstr "Remise à zéro"
 
 #: templates/ecm/industry/jobs_list.html:33
 msgid "Activity"
-msgstr ""
+msgstr "Activité"
 
 #: templates/ecm/industry/jobs_list.html:35
 #: templates/ecm/industry/jobs_list.html:42
 #: templates/ecm/industry/jobs_list.html:51
 msgid "All"
-msgstr ""
+msgstr "Tous"
 
 #: templates/ecm/industry/jobs_list.html:40
 msgid "State"
-msgstr ""
+msgstr "Etat"
 
 #: templates/ecm/industry/jobs_list.html:47
 msgid "Assignment"
-msgstr ""
+msgstr "Assigné à"
 
 #: templates/ecm/industry/jobs_list.html:49
 msgid "Unassigned"
-msgstr ""
+msgstr "Non-assigné"
 
 #: templates/ecm/industry/jobs_list.html:50
 msgid "Me"
-msgstr ""
+msgstr "Moi"
 
 #: templates/ecm/industry/jobs_list.html:72
 #: templates/ecm/industry/orders_list.html:48
@@ -149,15 +147,15 @@ msgstr ""
 #: templates/ecm/industry/catalog/supplies.html:52
 #: templates/ecm/industry/catalog/supply_details.html:48
 msgid "Loading data from server..."
-msgstr ""
+msgstr "Chargement des données depuis le serveur..."
 
 #: templates/ecm/industry/order_details.html:6
 msgid "Order #"
-msgstr ""
+msgstr "Commande n°"
 
 #: templates/ecm/industry/order_details.html:6
 msgid "Details"
-msgstr ""
+msgstr "Détails"
 
 #: templates/ecm/industry/order_details.html:29
 #: templates/ecm/industry/catalog/import_blueprints.html:32
@@ -166,132 +164,132 @@ msgstr ""
 #: templates/ecm/industry/catalog/items.html:129
 #: templates/ecm/industry/catalog/items.html:148
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: templates/ecm/industry/order_details.html:35
 msgid "Actions"
-msgstr ""
+msgstr "Actions"
 
 #: templates/ecm/industry/order_details.html:44
 msgid "Reject Order"
-msgstr ""
+msgstr "Rejeter Commande"
 
 #: templates/ecm/industry/order_details.html:45
 msgid "Abort"
-msgstr ""
+msgstr "Annuler"
 
 #: templates/ecm/industry/order_details.html:54
 msgid "Order details"
-msgstr ""
+msgstr "Détails de la commande"
 
 #: templates/ecm/industry/order_details.html:56
 msgid "Total Quote"
-msgstr ""
+msgstr "Prix Total"
 
 #: templates/ecm/industry/order_details.html:58
 #: templates/ecm/industry/catalog/item_details.html:29
 msgid "Production Cost"
-msgstr ""
+msgstr "Coût de Production"
 
 #: templates/ecm/industry/order_details.html:60
 msgid "Creation Date"
-msgstr ""
+msgstr "Date de Création"
 
 #: templates/ecm/industry/order_details.html:62
 msgid "Last Modified"
-msgstr ""
+msgstr "Dernière Modification"
 
 #: templates/ecm/industry/order_details.html:64
 msgid "Responsible"
-msgstr ""
+msgstr "Responsable"
 
 #: templates/ecm/industry/order_details.html:66
 msgid "Delivered by"
-msgstr ""
+msgstr "Livrée par"
 
 #: templates/ecm/industry/order_details.html:68
 msgid "Delivery Date"
-msgstr ""
+msgstr "Date de Livraison"
 
 #: templates/ecm/industry/order_details.html:74
 msgid "Ordered Items"
-msgstr ""
+msgstr "Objets Commandés"
 
 #: templates/ecm/industry/order_details.html:75
 msgid "Bill Of Materials"
-msgstr ""
+msgstr "Liste des Matières Premières"
 
 #: templates/ecm/industry/order_details.html:76
 msgid "Jobs Breakdown"
-msgstr ""
+msgstr "Décomposition en Tâches"
 
 #: templates/ecm/industry/order_details.html:83
 msgid "Icon"
-msgstr ""
+msgstr "Icône"
 
 #: templates/ecm/industry/order_details.html:84
 msgid "Item"
-msgstr ""
+msgstr "Objet"
 
 #: templates/ecm/industry/order_details.html:85
 #: templates/ecm/industry/order_details.html:106
 msgid "Quantity"
-msgstr ""
+msgstr "Quantité"
 
 #: templates/ecm/industry/order_details.html:86
 #: templates/ecm/industry/catalog/supply_details.html:20
 msgid "Price"
-msgstr ""
+msgstr "Prix"
 
 #: templates/ecm/industry/order_details.html:96
 msgid "No items in order"
-msgstr ""
+msgstr "Pas d'objets dans la commande"
 
 #: templates/ecm/industry/order_details.html:105
 msgid "Material"
-msgstr ""
+msgstr "Matériau"
 
 #: templates/ecm/industry/order_details.html:114
 msgid "No supplies"
-msgstr ""
+msgstr "Pas de matières premières"
 
 #: templates/ecm/industry/order_details.html:128
 msgid "History"
-msgstr ""
+msgstr "Historique"
 
 #: templates/ecm/industry/order_details.html:133
 msgid "Add comment"
-msgstr ""
+msgstr "Ajouter commentaire"
 
 #: templates/ecm/industry/order_details.html:139
 msgid "Date"
-msgstr ""
+msgstr "Date"
 
 #: templates/ecm/industry/order_details.html:140
 msgid "Order Status"
-msgstr ""
+msgstr "Etat de la commande"
 
 #: templates/ecm/industry/order_details.html:141
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
 #: templates/ecm/industry/order_details.html:142
 msgid "Comment"
-msgstr ""
+msgstr "Commentaire"
 
 #: templates/ecm/industry/order_details.html:152
 #: templates/ecm/industry/catalog/item_details.html:67
 #: templates/ecm/industry/catalog/item_details.html:174
 msgid "None"
-msgstr ""
+msgstr "-"
 
 #: templates/ecm/industry/orders_list.html:6
 msgid "Order list"
-msgstr ""
+msgstr "Liste des commandes"
 
 #: templates/ecm/industry/orders_list.html:17
 msgid "Orders list"
-msgstr ""
+msgstr "Liste des commandes"
 
 #: templates/ecm/industry/orders_list.html:28
 #: templates/ecm/industry/catalog/blueprints.html:22
@@ -299,108 +297,108 @@ msgstr ""
 #: templates/ecm/industry/catalog/items.html:27
 #: templates/ecm/industry/catalog/supplies.html:25
 msgid "Display"
-msgstr ""
+msgstr "Affichage"
 
 #: templates/ecm/industry/catalog/blueprints.html:6
 #: templates/ecm/industry/catalog/blueprints.html:13
 msgid "Blueprints Catalog"
-msgstr ""
+msgstr "Catalogue des Plans"
 
 #: templates/ecm/industry/catalog/blueprints.html:24
 #: templates/ecm/industry/catalog/import_blueprints.html:22
 msgid "All Blueprints"
-msgstr ""
+msgstr "Tous les plans"
 
 #: templates/ecm/industry/catalog/blueprints.html:25
 #: templates/ecm/industry/catalog/import_blueprints.html:23
 msgid "Only Originals"
-msgstr ""
+msgstr "Uniquement les Originaux"
 
 #: templates/ecm/industry/catalog/blueprints.html:26
 #: templates/ecm/industry/catalog/import_blueprints.html:24
 msgid "Only Copies"
-msgstr ""
+msgstr "Uniquement les Copies"
 
 #: templates/ecm/industry/catalog/blueprints.html:28
 msgid "Import blueprints from corp assets"
-msgstr ""
+msgstr "Import des plans depuis les assets corporatifs"
 
 #: templates/ecm/industry/catalog/catalog_home.html:12
 msgid "Industry Catalog Management"
-msgstr ""
+msgstr "Gestion du Catalogue"
 
 #: templates/ecm/industry/catalog/import_blueprints.html:4
 msgid "BPOs in Assets"
-msgstr ""
+msgstr "Plans dans les assets"
 
 #: templates/ecm/industry/catalog/import_blueprints.html:10
 msgid "Blueprints found in corporation assets"
-msgstr ""
+msgstr "Plans trouvés dans les assets corporatifs"
 
 #: templates/ecm/industry/catalog/import_blueprints.html:38
 msgid "Success"
-msgstr ""
+msgstr "Succès"
 
 #: templates/ecm/industry/catalog/import_blueprints.html:38
 msgid "blueprints imported"
-msgstr ""
+msgstr "plans importés"
 
 #: templates/ecm/industry/catalog/import_blueprints.html:66
 msgid "Import All BPOs"
-msgstr ""
+msgstr "Importer tous les plans originaux"
 
 #: templates/ecm/industry/catalog/import_blueprints.html:68
 msgid "Import Selected Blueprints"
-msgstr ""
+msgstr "Importer les plans sélectionnés"
 
 #: templates/ecm/industry/catalog/item_details.html:25
 msgid "Available in catalog"
-msgstr ""
+msgstr "Disponible au catalogue"
 
 #: templates/ecm/industry/catalog/item_details.html:27
 msgid "Fixed Price"
-msgstr ""
+msgstr "Prix Fixé"
 
 #: templates/ecm/industry/catalog/item_details.html:31
 msgid "Public Price"
-msgstr ""
+msgstr "Prix Public"
 
 #: templates/ecm/industry/catalog/item_details.html:38
 msgid "Owned Blueprints"
-msgstr ""
+msgstr "Plans Possédés"
 
 #: templates/ecm/industry/catalog/item_details.html:44
 msgid "ME"
-msgstr ""
+msgstr "ME"
 
 #: templates/ecm/industry/catalog/item_details.html:45
 msgid "PE"
-msgstr ""
+msgstr "PE"
 
 #: templates/ecm/industry/catalog/item_details.html:46
 msgid "Copy"
-msgstr ""
+msgstr "Copie"
 
 #: templates/ecm/industry/catalog/item_details.html:47
 msgid "Runs"
-msgstr ""
+msgstr "Runs"
 
 #: templates/ecm/industry/catalog/item_details.html:54
 msgid "Blueprint details"
-msgstr ""
+msgstr "Détails du plan"
 
 #: templates/ecm/industry/catalog/item_details.html:62
 msgid "Delete blueprint"
-msgstr ""
+msgstr "Effacer Plan"
 
 #: templates/ecm/industry/catalog/item_details.html:74
 msgid "Add New Blueprint"
-msgstr ""
+msgstr "Ajouter Nouveau Plan"
 
 #: templates/ecm/industry/catalog/item_details.html:99
 #: templates/ecm/industry/catalog/items.html:98
 msgid "Failed to change availability!"
-msgstr ""
+msgstr "Echec en modifiant la disponibilité !"
 
 #: templates/ecm/industry/catalog/item_details.html:107
 #: templates/ecm/industry/catalog/item_details.html:148
@@ -408,75 +406,75 @@ msgstr ""
 #: templates/ecm/industry/catalog/item_details.html:168
 #: templates/ecm/industry/catalog/items.html:107
 msgid "Click to edit"
-msgstr ""
+msgstr "Cliquez pour éditer..."
 
 #: templates/ecm/industry/catalog/item_details.html:162
 msgid "Failed to change copy"
-msgstr ""
+msgstr "Echec en modifiant le type de plan !"
 
 #: templates/ecm/industry/catalog/item_details.html:178
 msgid "Are you sure you want to delete this blueprint"
-msgstr ""
+msgstr "Êtes vous sûr de vouloir effacer ce plan"
 
 #: templates/ecm/industry/catalog/item_details.html:188
 msgid "Failed to delete blueprint"
-msgstr ""
+msgstr "Echec en effaçant le plan"
 
 #: templates/ecm/industry/catalog/item_details.html:213
 msgid "Failed to add blueprint."
-msgstr ""
+msgstr "Echec en ajoutant un plan."
 
 #: templates/ecm/industry/catalog/items.html:7
 #: templates/ecm/industry/catalog/items.html:18
 msgid "Items Catalog"
-msgstr ""
+msgstr "Catalogue des Objets"
 
 #: templates/ecm/industry/catalog/items.html:30
 msgid "All Items"
-msgstr ""
+msgstr "Tous les Objets"
 
 #: templates/ecm/industry/catalog/items.html:32
 msgid "Available Items"
-msgstr ""
+msgstr "Objets Disponibles"
 
 #: templates/ecm/industry/catalog/items.html:118
 #: templates/ecm/industry/catalog/items.html:137
 msgid "Click to update"
-msgstr ""
+msgstr "Cliquez pour mettre à jour"
 
 #: templates/ecm/industry/catalog/supplies.html:6
 #: templates/ecm/industry/catalog/supplies.html:16
 msgid "Supplies Catalog"
-msgstr ""
+msgstr "Catalogue des Matières Premières"
 
 #: templates/ecm/industry/catalog/supplies.html:27
 msgid "All Supplies"
-msgstr ""
+msgstr "Tous les matériaux"
 
 #: templates/ecm/industry/catalog/supplies.html:28
 msgid "Only Manual-Update"
-msgstr ""
+msgstr "Prix mis à jour manuellement"
 
 #: templates/ecm/industry/catalog/supplies.html:29
 msgid "Only Auto-Update"
-msgstr ""
+msgstr "Prix mis à jour automatiquement"
 
 #: templates/ecm/industry/catalog/supplies.html:32
 msgid "Filter"
-msgstr ""
+msgstr "Filtrage"
 
 #: templates/ecm/industry/catalog/supplies.html:74
 msgid "Update price"
-msgstr ""
+msgstr "Mettre à jour le prix"
 
 #: templates/ecm/industry/catalog/supply_details.html:22
 msgid "Auto-Update"
-msgstr ""
+msgstr "Mise à jour automatique"
 
 #: templates/ecm/industry/catalog/supply_details.html:24
 msgid "Supply Source"
-msgstr ""
+msgstr "Source d'approvisionnement"
 
 #: templates/ecm/industry/catalog/supply_details.html:35
 msgid "Price History"
-msgstr ""
+msgstr "Historique des Prix"
