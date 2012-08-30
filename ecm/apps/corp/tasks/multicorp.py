@@ -32,8 +32,8 @@ LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
 def update_all():
-    
-    for corp in Corporation.objects.others():
+    corps = Corporation.objects.exclude(public_key='').exclude(public_key=None)
+    for corp in corps.filter(is_trusted=True):
         LOG.debug('Updating info from corp: %s' % corp.ecm_url)
         update_one_corp(corp)
 
