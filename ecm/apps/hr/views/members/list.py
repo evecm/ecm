@@ -95,7 +95,7 @@ def members_data(request):
                           search_str=params.search,
                           sort_by=params.column,
                           asc=params.asc,
-                          format=params.format)
+                          for_csv=params.format == 'csv')
     
     if params.format == 'csv':
         return datatable_csv_data(members, filename='members.csv')

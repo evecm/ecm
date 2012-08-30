@@ -42,7 +42,7 @@ MEMBERS_COLUMNS = [
     {'sTitle': tr('Titles'),       'bVisible': False, 'db_field': None, },
 ]
 
-def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True, format=None):
+def get_members(query, first_id, last_id, search_str=None, sort_by=0, asc=True, for_csv=False):
 
     query = query.select_related(depth=2) # improve performance
 
@@ -70,7 +70,7 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0 , asc=True,
         total_members = filtered_members = query.count()
         
     member_list = []
-    if format == 'csv':
+    if for_csv:
         for member in query:
             member_list.append([
                 member.name,

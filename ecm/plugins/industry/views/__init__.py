@@ -21,7 +21,7 @@ __author__ = "diabeteman"
 import logging
 import time
 
-from django.db import connections, transaction
+from django.db import transaction
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
