@@ -21,10 +21,11 @@ __author__ = "tash"
 
 import logging
 
+import eveapi
+
 from django.db import transaction
 from django.utils import timezone
 
-from ecm.lib import eveapi
 from ecm.apps.common import api
 from ecm.apps.corp.models import Corporation
 from ecm.apps.common.models import UpdateDate
@@ -97,7 +98,7 @@ def process_contracts(contract_list, connection):
                 for item in item_list:
                     new_item = populate_contract_item(item, contract)
                     new_items[new_item] = new_item
-            except eveapi.Error:
+            except eveapi.RequestError:
                 LOG.debug("Invalid or missing contractID: %s" % contract.contractID)
                 continue
     # Get all contractitem ids for removed contracts

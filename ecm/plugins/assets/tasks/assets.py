@@ -22,10 +22,11 @@ __author__ = "diabeteman"
 
 import logging
 
+import eveapi
+
 from django.db import transaction
 from django.utils import timezone
 
-from ecm.lib import eveapi
 from ecm.apps.common.models import Setting, UpdateDate
 from ecm.apps.common import api
 from ecm.apps.eve.models import CelestialObject, Type

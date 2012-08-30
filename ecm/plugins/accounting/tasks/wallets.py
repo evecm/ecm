@@ -21,16 +21,17 @@ __author__ = "diabeteman"
 
 
 import logging
+
+import eveapi
+
 from django.db import transaction
+from django.utils import timezone
 
 from ecm.apps.common import api
-from ecm.lib import eveapi
-
 from ecm.apps.corp.models import Wallet
 from ecm.apps.common.models import UpdateDate
 from ecm.plugins.accounting.tasks import fix_encoding
 from ecm.plugins.accounting.models import JournalEntry, TransactionEntry
-from django.utils import timezone
 
 LOG = logging.getLogger(__name__)
 

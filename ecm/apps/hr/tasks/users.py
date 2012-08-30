@@ -20,10 +20,11 @@ __author__ = "diabeteman"
 
 import logging
 
+import eveapi
+
 from django.db import transaction
 from django.contrib.auth.models import User, Group
 
-from ecm.lib import eveapi
 from ecm.apps.common import api
 from ecm.apps.corp.tasks.corp import fix_description
 from ecm.apps.corp.models import Corporation
@@ -76,7 +77,7 @@ def update_character_associations(user):
                     new_characters.add(member)
                 
             api_key.is_valid = True
-        except eveapi.BadApiKeyError, e:
+        except eveapi.AuthenticationError, e:
             LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, api_key.keyID))
             api_key.is_valid = False
             api_key.error = str(e)

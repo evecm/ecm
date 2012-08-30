@@ -18,11 +18,15 @@
 __date__ = '2012 5 15'
 __author__ = 'diabeteman'
 
+import eveapi
+
 from django.core.exceptions import ValidationError
 
-from ecm.lib import eveapi
 from ecm.apps.common.models import Setting, APICall
 from ecm.apps.corp.models import Corporation
+from ecm.lib import eveapi_patch
+
+eveapi_patch.patch_autocast()
 
 #------------------------------------------------------------------------------
 EVE_API_VERSION = '2'
@@ -87,8 +91,8 @@ def check_access_mask(accessMask, character):
         if not accessMask & call.mask:
             missing.append(call)
     if missing:
-        raise eveapi.BadApiKeyError(0, "This API Key misses mandatory accesses: "
-                                    + ', '.join([ call.name for call in missing ]))
+        raise eveapi.AuthenticationError(0, "This API Key misses mandatory accesses: "
+                                         + ', '.join([ call.name for call in missing ]))
 
 #------------------------------------------------------------------------------
 def validate_director_api_key(keyID, vCode):
@@ -98,7 +102,7 @@ def validate_director_api_key(keyID, vCode):
         if response.key.type.lower() != "corporation":
             raise ValidationError("Wrong API Key type '%s'. Please provide a Corporation API Key." % response.key.type)
         check_access_mask(response.key.accessMask, character=False)
-    except eveapi.BadApiKeyError, e:
+    except eveapi.AuthenticationError, e:
         raise ValidationError(str(e))
 
     keyCharIDs = [ char.characterID for char in response.key.characters ]
@@ -119,8 +123,8 @@ def get_account_characters(user_api):
     corp = Corporation.objects.mine()
     characters = []
     if response.key.type.lower() != "account":
-        raise eveapi.BadApiKeyError(0, "Wrong API Key type '" + response.key.type + "'. " +
-                                    "Please provide an API Key working for all characters of your account.")
+        raise eveapi.AuthenticationError(0, "Wrong API Key type '" + response.key.type + "'. " +
+                                         "Please provide an API Key working for all characters of your account.")
 
     check_access_mask(response.key.accessMask, character=True)
 
