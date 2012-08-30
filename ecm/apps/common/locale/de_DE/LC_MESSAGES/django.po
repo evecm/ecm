@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
 "PO-Revision-Date: 2012-08-29 17:41+0200\n"
 "Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
 "Language-Team: German <>\n"
@@ -33,8 +33,7 @@ msgid ""
 "associated with your profile anymore. Please log-in to"
 msgstr ""
 "All diese Charaktere von den Accounts, die zu diesen API-Schlüsseln gehören "
-"sind nicht mehr mit deinem Profil "
-"assozieert. Bitte log dich ein"
+"sind nicht mehr mit deinem Profil assozieert. Bitte log dich ein"
 
 #: templates/ecm/common/email/invalid_api.html:14
 msgid " and make sure that these API Keys are valid"
@@ -46,8 +45,7 @@ msgid ""
 "delete them from your profile to stop receiving these e-mails."
 msgstr ""
 "P.S.: Wenn du diese Accounts nicht mehr besitzt, kannst du diese aus deinem "
-"Profil löschen, damit du "
-"diese E-Mails nicht mehr erhältst."
+"Profil löschen, damit du diese E-Mails nicht mehr erhältst."
 
 #: templates/ecm/common/email/invalid_api.html:18
 #: templates/ecm/common/email/invalid_api.txt:13
@@ -57,4 +55,3 @@ msgstr "Danke im Vorraus"
 #: templates/ecm/common/email/invalid_api_subject.txt:2
 msgid "Invalid API Key"
 msgstr "Ungültiger API-Schlüssel"
-

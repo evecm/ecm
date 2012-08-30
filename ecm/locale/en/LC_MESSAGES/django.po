@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,26 +46,30 @@ msgid "Account"
 msgstr ""
 
 #: templates/base.html:72
+msgid "Edit corporation API key"
+msgstr ""
+
+#: templates/base.html:73
 msgid "Administration"
 msgstr ""
 
-#: templates/base.html:75
+#: templates/base.html:76
 msgid "Logout"
 msgstr ""
 
-#: templates/base.html:93
+#: templates/base.html:94
 msgid "Message Of The Day"
 msgstr ""
 
-#: templates/base.html:94
+#: templates/base.html:95
 msgid "read more"
 msgstr ""
 
-#: templates/base.html:125
+#: templates/base.html:126
 msgid "Project website"
 msgstr ""
 
-#: templates/base.html:127
+#: templates/base.html:128
 msgid "Powered by"
 msgstr ""
 
@@ -111,7 +115,7 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-#: templates/ecm/auth/account.html:64 views/account/forms.py:294
+#: templates/ecm/auth/account.html:64 views/account/forms.py:281
 msgid "External Username"
 msgstr ""
 
@@ -471,12 +475,12 @@ msgstr ""
 msgid "Save as CSV"
 msgstr ""
 
-#: views/common.py:104 views/account/forms.py:212 views/account/forms.py:258
+#: views/common.py:104 views/account/forms.py:199 views/account/forms.py:245
 msgid "API Key ID"
 msgstr ""
 
-#: views/common.py:105 views/account/forms.py:54 views/account/forms.py:213
-#: views/account/forms.py:259
+#: views/common.py:105 views/account/forms.py:54 views/account/forms.py:200
+#: views/account/forms.py:246
 msgid "Verification Code"
 msgstr ""
 
@@ -504,7 +508,7 @@ msgstr ""
 msgid "Password (confirmation)"
 msgstr ""
 
-#: views/account/forms.py:52 views/account/forms.py:171
+#: views/account/forms.py:52 views/account/forms.py:158
 msgid "Enter the same password as above, for verification."
 msgstr ""
 
@@ -524,50 +528,49 @@ msgstr ""
 msgid "Passwords don't match"
 msgstr ""
 
-#: views/account/forms.py:112 views/account/forms.py:243
-#: views/account/forms.py:281
-msgid "A character from this account is already registered by another player"
-msgstr ""
-
-#: views/account/forms.py:127
+#: views/account/forms.py:114
 msgid "E-mail"
 msgstr ""
 
-#: views/account/forms.py:140
+#: views/account/forms.py:127
 msgid ""
 "That e-mail address doesn't have an associated user account. Are you sure "
 "you've registered?"
 msgstr ""
 
-#: views/account/forms.py:160
+#: views/account/forms.py:147
 #, python-format
 msgid "Password reset on %s"
 msgstr ""
 
-#: views/account/forms.py:169
+#: views/account/forms.py:156
 msgid "New password"
 msgstr ""
 
-#: views/account/forms.py:170
+#: views/account/forms.py:157
 msgid "New Password (confirmation)"
 msgstr ""
 
-#: views/account/forms.py:182
+#: views/account/forms.py:169
 msgid "The two password fields didn't match."
 msgstr ""
 
-#: views/account/forms.py:197
+#: views/account/forms.py:184
 msgid "Old Password"
 msgstr ""
 
-#: views/account/forms.py:205
+#: views/account/forms.py:192
 msgid "Your old password was entered incorrectly. Please enter it again."
 msgstr ""
 
-#: views/account/forms.py:222
+#: views/account/forms.py:209
 msgid "This API Key is already registered."
 msgstr ""
 
-#: views/account/forms.py:295
+#: views/account/forms.py:230 views/account/forms.py:268
+msgid "A character from this account is already registered by another player"
+msgstr ""
+
+#: views/account/forms.py:282
 msgid "External Password"
 msgstr ""

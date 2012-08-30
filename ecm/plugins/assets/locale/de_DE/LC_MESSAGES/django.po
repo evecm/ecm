@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
 "PO-Revision-Date: 2012-08-29 17:03+0200\n"
 "Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
 "Language-Team: German <>\n"
@@ -78,4 +78,3 @@ msgstr "Gegenstandsänderungen am"
 #: templates/ecm/assets/assets_no_data.html:8
 msgid "Assets - &lt;no data&gt;"
 msgstr "Gegenstände - &lt;Keine Daten&gt;"
-

@@ -8,32 +8,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.5.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
-"PO-Revision-Date: 2012-05-30 23:26+0200\n"
-"Last-Translator: johnfoo <edouard.chamillard@gmail.com>\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
+"PO-Revision-Date: 2012-08-30 03:52+0100\n"
+"Last-Translator: diabeteman <diab@diabeteman.com>\n"
 "Language-Team: fr_FR <translate@eve-corp-management.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bits\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n>1;\n"
 
-#: __init__.py:27 templates/ecm/pos/pos_list.html:7
+#: __init__.py:27
+#: templates/ecm/pos/pos_list.html:7
 msgid "POS"
-msgstr "SPJ"
+msgstr "POS"
 
 #: __init__.py:28
 msgid "Fuel Summary"
-msgstr ""
+msgstr "Bilan de Consommation"
 
 #: tasks/pos.py:136
-#, fuzzy
 msgid "unanchored"
-msgstr "peut désancrer des modules"
+msgstr "désancrée"
 
 #: templates/ecm/pos/pos_details.html:6
 msgid "POS Details"
-msgstr "Détail SPJ"
+msgstr "Détail POS"
 
 #: templates/ecm/pos/pos_details.html:26
 msgid "State"
@@ -45,7 +45,7 @@ msgstr "En ligne depuis"
 
 #: templates/ecm/pos/pos_details.html:30
 msgid "POS type"
-msgstr "Type SPJ"
+msgstr "Type POS"
 
 #: templates/ecm/pos/pos_details.html:35
 msgid "Links"
@@ -129,7 +129,8 @@ msgstr "Niveau de carburant"
 
 #: templates/ecm/pos/pos_details.html:104
 #: templates/ecm/pos/pos_details.html:121
-#: templates/ecm/pos/pos_details.html:153 templates/ecm/pos/pos_list.html:49
+#: templates/ecm/pos/pos_details.html:153
+#: templates/ecm/pos/pos_list.html:49
 msgid "Loading data from server..."
 msgstr "Chargement des données du serveur..."
 
@@ -142,13 +143,12 @@ msgid "Click to Change Name..."
 msgstr "Cliquez pour changer le nom"
 
 #: templates/ecm/pos/pos_details.html:255
-#, fuzzy
 msgid "Click to edit..."
-msgstr "Cliquez pour changer le nom"
+msgstr "Cliquez pour éditer..."
 
 #: templates/ecm/pos/pos_fuel.html:6
 msgid "POS Fuel summary"
-msgstr ""
+msgstr "Bilan de consommation en carburant"
 
 #: templates/ecm/pos/pos_list.html:24
 msgid "Search"
@@ -188,37 +188,36 @@ msgstr "Heures"
 
 #: views/pos_list.py:59
 msgid "Location"
-msgstr ""
+msgstr "Emplacement"
 
-#: views/pos_list.py:60 views/pos_list.py:66
+#: views/pos_list.py:60
+#: views/pos_list.py:66
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: views/pos_list.py:61
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: views/pos_list.py:62
-#, fuzzy
 msgid "Status"
 msgstr "État"
 
 #: views/pos_list.py:63
 msgid "Next Cycle"
-msgstr ""
+msgstr "Prochain Cycle"
 
 #: views/pos_list.py:64
-#, fuzzy
 msgid "Fuel Blocks"
 msgstr "Niveau de carburant"
 
 #: views/pos_list.py:65
 msgid "Strontium"
-msgstr ""
+msgstr "Strontium"
 
 #: views/pos_list.py:65
 msgid "Strontium Clathrates"
-msgstr ""
+msgstr "Strontium Clathrates"
 
 #~ msgid "Home"
 #~ msgstr "Accueil"

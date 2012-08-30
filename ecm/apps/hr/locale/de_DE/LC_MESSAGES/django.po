@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
 "PO-Revision-Date: 2012-08-29 17:38+0200\n"
 "Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
 "Language-Team: German <>\n"
@@ -21,8 +21,8 @@ msgstr ""
 msgid "Human Resources"
 msgstr "Human Resources"
 
-#: __init__.py:24 templates/ecm/hr/members/member_list.html:3
-#: views/__init__.py:75 views/__init__.py:85
+#: __init__.py:24 templates/ecm/hr/members/list.html:3 views/roles/list.py:42
+#: views/titles/list.py:45
 msgid "Members"
 msgstr "Mitglieder"
 
@@ -43,7 +43,7 @@ msgid "Skills"
 msgstr "Skills"
 
 #: __init__.py:30 templates/ecm/hr/titles/titles.html:3 views/__init__.py:42
-#: views/__init__.py:76
+#: views/roles/list.py:43
 msgid "Titles"
 msgstr "Titel"
 
@@ -124,12 +124,12 @@ msgid "Online Players"
 msgstr "Spieler online"
 
 #: templates/ecm/hr/members/access_changes.html:6
-#: templates/ecm/hr/members/member_history.html:6
+#: templates/ecm/hr/members/history.html:6
 msgid "Members History"
 msgstr "Mitglieder-Historie"
 
 #: templates/ecm/hr/members/access_changes.html:10
-#: templates/ecm/hr/members/member_details.html:110
+#: templates/ecm/hr/members/details.html:110
 msgid "Security Access Changes"
 msgstr "Zugriffsänderungen"
 
@@ -140,10 +140,11 @@ msgid "last update"
 msgstr "letztes Update"
 
 #: templates/ecm/hr/members/access_changes.html:17
-#: templates/ecm/hr/members/member_history.html:19
-#: templates/ecm/hr/members/member_list.html:16
+#: templates/ecm/hr/members/history.html:19
+#: templates/ecm/hr/members/list.html:16
 #: templates/ecm/hr/members/unassociated.html:22
-#: templates/ecm/hr/players/player_details.html:41
+#: templates/ecm/hr/players/player_details.html:39
+#: templates/ecm/hr/players/player_list.html:13
 #: templates/ecm/hr/players/player_list.html:15
 #: templates/ecm/hr/roles/role_details.html:41
 #: templates/ecm/hr/titles/title_members.html:19
@@ -151,192 +152,192 @@ msgid "Search"
 msgstr "Suche"
 
 #: templates/ecm/hr/members/access_changes.html:18
-#: templates/ecm/hr/members/member_history.html:20
-#: templates/ecm/hr/members/member_list.html:17
+#: templates/ecm/hr/members/history.html:20
+#: templates/ecm/hr/members/list.html:17
 #: templates/ecm/hr/members/unassociated.html:23
-#: templates/ecm/hr/players/player_details.html:42
+#: templates/ecm/hr/players/player_details.html:40
 #: templates/ecm/hr/players/player_list.html:16
 #: templates/ecm/hr/roles/role_details.html:42
 #: templates/ecm/hr/titles/title_members.html:20
 msgid "Reset"
 msgstr "Reset"
 
-#: templates/ecm/hr/members/member_details.html:8
+#: templates/ecm/hr/members/details.html:8
 msgid "Member Details"
 msgstr "Mitglieder-Details"
 
-#: templates/ecm/hr/members/member_details.html:22
+#: templates/ecm/hr/members/details.html:22
 msgid "Link to killboard"
 msgstr "Link zum Killboard"
 
-#: templates/ecm/hr/members/member_details.html:27 views/__init__.py:47
-#: views/members/history.py:39
+#: templates/ecm/hr/members/details.html:27 views/members/history.py:39
 msgid "Nickname"
 msgstr "Nickname"
 
-#: templates/ecm/hr/members/member_details.html:28
+#: templates/ecm/hr/members/details.html:28
 msgid "Corp Date"
 msgstr "Beitrittsdatum"
 
-#: templates/ecm/hr/members/member_details.html:29 views/__init__.py:39
-#: views/__init__.py:50 views/__init__.py:61
+#: templates/ecm/hr/members/details.html:29 views/__init__.py:39
+#: views/players.py:47
 msgid "Last Login"
 msgstr "Letzter Login"
 
-#: templates/ecm/hr/members/member_details.html:30
+#: templates/ecm/hr/members/details.html:30
 msgid "Last Logoff"
 msgstr "Letzter Logoff"
 
-#: templates/ecm/hr/members/member_details.html:31
+#: templates/ecm/hr/members/details.html:31
 msgid "Avg. Session Duration (30 Days)"
 msgstr "Durschnittliche Sitzungsdauer (30 Tage)"
 
-#: templates/ecm/hr/members/member_details.html:32
+#: templates/ecm/hr/members/details.html:32
 msgid "Logged in (last 30 Days)"
 msgstr "Eingeloggt (letzten 30 Tage)"
 
-#: templates/ecm/hr/members/member_details.html:33
+#: templates/ecm/hr/members/details.html:33
 msgid "Logged in (last 7 Days)"
 msgstr "Eingeloggt (letzten 7 Tage)"
 
-#: templates/ecm/hr/members/member_details.html:34
+#: templates/ecm/hr/members/details.html:34
 msgid "Base Office"
 msgstr "Hauptbüro"
 
-#: templates/ecm/hr/members/member_details.html:35
+#: templates/ecm/hr/members/details.html:35
 msgid "Owned by"
 msgstr "Gehört"
 
-#: templates/ecm/hr/members/member_details.html:36
+#: templates/ecm/hr/members/details.html:36
 msgid "Latest location"
 msgstr "Letzte Position"
 
-#: templates/ecm/hr/members/member_details.html:36
+#: templates/ecm/hr/members/details.html:36
 msgid "Docked"
 msgstr "Gedocked"
 
-#: templates/ecm/hr/members/member_details.html:36
+#: templates/ecm/hr/members/details.html:36
 msgid "on"
 msgstr "in"
 
-#: templates/ecm/hr/members/member_details.html:37
+#: templates/ecm/hr/members/details.html:37
 msgid "Links"
 msgstr "Links"
 
-#: templates/ecm/hr/members/member_details.html:53
+#: templates/ecm/hr/members/details.html:53
 msgid "DIRECTOR"
 msgstr "DIREKTOR"
 
-#: templates/ecm/hr/members/member_details.html:66
+#: templates/ecm/hr/members/details.html:66
 msgid "No titles"
 msgstr "Keine Titel"
 
-#: templates/ecm/hr/members/member_details.html:74
+#: templates/ecm/hr/members/details.html:74
 msgid "No extra roles"
 msgstr "Keine Extra-Rollen"
 
-#: templates/ecm/hr/members/member_details.html:84
+#: templates/ecm/hr/members/details.html:84
 msgid "Login"
 msgstr "Login"
 
-#: templates/ecm/hr/members/member_details.html:85
+#: templates/ecm/hr/members/details.html:85
 msgid "Logout"
 msgstr "Logout"
 
-#: templates/ecm/hr/members/member_details.html:86
+#: templates/ecm/hr/members/details.html:86
 msgid "Duration"
 msgstr "Dauer"
 
-#: templates/ecm/hr/members/member_details.html:97
+#: templates/ecm/hr/members/details.html:97
 msgid "No Data."
 msgstr "Keine Daten."
 
-#: templates/ecm/hr/members/member_details.html:102
+#: templates/ecm/hr/members/details.html:102
 msgid "Last Week"
 msgstr "Letzte Woche"
 
-#: templates/ecm/hr/members/member_details.html:103
+#: templates/ecm/hr/members/details.html:103
 msgid "Last Month"
 msgstr "Letzter Monat"
 
-#: templates/ecm/hr/members/member_details.html:104
+#: templates/ecm/hr/members/details.html:104
 msgid "Total"
 msgstr "Insgesamt"
 
-#: templates/ecm/hr/members/member_details.html:192
+#: templates/ecm/hr/members/details.html:193
 #: templates/ecm/hr/roles/role_details.html:72
 msgid "Click to edit..."
 msgstr "Klicken zum Editieren..."
 
-#: templates/ecm/hr/members/member_list.html:19
+#: templates/ecm/hr/members/list.html:19
 msgid "Display"
 msgstr "Anzeige"
 
-#: templates/ecm/hr/members/member_list.html:21
+#: templates/ecm/hr/members/list.html:21
 msgid "All Ships"
 msgstr "Alle Schiffe"
 
-#: templates/ecm/hr/members/member_list.html:22
+#: templates/ecm/hr/members/list.html:22
 msgid "Supers Only"
 msgstr "Nur Supers"
 
-#: templates/ecm/hr/members/member_list.html:25 views/__init__.py:36
+#: templates/ecm/hr/members/list.html:25 views/__init__.py:36
 msgid "Corp"
 msgstr "Corp"
 
-#: templates/ecm/hr/members/member_list.html:28
+#: templates/ecm/hr/members/list.html:28
+#: templates/ecm/hr/members/skills.html:26
 msgid "All"
 msgstr "Alle"
 
-#: templates/ecm/hr/members/member_skills.html:6
-#: templates/ecm/hr/members/member_skills.html:22
+#: templates/ecm/hr/members/skills.html:6
+#: templates/ecm/hr/members/skills.html:22
 msgid "Member Skills"
 msgstr "Mitglieder-Skills"
 
-#: templates/ecm/hr/members/member_skills.html:33
+#: templates/ecm/hr/members/skills.html:42
 msgid "Please select a ship, skill or module to add it to the filter."
 msgstr ""
 "Bitte wähle ein Schiff, Skill oder Modul aus um es zum Filter hinzuzufügen."
 
-#: templates/ecm/hr/members/member_skills.html:34
+#: templates/ecm/hr/members/skills.html:43
 msgid "Start typing to search items..."
 msgstr "Zum Suchen hier tippen..."
 
-#: templates/ecm/hr/members/member_skills.html:35
+#: templates/ecm/hr/members/skills.html:44
 msgid "Add item to filter"
 msgstr "Zu meinen Filtern hinzufügen"
 
-#: templates/ecm/hr/members/member_skills.html:36
-#: templates/ecm/hr/members/member_skills.html:97
+#: templates/ecm/hr/members/skills.html:45
+#: templates/ecm/hr/members/skills.html:117
 msgid "Import EFT Fitting"
 msgstr "EFT-Fitting importieren"
 
-#: templates/ecm/hr/members/member_skills.html:49
+#: templates/ecm/hr/members/skills.html:58
 msgid "Loading..."
 msgstr "Lade..."
 
-#: templates/ecm/hr/members/member_skills.html:55
+#: templates/ecm/hr/members/skills.html:64
 msgid "Icon"
 msgstr "Icon"
 
-#: templates/ecm/hr/members/member_skills.html:56
+#: templates/ecm/hr/members/skills.html:65
 msgid "Item"
 msgstr "Gegenstand"
 
-#: templates/ecm/hr/members/member_skills.html:57
+#: templates/ecm/hr/members/skills.html:66
 msgid "Level"
 msgstr "Level"
 
-#: templates/ecm/hr/members/member_skills.html:58
+#: templates/ecm/hr/members/skills.html:67
 msgid "Remove"
 msgstr "Entfernen"
 
-#: templates/ecm/hr/members/member_skills.html:63
+#: templates/ecm/hr/members/skills.html:72
 msgid "Your filter list is empty."
 msgstr "Die Filterliste ist leer."
 
-#: templates/ecm/hr/members/member_skills.html:162
-#: templates/ecm/hr/members/member_skills.html:266
+#: templates/ecm/hr/members/skills.html:180
+#: templates/ecm/hr/members/skills.html:284
 msgid "Error"
 msgstr "Fehler"
 
@@ -352,27 +353,27 @@ msgstr "In die Zwischenablage kopieren: Strg+C, Escape"
 msgid "Player Details"
 msgstr "Spielerdetails"
 
-#: templates/ecm/hr/players/player_details.html:15
+#: templates/ecm/hr/players/player_details.html:13
 msgid "ECM Administrator"
 msgstr "ECM Administrator"
 
-#: templates/ecm/hr/players/player_details.html:19
+#: templates/ecm/hr/players/player_details.html:17
 msgid "Account created"
 msgstr "Account erstellt"
 
-#: templates/ecm/hr/players/player_details.html:20
+#: templates/ecm/hr/players/player_details.html:18
 msgid "Last login in ECM"
 msgstr "Letzter ECM-Login"
 
-#: templates/ecm/hr/players/player_details.html:21
+#: templates/ecm/hr/players/player_details.html:19
 msgid "Owned EVE Accounts"
 msgstr "EVE-Accounts in Besitz"
 
-#: templates/ecm/hr/players/player_details.html:22
+#: templates/ecm/hr/players/player_details.html:20
 msgid "Owned Characters"
 msgstr "Charaktere in Besitz"
 
-#: templates/ecm/hr/players/player_details.html:30
+#: templates/ecm/hr/players/player_details.html:28
 #: templates/ecm/hr/roles/role_details.html:23
 #: templates/ecm/hr/roles/role_details.html:31
 msgid "None"
@@ -432,20 +433,20 @@ msgstr "Mitglieder-Titel"
 msgid "Corporation Titles"
 msgstr "Corporations-Titel"
 
-#: views/__init__.py:35 views/__init__.py:46 views/members/history.py:38
+#: views/__init__.py:35 views/members/history.py:38
 msgid "Name"
 msgstr "Name"
 
-#: views/__init__.py:37 views/__init__.py:48
+#: views/__init__.py:37
 msgid "Player"
 msgstr "Spieler"
 
-#: views/__init__.py:38 views/__init__.py:49 views/__init__.py:74
-#: views/__init__.py:84 views/__init__.py:93
+#: views/__init__.py:38 views/roles/list.py:41 views/titles/details.py:66
+#: views/titles/list.py:44
 msgid "Access Level"
 msgstr "Zugriffslevel"
 
-#: views/__init__.py:40 views/__init__.py:51
+#: views/__init__.py:40
 msgid "Location"
 msgstr "Ort"
 
@@ -453,80 +454,90 @@ msgstr "Ort"
 msgid "Ship"
 msgstr "Schiff"
 
-#: views/__init__.py:52
-msgid "Ships"
-msgstr "Schiffe"
-
-#: views/__init__.py:56
+#: views/players.py:42
 msgid "Username"
 msgstr "Benutzername"
 
-#: views/__init__.py:57
+#: views/players.py:43
 msgid "Admin"
 msgstr "Admin"
 
-#: views/__init__.py:58
+#: views/players.py:44
 msgid "EVE Accounts"
 msgstr "EVE-Accounts in Besitz"
 
-#: views/__init__.py:59
+#: views/players.py:45
 msgid "Characters"
 msgstr "Charaktere"
 
-#: views/__init__.py:60
+#: views/players.py:46
 msgid "Groups"
 msgstr "Gruppen"
 
-#: views/__init__.py:62
+#: views/players.py:48
 msgid "Joined Date"
 msgstr "Beitrittsdatum"
 
-#: views/__init__.py:66 views/__init__.py:97
+#: views/members/access.py:35 views/members/details.py:163
+#: views/titles/changes.py:48 views/titles/details.py:101
 msgid "Change"
 msgstr "Ändern"
 
-#: views/__init__.py:67
+#: views/members/access.py:36
+#, fuzzy
+msgid "Member"
+msgstr "Mitglieder"
+
+#: views/members/access.py:37 views/members/details.py:164
 msgid "Title/Role"
 msgstr "Titel/Rolle"
 
-#: views/__init__.py:68 views/members/history.py:40
+#: views/members/access.py:38 views/members/details.py:165
+#: views/members/history.py:40
 msgid "Date"
 msgstr "Datum"
-
-#: views/__init__.py:72
-msgid "Role Name"
-msgstr "Rollenname"
-
-#: views/__init__.py:73
-msgid "Description"
-msgstr "Beschreibung"
-
-#: views/__init__.py:83
-msgid "Title Name"
-msgstr "Titelname"
-
-#: views/__init__.py:86
-msgid "Role Count"
-msgstr "Rollen-Anzahl"
-
-#: views/__init__.py:87
-msgid "Last Modified"
-msgstr "Letzte Änderung"
-
-#: views/__init__.py:91 views/__init__.py:98
-msgid "Role"
-msgstr "Rolle"
-
-#: views/__init__.py:92 views/__init__.py:99
-msgid "Category"
-msgstr "Kategorie"
-
-#: views/__init__.py:100
-msgid "Modification Date"
-msgstr "Änderungsdatum"
 
 #: views/members/history.py:37
 msgid "In/Out"
 msgstr "Rein/Raus"
 
+#: views/roles/list.py:39
+msgid "Role Name"
+msgstr "Rollenname"
 
+#: views/roles/list.py:40
+msgid "Description"
+msgstr "Beschreibung"
+
+#: views/titles/changes.py:49
+#, fuzzy
+msgid "Title"
+msgstr "Titel"
+
+#: views/titles/changes.py:50 views/titles/details.py:64
+#: views/titles/details.py:102
+msgid "Role"
+msgstr "Rolle"
+
+#: views/titles/changes.py:51 views/titles/details.py:104
+msgid "Modification Date"
+msgstr "Änderungsdatum"
+
+#: views/titles/details.py:65 views/titles/details.py:103
+msgid "Category"
+msgstr "Kategorie"
+
+#: views/titles/list.py:43
+msgid "Title Name"
+msgstr "Titelname"
+
+#: views/titles/list.py:46
+msgid "Role Count"
+msgstr "Rollen-Anzahl"
+
+#: views/titles/list.py:47
+msgid "Last Modified"
+msgstr "Letzte Änderung"
+
+#~ msgid "Ships"
+#~ msgstr "Schiffe"

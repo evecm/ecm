@@ -3,78 +3,80 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
+"PO-Revision-Date: 2012-08-30 03:49+0100\n"
+"Last-Translator: diabeteman <diab@diabeteman.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: __init__.py:29 templates/ecm/assets/assets.html:6
+#: __init__.py:29
+#: templates/ecm/assets/assets.html:6
 #: templates/ecm/assets/assets_no_data.html:3
 msgid "Assets"
-msgstr ""
+msgstr "Actifs"
 
 #: __init__.py:30
 msgid "Changes"
-msgstr ""
+msgstr "Changements"
 
 #: templates/ecm/assets/assets.html:11
 msgid "Corporation Assets"
-msgstr ""
+msgstr "Actifs Corporatifs"
 
 #: templates/ecm/assets/assets.html:18
 msgid "Search"
-msgstr ""
+msgstr "Rechercher"
 
-#: templates/ecm/assets/assets.html:19 templates/ecm/assets/assets.html:46
+#: templates/ecm/assets/assets.html:19
+#: templates/ecm/assets/assets.html:46
 msgid "Reset"
-msgstr ""
+msgstr "Remise à zéro"
 
 #: templates/ecm/assets/assets.html:21
 msgid "Tree"
-msgstr ""
+msgstr "Arbre"
 
 #: templates/ecm/assets/assets.html:23
 msgid "Expand All"
-msgstr ""
+msgstr "Déplier Tout"
 
 #: templates/ecm/assets/assets.html:24
 msgid "Collapse All"
-msgstr ""
+msgstr "Replier Tout"
 
 #: templates/ecm/assets/assets.html:31
 msgid "Divisions"
-msgstr ""
+msgstr "Divisions"
 
 #: templates/ecm/assets/assets.html:38
 msgid "Locations"
-msgstr ""
+msgstr "Positions"
 
 #: templates/ecm/assets/assets.html:40
 msgid "In Station"
-msgstr ""
+msgstr "En Station"
 
 #: templates/ecm/assets/assets.html:41
 msgid "In Space"
-msgstr ""
+msgstr "Dans l'Espace"
 
 #: templates/ecm/assets/assets.html:45
 msgid "Apply Filter"
-msgstr ""
+msgstr "Appliquer Filtre"
 
 #: templates/ecm/assets/assets_diff.html:3
 #: templates/ecm/assets/assets_diff.html:9
 msgid "Asset Changes on"
-msgstr ""
+msgstr "Changement dans les actifs le"
 
 #: templates/ecm/assets/assets_no_data.html:8
 msgid "Assets - &lt;no data&gt;"
-msgstr ""
+msgstr "Actifs - &lt;pas de données&gt;"
+

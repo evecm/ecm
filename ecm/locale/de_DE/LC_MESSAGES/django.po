@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
 "PO-Revision-Date: 2012-08-29 17:29+0200\n"
 "Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
 "Language-Team: German <>\n"
@@ -46,26 +46,31 @@ msgid "Account"
 msgstr "Account"
 
 #: templates/base.html:72
+#, fuzzy
+msgid "Edit corporation API key"
+msgstr "API-Schlüssel editieren"
+
+#: templates/base.html:73
 msgid "Administration"
 msgstr "Administration"
 
-#: templates/base.html:75
+#: templates/base.html:76
 msgid "Logout"
 msgstr "Logout"
 
-#: templates/base.html:93
+#: templates/base.html:94
 msgid "Message Of The Day"
 msgstr "Nachricht des Tages"
 
-#: templates/base.html:94
+#: templates/base.html:95
 msgid "read more"
 msgstr "weiterlesen"
 
-#: templates/base.html:125
+#: templates/base.html:126
 msgid "Project website"
 msgstr "Projektwebsite"
 
-#: templates/base.html:127
+#: templates/base.html:128
 msgid "Powered by"
 msgstr "Betrieben mit"
 
@@ -113,7 +118,7 @@ msgstr "Name"
 msgid "Application"
 msgstr "Bewerbung"
 
-#: templates/ecm/auth/account.html:64 views/account/forms.py:294
+#: templates/ecm/auth/account.html:64 views/account/forms.py:281
 msgid "External Username"
 msgstr "Externer Benutzername"
 
@@ -134,9 +139,9 @@ msgid ""
 "If this character is still attached to one of your registered API Keys, it "
 "will be associated with your profile again at next scan."
 msgstr ""
-"Wenn dieser Charakter immernoch mit einem von deinen registrierten "
-"API-Schlüsseln verbunden ist, "
-"dann wird er mit deinem Profil beim nächsten Scan verknüpft."
+"Wenn dieser Charakter immernoch mit einem von deinen registrierten API-"
+"Schlüsseln verbunden ist, dann wird er mit deinem Profil beim nächsten Scan "
+"verknüpft."
 
 #: templates/ecm/auth/account.html:93
 msgid "Are you sure you want to delete this API Key?"
@@ -214,9 +219,8 @@ msgid ""
 "Please click on the following link in order to activate your account.\n"
 msgstr ""
 "\n"
-"Du hast einen neuen Account in <b>%(my_corp|default:'NO CORP YET')s</b> <i>"
-"EVE "
-"Corporation Management</i> erstellt. \n"
+"Du hast einen neuen Account in <b>%(my_corp|default:'NO CORP YET')s</b> "
+"<i>EVE Corporation Management</i> erstellt. \n"
 "Bitte klicke auf den folgenden Link um deinen Account zu aktivieren.\n"
 
 #: templates/ecm/auth/activation_email.html:18
@@ -254,8 +258,8 @@ msgid ""
 "Sorry, but the server was not able to activate this account with the "
 "following activation key:"
 msgstr ""
-"Entschuldigung, aber der Server war nicht in der Lage diesen Account "
-"mit dem Folgenden Schlüssel zu aktivieren:"
+"Entschuldigung, aber der Server war nicht in der Lage diesen Account mit dem "
+"Folgenden Schlüssel zu aktivieren:"
 
 #: templates/ecm/auth/add_api.html:4
 msgid "Add API Key"
@@ -424,8 +428,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Bitte gib dein Passwort doppelt ein, damit wir sicherstellen "
-"dass es korrekt eingegeben ist."
+"Bitte gib dein Passwort doppelt ein, damit wir sicherstellen dass es korrekt "
+"eingegeben ist."
 
 #: templates/ecm/auth/password_reset_confirm.html:30
 msgid "Password reset unsuccessful"
@@ -517,12 +521,12 @@ msgstr "(geflitert von _MAX_ Zeilen gesamt)"
 msgid "Save as CSV"
 msgstr "Als CSV speichern"
 
-#: views/common.py:104 views/account/forms.py:212 views/account/forms.py:258
+#: views/common.py:104 views/account/forms.py:199 views/account/forms.py:245
 msgid "API Key ID"
 msgstr "API-Key-ID"
 
-#: views/common.py:105 views/account/forms.py:54 views/account/forms.py:213
-#: views/account/forms.py:259
+#: views/common.py:105 views/account/forms.py:54 views/account/forms.py:200
+#: views/account/forms.py:246
 msgid "Verification Code"
 msgstr "Verification Code"
 
@@ -551,7 +555,7 @@ msgstr "Passwort"
 msgid "Password (confirmation)"
 msgstr "Passwort (Bestätigung)"
 
-#: views/account/forms.py:52 views/account/forms.py:171
+#: views/account/forms.py:52 views/account/forms.py:158
 msgid "Enter the same password as above, for verification."
 msgstr "Gib dasselbe Passwort wie oben zur Bestätigung ein."
 
@@ -571,18 +575,11 @@ msgstr "Dieser EVE-Account ist bereits registriert"
 msgid "Passwords don't match"
 msgstr "Passwörter stimmen nicht überein."
 
-#: views/account/forms.py:112 views/account/forms.py:243
-#: views/account/forms.py:281
-msgid "A character from this account is already registered by another player"
-msgstr ""
-"Ein Charakter von diesem Account ist bereits von einem anderen Spieler "
-"registriert."
-
-#: views/account/forms.py:127
+#: views/account/forms.py:114
 msgid "E-mail"
 msgstr "E-Mail"
 
-#: views/account/forms.py:140
+#: views/account/forms.py:127
 msgid ""
 "That e-mail address doesn't have an associated user account. Are you sure "
 "you've registered?"
@@ -590,36 +587,41 @@ msgstr ""
 "Diese E-Mail-Adresse ist mit keinem Account verknüpft. Sicher, dass du "
 "registriert bist?"
 
-#: views/account/forms.py:160
+#: views/account/forms.py:147
 #, python-format
 msgid "Password reset on %s"
 msgstr "Passwort-Reset auf %s"
 
-#: views/account/forms.py:169
+#: views/account/forms.py:156
 msgid "New password"
 msgstr "Neues Passwort"
 
-#: views/account/forms.py:170
+#: views/account/forms.py:157
 msgid "New Password (confirmation)"
 msgstr "Neues Passwort (Bestätigung)"
 
-#: views/account/forms.py:182
+#: views/account/forms.py:169
 msgid "The two password fields didn't match."
 msgstr "Beide Passwörter stimmen nicht überein."
 
-#: views/account/forms.py:197
+#: views/account/forms.py:184
 msgid "Old Password"
 msgstr "Altes Passwort"
 
-#: views/account/forms.py:205
+#: views/account/forms.py:192
 msgid "Your old password was entered incorrectly. Please enter it again."
 msgstr "Dein altes Passwort ist falsch. Bitte versuch es erneut."
 
-#: views/account/forms.py:222
+#: views/account/forms.py:209
 msgid "This API Key is already registered."
 msgstr "Dieser API-Schlüssel ist schon registriert."
 
-#: views/account/forms.py:295
+#: views/account/forms.py:230 views/account/forms.py:268
+msgid "A character from this account is already registered by another player"
+msgstr ""
+"Ein Charakter von diesem Account ist bereits von einem anderen Spieler "
+"registriert."
+
+#: views/account/forms.py:282
 msgid "External Password"
 msgstr "Externes Passwort"
-

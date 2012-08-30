@@ -3,220 +3,225 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Eve Corp. Management\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
+"PO-Revision-Date: 2012-08-30 03:29+0100\n"
+"Last-Translator: diabeteman <diab@diabeteman.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: templates/404.html:3 templates/404.html.py:7
+#: templates/404.html:3
+#: templates/404.html.py:7
 msgid "Resource not found"
-msgstr ""
+msgstr "Ressource introuvable"
 
 #: templates/404.html:9
 msgid "Sorry but the page you requested:"
-msgstr ""
+msgstr "Desolé, mais la page que vous avez demandée :"
 
 #: templates/404.html:13
 msgid "cannot be found on the server."
-msgstr ""
+msgstr "ne peut etre trouvée sur le serveur."
 
-#: templates/500.html:3 templates/500.html.py:7
+#: templates/500.html:3
+#: templates/500.html.py:7
 msgid "Server Internal Error"
-msgstr ""
+msgstr "Erreur Interne Serveur"
 
 #: templates/500.html:9
 msgid "Ooops, the server just failed in computing your request."
-msgstr ""
+msgstr "Oups, le serveur a échoué lors de la réponse à votre requête."
 
 #: templates/500.html:11
 msgid "The administrators have been notified."
-msgstr ""
+msgstr "Les administrateurs ont été prévenus."
 
 #: templates/base.html:70
 msgid "Account"
-msgstr ""
+msgstr "Compte"
 
 #: templates/base.html:72
+msgid "Edit corporation API key"
+msgstr "Éditer la clé API directeur"
+
+#: templates/base.html:73
 msgid "Administration"
-msgstr ""
+msgstr "Administration"
 
-#: templates/base.html:75
+#: templates/base.html:76
 msgid "Logout"
-msgstr ""
-
-#: templates/base.html:93
-msgid "Message Of The Day"
-msgstr ""
+msgstr "Déconnexion"
 
 #: templates/base.html:94
+msgid "Message Of The Day"
+msgstr "Message du jour"
+
+#: templates/base.html:95
 msgid "read more"
-msgstr ""
+msgstr "lire plus"
 
-#: templates/base.html:125
+#: templates/base.html:126
 msgid "Project website"
-msgstr ""
+msgstr "Site du projet"
 
-#: templates/base.html:127
+#: templates/base.html:128
 msgid "Powered by"
-msgstr ""
+msgstr "Propulsé par"
 
 #: templates/ecm/datatables.html:10
 msgid "Loading data from server..."
-msgstr ""
+msgstr "Chargement des données depuis le serveur..."
 
 #: templates/ecm/auth/account.html:4
 msgid "User Profile"
-msgstr ""
+msgstr "Profil utilisateur"
 
 #: templates/ecm/auth/account.html:8
 msgid "User Account"
-msgstr ""
+msgstr "Compte utilisateur"
 
 #: templates/ecm/auth/account.html:11
-msgid ""
-"Click <a href=\"/account/passwordchange/\">here</a> to change your password."
-msgstr ""
+msgid "Click <a href=\"/account/passwordchange/\">here</a> to change your password."
+msgstr "Cliquez <a href=\"/account/passwordchange/\">ici</a> pour changer votre mot de passe."
 
 #: templates/ecm/auth/account.html:15
 msgid "EVE API Keys"
-msgstr ""
+msgstr "Clés API EVE"
 
 #: templates/ecm/auth/account.html:19
 msgid "KeyID"
-msgstr ""
+msgstr "KeyID"
 
 #: templates/ecm/auth/account.html:20
 msgid "State"
-msgstr ""
+msgstr "État"
 
-#: templates/ecm/auth/account.html:29 templates/ecm/auth/account.html.py:50
+#: templates/ecm/auth/account.html:29
+#: templates/ecm/auth/account.html.py:50
 #: templates/ecm/auth/account.html:73
 msgid "Delete"
-msgstr ""
+msgstr "Effacer"
 
 #: templates/ecm/auth/account.html:41
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: templates/ecm/auth/account.html:63
 msgid "Application"
-msgstr ""
+msgstr "Application"
 
-#: templates/ecm/auth/account.html:64 views/account/forms.py:294
+#: templates/ecm/auth/account.html:64
+#: views/account/forms.py:281
 msgid "External Username"
-msgstr ""
+msgstr "Nom d'utilisateur externe"
 
 #: templates/ecm/auth/account.html:72
 msgid "None"
-msgstr ""
+msgstr "-"
 
-#: templates/ecm/auth/account.html:74 templates/ecm/auth/add_binding.html:21
+#: templates/ecm/auth/account.html:74
+#: templates/ecm/auth/add_binding.html:21
 msgid "Bind"
-msgstr ""
+msgstr "Lier"
 
 #: templates/ecm/auth/account.html:86
 msgid "Are you sure you want to get rid of"
-msgstr ""
+msgstr "Etes vous sur de vouloir vous débarasser de"
 
 #: templates/ecm/auth/account.html:87
-msgid ""
-"If this character is still attached to one of your registered API Keys, it "
-"will be associated with your profile again at next scan."
-msgstr ""
+msgid "If this character is still attached to one of your registered API Keys, it will be associated with your profile again at next scan."
+msgstr "Si ce personnage est encore lié à une de vos clés API enregistrées, il sera associé de nouveau avec votre profil au prochain scan."
 
 #: templates/ecm/auth/account.html:93
 msgid "Are you sure you want to delete this API Key?"
-msgstr ""
+msgstr "Êtes vous sur de vouloir effacer cette clé API ?"
 
 #: templates/ecm/auth/account.html:99
 msgid "Are you sure you want to delete this binding?"
-msgstr ""
+msgstr "Êtes vous sur de vouloir effacer cette liaison ?"
 
 #: templates/ecm/auth/account_activated.html:4
 #: templates/ecm/auth/account_created.html:5
 #: templates/ecm/auth/account_created.html:10
 msgid "Account Created"
-msgstr ""
+msgstr "Compte Crée"
 
 #: templates/ecm/auth/account_activated.html:8
 msgid "Account Activated"
-msgstr ""
+msgstr "Compte Activé"
 
 #: templates/ecm/auth/account_activated.html:11
 #: templates/ecm/auth/account_created.html:13
 msgid "Congratulations"
-msgstr ""
+msgstr "Félicitations"
 
 #: templates/ecm/auth/account_created.html:14
-msgid ""
-"You successfuly created an account. An activation email has been sent to"
-msgstr ""
+msgid "You successfuly created an account. An activation email has been sent to"
+msgstr "Vous avez créé un compte avec succès. Un e-mail d'activation a été envoyé à"
 
 #: templates/ecm/auth/account_created.html:15
 msgid "You should receive it witin minutes from now."
-msgstr ""
+msgstr "Vous devriez le recevoir d'ici quelques minutes."
 
 #: templates/ecm/auth/account_mail_fail.html:3
 #: templates/ecm/auth/account_mail_fail.html:9
 #: templates/ecm/auth/activation_error.html:3
 #: templates/ecm/auth/activation_error.html:8
 msgid "Activation Error"
-msgstr ""
+msgstr "Erreur d'activation"
 
 #: templates/ecm/auth/account_mail_fail.html:13
 #, python-format
 msgid ""
 " \n"
-"Sorry %(form.cleaned_data.username)s, but the server was not able to send an "
-"email %(form.cleaned_data.email)s.\n"
+"Sorry %(form.cleaned_data.username)s, but the server was not able to send an email %(form.cleaned_data.email)s.\n"
 msgstr ""
+" \n"
+"Désolé %(form.cleaned_data.username)s, mais le serveur n'a pas pu envoyer un email à %(form.cleaned_data.email)s.\n"
 
 #: templates/ecm/auth/account_mail_fail.html:18
 #: templates/ecm/auth/activation_error.html:13
 msgid "Reason:"
-msgstr ""
+msgstr "Raison :"
 
 #: templates/ecm/auth/account_mail_fail.html:19
 msgid "Please contact the administrator."
-msgstr ""
+msgstr "Veuillez contacter l'administrateur."
 
 #: templates/ecm/auth/activation_email.html:6
 #: templates/ecm/auth/activation_email.txt:3
 #: templates/ecm/auth/password_reset_email.txt:5
 msgid "Greetings"
-msgstr ""
+msgstr "Salutations"
 
 #: templates/ecm/auth/activation_email.html:9
 #, python-format
 msgid ""
 "\n"
-"You created a new account on <b>%(my_corp|default:'NO CORP YET')s</b> <i>EVE "
-"Corporation Management</i>. \n"
+"You created a new account on <b>%(my_corp|default:'NO CORP YET')s</b> <i>EVE Corporation Management</i>. \n"
 "Please click on the following link in order to activate your account.\n"
 msgstr ""
+"\n"
+"Vous avez créé un nouveau compte sur le serveur <i>EVE Corporation Management</i> de <b>%(my_corp|default:'NO CORP YET')s</b>. \n"
+"Veuillez cliquer sur le lien suivant pour activer votre compte.\n"
 
 #: templates/ecm/auth/activation_email.html:18
 #: templates/ecm/auth/activation_email.txt:10
 #, python-format
-msgid ""
-"N.B.: You have %(expiration_days)s day%(expiration_days|pluralize)s to "
-"activate your account"
-msgstr ""
+msgid "N.B.: You have %(expiration_days)s day%(expiration_days|pluralize)s to activate your account"
+msgstr "N.B.: Vous avez %(expiration_days)s jour%(expiration_days|pluralize)s pour activer votre compte"
 
 #: templates/ecm/auth/activation_email.html:21
 #: templates/ecm/auth/activation_email.txt:12
 #: templates/ecm/auth/password_reset_email.txt:15
 msgid "Thank you and see you in space :-)"
-msgstr ""
+msgstr "Merci et à bientôt dans l'espace :-)"
 
 #: templates/ecm/auth/activation_email.txt:5
 #, python-format
@@ -224,105 +229,105 @@ msgid ""
 "You created a new account on %(corp_name)s's EVE Corporation Management. \n"
 "Please click on the following link in order to activate your account."
 msgstr ""
+"Vous avez créé un compte sur le serveur EVE Corporation Management de %(corp_name)s. \n"
+"Veuillez cliquer sur le lien suivant pour activer votre compte."
 
 #: templates/ecm/auth/activation_email_subject.txt:3
 msgid "New account activation"
-msgstr ""
+msgstr "Activation d'un nouveau compte"
 
 #: templates/ecm/auth/activation_error.html:11
-msgid ""
-"Sorry, but the server was not able to activate this account with the "
-"following activation key:"
-msgstr ""
+msgid "Sorry, but the server was not able to activate this account with the following activation key:"
+msgstr "Désolé, le serveur n'a pas pu activer ce compte avec la clé d'activation suivante :"
 
 #: templates/ecm/auth/add_api.html:4
 msgid "Add API Key"
-msgstr ""
+msgstr "Ajouter clé API"
 
 #: templates/ecm/auth/add_api.html:12
 #: templates/ecm/auth/create_account.html:31
 #: templates/ecm/auth/edit_api.html:13
 msgid "Create a new API Key on EVE-Online support website"
-msgstr ""
+msgstr "Créer une nouvelle clé API sur le site de support EVE-Online"
 
 #: templates/ecm/auth/add_api.html:24
 #: templates/ecm/auth/create_account.html:44
 #: templates/ecm/auth/edit_api.html:25
 #: templates/ecm/common/edit_director_api.html:22
 msgid "Submit Information"
-msgstr ""
+msgstr "Soumettre les informations"
 
-#: templates/ecm/auth/add_binding.html:4 templates/ecm/auth/add_binding.html:8
+#: templates/ecm/auth/add_binding.html:4
+#: templates/ecm/auth/add_binding.html:8
 msgid "Create Binding to External Application"
-msgstr ""
+msgstr "Créer une liaison à une application externe"
 
 #: templates/ecm/auth/create_account.html:3
 msgid "User Signup"
-msgstr ""
+msgstr "Enregistrement utilisateur"
 
 #: templates/ecm/auth/create_account.html:9
 msgid "Create Account"
-msgstr ""
+msgstr "Créer un compte"
 
 #: templates/ecm/auth/create_account.html:28
 msgid "EVE-Online API Key"
-msgstr ""
+msgstr "Clé API EVE-Online"
 
 #: templates/ecm/auth/create_account.html:39
 msgid "Anti-Robot Security"
-msgstr ""
+msgstr "Sécurité anti-robot"
 
 #: templates/ecm/auth/edit_api.html:4
 msgid "Edit API Key"
-msgstr ""
+msgstr "Éditer clé API"
 
-#: templates/ecm/auth/forbidden.html:3 templates/ecm/auth/forbidden.html:8
+#: templates/ecm/auth/forbidden.html:3
+#: templates/ecm/auth/forbidden.html:8
 msgid "Forbidden Access"
-msgstr ""
+msgstr "Accès interdit"
 
 #: templates/ecm/auth/forbidden.html:11
 msgid "You don't have permission to get URL"
-msgstr ""
+msgstr "Vous n'avez pas la permission d'accéder a l'URL"
 
 #: templates/ecm/auth/forbidden.html:15
 msgid "from this server."
-msgstr ""
+msgstr "de ce serveur"
 
-#: templates/ecm/auth/login.html:3 templates/ecm/auth/login.html.py:26
+#: templates/ecm/auth/login.html:3
+#: templates/ecm/auth/login.html.py:26
 msgid "Login"
-msgstr ""
+msgstr "Connexion"
 
 #: templates/ecm/auth/login.html:9
 msgid "Please login"
-msgstr ""
+msgstr "Connectez vous s'il vous plaît"
 
 #: templates/ecm/auth/login.html:19
 msgid "username"
-msgstr ""
+msgstr "nom d'utilisateur"
 
 #: templates/ecm/auth/login.html:20
 msgid "password"
-msgstr ""
+msgstr "mot de passe"
 
 #: templates/ecm/auth/login.html:23
 msgid "Remember Me"
-msgstr ""
+msgstr "Se souvenir de moi"
 
 #: templates/ecm/auth/login.html:31
-msgid ""
-"Not a member yet, you can <a href=\"/account/create/\">create an account</a>."
-msgstr ""
+msgid "Not a member yet, you can <a href=\"/account/create/\">create an account</a>."
+msgstr "Si vous n'avez pas de compte, vous pouvez <a href=\"/account/create/\">en créer un</a>."
 
 #: templates/ecm/auth/login.html:34
-msgid ""
-"Forgot your password? Click <a href=\"/account/passwordreset/\">here to "
-"reset it</a>."
-msgstr ""
+msgid "Forgot your password? Click <a href=\"/account/passwordreset/\">here to reset it</a>."
+msgstr "Mot de passe oublié ? Cliquez <a href=\"/account/passwordreset/\">ici pour le remettre à zéro</a>."
 
 #: templates/ecm/auth/password_change.html:4
 #: templates/ecm/auth/password_change.html:8
 msgid "Password Change"
-msgstr ""
+msgstr "Modification de mot de passe"
 
 #: templates/ecm/auth/password_change.html:11
 msgid ""
@@ -330,24 +335,27 @@ msgid ""
 "Please enter your old password, for security's sake, and then enter your \n"
 "new password twice so we can verify you typed it in correctly.\n"
 msgstr ""
+"\n"
+"Veuillez entrer votre ancien mot de passe, puis entrer le nouveau \n"
+"deux fois pour s'assurer que vous l'avez tapé correctement.\n"
 
 #: templates/ecm/auth/password_change.html:27
 #: templates/ecm/auth/password_reset_confirm.html:24
 msgid "Change my password"
-msgstr ""
+msgstr "Modification de mon mot de passe"
 
 #: templates/ecm/auth/password_change_done.html:4
 #: templates/ecm/auth/password_change_done.html:8
 msgid "Password Change Successful"
-msgstr ""
+msgstr "Modification du mot de passe réussie"
 
 #: templates/ecm/auth/password_change_done.html:11
 msgid "Your password was changed."
-msgstr ""
+msgstr "Votre mot de passe a été modifié"
 
 #: templates/ecm/auth/password_change_done.html:12
 msgid "Go back to your <a href=\"/account/\">User Account</a>"
-msgstr ""
+msgstr "Retournez a votre <a href=\"/account/\">Compte Utilisateur</a>"
 
 #: templates/ecm/auth/password_reset.html:5
 #: templates/ecm/auth/password_reset.html:9
@@ -355,219 +363,224 @@ msgstr ""
 #: templates/ecm/auth/password_reset_done.html:5
 #: templates/ecm/auth/password_reset_done.html:10
 msgid "Password Reset"
-msgstr ""
+msgstr "Remise a zéro du mot de passe"
 
 #: templates/ecm/auth/password_reset.html:13
 msgid ""
 "\n"
-"Forgotten your password? Enter your e-mail address below, and we'll e-mail "
-"instructions for setting a new one.\n"
+"Forgotten your password? Enter your e-mail address below, and we'll e-mail instructions for setting a new one.\n"
 msgstr ""
+"\n"
+"Vous avez oublié votre mot de passe ? entrez votre e-mail ci dessous et nous vous transmettrons des instructions pour en créer un nouveau.\n"
 
 #: templates/ecm/auth/password_reset.html:28
 msgid "Reset my password"
-msgstr ""
+msgstr "Remise a zéro de mon mot de passe"
 
 #: templates/ecm/auth/password_reset_complete.html:5
 #: templates/ecm/auth/password_reset_complete.html:10
 msgid "Password Reset Complete"
-msgstr ""
+msgstr "Remise a zéro du mot de passe réussie"
 
 #: templates/ecm/auth/password_reset_complete.html:13
 msgid "Your password has been set. You may go ahead and log in now."
-msgstr ""
+msgstr "Votre mot de passe a été défini. vous pouvez dès à présent vous connecter"
 
 #: templates/ecm/auth/password_reset_complete.html:15
 msgid "Log in"
-msgstr ""
+msgstr "Connexion"
 
 #: templates/ecm/auth/password_reset_confirm.html:9
 msgid "Enter new password"
-msgstr ""
+msgstr "Entrez un nouveau mot de passe"
 
 #: templates/ecm/auth/password_reset_confirm.html:12
-msgid ""
-"Please enter your new password twice so we can verify you typed it in "
-"correctly."
-msgstr ""
+msgid "Please enter your new password twice so we can verify you typed it in correctly."
+msgstr "Entrez votre mot de passe deux fois que nous puissions vérifier que vous l'avez tapé correctement."
 
 #: templates/ecm/auth/password_reset_confirm.html:30
 msgid "Password reset unsuccessful"
-msgstr ""
+msgstr "Remise a zéro du mot de passe échouée"
 
 #: templates/ecm/auth/password_reset_confirm.html:34
 msgid ""
 "\n"
-"The password reset link was invalid, possibly because it has already been "
-"used. \n"
+"The password reset link was invalid, possibly because it has already been used. \n"
 "Please request a new password reset.\n"
 msgstr ""
+"\n"
+"Le lien de remise a zéro du mot de passe était invalide, peut être a-t'il déjà été utilisé. \n"
+"Merci de faire une nouvelle demande de remise a zéro de votre mot de passe.\n"
 
 #: templates/ecm/auth/password_reset_done.html:14
 msgid ""
 "\n"
-"We've e-mailed you instructions for setting your password to the e-mail "
-"address you submitted. \n"
+"We've e-mailed you instructions for setting your password to the e-mail address you submitted. \n"
 "You should be receiving it shortly.\n"
 msgstr ""
+"\n"
+"Nous vous avons transmis des instructions pour modifier votre mot de passe à l'adresse e-mail que vous nous avez donné. \n"
+"Vous devriez les recevoir rapidement.\n"
 
 #: templates/ecm/auth/password_reset_email.txt:7
 #, python-format
-msgid ""
-"You're receiving this e-mail because you requested a password reset for your "
-"user account at %(host_name)s."
-msgstr ""
+msgid "You're receiving this e-mail because you requested a password reset for your user account at %(host_name)s."
+msgstr "Vous recevez cet e-mail car vous avez demandé une remise à zéro de votre compte utilisateur sur %(host_name)s."
 
 #: templates/ecm/auth/password_reset_email.txt:9
 msgid "Please go to the following page and choose a new password:"
-msgstr ""
+msgstr "Visitez la page suivante et choisissez un nouveau mot de passe :"
 
 #: templates/ecm/auth/password_reset_email.txt:13
 msgid "Your username, in case you've forgotten:"
-msgstr ""
+msgstr "Votre nom d'utilisateur, au cas où vous l'auriez oublié :"
 
 #: templates/ecm/common/edit_director_api.html:4
 #: templates/ecm/common/edit_director_api.html:8
 msgid "Enter a Director API Key"
-msgstr ""
+msgstr "Entrez une clé API directeur"
 
 #: templates/ecm/common/edit_motd.html:3
 msgid "Edit MOTD"
-msgstr ""
+msgstr "Éditer le message du jour"
 
 #: templates/ecm/common/edit_motd.html:13
 msgid "MOTD Text"
-msgstr ""
+msgstr "Texte du message du jour"
 
 #: templates/ecm/common/edit_motd.html:16
 msgid "Select Markup"
-msgstr ""
+msgstr "Sélectionnez le langage de markup"
 
 #: templates/ecm/common/edit_motd.html:22
 msgid "Save Changes"
-msgstr ""
+msgstr "Sauvegarder les modifications"
 
 #: views/__init__.py:60
 msgid "_MENU_ lines per page"
-msgstr ""
+msgstr "_MENU_ lignes par page"
 
 #: views/__init__.py:61
 msgid "Nothing found to display - sorry."
-msgstr ""
+msgstr "Aucune donnée à afficher - désolé."
 
 #: views/__init__.py:62
 msgid "Showing _START_ to _END_ of _TOTAL_ records"
-msgstr ""
+msgstr "Affichage de _START_ à _END_ sur _TOTAL_ entrées"
 
 #: views/__init__.py:63
 msgid "Showing 0 to 0 of 0 records"
-msgstr ""
+msgstr "Affichage de 0 à 0 sur 0 entrées"
 
 #: views/__init__.py:64
 msgid "(filtered from _MAX_ total records)"
-msgstr ""
+msgstr "(filtrées sur _MAX_ entrées au total)"
 
 #: views/__init__.py:67
 msgid "Save as CSV"
-msgstr ""
+msgstr "Sauvegarder au format CSV"
 
-#: views/common.py:104 views/account/forms.py:212 views/account/forms.py:258
+#: views/common.py:104
+#: views/account/forms.py:199
+#: views/account/forms.py:245
 msgid "API Key ID"
-msgstr ""
+msgstr "ID de clé API"
 
-#: views/common.py:105 views/account/forms.py:54 views/account/forms.py:213
-#: views/account/forms.py:259
+#: views/common.py:105
+#: views/account/forms.py:54
+#: views/account/forms.py:200
+#: views/account/forms.py:246
 msgid "Verification Code"
-msgstr ""
+msgstr "Code de vérification"
 
 #: views/account/forms.py:44
 msgid "Username"
-msgstr ""
+msgstr "Nom d'utilisateur"
 
 #: views/account/forms.py:45
 msgid "Required. Less 30 characters. Letters, digits and @/./+/-/_ only."
-msgstr ""
+msgstr "Obligatoire. Moins de 30 caractères. Lettres, chiffres et @/./+/-/_ uniquement."
 
 #: views/account/forms.py:47
 msgid "This field may contain only letters, numbers and @/./+/-/_ characters."
-msgstr ""
+msgstr "Ce champ ne doit contenir que des lettres, les caractères @/./+/-/_ et des chiffres."
 
 #: views/account/forms.py:49
 msgid "E-Mail address"
-msgstr ""
+msgstr "Adresse e-mail"
 
 #: views/account/forms.py:50
 msgid "Password"
-msgstr ""
+msgstr "Mot de passe"
 
 #: views/account/forms.py:51
 msgid "Password (confirmation)"
-msgstr ""
+msgstr "Mot de passe (confirmation)"
 
-#: views/account/forms.py:52 views/account/forms.py:171
+#: views/account/forms.py:52
+#: views/account/forms.py:158
 msgid "Enter the same password as above, for verification."
-msgstr ""
+msgstr "Entrez à nouveau le mot de passe pour vérification."
 
 #: views/account/forms.py:65
 msgid "A user with that username already exists."
-msgstr ""
+msgstr "Un utilisateur du même nom existe déjà."
 
 #: views/account/forms.py:74
 msgid "This email address is already in use."
-msgstr ""
+msgstr "Cette adresse e-mail est déja utilisée."
 
 #: views/account/forms.py:82
 msgid "This EVE account is already registered."
-msgstr ""
+msgstr "Ce compte EVE est déjà enregistré"
 
 #: views/account/forms.py:98
 msgid "Passwords don't match"
-msgstr ""
+msgstr "Les mots de passe ne correspondent pas"
 
-#: views/account/forms.py:112 views/account/forms.py:243
-#: views/account/forms.py:281
-msgid "A character from this account is already registered by another player"
-msgstr ""
+#: views/account/forms.py:114
+msgid "E-mail"
+msgstr "E-Mail"
 
 #: views/account/forms.py:127
-msgid "E-mail"
-msgstr ""
+msgid "That e-mail address doesn't have an associated user account. Are you sure you've registered?"
+msgstr "Cette adresse e-mail n'a pas de compte utilisateur associé, êtes vous sur d’être enregistré ?"
 
-#: views/account/forms.py:140
-msgid ""
-"That e-mail address doesn't have an associated user account. Are you sure "
-"you've registered?"
-msgstr ""
-
-#: views/account/forms.py:160
+#: views/account/forms.py:147
 #, python-format
 msgid "Password reset on %s"
-msgstr ""
+msgstr "Remise à zéro du mot de passe sur %s"
+
+#: views/account/forms.py:156
+msgid "New password"
+msgstr "Nouveau mot de passe"
+
+#: views/account/forms.py:157
+msgid "New Password (confirmation)"
+msgstr "Nouveau mot de passe (confirmation)"
 
 #: views/account/forms.py:169
-msgid "New password"
-msgstr ""
-
-#: views/account/forms.py:170
-msgid "New Password (confirmation)"
-msgstr ""
-
-#: views/account/forms.py:182
 msgid "The two password fields didn't match."
-msgstr ""
+msgstr "Les deux champs de mot de passe ne correspondent pas."
 
-#: views/account/forms.py:197
+#: views/account/forms.py:184
 msgid "Old Password"
-msgstr ""
+msgstr "Ancien mot de passe"
 
-#: views/account/forms.py:205
+#: views/account/forms.py:192
 msgid "Your old password was entered incorrectly. Please enter it again."
-msgstr ""
+msgstr "Votre ancien mot de passe est incorrect."
 
-#: views/account/forms.py:222
+#: views/account/forms.py:209
 msgid "This API Key is already registered."
-msgstr ""
+msgstr "Cette clé API est déjà enregistrée."
 
-#: views/account/forms.py:295
+#: views/account/forms.py:230
+#: views/account/forms.py:268
+msgid "A character from this account is already registered by another player"
+msgstr "Un personnage de ce compte est déjà enregistré par un autre joueur"
+
+#: views/account/forms.py:282
 msgid "External Password"
-msgstr ""
+msgstr "Mot de passe externe"
+

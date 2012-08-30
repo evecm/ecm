@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
 "PO-Revision-Date: 2012-08-29 17:33+0200\n"
 "Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
 "Language-Team: German <>\n"
@@ -21,63 +21,63 @@ msgstr ""
 msgid "Scheduled Tasks"
 msgstr "geplante Aufgaben"
 
-#: models.py:39
+#: models.py:40
 msgid "seconds"
 msgstr "Sekunden"
 
-#: models.py:40
+#: models.py:41
 msgid "minutes"
 msgstr "Minuten"
 
-#: models.py:41
+#: models.py:42
 msgid "hours"
 msgstr "Stunden"
 
-#: models.py:42 models.py:133
+#: models.py:43 models.py:143
 msgid "days"
 msgstr "Tage"
 
-#: models.py:43 models.py:134
+#: models.py:44 models.py:144
 msgid "weeks"
 msgstr "Wochen"
 
-#: models.py:60
+#: models.py:61
 msgid "scheduled task"
 msgstr "geplante Aufgabe"
 
-#: models.py:61
+#: models.py:62
 msgid "scheduled tasks"
 msgstr "geplante Aufgaben"
 
-#: models.py:69
+#: models.py:70
 msgid "Every "
 msgstr "Jede "
 
-#: models.py:70
+#: models.py:71
 msgid "frequency"
 msgstr "Frequenz"
 
-#: models.py:74
+#: models.py:75
 msgid "Function"
 msgstr "Funktion"
 
-#: models.py:82 models.py:87
+#: models.py:83 models.py:88
 msgid "Launch"
 msgstr "STarten"
 
-#: models.py:95
+#: models.py:96
 msgid "Next execution"
 msgstr "Nächste Ausführung"
 
-#: models.py:135
+#: models.py:145
 msgid "months"
 msgstr "Monate"
 
-#: models.py:146
+#: models.py:156
 msgid "DB Table"
 msgstr "Datenbank-Tabelle"
 
-#: models.py:152
+#: models.py:162
 msgid "Max Age Threshold"
 msgstr "Maximales Alter"
 
@@ -116,4 +116,3 @@ msgstr "Erzwinge Ausführung"
 #: templates/ecm/scheduler/tasks.html:26
 msgid "Loading data from server..."
 msgstr "Lade Daten vom Server..."
-

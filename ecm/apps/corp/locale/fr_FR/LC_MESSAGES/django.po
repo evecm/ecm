@@ -3,14 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
+"PO-Revision-Date: 2012-08-30 02:54+0100\n"
+"Last-Translator: diabeteman <diab@diabeteman.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -19,110 +18,112 @@ msgstr ""
 
 #: __init__.py:23
 msgid "Corporation"
-msgstr ""
+msgstr "Corporation"
 
 #: __init__.py:24 templates/ecm/corp/standings.html:6
 msgid "Standings"
-msgstr ""
+msgstr "Relations"
 
 #: templates/ecm/corp/corp.html:3
 msgid "Home"
-msgstr ""
+msgstr "Accueil"
 
 #: templates/ecm/corp/corp.html:9
 msgid "Message Of The Day"
-msgstr ""
+msgstr "Message du jour"
 
 #: templates/ecm/corp/corp.html:13
 msgid "by"
-msgstr ""
+msgstr "par"
 
 #: templates/ecm/corp/corp.html:22
 msgid "CEO"
-msgstr ""
+msgstr "CEO"
 
 #: templates/ecm/corp/corp.html:23
 msgid "Tax Rate"
-msgstr ""
+msgstr "Taux de taxe"
 
 #: templates/ecm/corp/corp.html:24
 msgid "Member Count"
-msgstr ""
+msgstr "Nombre de membres"
 
 #: templates/ecm/corp/corp.html:25
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #: templates/ecm/corp/standings.html:33 templates/ecm/corp/standings.html:53
 msgid "Entity"
-msgstr ""
+msgstr "Entité"
 
 #: templates/ecm/corp/standings.html:33 templates/ecm/corp/standings.html:53
 msgid "Standing"
-msgstr ""
+msgstr "Relation"
 
 #: templates/ecm/corp/standings.html:78
 msgid "None"
-msgstr ""
+msgstr "-"
 
 #: templates/ecm/corp/standings.html:79
 msgid "Alliance"
-msgstr ""
+msgstr "Alliance"
 
 #: templates/ecm/corp/standings.html:80
 msgid "Corp"
-msgstr ""
+msgstr "Corp"
 
 #: templates/ecm/corp/standings.html:81
 msgid "Both"
-msgstr ""
+msgstr "Tout"
 
 #: templates/ecm/corp/standings.html:83
 msgid "Set Access"
-msgstr ""
+msgstr "Appliquer les accès"
 
 #: templates/ecm/corp/email/notify_contact.html:5
 #: templates/ecm/corp/email/notify_contact.txt:2
 msgid "Hello"
-msgstr ""
+msgstr "Bonjour"
 
 #: templates/ecm/corp/email/notify_contact.html:7
 #: templates/ecm/corp/email/notify_contact.txt:4
 msgid "A new corporation contacted us and wants to exchange data."
-msgstr ""
+msgstr "Une nouvelle corporation nous a contacté et veut échanger des données."
 
 #: templates/ecm/corp/email/notify_contact.html:9
 #: templates/ecm/corp/email/notify_contact.txt:6
 msgid "Here is the information they provided about them:"
-msgstr ""
+msgstr "Voilà les informations qu'ils ont fourni sur eux :"
 
 #: templates/ecm/corp/email/notify_contact.html:12
 #: templates/ecm/corp/email/notify_contact.txt:8
 msgid "Corporation:"
-msgstr ""
+msgstr "Corporation :"
 
 #: templates/ecm/corp/email/notify_contact.html:14
 #: templates/ecm/corp/email/notify_contact.txt:9
 msgid "Alliance:"
-msgstr ""
+msgstr "Alliance :"
 
 #: templates/ecm/corp/email/notify_contact.html:16
 #: templates/ecm/corp/email/notify_contact.txt:10
 msgid "URL of their ECM server:"
-msgstr ""
+msgstr "URL de leur serveur ECM :"
 
 #: templates/ecm/corp/email/notify_contact.html:20
 #: templates/ecm/corp/email/notify_contact.txt:12
 msgid ""
 "You should verify this information and choose if you trust them in return."
 msgstr ""
+"Vous devriez vérifier ces informations et choisir si vous leur faites "
+"confiance."
 
 #: templates/ecm/corp/email/notify_contact.html:26
 #: templates/ecm/corp/email/notify_contact.txt:16
 msgid "Fly Safe!"
-msgstr ""
+msgstr "Volez couverts !"
 
 #: views/contact.py:100
 #, python-format
 msgid "%s wants to exchange data with us"
-msgstr ""
+msgstr "%s veut échanger des données avec nous"

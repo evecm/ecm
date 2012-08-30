@@ -3,14 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
+"PO-Revision-Date: 2012-08-30 02:49+0100\n"
+"Last-Translator: diabeteman <diab@diabeteman.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -20,34 +19,38 @@ msgstr ""
 #: templates/ecm/common/email/invalid_api.html:6
 #: templates/ecm/common/email/invalid_api.txt:3
 msgid "Hello"
-msgstr ""
+msgstr "Bonjour"
 
 #: templates/ecm/common/email/invalid_api.html:8
 #: templates/ecm/common/email/invalid_api.txt:5
 msgid "The following API Keys are invalid"
-msgstr ""
+msgstr "Les clés API suivantes sont invalides"
 
 #: templates/ecm/common/email/invalid_api.html:13
 msgid ""
 "All the characters from the accounts related to these API Keys are not "
 "associated with your profile anymore. Please log-in to"
 msgstr ""
+"Tous les personnages appartenant aux comptes liés à ces clés API ne sont "
+"plus associés à votre compte. Veuillez vous connecter à"
 
 #: templates/ecm/common/email/invalid_api.html:14
 msgid " and make sure that these API Keys are valid"
-msgstr ""
+msgstr " et assurez vous que ces clés soient valides"
 
 #: templates/ecm/common/email/invalid_api.html:16
 msgid ""
 "NB: If you don't own the accounts related to these API Keys anymore, you can "
 "delete them from your profile to stop receiving these e-mails."
 msgstr ""
+"NB: Si vous ne possédez plus les compte liés à ces clés API, vous pouvez les "
+"effacer de votre profile pour arrêter de recevoir ces e-mails."
 
 #: templates/ecm/common/email/invalid_api.html:18
 #: templates/ecm/common/email/invalid_api.txt:13
 msgid "Thank you in advance"
-msgstr ""
+msgstr "Merci d'avance"
 
 #: templates/ecm/common/email/invalid_api_subject.txt:2
 msgid "Invalid API Key"
-msgstr ""
+msgstr "Clé API invalide"

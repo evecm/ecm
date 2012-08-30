@@ -3,116 +3,120 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-29 02:21+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2012-08-30 03:28+0200\n"
+"PO-Revision-Date: 2012-08-30 03:33+0100\n"
+"Last-Translator: diabeteman <diab@diabeteman.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: __init__.py:22 templates/ecm/scheduler/tasks.html:8
+#: __init__.py:22
+#: templates/ecm/scheduler/tasks.html:8
 msgid "Scheduled Tasks"
-msgstr ""
-
-#: models.py:39
-msgid "seconds"
-msgstr ""
+msgstr "Tâches Planifiées"
 
 #: models.py:40
-msgid "minutes"
-msgstr ""
+msgid "seconds"
+msgstr "secondes"
 
 #: models.py:41
+msgid "minutes"
+msgstr "minutes"
+
+#: models.py:42
 msgid "hours"
-msgstr ""
+msgstr "heures"
 
-#: models.py:42 models.py:133
+#: models.py:43
+#: models.py:143
 msgid "days"
-msgstr ""
+msgstr "jours"
 
-#: models.py:43 models.py:134
+#: models.py:44
+#: models.py:144
 msgid "weeks"
-msgstr ""
-
-#: models.py:60
-msgid "scheduled task"
-msgstr ""
+msgstr "semaines"
 
 #: models.py:61
-msgid "scheduled tasks"
-msgstr ""
+msgid "scheduled task"
+msgstr "tâche planifiée"
 
-#: models.py:69
-msgid "Every "
-msgstr ""
+#: models.py:62
+msgid "scheduled tasks"
+msgstr "tâches planifiées"
 
 #: models.py:70
+msgid "Every "
+msgstr "Période"
+
+#: models.py:71
 msgid "frequency"
-msgstr ""
+msgstr "Fréquence"
 
-#: models.py:74
+#: models.py:75
 msgid "Function"
-msgstr ""
+msgstr "Fonction"
 
-#: models.py:82 models.py:87
+#: models.py:83
+#: models.py:88
 msgid "Launch"
-msgstr ""
+msgstr "Lancer"
 
-#: models.py:95
+#: models.py:96
 msgid "Next execution"
-msgstr ""
+msgstr "Prochaine exécution"
 
-#: models.py:135
+#: models.py:145
 msgid "months"
-msgstr ""
+msgstr "mois"
 
-#: models.py:146
+#: models.py:156
 msgid "DB Table"
-msgstr ""
+msgstr "Table de la base de données"
 
-#: models.py:152
+#: models.py:162
 msgid "Max Age Threshold"
-msgstr ""
+msgstr "Seuil d'age maximum"
 
 #: templates/ecm/scheduler/tasks.html:14
 msgid "Task Description"
-msgstr ""
+msgstr "Description"
 
 #: templates/ecm/scheduler/tasks.html:15
 msgid "Next Auto Execution"
-msgstr ""
+msgstr "Prochaine Exécution Automatique"
 
 #: templates/ecm/scheduler/tasks.html:16
 msgid "Frequency"
-msgstr ""
+msgstr "Fréquence"
 
 #: templates/ecm/scheduler/tasks.html:17
 msgid "Last Execution"
-msgstr ""
+msgstr "Dernière Exécution"
 
 #: templates/ecm/scheduler/tasks.html:18
 msgid "Last Result"
-msgstr ""
+msgstr "Dernier Résultat"
 
 #: templates/ecm/scheduler/tasks.html:19
 msgid "Is Running"
-msgstr ""
+msgstr "En Cours"
 
 #: templates/ecm/scheduler/tasks.html:20
 msgid "Is Scheduled"
-msgstr ""
+msgstr "Plannifiée"
 
 #: templates/ecm/scheduler/tasks.html:21
 msgid "Force Execution"
-msgstr ""
+msgstr "Forcer l'Exécution"
 
 #: templates/ecm/scheduler/tasks.html:26
 msgid "Loading data from server..."
-msgstr ""
+msgstr "Chargement des données depuis le serveur..."
+
