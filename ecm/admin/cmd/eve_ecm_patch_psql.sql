@@ -199,13 +199,15 @@ INSERT INTO "eve_blueprintreq"("id",
                              "activityID",
                              "requiredTypeID",
                              "quantity",
-                             "damagePerJob")
+                             "damagePerJob",
+                             "baseMaterial")
     SELECT  CAST(rtr."typeID" AS bigint) * 100000000 + CAST(rtr."requiredTypeID" AS bigint) * 100 + CAST(rtr."activityID" AS bigint),
             rtr."typeID",
             rtr."activityID",
             rtr."requiredTypeID",
             rtr."quantity",
-            rtr."damagePerJob"
+            rtr."damagePerJob",
+            0 AS "baseMaterial"
     FROM "ramTypeRequirements" AS rtr
     WHERE rtr."activityID" NOT IN (1)
       AND rtr."typeID" IN (SELECT "blueprintTypeID" FROM "eve_blueprinttype") 
