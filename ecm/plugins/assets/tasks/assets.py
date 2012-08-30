@@ -71,6 +71,8 @@ def update():
     # then query /corp/Locations.xml with the list
     assets_to_locate = []
 
+    fill_cache()
+
     LOG.debug("parsing api response...")
     for row in apiAssets.assets:
         if row.typeID == cst.BOOKMARK_TYPEID:
@@ -93,8 +95,10 @@ def update():
             except KeyError:
                 # unhandled typeID, this may be a reactor array or some other crap
                 pass
-
+    
     LOG.info("%d assets parsed", len(new_items))
+    
+    clear_cache()
 
     diffs = []
     if len(old_items) != 0:
@@ -265,7 +269,8 @@ def row_is_in_hangar(item, items_dic, solarSystemID=None, stationID=None, hangar
     """
     try:
         asset = make_asset_from_row(item)
-    except Type.DoesNotExist:
+    except Type.DoesNotExist, err:
+        LOG.warning(err)
         return
     
     if solarSystemID is None and stationID is None:
@@ -312,8 +317,8 @@ def fill_contents(container, item, items_dic, flag=None):
             continue # we don't give a flying @#!$ about the bookmarks...
         try:
             _asset = make_asset_from_row(_item)
-        except Type.DoesNotExist:
-            continue
+        except Type.DoesNotExist, err:
+            LOG.warning(err)
         _asset.solarSystemID = container.solarSystemID
         _asset.stationID = container.stationID
         _asset.hangarID = container.hangarID
@@ -328,8 +333,8 @@ def fill_contents(container, item, items_dic, flag=None):
                     continue # we don't give a flying @#!$ about the bookmarks...
                 try:
                     __asset = make_asset_from_row(__item)
-                except Type.DoesNotExist:
-                    continue
+                except Type.DoesNotExist, err:
+                    LOG.warning(err)
                 __asset.solarSystemID = container.solarSystemID
                 __asset.stationID = container.stationID
                 __asset.hangarID = container.hangarID
@@ -348,7 +353,7 @@ def fill_contents(container, item, items_dic, flag=None):
 
 #------------------------------------------------------------------------------
 def make_asset_from_row(row):
-    item = Type.objects.get(pk=row.typeID)
+    item = get_item(row.typeID)
 
     if IGNORE_CONTAINERS_VOLUMES and item.category == cst.CELESTIAL_CATEGORYID:
         volume = 0.0
@@ -370,6 +375,22 @@ def make_asset_from_row(row):
                  singleton   = row.singleton,
                  volume      = volume,
                  is_bpc      = is_bpc)
+
+#------------------------------------------------------------------------------
+ITEMS_CACHE = {}
+def get_item(typeID):
+    try:
+        return ITEMS_CACHE[typeID]
+    except KeyError:
+        raise Type.DoesNotExist('Item with typeID=%s not found in eve db.' % typeID)
+        
+def fill_cache():
+    for item in Type.objects.all():
+        ITEMS_CACHE[item.typeID] = item
+    
+def clear_cache():
+    ITEMS_CACHE.clear()
+    
 
 #------------------------------------------------------------------------------
 def locationid_to_stationid(locationID):

@@ -63,7 +63,7 @@ def connect(proxy=None):
     """
     Creates a connection to the web API with director credentials
     """
-    conn = eveapi.EVEAPIConnection(scheme="https", proxy=proxy)
+    conn = eveapi.EVEAPIConnection(proxy=proxy)
     keyID, vCode = get_api()
     return conn.auth(keyID=keyID, vCode=vCode)
 
@@ -72,7 +72,7 @@ def connect_user(user_api, proxy=None):
     """
     Creates a connection to the web API with a user's credentials
     """
-    conn = eveapi.EVEAPIConnection(scheme="http", proxy=proxy)
+    conn = eveapi.EVEAPIConnection(proxy=proxy)
     return conn.auth(keyID=user_api.keyID, vCode=user_api.vCode)
 
 #------------------------------------------------------------------------------

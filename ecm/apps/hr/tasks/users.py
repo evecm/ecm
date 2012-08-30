@@ -206,7 +206,7 @@ def get_corp(char):
     try:
         return Corporation.objects.get(corporationID=char.corporationID)
     except Corporation.DoesNotExist:
-        conn = eveapi.EVEAPIConnection(scheme='http')
+        conn = eveapi.EVEAPIConnection()
         api_corp = conn.corp.CorporationSheet(corporationID=char.corporationID)
         
         if api_corp.allianceID:
