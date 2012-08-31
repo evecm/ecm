@@ -35,7 +35,7 @@ class Asset(models.Model):
     hangarID = models.PositiveIntegerField() # hangar division
     container1 = models.BigIntegerField(null=True, blank=True) # first container or ship
     container2 = models.BigIntegerField(null=True, blank=True) # second container or ship
-    eve_type = softfk.SoftForeignKey(to='eve.Type') #@ReservedAssignment
+    eve_type = softfk.SoftForeignKey(to='eve.Type')
     quantity = models.BigIntegerField(default=0)
     flag = models.BigIntegerField() # used to determine the state or path of the asset
     singleton = models.BooleanField(default=False) # true if assembled
@@ -98,9 +98,9 @@ class AssetDiff(models.Model):
     solarSystemID = models.BigIntegerField()
     stationID = models.BigIntegerField()
     hangarID = models.PositiveIntegerField() # hangar division
-    eve_type = softfk.SoftForeignKey(to='eve.Type') #@ReservedAssignment
+    eve_type = softfk.SoftForeignKey(to='eve.Type')
     quantity = models.IntegerField(default=0)
-    date = models.DateTimeField(db_index=True, auto_now_add=True)
+    date = models.DateTimeField(db_index=True)
     new = models.BooleanField()
     flag = models.BigIntegerField() # used to determine the state or path of the asset
     volume = models.BigIntegerField(default=0)

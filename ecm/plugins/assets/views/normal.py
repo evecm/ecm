@@ -40,7 +40,7 @@ from ecm.views.decorators import check_user_access
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
 from ecm.plugins.assets.models import Asset
-from ecm.apps.corp.models import CorpHangar, Corporation
+from ecm.apps.corp.models import Corporation, Hangar
 from ecm.apps.common.models import Setting, UpdateDate
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 
@@ -60,7 +60,10 @@ def root(request):
         return render_to_response('ecm/assets/assets_no_data.html', Ctx(request))
 
     my_corp = Corporation.objects.mine()
-    all_hangars = CorpHangar.objects.filter(corp=my_corp).order_by('hangar')
+    all_hangars = Hangar.objects.all().order_by('hangarID')
+    for hangar in all_hangars:
+        hangar.name = hangar.get_name(my_corp)
+    
     try:
         divisions_str = request.GET['divisions']
         divisions = [ int(div) for div in divisions_str.split(',') ]
@@ -307,9 +310,7 @@ def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
     else:
         cursor.execute(sql, [solarSystemID, closest_obj_id, stationID] + list(divisions))
 
-    HANGAR = {}
-    for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
-        HANGAR[h.hangar_id] = h.name
+    my_corp = Corporation.objects.mine()
 
     exact_volumes = Setting.get('assets_show_exact_volumes')
 
@@ -320,9 +321,11 @@ def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
             volume = print_float(volume)
         else:
             volume = round_quantity(volume)
-
+        
+        hangar = Hangar.objects.get(pk=hangarID)
+        
         jstree_data.append({
-            'data': HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items), volume),
+            'data': HTML_ITEM_SPAN % (hangar.get_name(my_corp), items, pluralize(items), volume),
             'attr' : {
                 'id' : '%d_%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID, hangarID),
                 'sort_key' : hangarID,

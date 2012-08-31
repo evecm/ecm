@@ -41,7 +41,7 @@ from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
 from ecm.plugins.assets.models import Asset, AssetDiff
-from ecm.apps.corp.models import CorpHangar, Corporation
+from ecm.apps.corp.models import CorpHangar, Corporation, Hangar
 from ecm.views import DATE_PATTERN
 
 
@@ -64,7 +64,7 @@ def last_date(request):
     except IndexError:
         return render_to_response('ecm/assets/assets_no_data.html', context_instance=Ctx(request))
 
-
+#------------------------------------------------------------------------------
 def get_dates(request):
 
     show_in_space = json.loads(request.GET.get('space', 'true'))
@@ -96,19 +96,15 @@ def get_dates(request):
 
     return HttpResponse(json.dumps(dates))
 
-
-
-
-
-
-
-
 #------------------------------------------------------------------------------
 @check_user_access()
 def root(request, date_str):
 
     my_corp = Corporation.objects.mine()
-    all_hangars = CorpHangar.objects.filter(corp=my_corp).order_by('hangar')
+    all_hangars = Hangar.objects.all().order_by('hangarID')
+    for hangar in all_hangars:
+        hangar.name = hangar.get_name(my_corp)
+    
     try:
         divisions_str = request.GET['divisions']
         divisions = [ int(div) for div in divisions_str.split(',') ]
@@ -151,10 +147,12 @@ def root(request, date_str):
 
     try:
         date_asked = datetime.strptime(date_str, DATE_PATTERN)
+        date_asked = timezone.make_aware(date_asked, timezone.utc)
+        next_date = date_asked + timedelta(seconds=1)
     except ValueError:
         return redirect('/assets/changes/')
 
-    if AssetDiff.objects.filter(date=date_asked).exists():
+    if AssetDiff.objects.filter(date__range=(date_asked, next_date)).exists():
         data['date'] = date_asked
         return render_to_response('ecm/assets/assets_diff.html', data, Ctx(request))
     else:
@@ -166,6 +164,9 @@ def root(request, date_str):
 @cache_page(3 * 60 * 60) # 3 hours cache
 def get_systems_data(request, date_str):
     date = datetime.strptime(date_str, DATE_PATTERN)
+    date = timezone.make_aware(date, timezone.utc)
+    next_date = date + timedelta(seconds=1)
+    
     divisions = extract_divisions(request)
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
@@ -181,16 +182,16 @@ def get_systems_data(request, date_str):
     # TODO: fix this sql into an object
     sql = 'SELECT "solarSystemID", COUNT(*) AS "items", SUM("volume") AS "volume" '
     sql += 'FROM "assets_assetdiff" '
-    sql += 'WHERE date=%s'
+    sql += 'WHERE date >= %s AND date < %s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "solarSystemID";'
     sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
-        cursor.execute(sql, [date])
+        cursor.execute(sql, [date, next_date])
     else:
-        cursor.execute(sql, [date] + list(divisions))
+        cursor.execute(sql, [date, next_date] + list(divisions))
 
     jstree_data = []
     for solarSystemID, items, volume in cursor:
@@ -222,6 +223,8 @@ def get_systems_data(request, date_str):
 @cache_page(3 * 60 * 60) # 3 hours cache
 def get_stations_data(request, date_str, solarSystemID):
     date = datetime.strptime(date_str, DATE_PATTERN)
+    date = timezone.make_aware(date, timezone.utc)
+    next_date = date + timedelta(seconds=1)
     solarSystemID = int(solarSystemID)
     divisions = extract_divisions(request)
     show_in_space = json.loads(request.GET.get('space', 'true'))
@@ -238,16 +241,16 @@ def get_stations_data(request, date_str, solarSystemID):
 
     sql = 'SELECT "stationID", MAX("flag") as "flag", COUNT(*) AS "items", SUM("volume") AS "volume" '
     sql += 'FROM "assets_assetdiff" '
-    sql += 'WHERE "solarSystemID"=%s AND "date"=%s '
+    sql += 'WHERE "solarSystemID"=%s AND "date" >= %s AND "date" < %s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "stationID";'
     sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
-        cursor.execute(sql, [solarSystemID, date])
+        cursor.execute(sql, [solarSystemID, date, next_date])
     else:
-        cursor.execute(sql, [solarSystemID, date] + list(divisions))
+        cursor.execute(sql, [solarSystemID, date, next_date] + list(divisions))
 
     jstree_data = []
     for stationID, flag, items, volume in cursor:
@@ -283,6 +286,8 @@ def get_stations_data(request, date_str, solarSystemID):
 def get_hangars_data(request, date_str, solarSystemID, stationID):
 
     date = datetime.strptime(date_str, DATE_PATTERN)
+    date = timezone.make_aware(date, timezone.utc)
+    next_date = date + timedelta(seconds=1)
     solarSystemID = int(solarSystemID)
     stationID = int(stationID)
     divisions = extract_divisions(request)
@@ -294,16 +299,16 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
 
     sql = 'SELECT "hangarID", COUNT(*) AS "items", SUM("volume") AS "volume" '
     sql += 'FROM "assets_assetdiff" '
-    sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s AND "date"=%s '
+    sql += 'WHERE "solarSystemID"=%s AND "stationID"=%s AND "date" >= %s AND "date" < %s '
     if where: sql += ' AND ' + ' AND '.join(where)
     sql += ' GROUP BY "hangarID";'
     sql = db.fix_mysql_quotes(sql)
 
     cursor = connection.cursor() #@UndefinedVariable
     if divisions is None:
-        cursor.execute(sql, [solarSystemID, stationID, date])
+        cursor.execute(sql, [solarSystemID, stationID, date, next_date])
     else:
-        cursor.execute(sql, [solarSystemID, stationID, date] + list(divisions))
+        cursor.execute(sql, [solarSystemID, stationID, date, next_date] + list(divisions))
 
     HANGAR = {}
     for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
@@ -328,10 +333,15 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def get_hangar_content_data(request, date_str, solarSystemID, stationID, hangarID):
-
+    
+    date = datetime.strptime(date_str, DATE_PATTERN)
+    date = timezone.make_aware(date, timezone.utc)
+    next_date = date + timedelta(seconds=1)
+    
     assets_query = AssetDiff.objects.filter(solarSystemID=int(solarSystemID),
-                                            stationID=int(stationID), hangarID=int(hangarID),
-                                            date=datetime.strptime(date_str, DATE_PATTERN))
+                                            stationID=int(stationID), 
+                                            hangarID=int(hangarID),
+                                            date__range=(date, next_date))
     jstree_data = []
     for a in assets_query.select_related(depth=1):
 
@@ -356,12 +366,15 @@ def get_hangar_content_data(request, date_str, solarSystemID, stationID, hangarI
 @cache_page(3 * 60 * 60) # 3 hours cache
 def search_items(request, date_str):
     date = datetime.strptime(date_str, DATE_PATTERN)
+    date = timezone.make_aware(date, timezone.utc)
+    next_date = date + timedelta(seconds=1)
     divisions = extract_divisions(request)
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
     search_string = request.GET.get('search_string', None)
 
-    query = AssetDiff.objects.filter(eve_type__typeName__icontains=search_string, date=date)
+    query = AssetDiff.objects.filter(eve_type__typeName__icontains=search_string)
+    query = query.filter(date__range=(date, next_date))
 
     if divisions is not None:
         query = query.filter(hangarID__in=divisions)
