@@ -3,8 +3,8 @@
 {% block headtitle %}{% trans 'Login' %}{% endblock %}
 
 {% block main_content %}
-<div class="row">
-  <div class="span6 offset4">
+<div class="row offset5">
+  <div class="span5">
 	  <div class="page-header">
 		  <h1>{% trans 'Please login' %}</h1>
 	  </div>
@@ -16,12 +16,13 @@
 	  
 	    <input type="text" name="username"{% if form.username.value %}
 	           value="{{ form.username.value }}"{% endif %}
-	           placeholder="{% trans 'username' %}" id="id_username">
-	    <input type="password" name="password" placeholder="{% trans 'password' %}">
+	           placeholder="{% trans 'username' %}" id="id_username"><br>
+	    <input type="password" name="password" placeholder="{% trans 'password' %}"><br>
+	    
 	    <label class="checkbox">
 	       <input type="checkbox" id="rememberme" name="rememberme" value="0">
 	       {% trans 'Remember Me' %}
-	    </label>
+	    </label><br>
 	    
 	    <button type="submit" class="btn btn-primary">{% trans 'Login' %}</button>
 	    
