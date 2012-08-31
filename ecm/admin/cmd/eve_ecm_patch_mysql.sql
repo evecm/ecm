@@ -283,9 +283,9 @@ INSERT INTO `eve_controltowerresource`
 ;
 
 
-----------------------------------------------------------
---- add our enhanced skills reference.
----------------------------------------------------------
+--
+-- add our enhanced skills reference.
+--
 INSERT INTO `eve_skillreq`
     SELECT
         t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS INT)) AS `id`,
