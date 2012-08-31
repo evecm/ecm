@@ -54,7 +54,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'Corporation'
         db.create_table('corp_corporation', (
-            ('ecm_url', self.gf('django.db.models.fields.URLField')(unique=True, max_length=200)),
+            ('ecm_url', self.gf('django.db.models.fields.URLField')(unique=True, max_length=200, null=True, blank=True)),
             ('is_my_corp', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('corporationID', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
             ('corporationName', self.gf('django.db.models.fields.CharField')(max_length=256, null=True, blank=True)),
@@ -70,8 +70,8 @@ class Migration(SchemaMigration):
             ('taxRate', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('memberLimit', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('private_key', self.gf('django.db.models.fields.TextField')(unique=True, null=True, blank=True)),
-            ('public_key', self.gf('django.db.models.fields.TextField')(unique=True, blank=True)),
-            ('key_fingerprint', self.gf('django.db.models.fields.CharField')(unique=True, max_length=1024, blank=True)),
+            ('public_key', self.gf('django.db.models.fields.TextField')(unique=True, null=True, blank=True)),
+            ('key_fingerprint', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255, null=True, blank=True)),
             ('last_update', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
         ))
         db.send_create_signal('corp', ['Corporation'])
@@ -102,10 +102,10 @@ class Migration(SchemaMigration):
                                                   allianceID=allianceID, 
                                                   ceoID=ceoID,
                                                   is_my_corp=True,
-                                                  ecm_url='http://localhost:8000',
+                                                  ecm_url=None,
                                                   private_key=None,
-                                                  public_key='',
-                                                  key_fingerprint='')
+                                                  public_key=None,
+                                                  key_fingerprint=None)
 
             for contactID, contactName, is_corp_contact, standing in standings_rows:
                 orm.Standing.objects.create(corp=corp,
@@ -164,13 +164,13 @@ class Migration(SchemaMigration):
             'corporationID': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
             'corporationName': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'ecm_url': ('django.db.models.fields.URLField', [], {'unique': 'True', 'max_length': '200'}),
+            'ecm_url': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'is_my_corp': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'key_fingerprint': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '1024', 'blank': 'True'}),
+            'key_fingerprint': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'last_update': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'memberLimit': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'private_key': ('django.db.models.fields.TextField', [], {'unique': 'True', 'null': 'True', 'blank': 'True'}),
-            'public_key': ('django.db.models.fields.TextField', [], {'unique': 'True', 'blank': 'True'}),
+            'public_key': ('django.db.models.fields.TextField', [], {'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'stationID': ('django.db.models.fields.BigIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'stationName': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'taxRate': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
