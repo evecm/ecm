@@ -288,10 +288,10 @@ INSERT INTO `eve_controltowerresource`
 --
 INSERT INTO `eve_skillreq`
     SELECT
-        t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS INT)) AS `id`,
+        t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `id`,
         t.`typeID` AS `item_id`,
-        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS INT)) AS `skill_id`,
-        COALESCE(r.`valueInt`, CAST(r.`valueFloat` AS INT)) AS `required_level`
+        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `skill_id`,
+        COALESCE(r.`valueInt`, CAST(r.`valueFloat` AS UNSIGNED)) AS `required_level`
     FROM `eve_type` AS t
         JOIN `dgmTypeAttributes` s ON (t.`typeID` = s.`typeID` AND s.`attributeID` = 182)
         JOIN `dgmTypeAttributes` r ON (t.`typeID` = r.`typeID` AND r.`attributeID` = 277)
@@ -301,10 +301,10 @@ INSERT INTO `eve_skillreq`
         `skill_id` IN (SELECT `typeID` FROM `eve_type`)
   UNION
     SELECT
-        t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS INT)) AS `id`,
+        t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `id`,
         t.`typeID` AS `item_id`,
-        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS INT)) AS `skill_id`,
-        COALESCE(r.`valueInt`, CAST(r.`valueFloat` AS INT)) AS `required_level`
+        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `skill_id`,
+        COALESCE(r.`valueInt`, CAST(r.`valueFloat` AS UNSIGNED)) AS `required_level`
     FROM `eve_type` AS t
         JOIN `dgmTypeAttributes` s ON (t.`typeID` = s.`typeID` AND s.`attributeID` = 183)
         JOIN `dgmTypeAttributes` r ON (t.`typeID` = r.`typeID` AND r.`attributeID` = 278)
@@ -314,10 +314,10 @@ INSERT INTO `eve_skillreq`
         `skill_id` IN (SELECT `typeID` FROM `eve_type`)
   UNION
     SELECT
-        t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS INT)) AS `id`,
+        t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `id`,
         t.`typeID` AS `item_id`,
-        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS INT)) AS `skill_id`,
-        COALESCE(r.`valueInt`, CAST(r.`valueFloat` AS INT)) AS `required_level`
+        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `skill_id`,
+        COALESCE(r.`valueInt`, CAST(r.`valueFloat` AS UNSIGNED)) AS `required_level`
     FROM `eve_type` AS t
         JOIN `dgmTypeAttributes` s ON (t.`typeID` = s.`typeID` AND s.`attributeID` = 184)
         JOIN `dgmTypeAttributes` r ON (t.`typeID` = r.`typeID` AND r.`attributeID` = 279)
