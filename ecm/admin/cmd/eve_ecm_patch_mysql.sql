@@ -25,7 +25,7 @@ ALTER TABLE `eve_marketgroup` DISABLE KEYS;
 ALTER TABLE `eve_type` DISABLE KEYS;
 ALTER TABLE `eve_group` DISABLE KEYS;
 ALTER TABLE `eve_category` DISABLE KEYS;
-ALTER TABLE `eve_skills` DISABLE KEYS;
+ALTER TABLE `eve_skillreq` DISABLE KEYS;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- reset existing data
