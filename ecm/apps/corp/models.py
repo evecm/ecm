@@ -146,7 +146,7 @@ class Corporation(models.Model):
     
     objects = CorpManager()
     
-    ecm_url         = models.CharField(unique=True, max_length=200, blank=True, null=True)
+    ecm_url         = models.CharField(max_length=200, blank=True, null=True)
     is_my_corp      = models.BooleanField(default=False)
     is_trusted      = models.BooleanField(default=False)
 
@@ -164,9 +164,9 @@ class Corporation(models.Model):
     taxRate         = models.IntegerField(blank=True, null=True)
     memberLimit     = models.IntegerField(blank=True, null=True)
 
-    private_key     = models.TextField(unique=True, blank=True, null=True)
-    public_key      = models.TextField(unique=True, blank=True, null=True)
-    key_fingerprint = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    private_key     = models.TextField(blank=True, null=True)
+    public_key      = models.TextField(blank=True, null=True)
+    key_fingerprint = models.CharField(max_length=255, blank=True, null=True)
     
     last_update     = models.DateTimeField(auto_now=True)
     
