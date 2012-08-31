@@ -56,7 +56,7 @@ def edit_motd(request):
             Motd.objects.create(message=request.POST['message'],
                                 markup=int(request.POST['markup']),
                                 user=request.user)
-            return redirect('/')
+            return redirect('/corp/')
             
     data = {
         'motd'    : motd,

@@ -7,7 +7,7 @@
     <h1>Edit the <em>Message Of The Day</em></h1>
 </div>
 
-<form class="well form-horizontal" target="/editapi/" method="post">
+<form class="well form-horizontal" method="post">
 	{% csrf_token %}
 	
 	<label>{% trans 'MOTD Text' %}</label>
