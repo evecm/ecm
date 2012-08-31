@@ -20,7 +20,7 @@ __author__ = "diabeteman"
 
 
 from django.contrib import admin
-from ecm.apps.corp.models import Corporation, CorpHangar, CorpWallet, SharedData, CorpGroup, Standing
+from ecm.apps.corp.models import Corporation, CorpHangar, CorpWallet, CorpGroup, Standing
 
 
 class CorpAdmin(admin.ModelAdmin):
@@ -29,10 +29,11 @@ class CorpAdmin(admin.ModelAdmin):
     list_filter = ['is_my_corp', 'is_trusted']
     search_fields = ['corporationName']
 
+class CorpGroupAdmin(admin.ModelAdmin):
+    filter_horizontal = ('corporations', 'allowed_shares')
 
 admin.site.register(Corporation, CorpAdmin)
 admin.site.register(Standing)
 admin.site.register(CorpWallet)
 admin.site.register(CorpHangar)
-admin.site.register(SharedData)
-admin.site.register(CorpGroup)
+admin.site.register(CorpGroup, CorpGroupAdmin)

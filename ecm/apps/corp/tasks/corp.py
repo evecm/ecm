@@ -70,8 +70,8 @@ def update_corp_info(corpApi, currentTime):
     try:
         try:
             allianceName = corpApi.allianceName
-            allianceID   = corpApi.allianceID
-            allianceTicker = ""
+            allianceID = corpApi.allianceID
+            allianceTicker = None
             alliancesApi = api.connect().eve.AllianceList()
             for a in alliancesApi.alliances:
                 if a.allianceID == allianceID:
@@ -84,9 +84,9 @@ def update_corp_info(corpApi, currentTime):
             allianceName = corp.allianceName
             allianceTicker = corp.allianceTicker
     except:
-        allianceName = "-"
-        allianceID   = 0
-        allianceTicker = "-"
+        allianceName = None
+        allianceID = None
+        allianceTicker = None
 
     description = fix_description(corpApi.description)
 

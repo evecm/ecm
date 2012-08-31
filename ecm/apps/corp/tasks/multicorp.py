@@ -22,10 +22,8 @@ import zlib
 import logging
 import urlparse
 
-import django.utils.simplejson as json
-
 from ecm.utils.http import HttpClient
-from ecm.utils import crypto
+from ecm.utils import crypto, json
 from ecm.apps.corp.models import Corporation, SharedData
 
 LOG = logging.getLogger(__name__)
@@ -74,7 +72,7 @@ def update_one_corp(corp):
             
             raw_data = crypto.aes_decrypt(session_secret, response.read())
             
-            if response.getheader('content-type') == 'application/gzip-compressed':
+            if response.info().getheader('content-type') == 'application/gzip-compressed':
                 raw_data = zlib.decompress(raw_data)
             
             shared_data.call_handler(corp, json.loads(raw_data))

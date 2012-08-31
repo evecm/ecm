@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from functools import wraps
 
 __date__ = '2012 08 01'
 __author__ = 'diabeteman'
@@ -22,13 +21,13 @@ __author__ = 'diabeteman'
 import zlib
 import logging
 import httplib as http
+from functools import wraps
 
-import django.utils.simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.apps.corp.models import Corporation
-from ecm.utils import crypto
+from ecm.utils import crypto, json
 
 LOG = logging.getLogger(__name__)
 
@@ -174,4 +173,3 @@ def encrypted_response(request, data, compress=False):
     encrypted_data = crypto.aes_encrypt(request.session[AUTH_SECRET], data)
     return HttpResponse(encrypted_data, mimetype=mime)
 
-    

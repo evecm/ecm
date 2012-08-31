@@ -65,7 +65,7 @@ def process_skills(corp, data):
     
     for char in data:
         try:
-            member = corp.members.get(char['characterID'])
+            member = corp.members.get(characterID=char['characterID'])
             for skill in char['skills']:
                 member.skills.create(eve_type_id=skill['eve_type_id'], level=skill['level'])
         except Member.DoesNotExist:

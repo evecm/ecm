@@ -211,7 +211,7 @@ def get_corp(char):
         
         if api_corp.allianceID:
             allianceID = api_corp.allianceID
-            allianceName    = api_corp.allianceName
+            allianceName = api_corp.allianceName
         else:
             allianceID = None
             allianceName = None
@@ -226,6 +226,5 @@ def get_corp(char):
                            description     = fix_description(api_corp.description),
                            allianceID      = allianceID,
                            allianceName    = allianceName,
-                           allianceTicker  = '',
                            taxRate         = api_corp.taxRate,
                            )

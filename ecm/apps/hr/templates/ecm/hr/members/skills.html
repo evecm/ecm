@@ -1,11 +1,11 @@
-{% extends "base.html" %}
+{% extends "ecm/hr/hr_base.html" %}
 
 {% load i18n %}
 {% load static from staticfiles %}
 
 {% block headtitle %}{% trans 'Member Skills' %}{% endblock %}
 
-{% block stylesheets %}
+{% block hr_stylesheets %}
 <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery.autocomplete.css' %}" />
 <style type="text/css">
 #eft-modal, #lifecycle-modal, .throbber, #error-box, #warning-box {display: none;}

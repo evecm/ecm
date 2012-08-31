@@ -113,7 +113,8 @@ def update():
             # 'm' is a brand new member, his/her access level didn't exist before
             # we leave it to the default value '0'
             continue
-
+    
+    for m in newMembers.values():
         # to be sure to store the nicknames change, etc.
         # even if there are no diff, we always overwrite the members
         m.save()

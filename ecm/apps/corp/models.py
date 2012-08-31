@@ -172,12 +172,14 @@ class Corporation(models.Model):
     
     #override
     def clean(self):
-        if self.ecm_url is not None and not (self.key_fingerprint and self.public_key):
+        if self.ecm_url and not (self.key_fingerprint and self.public_key):
             self.contact_corp(self.ecm_url)
     
     def save(self, force_insert=False, force_update=False, using=None):
-        if not self.ecm_url:
-            self.ecm_url = str(self.corporationID)
+        self.ecm_url = self.ecm_url or None
+        self.private_key = self.private_key or None
+        self.public_key = self.public_key or None
+        self.key_fingerprint = self.key_fingerprint or None
         models.Model.save(self, force_insert=force_insert, force_update=force_update, using=using)
     
     def contact_corp(self, corp_url):

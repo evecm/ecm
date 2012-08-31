@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.views.decorators.csrf import csrf_exempt
 
 __date__ = '2012 08 01'
 __author__ = 'diabeteman'
@@ -22,6 +21,7 @@ __author__ = 'diabeteman'
 import logging
 
 import django.utils.simplejson as json
+from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -101,6 +101,7 @@ def handle_contact(request):
                 ctx_dict = {
                     'host_name': settings.EXTERNAL_HOST_NAME,
                     'use_https': settings.USE_HTTPS,
+                    'corp': corp,
                 }
                 txt_content = render_to_string('ecm/corp/email/notify_contact.txt', 
                                                ctx_dict, Ctx(request))

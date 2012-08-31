@@ -5,7 +5,7 @@
 
 {% trans 'Here is the information they provided about them:' %}
 
-{% trans 'Corporation:' %} {{corp.corporationID}} [{{corp.ticker}}]
+{% trans 'Corporation:' %} {{corp}} [{{corp.ticker}}]
 {% trans 'Alliance:' %} {{corp.allianceName}} <{{corp.allianceTicker}}>
 {% trans 'URL of their ECM server:' %} {{corp.ecm_url}}
 
