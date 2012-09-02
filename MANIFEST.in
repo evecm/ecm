@@ -8,3 +8,4 @@ global-exclude *.pyo
 global-exclude *.old
 global-exclude *.db
 global-exclude *.log
+global-exclude *.orig

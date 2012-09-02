@@ -132,3 +132,18 @@ def run(command, global_options, optionsd, args):
         shutil.rmtree(tempdir)
         log('done')
 
+#-------------------------------------------------------------------------------
+def print_load_message(instance_dir, db_engine):
+    
+    if 'mysql' in db_engine:
+        engine = 'mysql'
+    elif 'sqlite' in db_engine:
+        engine = 'sqlite'
+    else:
+        engine = 'psql'
+    
+    log('')
+    log('Now you need to load your database with EVE static data.')
+    log('Please execute `ecm-admin load %s <official_dump_file>` to do so.' % instance_dir)
+    log('You will find official dump conversions here http://releases.eve-corp-management.org/eve_sde/')
+    log('Be sure to take the latest one matching your db engine "%s".' % engine)

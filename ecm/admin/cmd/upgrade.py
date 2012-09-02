@@ -17,8 +17,6 @@
 
 
 from __future__ import with_statement
-from django.utils.crypto import get_random_string
-import string
 
 
 __date__ = '2012 3 23'
@@ -27,14 +25,18 @@ __author__ = 'diabeteman'
 import os
 import re
 import shutil
+import string
 from os import path
 from distutils import dir_util
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
 
+from django.utils.crypto import get_random_string
+
 from ecm.lib.subcommand import Subcommand
 from ecm.admin import instance_template
 from ecm.admin.util import run_python_cmd, log, pipe_to_django_shell
+from ecm.admin.cmd.load import print_load_message
 from ecm.admin.cmd import collect_static_files
 
 #-------------------------------------------------------------------------------
@@ -178,4 +180,8 @@ def run(command, global_options, options, args):
     # migrate ecm db
     if not options.no_syncdb:
         migrate_ecm_db(instance_dir, options.upgrade_from_149)
-
+    
+    log('')
+    log('ECM instance upgraded in "%s".' % instance_dir)
+    
+    print_load_message(instance_dir, config.get('database', 'ecm_engine'))

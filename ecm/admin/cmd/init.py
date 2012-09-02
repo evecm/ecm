@@ -25,8 +25,9 @@ import os
 from ConfigParser import SafeConfigParser
 from optparse import OptionParser
 
-from ecm.admin.util import run_python_cmd, log
 from ecm.lib.subcommand import Subcommand
+from ecm.admin.util import run_python_cmd, log
+from ecm.admin.cmd.load import print_load_message
 from ecm.admin.cmd import collect_static_files
 
 #-------------------------------------------------------------------------------
@@ -74,4 +75,9 @@ def run(command, global_options, options, args):
     if 'sqlite' in ecm_db_engine and not os.path.exists(sqlite_db_dir):
         os.makedirs(sqlite_db_dir)
     init_ecm_db(instance_dir)
+    
+    log('')
+    log('ECM instance initialized in "%s".' % instance_dir)
+    
+    print_load_message(instance_dir, ecm_db_engine)
 
