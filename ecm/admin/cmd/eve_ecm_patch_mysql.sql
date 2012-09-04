@@ -298,7 +298,7 @@ INSERT INTO `eve_skillreq`
     WHERE
         t.`published` = 1
       AND
-        `skill_id` IN (SELECT `typeID` FROM `eve_type`)
+        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) IN (SELECT `typeID` FROM `eve_type`)
   UNION
     SELECT
         t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `id`,
@@ -311,7 +311,7 @@ INSERT INTO `eve_skillreq`
     WHERE
         t.`published` = 1
       AND
-        `skill_id` IN (SELECT `typeID` FROM `eve_type`)
+        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) IN (SELECT `typeID` FROM `eve_type`)
   UNION
     SELECT
         t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `id`,
@@ -324,7 +324,7 @@ INSERT INTO `eve_skillreq`
     WHERE
         t.`published` = 1
       AND
-        `skill_id` IN (SELECT `typeID` FROM `eve_type`)
+        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) IN (SELECT `typeID` FROM `eve_type`)
 ;
 
 
