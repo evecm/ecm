@@ -26,6 +26,7 @@ import eveapi
 
 from django.db import transaction
 from django.utils import timezone
+import pytz
 
 from ecm.apps.common import api
 from ecm.apps.corp.models import Wallet
@@ -83,7 +84,7 @@ def write_journal_results(wallet, entries):
 
         JournalEntry.objects.create(refID=e.refID,
                                     wallet=wallet,
-                                    date=e.date,
+                                    date=e.date.replace(tzinfo=pytz.UTC),
                                     type_id=e.refTypeID,
                                     ownerName1=e.ownerName1,
                                     ownerID1=e.ownerID1,
@@ -118,7 +119,7 @@ def write_transaction_results(wallet, entries):
         if journal != None:
             TransactionEntry.objects.create(
                                             id = e.transactionID,
-                                            date = e.transactionDateTime,
+                                            date = e.transactionDateTime.replace(tzinfo=pytz.UTC),
                                             quantity = e.quantity,
                                             typeID = e.typeID,
                                             price = e.price,
