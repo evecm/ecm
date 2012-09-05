@@ -152,6 +152,8 @@ def get_item_id(request):
         if query.exists():
             item = query[0]
             out = []
+            if item.categoryID == 16:
+                out.append([item.typeID, item.typeName, 1])
             for i in item.skill_reqs.all():
                 out.append([i.skill.typeID, i.skill.typeName, i.required_level])
             return HttpResponse(json.dumps(out), mimetype=JSON)
