@@ -210,7 +210,7 @@ def get_details(pos, api_resp, sov):
         corp = Corporation.objects.mine()
         "J\d{6}"
         # sov fuel check
-        if not re.search("J\d{6}", pos.location_id):
+        if pos.location_id < 31000000:
             if sov[pos.location_id]['faction'] == 0 and \
                sov[pos.location_id]['alliance'] == corp.allianceID and \
                base_fuel_cons > 1:
