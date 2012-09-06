@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block headtitle %}{% trans 'POS Timers' %}{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'pos/css/classes.css' %}" />
+{% endblock %}
+{% block main_content %}
+
+<table class="table table-bordered" id="timer_table">
+  <thead>
+    <tr>
+      <th class="top" scope="col" >Location</th>
+      <th class="top" scope="col" >Type</th>
+      <th class="top" scope="col" >Cycle</th>
+      <th class="top" scope="col" >Planet</th>
+      <th class="top" scope="col" >Moon</th>
+      <th class="top" scope="col" >Owner</th>
+      <th class="top" scope="col" >Friendly</th>
+      <th class="top" scope="col" >Date</th>
+      <th class="top" scope="col" >Notes</th>
+      <th class="top" scope="col" >Time Remaining</th>
+    </tr>
+  </thead>
+  <tbody>
+      {{ timers.items }}
+  	{% for timer in timers %}
+        <tr style="{{timer.class}}">
+        <td>{{ timer.location }}</td>
+        <td>{{ timer.structure }}</td>
+        <td>{{ timer.cycle}}</td>
+        <td>{{ timer.location_id }}</td>
+        <td>{{ timer.moon_id }}</td>
+        <td>{{ timer.owner }}</td>
+        <td>{{ timer.friendly }}</td>
+        <td>{{ timer.timer }}</td>
+        <td>{{ timer.notes }}</td>
+        <td>{{ timer.time_remaining }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
