@@ -20,7 +20,7 @@ __author__ = "JerryKhan"
 
 from django.contrib import admin
 
-from ecm.plugins.pos.models import POS, FuelLevel
+from ecm.plugins.pos.models import POS, FuelLevel, Timer
 
 #------------------------------------------------------------------------------
 class POSAdmin(admin.ModelAdmin):
@@ -39,6 +39,15 @@ class FuelLevelAdmin(admin.ModelAdmin):
                     'quantity']
 
 #------------------------------------------------------------------------------
+class TimerAdmin(admin.ModelAdmin):
+    list_display = ['timer',
+                    'structure',
+                    'location_id',
+                    'location',
+                    'notes',
+                    'cycle']
+
+#------------------------------------------------------------------------------
 admin.site.register(POS, POSAdmin)
 admin.site.register(FuelLevel, FuelLevelAdmin)
-
+admin.site.register(Timer, TimerAdmin)

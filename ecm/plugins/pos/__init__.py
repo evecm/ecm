@@ -26,6 +26,7 @@ DEPENDS_ON = {
 MENUS = [
      {'title': tr_lazy('POS'),    'url': '',      'items': [
         {'title': tr_lazy('Fuel Summary'), 'url': 'fuel_summary/', 'items': []},
+        {'title': tr_lazy('Timers'), 'url': 'timers/', 'items': []},
      ]},
 ]
 
