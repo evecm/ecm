@@ -65,19 +65,19 @@ def create_timer_style(date, threshold_alert=24):
     Returns a css style wrt. time remaining.
     The background color is created based on the remaining time scaled by threshold_alert.
     A timer that expires in 4 hours has a brighter red then a timer due in 24 hours.
-    Background color ranges from #000000 to #F80000.
+    Background color ranges from #444444 (bg-color of navbar) to #F84444.
     !!!TODO: Make threshold configurable in POS settings.
     """
     delta = delta_seconds_from_now(date)
-    threshold_step = (threshold_alert * 60) / 32
+    threshold_step = (threshold_alert * 60) / 26
     alert_map = []
-    for x in range(0, 255, 8):
-        alert_map.append(triplet((x,0,0)))
+    for x in range(44, 255, 8):
+        alert_map.append(triplet((x,44,44)))
     if delta <= 0:
         return 'backgroud-color: #383838; color: white;'
     if delta / 60 > 0:
         if delta / 60 < threshold_alert * 60:
-            index = 32 - ((delta / 60) / threshold_step) - 1
+            index = 26 - ((delta / 60) / threshold_step) - 1
         else:
             index = 0
         #return 'background-color: #%s; color: white; font-weight:bold;' % alert_map[index]
