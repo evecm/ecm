@@ -80,7 +80,8 @@ def create_timer_style(date, threshold_alert=24):
             index = 32 - ((delta / 60) / threshold_step) - 1
         else:
             index = 0
-        return 'background-color: #%s; color: white; font-weight:bold;' % alert_map[index]
+        #return 'background-color: #%s; color: white; font-weight:bold;' % alert_map[index]
+        return 'background-color: #%s; color: white;' % alert_map[index]
     return 'timer'
 
 def create_time_remaining(date):

@@ -44,3 +44,6 @@ a.pos {
 .reinforced-alert a {
     color: white;
 }
+.timer:hover{
+    color: black !important;
+}
