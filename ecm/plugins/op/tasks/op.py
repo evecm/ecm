@@ -15,28 +15,29 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-from django.utils.translation import ugettext_lazy as tr_lazy
+__date__ = "2012 09 07"
+__author__ = "tash"
 
-NAME = 'op'
+import logging
+import re
 
-DEPENDS_ON = {
-    'ecm' : '2.1',
-}
+from django.db import transaction
+from django.utils import timezone
+from django.utils.translation import ugettext as tr
 
-MENUS = [
-     {'title': tr_lazy('Timer'),    'url': '',      'items': [
-     ]},
-]
+from ecm.plugins.pos.models import POS, FuelLevel
+from ecm.apps.eve.models import CelestialObject, ControlTowerResource, Type
+from ecm.plugins.pos import constants
+from ecm.apps.common import api
+from ecm.apps.corp.models import Corporation
 
-TASKS = [
-    {
-        'function' : 'ecm.plugins.op.tasks.op.update',
-        'priority' : 100,
-        'frequency' : 6,
-        'frequency_units' : 3600, # hour
-    },
-]
+logger = logging.getLogger(__name__)
 
-URL_PERMISSIONS = [
-    r'^/op/.*$',
-]
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def update():
+    """
+    Stub.
+    !!!TODO: Implement
+    """
+    pass
