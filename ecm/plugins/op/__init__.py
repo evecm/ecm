@@ -17,27 +17,26 @@
 
 from django.utils.translation import ugettext_lazy as tr_lazy
 
-NAME = 'pos'
+NAME = 'op'
 
 DEPENDS_ON = {
-    'ecm' : '2.0',
+    'ecm' : '2.1',
 }
 
 MENUS = [
-     {'title': tr_lazy('POS'),    'url': '',      'items': [
-        {'title': tr_lazy('Fuel Summary'), 'url': 'fuel_summary/', 'items': []},
+     {'title': tr_lazy('Timer'),    'url': '',      'items': [
      ]},
 ]
 
 TASKS = [
     {
-        'function' : 'ecm.plugins.pos.tasks.pos.update',
-        'priority' : 100,
-        'frequency' : 6,
-        'frequency_units' : 3600, # hour
+     #   'function' : 'ecm.plugins.op.tasks.op.update',
+     #   'priority' : 100,
+     #   'frequency' : 6,
+     #   'frequency_units' : 3600, # hour
     },
 ]
 
 URL_PERMISSIONS = [
-    r'^/pos/.*$',
+    r'^/op/.*$',
 ]

@@ -1,4 +1,4 @@
-# Copyright (c) 2011 jerome Vacher
+# Copyright (c) 2010-2011 Jerome Vacher
 #
 # This file is part of EVE Corporation Management.
 #
@@ -15,29 +15,14 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-from django.utils.translation import ugettext_lazy as tr_lazy
+__date__ = "2011 10 30"
+__author__ = "JerryKhan"
 
-NAME = 'pos'
+from django.conf.urls.defaults import patterns
 
-DEPENDS_ON = {
-    'ecm' : '2.0',
-}
+urlpatterns = patterns('ecm.plugins.op.views',
+    ###########################################################################
+    # POS VIEWS
+    (r'^$',                     'timers.timers'),          
+)
 
-MENUS = [
-     {'title': tr_lazy('POS'),    'url': '',      'items': [
-        {'title': tr_lazy('Fuel Summary'), 'url': 'fuel_summary/', 'items': []},
-     ]},
-]
-
-TASKS = [
-    {
-        'function' : 'ecm.plugins.pos.tasks.pos.update',
-        'priority' : 100,
-        'frequency' : 6,
-        'frequency_units' : 3600, # hour
-    },
-]
-
-URL_PERMISSIONS = [
-    r'^/pos/.*$',
-]

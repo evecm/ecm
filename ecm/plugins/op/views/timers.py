@@ -23,7 +23,7 @@ from datetime import datetime
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
-from ecm.plugins.pos.models import Timer 
+from ecm.plugins.op.models import Timer 
 from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access
 
@@ -53,7 +53,7 @@ def timers(request):
     data = {
            'timers' : timer_list 
            }
-    return render_to_response("ecm/pos/pos_timers.html", data, RequestContext(request))
+    return render_to_response("ecm/op/timers.html", data, RequestContext(request))
 
 def triplet(rgb):
     """
@@ -67,7 +67,6 @@ def create_timer_style(date, threshold_alert=24):
     The background color is created based on the remaining time scaled by threshold_alert.
     A timer that expires in 4 hours has a brighter red then a timer due in 24 hours.
     Background color ranges from #444444 (bg-color of navbar) to #F84444.
-    !!!TODO: Make threshold configurable in POS settings.
     """
     delta = delta_seconds_from_now(date)
     threshold_step = (threshold_alert * 60) / 26
@@ -81,8 +80,6 @@ def create_timer_style(date, threshold_alert=24):
             index = 26 - ((delta / 60) / threshold_step) 
         else:
             index = 0
-        print "%s / %s" % (index, 26)
-        #return 'background-color: #%s; color: white; font-weight:bold;' % alert_map[index]
         return 'background-color: #%s; color: white;' % alert_map[index]
     return 'timer'
 

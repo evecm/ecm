@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0.5.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-30 03:28+0200\n"
+"POT-Creation-Date: 2012-09-07 09:57+0200\n"
 "PO-Revision-Date: 2012-08-29 17:09+0200\n"
 "Last-Translator: Stefan Dresselhaus <sdressel@techfak.uni-bielefeld.de>\n"
 "Language-Team: German <>\n"
@@ -17,18 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bits\n"
 "Plural-Forms: nplurals=2; plural=n>1;\n"
 "X-Generator: Lokalize 1.4\n"
-
-#: __init__.py:27 templates/ecm/pos/pos_list.html:7
-msgid "POS"
-msgstr "POS"
-
-#: __init__.py:28
-msgid "Fuel Summary"
-msgstr "Sprit-Zusammenfassung"
-
-#: tasks/pos.py:136
-msgid "unanchored"
-msgstr "entankert"
 
 #: templates/ecm/pos/pos_details.html:6
 msgid "POS Details"
@@ -148,6 +136,10 @@ msgstr "Klicken zum Editieren..."
 msgid "POS Fuel summary"
 msgstr "POS-Sprit-Zusammenfassung"
 
+#: templates/ecm/pos/pos_list.html:7
+msgid "POS"
+msgstr "POS"
+
 #: templates/ecm/pos/pos_list.html:24
 msgid "Search"
 msgstr "Suche"
@@ -184,37 +176,39 @@ msgstr "Zeige verbleibende Laufzeit (in Stunden)"
 msgid "Hours"
 msgstr "Stunden"
 
-#: views/pos_list.py:59
-msgid "Location"
-msgstr "Ort"
+#: templates/ecm/pos/pos_timers.html:6
+msgid "POS Timers"
+msgstr "POS Timer"
 
-#: views/pos_list.py:60 views/pos_list.py:66
-msgid "Name"
-msgstr "Name"
+#~ msgid "Fuel Summary"
+#~ msgstr "Sprit-Zusammenfassung"
 
-#: views/pos_list.py:61
-msgid "Type"
-msgstr "Typ"
+#~ msgid "unanchored"
+#~ msgstr "entankert"
 
-#: views/pos_list.py:62
-msgid "Status"
-msgstr "Status"
+#~ msgid "Location"
+#~ msgstr "Ort"
 
-#: views/pos_list.py:63
-msgid "Next Cycle"
-msgstr "Nächster Zyklus"
+#~ msgid "Name"
+#~ msgstr "Name"
 
-#: views/pos_list.py:64
-msgid "Fuel Blocks"
-msgstr "Blöcke"
+#~ msgid "Type"
+#~ msgstr "Typ"
 
-#: views/pos_list.py:65
-msgid "Strontium"
-msgstr "Strontium"
+#~ msgid "Status"
+#~ msgstr "Status"
 
-#: views/pos_list.py:65
-msgid "Strontium Clathrates"
-msgstr "Strontium Clatherate"
+#~ msgid "Next Cycle"
+#~ msgstr "Nächster Zyklus"
+
+#~ msgid "Fuel Blocks"
+#~ msgstr "Blöcke"
+
+#~ msgid "Strontium"
+#~ msgstr "Strontium"
+
+#~ msgid "Strontium Clathrates"
+#~ msgstr "Strontium Clatherate"
 
 #~ msgid "Home"
 #~ msgstr "Start"
