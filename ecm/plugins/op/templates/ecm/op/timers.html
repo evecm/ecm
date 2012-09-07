@@ -12,16 +12,9 @@
 <table class="table table-bordered" id="timer_table">
   <thead>
     <tr>
-      <th class="top" scope="col" >Location</th>
-      <th class="top" scope="col" >Type</th>
-      <th class="top" scope="col" >Cycle</th>
-      <th class="top" scope="col" >Planet</th>
-      <th class="top" scope="col" >Moon</th>
-      <th class="top" scope="col" >Owner</th>
-      <th class="top" scope="col" >Friendly</th>
-      <th class="top" scope="col" >Date</th>
-      <th class="top" scope="col" >Notes</th>
-      <th class="top" scope="col" >Time Remaining</th>
+    {% for head in header %}
+      <th class="top" scope="col" >{{ head }}</th>
+    {% endfor %}
     </tr>
   </thead>
   <tbody>

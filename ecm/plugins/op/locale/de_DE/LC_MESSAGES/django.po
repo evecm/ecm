@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-07 11:21+0200\n"
+"POT-Creation-Date: 2012-09-07 11:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,4 +19,44 @@ msgstr ""
 
 #: templates/ecm/op/timers.html:6
 msgid "POS Timers"
-msgstr ""
+msgstr "POS Timer"
+
+#: views/timers.py:37
+msgid "Location"
+msgstr "Ort"
+
+#: views/timers.py:37
+msgid "Type"
+msgstr "Typ"
+
+#: views/timers.py:37
+msgid "Cycle"
+msgstr "Zyklus"
+
+#: views/timers.py:37
+msgid "Planet"
+msgstr "Planet"
+
+#: views/timers.py:37
+msgid "Moon"
+msgstr "Mond"
+
+#: views/timers.py:37
+msgid "Owner"
+msgstr "Besitzer"
+
+#: views/timers.py:37
+msgid "Friendly"
+msgstr "Freundlich"
+
+#: views/timers.py:37
+msgid "Date"
+msgstr "Datum"
+
+#: views/timers.py:37
+msgid "Notes"
+msgstr "Anmerkung"
+
+#: views/timers.py:37
+msgid "Time Remaining"
+msgstr "Verbleibende Zeit"

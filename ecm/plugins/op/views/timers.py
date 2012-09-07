@@ -22,6 +22,7 @@ from datetime import datetime
 
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
 from ecm.plugins.op.models import Timer 
 from ecm.apps.eve.models import Type
@@ -32,6 +33,8 @@ def timers(request):
     timers = Timer.objects.all()
     # Build result list for formatted/labeled data
     timer_list = []
+    # Location  Type    Cycle   Planet  Moon    Owner   Friendly    Date    Notes   Time Remaining
+    header = [_('Location'), _('Type'), _('Cycle'), _('Planet'), _('Moon'), _('Owner'), _('Friendly'), _('Date'), _('Notes'), _('Time Remaining')]
     na = '-na-'
     for timer in timers:
         time_remaining = create_time_remaining(timer.timer)
@@ -51,7 +54,8 @@ def timers(request):
         timer_list.append(t)
 
     data = {
-           'timers' : timer_list 
+           'timers' : timer_list,
+           'header' : header
            }
     return render_to_response("ecm/op/timers.html", data, RequestContext(request))
 
