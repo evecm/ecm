@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2011 Jerome Vacher
+# Copyright (c) 2011 jerome Vacher
 #
 # This file is part of EVE Corporation Management.
 #
@@ -15,15 +15,17 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 10 30"
-__author__ = "JerryKhan"
+__date__ = "2012 09 06"
+__author__ = "tash"
 
-from django.conf.urls.defaults import patterns
+from datetime import datetime
 
-urlpatterns = patterns('ecm.plugins.op.views',
-    ###########################################################################
-    # POS VIEWS
-    (r'^$',                     'ops.overview'), #Placeholder
-    (r'^timers/$',                'timers.timers'),
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
-)
+from ecm.views.decorators import check_user_access
+
+@check_user_access()
+def overview(request):
+    return render_to_response("ecm/op/ops.html", None, RequestContext(request))

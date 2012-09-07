@@ -24,7 +24,8 @@ DEPENDS_ON = {
 }
 
 MENUS = [
-     {'title': tr_lazy('Timer'),    'url': '',      'items': [
+     {'title': tr_lazy('Fleet Ops'),    'url': '',      'items': [
+     {'title': tr_lazy('Timers'), 'url': 'timers/', 'items': []},
      ]},
 ]
 
@@ -39,4 +40,5 @@ TASKS = [
 
 URL_PERMISSIONS = [
     r'^/op/.*$',
+    r'^/op/timers/.*$',
 ]
