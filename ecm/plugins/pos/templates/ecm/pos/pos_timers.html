@@ -28,13 +28,13 @@
       {{ timers.items }}
   	{% for timer in timers %}
         <tr class="timer" style="{{timer.class}}">
-        <td>{{ timer.location }}</td>
+            <td><a href="http://evemaps.dotlan.net/system/{{ timer.location }}" target="_blank">{{ timer.location}}</a></td>
         <td>{{ timer.structure }}</td>
         <td>{{ timer.cycle}}</td>
         <td>{{ timer.location_id }}</td>
         <td>{{ timer.moon_id }}</td>
         <td>{{ timer.owner }}</td>
-        <td>{{ timer.friendly }}</td>
+        <td>{% if timer.friendly%}<i class="icon-ok icon-white"></i>{% else %}<i class="icon-remove icon-white"></i>{% endif %}</td>
         <td>{{ timer.timer }}</td>
         <td>{{ timer.notes }}</td>
         <td>{{ timer.time_remaining }}</td>
@@ -42,4 +42,5 @@
     {% endfor %}
   </tbody>
 </table>
+System links provided by <span class="dotlan">dotlan &copy;</span>
 {% endblock %}

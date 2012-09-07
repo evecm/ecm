@@ -213,15 +213,15 @@ class FuelLevel(models.Model):
         return u'%s: %d x %s' % (unicode(self.pos), self.quantity, fuel_name.typeName)
 
 class Timer(models.Model):
+    class Meta:
+        ordering = ['timer']
+
     #CYCLES
     SHIELD = 0
     ARMOR = 1
     FINAL = 2
     # IHUB
-    AMARR_INFRASTRUCTURE_HUB = 29286
-    CALDARI_INFRASTRUCTURE_HUB = 29302
-    GALLENTE_INFRASTRUCTURE_HUB = 29303
-    MINMATAR_INFRASTRUCTURE_HUB = 29304
+    INFRASTRUCTURE_HUB = 32458 
     # POS
     AMARR_CONTROL_TOWER = 12235
     AMARR_CONTROL_TOWER_MEDIUM = 20059
@@ -306,10 +306,7 @@ class Timer(models.Model):
 
     STRUCTURE_CHOICE = {
             ('IHUB', (
-                (AMARR_INFRASTRUCTURE_HUB, "Amarr Infrastructure Hub"),
-                (CALDARI_INFRASTRUCTURE_HUB, "Caldari Infrastructure Hub"),
-                (GALLENTE_INFRASTRUCTURE_HUB, "Gallente Infrastructure Hub"),
-                (MINMATAR_INFRASTRUCTURE_HUB, "Minmatar Infrastructure Hub"),
+                (INFRASTRUCTURE_HUB, "Infrastructure Hub"),
                 )
             ),
             ('Control Tower', (

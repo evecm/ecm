@@ -32,15 +32,16 @@ def timers(request):
     timers = Timer.objects.all()
     # Build result list for formatted/labeled data
     timer_list = []
+    na = '-na-'
     for timer in timers:
         time_remaining = create_time_remaining(timer.timer)
         t = {
                 'location': timer.location,
                 'structure': timer.structure_label(),
                 'cycle': timer.cycle_label(),
-                'location_id': timer.location_id,
-                'moon_id': timer.moon_id,
-                'owner': timer.owner_id,
+                'location_id': timer.location_id if timer.location_id else na,
+                'moon_id': timer.moon_id if timer.moon_id else na,
+                'owner': timer.owner_id if timer.owner_id else na,
                 'friendly': timer.friendly,
                 'timer': timer.timer,
                 'notes': timer.notes,
@@ -74,12 +75,13 @@ def create_timer_style(date, threshold_alert=24):
     for x in range(44, 255, 8):
         alert_map.append(triplet((x,44,44)))
     if delta <= 0:
-        return 'backgroud-color: #383838; color: white;'
+        return 'background-color: #242424 !important; color: white;'
     if delta / 60 > 0:
         if delta / 60 < threshold_alert * 60:
-            index = 26 - ((delta / 60) / threshold_step) - 1
+            index = 26 - ((delta / 60) / threshold_step) 
         else:
             index = 0
+        print "%s / %s" % (index, 26)
         #return 'background-color: #%s; color: white; font-weight:bold;' % alert_map[index]
         return 'background-color: #%s; color: white;' % alert_map[index]
     return 'timer'
