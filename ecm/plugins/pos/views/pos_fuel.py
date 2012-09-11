@@ -22,7 +22,7 @@ __author__ = "Ajurna"
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
-from ecm.plugins.pos.models import POS
+from ecm.plugins.pos.models import POS, FuelLevel
 from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access
 
@@ -31,12 +31,15 @@ def pos_fuel(request):
     pos_list = POS.objects.all()
     fuels = {}
     for pos in pos_list:
-        fuel = pos.fuel_levels.filter(type_id = pos.fuel_type_id).latest()
-        fuel_name = Type.objects.get(typeID = pos.fuel_type_id)
-        if fuels.has_key(fuel_name.typeName):
-            fuels[fuel_name.typeName] += fuel.consumption
-        else:
-            fuels[fuel_name.typeName] = fuel.consumption
+        try:
+            fuel = pos.fuel_levels.filter(type_id = pos.fuel_type_id).latest()
+            fuel_name = Type.objects.get(typeID = pos.fuel_type_id)
+            if fuels.has_key(fuel_name.typeName):
+                fuels[fuel_name.typeName] += fuel.consumption
+            else:
+                fuels[fuel_name.typeName] = fuel.consumption
+        except FuelLevel.DoesNotExist:
+            pass
     for fuel in fuels:
         counts = []
         counts.append(fuels[fuel])
