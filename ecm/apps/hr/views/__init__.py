@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 MEMBERS_COLUMNS = [
     {'sTitle': tr('Name'),         'sWidth': '15%',   'db_field': 'name', },
-    {'sTitle': tr('Corp'),         'sWidth': '5%',    'db_field': 'corp', },
+    {'sTitle': tr('Corp'),         'sWidth': '5%',    'db_field': 'corp__corporationName', },
     {'sTitle': tr('Player'),       'sWidth': '15%',   'db_field': 'owner__username', },
     {'sTitle': tr('Access Level'), 'sWidth':  '5%',   'db_field': 'accessLvl', },
     {'sTitle': tr('Last Login'),   'sWidth': '10%',   'db_field': 'lastLogin', },
@@ -48,7 +48,7 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0, asc=True, 
 
     sort_col = MEMBERS_COLUMNS[sort_by]['db_field']
     # SQL hack for making a case insensitive sort
-    if sort_by in (0, 1):
+    if sort_by == 0:
         sort_col = sort_col + "_nocase"
         sort_val = db.fix_mysql_quotes('LOWER("%s")' % MEMBERS_COLUMNS[sort_by]['db_field'])
         query = query.extra(select={ sort_col : sort_val })
