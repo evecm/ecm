@@ -1,0 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-09-11 23:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/ecm/common/email/invalid_api.html:6
+#: templates/ecm/common/email/invalid_api.txt:3
+msgid "Hello"
+msgstr ""
+
+#: templates/ecm/common/email/invalid_api.html:8
+#: templates/ecm/common/email/invalid_api.txt:5
+msgid "The following API Keys are invalid"
+msgstr ""
+
+#: templates/ecm/common/email/invalid_api.html:13
+msgid ""
+"All the characters from the accounts related to these API Keys are not "
+"associated with your profile anymore. Please log-in to"
+msgstr ""
+
+#: templates/ecm/common/email/invalid_api.html:14
+msgid " and make sure that these API Keys are valid"
+msgstr ""
+
+#: templates/ecm/common/email/invalid_api.html:16
+msgid ""
+"NB: If you don't own the accounts related to these API Keys anymore, you can "
+"delete them from your profile to stop receiving these e-mails."
+msgstr ""
+
+#: templates/ecm/common/email/invalid_api.html:18
+#: templates/ecm/common/email/invalid_api.txt:13
+msgid "Thank you in advance"
+msgstr ""
+
+#: templates/ecm/common/email/invalid_api_subject.txt:2
+msgid "Invalid API Key"
+msgstr ""

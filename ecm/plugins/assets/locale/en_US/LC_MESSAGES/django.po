@@ -1,0 +1,80 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-09-11 23:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: __init__.py:29 templates/ecm/assets/assets.html:6
+#: templates/ecm/assets/assets_no_data.html:3
+msgid "Assets"
+msgstr ""
+
+#: __init__.py:30
+msgid "Changes"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:11
+msgid "Corporation Assets"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:18
+msgid "Search"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:19 templates/ecm/assets/assets.html:46
+msgid "Reset"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:21
+msgid "Tree"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:23
+msgid "Expand All"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:24
+msgid "Collapse All"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:31
+msgid "Divisions"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:38
+msgid "Locations"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:40
+msgid "In Station"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:41
+msgid "In Space"
+msgstr ""
+
+#: templates/ecm/assets/assets.html:45
+msgid "Apply Filter"
+msgstr ""
+
+#: templates/ecm/assets/assets_diff.html:3
+#: templates/ecm/assets/assets_diff.html:9
+msgid "Asset Changes on"
+msgstr ""
+
+#: templates/ecm/assets/assets_no_data.html:8
+msgid "Assets - &lt;no data&gt;"
+msgstr ""

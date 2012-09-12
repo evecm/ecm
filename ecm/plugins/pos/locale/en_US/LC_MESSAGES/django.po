@@ -1,0 +1,216 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-09-11 23:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: __init__.py:27 templates/ecm/pos/pos_list.html:7
+msgid "POS"
+msgstr ""
+
+#: __init__.py:28
+msgid "Fuel Summary"
+msgstr ""
+
+#: tasks/pos.py:137
+msgid "unanchored"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:6
+msgid "POS Details"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:26
+msgid "State"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:28
+msgid "Online since"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:30
+msgid "POS type"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:35
+msgid "Links"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:45
+msgid "Access Control"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:47
+msgid "Allow corp members in force field"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:49
+msgid "Allow ally members in force field"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:51
+msgid "Can view fuel bay"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:53
+msgid "Can take in fuel bay"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:55
+msgid "Can anchor modules"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:57
+msgid "Can unanchor modules"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:59
+msgid "Can online modules"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:61
+msgid "Can offline modules"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:66
+msgid "Combat Settings"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:69
+msgid "Attack when standing is below"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:70
+msgid "use standings from"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:72
+msgid "Attack on bad standing"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:76
+msgid "Attack when security status is below"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:79
+msgid "Attack when security status is bad"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:82
+msgid "Attack on concord flag"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:84
+msgid "Attack on aggression"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:86
+msgid "Attack war targets"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:92
+msgid "Fuel Levels"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:104
+#: templates/ecm/pos/pos_details.html:121
+#: templates/ecm/pos/pos_details.html:153 templates/ecm/pos/pos_list.html:49
+msgid "Loading data from server..."
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:140
+msgid "Add/Remove"
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:249
+msgid "Click to Change Name..."
+msgstr ""
+
+#: templates/ecm/pos/pos_details.html:255
+msgid "Click to edit..."
+msgstr ""
+
+#: templates/ecm/pos/pos_fuel.html:6
+msgid "POS Fuel summary"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:24
+msgid "Search"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:25
+msgid "Reset"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:27
+msgid "Display mode"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:30
+msgid "Show remaining fuel quantities"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:30
+msgid "Quantities"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:32
+msgid "Show remaining fuel time (in days)"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:32
+msgid "Days"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:34
+msgid "Show remaining fuel time (in hours)"
+msgstr ""
+
+#: templates/ecm/pos/pos_list.html:34
+msgid "Hours"
+msgstr ""
+
+#: views/pos_list.py:59
+msgid "Location"
+msgstr ""
+
+#: views/pos_list.py:60 views/pos_list.py:66
+msgid "Name"
+msgstr ""
+
+#: views/pos_list.py:61
+msgid "Type"
+msgstr ""
+
+#: views/pos_list.py:62
+msgid "Status"
+msgstr ""
+
+#: views/pos_list.py:63
+msgid "Next Cycle"
+msgstr ""
+
+#: views/pos_list.py:64
+msgid "Fuel Blocks"
+msgstr ""
+
+#: views/pos_list.py:65
+msgid "Strontium"
+msgstr ""
+
+#: views/pos_list.py:65
+msgid "Strontium Clathrates"
+msgstr ""

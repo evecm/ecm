@@ -1,0 +1,128 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-09-11 23:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: __init__.py:23
+msgid "Corporation"
+msgstr ""
+
+#: __init__.py:24 templates/ecm/corp/standings.html:6
+msgid "Standings"
+msgstr ""
+
+#: templates/ecm/corp/corp.html:3
+msgid "Home"
+msgstr ""
+
+#: templates/ecm/corp/corp.html:9
+msgid "Message Of The Day"
+msgstr ""
+
+#: templates/ecm/corp/corp.html:13
+msgid "by"
+msgstr ""
+
+#: templates/ecm/corp/corp.html:22
+msgid "CEO"
+msgstr ""
+
+#: templates/ecm/corp/corp.html:23
+msgid "Tax Rate"
+msgstr ""
+
+#: templates/ecm/corp/corp.html:24
+msgid "Member Count"
+msgstr ""
+
+#: templates/ecm/corp/corp.html:25
+msgid "Description"
+msgstr ""
+
+#: templates/ecm/corp/standings.html:33 templates/ecm/corp/standings.html:53
+msgid "Entity"
+msgstr ""
+
+#: templates/ecm/corp/standings.html:33 templates/ecm/corp/standings.html:53
+msgid "Standing"
+msgstr ""
+
+#: templates/ecm/corp/standings.html:78
+msgid "None"
+msgstr ""
+
+#: templates/ecm/corp/standings.html:79
+msgid "Alliance"
+msgstr ""
+
+#: templates/ecm/corp/standings.html:80
+msgid "Corp"
+msgstr ""
+
+#: templates/ecm/corp/standings.html:81
+msgid "Both"
+msgstr ""
+
+#: templates/ecm/corp/standings.html:83
+msgid "Set Access"
+msgstr ""
+
+#: templates/ecm/corp/email/notify_contact.html:5
+#: templates/ecm/corp/email/notify_contact.txt:2
+msgid "Hello"
+msgstr ""
+
+#: templates/ecm/corp/email/notify_contact.html:7
+#: templates/ecm/corp/email/notify_contact.txt:4
+msgid "A new corporation contacted us and wants to exchange data."
+msgstr ""
+
+#: templates/ecm/corp/email/notify_contact.html:9
+#: templates/ecm/corp/email/notify_contact.txt:6
+msgid "Here is the information they provided about them:"
+msgstr ""
+
+#: templates/ecm/corp/email/notify_contact.html:12
+#: templates/ecm/corp/email/notify_contact.txt:8
+msgid "Corporation:"
+msgstr ""
+
+#: templates/ecm/corp/email/notify_contact.html:14
+#: templates/ecm/corp/email/notify_contact.txt:9
+msgid "Alliance:"
+msgstr ""
+
+#: templates/ecm/corp/email/notify_contact.html:16
+#: templates/ecm/corp/email/notify_contact.txt:10
+msgid "URL of their ECM server:"
+msgstr ""
+
+#: templates/ecm/corp/email/notify_contact.html:20
+#: templates/ecm/corp/email/notify_contact.txt:12
+msgid ""
+"You should verify this information and choose if you trust them in return."
+msgstr ""
+
+#: templates/ecm/corp/email/notify_contact.html:26
+#: templates/ecm/corp/email/notify_contact.txt:16
+msgid "Fly Safe!"
+msgstr ""
+
+#: views/contact.py:100
+#, python-format
+msgid "%s wants to exchange data with us"
+msgstr ""

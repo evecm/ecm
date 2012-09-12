@@ -1,0 +1,572 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-09-11 23:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/404.html:3 templates/404.html.py:7
+msgid "Resource not found"
+msgstr ""
+
+#: templates/404.html:9
+msgid "Sorry but the page you requested:"
+msgstr ""
+
+#: templates/404.html:13
+msgid "cannot be found on the server."
+msgstr ""
+
+#: templates/500.html:3 templates/500.html.py:7
+msgid "Server Internal Error"
+msgstr ""
+
+#: templates/500.html:9
+msgid "Ooops, the server just failed in computing your request."
+msgstr ""
+
+#: templates/500.html:11
+msgid "The administrators have been notified."
+msgstr ""
+
+#: templates/base.html:70
+msgid "Account"
+msgstr ""
+
+#: templates/base.html:72
+msgid "Edit corporation API key"
+msgstr ""
+
+#: templates/base.html:73
+msgid "Administration"
+msgstr ""
+
+#: templates/base.html:76
+msgid "Logout"
+msgstr ""
+
+#: templates/base.html:94
+msgid "Message Of The Day"
+msgstr ""
+
+#: templates/base.html:95
+msgid "read more"
+msgstr ""
+
+#: templates/base.html:126
+msgid "Project website"
+msgstr ""
+
+#: templates/base.html:128
+msgid "Powered by"
+msgstr ""
+
+#: templates/ecm/datatables.html:10
+msgid "Loading data from server..."
+msgstr ""
+
+#: templates/ecm/auth/account.html:4
+msgid "User Profile"
+msgstr ""
+
+#: templates/ecm/auth/account.html:8
+msgid "User Account"
+msgstr ""
+
+#: templates/ecm/auth/account.html:11
+msgid ""
+"Click <a href=\"/account/passwordchange/\">here</a> to change your password."
+msgstr ""
+
+#: templates/ecm/auth/account.html:15
+msgid "EVE API Keys"
+msgstr ""
+
+#: templates/ecm/auth/account.html:19
+msgid "KeyID"
+msgstr ""
+
+#: templates/ecm/auth/account.html:20
+msgid "State"
+msgstr ""
+
+#: templates/ecm/auth/account.html:29 templates/ecm/auth/account.html.py:50
+#: templates/ecm/auth/account.html:73
+msgid "Delete"
+msgstr ""
+
+#: templates/ecm/auth/account.html:41
+msgid "Name"
+msgstr ""
+
+#: templates/ecm/auth/account.html:63
+msgid "Application"
+msgstr ""
+
+#: templates/ecm/auth/account.html:64 views/account/forms.py:257
+msgid "External Username"
+msgstr ""
+
+#: templates/ecm/auth/account.html:72
+msgid "None"
+msgstr ""
+
+#: templates/ecm/auth/account.html:74 templates/ecm/auth/add_binding.html:21
+msgid "Bind"
+msgstr ""
+
+#: templates/ecm/auth/account.html:86
+msgid "Are you sure you want to get rid of"
+msgstr ""
+
+#: templates/ecm/auth/account.html:87
+msgid ""
+"If this character is still attached to one of your registered API Keys, it "
+"will be associated with your profile again at next scan."
+msgstr ""
+
+#: templates/ecm/auth/account.html:93
+msgid "Are you sure you want to delete this API Key?"
+msgstr ""
+
+#: templates/ecm/auth/account.html:99
+msgid "Are you sure you want to delete this binding?"
+msgstr ""
+
+#: templates/ecm/auth/account_activated.html:4
+#: templates/ecm/auth/account_created.html:5
+#: templates/ecm/auth/account_created.html:10
+msgid "Account Created"
+msgstr ""
+
+#: templates/ecm/auth/account_activated.html:8
+msgid "Account Activated"
+msgstr ""
+
+#: templates/ecm/auth/account_activated.html:11
+#: templates/ecm/auth/account_created.html:13
+msgid "Congratulations"
+msgstr ""
+
+#: templates/ecm/auth/account_created.html:14
+msgid ""
+"You successfuly created an account. An activation email has been sent to"
+msgstr ""
+
+#: templates/ecm/auth/account_created.html:15
+msgid "You should receive it witin minutes from now."
+msgstr ""
+
+#: templates/ecm/auth/account_mail_fail.html:3
+#: templates/ecm/auth/account_mail_fail.html:9
+#: templates/ecm/auth/activation_error.html:3
+#: templates/ecm/auth/activation_error.html:8
+msgid "Activation Error"
+msgstr ""
+
+#: templates/ecm/auth/account_mail_fail.html:13
+#, python-format
+msgid ""
+" \n"
+"Sorry %(form.cleaned_data.username)s, but the server was not able to send an "
+"email %(form.cleaned_data.email)s.\n"
+msgstr ""
+
+#: templates/ecm/auth/account_mail_fail.html:18
+#: templates/ecm/auth/activation_error.html:13
+msgid "Reason:"
+msgstr ""
+
+#: templates/ecm/auth/account_mail_fail.html:19
+msgid "Please contact the administrator."
+msgstr ""
+
+#: templates/ecm/auth/activation_email.html:6
+#: templates/ecm/auth/activation_email.txt:3
+#: templates/ecm/auth/password_reset_email.txt:5
+msgid "Greetings"
+msgstr ""
+
+#: templates/ecm/auth/activation_email.html:9
+#, python-format
+msgid ""
+"\n"
+"You created a new account on <b>%(my_corp|default:'NO CORP YET')s</b> <i>EVE "
+"Corporation Management</i>. \n"
+"Please click on the following link in order to activate your account.\n"
+msgstr ""
+
+#: templates/ecm/auth/activation_email.html:18
+#: templates/ecm/auth/activation_email.txt:10
+#, python-format
+msgid ""
+"N.B.: You have %(expiration_days)s day%(expiration_days|pluralize)s to "
+"activate your account"
+msgstr ""
+
+#: templates/ecm/auth/activation_email.html:21
+#: templates/ecm/auth/activation_email.txt:12
+#: templates/ecm/auth/password_reset_email.txt:15
+msgid "Thank you and see you in space :-)"
+msgstr ""
+
+#: templates/ecm/auth/activation_email.txt:5
+#, python-format
+msgid ""
+"You created a new account on %(corp_name)s's EVE Corporation Management. \n"
+"Please click on the following link in order to activate your account."
+msgstr ""
+
+#: templates/ecm/auth/activation_email_subject.txt:3
+msgid "New account activation"
+msgstr ""
+
+#: templates/ecm/auth/activation_error.html:11
+msgid ""
+"Sorry, but the server was not able to activate this account with the "
+"following activation key:"
+msgstr ""
+
+#: templates/ecm/auth/add_api.html:4
+msgid "Add API Key"
+msgstr ""
+
+#: templates/ecm/auth/add_api.html:12
+#: templates/ecm/auth/create_account.html:31
+#: templates/ecm/auth/edit_api.html:13
+msgid "Create a new API Key on EVE-Online support website"
+msgstr ""
+
+#: templates/ecm/auth/add_api.html:24
+#: templates/ecm/auth/create_account.html:44
+#: templates/ecm/auth/edit_api.html:25
+#: templates/ecm/common/edit_director_api.html:22
+msgid "Submit Information"
+msgstr ""
+
+#: templates/ecm/auth/add_binding.html:4 templates/ecm/auth/add_binding.html:8
+msgid "Create Binding to External Application"
+msgstr ""
+
+#: templates/ecm/auth/create_account.html:3
+msgid "User Signup"
+msgstr ""
+
+#: templates/ecm/auth/create_account.html:9
+msgid "Create Account"
+msgstr ""
+
+#: templates/ecm/auth/create_account.html:28
+msgid "EVE-Online API Key"
+msgstr ""
+
+#: templates/ecm/auth/create_account.html:39
+msgid "Anti-Robot Security"
+msgstr ""
+
+#: templates/ecm/auth/edit_api.html:4
+msgid "Edit API Key"
+msgstr ""
+
+#: templates/ecm/auth/forbidden.html:3 templates/ecm/auth/forbidden.html:8
+msgid "Forbidden Access"
+msgstr ""
+
+#: templates/ecm/auth/forbidden.html:11
+msgid "You don't have permission to get URL"
+msgstr ""
+
+#: templates/ecm/auth/forbidden.html:15
+msgid "from this server."
+msgstr ""
+
+#: templates/ecm/auth/login.html:3 templates/ecm/auth/login.html.py:27
+msgid "Login"
+msgstr ""
+
+#: templates/ecm/auth/login.html:9
+msgid "Please login"
+msgstr ""
+
+#: templates/ecm/auth/login.html:19
+msgid "username"
+msgstr ""
+
+#: templates/ecm/auth/login.html:20
+msgid "password"
+msgstr ""
+
+#: templates/ecm/auth/login.html:24
+msgid "Remember Me"
+msgstr ""
+
+#: templates/ecm/auth/login.html:32
+msgid ""
+"Not a member yet, you can <a href=\"/account/create/\">create an account</a>."
+msgstr ""
+
+#: templates/ecm/auth/login.html:35
+msgid ""
+"Forgot your password? Click <a href=\"/account/passwordreset/\">here to "
+"reset it</a>."
+msgstr ""
+
+#: templates/ecm/auth/password_change.html:4
+#: templates/ecm/auth/password_change.html:8
+msgid "Password Change"
+msgstr ""
+
+#: templates/ecm/auth/password_change.html:11
+msgid ""
+"\n"
+"Please enter your old password, for security's sake, and then enter your \n"
+"new password twice so we can verify you typed it in correctly.\n"
+msgstr ""
+
+#: templates/ecm/auth/password_change.html:27
+#: templates/ecm/auth/password_reset_confirm.html:24
+msgid "Change my password"
+msgstr ""
+
+#: templates/ecm/auth/password_change_done.html:4
+#: templates/ecm/auth/password_change_done.html:8
+msgid "Password Change Successful"
+msgstr ""
+
+#: templates/ecm/auth/password_change_done.html:11
+msgid "Your password was changed."
+msgstr ""
+
+#: templates/ecm/auth/password_change_done.html:12
+msgid "Go back to your <a href=\"/account/\">User Account</a>"
+msgstr ""
+
+#: templates/ecm/auth/password_reset.html:5
+#: templates/ecm/auth/password_reset.html:9
+#: templates/ecm/auth/password_reset_confirm.html:4
+#: templates/ecm/auth/password_reset_done.html:5
+#: templates/ecm/auth/password_reset_done.html:10
+msgid "Password Reset"
+msgstr ""
+
+#: templates/ecm/auth/password_reset.html:13
+msgid ""
+"\n"
+"Forgotten your password? Enter your e-mail address below, and we'll e-mail "
+"instructions for setting a new one.\n"
+msgstr ""
+
+#: templates/ecm/auth/password_reset.html:28
+msgid "Reset my password"
+msgstr ""
+
+#: templates/ecm/auth/password_reset_complete.html:5
+#: templates/ecm/auth/password_reset_complete.html:10
+msgid "Password Reset Complete"
+msgstr ""
+
+#: templates/ecm/auth/password_reset_complete.html:13
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr ""
+
+#: templates/ecm/auth/password_reset_complete.html:15
+msgid "Log in"
+msgstr ""
+
+#: templates/ecm/auth/password_reset_confirm.html:9
+msgid "Enter new password"
+msgstr ""
+
+#: templates/ecm/auth/password_reset_confirm.html:12
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+
+#: templates/ecm/auth/password_reset_confirm.html:30
+msgid "Password reset unsuccessful"
+msgstr ""
+
+#: templates/ecm/auth/password_reset_confirm.html:34
+msgid ""
+"\n"
+"The password reset link was invalid, possibly because it has already been "
+"used. \n"
+"Please request a new password reset.\n"
+msgstr ""
+
+#: templates/ecm/auth/password_reset_done.html:14
+msgid ""
+"\n"
+"We've e-mailed you instructions for setting your password to the e-mail "
+"address you submitted. \n"
+"You should be receiving it shortly.\n"
+msgstr ""
+
+#: templates/ecm/auth/password_reset_email.txt:7
+#, python-format
+msgid ""
+"You're receiving this e-mail because you requested a password reset for your "
+"user account at %(host_name)s."
+msgstr ""
+
+#: templates/ecm/auth/password_reset_email.txt:9
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+#: templates/ecm/auth/password_reset_email.txt:13
+msgid "Your username, in case you've forgotten:"
+msgstr ""
+
+#: templates/ecm/common/edit_director_api.html:4
+#: templates/ecm/common/edit_director_api.html:8
+msgid "Enter a Director API Key"
+msgstr ""
+
+#: templates/ecm/common/edit_motd.html:3
+msgid "Edit MOTD"
+msgstr ""
+
+#: templates/ecm/common/edit_motd.html:13
+msgid "MOTD Text"
+msgstr ""
+
+#: templates/ecm/common/edit_motd.html:16
+msgid "Select Markup"
+msgstr ""
+
+#: templates/ecm/common/edit_motd.html:22
+msgid "Save Changes"
+msgstr ""
+
+#: views/__init__.py:60
+msgid "_MENU_ lines per page"
+msgstr ""
+
+#: views/__init__.py:61
+msgid "Nothing found to display - sorry."
+msgstr ""
+
+#: views/__init__.py:62
+msgid "Showing _START_ to _END_ of _TOTAL_ records"
+msgstr ""
+
+#: views/__init__.py:63
+msgid "Showing 0 to 0 of 0 records"
+msgstr ""
+
+#: views/__init__.py:64
+msgid "(filtered from _MAX_ total records)"
+msgstr ""
+
+#: views/__init__.py:67
+msgid "Save as CSV"
+msgstr ""
+
+#: views/common.py:104 views/account/forms.py:199 views/account/forms.py:232
+msgid "API Key ID"
+msgstr ""
+
+#: views/common.py:105 views/account/forms.py:54 views/account/forms.py:200
+#: views/account/forms.py:233
+msgid "Verification Code"
+msgstr ""
+
+#: views/account/forms.py:44
+msgid "Username"
+msgstr ""
+
+#: views/account/forms.py:45
+msgid "Required. Less 30 characters. Letters, digits and @/./+/-/_ only."
+msgstr ""
+
+#: views/account/forms.py:47
+msgid "This field may contain only letters, numbers and @/./+/-/_ characters."
+msgstr ""
+
+#: views/account/forms.py:49
+msgid "E-Mail address"
+msgstr ""
+
+#: views/account/forms.py:50
+msgid "Password"
+msgstr ""
+
+#: views/account/forms.py:51
+msgid "Password (confirmation)"
+msgstr ""
+
+#: views/account/forms.py:52 views/account/forms.py:158
+msgid "Enter the same password as above, for verification."
+msgstr ""
+
+#: views/account/forms.py:65
+msgid "A user with that username already exists."
+msgstr ""
+
+#: views/account/forms.py:74
+msgid "This email address is already in use."
+msgstr ""
+
+#: views/account/forms.py:82
+msgid "This EVE account is already registered."
+msgstr ""
+
+#: views/account/forms.py:98
+msgid "Passwords don't match"
+msgstr ""
+
+#: views/account/forms.py:114
+msgid "E-mail"
+msgstr ""
+
+#: views/account/forms.py:127
+msgid ""
+"That e-mail address doesn't have an associated user account. Are you sure "
+"you've registered?"
+msgstr ""
+
+#: views/account/forms.py:147
+#, python-format
+msgid "Password reset on %s"
+msgstr ""
+
+#: views/account/forms.py:156
+msgid "New password"
+msgstr ""
+
+#: views/account/forms.py:157
+msgid "New Password (confirmation)"
+msgstr ""
+
+#: views/account/forms.py:169
+msgid "The two password fields didn't match."
+msgstr ""
+
+#: views/account/forms.py:184
+msgid "Old Password"
+msgstr ""
+
+#: views/account/forms.py:192
+msgid "Your old password was entered incorrectly. Please enter it again."
+msgstr ""
+
+#: views/account/forms.py:209
+msgid "This API Key is already registered."
+msgstr ""
+
+#: views/account/forms.py:258
+msgid "External Password"
+msgstr ""
