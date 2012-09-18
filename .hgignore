@@ -12,7 +12,8 @@ syntax: glob
 .metadata
 dist
 build
-
+.pydevproject
 
 syntax: regexp
 ^\.settings/org\.eclipse\.mylyn\.tasks\.ui\.prefs$
+
