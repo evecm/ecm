@@ -109,4 +109,9 @@ for plugin in ecm.plugins.LIST:
     PLUGINS_URLS.append( (r'^' + plugin.app_prefix + '/', include(plugin.urlconf)) )
 if PLUGINS_URLS:
     urlpatterns += patterns('',  *PLUGINS_URLS)
+    
+################################################
+#custom handlers for http return codes
+handler500='ecm.views.custom_handlers.server_error'
+
 
