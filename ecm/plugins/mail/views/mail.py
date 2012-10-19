@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2012 Robin Jarry
+# Copyright (c) 2010-2011 Jerome Vacher
 #
 # This file is part of EVE Corporation Management.
 #
@@ -15,30 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-NAME = 'common'
+__date__ = "2012 09 06"
+__author__ = "Ajurna"
 
-TASKS = [
-    {
-        'function' : 'ecm.apps.common.tasks.users.cleanup_unregistered_users',
-        'priority' : 0,
-        'frequency' : 1,
-        'frequency_units' : 86400, # day
-    }, {
-        'function' : 'ecm.apps.common.tasks.outposts.update',
-        'priority' : 1000,
-        'frequency' : 1,
-        'frequency_units' : 86400, # day
-    },
-]
-
-URL_PERMISSIONS = [
-    r'^/editmotd/$',
-]
-
-SETTINGS = {
-    'common_api_keyID': 0,
-    'common_api_vCode': '',
-    'common_api_characterID': 0,
-    'common_admin_username': 'admin',
-    'common_cron_username': 'cron',
-}
+def mail_list(request):
+    pass

@@ -44,7 +44,6 @@ TASKS = [
         'frequency' : 24,
         'frequency_units' : 3600, # hour
     },
-
 ]
 
 SHARED_DATA = [

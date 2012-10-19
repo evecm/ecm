@@ -28,9 +28,9 @@
 	<div class="span4">
 	  <img src="//image.eveonline.com/Corporation/{{ corp.corporationID }}_128.png"></img><br>
 	  <em>{{ corp.corporationName }} [{{ corp.ticker }}]</em><br>
-	  {% if corp.allianceID %}
-	  <img src="//image.eveonline.com/Alliance/{{ corp.allianceID }}_128.png"></img><br>
-	  <em>{{ corp.allianceName }} &lt;{{ corp.allianceTicker }}&gt;</em><br>
+	  {% if corp.alliance.allianceID %}
+	  <img src="//image.eveonline.com/Alliance/{{ corp.alliance.allianceID }}_128.png"></img><br>
+	  <em>{{ corp.alliance.name }} &lt;{{ corp.alliance.shortName }}&gt;</em><br>
 	  {% endif %}
 	</div>
 </div>

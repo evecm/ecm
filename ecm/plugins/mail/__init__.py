@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2012 Robin Jarry
+# Copyright (c) 2011 jerome Vacher
 #
 # This file is part of EVE Corporation Management.
 #
@@ -15,30 +15,27 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-NAME = 'common'
+from django.utils.translation import ugettext_lazy as tr_lazy
+
+NAME = 'mail'
+
+DEPENDS_ON = {
+    'ecm' : '2.0',
+}
+
+MENUS = [
+     {'title': tr_lazy('Mail'),    'url': '',      'items': []},
+]
 
 TASKS = [
     {
-        'function' : 'ecm.apps.common.tasks.users.cleanup_unregistered_users',
-        'priority' : 0,
-        'frequency' : 1,
-        'frequency_units' : 86400, # day
-    }, {
-        'function' : 'ecm.apps.common.tasks.outposts.update',
-        'priority' : 1000,
-        'frequency' : 1,
-        'frequency_units' : 86400, # day
-    },
+        'function': 'ecm.plugins.mail.tasks.mail.update',
+        'priority': 50,
+        'frequency': 6,
+        'frequency_units': 3600, # hour
+    }
 ]
 
 URL_PERMISSIONS = [
-    r'^/editmotd/$',
+    r'^/mail/.*$',
 ]
-
-SETTINGS = {
-    'common_api_keyID': 0,
-    'common_api_vCode': '',
-    'common_api_characterID': 0,
-    'common_admin_username': 'admin',
-    'common_cron_username': 'cron',
-}
