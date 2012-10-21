@@ -55,7 +55,7 @@ def update():
 
     LOG.debug("name: %s [%s]", corp.corporationName, corp.ticker)
     try:
-        LOG.debug("alliance: %s <%s>", corp.alliance.name, corp.alliance.shortName)
+        if corp.alliance: LOG.debug("alliance: %s <%s>", corp.alliance.name, corp.alliance.shortName)
     except Alliance.DoesNotExist:
         LOG.debug("alliance: None")
     LOG.debug("CEO: %s", corpApi.ceoName)
