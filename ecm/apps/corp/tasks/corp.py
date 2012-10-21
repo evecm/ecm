@@ -54,10 +54,8 @@ def update():
     corp = update_corp_info(corpApi, currentTime)
 
     LOG.debug("name: %s [%s]", corp.corporationName, corp.ticker)
-    try:
-        if corp.alliance: LOG.debug("alliance: %s <%s>", corp.alliance.name, corp.alliance.shortName)
-    except Alliance.DoesNotExist:
-        LOG.debug("alliance: None")
+    if corp.alliance: LOG.debug("alliance: %s <%s>", corp.alliance.name, corp.alliance.shortName)
+    else: LOG.debug("alliance: None")
     LOG.debug("CEO: %s", corpApi.ceoName)
     LOG.debug("tax rate: %d%%", corp.taxRate)
     LOG.debug("member limit: %d", corp.memberLimit)
