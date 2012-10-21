@@ -64,17 +64,12 @@ def report(request):
     # !!!TODO: Make period variable (Datepicker)
     end = timezone.now()
     start = end - timedelta(period)
-    
-    
     # Query all journal entries in this period
     journal_entries = JournalEntry.objects.filter(date__range=(start, end))
-    
     # Get an aggregated set of the positive income in this period
     positivie_entries = journal_entries.filter(amount__gt=0)
-    
     # Calculate the total positive income in this period 
     income_total = positivie_entries.aggregate(Sum('amount'))['amount__sum']
-    
     # Calculate the sum for each journal entry type and order by entry type
     income_entries = _group_by_wallet_entry(positivie_entries)
     income_aggregated = []
@@ -82,33 +77,26 @@ def report(request):
         # populate results with percentage for each entry
         item['percentage'] = item['amount'] / (income_total / 100)
         income_aggregated.append(item)
-    
     # Get an aggregated set of the negative_entries in this period
     negative_entries = journal_entries.filter(amount__lt=0)
-    
     # Calculate the total expenditures in this periodamount__gt=0
     expenditure_total = negative_entries.aggregate(Sum('amount'))['amount__sum']
-    
+    if expenditure_total == None: expenditure_total = 0.0
     # Calculate the sum for each journal entry type and order by entry type
     expenditure_entries = _group_by_wallet_entry(negative_entries)
     expenditure_aggregated = []
     for item in expenditure_entries:
         item['percentage'] = item['amount'] / (expenditure_total / 100)
         expenditure_aggregated.append(item)
-        
     # Get the daily sums for income and expenditure
     income_time = _get_daily_sums(period, positivie_entries)
     expenditure_time = _get_daily_sums(period, negative_entries)
-    
     # Calculate the cash flow
     cashflow = income_total + expenditure_total
-    
     # Get wallet balance
     wallet_balance = _get_wallet_balance_by_day(start, end)
-    
     # Get custom report data
     custom_reports = _load_custom_reports()
-    
     # Create default report data
     data = {
             'columns_income'        : COLUMNS_INCOME,
@@ -124,7 +112,6 @@ def report(request):
             'wallet_balance'        : wallet_balance,
             'custom_reports'        : custom_reports,
             }
-    
     # Add custom report data
     return render_to_response("ecm/accounting/report.html", data, RequestContext(request))
 
