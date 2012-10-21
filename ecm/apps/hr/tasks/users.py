@@ -27,7 +27,7 @@ from django.contrib.auth.models import User, Group
 
 from ecm.apps.common import api
 from ecm.apps.corp.tasks.corp import fix_description
-from ecm.apps.corp.models import Corporation
+from ecm.apps.corp.models import Corporation, Alliance
 from ecm.apps.common.auth import get_members_group, get_directors_group, alert_user_for_invalid_apis,\
     get_allies_plus_5_group, get_allies_plus_10_group
 from ecm.apps.hr.models import Title, Member
@@ -208,14 +208,6 @@ def get_corp(char):
     except Corporation.DoesNotExist:
         conn = eveapi.EVEAPIConnection()
         api_corp = conn.corp.CorporationSheet(corporationID=char.corporationID)
-        
-        if api_corp.allianceID:
-            allianceID = api_corp.allianceID
-            allianceName = api_corp.allianceName
-        else:
-            allianceID = None
-            allianceName = None
-        
         return Corporation(corporationID   = api_corp.corporationID,
                            corporationName = api_corp.corporationName,
                            ticker          = api_corp.ticker,
@@ -224,7 +216,32 @@ def get_corp(char):
                            stationID       = api_corp.stationID,
                            stationName     = api_corp.stationName,
                            description     = fix_description(api_corp.description),
-                           allianceID      = allianceID,
-                           allianceName    = allianceName,
+                           alliance        = get_alliance(api_corp),
                            taxRate         = api_corp.taxRate,
                            )
+
+
+#------------------------------------------------------------------------------
+def get_alliance(api_corp):
+    try:
+        try:
+            try:
+                alliance = Alliance.objects.get(allianceID = api_corp.allianceID)
+            except Alliance.DoesNotExist:
+                LOG.exception("Adding new Alliance: "+ api_corp.allianceName)
+                alliance = Alliance()
+                alliance.allianceID = api_corp.allianceID
+                alliance.name = api_corp.allianceName
+                alliancesApi = api.connect().eve.AllianceList()
+                for a in alliancesApi.alliances:
+                    if a.allianceID == api_corp.allianceID:
+                        alliance.shortName = a.shortName
+                        alliance.save()
+                        break
+        except eveapi.Error:
+            LOG.exception("Failed to fetch AllianceList.xml.aspx from EVE API server")
+            corp = Corporation.objects.mine()
+            alliance = None
+    except:
+        alliance = None
+    return alliance

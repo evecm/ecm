@@ -73,7 +73,7 @@ def create_account(request):
                              % (user.email, user))
                 return render_to_response('ecm/auth/account_mail_fail.html',
                                           { 'form': form,
-                                            'error_reason' : str(err)},
+                                            'error_reason' : "Error{0}".format(str(err))},
                                           context_instance=Ctx(request))
 
     else: # request.method == 'GET'
