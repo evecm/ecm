@@ -31,7 +31,8 @@ from django.template.context import RequestContext as Ctx
 from django.utils.translation import ugettext
 
 import ecm
-from ecm.apps.corp.models import Corporation
+from ecm.apps.corp.models import Corporation, Alliance
+from ecm.apps.common import api
 
 LOG = logging.getLogger(__name__)
 
@@ -52,12 +53,20 @@ def handle_contact(request):
             corporationID = corp_info['corporationID']
             corporationName = corp_info['corporationName']
             ticker = corp_info['ticker']
-            allianceID = corp_info['allianceID']
-            allianceName = corp_info['allianceName']
-            allianceTicker = corp_info['allianceTicker']
             public_key = corp_info['public_key']
             key_fingerprint = corp_info['key_fingerprint']
-            
+            try:
+                alliance = Alliance.objects.get(allianceID = corp_info['alliance'])
+            except Alliance.DoesNotExist:
+                alliance = Alliance()
+                alliance.allianceID = corp_info['alliance']
+                alliancesApi = api.connect().eve.AllianceList()
+                for a in alliancesApi.alliances:
+                    if a.allianceID == corp_info['alliance']:
+                        alliance.shortName = a.shortName
+                        alliance.name = a.name
+                        alliance.save()
+                        break
             new_request = False
             if Corporation.objects.filter(corporationID=corporationID).exists():
                 corp = Corporation.objects.get(corporationID=corporationID)
@@ -66,9 +75,7 @@ def handle_contact(request):
                     # public info yet.
                     corp.corporationName = corporationName
                     corp.ticker = ticker
-                    corp.allianceID = allianceID
-                    corp.allianceName = allianceName
-                    corp.allianceTicker = allianceTicker
+                    corp.alliance = alliance
                     corp.ecm_url = ecm_url
                     corp.public_key = public_key
                     corp.key_fingerprint = key_fingerprint
@@ -84,9 +91,7 @@ def handle_contact(request):
                 corp = Corporation(corporationID=corporationID,
                                    corporationName=corporationName,
                                    ticker=ticker,
-                                   allianceID=allianceID,
-                                   allianceName=allianceName,
-                                   allianceTicker=allianceTicker,
+                                   alliance=alliance,
                                    ecm_url=ecm_url,
                                    public_key=public_key,
                                    key_fingerprint=key_fingerprint,
