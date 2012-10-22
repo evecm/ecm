@@ -59,7 +59,7 @@ def process_contracts(contract_list, connection):
     """
     Process all contracts from the API
     """
-    alliance_id = Corporation.objects.mine().allianceID
+    alliance_id = Corporation.objects.mine().alliance.allianceID
     LOG.debug("Fetching contracts from DB...")    
     # Get old contracts
     old_contracts = {}

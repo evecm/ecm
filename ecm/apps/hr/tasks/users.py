@@ -170,8 +170,8 @@ def update_user_accesses(user, my_corp=None, corp_members_group=None, directors_
         contact_ids.add(char.characterID)
         if char.corp:
             contact_ids.add(char.corp_id)
-            if char.corp.allianceID:
-                contact_ids.add(char.corp.allianceID)
+            if char.corp.alliance:
+                contact_ids.add(char.corp.alliance.allianceID)
         
         director = char.is_director or director
         titles |= char.titles.all() # the "|" operator concatenates django QuerySets
