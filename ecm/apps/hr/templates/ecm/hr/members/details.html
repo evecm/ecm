@@ -180,17 +180,16 @@ $(document).ready(function() {
             }
         },
     });
-
-});
-/* Apply a jEditable handler to the "notes" paragraph */
-$('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {
-    placeholder: 'Click to add notes...',
-    style: 'inherit',
-    cssClass: 'edited',
-    callback: function( sValue, y ) {
-        $('#notes').html(sValue);
-    },
-    tooltip   : '{% trans "Click to edit..." %}'
+	/* Apply a jEditable handler to the "notes" paragraph */
+	$('#notes').editable( '/hr/members/{{ member.characterID }}/updatenotes/', {
+	    placeholder: 'Click to add notes...',
+	    style: 'inherit',
+	    cssClass: 'edited',
+	    callback: function( sValue, y ) {
+	        $('#notes').html(sValue);
+	    },
+	    tooltip   : '{% trans "Click to edit..." %}'
+	});
 });
 </script>
 {% endblock %}
