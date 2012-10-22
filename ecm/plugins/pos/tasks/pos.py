@@ -212,7 +212,7 @@ def get_details(pos, api_resp, sov):
         # sov fuel check
         if pos.location_id < 31000000:
             if sov[pos.location_id]['faction'] == 0 and \
-               sov[pos.location_id]['alliance'] == corp.allianceID and \
+               sov[pos.location_id]['alliance'] == corp.alliance.allianceID and \
                base_fuel_cons > 1:
                 base_fuel_cons = int(round(base_fuel_cons * .75))
         fuel_level.consumption = base_fuel_cons
