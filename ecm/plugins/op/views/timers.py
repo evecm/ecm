@@ -20,44 +20,96 @@ __author__ = "tash"
 
 from datetime import datetime
 
+try:
+    import json
+except ImportError:
+    # fallback for python 2.5
+    import django.utils.simplejson as json
+
+from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
-from ecm.plugins.op.models import Timer 
+from ecm.plugins.op.models import Timer
 from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access
+from ecm.views import extract_datatable_params
 
 @check_user_access()
 def timers(request):
-    timers = Timer.objects.all()
-    # Build result list for formatted/labeled data
-    timer_list = []
     # Location  Type    Cycle   Planet  Moon    Owner   Friendly    Date    Notes   Time Remaining
     header = [_('Location'), _('Type'), _('Cycle'), _('Planet'), _('Moon'), _('Owner'), _('Friendly'), _('Date'), _('Notes'), _('Time Remaining')]
-    na = '-na-'
-    for timer in timers:
-        time_remaining = create_time_remaining(timer.timer)
-        t = {
-                'location': timer.location,
-                'structure': timer.structure_label(),
-                'cycle': timer.cycle_label(),
-                'location_id': timer.location_id if timer.location_id else na,
-                'moon_id': timer.moon_id if timer.moon_id else na,
-                'owner': timer.owner_id if timer.owner_id else na,
-                'friendly': timer.friendly,
-                'timer': timer.timer,
-                'notes': timer.notes,
-                'time_remaining': time_remaining,
-                'class': create_timer_style(timer.timer)
-         }
-        timer_list.append(t)
-
     data = {
-           'timers' : timer_list,
+    #       'timers' : timer_list,
            'header' : header
            }
     return render_to_response("ecm/op/timers.html", data, RequestContext(request))
+
+@check_user_access()
+def timers_data(request):
+    try:
+        params = extract_datatable_params(request)
+    except:
+        return HttpResponseBadRequest()
+    timers = Timer.objects.all()
+    ordering_map = {
+        0: 'location',
+        1: 'structure',
+        2: 'cycle',
+        3: 'location_id',
+        4: 'moon_id',
+        5: 'owner_id',
+        6: 'friendly',
+        7: 'timer',
+        8: 'notes',
+        9: 'timer',
+        }
+    if params.column in ordering_map:
+        sort_order = ''
+        sort_order += '-' if not params.asc else ''
+        sort_order += ordering_map[params.column]
+        timers = timers.order_by(sort_order)
+        
+    # Build result list for formatted/labeled data
+    timer_list = []
+    na = '-na-'
+    total_entries = filtered_entries = timers.count()
+    print params.column
+   
+    for timer in timers:
+        t = {
+                '0': timer.location,
+                '1': timer.structure_label(),
+                '2': timer.cycle_label(),
+                '3': timer.location_id if timer.location_id else na,
+                '4': timer.moon_id if timer.moon_id else na,
+                '5': timer.owner_id if timer.owner_id else na,
+                '6': timer.friendly,
+                '7': timer.timer.strftime('%Y-%m-%dT%H:%M:%S'),
+                '8': timer.notes,
+                '9': create_time_remaining(timer.timer),
+                '10': create_timer_style(timer.timer)
+         }
+        timer_list.append(t)
+        """timer_list.append([timer.location,
+                           timer.structure_label(),
+                           timer.cycle_label(),
+                           timer.location_id if timer.location_id else na,
+                           timer.moon_id if timer.moon_id else na,
+                           timer.owner_id if timer.owner_id else na,
+                           timer.friendly,
+                           timer.timer.strftime('%Y-%m-%dT%H:%M:%S'), 
+                           timer.notes, create_time_remaining(timer.timer),
+                           create_timer_style(timer.timer)])
+"""
+    json_data = {
+        "sEcho" : params.sEcho,
+        "iTotalRecords" : total_entries,
+        "iTotalDisplayRecords" : filtered_entries,
+        "aaData" : timer_list,
+    }
+    return HttpResponse(json.dumps(json_data))
 
 def triplet(rgb):
     """
@@ -81,7 +133,7 @@ def create_timer_style(date, threshold_alert=24):
         return 'background-color: #242424 !important; color: white;'
     if delta / 60 > 0:
         if delta / 60 < threshold_alert * 60:
-            index = 26 - ((delta / 60) / threshold_step) 
+            index = 26 - ((delta / 60) / threshold_step)
         else:
             index = 0
         return 'background-color: #%s; color: white;' % alert_map[index]
@@ -95,9 +147,9 @@ def create_time_remaining(date):
     delta_seconds = delta_seconds_from_now(date)
     if delta_seconds <= 0:
         return "Expired"
-    hours, remainder = divmod(delta_seconds, 3600)  
-    minutes, seconds = divmod(remainder, 60)  
-    return '%sh %sm %ss' % (hours, minutes, seconds) 
+    hours, remainder = divmod(delta_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return '%sh %sm %ss' % (hours, minutes, seconds)
 
 def delta_seconds_from_now(date):
     """

@@ -24,6 +24,7 @@ urlpatterns = patterns('ecm.plugins.op.views',
     ###########################################################################
     # POS VIEWS
     (r'^$',                     'ops.overview'), #Placeholder
-    (r'^timers/$',                'timers.timers'),
+    (r'^timers/$',              'timers.timers'),
+    (r'^timers/data/$',         'timers.timers_data'),
 
 )
