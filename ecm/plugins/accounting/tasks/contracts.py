@@ -21,11 +21,10 @@ __author__ = "tash"
 
 import logging
 
-import eveapi
-
 from django.db import transaction
 from django.utils import timezone
 
+from ecm.apps.common import eveapi
 from ecm.apps.common import api
 from ecm.apps.corp.models import Corporation
 from ecm.apps.common.models import UpdateDate

@@ -18,11 +18,10 @@
 __date__ = '2012 5 15'
 __author__ = 'diabeteman'
 
-import eveapi
-
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
+from ecm.apps.common import eveapi
 from ecm.apps.common.models import Setting, APICall
 from ecm.apps.corp.models import Corporation, Alliance
 from ecm.apps.hr.models.member import Member
