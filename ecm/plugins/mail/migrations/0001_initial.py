@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'Mail'
         db.create_table('mail_mail', (
             ('messageID', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
-            ('senderID', self.gf('django.db.models.fields.related.ForeignKey')(related_name='sent_mail', to=orm['hr.Member'])),
+            ('sender', self.gf('django.db.models.fields.related.ForeignKey')(related_name='sent_mail', to=orm['hr.Member'])),
             ('sentDate', self.gf('django.db.models.fields.DateTimeField')()),
             ('title', self.gf('django.db.models.fields.CharField')(default='', max_length=255)),
             ('body', self.gf('django.db.models.fields.TextField')(default='')),
@@ -168,7 +168,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Mail'},
             'body': ('django.db.models.fields.TextField', [], {'default': "''"}),
             'messageID': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
-            'senderID': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'sent_mail'", 'to': "orm['hr.Member']"}),
+            'sender': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'sent_mail'", 'to': "orm['hr.Member']"}),
             'sentDate': ('django.db.models.fields.DateTimeField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'})
         },

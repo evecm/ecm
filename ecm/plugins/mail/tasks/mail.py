@@ -87,7 +87,7 @@ def get_mail(api_conn, charid):
                 mem = Member.objects.get(characterID = head.senderID)
             except Member.DoesNotExist:
                 mem = api.pull_character(head.senderID)
-            mail.senderID = mem    
+            mail.sender = mem    
             mail.sentDate = timezone.make_aware(head.sentDate, timezone.utc)
             mail.title = head.title
             mail.save()
@@ -96,7 +96,6 @@ def get_mail(api_conn, charid):
                 rec.mail = mail
                 rec.recipient = pull_corp_or_alliance(head.toCorpOrAllianceID)
                 rec.save()
-                mail.toCorpOrAllianceID = head.toCorpOrAllianceID
             for chid in str(head.toCharacterIDs).split(','):
                 if chid == '':
                     break

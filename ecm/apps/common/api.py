@@ -121,7 +121,7 @@ def pull_character(charid):
         corp = pull_corporation(char.corporationID)
     mem = Member()
     mem.characterID = char.characterID
-    mem.characterName = char.characterName
+    mem.name = char.characterName
     mem.race = char.race
     mem.bloodline = char.bloodline
     mem.corp = corp
