@@ -72,10 +72,10 @@ def add_api(request):
 
             members, corps = init_characters(request.user, form.characters)
             
-            for member in members:
-                member.save()
             for corp in corps:
                 corp.save()
+            for member in members:
+                member.save()
             
             update_user_accesses(request.user)
             
