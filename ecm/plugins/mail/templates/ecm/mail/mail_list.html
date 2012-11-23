@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+
+{% block headtitle %}{% trans 'Mail' %}{% endblock %}
+
+{% block main_content %}
+<div class="page-header">
+  <h1>Mail</h1>
+</div>
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
+    </div>
+  </div>
+</form>
+
+<table class="table table-bordered table-condensed" id="mail_table">
+  <thead>
+    <tr>
+      {% for col, title in columns %}
+      <th class="top" scope="col" title="{{title}}">{{col|safe}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="{{columns|length}}" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      {% for col, title in columns %}
+      <th title="{{title}}">{{col|safe}}</th>
+      {% endfor %}
+    </tr>
+  </tfoot>
+</table>
+{% endblock %}
+
+
+{% block post_javascripts %}
+<script>
+DISPLAY_MODE = 'date'; /* default */
+$(document).ready(function() {
+    var table = $('#mail_table').dataTable($.extend(true, {}, DATATABLE_DEFAULTS, {
+        sAjaxSource: '/mail/list/',
+        aaSorting: [[0, 'asc']],/* sort ascending using column 5 */
+        aoColumns: [
+            { /* 0 Sent Date */ sWidth: '10%' },
+            { /* 1 Sender */    sWidth: '15%' },
+            { /* 2 Reciever */  sWidth: '25%' },
+            { /* 3 Title */     sWidth: '50%' },
+            { /* 4 id */        bVisible: false, bSortable: false },
+        ],
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+			$('td:eq(5)', nRow).hide();
+        },
+
+        /* this function will be called when the table has to query data to be displayed */
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            /* Add some extra variables to the url */
+            aoData.push( {
+                name: 'displayMode',
+                value: DISPLAY_MODE
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+
+        /* the search field being outside the table object, we need to save its status
+         * explicitly here in order to restore it with the rest */
+        fnStateSaveParams: function (oSettings, oData) {
+            oData.sFilter = $('#search_text').val()
+            oData.displayMode = DISPLAY_MODE;
+        },
+        /* restore the search field content */
+        fnStateLoadParams: function (oSettings, oData) {
+            $('#search_text').val(oData.sFilter);
+            if ('displayMode' in oData) {
+                DISPLAY_MODE = oData.displayMode;
+                if (DISPLAY_MODE == 'quantities') {
+                    $('#quantities_button').button('toggle');
+                } else if (DISPLAY_MODE == 'days') {
+                    $('#days_button').button('toggle');
+                } else if (DISPLAY_MODE == 'hours') {
+                    $('#hours_button').button('toggle');
+                }
+            }
+            return true;
+        }
+
+    }));
+
+    /* trigger the search when pressing return in the text field */
+    $('#search_form').submit(function(event) {
+        event.preventDefault();
+        table.fnFilter($('#search_text').val());
+    });
+
+    /* trigger the search when clicking the "search" button */
+    $('#search_button').click(function() {
+        table.fnFilter($('#search_text').val());
+    });
+
+    /* reset the search when clicking the "reset" button */
+    $('#clear_search').click(function() {
+        $('#search_text').val('');
+        table.fnFilter('');
+    });
+    /* disable multi column sorting */
+    $('#pos_table thead th').click(function(event) {
+        if (!$(event.target).hasClass('sorthandle')) {
+            event.shiftKey = false;
+        }
+    });
+
+    /* Button to select quatities values */
+    $('#quantities_button').click(function() {
+        if (DISPLAY_MODE != 'quantities') {
+            DISPLAY_MODE = 'quantities';
+            table.fnDraw();
+        }
+    });
+    $('#days_button').click(function() {
+        if (DISPLAY_MODE != 'days') {
+            DISPLAY_MODE = 'days';
+            table.fnDraw();
+        }
+    });
+    $('#hours_button').click(function() {
+        if (DISPLAY_MODE != 'hours') {
+            DISPLAY_MODE = 'hours';
+            table.fnDraw();
+        }
+    });
+});
+</script>
+{% endblock %}
