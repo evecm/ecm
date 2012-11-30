@@ -47,32 +47,32 @@ def set_extended_char_attributes(member, sheet):
     member.cloneSkillPoints = sheet.cloneSkillPoints
     member.balance = sheet.balance
     try:
-        member.memoryBonusName = sheet.memoryBonusName
-        member.memoryBonusValue = sheet.memoryBonusValue
+        member.memoryBonusName = sheet.memoryBonusName.augmentatorName
+        member.memoryBonusValue = sheet.memoryBonusValue.augmentatorValue
     except AttributeError:
         member.memoryBonusName = None
         member.memoryBonusValue = 0
     try:
-        member.intelligenceBonusName = sheet.intelligenceBonusName
-        member.intelligenceBonusValue = sheet.intelligenceBonusValue
+        member.intelligenceBonusName = sheet.intelligenceBonusName.augmentatorName
+        member.intelligenceBonusValue = sheet.intelligenceBonusValue.augmentatorValue
     except AttributeError:
         member.intelligenceBonusName = None
         member.intelligenceBonusValue = 0
     try:
-        member.charismaBonusName = sheet.charismaBonusName
-        member.charismaBonusValue = sheet.charismaBonusValue
+        member.charismaBonusName = sheet.charismaBonusName.augmentatorName
+        member.charismaBonusValue = sheet.charismaBonusValue.augmentatorValue
     except AttributeError:
         member.charismaBonusName = None
         member.charismaBonusValue = 0
     try:
-        member.willpowerBonusName = sheet.willpowerBonusName
-        member.willpowerBonusValue = sheet.willpowerBonusValue
+        member.willpowerBonusName = sheet.willpowerBonusName.augmentatorName
+        member.willpowerBonusValue = sheet.willpowerBonusValue.augmentatorValue
     except AttributeError:
         member.willpowerBonusName = None
         member.willpowerBonusValue = 0
     try:
-        member.perceptionBonusName = sheet.perceptionBonusName
-        member.perceptionBonusValue = sheet.perceptionBonusValue
+        member.perceptionBonusName = sheet.perceptionBonusName.augmentatorName
+        member.perceptionBonusValue = sheet.perceptionBonusValue.augmentatorValue
     except AttributeError:
         member.perceptionBonusName = None
         member.perceptionBonusValue = 0
