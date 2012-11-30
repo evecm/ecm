@@ -239,7 +239,6 @@ def get_alliance(api_corp):
                         break
         except eveapi.Error:
             LOG.exception("Failed to fetch AllianceList.xml.aspx from EVE API server")
-            corp = Corporation.objects.mine()
             alliance = None
     except:
         alliance = None
