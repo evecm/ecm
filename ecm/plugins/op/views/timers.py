@@ -70,23 +70,25 @@ def timers_data(request):
         sort_order += '-' if not params.asc else ''
         sort_order += ordering_map[params.column]
         timers = timers.order_by(sort_order)
-        
+    if not params.display_all:
+        timers =  timers.filter(timers__gte=datetime.utcnow())
+
     # Build result list for formatted/labeled data
     timer_list = []
     na = '-na-'
     total_entries = filtered_entries = timers.count()
     print params.column
-   
+
     for timer in timers:
         t = {
-                '0': timer.location,
+                '0': '<a href="http://evemaps.dotlan.net/system/%s" target="_blank">%s</a>' % (timer.location, timer.location),
                 '1': timer.structure_label(),
                 '2': timer.cycle_label(),
                 '3': timer.location_id if timer.location_id else na,
                 '4': timer.moon_id if timer.moon_id else na,
                 '5': timer.owner_id if timer.owner_id else na,
                 '6': timer.friendly,
-                '7': timer.timer.strftime('%Y-%m-%dT%H:%M:%S'),
+                '7': timer.timer.strftime('%Y-%m-%d %H:%M:%S'),
                 '8': timer.notes,
                 '9': create_time_remaining(timer.timer),
                 '10': create_timer_style(timer.timer)

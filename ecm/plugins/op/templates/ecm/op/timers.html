@@ -9,6 +9,12 @@
 {% endblock %}
 {% block main_content %}
 
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+      <button class="btn btn-small btn-info" id="show_all_button"
+              title="{% trans 'Show all timers' %}">{% trans 'Show All' %}</button>
+  </div>
+</form>
 <table class="table table-bordered" id="timer_table">
   <thead>
     <tr>
@@ -34,14 +40,15 @@
     </tr>
     {% endfor %}
   </tbody>--!>
-  
-  <tbody>                                                                                                
+
+  <tbody>
     <tr>
-      <td colspan="10" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>            
+      <td colspan="10" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
     </tr>
   </tbody>
 </table>
-System links provided by <span class="dotlan">dotlan &copy;</span>
+System links provided by <span class="dotlan"><a
+href="http://evemaps.dotlan.net/" target="_blank">dotlan &copy;</a></span>
 {% endblock %}
 {% block post_javascripts %}
 <script type="text/javascript">                                                                          
@@ -60,6 +67,7 @@ $(document).ready(function() {
         iDisplayLength: 25,
         sAjaxSource: "/op/timers/data/",                                                        
         sDom: 'rt',
+	aaSorting: [[ 9, "asc" ]],
         aoColumns: [
             { /* Location*/   sType: "html",    sWidth: "1%"},
             { /* Type*/       sType: "html",    sWidth: "5%"},
@@ -68,16 +76,10 @@ $(document).ready(function() {
             { /* Moon */      sType: "html",    sWidth: "2%"},
             { /* Owner */     sType: "html",    sWidth: "2%"},
             { /* Friendly */  sType: "html",    sWidth: "1%"},
-            { /* Date */      sType: "html",    sWidth: "2%"},
+            { /* Date */      sType: "html",    sWidth: "3%"},
             { /* Notes */     sType: "html",    sWidth: "5%"},
             { /* Remaining*/  sType: "string",  sWidth: "2%", sClass : "right" },                                      
         ],
-	fnRowCallback: function(nRow, aaData, iDisplayIndex){
-	    var bg = $('td:eq(10)', nRow).text();
-	    $('tr', nRow).css('backgroundColor', bg);
-	    $('td:eq(0)', nRow).addClass('testing');
-	    return nRow;
-	}
     });                                                                                                  
 });
 </script>
