@@ -22,12 +22,11 @@ __author__ = "diabeteman"
 import re
 import logging
 
-import eveapi
-
 from django.utils import timezone
 from django.conf import settings
 from django.db import transaction
 
+from ecm.apps.common import eveapi
 from ecm.utils import crypto
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.corp.models import Corporation, Hangar, Wallet, CorpHangar, CorpWallet, Alliance

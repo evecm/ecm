@@ -47,32 +47,32 @@ def set_extended_char_attributes(member, sheet):
     member.cloneSkillPoints = sheet.cloneSkillPoints
     member.balance = sheet.balance
     try:
-        member.memoryBonusName = sheet.memoryBonusName
-        member.memoryBonusValue = sheet.memoryBonusValue
+        member.memoryBonusName = sheet.attributeEnhancers.memoryBonus.augmentatorName
+        member.memoryBonusValue = sheet.attributeEnhancers.memoryBonus.augmentatorValue
     except AttributeError:
         member.memoryBonusName = None
         member.memoryBonusValue = 0
     try:
-        member.intelligenceBonusName = sheet.intelligenceBonusName
-        member.intelligenceBonusValue = sheet.intelligenceBonusValue
+        member.intelligenceBonusName = sheet.attributeEnhancers.intelligenceBonus.augmentatorName
+        member.intelligenceBonusValue = sheet.attributeEnhancers.intelligenceBonus.augmentatorValue
     except AttributeError:
         member.intelligenceBonusName = None
         member.intelligenceBonusValue = 0
     try:
-        member.charismaBonusName = sheet.charismaBonusName
-        member.charismaBonusValue = sheet.charismaBonusValue
+        member.charismaBonusName = sheet.attributeEnhancers.charismaBonus.augmentatorName
+        member.charismaBonusValue = sheet.attributeEnhancers.charismaBonus.augmentatorValue
     except AttributeError:
         member.charismaBonusName = None
         member.charismaBonusValue = 0
     try:
-        member.willpowerBonusName = sheet.willpowerBonusName
-        member.willpowerBonusValue = sheet.willpowerBonusValue
+        member.willpowerBonusName = sheet.attributeEnhancers.willpowerBonus.augmentatorName
+        member.willpowerBonusValue = sheet.attributeEnhancers.willpowerBonus.augmentatorValue
     except AttributeError:
         member.willpowerBonusName = None
         member.willpowerBonusValue = 0
     try:
-        member.perceptionBonusName = sheet.perceptionBonusName
-        member.perceptionBonusValue = sheet.perceptionBonusValue
+        member.perceptionBonusName = sheet.attributeEnhancers.perceptionBonus.augmentatorName
+        member.perceptionBonusValue = sheet.attributeEnhancers.perceptionBonus.augmentatorValue
     except AttributeError:
         member.perceptionBonusName = None
         member.perceptionBonusValue = 0

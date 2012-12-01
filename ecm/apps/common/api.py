@@ -18,11 +18,10 @@
 __date__ = '2012 5 15'
 __author__ = 'diabeteman'
 
-import eveapi
-
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
+from ecm.apps.common import eveapi
 from ecm.apps.common.models import Setting, APICall
 from ecm.apps.corp.models import Corporation, Alliance
 from ecm.apps.hr.models.member import Member
@@ -122,7 +121,7 @@ def pull_character(charid):
         corp = pull_corporation(char.corporationID)
     mem = Member()
     mem.characterID = char.characterID
-    mem.characterName = char.characterName
+    mem.name = char.characterName
     mem.race = char.race
     mem.bloodline = char.bloodline
     mem.corp = corp

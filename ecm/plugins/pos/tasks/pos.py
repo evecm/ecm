@@ -19,7 +19,6 @@ __date__ = "2010 04 23"
 __author__ = "Ajurna"
 
 import logging
-import re
 
 from django.db import transaction
 from django.utils import timezone
@@ -208,9 +207,8 @@ def get_details(pos, api_resp, sov):
 
         base_fuel_cons = ControlTowerResource.objects.get(control_tower=pos.type_id, resource=fuel.typeID).quantity
         corp = Corporation.objects.mine()
-        "J\d{6}"
         # sov fuel check
-        if pos.location_id < 31000000:
+        if pos.location_id < 31000000:#check not in wh
             if sov[pos.location_id]['faction'] == 0 and \
                sov[pos.location_id]['alliance'] == corp.alliance.allianceID and \
                base_fuel_cons > 1:

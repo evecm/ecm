@@ -29,7 +29,7 @@ class Mail(models.Model):
         verbose_name = "Mail"
         verbose_name_plural = "Mails"
     messageID = models.BigIntegerField(primary_key=True)
-    senderID = models.ForeignKey(Member, related_name='sent_mail')
+    sender = models.ForeignKey(Member, related_name='sent_mail')
     sentDate = models.DateTimeField()
     title = models.CharField(max_length=255, default="")
     body = models.TextField(default="")

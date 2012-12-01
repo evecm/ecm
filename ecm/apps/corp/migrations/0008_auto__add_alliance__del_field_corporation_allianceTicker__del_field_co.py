@@ -6,7 +6,9 @@ from django.db import models
 
 
 class Migration(SchemaMigration):
-
+    depends_on = (
+        ("hr", "0008_init_corp_field"),
+    )
     def forwards(self, orm):
         # Adding model 'Alliance'
         db.create_table('corp_alliance', (

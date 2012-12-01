@@ -20,11 +20,10 @@ __author__ = "diabeteman"
 
 import logging
 
-import eveapi
-
 from django.db import transaction
 from django.contrib.auth.models import User, Group
 
+from ecm.apps.common import eveapi
 from ecm.apps.common import api
 from ecm.apps.corp.tasks.corp import fix_description
 from ecm.apps.corp.models import Corporation, Alliance
@@ -240,7 +239,6 @@ def get_alliance(api_corp):
                         break
         except eveapi.Error:
             LOG.exception("Failed to fetch AllianceList.xml.aspx from EVE API server")
-            corp = Corporation.objects.mine()
             alliance = None
     except:
         alliance = None

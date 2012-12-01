@@ -55,10 +55,10 @@ def create_account(request):
             
             members, corps = init_characters(user, form.characters)
             
+            for corp in corps:
+                corp.save()           
             for member in members:
                 member.save()
-            for corp in corps:
-                corp.save()
             
             logger.info('"%s" created new account id=%d' % (user, user.id))
             # Be sure to have mail configured on your server, otherwise catch except
