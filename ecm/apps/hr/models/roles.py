@@ -139,7 +139,10 @@ class Role(models.Model):
             return '<b>%s</b>' % self.get_disp_name()
 
     def __eq__(self, other):
-        return self.id == other.id
+        if other:
+            return self.id == other.id
+        else:
+            return False
 
     def __hash__(self):
         return self.id

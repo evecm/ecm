@@ -29,6 +29,7 @@ from ecm.apps.corp.models import Corporation
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.hr.models import TitleComposition, Title, Role, TitleCompoDiff, RoleType
 from ecm.apps.common import api
+from ecm.utils.format import strip_tags
 
 import logging
 logger = logging.getLogger(__name__)
@@ -119,7 +120,7 @@ def parse_one_title(titleApi, my_corp):
     except Title.DoesNotExist:
         # the title doesn't exist yet, we create it
         logger.info('Title "%s" does not exist. Creating...' % name)
-        title = Title.objects.create(corp=my_corp, titleID=titleID, titleName=name)
+        title = Title.objects.create(corp=my_corp, titleID=titleID, titleName=strip_tags(name))
     try:
         # retrieval of the group corresponding to the title from de DB
         group = Group.objects.get(id=titleID)

@@ -111,7 +111,7 @@ def titles_data(request):
     titles = []
     for title in query:
         if title.title_compo_diffs.all():
-            modification_date = print_time_min(title.title_compo_diffs.latest('id'))
+            modification_date = print_time_min(title.title_compo_diffs.latest('id').date)
         else:
             modification_date = "-"
 

@@ -54,6 +54,7 @@ class DatetimeJSONEncoder(JSON.JSONEncoder):
         if isinstance(obj, datetime):
             return obj.strftime(DATE_PATTERN)
         else:
+            print type(obj)
             JSON.JSONEncoder.default(self, obj)
 
 #------------------------------------------------------------------------------
