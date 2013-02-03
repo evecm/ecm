@@ -87,7 +87,7 @@ def one_pos(request, pos_id):
         corp = Corporation.objects.mine()
         if pos.use_standings_from == corp.corporationID:
             use_standings_from = 'Corporation'
-        elif pos.use_standings_from == corp.allianceID:
+        elif pos.use_standings_from == corp.alliance.allianceID:
             use_standings_from = 'Alliance'
         else:
             use_standings_from = pos.use_standings_from

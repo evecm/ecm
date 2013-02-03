@@ -51,23 +51,25 @@ System links provided by <span class="dotlan"><a
 href="http://evemaps.dotlan.net/" target="_blank">dotlan &copy;</a></span>
 {% endblock %}
 {% block post_javascripts %}
-<script type="text/javascript">                                                                          
+<script type="text/javascript">
+DISPLAY_ALL=false
+
 //disable multi column sorting
-$('#history_table thead th').click(function(event) {                                                     
-    if (!$(event.target).hasClass('sorthandle')) {                                                       
-        event.shiftKey = false;                                                                          
-    }                                                                                                    
-});                                                                                                      
+$('#history_table thead th').click(function(event) {
+    if (!$(event.target).hasClass('sorthandle')) {
+        event.shiftKey = false;
+    }
+});
 
 // dataTable setup
 $(document).ready(function() {
-    table = $('#timer_table').dataTable( {                                                             
-        bProcessing: true,                                                                               
+    var table = $('#timer_table').dataTable( {
+        bProcessing: true,
         bServerSide: true,
         iDisplayLength: 25,
-        sAjaxSource: "/op/timers/data/",                                                        
+        sAjaxSource: "/op/timers/data/",
         sDom: 'rt',
-	aaSorting: [[ 9, "asc" ]],
+        aaSorting: [[ 9, "asc" ]],
         aoColumns: [
             { /* Location*/   sType: "html",    sWidth: "1%"},
             { /* Type*/       sType: "html",    sWidth: "5%"},
@@ -78,9 +80,30 @@ $(document).ready(function() {
             { /* Friendly */  sType: "html",    sWidth: "1%"},
             { /* Date */      sType: "html",    sWidth: "3%"},
             { /* Notes */     sType: "html",    sWidth: "5%"},
-            { /* Remaining*/  sType: "string",  sWidth: "2%", sClass : "right" },                                      
-        ],
-    });                                                                                                  
+            { /* Remaining*/  sType: "string",  sWidth: "2%", sClass : "right" },
+        ], 
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            aoData.push( {
+                name: 'display_all',
+                value: DISPLAY_ALL
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+        fnStateLoadParams: function (oSettings, oData) {
+            if ('display_all' in oData) {
+                DISPLAY_ALL = oData.display_all;
+                if (DISPLAY_ALL == true) {
+                    $('#show_all_button').button('toggle');
+                }
+            }
+            return true;
+        },
+    });
+    $('#show_all_button').click(function() {
+        DISPLAY = true
+    });
 });
 </script>
-{% endblock %} 
+{% endblock %}

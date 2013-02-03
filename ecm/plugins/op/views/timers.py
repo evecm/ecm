@@ -50,6 +50,8 @@ def timers(request):
 def timers_data(request):
     try:
         params = extract_datatable_params(request)
+        REQ = request.GET if request.method == 'GET' else request.POST
+        params.display_all = REQ.get('display_all', 'days')
     except:
         return HttpResponseBadRequest()
     timers = Timer.objects.all()
@@ -70,14 +72,15 @@ def timers_data(request):
         sort_order += '-' if not params.asc else ''
         sort_order += ordering_map[params.column]
         timers = timers.order_by(sort_order)
+
+    print params.display_all
     if not params.display_all:
         timers =  timers.filter(timers__gte=datetime.utcnow())
 
     # Build result list for formatted/labeled data
     timer_list = []
-    na = '-na-'
+    na = '-'
     total_entries = filtered_entries = timers.count()
-    print params.column
 
     for timer in timers:
         t = {
