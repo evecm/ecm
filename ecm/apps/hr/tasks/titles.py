@@ -23,13 +23,13 @@ from django.conf import settings
 from django import db
 from django.db import transaction
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.db.models import Max
 
 from ecm.apps.corp.models import Corporation
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.hr.models import TitleComposition, Title, Role, TitleCompoDiff, RoleType
 from ecm.apps.common import api
-from ecm.utils.format import strip_tags
 
 import logging
 logger = logging.getLogger(__name__)
