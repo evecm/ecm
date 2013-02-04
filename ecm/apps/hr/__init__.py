@@ -64,6 +64,7 @@ URL_PERMISSIONS = [
     r'^/hr/members/.*$',
     r'^/hr/roles/.*$',
     r'^/hr/titles/.*$',
+    r'^/hr/players/.*$',
 ]
 
 SHARED_DATA = [
