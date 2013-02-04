@@ -18,7 +18,7 @@
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
 
-from ecm.apps.hr.models.member import Member, MemberDiff, Skill #@UnusedImport
+from ecm.apps.hr.models.member import Member, MemberDiff, Recruit, Skill #@UnusedImport
 from ecm.apps.hr.models.roles import RoleType, Role, RoleMembership, RoleMemberDiff #@UnusedImport
 from ecm.apps.hr.models.titles import (Title, #@UnusedImport
                                        TitleComposition,  #@UnusedImport
@@ -44,4 +44,6 @@ __all__ = (
     'TitleMembership',
     'TitleCompoDiff',
     'TitleMemberDiff',
+
+    'Recruit',
 )

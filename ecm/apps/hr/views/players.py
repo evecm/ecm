@@ -115,6 +115,7 @@ def player_details(request, player_id):
 
     eve_accounts = player.eve_accounts.all().count()
     characters = player.characters.all().count()
+    
     groups = player.groups.all().order_by('id')
 
     data = {

@@ -20,6 +20,8 @@ __author__ = "diabeteman"
 
 
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
 from ecm.apps.hr.models import Member,\
                                Role,\
@@ -31,12 +33,20 @@ from ecm.apps.hr.models import Member,\
                                TitleComposition,\
                                TitleCompoDiff,\
                                TitleMemberDiff,\
-                               RoleMemberDiff
+                               RoleMemberDiff,\
+                               Recruit
 
 class MemberAdmin(admin.ModelAdmin):
     list_display = ['name', 'nickname', 'owner', 'corpDate', 'lastLogin']
     search_fields = ['name', 'nickname', 'owner__username']
 
+class RecruitInline(admin.StackedInline):
+    model = Recruit
+    fk_name = 'user'
+    can_delete = False
+
+class UserAdmin(UserAdmin):
+    inlines = (RecruitInline, )
 
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Role)
@@ -49,4 +59,6 @@ admin.site.register(TitleComposition)
 admin.site.register(TitleCompoDiff)
 admin.site.register(TitleMemberDiff)
 admin.site.register(RoleMemberDiff)
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
