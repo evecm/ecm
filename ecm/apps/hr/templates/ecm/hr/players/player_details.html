@@ -18,6 +18,8 @@
 <p><b>{% trans 'Last login in ECM' %}:</b> {{player.last_login|date:"Y F d - H:i"}}</p>
 <p><b>{% trans 'Owned EVE Accounts' %}:</b> {{eve_accounts}}</p>
 <p><b>{% trans 'Owned Characters' %}:</b> {{characters}}</p>
+<p><b>{% trans 'References' %}:</b> {{reference|safe}}</p>
+<p><b>{% trans 'Recruited by' %}:</b> {{recruiter|safe}}</p>
 
 <h2>Groups</h2>
 

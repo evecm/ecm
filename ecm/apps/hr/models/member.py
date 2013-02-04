@@ -258,6 +258,6 @@ class Recruit(models.Model):
     class Meta:
         app_label = 'hr'
 
-    user = models.OneToOneField(User, related_name='asdf')
-    reference = models.ManyToManyField(User, blank=True, related_name='reference')
-    recruiter = models.ForeignKey(User, blank=True, related_name='recruiter')
+    user = models.OneToOneField(User, related_name='user')
+    reference = models.ManyToManyField(User, null=True, blank=True, related_name='reference')
+    recruiter = models.ForeignKey(User, null=True, blank=True, related_name='recruiter')
