@@ -39,12 +39,13 @@ def dumps(obj, skipkeys=False, ensure_ascii=True, check_circular=True,
           namedtuple_as_object=True, tuple_as_array=True,
           bigint_as_string=False, sort_keys=False, item_sort_key=None,
           **kw):
-    
+
     cls = cls or DatetimeJSONEncoder
-    
+
     return JSON.dumps(obj, skipkeys, ensure_ascii, check_circular, allow_nan, cls, 
-                      indent, separators, encoding, default, use_decimal, namedtuple_as_object, 
-                      tuple_as_array, bigint_as_string, sort_keys, item_sort_key)
+                      indent, separators, encoding, default)#, use_decimal, namedtuple_as_object, 
+                      #tuple_as_array, bigint_as_string, sort_keys, item_sort_key)
+                      #Fix for too many args to dumps.
     
 #------------------------------------------------------------------------------
 DATE_PATTERN = '%Y-%m-%d_%H-%M-%S'
