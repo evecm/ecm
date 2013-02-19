@@ -58,7 +58,10 @@ def process_contracts(contract_list, connection):
     """
     Process all contracts from the API
     """
-    alliance_id = Corporation.objects.mine().alliance.allianceID
+    try:
+        alliance_id = Corporation.objects.mine().alliance.allianceID
+    except AttributeError:
+        alliance_id = 0
     LOG.debug("Fetching contracts from DB...")    
     # Get old contracts
     old_contracts = {}
