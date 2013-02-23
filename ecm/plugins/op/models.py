@@ -233,7 +233,7 @@ class Timer(models.Model):
 
     def exit_time(self):
         base_time = self.timer + 48
-        return (basetime - 3, basetime + 3)
+        return (base_time - 3, base_time + 3)
 
     def cycle_label(self):
         for choice in self.CYCLE_CHOICES:
