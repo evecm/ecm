@@ -65,13 +65,6 @@ def get_notifications(api_conn, charid):
                 pass
 
 #-----------------------------------------------------------------------------
-def pull_corp_or_alliance(idn):
-    if id > 98000000 and id < 99000000:
-        return api.pull_corporation(idn)
-    else:
-        return api.pull_alliance(idn)
-
-#-----------------------------------------------------------------------------
 @transaction.commit_on_success
 def get_mail(api_conn, charid):
     headers = api_conn.char.MailMessages(characterID=charid)
@@ -94,7 +87,7 @@ def get_mail(api_conn, charid):
             if not head.toCorpOrAllianceID == '':
                 rec = Recipient()
                 rec.mail = mail
-                rec.recipient = pull_corp_or_alliance(head.toCorpOrAllianceID)
+                rec.recipient = api.pull_corporation(head.toCorpOrAllianceID)
                 rec.save()
             for chid in str(head.toCharacterIDs).split(','):
                 if chid == '':

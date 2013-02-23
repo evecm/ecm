@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+
+{% block headtitle %}{% trans 'Message: ' %}{{message.title}}{% endblock %}
+
+{% block main_content %}
+<div class="page-header">
+  <h1>Message</h1>
+</div>
+<table class="table table-bordered">
+	<tr>
+		<td>From:</td><td>{{message.sender}}</td>
+	</tr>
+	<tr>
+		<td>To:</td><td>
+			{% for rec in recipients%}{{rec}}{%if not forloop.last%}, {%endif%}{%endfor%}</td>
+	</tr>
+	<tr>
+		<td>Subject:</td><td>{{message.title}}</td>
+	</tr>
+	<tr>
+		<td>Body:</td><td>{% autoescape off %}{{message.body|removetags:"font"}}{% endautoescape %}</td>
+	</tr>
+</table>
+
+{% endblock %}

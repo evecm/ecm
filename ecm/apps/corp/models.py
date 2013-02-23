@@ -146,6 +146,8 @@ class Alliance(models.Model):
     allianceID = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     shortName = models.CharField(max_length=10)
+    def __unicode__(self):
+        return unicode(self.name)
 
 #------------------------------------------------------------------------------
 class Corporation(models.Model):

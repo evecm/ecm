@@ -133,39 +133,49 @@ def pull_character(charid):
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def pull_corporation(corporationID):
-    api_conn = eveapi.EVEAPIConnection()
-    corp_api = api_conn.corp.CorporationSheet(corporationID = corporationID)
+    #Note will return an alliance if no corp found
     try:
-        alliance = Alliance.objects.get(allianceID = corp_api.allianceID)
-    except Alliance.DoesNotExist:
-        alliance = pull_alliance(corp_api.allianceID)
-    corp = Corporation()
-    corp.alliance = alliance
-    corp.corporationID = corp_api.corporationID
-    corp.corporationName = corp_api.corporationName
-    corp.ticker = corp_api.ticker
-    corp.ceoID = corp_api.ceoID
-    corp.ceoName = corp_api.ceoName
-    corp.locationID = corp_api.stationID
-    corp.location = corp_api.stationName
-    corp.description = fix_description(corp_api.description)
-    corp.taxRate = corp_api.taxRate
-    corp.save()
+        corp = Corporation.objects.get(corporationID = corporationID)
+    except Corporation.DoesNotExist:
+        api_conn = eveapi.EVEAPIConnection()
+        try:
+            corp_api = api_conn.corp.CorporationSheet(corporationID = corporationID)
+        except eveapi.ServerError:
+            return pull_alliance(corporationID)
+        try:
+            alliance = Alliance.objects.get(allianceID = corp_api.allianceID)
+        except Alliance.DoesNotExist:
+            alliance = pull_alliance(corp_api.allianceID)
+        corp = Corporation()
+        corp.alliance = alliance
+        corp.corporationID = corp_api.corporationID
+        corp.corporationName = corp_api.corporationName
+        corp.ticker = corp_api.ticker
+        corp.ceoID = corp_api.ceoID
+        corp.ceoName = corp_api.ceoName
+        corp.locationID = corp_api.stationID
+        corp.location = corp_api.stationName
+        corp.description = fix_description(corp_api.description)
+        corp.taxRate = corp_api.taxRate
+        corp.save()
     return corp
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def pull_alliance(allianceID):
-    api_conn = eveapi.EVEAPIConnection()
-    alliancesApi = api_conn.eve.AllianceList()
-    alliance = Alliance()
-    alliance.allianceID = allianceID
-    for a in alliancesApi.alliances:
-        if a.allianceID == allianceID:
-            alliance.shortName = a.shortName
-            alliance.name = a.name
-            alliance.save()
-            break
+    try:
+        alliance = Alliance.objects.get(allianceID = allianceID)
+    except Alliance.DoesNotExist:
+        api_conn = eveapi.EVEAPIConnection()
+        alliancesApi = api_conn.eve.AllianceList()
+        alliance = Alliance()
+        alliance.allianceID = allianceID
+        for a in alliancesApi.alliances:
+            if a.allianceID == allianceID:
+                alliance.shortName = a.shortName
+                alliance.name = a.name
+                alliance.save()
+                break
     return alliance
 
 #------------------------------------------------------------------------------

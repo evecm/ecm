@@ -33,6 +33,14 @@ class Mail(models.Model):
     sentDate = models.DateTimeField()
     title = models.CharField(max_length=255, default="")
     body = models.TextField(default="")
+    @property
+    def url(self):
+        return 'message/%d/' % self.messageID
+    @property
+    def permalink(self):
+        return '<a href="%s" class="pos">%s</a>' % (self.url, self.title)
+    def __unicode__(self):
+        return unicode(self.title)
 
 class MailingList(models.Model):
     class Meta:
@@ -49,6 +57,8 @@ class Recipient(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.BigIntegerField()
     recipient = generic.GenericForeignKey('content_type', 'object_id')
+    def __unicode__(self):
+        return unicode(self.recipient)
 
 class Notification(models.Model):
     class Meta:
