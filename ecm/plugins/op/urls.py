@@ -26,5 +26,6 @@ urlpatterns = patterns('ecm.plugins.op.views',
     (r'^$',                     'ops.overview'), #Placeholder
     (r'^timers/$',              'timers.timers'),
     (r'^timers/data/$',         'timers.timers_data'),
+    (r'^timers/add/$',          'timers.add_timer'),
 
 )

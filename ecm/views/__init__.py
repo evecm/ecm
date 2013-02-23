@@ -26,10 +26,11 @@ except ImportError:
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as tr
+import django.utils.simplejson as json
 
 from ecm import apps, plugins
 from ecm.utils.c_s_v import CSVUnicodeWriter
-import ecm.utils.json as json
+#import ecm.utils.json as json
 from ecm.apps.common.models import UrlPermission, Setting
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.corp.models import SharedData

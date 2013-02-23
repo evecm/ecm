@@ -32,6 +32,7 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from ecm.plugins.op.models import Timer
+from ecm.plugins.op.forms import TimerForm
 from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params
@@ -115,6 +116,15 @@ def timers_data(request):
         "aaData" : timer_list,
     }
     return HttpResponse(json.dumps(json_data))
+
+@check_user_access()
+def add_timer(request):
+    form = TimerForm(request.POST) 
+    if form.is_valid():
+        return HttpResponseRedirect('/')
+    else:
+        form = TimerForm()
+    return render_to_response("ecm/op/add_timer.html", {'form' : form,}, RequestContext(request))
 
 def triplet(rgb):
     """
