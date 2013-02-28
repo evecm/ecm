@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery-ui-1.8.13.custom.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery.autocomplete.css' %}" />
+{% endblock %}
+{% block headtitle %}{% trans 'Add Timer' %}{% endblock %}
+
+{% block main_content %}
+<div class="row">
+  <div class="span5 offset4">
+    <h1>{% trans 'Add Timer' %}</h1>
+	<form class="" action="/op/timers/add/" method="post">{% csrf_token %}
+	    {% for field in form %}{{ field.errors }}
+            <div class="control-group">
+                <label class="control-label span3" for="id_{{field.html_name}}">{{field.label}}</label>
+                <div class="controls controls-row">{{ field }}</div>
+            </div>
+            {% endfor %}
+            <div class="control-group">
+                <div class="controls"><input type="submit" class="btn" value="Send message" /></div>
+            </div>
+	</form>
+  </div>
+</div>
+{% endblock %}
+
+{% block compressed_javascripts %}
+<script type="text/javascript" src="{% static 'ecm/js/lib/jquery.ui.js' %}"></script>
+<script type="text/javascript" src="{% static 'ecm/js/lib/i18n/jquery-ui-i18n.js' %}"></script>
+<script type="text/javascript" src="{% static 'ecm/js/lib/jquery.autocomplete.js' %}"></script>
+{% endblock %}
+{% block post_javascripts %}
+<script type="text/javascript">
+	$(function() {
+		// Get the currently used language code determined by i18n
+		var lng = "{{LANGUAGE_CODE}}"
+		// Check if given locale is supported by jquery.ui 
+		if( lng in $.datepicker.regional ){
+			$( "#id_date" ).datepicker($.datepicker.regional[ lng ] );
+		} else {
+			// Use EN as default
+			$( "#id_date" ).datepicker($.datepicker.regional[""]);
+		}
+	});
+	$(function() {
+		if (document.getElementById('#location')){
+			$("#id_moon").val(document.getElementById('#location').value)
+		}
+	});
+</script>
+{% endblock %}

@@ -93,6 +93,13 @@ urlpatterns += patterns('ecm.views.api',
     (r'^api/bindings/(\w+)/groups/$', 'group_bindings'),
 )
 
+urlpatterns += patterns('ecm.views.ajax',
+    ###########################################################################
+    # AJAX QUERY VIEWS
+    (r'^ajax/solarsystems/$',         'solarsystem.list'),
+    (r'^ajax/moons/$',                'moons.list'),
+)
+
 
 import ecm.apps
 CORE_APPS_URLS = []

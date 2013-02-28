@@ -33,7 +33,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ecm.plugins.op.models import Timer
 from ecm.plugins.op.forms import TimerForm
-from ecm.apps.eve.models import Type
+from ecm.apps.eve.models import Type, CelestialObject
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params
 

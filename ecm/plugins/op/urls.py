@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 10 30"
-__author__ = "JerryKhan"
+__date__ = "2013 02 26"
+__author__ = "tash"
 
 from django.conf.urls.defaults import patterns
 
@@ -27,5 +27,4 @@ urlpatterns = patterns('ecm.plugins.op.views',
     (r'^timers/$',              'timers.timers'),
     (r'^timers/data/$',         'timers.timers_data'),
     (r'^timers/add/$',          'timers.add_timer'),
-
 )
