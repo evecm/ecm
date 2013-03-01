@@ -13,7 +13,24 @@
 
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
+    Sent From
     <input type="text" id="search_text" class="input-medium search-query" value="" />
+    Sent To
+    <input type="text" id="sent_to" class="input-medium search-query" value="" />
+    Corp
+    <select>
+    	<option value="0">All</option>
+    	{%for corp in corps%}
+    	<option value="{{corp.corporationID}}">{{corp}}</option>
+    	{%endfor%}
+    </select>
+    Alliance
+    <select>
+    	<option value="0">All</option>
+    	{%for ally in alliances%}
+    	<option value="{{ally.allianceID}}">{{ally}}</option>
+    	{%endfor%}
+    </select>
     <div class="btn-group">
       <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
       <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>

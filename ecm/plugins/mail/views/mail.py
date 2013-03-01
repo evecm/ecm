@@ -25,7 +25,7 @@ from django.http import HttpResponseBadRequest
 
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data
-from ecm.plugins.mail.models import Mail
+from ecm.plugins.mail.models import Mail, Recipient
 from ecm.apps.hr.models.member import Member
 from ecm.apps.corp.models import Corporation, Alliance
 
@@ -41,8 +41,16 @@ COLUMNS = [
 #------------------------------------------------------------------------------
 @check_user_access()
 def mail_list(request):
+    corps = set()
+    alliances = set()
+    for corp in Recipient.objects.filter(content_type_id = 38):
+        corps.add(corp.recipient)
+    for ally in Recipient.objects.filter(content_type_id = 37):
+        alliances.add(ally.recipient)
     data = {
-        'columns' : [ (col, title) for col, title, _ in COLUMNS ],
+        'columns'   : [ (col, title) for col, title, _ in COLUMNS ],
+        'corps'     : corps,
+        'alliances' : alliances,
     }
     return render_to_response("ecm/mail/mail_list.html", data, RequestContext(request))
 
@@ -69,10 +77,10 @@ def mail_list_data(request):
         REQ = request.GET if request.method == 'GET' else request.POST
     except:
         return HttpResponseBadRequest()
-    print REQ
-    print params.__dict__
+    
     mail = Mail.objects.all().order_by('-sentDate')
     mail_list = []
+    
     for message in mail[params.first_id:params.last_id]:
         recp = []
         for target in message.recipients.all():
