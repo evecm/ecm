@@ -20,22 +20,22 @@ __author__ = "Ajurna"
 
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
-from django.utils.translation import ugettext_lazy as tr_lazy
 from django.http import HttpResponseBadRequest
+from django.utils.translation import ugettext as tr
 
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.plugins.mail.models import Mail, Recipient
 from ecm.apps.hr.models.member import Member
 from ecm.apps.corp.models import Corporation, Alliance
+from ecm.views import DATATABLES_DEFAULTS, datatable_csv_data
 
 COLUMNS = [
-    # Name                       Tooltip                          db_field
-    [tr_lazy('Sent Date'),       tr_lazy('Sent Date'),            'sentDate'],
-    [tr_lazy('Sender'),          tr_lazy('Sender'),               'sender'],
-    [tr_lazy('Recipients'),      tr_lazy('Recipients'),           'Recipients'],
-    [tr_lazy('Title'),           tr_lazy('Title'),                'title'],
-    [tr_lazy('id'),              tr_lazy('id'),                   'id'],
+    {'sTitle': tr('Sent Date'),    'sWidth': '10%',   'db_field': 'sentDate', },
+    {'sTitle': tr('Sender'),       'sWidth': '15%',   'db_field': 'sender', },
+    {'sTitle': tr('Recipients'),   'sWidth': '25%',   'db_field': 'Recipients', },
+    {'sTitle': tr('Title'),        'sWidth': '50%',   'db_field': 'title', },
+    {'sTitle': tr('id'),           'bVisible': False, 'db_field': 'id', },
 ]
 
 #------------------------------------------------------------------------------
@@ -48,9 +48,11 @@ def mail_list(request):
     for ally in Recipient.objects.filter(content_type_id = 37):
         alliances.add(ally.recipient)
     data = {
-        'columns'   : [ (col, title) for col, title, _ in COLUMNS ],
         'corps'     : corps,
         'alliances' : alliances,
+        'datatables_defaults': DATATABLES_DEFAULTS,
+        'columns': COLUMNS,
+        'ajax_url': '/mail/list/',
     }
     return render_to_response("ecm/mail/mail_list.html", data, RequestContext(request))
 
