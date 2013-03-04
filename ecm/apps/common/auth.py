@@ -37,6 +37,10 @@ def get_directors_group():
     return get_or_create_group(Setting.get('hr_directors_group_name'))
 
 #------------------------------------------------------------------------------
+def get_recruiters_group():
+    return get_or_create_group(Setting.get('hr_recruiters_group_name'))
+
+#------------------------------------------------------------------------------
 def get_members_group():
     return get_or_create_group(Setting.get('hr_corp_members_group_name'))
 

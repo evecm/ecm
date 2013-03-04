@@ -76,6 +76,7 @@ SHARED_DATA = [
 SETTINGS = {
     'hr_corp_members_group_name': 'Members',
     'hr_directors_group_name': 'Directors',
+    'hr_recruiters_group_name': 'Recruiters',
     'hr_allies_plus_5_group_name': 'Allies +5',
     'hr_allies_plus_10_group_name': 'Allies +10',
 }
