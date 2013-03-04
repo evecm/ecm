@@ -107,6 +107,7 @@ def get_mail(api_conn, charid):
                     lis = MailingList()
                     lis.listID = head.toListID
                     lis.displayName = "Unknown Mailing List"
+                    lis.save()
                 rec = Recipient()
                 rec.mail = mail
                 rec.recipient = lis
