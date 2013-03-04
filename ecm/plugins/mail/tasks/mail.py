@@ -104,7 +104,9 @@ def get_mail(api_conn, charid):
                 try:
                     lis = MailingList.objects.get(listID=head.toListID)
                 except MailingList.DoesNotExist:
-                    lis = head.toListID
+                    lis = MailingList()
+                    lis.listID = head.toListID
+                    lis.displayName = "Unknown Mailing List"
                 rec = Recipient()
                 rec.mail = mail
                 rec.recipient = lis
