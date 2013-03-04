@@ -129,7 +129,10 @@ def get_mailing_lists(api_conn, charid):
     lists = api_conn.char.mailinglists(characterID=charid)
     for li in lists.mailingLists:
         try:
-            MailingList.objects.get(listID=li.listID)
+            ml = MailingList.objects.get(listID=li.listID)
+            if ml.displayName == "Unknown Mailing List":
+                ml.displayName = li.displayName
+                ml.save()
         except MailingList.DoesNotExist:
             ml = MailingList()
             ml.listID = li.listID
