@@ -223,12 +223,11 @@ class Timer(models.Model):
     timer = models.DateTimeField(db_index=True)
     location_id = models.BigIntegerField(default=0)
     location = models.CharField(max_length=255, default="")
-    moon_id = models.BigIntegerField(default=0, null=True, blank=True)
-    moon = models.CharField(max_length=255, default="", null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     cycle = models.IntegerField(choices=CYCLE_CHOICES, default=SHIELD)
     friendly = models.BooleanField(default=False)
     owner_id = models.BigIntegerField(default=0)
+    owner = models.TextField(null=True, blank=True)
 
 
     def exit_time(self):
@@ -246,6 +245,20 @@ class Timer(models.Model):
                 for entry in category:
                     if self.structure == entry[0]:
                         return entry[1]
+
+    def location_label(self):
+        if self.location:
+            return self.location.split()[0]
+        else:
+            return ''
+    
+    def location_dotlan(self):
+        if self.location:
+            # ingame: Jita III - Moon 1
+            # DOTLAN: Jita/III-Moon-1
+            return self.location.split()[0] + '/' + '-'.join(self.location.replace(' - ', '-').split()[1:])
+        else:
+            return ''
 
     def __eq__(self, other):
         return self.timer == other.timer

@@ -6,24 +6,23 @@
 <link rel="stylesheet" type="text/css" href="{% static 'ecm/css/jquery.autocomplete.css' %}" />
 {% endblock %}
 {% block headtitle %}{% trans 'Add Timer' %}{% endblock %}
-
 {% block main_content %}
 <div class="row">
   <div class="span5 offset4">
-    <h1>{% trans 'Add Timer' %}</h1>
-	<form class="form-horizontal" action="/op/timers/add/" method="post">{% csrf_token %}
-	    {% for field in form %}{{ field.errors }}
+    <h1>{% trans 'Edit Timer' %}</h1>
+	<form class="form-horizontal" action="/op/timers/edit/{{id}}/" method="post">{% csrf_token %}
+        {% for field in form %}{{ field.errors }}
             {% if field.label != "Timer" %}
             <div class="control-group">
-                <label class="control-label span3" for="id_{{field.html_name}}">{{field.label}}</label>
-                <div class="controls controls-row">{{ field }}</div>
+                <label class="control-label span3" for="id_{{field.html_name}}">{{field.label}}</label>  
+                <div class="controls controls-row">{{ field }}</div>                                     
             </div>
             {% else %}
                 {{ field }}
             {% endif %}
         {% endfor %}
             <div class="control-group">
-                <div class="controls"><input type="submit" class="btn" value="{% trans 'Save' %}" /></div>
+                <div class="controls"><input type="submit" class="btn" value="{% trans "Edit" %}" /></div>     
             </div>
 	</form>
   </div>

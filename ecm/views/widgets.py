@@ -4,6 +4,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.utils.simplejson import JSONEncoder
+from django.utils.encoding import smart_unicode
 
 class DatePickerWidget(forms.DateInput):
     @property
@@ -18,20 +19,24 @@ class SplitDatePickerTimeWidget(forms.SplitDateTimeWidget):
         forms.MultiWidget.__init__(self, widgets, attrs)
 
     def format_output(self, rendered_widgets):
-        str_form = u'\n\
-            \t\t<div class="control-group">\n \
-            \t\t\t<label class="control-label" for="id_timer_0">%s</label>\n\
-            \t\t\t<div class="controls">%s</div>\n\t\t\t\n\
-            \t\t\t<label class="control-label" for="id_timer_1">%s</label>\n\
-            \t\t\t<div class="controls">%s</div>\n\t\t\t</div>\n'
-        return mark_safe( str_form % (_('Date:'), rendered_widgets[0],_('Time:'),rendered_widgets[1]))
+        str_form = """
+            <div class="control-group">
+                <label for="id_timer_0" class="control-label">%s:</label>
+                <div class="controls controls-row">
+                    %s
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="id_timer_1" class="control-label">%s:</label>
+                <div class="controls controls-row">
+                    %s
+                </div>
+            </div>
+        """
+        return mark_safe( str_form % (_('Date'), rendered_widgets[0],_('Time'),rendered_widgets[1]))
 
 class ModelAutoCompleteField(forms.TextInput):
     def __init__(self, source, options={}, attrs={}):
-        """source can be a list containing the autocomplete values or a
-        string containing the url used for the XHR request.
-        For available options see the autocomplete sample page::
-        http://jquery.bassistance.de/autocomplete/"""
         self.options = None
         self.attrs = {'autocomplete': 'off'}
         self.source = source

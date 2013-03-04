@@ -96,6 +96,7 @@ urlpatterns += patterns('ecm.views.api',
 urlpatterns += patterns('ecm.views.ajax',
     ###########################################################################
     # AJAX QUERY VIEWS
+    (r'^ajax/celestials/$',           'celestial.list'),
     (r'^ajax/solarsystems/$',         'solarsystem.list'),
     (r'^ajax/moons/$',                'moons.list'),
 )

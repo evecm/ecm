@@ -27,4 +27,6 @@ urlpatterns = patterns('ecm.plugins.op.views',
     (r'^timers/$',              'timers.timers'),
     (r'^timers/data/$',         'timers.timers_data'),
     (r'^timers/add/$',          'timers.add_timer'),
+    (r'^timers/edit/(\d+)/$',   'timers.edit_timer'),
+    (r'^timers/remove/(\d+)/$', 'timers.remove_timer'),
 )
