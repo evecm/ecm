@@ -29,6 +29,10 @@ def get_character_skills(member, sheet):
             db_skill = member.skills.get(eve_type_id=skill.typeID)
         except Skill.DoesNotExist:
             db_skill = Skill(character=member, eve_type_id=skill.typeID)
+        except Skill.MultipleObjectsReturned:
+            for sk in member.skills.filter(eve_type_id=skill.typeID):
+                sk.delete()
+            db_skill = Skill(character=member, eve_type_id=skill.typeID)
         
         db_skill.skillpoints = skill.skillpoints
         db_skill.level = skill.level
