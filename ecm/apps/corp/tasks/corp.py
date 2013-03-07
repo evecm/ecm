@@ -72,7 +72,7 @@ def update_corp_info(corpApi, currentTime):
             try:
                 alliance = Alliance.objects.get(allianceID = corpApi.allianceID)
             except Alliance.DoesNotExist:
-                LOG.exception("Adding new Alliance: "+ corpApi.allianceName)
+                LOG.info("Adding new Alliance: "+ corpApi.allianceName)
                 alliance = Alliance()
                 alliance.allianceID = corpApi.allianceID
                 alliance.name = corpApi.allianceName
