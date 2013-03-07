@@ -31,6 +31,13 @@
     	<option value="{{ally.allianceID}}">{{ally}}</option>
     	{%endfor%}
     </select>
+    Mailing List
+    <select id="mailinglist_selector">
+    	<option value="0">All</option>
+    	{%for mlist in maillists%}
+    	<option value="{{mlist.listID}}">{{mlist.displayName}}</option>
+    	{%endfor%}
+    </select>
     <div class="btn-group">
       <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
       <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
