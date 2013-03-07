@@ -114,8 +114,8 @@ def write_transaction_results(wallet, entries):
                 journal = JournalEntry.objects.get(argName1 = e.transactionID)
             except JournalEntry.DoesNotExist:
                 journal = None
-        except JournalEntry.MultipleObjectsReturned:
-                LOG.info("Duplicate entries for transaction:", e.transactionID)
+        except JournalEntry.MultipleObjectsReturned, err:
+                LOG.warning("Duplicate entries for transaction: %s", err)
                 journal = None
         #journal is nono for very old entries. can happen at initial import -> drop fhem.
         if journal != None:
