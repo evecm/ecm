@@ -25,7 +25,7 @@ from django.utils.translation import ugettext as tr
 
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data
-from ecm.plugins.mail.models import Mail, Recipient
+from ecm.plugins.mail.models import Mail, Recipient, MailingList
 from ecm.apps.hr.models.member import Member
 from ecm.apps.corp.models import Corporation, Alliance
 from ecm.views import DATATABLES_DEFAULTS, datatable_csv_data
@@ -50,6 +50,7 @@ def mail_list(request):
     data = {
         'corps'     : corps,
         'alliances' : alliances,
+        'maillists' : MailingList.objects.all(),
         'datatables_defaults': DATATABLES_DEFAULTS,
         'columns': COLUMNS,
         'ajax_url': '/mail/list/',
