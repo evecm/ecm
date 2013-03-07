@@ -1,0 +1,537 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-09-11 23:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: __init__.py:23
+msgid "Human Resources"
+msgstr ""
+
+#: __init__.py:24 templates/ecm/hr/members/list.html:3 views/roles/list.py:42
+#: views/titles/list.py:45
+msgid "Members"
+msgstr ""
+
+#: __init__.py:25
+msgid "History"
+msgstr ""
+
+#: __init__.py:26
+msgid "Access Changes"
+msgstr ""
+
+#: __init__.py:27 templates/ecm/hr/members/unassociated.html:3
+msgid "Unassociated Members"
+msgstr ""
+
+#: __init__.py:28
+msgid "Skills"
+msgstr ""
+
+#: __init__.py:30 templates/ecm/hr/titles/titles.html:3 views/__init__.py:42
+#: views/roles/list.py:43
+msgid "Titles"
+msgstr ""
+
+#: __init__.py:31
+msgid "Changes"
+msgstr ""
+
+#: __init__.py:33 templates/ecm/hr/roles/roles.html:3
+msgid "Roles"
+msgstr ""
+
+#: __init__.py:34 templates/ecm/hr/dashboard.html:170
+msgid "Players"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:3 templates/ecm/hr/dashboard.html.py:8
+msgid "Human Resources Dashboard"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:27
+msgid "Registered Players"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:29
+msgid "Average number of accounts by player"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:30
+msgid "account / player"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:31
+msgid "Average number of characters by player"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:32
+msgid "character / player"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:33
+msgid "Unassociated Characters"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:73
+msgid "No Roles"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:75
+msgid "Directors"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:77
+msgid "level"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:94
+msgid "Security access level distribution"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:115
+msgid "Position of members"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:141
+msgid "Avg. Playtime"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:142
+msgid "Hours"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:143 templates/ecm/hr/dashboard.html:171
+msgid "Last 30 Days"
+msgstr ""
+
+#: templates/ecm/hr/dashboard.html:169
+msgid "Online Players"
+msgstr ""
+
+#: templates/ecm/hr/members/access_changes.html:6
+#: templates/ecm/hr/members/history.html:6
+msgid "Members History"
+msgstr ""
+
+#: templates/ecm/hr/members/access_changes.html:10
+#: templates/ecm/hr/members/details.html:110
+msgid "Security Access Changes"
+msgstr ""
+
+#: templates/ecm/hr/members/access_changes.html:10
+#: templates/ecm/hr/titles/changes.html:12
+#: templates/ecm/hr/titles/titles.html:8
+msgid "last update"
+msgstr ""
+
+#: templates/ecm/hr/members/access_changes.html:17
+#: templates/ecm/hr/members/history.html:19
+#: templates/ecm/hr/members/list.html:16
+#: templates/ecm/hr/members/unassociated.html:22
+#: templates/ecm/hr/players/player_details.html:39
+#: templates/ecm/hr/players/player_list.html:13
+#: templates/ecm/hr/players/player_list.html:15
+#: templates/ecm/hr/roles/role_details.html:41
+#: templates/ecm/hr/titles/title_members.html:19
+msgid "Search"
+msgstr ""
+
+#: templates/ecm/hr/members/access_changes.html:18
+#: templates/ecm/hr/members/history.html:20
+#: templates/ecm/hr/members/list.html:17
+#: templates/ecm/hr/members/unassociated.html:23
+#: templates/ecm/hr/players/player_details.html:40
+#: templates/ecm/hr/players/player_list.html:16
+#: templates/ecm/hr/roles/role_details.html:42
+#: templates/ecm/hr/titles/title_members.html:20
+msgid "Reset"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:8
+msgid "Member Details"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:22
+msgid "Link to killboard"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:27 views/members/history.py:39
+msgid "Nickname"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:28
+msgid "Corp Date"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:29 views/__init__.py:39
+#: views/players.py:47
+msgid "Last Login"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:30
+msgid "Last Logoff"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:31
+msgid "Avg. Session Duration (30 Days)"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:32
+msgid "Logged in (last 30 Days)"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:33
+msgid "Logged in (last 7 Days)"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:34
+msgid "Base Office"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:35
+msgid "Owned by"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:36
+msgid "Latest location"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:36
+msgid "Docked"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:36
+msgid "on"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:37
+msgid "Links"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:53
+msgid "DIRECTOR"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:66
+msgid "No titles"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:74
+msgid "No extra roles"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:84
+msgid "Login"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:85
+msgid "Logout"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:86
+msgid "Duration"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:97
+msgid "No Data."
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:102
+msgid "Last Week"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:103
+msgid "Last Month"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:104
+msgid "Total"
+msgstr ""
+
+#: templates/ecm/hr/members/details.html:193
+#: templates/ecm/hr/roles/role_details.html:72
+msgid "Click to edit..."
+msgstr ""
+
+#: templates/ecm/hr/members/list.html:19
+msgid "Display"
+msgstr ""
+
+#: templates/ecm/hr/members/list.html:21
+msgid "All Ships"
+msgstr ""
+
+#: templates/ecm/hr/members/list.html:22
+msgid "Supers Only"
+msgstr ""
+
+#: templates/ecm/hr/members/list.html:25 views/__init__.py:36
+msgid "Corp"
+msgstr ""
+
+#: templates/ecm/hr/members/list.html:28
+#: templates/ecm/hr/members/skills.html:26
+msgid "All"
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:6
+#: templates/ecm/hr/members/skills.html:22
+msgid "Member Skills"
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:42
+msgid "Please select a ship, skill or module to add it to the filter."
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:43
+msgid "Start typing to search items..."
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:44
+msgid "Add item to filter"
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:45
+#: templates/ecm/hr/members/skills.html:117
+msgid "Import EFT Fitting"
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:58
+msgid "Loading..."
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:64
+msgid "Icon"
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:65
+msgid "Item"
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:66
+msgid "Level"
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:67
+msgid "Remove"
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:72
+msgid "Your filter list is empty."
+msgstr ""
+
+#: templates/ecm/hr/members/skills.html:180
+#: templates/ecm/hr/members/skills.html:284
+msgid "Error"
+msgstr ""
+
+#: templates/ecm/hr/members/unassociated.html:25
+msgid "Copy to clipboard"
+msgstr ""
+
+#: templates/ecm/hr/members/unassociated.html:64
+msgid "Copy to clipboard: Ctrl+C, Escape"
+msgstr ""
+
+#: templates/ecm/hr/players/player_details.html:6
+msgid "Player Details"
+msgstr ""
+
+#: templates/ecm/hr/players/player_details.html:13
+msgid "ECM Administrator"
+msgstr ""
+
+#: templates/ecm/hr/players/player_details.html:17
+msgid "Account created"
+msgstr ""
+
+#: templates/ecm/hr/players/player_details.html:18
+msgid "Last login in ECM"
+msgstr ""
+
+#: templates/ecm/hr/players/player_details.html:19
+msgid "Owned EVE Accounts"
+msgstr ""
+
+#: templates/ecm/hr/players/player_details.html:20
+msgid "Owned Characters"
+msgstr ""
+
+#: templates/ecm/hr/players/player_details.html:28
+#: templates/ecm/hr/roles/role_details.html:23
+#: templates/ecm/hr/roles/role_details.html:31
+msgid "None"
+msgstr ""
+
+#: templates/ecm/hr/players/player_list.html:3
+#: templates/ecm/hr/players/player_list.html:8
+msgid "Player List"
+msgstr ""
+
+#: templates/ecm/hr/roles/role_details.html:3
+msgid "Role Details"
+msgstr ""
+
+#: templates/ecm/hr/roles/role_details.html:19
+msgid "Assigned directly"
+msgstr ""
+
+#: templates/ecm/hr/roles/role_details.html:27
+msgid "Assigned through titles"
+msgstr ""
+
+#: templates/ecm/hr/roles/roles.html:13
+msgid "Role Category"
+msgstr ""
+
+#: templates/ecm/hr/titles/changes.html:6
+#: templates/ecm/hr/titles/changes.html:12
+msgid "Titles Modifications History"
+msgstr ""
+
+#: templates/ecm/hr/titles/title_details.html:6
+msgid "Title Details"
+msgstr ""
+
+#: templates/ecm/hr/titles/title_details.html:12
+msgid "last modification"
+msgstr ""
+
+#: templates/ecm/hr/titles/title_details.html:16
+msgid "Show all"
+msgstr ""
+
+#: templates/ecm/hr/titles/title_details.html:16
+msgid "members having this title"
+msgstr ""
+
+#: templates/ecm/hr/titles/title_details.html:39
+msgid "No changes"
+msgstr ""
+
+#: templates/ecm/hr/titles/title_members.html:6
+msgid "Title Members"
+msgstr ""
+
+#: templates/ecm/hr/titles/titles.html:8
+msgid "Corporation Titles"
+msgstr ""
+
+#: views/__init__.py:35 views/members/history.py:38
+msgid "Name"
+msgstr ""
+
+#: views/__init__.py:37
+msgid "Player"
+msgstr ""
+
+#: views/__init__.py:38 views/roles/list.py:41 views/titles/details.py:66
+#: views/titles/list.py:44
+msgid "Access Level"
+msgstr ""
+
+#: views/__init__.py:40
+msgid "Location"
+msgstr ""
+
+#: views/__init__.py:41
+msgid "Ship"
+msgstr ""
+
+#: views/players.py:42
+msgid "Username"
+msgstr ""
+
+#: views/players.py:43
+msgid "Admin"
+msgstr ""
+
+#: views/players.py:44
+msgid "EVE Accounts"
+msgstr ""
+
+#: views/players.py:45
+msgid "Characters"
+msgstr ""
+
+#: views/players.py:46
+msgid "Groups"
+msgstr ""
+
+#: views/players.py:48
+msgid "Joined Date"
+msgstr ""
+
+#: views/members/access.py:35 views/members/details.py:163
+#: views/titles/changes.py:48 views/titles/details.py:101
+msgid "Change"
+msgstr ""
+
+#: views/members/access.py:36
+msgid "Member"
+msgstr ""
+
+#: views/members/access.py:37 views/members/details.py:164
+msgid "Title/Role"
+msgstr ""
+
+#: views/members/access.py:38 views/members/details.py:165
+#: views/members/history.py:40
+msgid "Date"
+msgstr ""
+
+#: views/members/history.py:37
+msgid "In/Out"
+msgstr ""
+
+#: views/roles/list.py:39
+msgid "Role Name"
+msgstr ""
+
+#: views/roles/list.py:40
+msgid "Description"
+msgstr ""
+
+#: views/titles/changes.py:49
+msgid "Title"
+msgstr ""
+
+#: views/titles/changes.py:50 views/titles/details.py:64
+#: views/titles/details.py:102
+msgid "Role"
+msgstr ""
+
+#: views/titles/changes.py:51 views/titles/details.py:104
+msgid "Modification Date"
+msgstr ""
+
+#: views/titles/details.py:65 views/titles/details.py:103
+msgid "Category"
+msgstr ""
+
+#: views/titles/list.py:43
+msgid "Title Name"
+msgstr ""
+
+#: views/titles/list.py:46
+msgid "Role Count"
+msgstr ""
+
+#: views/titles/list.py:47
+msgid "Last Modified"
+msgstr ""

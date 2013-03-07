@@ -23,6 +23,7 @@ from django.conf import settings
 from django import db
 from django.db import transaction
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.db.models import Max
 
 from ecm.apps.corp.models import Corporation
@@ -119,7 +120,7 @@ def parse_one_title(titleApi, my_corp):
     except Title.DoesNotExist:
         # the title doesn't exist yet, we create it
         logger.info('Title "%s" does not exist. Creating...' % name)
-        title = Title.objects.create(corp=my_corp, titleID=titleID, titleName=name)
+        title = Title.objects.create(corp=my_corp, titleID=titleID, titleName=strip_tags(name))
     try:
         # retrieval of the group corresponding to the title from de DB
         group = Group.objects.get(id=titleID)

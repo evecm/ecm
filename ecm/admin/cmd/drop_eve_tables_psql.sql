@@ -22,8 +22,6 @@ DROP TABLE "dgmAttributeTypes" CASCADE;
 DROP TABLE "dgmEffects" CASCADE; 
 DROP TABLE "dgmTypeAttributes" CASCADE; 
 DROP TABLE "dgmTypeEffects" CASCADE; 
-DROP TABLE "eveGraphics" CASCADE; 
-DROP TABLE "eveIcons" CASCADE; 
 DROP TABLE "eveUnits" CASCADE; 
 DROP TABLE "invBlueprintTypes" CASCADE; 
 DROP TABLE "invCategories" CASCADE; 

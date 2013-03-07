@@ -174,4 +174,3 @@ def print_volume(volume, rounded=False):
     else:
         return "%s m&sup3" % print_float(volume)
 
-

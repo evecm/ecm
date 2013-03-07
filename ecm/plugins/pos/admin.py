@@ -41,4 +41,3 @@ class FuelLevelAdmin(admin.ModelAdmin):
 #------------------------------------------------------------------------------
 admin.site.register(POS, POSAdmin)
 admin.site.register(FuelLevel, FuelLevelAdmin)
-

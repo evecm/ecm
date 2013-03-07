@@ -9,11 +9,11 @@ syntax: glob
 *.egg-info
 *~
 
-.pydevproject
 .metadata
 dist
 build
-dev-instance/*
-db/*
-ecm.komodoproject
-.hgignore
+.pydevproject
+
+syntax: regexp
+^\.settings/org\.eclipse\.mylyn\.tasks\.ui\.prefs$
+

@@ -77,7 +77,8 @@ def update():
         session = MemberSession(character_id = m.characterID,
                                 session_begin = m.lastLogin,
                                 session_end = m.lastLogoff,
-                                session_seconds = (m.lastLogoff-m.lastLogin).seconds)
+                                session_seconds = (member.logoffDateTime-member.logonDateTime).seconds)
+        
         dbsession = MemberSession.objects.filter(character_id = m.characterID,
                                                  session_begin = m.lastLogin)
         if len(dbsession) == 0:
@@ -136,17 +137,29 @@ def parseOneMember(member, my_corp):
         location = CelestialObject.objects.get(itemID = member.locationID).itemName
     except CelestialObject.DoesNotExist:
         location = str(member.locationID)
-    return Member(corp          = my_corp,
-                  characterID   = member.characterID,
-                  name          = member.name,
-                  nickname      = member.title,
-                  baseID        = member.baseID,
-                  corpDate      = timezone.make_aware(member.startDateTime, timezone.utc),
-                  lastLogin     = timezone.make_aware(member.logonDateTime, timezone.utc),
-                  lastLogoff    = timezone.make_aware(member.logoffDateTime, timezone.utc),
-                  location      = location,
-                  locationID    = member.locationID,
-                  ship          = member.shipType)
+    try:
+        mem = Member.objects.get(characterID=member.characterID)
+        mem.nickname   = member.title
+        mem.baseID     = member.baseID
+        mem.corpDate   = timezone.make_aware(member.startDateTime, timezone.utc)
+        mem.lastLogin  = timezone.make_aware(member.logonDateTime, timezone.utc)
+        mem.lastLogoff = timezone.make_aware(member.logoffDateTime, timezone.utc)
+        mem.location   = location
+        mem.locationID = member.locationID
+        mem.ship       = member.shipType
+        return mem
+    except Member.DoesNotExist:
+        return Member(corp        = my_corp,
+                      characterID = member.characterID,
+                      name        = member.name,
+                      nickname    = member.title,
+                      baseID      = member.baseID,
+                      corpDate    = timezone.make_aware(member.startDateTime, timezone.utc),
+                      lastLogin   = timezone.make_aware(member.logonDateTime, timezone.utc),
+                      lastLogoff  = timezone.make_aware(member.logoffDateTime, timezone.utc),
+                      location    = location,
+                      locationID  = member.locationID,
+                      ship        = member.shipType)
 
 #------------------------------------------------------------------------------
 def getDiffs(oldMembers, newMembers, date):

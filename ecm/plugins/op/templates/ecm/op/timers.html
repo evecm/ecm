@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block headtitle %}{% trans 'POS Timers' %}{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'op/css/classes.css' %}" />
+{% endblock %}
+{% block main_content %}
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+      <button class="btn btn-small btn-info" id="show_all_button"
+              title="{% trans 'Show all timers' %}">{% trans 'Show All' %}</button>
+  </div>
+</form>
+<a class="btn btn-small" href="add"><i class="icon-plus"></i>{% trans 'Add' %}</a>
+<table class="table table-bordered" id="timer_table">
+  <thead>
+    <tr>
+    {% for head in header %}
+      <th class="top" scope="col" >{{ head }}</th>
+    {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="10" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
+    </tr>
+  </tbody>
+</table>
+System links provided by <span class="dotlan"><a
+href="http://evemaps.dotlan.net/" target="_blank">dotlan &copy;</a></span>
+{% endblock %}
+{% block post_javascripts %}
+<script type="text/javascript">
+DISPLAY_ALL=false
+
+//disable multi column sorting
+$('#history_table thead th').click(function(event) {
+    if (!$(event.target).hasClass('sorthandle')) {
+        event.shiftKey = false;
+    }
+});
+
+// dataTable setup
+$(document).ready(function() {
+    var table = $('#timer_table').dataTable( {
+        bProcessing: true,
+        bServerSide: true,
+        iDisplayLength: 25,
+        sAjaxSource: "/op/timers/data/",
+        sDom: 'rt',
+        aaSorting: [[ 9, "asc" ]],
+        aoColumns: [
+            { /* Edit/Remove*/sType: "html",    sWidth: "2%", bSortable: false},
+            { /* Location*/   sType: "html",    sWidth: "3%"},
+            { /* Type*/       sType: "html",    sWidth: "5%"},
+            { /* Cycle */     sType: "html",    sWidth: "2%"},
+            { /* Celestial */ sType: "html",    sWidth: "2%"},
+            { /* Owner */     sType: "string",  sWidth: "2%"},
+            { /* Friendly */  sType: "html",    sWidth: "1%"},
+            { /* Date */      sType: "html",    sWidth: "3%"},
+            { /* Notes */     sType: "html",    sWidth: "5%"},
+            { /* Remaining*/  sType: "string",  sWidth: "2%", sClass : "right" },
+        ], 
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            aoData.push( {
+                name: 'display_all',
+                value: DISPLAY_ALL
+            } );
+            $.getJSON( sSource, aoData, function (json) {
+                fnCallback(json)
+            } );
+        },
+        fnStateLoadParams: function (oSettings, oData) {
+            if ('display_all' in oData) {
+                DISPLAY_ALL = oData.display_all;
+                if (DISPLAY_ALL == true) {
+                    $('#show_all_button').button('toggle');
+                }
+            }
+            return true;
+        },
+    });
+    $('#show_all_button').click(function() {
+        DISPLAY = true
+    });
+});
+</script>
+{% endblock %}

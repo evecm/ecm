@@ -184,6 +184,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # MISC #
 ########
 USE_I18N = config.getboolean('misc', 'use_i18n')
+USE_L10N = config.getboolean('misc', 'use_l10n')
 USE_TZ = config.getboolean('misc', 'use_tz')
 TIME_ZONE = config.get('misc', 'time_zone') or None # use system default
 SECRET_KEY = config.get('misc', 'secret_key')

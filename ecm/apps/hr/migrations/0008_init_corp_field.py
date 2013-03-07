@@ -1,7 +1,9 @@
 from south.v2 import DataMigration
 
 class Migration(DataMigration):
-
+    depends_on = (
+        ("corp", "0007_auto__add_shareddata__add_corpgroup"),
+    )
     def forwards(self, orm):
         if orm['corp.Corporation'].objects.filter(is_my_corp=True):
             my_corp = orm['corp.Corporation'].objects.get(is_my_corp=True)

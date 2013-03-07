@@ -208,10 +208,14 @@ def get_details(pos, api_resp, sov):
         base_fuel_cons = ControlTowerResource.objects.get(control_tower=pos.type_id, resource=fuel.typeID).quantity
         corp = Corporation.objects.mine()
         # sov fuel check
-        if sov[pos.location_id]['faction'] == 0 and \
-           sov[pos.location_id]['alliance'] == corp.allianceID and \
-           base_fuel_cons > 1:
-            base_fuel_cons = int(round(base_fuel_cons * .75))
+        try:
+            if pos.location_id < 31000000:#check not in wh
+                if sov[pos.location_id]['faction'] == 0 and \
+                   sov[pos.location_id]['alliance'] == corp.alliance.allianceID and \
+                   base_fuel_cons > 1:
+                    base_fuel_cons = int(round(base_fuel_cons * .75))
+        except AttributeError:
+            pass
         fuel_level.consumption = base_fuel_cons
         fuel_level.save()
 

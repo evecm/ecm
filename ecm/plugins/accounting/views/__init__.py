@@ -40,7 +40,7 @@ PLAYER_CONTRIB_COLUMNS = [
         {'sTitle':tr('Contributions'),  'sWidth':'50%', 'sType':'html', 'sClass': 'right', },
         ]
 SYSTEM_CONTRIB_COLUMNS = [
-        {'sTitle':tr('Solar System'),         'sWidth':'50%', 'sType':'html', },
+        {'sTitle':tr('Source'),         'sWidth':'50%', 'sType':'html', },
         {'sTitle':tr('Contributions'),  'sWidth':'50%', 'sType':'html', 'sClass': 'right', },
         ]
 #------------------------------------------------------------------------------

@@ -2,8 +2,7 @@
 #
 # This file is part of EVE Corporation Management.
 #
-# EVE Corporation Management is free software: you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as published by
+# EVE Corporation Management is free software: you can redistribute it and/or # modify it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
 #
@@ -97,7 +96,10 @@ def member_contrib_data(request):
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
         params.from_date = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
-        params.to_date = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
+        to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+        if to_date.hour == 0 and to_date.minute == 0 and to_date.second == 0:
+            to_date += timedelta(1)
+        params.to_date = timezone.make_aware(to_date, timezone.get_current_timezone())
     except:
         return HttpResponseBadRequest()
 
@@ -135,7 +137,10 @@ def player_contrib_data(request):
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
         params.from_date = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
-        params.to_date = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
+        to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+        if to_date.hour == 0 and to_date.minute == 0 and to_date.second == 0:
+            to_date += timedelta(1)
+        params.to_date = timezone.make_aware(to_date, timezone.get_current_timezone())
     except:
         return HttpResponseBadRequest()
 
@@ -178,12 +183,14 @@ def system_contrib_data(request):
         params = extract_datatable_params(request)
         REQ = request.GET if request.method == 'GET' else request.POST
         params.from_date = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
-        params.to_date = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
+        to_date = datetime.strptime(REQ.get('to_date', None), DATE_PATTERN)
+        if to_date.hour == 0 and to_date.minute == 0 and to_date.second == 0:
+            to_date += timedelta(1)
+        params.to_date = timezone.make_aware(to_date, timezone.get_current_timezone())
         # In the database query below, we use a BETWEEN operator.
         # The upper bound 'to_date' will be excluded from the interval
         # because it is a datetime with time set to 00:00 (beginning of the day).
         # We add one day in order to include the last day in the interval.
-        params.to_date += timedelta(days=1)
     except:
         return HttpResponseBadRequest()
 
@@ -220,7 +227,7 @@ def total_contrib_data(request):
         REQ = request.GET if request.method == 'GET' else request.POST
         from_date = timezone.make_aware(datetime.strptime(REQ.get('from_date', None), DATE_PATTERN), timezone.get_current_timezone())
         to_date = timezone.make_aware(datetime.strptime(REQ.get('to_date', None), DATE_PATTERN), timezone.get_current_timezone())
-    except (KeyError, ValueError):
+    except (TypeError, KeyError, ValueError):
         from_date = JournalEntry.objects.all().aggregate(date=Min("date"))["date"]
         if from_date is None: from_date = datetime.utcfromtimestamp(0)
         to_date = JournalEntry.objects.all().aggregate(date=Max("date"))["date"]

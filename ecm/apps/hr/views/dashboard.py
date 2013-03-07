@@ -69,7 +69,7 @@ def dashboard(request):
     if corp is not None:
         members = corp.members.all()
     else:
-        members = Member.objects.filter(corp__null=False)
+        members = Member.objects.filter(corp__isnull=False)
     
     data = {
         'unassociatedCharacters' : members.filter(owner=None).count(),

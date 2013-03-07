@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+
+{% block headtitle %}{% trans 'Mail' %}{% endblock %}
+
+{% block main_content %}
+<div class="page-header">
+  <h1>Mail</h1>
+</div>
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    Sent From
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    Sent To
+    <input type="text" id="sent_to" class="input-medium search-query" value="" />
+    Corp
+    <select id="corp_selector">
+    	<option value="0">All</option>
+    	{%for corp in corps%}
+    	<option value="{{corp.corporationID}}">{{corp}}</option>
+    	{%endfor%}
+    </select>
+    Alliance
+    <select id="alliance_selector">
+    	<option value="0">All</option>
+    	{%for ally in alliances%}
+    	<option value="{{ally.allianceID}}">{{ally}}</option>
+    	{%endfor%}
+    </select>
+    <div class="btn-group">
+      <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
+      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
+    </div>
+  </div>
+</form>
+
+{% datatable 'mail_table' columns 
+             css_class='table table-bordered table-condensed searchable_table' 
+             defaults=datatables_defaults 
+             sAjaxSource='/mail/list/' 
+             sCookiePrefix='ecm_mail_table_' 
+             sDom='<"row-fluid"<"span5"l><"span7"C>>rt<"row-fluid"<"span5"i><"span7"p>>' 
+             fnRowCallback='mailRowCallback' 
+             fnServerParams='mailServerParams' 
+             fnStateSaveParams='mailStateSaveParams' 
+             fnStateLoadParams='mailStateLoadParams' %}
+{% endblock %}
+
+
+{% block post_javascripts %}
+<script>
+/*************************
+ * "Members" table setup *
+ *************************/
+/**
+ * Needs three global constants to be defined:
+ *      - DIRECTOR_ACCESS_LVL
+ *      - COLOR_THRESHOLDS
+ *      - AJAX_URL
+ **/
+
+function mailRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+
+    /* hide id column */
+    $('td:eq(5)', nRow).hide()
+
+    return nRow;
+}
+        
+function mailServerParams( aoData ) {
+    /* Add some extra variables to the url */
+	if ($('#sent_to button').length) {
+		aoData.push( {
+			name: 'sent_to',
+			value: $('#sent_to').val(),
+		});
+	}
+	if ($('#corp_selector').length) {
+		aoData.push({
+			name: 'corp',
+			value: $('#corp_selector').val(),
+		});
+	}
+}
+        
+function mailStateSaveParams (oSettings, oData) {
+    oData.sFilter = $("#search_text").val();
+    if ($('#ships_selector button').length) {
+    	oData.show_ships = SHOW_SHIPS;
+    }
+    if ($('#corp_selector').length) {
+    	oData.corp = $('#corp_selector').val();
+    }
+}
+
+function mailStateLoadParams (oSettings, oData) {
+    $("#search_text").val(oData.sFilter);
+    if ('show_ships' in oData) {
+    	var buttons = $('#ships_selector button');
+    	SHOW_SHIPS = oData.show_ships;
+        for (var i = 0; i < buttons.length; i++) {
+            if (buttons[i].id == SHOW_SHIPS) {
+                $(buttons[i]).addClass('active');
+            } else {
+                $(buttons[i]).removeClass('active');
+            }
+        }
+    }
+    if ('corp' in oData) {
+    	$('#corp_selector').val(oData.corp);
+    }
+    return true;
+}
+        
+$(document).ready(function () {
+    $('#ships_selector button').on('click', function (event) {
+    	event.preventDefault();
+    	SHOW_SHIPS = this.id;
+    	$('#mail_table').dataTable().fnDraw();
+	});
+    
+    $('#corp_selector').on('change', function () {
+    	$('#mail_table').dataTable().fnDraw();
+    });
+});
+
+
+</script>
+{% endblock %}

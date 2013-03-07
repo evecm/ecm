@@ -33,7 +33,7 @@ from django.utils.translation import ugettext as tr
 
 from ecm.views.decorators import check_user_access
 from ecm.utils.format import print_time_min
-from ecm.apps.hr.models import Member
+from ecm.apps.hr.models import Member, Recruit
 from ecm.apps.common.models import ColorThreshold
 from ecm.views import extract_datatable_params, datatable_ajax_data, DATATABLES_DEFAULTS
 from ecm.apps.hr.views import get_members, MEMBERS_COLUMNS
@@ -115,13 +115,41 @@ def player_details(request, player_id):
 
     eve_accounts = player.eve_accounts.all().count()
     characters = player.characters.all().count()
+    
     groups = player.groups.all().order_by('id')
+
+    reference = ''
+    try:
+        player.user
+        counter = 1
+        count = player.user.reference.all().all().count()
+        if count > 0:
+            for r in player.user.reference.all().all():
+                url = '/hr/players/%d/' % r.id
+                reference += '<a href="%s" class="player">%s</a>' % (url, r.username)
+                if counter < count:
+                    reference += ', '
+                counter += 1
+        else:
+            reference = '-'
+    except Recruit.DoesNotExist:
+        reference = '-'
+    
+    try:
+        if player.user.recruiter and player.user.recruiter.characters.all().count() > 0:
+            recruiter = player.user.recruiter.characters.all()[0].owner_permalink
+        else:
+            recruiter = '-'
+    except Recruit.DoesNotExist:
+        recruiter = '-'
 
     data = {
         'player': player,
         'eve_accounts'        : eve_accounts,
         'characters'          : characters,
         'groups'              : groups,
+        'reference'           : reference,
+        'recruiter'           : recruiter,
         'colorThresholds'     : ColorThreshold.as_json(),
         'directorAccessLvl'   : Member.DIRECTOR_ACCESS_LVL,
         'player_columns'      : MEMBERS_COLUMNS,

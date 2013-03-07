@@ -1,0 +1,482 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-09-11 23:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: __init__.py:31 templates/ecm/industry/industry_home.html:6
+msgid "Industry"
+msgstr ""
+
+#: __init__.py:32
+msgid "Orders"
+msgstr ""
+
+#: __init__.py:33
+msgid "Jobs"
+msgstr ""
+
+#: __init__.py:34 templates/ecm/industry/catalog/catalog_home.html:6
+msgid "Catalog"
+msgstr ""
+
+#: __init__.py:35
+msgid "Items"
+msgstr ""
+
+#: __init__.py:36 templates/ecm/industry/industry_home.html:42
+#: templates/ecm/industry/catalog/catalog_home.html:26
+msgid "Supplies"
+msgstr ""
+
+#: __init__.py:37
+msgid "Blueprints"
+msgstr ""
+
+#: models/catalog.py:39
+msgid "Catalog Entry"
+msgstr ""
+
+#: models/catalog.py:40
+msgid "Catalog Entries"
+msgstr ""
+
+#: models/catalog.py:210
+msgid "Surcharge Policy"
+msgstr ""
+
+#: models/catalog.py:211
+msgid "Surcharge Policies"
+msgstr ""
+
+#: models/research.py:53
+msgid "Invention Policy"
+msgstr ""
+
+#: models/research.py:54
+msgid "Invention Policies"
+msgstr ""
+
+#: templates/ecm/industry/industry_home.html:12
+msgid "Industry Management Home"
+msgstr ""
+
+#: templates/ecm/industry/industry_home.html:20
+msgid "Follow orders"
+msgstr ""
+
+#: templates/ecm/industry/industry_home.html:26
+msgid "Follow industry jobs"
+msgstr ""
+
+#: templates/ecm/industry/industry_home.html:36
+#: templates/ecm/industry/catalog/catalog_home.html:20
+msgid "Items catalog"
+msgstr ""
+
+#: templates/ecm/industry/industry_home.html:48
+#: templates/ecm/industry/catalog/catalog_home.html:32
+msgid "Owned blueprints"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:6
+#: templates/ecm/industry/jobs_list.html:21
+msgid "Jobs list"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:28
+#: templates/ecm/industry/orders_list.html:24
+#: templates/ecm/industry/catalog/blueprints.html:19
+#: templates/ecm/industry/catalog/import_blueprints.html:17
+#: templates/ecm/industry/catalog/items.html:24
+#: templates/ecm/industry/catalog/supplies.html:22
+msgid "Search"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:29
+#: templates/ecm/industry/orders_list.html:25
+#: templates/ecm/industry/catalog/blueprints.html:20
+#: templates/ecm/industry/catalog/import_blueprints.html:18
+#: templates/ecm/industry/catalog/items.html:25
+#: templates/ecm/industry/catalog/supplies.html:23
+msgid "Reset"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:33
+msgid "Activity"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:35
+#: templates/ecm/industry/jobs_list.html:42
+#: templates/ecm/industry/jobs_list.html:51
+msgid "All"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:40
+msgid "State"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:47
+msgid "Assignment"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:49
+msgid "Unassigned"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:50
+msgid "Me"
+msgstr ""
+
+#: templates/ecm/industry/jobs_list.html:72
+#: templates/ecm/industry/orders_list.html:48
+#: templates/ecm/industry/catalog/blueprints.html:42
+#: templates/ecm/industry/catalog/import_blueprints.html:52
+#: templates/ecm/industry/catalog/items.html:52
+#: templates/ecm/industry/catalog/supplies.html:52
+#: templates/ecm/industry/catalog/supply_details.html:48
+msgid "Loading data from server..."
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:6
+msgid "Order #"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:6
+msgid "Details"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:29
+#: templates/ecm/industry/catalog/import_blueprints.html:32
+#: templates/ecm/industry/catalog/item_details.html:120
+#: templates/ecm/industry/catalog/item_details.html:135
+#: templates/ecm/industry/catalog/items.html:129
+#: templates/ecm/industry/catalog/items.html:148
+msgid "Error"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:35
+msgid "Actions"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:44
+msgid "Reject Order"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:45
+msgid "Abort"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:54
+msgid "Order details"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:56
+msgid "Total Quote"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:58
+#: templates/ecm/industry/catalog/item_details.html:29
+msgid "Production Cost"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:60
+msgid "Creation Date"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:62
+msgid "Last Modified"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:64
+msgid "Responsible"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:66
+msgid "Delivered by"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:68
+msgid "Delivery Date"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:74
+msgid "Ordered Items"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:75
+msgid "Bill Of Materials"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:76
+msgid "Jobs Breakdown"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:83
+msgid "Icon"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:84
+msgid "Item"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:85
+#: templates/ecm/industry/order_details.html:106
+msgid "Quantity"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:86
+#: templates/ecm/industry/catalog/supply_details.html:20
+msgid "Price"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:96
+msgid "No items in order"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:105
+msgid "Material"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:114
+msgid "No supplies"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:128
+msgid "History"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:133
+msgid "Add comment"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:139
+msgid "Date"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:140
+msgid "Order Status"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:141
+msgid "User"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:142
+msgid "Comment"
+msgstr ""
+
+#: templates/ecm/industry/order_details.html:152
+#: templates/ecm/industry/catalog/item_details.html:67
+#: templates/ecm/industry/catalog/item_details.html:174
+msgid "None"
+msgstr ""
+
+#: templates/ecm/industry/orders_list.html:6
+msgid "Order list"
+msgstr ""
+
+#: templates/ecm/industry/orders_list.html:17
+msgid "Orders list"
+msgstr ""
+
+#: templates/ecm/industry/orders_list.html:28
+#: templates/ecm/industry/catalog/blueprints.html:22
+#: templates/ecm/industry/catalog/import_blueprints.html:20
+#: templates/ecm/industry/catalog/items.html:27
+#: templates/ecm/industry/catalog/supplies.html:25
+msgid "Display"
+msgstr ""
+
+#: templates/ecm/industry/catalog/blueprints.html:6
+#: templates/ecm/industry/catalog/blueprints.html:13
+msgid "Blueprints Catalog"
+msgstr ""
+
+#: templates/ecm/industry/catalog/blueprints.html:24
+#: templates/ecm/industry/catalog/import_blueprints.html:22
+msgid "All Blueprints"
+msgstr ""
+
+#: templates/ecm/industry/catalog/blueprints.html:25
+#: templates/ecm/industry/catalog/import_blueprints.html:23
+msgid "Only Originals"
+msgstr ""
+
+#: templates/ecm/industry/catalog/blueprints.html:26
+#: templates/ecm/industry/catalog/import_blueprints.html:24
+msgid "Only Copies"
+msgstr ""
+
+#: templates/ecm/industry/catalog/blueprints.html:28
+msgid "Import blueprints from corp assets"
+msgstr ""
+
+#: templates/ecm/industry/catalog/catalog_home.html:12
+msgid "Industry Catalog Management"
+msgstr ""
+
+#: templates/ecm/industry/catalog/import_blueprints.html:4
+msgid "BPOs in Assets"
+msgstr ""
+
+#: templates/ecm/industry/catalog/import_blueprints.html:10
+msgid "Blueprints found in corporation assets"
+msgstr ""
+
+#: templates/ecm/industry/catalog/import_blueprints.html:38
+msgid "Success"
+msgstr ""
+
+#: templates/ecm/industry/catalog/import_blueprints.html:38
+msgid "blueprints imported"
+msgstr ""
+
+#: templates/ecm/industry/catalog/import_blueprints.html:66
+msgid "Import All BPOs"
+msgstr ""
+
+#: templates/ecm/industry/catalog/import_blueprints.html:68
+msgid "Import Selected Blueprints"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:25
+msgid "Available in catalog"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:27
+msgid "Fixed Price"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:31
+msgid "Public Price"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:38
+msgid "Owned Blueprints"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:44
+msgid "ME"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:45
+msgid "PE"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:46
+msgid "Copy"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:47
+msgid "Runs"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:54
+msgid "Blueprint details"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:62
+msgid "Delete blueprint"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:74
+msgid "Add New Blueprint"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:99
+#: templates/ecm/industry/catalog/items.html:98
+msgid "Failed to change availability!"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:107
+#: templates/ecm/industry/catalog/item_details.html:148
+#: templates/ecm/industry/catalog/item_details.html:154
+#: templates/ecm/industry/catalog/item_details.html:168
+#: templates/ecm/industry/catalog/items.html:107
+msgid "Click to edit"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:162
+msgid "Failed to change copy"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:178
+msgid "Are you sure you want to delete this blueprint"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:188
+msgid "Failed to delete blueprint"
+msgstr ""
+
+#: templates/ecm/industry/catalog/item_details.html:213
+msgid "Failed to add blueprint."
+msgstr ""
+
+#: templates/ecm/industry/catalog/items.html:7
+#: templates/ecm/industry/catalog/items.html:18
+msgid "Items Catalog"
+msgstr ""
+
+#: templates/ecm/industry/catalog/items.html:30
+msgid "All Items"
+msgstr ""
+
+#: templates/ecm/industry/catalog/items.html:32
+msgid "Available Items"
+msgstr ""
+
+#: templates/ecm/industry/catalog/items.html:118
+#: templates/ecm/industry/catalog/items.html:137
+msgid "Click to update"
+msgstr ""
+
+#: templates/ecm/industry/catalog/supplies.html:6
+#: templates/ecm/industry/catalog/supplies.html:16
+msgid "Supplies Catalog"
+msgstr ""
+
+#: templates/ecm/industry/catalog/supplies.html:27
+msgid "All Supplies"
+msgstr ""
+
+#: templates/ecm/industry/catalog/supplies.html:28
+msgid "Only Manual-Update"
+msgstr ""
+
+#: templates/ecm/industry/catalog/supplies.html:29
+msgid "Only Auto-Update"
+msgstr ""
+
+#: templates/ecm/industry/catalog/supplies.html:32
+msgid "Filter"
+msgstr ""
+
+#: templates/ecm/industry/catalog/supplies.html:74
+msgid "Update price"
+msgstr ""
+
+#: templates/ecm/industry/catalog/supply_details.html:22
+msgid "Auto-Update"
+msgstr ""
+
+#: templates/ecm/industry/catalog/supply_details.html:24
+msgid "Supply Source"
+msgstr ""
+
+#: templates/ecm/industry/catalog/supply_details.html:35
+msgid "Price History"
+msgstr ""

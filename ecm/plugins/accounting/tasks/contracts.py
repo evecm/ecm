@@ -21,11 +21,10 @@ __author__ = "tash"
 
 import logging
 
-import eveapi
-
 from django.db import transaction
 from django.utils import timezone
 
+from ecm.apps.common import eveapi
 from ecm.apps.common import api
 from ecm.apps.corp.models import Corporation
 from ecm.apps.common.models import UpdateDate
@@ -59,7 +58,10 @@ def process_contracts(contract_list, connection):
     """
     Process all contracts from the API
     """
-    alliance_id = Corporation.objects.mine().allianceID
+    try:
+        alliance_id = Corporation.objects.mine().alliance.allianceID
+    except AttributeError:
+        alliance_id = 0
     LOG.debug("Fetching contracts from DB...")    
     # Get old contracts
     old_contracts = {}

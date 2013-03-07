@@ -156,7 +156,7 @@ class Contract(models.Model):
     
     class Meta:
         verbose_name ='Contract'
-        ordering = ['contractID']
+        ordering = ['dateIssued']
 
     def __hash__(self):
         return self.contractID

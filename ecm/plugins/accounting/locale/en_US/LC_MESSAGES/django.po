@@ -1,0 +1,390 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-09-11 23:36+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: __init__.py:29
+msgid "Accounting"
+msgstr ""
+
+#: __init__.py:30 templates/ecm/accounting/wallet_journal.html:12
+#: templates/ecm/accounting/wallet_journal.html:18
+msgid "Wallets Journal"
+msgstr ""
+
+#: __init__.py:31
+msgid "Wallets Transactions"
+msgstr ""
+
+#: __init__.py:32
+msgid "Tax Contributions"
+msgstr ""
+
+#: __init__.py:33 templates/ecm/accounting/contracts.html:11
+msgid "Contracts"
+msgstr ""
+
+#: __init__.py:34 templates/ecm/accounting/marketorders.html:12
+msgid "Market Orders"
+msgstr ""
+
+#: __init__.py:35 templates/ecm/accounting/report.html:3
+msgid "Report"
+msgstr ""
+
+#: models.py:69
+msgid "Journal Entry"
+msgstr ""
+
+#: models.py:70
+msgid "Journal Entries"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:8
+#: templates/ecm/accounting/contract_details.html:36
+msgid "&lt;No Title&gt;"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:24
+msgid "Contract Details"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:35
+msgid "Title"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:37
+#: templates/ecm/accounting/contracts.html:28
+#: templates/ecm/accounting/marketorders.html:35
+#: templates/ecm/accounting/wallet_transactions.html:87
+#: templates/ecm/accounting/wallet_transactions.html:104
+msgid "Type"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:39
+#: templates/ecm/accounting/contracts.html:34
+msgid "Status"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:41
+msgid "Availability"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:43
+msgid "Date Issued"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:45
+msgid "Date Expired"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:47
+msgid "Date Accepted"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:49
+msgid "Date Completed"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:51
+msgid "Station (start)"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:53
+msgid "Station (end)"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:59
+msgid "Time left"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:60
+msgid "days"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:61
+#: templates/ecm/accounting/wallet_transactions.html:88
+#: templates/ecm/accounting/wallet_transactions.html:105
+msgid "Price"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:63
+msgid "Reward"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:65
+msgid "Collateral"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:67
+msgid "Buyout"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:69
+msgid "Volume"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:71
+msgid "Issuer"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:73
+msgid "Assignee"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:75
+msgid "Acceptor"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:81
+msgid "Contract Items"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:86
+#: templates/ecm/accounting/contracts.html:24
+#: templates/ecm/accounting/marketorders.html:25
+#: templates/ecm/accounting/wallet_journal.html:57
+#: templates/ecm/accounting/wallet_transactions.html:57
+msgid "Search"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:87
+#: templates/ecm/accounting/contracts.html:25
+#: templates/ecm/accounting/marketorders.html:26
+#: templates/ecm/accounting/wallet_journal.html:58
+#: templates/ecm/accounting/wallet_transactions.html:58
+msgid "Reset"
+msgstr ""
+
+#: templates/ecm/accounting/contract_details.html:89
+msgid "Group"
+msgstr ""
+
+#: templates/ecm/accounting/contracts.html:50
+#: templates/ecm/accounting/marketorders.html:51
+#: templates/ecm/accounting/wallet_journal.html:100
+#: templates/ecm/accounting/wallet_transactions.html:98
+#: templates/ecm/accounting/wallets.html:27
+msgid "Loading data from server..."
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:6
+#: templates/ecm/accounting/contrib.html:19
+msgid "Contributions to Corp tax"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:20
+#: templates/ecm/accounting/wallet_journal.html:18
+#: templates/ecm/accounting/wallet_transactions.html:18
+#: templates/ecm/accounting/wallets.html:16
+msgid "last update"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:26
+#: templates/ecm/accounting/wallet_journal.html:39
+#: templates/ecm/accounting/wallet_transactions.html:39
+msgid "Period"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:28
+#: templates/ecm/accounting/wallet_journal.html:41
+#: templates/ecm/accounting/wallet_transactions.html:41
+msgid "All Time"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:29
+#: templates/ecm/accounting/wallet_journal.html:42
+#: templates/ecm/accounting/wallet_transactions.html:42
+msgid "This Month"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:30
+#: templates/ecm/accounting/wallet_journal.html:43
+#: templates/ecm/accounting/wallet_transactions.html:43
+msgid "Last Week"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:31
+#: templates/ecm/accounting/wallet_journal.html:44
+#: templates/ecm/accounting/wallet_transactions.html:44
+msgid "Last Month"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:32
+#: templates/ecm/accounting/wallet_journal.html:45
+#: templates/ecm/accounting/wallet_transactions.html:45
+msgid "Last Year"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:34
+#: templates/ecm/accounting/wallet_journal.html:49
+#: templates/ecm/accounting/wallet_journal.html:91
+#: templates/ecm/accounting/wallet_journal.html:108
+#: templates/ecm/accounting/wallet_transactions.html:49 views/__init__.py:27
+msgid "From"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:36
+#: templates/ecm/accounting/wallet_journal.html:53
+#: templates/ecm/accounting/wallet_journal.html:92
+#: templates/ecm/accounting/wallet_journal.html:109
+#: templates/ecm/accounting/wallet_transactions.html:53 views/__init__.py:28
+msgid "To"
+msgstr ""
+
+#: templates/ecm/accounting/contrib.html:38
+msgid "Refresh"
+msgstr ""
+
+#: templates/ecm/accounting/marketorders.html:29
+msgid "State"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:12
+msgid "Summary"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:13
+msgid "Income"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:14
+#: templates/ecm/accounting/report.html:235
+msgid "Expenditure"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:32
+msgid "Income total"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:36
+msgid "Expenditure total"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:42
+msgid "Net cash inflow"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:70
+#: templates/ecm/accounting/report.html:100
+#: templates/ecm/accounting/report.html:131
+msgid "Total"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:125
+msgid "No data"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:187
+msgid "Income over time (w/o Corporation Account Withdrawal)"
+msgstr ""
+
+#: templates/ecm/accounting/report.html:212
+msgid "Expenditures over time (w/o Corporation Account Withdrawal"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_journal.html:27
+#: templates/ecm/accounting/wallet_journal.html:93
+#: templates/ecm/accounting/wallet_journal.html:110
+#: templates/ecm/accounting/wallet_transactions.html:27
+#: templates/ecm/accounting/wallet_transactions.html:90
+#: templates/ecm/accounting/wallet_transactions.html:107 views/__init__.py:29
+msgid "Amount"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_journal.html:64
+#: templates/ecm/accounting/wallet_journal.html:89
+#: templates/ecm/accounting/wallet_journal.html:106
+#: templates/ecm/accounting/wallet_transactions.html:64
+#: templates/ecm/accounting/wallet_transactions.html:93
+#: templates/ecm/accounting/wallet_transactions.html:110
+#: templates/ecm/accounting/wallets.html:21
+#: templates/ecm/accounting/wallets.html:32 views/__init__.py:25
+msgid "Wallet"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_journal.html:70
+#: templates/ecm/accounting/wallet_journal.html:90
+#: templates/ecm/accounting/wallet_journal.html:107
+#: templates/ecm/accounting/wallet_transactions.html:70 views/__init__.py:26
+msgid "Operation"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_journal.html:88
+#: templates/ecm/accounting/wallet_journal.html:105
+#: templates/ecm/accounting/wallet_transactions.html:86
+#: templates/ecm/accounting/wallet_transactions.html:103 views/__init__.py:24
+msgid "Date"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_journal.html:94
+#: templates/ecm/accounting/wallet_journal.html:111
+#: templates/ecm/accounting/wallet_transactions.html:91
+#: templates/ecm/accounting/wallet_transactions.html:108
+#: templates/ecm/accounting/wallets.html:22
+#: templates/ecm/accounting/wallets.html:33 views/__init__.py:30
+msgid "Balance"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_journal.html:95
+#: templates/ecm/accounting/wallet_journal.html:112 views/__init__.py:31
+msgid "Reason"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_transactions.html:12
+#: templates/ecm/accounting/wallet_transactions.html:18
+msgid "Wallet Transactions"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_transactions.html:76
+msgid "For"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_transactions.html:89
+#: templates/ecm/accounting/wallet_transactions.html:106
+msgid "Quantity"
+msgstr ""
+
+#: templates/ecm/accounting/wallet_transactions.html:92
+#: templates/ecm/accounting/wallet_transactions.html:109
+msgid "Location"
+msgstr ""
+
+#: templates/ecm/accounting/wallets.html:6
+#: templates/ecm/accounting/wallets.html:16
+msgid "Corporation Wallets"
+msgstr ""
+
+#: views/__init__.py:35
+msgid "Member"
+msgstr ""
+
+#: views/__init__.py:36 views/__init__.py:40 views/__init__.py:44
+msgid "Contributions"
+msgstr ""
+
+#: views/__init__.py:39
+msgid "Player"
+msgstr ""
+
+#: views/__init__.py:43
+msgid "Solar System"
+msgstr ""
+
+#: views/contrib.py:153
+msgid "not associated"
+msgstr ""

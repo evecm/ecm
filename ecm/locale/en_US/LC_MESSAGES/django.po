@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-30 03:28+0200\n"
+"POT-Creation-Date: 2012-09-11 23:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-#: templates/ecm/auth/account.html:64 views/account/forms.py:281
+#: templates/ecm/auth/account.html:64 views/account/forms.py:257
 msgid "External Username"
 msgstr ""
 
@@ -292,7 +292,7 @@ msgstr ""
 msgid "from this server."
 msgstr ""
 
-#: templates/ecm/auth/login.html:3 templates/ecm/auth/login.html.py:26
+#: templates/ecm/auth/login.html:3 templates/ecm/auth/login.html.py:27
 msgid "Login"
 msgstr ""
 
@@ -308,16 +308,16 @@ msgstr ""
 msgid "password"
 msgstr ""
 
-#: templates/ecm/auth/login.html:23
+#: templates/ecm/auth/login.html:24
 msgid "Remember Me"
 msgstr ""
 
-#: templates/ecm/auth/login.html:31
+#: templates/ecm/auth/login.html:32
 msgid ""
 "Not a member yet, you can <a href=\"/account/create/\">create an account</a>."
 msgstr ""
 
-#: templates/ecm/auth/login.html:34
+#: templates/ecm/auth/login.html:35
 msgid ""
 "Forgot your password? Click <a href=\"/account/passwordreset/\">here to "
 "reset it</a>."
@@ -475,12 +475,12 @@ msgstr ""
 msgid "Save as CSV"
 msgstr ""
 
-#: views/common.py:104 views/account/forms.py:199 views/account/forms.py:245
+#: views/common.py:104 views/account/forms.py:199 views/account/forms.py:232
 msgid "API Key ID"
 msgstr ""
 
 #: views/common.py:105 views/account/forms.py:54 views/account/forms.py:200
-#: views/account/forms.py:246
+#: views/account/forms.py:233
 msgid "Verification Code"
 msgstr ""
 
@@ -567,10 +567,6 @@ msgstr ""
 msgid "This API Key is already registered."
 msgstr ""
 
-#: views/account/forms.py:230 views/account/forms.py:268
-msgid "A character from this account is already registered by another player"
-msgstr ""
-
-#: views/account/forms.py:282
+#: views/account/forms.py:258
 msgid "External Password"
 msgstr ""

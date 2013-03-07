@@ -385,21 +385,21 @@ class Order(models.Model):
 
     def originator_permalink(self):
         if self.originator is not None:
-            url = '/hr/player/%d/' % self.originator.id
+            url = '/hr/players/%d/' % self.originator.id
             return '<a href="%s" class="player">%s</a>' % (url, self.originator.username)
         else:
             return '(none)'
 
     def responsible_permalink(self):
         if self.responsible is not None:
-            url = '/hr/player/%d/' % self.responsible.id
+            url = '/hr/players/%d/' % self.responsible.id
             return '<a href="%s" class="player">%s</a>' % (url, self.responsible.username)
         else:
             return '(none)'
 
     def delivery_boy_permalink(self):
         if self.delivery_boy is not None:
-            url = '/hr/player/%d/' % self.delivery_boy.id
+            url = '/hr/players/%d/' % self.delivery_boy.id
             return '<a href="%s" class="player">%s</a>' % (url, self.delivery_boy.username)
         else:
             return '(none)'
@@ -427,7 +427,7 @@ class OrderLog(models.Model):
 
     def user_permalink(self):
         try:
-            url = '/player/%d/' % self.user.id
+            url = '/players/%d/' % self.user.id
             return '<a href="%s" class="player">%s</a>' % (url, self.user.username)
         except:
             return '(None)'

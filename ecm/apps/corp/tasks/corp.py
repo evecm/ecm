@@ -22,15 +22,14 @@ __author__ = "diabeteman"
 import re
 import logging
 
-import eveapi
-
 from django.utils import timezone
 from django.conf import settings
 from django.db import transaction
 
+from ecm.apps.common import eveapi
 from ecm.utils import crypto
 from ecm.apps.common.models import UpdateDate
-from ecm.apps.corp.models import Corporation, Hangar, Wallet, CorpHangar, CorpWallet
+from ecm.apps.corp.models import Corporation, Hangar, Wallet, CorpHangar, CorpWallet, Alliance
 from ecm.apps.common import api
 
 LOG = logging.getLogger(__name__)
@@ -54,7 +53,8 @@ def update():
     corp = update_corp_info(corpApi, currentTime)
 
     LOG.debug("name: %s [%s]", corp.corporationName, corp.ticker)
-    LOG.debug("alliance: %s <%s>", corp.allianceName, corp.allianceTicker)
+    if corp.alliance: LOG.debug("alliance: %s <%s>", corp.alliance.name, corp.alliance.shortName)
+    else: LOG.debug("alliance: None")
     LOG.debug("CEO: %s", corpApi.ceoName)
     LOG.debug("tax rate: %d%%", corp.taxRate)
     LOG.debug("member limit: %d", corp.memberLimit)
@@ -69,24 +69,25 @@ def update():
 def update_corp_info(corpApi, currentTime):
     try:
         try:
-            allianceName = corpApi.allianceName
-            allianceID = corpApi.allianceID
-            allianceTicker = None
-            alliancesApi = api.connect().eve.AllianceList()
-            for a in alliancesApi.alliances:
-                if a.allianceID == allianceID:
-                    allianceTicker = a.shortName
-                    break
+            try:
+                alliance = Alliance.objects.get(allianceID = corpApi.allianceID)
+            except Alliance.DoesNotExist:
+                LOG.info("Adding new Alliance: "+ corpApi.allianceName)
+                alliance = Alliance()
+                alliance.allianceID = corpApi.allianceID
+                alliance.name = corpApi.allianceName
+                alliancesApi = api.connect().eve.AllianceList()
+                for a in alliancesApi.alliances:
+                    if a.allianceID == corpApi.allianceID:
+                        alliance.shortName = a.shortName
+                        alliance.save()
+                        break
         except eveapi.Error:
             LOG.exception("Failed to fetch AllianceList.xml.aspx from EVE API server")
             corp = Corporation.objects.mine()
-            allianceID = corp.allianceID
-            allianceName = corp.allianceName
-            allianceTicker = corp.allianceTicker
+            alliance = None
     except:
-        allianceName = None
-        allianceID = None
-        allianceTicker = None
+        alliance = None
 
     description = fix_description(corpApi.description)
 
@@ -104,9 +105,7 @@ def update_corp_info(corpApi, currentTime):
         corp.ceoName         = corpApi.ceoName
         corp.stationID       = corpApi.stationID
         corp.stationName     = corpApi.stationName
-        corp.allianceID      = allianceID
-        corp.allianceName    = allianceName
-        corp.allianceTicker  = allianceTicker
+        corp.alliance        = alliance
         corp.description     = description
         corp.taxRate         = corpApi.taxRate
         corp.memberLimit     = corpApi.memberLimit
@@ -122,9 +121,7 @@ def update_corp_info(corpApi, currentTime):
                            stationID       = corpApi.stationID,
                            stationName     = corpApi.stationName,
                            description     = description,
-                           allianceID      = allianceID,
-                           allianceName    = allianceName,
-                           allianceTicker  = allianceTicker,
+                           alliance        = alliance,
                            taxRate         = corpApi.taxRate,
                            memberLimit     = corpApi.memberLimit
                            )

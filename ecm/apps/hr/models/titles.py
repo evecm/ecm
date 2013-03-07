@@ -59,7 +59,10 @@ class Title(models.Model):
         return '<a href="%s" class="title">%s</a>' % (self.url, self.titleName)
 
     def __eq__(self, other):
-        return self.titleID == other.titleID
+        if other:
+            return self.titleID == other.titleID
+        else:
+            return False 
 
     def __hash__(self):
         return self.titleID

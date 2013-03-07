@@ -21,8 +21,6 @@ __author__ = "diabeteman"
 import urllib2
 import urllib
 
-import eveapi
-
 from django.conf import settings
 from django import forms
 from django.contrib.auth.models import User, AnonymousUser
@@ -34,6 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import CaptchaField
 
+from ecm.apps.common import eveapi
 from ecm.apps.common import api
 from ecm.apps.common.models import UserAPIKey, UserBinding
 from ecm.views.account.fields import PasswordField

@@ -252,3 +252,12 @@ class Skill(models.Model):
     def name(self):
         return self.eve_type.typeName
     
+#------------------------------------------------------------------------------
+class Recruit(models.Model):
+
+    class Meta:
+        app_label = 'hr'
+
+    user = models.OneToOneField(User, related_name='user')
+    reference = models.ManyToManyField(User, null=True, blank=True, related_name='reference')
+    recruiter = models.ForeignKey(User, null=True, blank=True, related_name='recruiter')

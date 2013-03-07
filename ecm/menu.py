@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2012 Robin Jarry
+#asdf Copyright (c) 2010-2012 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
 #

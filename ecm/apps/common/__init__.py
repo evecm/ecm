@@ -30,9 +30,11 @@ TASKS = [
         'frequency_units' : 86400, # day
     },
 ]
+
 URL_PERMISSIONS = [
     r'^/editmotd/$',
 ]
+
 SETTINGS = {
     'common_api_keyID': 0,
     'common_api_vCode': '',

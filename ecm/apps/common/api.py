@@ -18,13 +18,15 @@
 __date__ = '2012 5 15'
 __author__ = 'diabeteman'
 
-import eveapi
-
 from django.core.exceptions import ValidationError
+from django.db import transaction
 
+from ecm.apps.common import eveapi
 from ecm.apps.common.models import Setting, APICall
-from ecm.apps.corp.models import Corporation
+from ecm.apps.corp.models import Corporation, Alliance
+from ecm.apps.hr.models.member import Member
 from ecm.lib import eveapi_patch
+import re
 
 eveapi_patch.patch_autocast()
 
@@ -108,6 +110,73 @@ def validate_director_api_key(keyID, vCode):
     keyCharIDs = [ char.characterID for char in response.key.characters ]
     return keyCharIDs[0]
 
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def pull_character(charid):
+    api_conn = eveapi.EVEAPIConnection()
+    char = api_conn.eve.CharacterInfo(characterID = charid)
+    try:
+        corp = Corporation.objects.get(corporationID = char.corporationID)
+    except Corporation.DoesNotExist:
+        corp = pull_corporation(char.corporationID)
+    mem = Member()
+    mem.characterID = char.characterID
+    mem.name = char.characterName
+    mem.race = char.race
+    mem.bloodline = char.bloodline
+    mem.corp = corp
+    mem.corpDate = char.corporationDate
+    mem.securityStatus = char.securityStatus
+    mem.save()
+    return mem
+
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def pull_corporation(corporationID):
+    #Note will return an alliance if no corp found
+    try:
+        corp = Corporation.objects.get(corporationID = corporationID)
+    except Corporation.DoesNotExist:
+        api_conn = eveapi.EVEAPIConnection()
+        try:
+            corp_api = api_conn.corp.CorporationSheet(corporationID = corporationID)
+        except eveapi.ServerError:
+            return pull_alliance(corporationID)
+        try:
+            alliance = Alliance.objects.get(allianceID = corp_api.allianceID)
+        except Alliance.DoesNotExist:
+            alliance = pull_alliance(corp_api.allianceID)
+        corp = Corporation()
+        corp.alliance = alliance
+        corp.corporationID = corp_api.corporationID
+        corp.corporationName = corp_api.corporationName
+        corp.ticker = corp_api.ticker
+        corp.ceoID = corp_api.ceoID
+        corp.ceoName = corp_api.ceoName
+        corp.locationID = corp_api.stationID
+        corp.location = corp_api.stationName
+        corp.description = fix_description(corp_api.description)
+        corp.taxRate = corp_api.taxRate
+        corp.save()
+    return corp
+
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def pull_alliance(allianceID):
+    try:
+        alliance = Alliance.objects.get(allianceID = allianceID)
+    except Alliance.DoesNotExist:
+        api_conn = eveapi.EVEAPIConnection()
+        alliancesApi = api_conn.eve.AllianceList()
+        alliance = Alliance()
+        alliance.allianceID = allianceID
+        for a in alliancesApi.alliances:
+            if a.allianceID == allianceID:
+                alliance.shortName = a.shortName
+                alliance.name = a.name
+                alliance.save()
+                break
+    return alliance
 
 #------------------------------------------------------------------------------
 class Character:
@@ -138,3 +207,15 @@ def get_account_characters(user_api):
         characters.append(c)
     return characters
 
+#------------------------------------------------------------------------------
+FONT_TAG_REGEXP = re.compile('</?font.*?>', re.DOTALL)
+SPAN_TAG_REGEXP = re.compile('</?span.*?>', re.DOTALL)
+def fix_description(description):
+    # an empty corp description string ('<description />' )will throw a TypeError
+    # so let's catch it
+    try:
+        desc, _ = FONT_TAG_REGEXP.subn("", description)
+        desc, _ = SPAN_TAG_REGEXP.subn("", desc)
+        return desc.strip()
+    except TypeError:
+        return '-'
