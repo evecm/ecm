@@ -24,12 +24,17 @@ class Migration(SchemaMigration):
         ))
         db.create_unique('hr_recruit_reference', ['recruit_id', 'user_id'])
 
-
         # Changing field 'TitleCompoDiff.id'
-        db.alter_column('hr_titlecompodiff', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
+        if 'postgres' in db.backend_name.lower():
+            db.execute("ALTER TABLE hr_titlecompodiff ALTER COLUMN id TYPE integer;")
+        else:
+            db.alter_column('hr_titlecompodiff', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
 
         # Changing field 'TitleMemberDiff.id'
-        db.alter_column('hr_titlememberdiff', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
+        if 'postgres' in db.backend_name.lower():
+            db.execute("ALTER TABLE hr_titlememberdiff ALTER COLUMN id TYPE integer;")
+        else:
+            db.alter_column('hr_titlememberdiff', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
 
     def backwards(self, orm):
         # Deleting model 'Recruit'
@@ -38,12 +43,17 @@ class Migration(SchemaMigration):
         # Removing M2M table for field reference on 'Recruit'
         db.delete_table('hr_recruit_reference')
 
-
         # Changing field 'TitleCompoDiff.id'
-        db.alter_column('hr_titlecompodiff', 'id', self.gf('ecm.lib.bigintpatch.BigAutoField')(primary_key=True))
+        if 'postgres' in db.backend_name.lower():
+            db.execute("ALTER TABLE hr_titlecompodiff ALTER COLUMN id TYPE bigint;")
+        else:
+            db.alter_column('hr_titlecompodiff', 'id', self.gf('ecm.lib.bigintpatch.BigAutoField')(primary_key=True))
 
         # Changing field 'TitleMemberDiff.id'
-        db.alter_column('hr_titlememberdiff', 'id', self.gf('ecm.lib.bigintpatch.BigAutoField')(primary_key=True))
+        if 'postgres' in db.backend_name.lower():
+            db.execute("ALTER TABLE hr_titlememberdiff ALTER COLUMN id TYPE bigint;")
+        else:
+            db.alter_column('hr_titlememberdiff', 'id', self.gf('ecm.lib.bigintpatch.BigAutoField')(primary_key=True))
 
     models = {
         'auth.group': {
