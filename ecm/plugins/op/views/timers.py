@@ -20,36 +20,33 @@ __author__ = "tash"
 
 from datetime import datetime
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
+import django.utils.simplejson as json
 
 from django.db.models import Q
-from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedirect,\
+    Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
-from django.utils import translation
 from django.utils.timezone import utc
-from django.utils.translation import ugettext_lazy as _, get_language
+from django.utils.translation import ugettext_lazy as _
 from ecm.plugins.op.models import Timer
 from ecm.plugins.op.forms import TimerForm
-from ecm.apps.eve.models import Type, CelestialObject
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params
 
 # Table header
-header = [  '',
-            _('Solarsystem'),
-            _('Type'),
-            _('Cycle'),
-            _('Celestial'),
-            _('Owner'),
-            _('Friendly'),
-            _('Date'),
-            _('Notes'),
-            _('Time Remaining')]
+header = [  
+    '',
+    _('Solarsystem'),
+    _('Type'),
+    _('Cycle'),
+    _('Celestial'),
+    _('Owner'),
+    _('Friendly'),
+    _('Date'),
+    _('Notes'),
+    _('Time Remaining')
+]
 
 # Table ordering map
 ordering_map = {

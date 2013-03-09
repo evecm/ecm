@@ -1,3 +1,4 @@
+#@PydevCodeAnalysisIgnore
 from south.v2 import DataMigration
 
 class Migration(DataMigration):
