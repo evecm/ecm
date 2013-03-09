@@ -59,6 +59,9 @@ if not config.read(CONFIG_FILES):
 EXTERNAL_HOST_NAME = config.get('misc', 'external_host_name')
 USE_HTTPS = config.getboolean('misc', 'use_https')
 
+EVEAPI_STUB_ENABLED = config.getboolean('misc', 'eveapi_stub_enabled')
+EVEAPI_STUB_FILES_ROOT = config.get('misc', 'eveapi_stub_files_root')
+
 ###############################################################################
 ###################
 # DJANGO SETTINGS #
