@@ -28,25 +28,22 @@ from ecm.apps.scheduler.models import GarbageCollector
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
 def collect_garbage():
-    count = 0
     for collector in GarbageCollector.objects.all():
-        LOG.info("collecting old records for model: %s" % collector.db_table)
-        model = collector.get_model()
-        count = model.objects.all().count()
+        collect_one(collector)
 
-        if count > collector.min_entries_threshold:
-            entries = model.objects.filter(date__lt=collector.get_expiration_date())
-            for entry in entries:
-                entry.delete()
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def collect_one(collector):
+    LOG.info("collecting old records for model: %s" % collector.db_table)
+    model = collector.get_model()
 
-            deleted_entries = entries.count()
-        else:
-            deleted_entries = 0
+    if collector.model_has_date_field(model) and model.objects.all().count() > collector.min_entries_threshold:
+        filter_args = { model.DATE_FIELD + '__lt': collector.get_expiration_date() }
+        entries = model.objects.filter(**filter_args)
+        deleted_entries = entries.count()
+        entries.delete()
+    else:
+        deleted_entries = 0
 
-        LOG.info("%d entries will be deleted" % deleted_entries)
-        count += deleted_entries
-
-    LOG.info("%d old records deleted" % count)
-
+    LOG.info("%d entries deleted" % deleted_entries)

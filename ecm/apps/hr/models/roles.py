@@ -204,6 +204,8 @@ class RoleMemberDiff(models.Model):
     # date of change
     date = models.DateTimeField(db_index=True, auto_now_add=True)
 
+    DATE_FIELD = 'date' # used for garbage collection
+
     @property
     def access_permalink(self):
         return self.role.permalink

@@ -64,6 +64,8 @@ class JournalEntry(models.Model):
     balance    = models.FloatField() # balance of the account after the transaction
     reason     = models.CharField(max_length=512) # comment
 
+    DATE_FIELD = 'date' # used for garbage collection
+
     class Meta:
         get_latest_by = 'refID'
         verbose_name = _("Journal Entry")
@@ -101,6 +103,8 @@ class TransactionEntry(models.Model):
     transactionFor       = models.SmallIntegerField (default = 0, choices=FOR.items())
     journal              = models.ForeignKey        (JournalEntry, related_name = 'JournalEntry')
     wallet               = models.ForeignKey        (Wallet, db_index=True)
+    
+    DATE_FIELD = 'date' # used for garbage collection
     
     @property
     def typeName(self):
@@ -193,6 +197,8 @@ class Contract(models.Model):
     buyout         = models.FloatField() # Buyout price (for Auctions only)
     volume         = models.FloatField() # Volume of items in the contract (courier)
     
+    DATE_FIELD = 'dateIssued' # used for garbage collection
+    
     @property
     def permalink(self):
         url = '/accounting/contracts/%d/' % self.contractID
@@ -276,6 +282,8 @@ class MarketOrder(models.Model):
     price        = models.FloatField()
     bid          = models.BooleanField(default=False)
     issued       = models.DateTimeField()
+
+    DATE_FIELD = 'issued' # used for garbage collection
 
     @property
     def get_type(self):

@@ -105,6 +105,8 @@ class AssetDiff(models.Model):
     flag = models.BigIntegerField() # used to determine the state or path of the asset
     volume = models.BigIntegerField(default=0)
     
+    DATE_FIELD = 'date' # used for garbage collection
+    
     def __unicode__(self):
         try:
             return u'%s x%d' % (self.eve_type.typeName, self.quantity)
