@@ -40,7 +40,6 @@ dependencies = [
     'pytz',
     'PIL',
     'pycrypto',
-    'eveapi',
 ]
 
 setup(
