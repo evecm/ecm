@@ -5,7 +5,11 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
-
+    
+    depends_on = (
+        ("corp", "0005_auto__add_corphangar__add_unique_corphangar_corp_hangar__add_corpwalle"),
+    )
+    
     def forwards(self, orm):
 
         try:
