@@ -2,6 +2,7 @@ from django.db.backends import util, BaseDatabaseOperations
 from django.db.backends.sqlite3.base import DatabaseOperations
 from django.db.models import fields
 from django.db.models.fields.related import ForeignKey
+from south.modelsinspector import add_introspection_rules
 try:
     from django.db.backends.postgresql_psycopg2.creation import DatabaseCreation as PostgresDBCreation
 except:
@@ -26,7 +27,6 @@ class BigAutoField(fields.AutoField):
     def get_internal_type(self):
         return "BigAutoField"
     
-from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], [r'^ecm\.lib\.bigintpatch\.BigAutoField'])
 
 try:

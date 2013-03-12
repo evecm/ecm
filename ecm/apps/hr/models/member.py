@@ -181,6 +181,8 @@ class MemberDiff(models.Model):
     # date of change
     date = models.DateTimeField(db_index=True, auto_now_add=True)
 
+    DATE_FIELD = 'date' # used for garbage collection
+
     @property
     def url(self):
         return '/%s/members/%d/' % (app_prefix, self.member_id)
@@ -203,9 +205,6 @@ class MemberDiff(models.Model):
 
 #------------------------------------------------------------------------------
 class MemberSession(models.Model):
-    """
-    Represents the arrival or departure of a member of the corporation
-    """
     class Meta:
         app_label = 'hr'
 
@@ -218,16 +217,8 @@ class MemberSession(models.Model):
     session_end = models.DateTimeField()
     session_seconds = models.BigIntegerField(default=0)
     
-    """
-    @property
-    def url(self):
-        return '/%s/members/%d/' % (app_prefix, self.member_id)
+    DATE_FIELD = 'session_begin' # used for garbage collection 
 
-    @property
-    def permalink(self):
-        return '<a href="%s" class="member">%s</a>' % (self.url, self.name)
-
-    """
     def __eq__(self, other):
         return self.id == other.id
 

@@ -227,5 +227,6 @@ def get_details(pos, api_resp, sov):
             fuel_level = FuelLevel.objects.create(pos = pos,
                                                  type_id = charters,
                                                  quantity = 0,
+                                                 consumption = 1,
                                                  date = current_time)
             fuel_level.save()

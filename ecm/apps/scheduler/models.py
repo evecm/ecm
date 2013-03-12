@@ -144,27 +144,39 @@ class GarbageCollector(models.Model):
         (3600 * 24 * 7, tr("weeks")),
         (3600 * 24 * 7 * 30, tr("months"))
     )
+    
+    DATE_FIELD = 'DATE_FIELD'
 
-    db_table = models.CharField(max_length=255, primary_key=True,
-                                validators=[ModelValidator()])
+    model = models.CharField(max_length=255, primary_key=True,
+                             validators=[ModelValidator()])
     min_entries_threshold = models.BigIntegerField(default=10000)
     max_age_threshold = models.BigIntegerField()
     age_units = models.BigIntegerField(default=3600 * 24 * 7 * 30, choices=AGE_UNIT_CHOICES)
 
     def db_table_admin_display(self):
-        return self.get_db_table_display()
+        return self.model
     db_table_admin_display.short_description = tr("DB Table")
 
     def max_age_threshold_admin_display(self):
         max_age_thres = self.max_age_threshold
         age_unit_disp = self.get_age_units_display()
-        return str(max_age_thres+" "+age_unit_disp)
+        return '%s %s' % (max_age_thres, age_unit_disp)
     max_age_threshold_admin_display.short_description = tr("Max Age Threshold")
 
     def get_expiration_date(self):
         return timezone.now() + timedelta(seconds=self.max_age_threshold * self.age_units)
 
     def get_model(self):
-        return extract_model(self.db_table)
+        return extract_model(self.model)
+    
+    def model_has_date_field(self):
+        model = self.get_model()
+        if hasattr(model, self.DATE_FIELD):
+            date_field_name = getattr(model, self.DATE_FIELD)
+            for field in model._meta.fields:
+                if field.name == date_field_name:
+                    return True
+        return False 
+        
 
 

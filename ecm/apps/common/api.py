@@ -18,17 +18,23 @@
 __date__ = '2012 5 15'
 __author__ = 'diabeteman'
 
+import re
+
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.conf import settings
 
-from ecm.apps.common import eveapi
+if settings.EVEAPI_STUB_ENABLED:
+    from ecm.utils import eveapi_stub as eveapi  #@UnusedImport
+    from ecm.utils.eveapi_stub import Error, ServerError, AuthenticationError, RequestError #@UnusedImport
+else:
+    from ecm.lib import eveapi  #@UnusedImport @Reimport
+    from ecm.lib.eveapi import Error, ServerError, AuthenticationError, RequestError #@UnusedImport @Reimport
+
 from ecm.apps.common.models import Setting, APICall
 from ecm.apps.corp.models import Corporation, Alliance
 from ecm.apps.hr.models.member import Member
-from ecm.lib import eveapi_patch
-import re
 
-eveapi_patch.patch_autocast()
 
 #------------------------------------------------------------------------------
 EVE_API_VERSION = '2'

@@ -32,7 +32,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import CaptchaField
 
-from ecm.apps.common import eveapi
 from ecm.apps.common import api
 from ecm.apps.common.models import UserAPIKey, UserBinding
 from ecm.views.account.fields import PasswordField
@@ -100,7 +99,7 @@ class AccountCreationForm(forms.Form):
             # test if API credentials are valid
             try:
                 self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
-            except eveapi.Error, e:
+            except api.Error, e:
                 self._errors["keyID"] = self.error_class([str(e)])
                 self._errors["vCode"] = self.error_class([str(e)])
                 del cleaned_data["keyID"]
@@ -218,7 +217,7 @@ class AddApiKeyForm(forms.Form):
             # test if API credentials are valid
             try:
                 self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
-            except eveapi.Error, e:
+            except api.Error, e:
                 self._errors["keyID"] = self.error_class([str(e)])
                 self._errors["vCode"] = self.error_class([str(e)])
                 del cleaned_data["keyID"]
@@ -243,7 +242,7 @@ class EditApiKeyForm(forms.Form):
             # test if API credentials are valid
             try:
                 self.characters = api.get_account_characters(UserAPIKey(keyID=keyID, vCode=vCode))
-            except eveapi.Error, e:
+            except api.Error, e:
                 self._errors["keyID"] = self.error_class([str(e)])
                 self._errors["vCode"] = self.error_class([str(e)])
                 del cleaned_data["keyID"]

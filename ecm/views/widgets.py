@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.utils.simplejson import JSONEncoder
 from django.utils.encoding import smart_unicode
+from django.conf.urls.static import static
 
 class DatePickerWidget(forms.DateInput):
     @property

@@ -138,6 +138,8 @@ class TitleCompoDiff(models.Model):
     # date of change
     date = models.DateTimeField(db_index=True, auto_now_add=True)
 
+    DATE_FIELD = 'date' # used for garbage collection
+
     def __unicode__(self):
         if self.new: 
             return unicode(self.title) + u' gets ' + unicode(self.role)
@@ -162,6 +164,8 @@ class TitleMemberDiff(models.Model):
     new = models.BooleanField(db_index=True, default=True)
     # date of change
     date = models.DateTimeField(db_index=True, auto_now_add=True)
+
+    DATE_FIELD = 'date' # used for garbage collection
 
     @property
     def access_permalink(self):

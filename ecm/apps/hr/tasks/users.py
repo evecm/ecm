@@ -23,7 +23,6 @@ import logging
 from django.db import transaction
 from django.contrib.auth.models import User, Group
 
-from ecm.apps.common import eveapi
 from ecm.apps.common import api
 from ecm.apps.corp.tasks.corp import fix_description
 from ecm.apps.corp.models import Corporation, Alliance
@@ -76,12 +75,12 @@ def update_character_associations(user):
                     new_characters.add(member)
                 
             api_key.is_valid = True
-        except eveapi.AuthenticationError, e:
+        except api.AuthenticationError, e:
             LOG.warning("%s (user: '%s' keyID: %d)" % (str(e), user.username, api_key.keyID))
             api_key.is_valid = False
             api_key.error = str(e)
             invalid_api_keys.append(api_key)
-        except eveapi.Error, e:
+        except api.Error, e:
             # for all other errors, we abort the operation so that
             # character associations are not deleted by mistake and
             # therefore, that users find themselves with no access :)
@@ -205,7 +204,7 @@ def get_corp(char):
     try:
         return Corporation.objects.get(corporationID=char.corporationID)
     except Corporation.DoesNotExist:
-        conn = eveapi.EVEAPIConnection()
+        conn = api.eveapi.EVEAPIConnection()
         api_corp = conn.corp.CorporationSheet(corporationID=char.corporationID)
         return Corporation(corporationID   = api_corp.corporationID,
                            corporationName = api_corp.corporationName,
@@ -237,7 +236,7 @@ def get_alliance(api_corp):
                         alliance.shortName = a.shortName
                         alliance.save()
                         break
-        except eveapi.Error:
+        except api.Error:
             LOG.exception("Failed to fetch AllianceList.xml.aspx from EVE API server")
             alliance = None
     except:

@@ -149,9 +149,10 @@ proxySSL = False
 #-----------------------------------------------------------------------------
 
 class Error(StandardError):
-	def __init__(self, code, message):
+	def __init__(self, code, message, rawxml=None):
 		self.code = code
 		self.args = (message.rstrip("."),)
+		self.__rawxml__ = rawxml
 	def __unicode__(self):
 		return u'%s [code=%s]' % (self.args[0], self.code)
 
@@ -238,14 +239,18 @@ def _ParseXML(response, fromContext, storeFunc):
 
 	error = getattr(obj, "error", False)
 	if error:
-		if error.code >= 500:
-			raise ServerError(error.code, error.data)
-		elif error.code >= 200:
-			raise AuthenticationError(error.code, error.data)
-		elif error.code >= 100:
-			raise RequestError(error.code, error.data)
+		if hasattr(obj, "__rawxml__"):
+			rawxml = obj.__rawxml__
 		else:
-			raise Error(error.code, error.data)
+			rawxml = None
+		if error.code >= 500:
+			raise ServerError(error.code, error.data, rawxml)
+		elif error.code >= 200:
+			raise AuthenticationError(error.code, error.data, rawxml)
+		elif error.code >= 100:
+			raise RequestError(error.code, error.data, rawxml)
+		else:
+			raise Error(error.code, error.data, rawxml)
 
 	result = getattr(obj, "result", False)
 	if not result:
@@ -443,9 +448,11 @@ class _Parser(object):
 		p.buffer_text = True
 
 		if isStream:
-			p.ParseFile(data)
-		else:
-			p.Parse(data, True)
+			data = data.read()
+		p.Parse(data, True)
+		
+		self.root.__rawxml__ = data
+		
 		return self.root
 
 

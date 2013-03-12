@@ -25,7 +25,6 @@ import logging
 from django.db import transaction
 from django.utils import timezone
 
-from ecm.apps.common import eveapi
 from ecm.apps.common.models import Setting, UpdateDate
 from ecm.apps.common import api
 from ecm.apps.eve.models import CelestialObject, Type
@@ -422,7 +421,7 @@ def update_assets_locations(assets_to_locate):
             locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
             for loc in locations_api.locations:
                 located_assets.append( (loc.itemID, loc.itemName, loc.x, loc.y, loc.z) )
-        except eveapi.Error, err:
+        except api.Error, err:
             # error can happen if a ship/asset found in a SMA/CHA does not belong to the corp
             LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).', 
                         err.code, str(err), ids)
@@ -471,7 +470,7 @@ def update_assets_names():
             locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
             for loc in locations_api.locations:
                 named_assets.append( (loc.itemID, loc.itemName) )
-        except eveapi.Error, err:
+        except api.Error, err:
             # error can happen if a ship/asset found in a SMA/CHA does not belong to the corp
             LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).', 
                         err.code, str(err), ids)

@@ -26,7 +26,6 @@ from django.utils import timezone
 from django.conf import settings
 from django.db import transaction
 
-from ecm.apps.common import eveapi
 from ecm.utils import crypto
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.corp.models import Corporation, Hangar, Wallet, CorpHangar, CorpWallet, Alliance
@@ -82,7 +81,7 @@ def update_corp_info(corpApi, currentTime):
                         alliance.shortName = a.shortName
                         alliance.save()
                         break
-        except eveapi.Error:
+        except api.Error:
             LOG.exception("Failed to fetch AllianceList.xml.aspx from EVE API server")
             corp = Corporation.objects.mine()
             alliance = None

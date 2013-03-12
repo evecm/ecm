@@ -26,7 +26,6 @@ from django.db import transaction
 from django.utils import timezone
 import pytz
 
-from ecm.apps.common import eveapi
 from ecm.apps.common import api
 from ecm.apps.corp.models import Wallet
 from ecm.apps.common.models import UpdateDate
@@ -182,7 +181,7 @@ def fetch_journal_entries(wallet, lastKnownID):
             del entries[0]
 
         return entries
-    except eveapi.Error, e:
+    except api.Error, e:
         LOG.error("API returned: %s. WalletJournal for account key %s might be empty."
                   % (str(e), wallet.walletID))
         return ''
@@ -233,7 +232,7 @@ def fetch_transaction_entries(wallet, lastKnownID):
             del transactions[0]
 
         return transactions
-    except eveapi.Error, e:
+    except api.Error, e:
         LOG.error("API returned: %s. WalletTransactions for account key %s might be empty."
                   % (str(e), wallet.walletID))
         return ''
