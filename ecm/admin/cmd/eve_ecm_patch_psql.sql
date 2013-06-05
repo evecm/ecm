@@ -31,9 +31,18 @@ DELETE FROM "eve_skillreq";
 
 
 
-INSERT INTO "eve_category" SELECT * FROM "invCategories";
-INSERT INTO "eve_group" SELECT * FROM "invGroups";
-INSERT INTO "eve_marketgroup" SELECT * FROM "invMarketGroups";
+INSERT INTO "eve_category" SELECT "categoryID","categoryName","description","iconID",
+	CASE WHEN "published" then 1 else 0 end  FROM "invCategories";
+INSERT INTO "eve_group" SELECT "groupID","categoryID","groupName","description","iconID",
+	CASE WHEN "useBasePrice" then 1 else 0 end ,
+	CASE WHEN "allowManufacture" then 1 else 0 end,
+	CASE WHEN "allowRecycler" then 1 else 0 end,
+	CASE WHEN "anchored" then 1 else 0 end,
+	CASE WHEN "anchorable" then 1 else 0 end,
+	CASE WHEN "fittableNonSingleton" then 1 else 0 end
+	FROM "invGroups";
+INSERT INTO "eve_marketgroup" SELECT "marketGroupID","parentGroupID","marketGroupName","description","iconID",
+	CASE WHEN "hasTypes" then 1 else 0 end  FROM "invMarketGroups";
 
 --------------------
 -- PATCH invTypes --
@@ -54,7 +63,7 @@ SELECT  t."typeID",
         t."basePrice",
         t."marketGroupID",
         COALESCE(m."metaGroupID", 0),
-        t."published"
+        CASE WHEN t."published" then 1 else 0 end
 FROM "invTypes" t LEFT OUTER JOIN "invBlueprintTypes" b ON t."typeID" = b."productTypeID",
      "invTypes" tt LEFT OUTER JOIN "invMetaTypes" m ON tt."typeID" = m."typeID",
      "invGroups" gg
@@ -173,7 +182,7 @@ INSERT INTO "eve_blueprintreq"
            FROM "ramTypeRequirements" AS srtr
                INNER JOIN "invTypeMaterials" AS sitm
                    ON srtr."requiredTypeID" = sitm."typeID"
-           WHERE srtr."recycle" = 1   -- the recycle flag determines whether or not this requirement's materials are added
+           WHERE  srtr."recycle" = true   -- the recycle flag determines whether or not this requirement's materials are added
              AND srtr."activityID" = 1
        ) AS sub
            ON sub."blueprintTypeID" = b."blueprintTypeID"
