@@ -37,7 +37,7 @@ from ecm.lib.subcommand import Subcommand
 from ecm.admin import instance_template
 from ecm.admin.util import run_python_cmd, log, pipe_to_django_shell
 from ecm.admin.cmd.load import print_load_message
-from ecm.admin.cmd import collect_static_files
+from ecm.admin.cmd import collect_static_files, print_usage_feedback_message
 
 #-------------------------------------------------------------------------------
 def sub_command():
@@ -63,7 +63,7 @@ def sub_command():
 #-------------------------------------------------------------------------------
 def migrate_ecm_db(instance_dir, upgrade_from_149=False):
     instance_dir = path.abspath(instance_dir)
-    
+
     log("Migrating database...")
     run_python_cmd('manage.py syncdb --noinput', instance_dir)
 
@@ -73,7 +73,7 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
         # on the 'hr' app (rename tables from 'roles_xxxxx' to 'hr_xxxxx')
         pipe_to_django_shell('from south.models import MigrationHistory; '\
                              'MigrationHistory.objects.all().delete()' , instance_dir)
-        
+
         run_python_cmd('manage.py migrate hr 0001 --noinput', instance_dir)
         # we MUST "fake" the first migration for 1.4.9 apps
         # otherwise the migrate command will fail because DB tables already exist...
@@ -81,7 +81,7 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
             run_python_cmd('manage.py migrate %s 0001 --fake --noinput' % app, instance_dir)
 
     run_python_cmd('manage.py migrate --all --noinput', instance_dir)
-    
+
     if upgrade_from_149:
         pipe_to_django_shell('from ecm.apps.scheduler.models import ScheduledTask; '\
                              'ScheduledTask.objects.all().delete()' , instance_dir)
@@ -94,7 +94,7 @@ def migrate_ecm_db(instance_dir, upgrade_from_149=False):
 SERVER_NAME_REGEXP = re.compile('ServerName (.+)', re.IGNORECASE)
 def upgrade_instance_files(instance_dir, config):
     log('Upgrading instance config files & examples...')
-    
+
     apache_mod_wsgi_vhost = path.join(instance_dir, 'examples/apache_mod_wsgi_vhost.example')
     apache_proxy_vhost = path.join(instance_dir, 'examples/apache_reverse_proxy.example')
     try:
@@ -108,7 +108,7 @@ def upgrade_instance_files(instance_dir, config):
     except IOError:
         buff = ''
         host_name = '???'
-    
+
     template_dir = path.abspath(path.dirname(instance_template.__file__))
     shutil.copy(path.join(template_dir, 'settings.py'), instance_dir)
     shutil.copy(path.join(template_dir, 'manage.py'), instance_dir)
@@ -116,14 +116,14 @@ def upgrade_instance_files(instance_dir, config):
     dir_util.copy_tree(path.join(template_dir, 'examples'), path.join(instance_dir, 'examples'))
     if hasattr(os, 'chmod'):
         os.chmod(path.join(instance_dir, 'manage.py'), 00755)
-    
+
     options = {
         'host_name': host_name,
         'instance_dir': path.abspath(instance_dir),
         'bind_address': config.get('misc', 'server_bind_ip'),
         'bind_port': config.get('misc', 'server_bind_port'),
     }
-    
+
     try:
         with open(apache_mod_wsgi_vhost, 'r') as fd:
             buff = fd.read()
@@ -140,21 +140,21 @@ def upgrade_instance_files(instance_dir, config):
             buff = fd.write(buff)
     except IOError, err:
         log(err)
-    
+
     if not config.has_option('misc', 'secret_key'):
         # Create a random SECRET_KEY hash to put it in the main settings.
         chars = string.ascii_letters + string.digits + '.,;:!@#$^&*(-_+)[]{}'
         config.set('misc', 'secret_key', get_random_string(50, chars))
-    
+
     template_dir = path.abspath(path.dirname(instance_template.__file__))
     default_config = SafeConfigParser()
     default_config.read([path.join(template_dir, 'settings.ini')])
-    
+
     for section in default_config.sections():
         for option in default_config.options(section):
             if not config.has_option(section, option):
                 config.set(section, option, default_config.get(section, option))
-        
+
     settings_fd = open(path.join(instance_dir, 'settings.ini'), 'w')
     config.write(settings_fd)
     settings_fd.close()
@@ -170,18 +170,19 @@ def run(command, global_options, options, args):
         sqlite_db_dir = config.get('database', 'sqlite_db_dir')
     if not sqlite_db_dir:
         sqlite_db_dir = path.join(instance_dir, 'db')
-    
+
     # upgrade files from template
     upgrade_instance_files(instance_dir, config)
-    
+
     # run collectstatic
     collect_static_files(instance_dir, options)
 
     # migrate ecm db
     if not options.no_syncdb:
         migrate_ecm_db(instance_dir, options.upgrade_from_149)
-    
+
     log('')
     log('ECM instance upgraded in "%s".' % instance_dir)
-    
+
     print_load_message(instance_dir, config.get('database', 'ecm_engine'))
+    print_usage_feedback_message()

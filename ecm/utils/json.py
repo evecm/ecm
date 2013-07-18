@@ -23,29 +23,14 @@ from datetime import datetime
 import django.utils.simplejson as JSON
 
 #------------------------------------------------------------------------------
-def loads(s, encoding=None, cls=None, object_hook=None, parse_float=None,
-          parse_int=None, parse_constant=None, object_pairs_hook=None,
-          use_decimal=False, **kw):
-    
+def loads(s, object_hook=None, **kw):
     object_hook = object_hook or __datetime_json_decoder
-    
-    return JSON.loads(s, encoding, cls, object_hook, parse_float, parse_int, parse_constant, 
-                      object_pairs_hook, use_decimal)
+    return JSON.loads(s, object_hook=object_hook, **kw)
   
 #------------------------------------------------------------------------------  
-def dumps(obj, skipkeys=False, ensure_ascii=True, check_circular=True,
-          allow_nan=True, cls=None, indent=None, separators=None,
-          encoding='utf-8', default=None, use_decimal=True,
-          namedtuple_as_object=True, tuple_as_array=True,
-          bigint_as_string=False, sort_keys=False, item_sort_key=None,
-          **kw):
-
+def dumps(obj, cls=None, **kw):
     cls = cls or DatetimeJSONEncoder
-
-    return JSON.dumps(obj, skipkeys, ensure_ascii, check_circular, allow_nan, cls, 
-                      indent, separators, encoding, default)#, use_decimal, namedtuple_as_object, 
-                      #tuple_as_array, bigint_as_string, sort_keys, item_sort_key)
-                      #Fix for too many args to dumps.
+    return JSON.dumps(obj, cls=cls, **kw)
     
 #------------------------------------------------------------------------------
 DATE_PATTERN = '%Y-%m-%d_%H-%M-%S'
@@ -55,8 +40,7 @@ class DatetimeJSONEncoder(JSON.JSONEncoder):
         if isinstance(obj, datetime):
             return obj.strftime(DATE_PATTERN)
         else:
-            print type(obj)
-            JSON.JSONEncoder.default(self, obj)
+            return JSON.JSONEncoder.default(self, obj)
 
 #------------------------------------------------------------------------------
 DATE_RE = re.compile('\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}')

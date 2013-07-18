@@ -1,4 +1,5 @@
-# Copyright (c) 2010-2012 Robin Jarry
+#!/usr/bin/env python
+# Copyright (c) 2010-2013 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
 #
@@ -15,7 +16,15 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__author__ = 'diabeteman'
-__date__ = '2011-05-17'
+__date__ = "2013 07 17"
+__author__ = "diabeteman"
 
-VERSION = '2.1.3'
+import os
+import sys
+
+if __name__ == "__main__":
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'ecm.utils.usage_feedback.settings'
+
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(sys.argv)

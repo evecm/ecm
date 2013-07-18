@@ -187,7 +187,14 @@ def silo_data(request, pos_id):
         else:
             remaining_vol = constants.SILO_VOLUME - silo.volume
             remaining_per = int((1.0 * silo.volume / (constants.SILO_VOLUME)) * 100)
-        hours_to_full = remaining_vol / (mineral.volume * 100)
+        if mineral.typeID in constants.COMPLEX_REACTIONS:
+            hours_to_full = remaining_vol / (mineral.volume * constants.COMPLEX_REACTIONS[mineral.typeID])
+        elif mineral.typeID in constants.SIMPLE_REACTIONS:
+            hours_to_full = remaining_vol / (mineral.volume * 200)
+        elif mineral.typeID in constants.UNREFINED:
+            hours_to_full = remaining_vol / (mineral.volume * 1)
+        else:
+            hours_to_full = remaining_vol / (mineral.volume * 100)
 
         silo_div = '<div class="progress"><div class="bar" style="width: '
         silo_div += str(remaining_per)+'%;"><span style="color:black;">'

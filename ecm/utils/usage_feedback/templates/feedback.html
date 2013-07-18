@@ -1,0 +1,108 @@
+<html>
+  <head>
+    <script type='text/javascript' src='//www.google.com/jsapi'></script>
+    <script type='text/javascript'>
+    google.load('visualization', '1', {'packages': ['geochart']});
+    google.setOnLoadCallback(drawUsersMap);
+    google.setOnLoadCallback(drawInstancesMap);
+
+    function drawUsersMap() {
+        var data = google.visualization.arrayToDataTable([
+          ['Country', 'Active Users'],{% for usage in usage_per_country %}
+          ['{{usage.country_name}}', {{usage.active_users}}],{% endfor %}
+        ]);
+
+        var options = {
+        		colorAxis: {colors: ['#ffc000', '#b50000']}
+        };
+
+        var chart = new google.visualization.GeoChart(document.getElementById('users_chart'));
+        chart.draw(data, options);
+    };
+
+    function drawInstancesMap() {
+        var data = google.visualization.arrayToDataTable([
+          ['City', 'ECM Instances', 'Active Users'],{% for usage in usage_per_city %}
+          ['{{usage.city}}', {{usage.instance_count}}, {{usage.active_users}}],{% endfor %}
+        ]);
+
+        var options = {
+        		region: 'world',
+        		displayMode: 'markers',
+        		legend: 'none',
+        		colorAxis: {colors: ['#6daef8', '#00428c']}
+        };
+
+        var chart = new google.visualization.GeoChart(document.getElementById('instances_chart'));
+        chart.draw(data, options);
+    };
+
+    </script>
+  </head>
+  <body>
+    <h1>ECM Throughout The World</h1>
+
+    <p>Last update {{last_update}}</p>
+
+    <h2>Active Users Per Country</h2>
+    <table>
+      <tr>
+        <td>
+          <div id="users_chart" style="width: 900px; height: 500px;"></div>
+        </td>
+        <td>
+          <h3>Top 10 Countries</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Country</th>
+                <th>Active Users</th>
+              </tr>
+            </thead>
+            <tbody>{% for country in top_countries %}
+              <tr>
+                <td>{{forloop.counter}}.</td>
+                <td>{{country.country_name}}</td>
+                <td>{{country.active_users}}</td>
+              </tr>{% endfor %}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </table>
+    
+    <h2>ECM Instances</h2>
+    <table>
+      <tr>
+        <td>
+          <div id="instances_chart" style="width: 900px; height: 500px;"></div>
+        </td>
+        <td>
+          <h3>Top 10 Instances</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>City</th>
+                <th>Active Users</th>
+                <th>First Installed</th>
+                <th>Avg. Last Login</th>
+              </tr>
+            </thead>
+            <tbody>{% for instance in top_instances %}
+              <tr>
+                <td>{{forloop.counter}}.</td>
+                <td>{{instance.city}}</td>
+                <td>{{instance.active_user_count}}</td>
+                <td>{{instance.first_installed}}</td>
+                <td>{{instance.avg_last_visit_top10}}</td>
+              </tr>{% endfor %}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </table>
+    
+  </body>
+</html>

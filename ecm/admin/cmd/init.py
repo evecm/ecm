@@ -28,13 +28,13 @@ from optparse import OptionParser
 from ecm.lib.subcommand import Subcommand
 from ecm.admin.util import run_python_cmd, log
 from ecm.admin.cmd.load import print_load_message
-from ecm.admin.cmd import collect_static_files
+from ecm.admin.cmd import collect_static_files, print_usage_feedback_message
 
 #-------------------------------------------------------------------------------
 def sub_command():
     # INIT
     description = 'Initialize an instance\'s database and files.'
-    
+
     init_cmd = Subcommand('init',
                           parser=OptionParser(usage='%prog [OPTIONS] instance_dir'),
                           help=description, callback=run)
@@ -75,9 +75,9 @@ def run(command, global_options, options, args):
     if 'sqlite' in ecm_db_engine and not os.path.exists(sqlite_db_dir):
         os.makedirs(sqlite_db_dir)
     init_ecm_db(instance_dir)
-    
+
     log('')
     log('ECM instance initialized in "%s".' % instance_dir)
-    
-    print_load_message(instance_dir, ecm_db_engine)
 
+    print_load_message(instance_dir, ecm_db_engine)
+    print_usage_feedback_message()

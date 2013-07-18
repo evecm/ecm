@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2012 Robin Jarry
+# Copyright (c) 2010-2013 Robin Jarry
 #
 # This file is part of EVE Corporation Management.
 #
@@ -15,7 +15,19 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__author__ = 'diabeteman'
-__date__ = '2011-05-17'
+__date__ = "2013 07 17"
+__author__ = "diabeteman"
 
-VERSION = '2.1.3'
+"""
+This script allows to run ECM feedback app with Apache mod_wsgi
+"""
+
+import os
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'ecm.utils.usage_feedback.settings'
+    
+# This application object is used by any WSGI server configured to use this
+# file. This includes Django's development server, if the WSGI_APPLICATION
+# setting points here.
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()

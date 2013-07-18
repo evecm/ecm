@@ -94,6 +94,11 @@ DATABASES = { # see http://docs.djangoproject.com/en/1.3/ref/settings/#databases
 
 SITE_ID = 1
 
+ALLOWED_HOSTS = [ '127.0.0.1', 'localhost' ]
+if config.has_option('misc', 'external_host_name'):
+    ALLOWED_HOSTS += config.get('misc', 'external_host_name').split()
+
+
 ##########
 # E-MAIL #
 ##########
