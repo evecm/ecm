@@ -31,7 +31,7 @@ from ecm.utils.usage_feedback.models import ECMInstanceFeedback
 
 #------------------------------------------------------------------------------
 STATS_PER_COUNTRY_SQL = '''\
-SELECT  key_fingerprint,
+SELECT  MAX(key_fingerprint) AS key_fingerprint,
         country_name,
         SUM(active_user_count) as active_users
 FROM usage_feedback_ecminstancefeedback
@@ -40,12 +40,13 @@ ORDER BY active_users DESC;
 '''
 
 STATS_PER_CITY_SQL = '''\
-SELECT  key_fingerprint,
+SELECT  MAX(key_fingerprint) AS key_fingerprint,
         city,
+        country_name,
         SUM(active_user_count) as active_users,
-        COUNT(*) as instance_count 
+        COUNT(*) as instance_count
 FROM usage_feedback_ecminstancefeedback
-GROUP BY city;
+GROUP BY city, country_name;
 '''
 
 @csrf_exempt
@@ -62,25 +63,26 @@ def post_feedback(request):
 
 
     try:
-        one_day_ago = timezone.now() - timedelta(days=1)
-
         db_feedback = ECMInstanceFeedback.objects.get(key_fingerprint=key)
-
-        if db_feedback.last_updated > one_day_ago:
+        if db_feedback.last_updated > timezone.now() - timedelta(days=1):
             return HttpResponse('You cannot send feedback more than once a day')
-
-        db_feedback.url = feedback.get('url')
-        db_feedback.eve_char_count = feedback.get('eve_char_count')
-        db_feedback.active_user_count = feedback.get('active_user_count')
-        db_feedback.avg_last_visit_top10 = feedback.get('avg_last_visit_top10')
-        db_feedback.avg_last_visit = feedback.get('avg_last_visit')
-        db_feedback.country_code = feedback.get('country_code')
-        db_feedback.country_name = feedback.get('country_name')
-        db_feedback.city = feedback.get('city')
-        db_feedback.latitude = feedback.get('latitude')
-        db_feedback.longitude = feedback.get('longitude')
     except ECMInstanceFeedback.DoesNotExist:
-        db_feedback = ECMInstanceFeedback(**feedback)
+        db_feedback = ECMInstanceFeedback(key_fingerprint=feedback.get('key_fingerprint'),
+                                          public_key=feedback.get('public_key'))
+
+    db_feedback.url = feedback.get('url')
+    db_feedback.corp_id = feedback.get('corp_id')
+    db_feedback.corp_name = feedback.get('corp_name')
+    db_feedback.eve_char_count = feedback.get('eve_char_count')
+    db_feedback.active_user_count = feedback.get('active_user_count')
+    db_feedback.avg_last_visit_top10 = feedback.get('avg_last_visit_top10')
+    db_feedback.avg_last_visit = feedback.get('avg_last_visit')
+    db_feedback.country_code = feedback.get('country_code')
+    db_feedback.country_name = feedback.get('country_name')
+    db_feedback.city = feedback.get('city')
+    db_feedback.latitude = feedback.get('latitude')
+    db_feedback.longitude = feedback.get('longitude')
+    db_feedback.first_installed = feedback.get('first_installed')
 
     db_feedback.feedback_count += 1
     db_feedback.save()
@@ -93,8 +95,13 @@ def get_feedback(request):
         instance.avg_last_visit = timedelta(seconds=instance.avg_last_visit or 0)
         instance.avg_last_visit_top10 = timedelta(seconds=instance.avg_last_visit_top10 or 0)
 
+    try:
+        last_update = ECMInstanceFeedback.objects.latest('last_updated').last_updated
+    except ECMInstanceFeedback.DoesNotExist:
+        last_update = 'None'
+
     data = {
-        'last_update': ECMInstanceFeedback.objects.latest('last_updated').last_updated,
+        'last_update': last_update,
         'usage_per_country': usage_per_country,
         'top_countries': usage_per_country[:10],
         'usage_per_city': ECMInstanceFeedback.objects.raw(STATS_PER_CITY_SQL),

@@ -18,13 +18,13 @@
 __date__ = "2013 07 17"
 __author__ = "diabeteman"
 
-"""
-This script allows to run ECM feedback app with Apache mod_wsgi
-"""
-
 import os
+import sys
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'ecm.utils.usage_feedback.settings'
+instance_dir = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, instance_dir)
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
     
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION

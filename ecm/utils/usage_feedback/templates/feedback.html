@@ -23,7 +23,7 @@
     function drawInstancesMap() {
         var data = google.visualization.arrayToDataTable([
           ['City', 'ECM Instances', 'Active Users'],{% for usage in usage_per_city %}
-          ['{{usage.city}}', {{usage.instance_count}}, {{usage.active_users}}],{% endfor %}
+          ['{% if usage.city %}{{usage.city}}{% else %}{{usage.country_name}}{% endif %}', {{usage.instance_count}}, {{usage.active_users}}],{% endfor %}
         ]);
 
         var options = {
@@ -84,7 +84,7 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>City</th>
+                <th>City or Country</th>
                 <th>Active Users</th>
                 <th>First Installed</th>
                 <th>Avg. Last Login</th>
@@ -93,7 +93,7 @@
             <tbody>{% for instance in top_instances %}
               <tr>
                 <td>{{forloop.counter}}.</td>
-                <td>{{instance.city}}</td>
+                <td>{% if instance.city %}{{instance.city}}{% else %}{{instance.country_name}}{% endif %}</td>
                 <td>{{instance.active_user_count}}</td>
                 <td>{{instance.first_installed}}</td>
                 <td>{{instance.avg_last_visit_top10}}</td>
