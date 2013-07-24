@@ -148,6 +148,7 @@ STATICFILES_FINDERS = (
     # other finders..
     'compressor.finders.CompressorFinder',
 )
+
 COMPRESS_OUTPUT_DIR = 'cache'
 COMPRESS_CSS_FILTERS = (
     'compressor.filters.css_default.CssAbsoluteFilter',
@@ -156,7 +157,7 @@ COMPRESS_CSS_FILTERS = (
 COMPRESS_JS_FILTERS = (
     #'compressor.filters.jsmin.JSMinFilter',
 )
-
+COMPRESS_PARSER = 'compressor.parser.HtmlParser'
 #COMPRESS_ENABLED = True
 
 #############

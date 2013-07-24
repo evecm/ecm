@@ -28,27 +28,15 @@ LOG = logging.getLogger(__name__)
 class ECMInstanceFeedback(models.Model):
 
     key_fingerprint = models.CharField(max_length=200, primary_key=True)
-    public_key = models.TextField(blank=True, null=True)
-    url = models.CharField(max_length=200, blank=True, null=True)
 
-    # corp_id is not primary_key here, we focus on "instances" more than
-    # on "corporations" there could be multiple instances of ecm running
-    # for the same corp.
-    corp_id = models.BigIntegerField(blank=True, null=True)
-    corp_name = models.CharField(max_length=256, blank=True, null=True)
-
-    eve_char_count = models.IntegerField(default=0)
     active_user_count = models.IntegerField(default=0)
     avg_last_visit_top10 = models.IntegerField(default=0)
     avg_last_visit = models.IntegerField(default=0)
-    first_installed = models.DateTimeField(auto_now_add=True)
+    first_installed = models.DateTimeField(blank=True, null=True)
 
     country_code = models.CharField(max_length=2, blank=True, null=True)
     country_name = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=255, blank=True, null=True)
-
-    latitude = models.FloatField(default=0.0)
-    longitude = models.FloatField(default=0.0)
 
     last_updated = models.DateTimeField(auto_now=True)
     feedback_count = models.IntegerField(default=0)
@@ -60,4 +48,4 @@ class ECMInstanceFeedback(models.Model):
         return isinstance(other, self.__class__) and other.key_fingerprint == self.key_fingerprint
 
     def __unicode__(self):
-        return self.corp_name
+        return self.city or self.country_name

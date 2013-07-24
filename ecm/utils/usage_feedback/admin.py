@@ -24,13 +24,13 @@ from ecm.utils.usage_feedback.models import ECMInstanceFeedback
 class ECMInstanceFeedbackAdmin(admin.ModelAdmin):
     list_display = [
         'key_fingerprint', 
-        'corp_name',
         'active_user_count', 
         'first_installed',
+        'city',
         'country_name',
         'last_updated',
         'feedback_count',
     ]
-    search_fields = ['corp_name', 'country_name', 'country_code', 'url']
+    search_fields = ['city', 'country_name', 'country_code', 'url']
 
 admin.site.register(ECMInstanceFeedback, ECMInstanceFeedbackAdmin)

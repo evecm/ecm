@@ -18,7 +18,12 @@
 __date__ = "2013 07 17"
 __author__ = "diabeteman"
 
-from os import path
+import os
+
+ROOT = os.path.abspath(os.path.dirname(__file__))
+
+def rel_path(pth, root=ROOT):
+    return os.path.abspath(os.path.join(root, pth)).replace('\\', '/')
 
 ###################
 # DJANGO SETTINGS #
@@ -28,8 +33,12 @@ DEBUG = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': path.expanduser('~/ecm_feedback.db'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ecm_feedback',
+        'USER': 'ecm_feedback',
+        'PASSWORD': 'ecm_feedback',
+        'HOST': 'localhost',
+        'PORT': 5432,
     }
 }
 
@@ -69,6 +78,7 @@ APPEND_SLASH = True
 # TEMPLATES #
 #############
 STATIC_URL = '/static/'
+STATIC_ROOT = rel_path('static/')
 
 TEMPLATE_DEBUG = DEBUG
 # List of callables that know how to import templates from various sources.
@@ -118,10 +128,18 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
+    'south',
 
     'ecm.utils.usage_feedback'
 ]
 
+
+###########
+# LOGGING #
+###########
+LOG_FILES_DIR = rel_path('logs/')
+if not os.path.exists(LOG_FILES_DIR):
+    os.makedirs(LOG_FILES_DIR)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -131,20 +149,24 @@ LOGGING = {
         },
     },
     'handlers': {
-        'console_handler': {
-            'class': 'logging.StreamHandler',
+        'file_handler': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'ecm_formatter',
-            'level': 'DEBUG',
+            'level': 'INFO',
+            'filename': os.path.join(LOG_FILES_DIR, 'feedback.log'),
+            #'delay': True, # wait until first log record is emitted to open file
+            'when': 'midnight', # roll over each day at midnight
+            'backupCount': 15, # keep 15 backup files
         },
     },
     'loggers': {
         'ecm': {                                        # remove console handler on production
-            'handlers': ['console_handler'],
+            'handlers': ['file_handler'],
             'propagate': True,
             'level': 'DEBUG',
         },
         'django.request': {
-            'handlers': ['console_handler'],
+            'handlers': ['file_handler'],
             'propagate': False,
             'level': 'ERROR',
         },
