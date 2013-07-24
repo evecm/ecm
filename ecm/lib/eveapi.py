@@ -379,6 +379,8 @@ class _RootContext(_Context):
 			if response.status != 200:
 				if response.status == httplib.NOT_FOUND:
 					raise AttributeError("'%s' not available on API server (404 Not Found)" % path)
+				elif response.status == httplib.FORBIDDEN or response.status == httplib.UNAUTHORIZED:
+					raise AuthenticationError(response.status, str(response.status)+" - "+response.reason)
 				else:
 					raise RuntimeError("'%s' request failed (%d %s)" % (path, response.status, response.reason))
 
