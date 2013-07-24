@@ -1,5 +1,6 @@
 <html>
   <head>
+    <title>ECM Usage Statistics</title>
     <script type='text/javascript' src='//www.google.com/jsapi'></script>
     <script type='text/javascript'>
     google.load('visualization', '1', {'packages': ['geochart']});
@@ -36,13 +37,15 @@
         var chart = new google.visualization.GeoChart(document.getElementById('instances_chart'));
         chart.draw(data, options);
     };
-
     </script>
   </head>
   <body>
-    <h1>ECM Throughout The World</h1>
+    <h1>ECM Throughout The World <small style='font-weight: normal; font-style: italic;'>Last update {{last_update}}</small></h1>
 
-    <p>Last update {{last_update}}</p>
+    <p>
+      <b>Total users:</b> {{total_users}},
+      <b>Total instances (installations):</b> {{total_instances}}
+    </p>
 
     <h2>Active Users Per Country</h2>
     <table>
