@@ -309,7 +309,8 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
     HANGAR = {}
     for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
         HANGAR[h.hangar_id] = h.name
-
+    #Added in because orphaned pos's end up with a hanger id of 1
+    HANGAR[1] = 'Old POS'
     jstree_data = []
     for hangarID, items, volume in cursor.fetchall():
         jstree_data.append({
