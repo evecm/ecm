@@ -18,13 +18,7 @@
 __date__ = "2011-04-25"
 __author__ = "JerryKhan"
 
-try:
-    import json
-except ImportError:
-    import django.utils.simplejson as json
-
 from django.utils.translation import ugettext_lazy as tr_lazy
-
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.cache import cache_page
@@ -32,6 +26,7 @@ from django.http import HttpResponseBadRequest
 from django.db.models import Q
 
 from ecm.utils import db
+from ecm.utils import _json as json
 from ecm.utils.format import print_duration
 from ecm.plugins.pos.views import print_fuel_quantity
 from ecm.plugins.pos.models import POS, FuelLevel

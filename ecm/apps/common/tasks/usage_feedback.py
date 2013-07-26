@@ -29,7 +29,7 @@ from ecm.apps.hr.models.roles import RoleMemberDiff
 from ecm.apps.common.auth import get_members_group
 from ecm.utils.usage_feedback import ECM_USAGE_FEEDBACK_URL
 from ecm.utils.http import HttpClient
-from ecm.utils import json
+from ecm.utils import _json as json
 
 LOG = logging.getLogger(__name__)
 

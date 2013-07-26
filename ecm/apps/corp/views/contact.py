@@ -20,7 +20,7 @@ __author__ = 'diabeteman'
 
 import logging
 
-import django.utils.simplejson as json
+
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.conf import settings
@@ -31,6 +31,7 @@ from django.template.context import RequestContext as Ctx
 from django.utils.translation import ugettext
 
 import ecm
+from ecm.utils import _json as json
 from ecm.apps.corp.models import Corporation, Alliance
 from ecm.apps.common import api
 

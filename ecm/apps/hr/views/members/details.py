@@ -18,7 +18,6 @@ __date__ = "2011-03-13"
 __author__ = "diabeteman"
 
 from datetime import timedelta
-import json
 
 from django.utils import timezone
 from django.shortcuts import render_to_response, get_object_or_404
@@ -28,6 +27,7 @@ from django.template.context import RequestContext as Ctx
 from django.db.models.aggregates import Avg, Sum
 from django.utils.translation import ugettext as tr
 
+from ecm.utils import _json as json
 from ecm.apps.corp.models import Corporation
 from ecm.apps.hr.models.member import MemberSession
 from ecm.apps.hr.models import MemberDiff, Member, RoleMemberDiff, TitleMemberDiff

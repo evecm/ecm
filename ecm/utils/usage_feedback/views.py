@@ -27,7 +27,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http.response import HttpResponse
 from django.shortcuts import render_to_response
 
-from ecm.utils import json
+from ecm.utils import _json as json
 from ecm.utils.usage_feedback.models import ECMInstanceFeedback
 
 #------------------------------------------------------------------------------

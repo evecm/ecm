@@ -18,11 +18,6 @@
 __date__ = '2010-12-25'
 __author__ = 'diabeteman'
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 from datetime import datetime, timedelta
 
 from django.utils import timezone
@@ -34,6 +29,7 @@ from django.http import HttpResponse
 from django.db import connection
 
 from ecm.utils import db
+from ecm.utils import _json as json
 from ecm.apps.common.models import UpdateDate
 from ecm.utils.format import print_integer, print_time_min
 from ecm.views.decorators import check_user_access

@@ -18,11 +18,6 @@
 __date__ = "2011 8 19"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 import logging
 
 from django.db import transaction
@@ -31,6 +26,7 @@ from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.text import truncate_words
 
+from ecm.utils import _json as json
 from ecm.utils.format import print_date, print_float, print_integer, verbose_name
 from ecm.views.decorators import check_user_access, forbidden
 from ecm.plugins.industry.models.order import IllegalTransition

@@ -19,11 +19,6 @@ __date__ = "2012 5 10"
 __author__ = "Ajurna"
 
 from datetime import datetime, timedelta
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
     
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
@@ -35,6 +30,7 @@ from django.utils import timezone
 
 from ecm.utils.format import print_time_min, print_float
 from ecm.utils import is_number
+from ecm.utils import _json as json
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.eve.models import Type, CelestialObject
 from ecm.apps.corp.models import Corporation

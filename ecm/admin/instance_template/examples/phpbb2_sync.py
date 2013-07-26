@@ -28,15 +28,12 @@ import os
 from os import path
 import sys
 import base64
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 import urllib2
 import MySQLdb
 import logging
 from logging import handlers
+
+from ecm.utils import _json as json
 
 #------------------------------------------------------------------------------
 # database connection info

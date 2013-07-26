@@ -25,10 +25,7 @@ import urlparse
 from ecm.utils.http import HttpClient
 from ecm.utils import crypto 
 from ecm.apps.corp.models import Corporation, SharedData
-try:
-    import json
-except ImportError:
-    from ecm.utils import json
+from ecm.utils import _json as json
 
 
 LOG = logging.getLogger(__name__)

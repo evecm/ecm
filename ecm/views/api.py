@@ -18,17 +18,13 @@
 __date__ = "2011 6 26"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.db.models.aggregates import Count
 from django.contrib.auth.models import User
 
+from ecm.utils import _json as json
 from ecm.views.decorators import basic_auth_required
 from ecm.apps.common.models import ExternalApplication, GroupBinding, UserBinding, Setting
 

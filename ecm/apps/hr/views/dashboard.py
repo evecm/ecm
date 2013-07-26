@@ -18,13 +18,15 @@
 __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
-import django.utils.simplejson as json
+
 from datetime import timedelta
+
 from django.db.models.aggregates import Avg
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.utils import timezone
 
+from ecm.utils import _json as json
 from ecm.apps.eve.models import CelestialObject
 from ecm.apps.eve import constants
 from ecm.apps.corp.models import Corporation

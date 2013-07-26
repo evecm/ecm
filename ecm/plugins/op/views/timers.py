@@ -20,7 +20,6 @@ __author__ = "tash"
 
 from datetime import datetime
 
-import django.utils.simplejson as json
 
 from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedirect,\
@@ -29,6 +28,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
+
+from ecm.utils import _json as json
 from ecm.plugins.op.models import Timer
 from ecm.plugins.op.forms import TimerForm
 from ecm.views.decorators import check_user_access

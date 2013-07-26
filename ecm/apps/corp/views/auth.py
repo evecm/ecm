@@ -27,7 +27,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from ecm.apps.corp.models import Corporation
-from ecm.utils import crypto, json
+from ecm.utils import crypto
+from ecm.utils import _json as json
 
 LOG = logging.getLogger(__name__)
 

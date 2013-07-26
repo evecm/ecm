@@ -18,16 +18,12 @@
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 
+from ecm.utils import _json as json
 from ecm.plugins.accounting.views import wallet_journal_permalink, WALLET_LINK
 from ecm.apps.common.models import UpdateDate
 from ecm.apps.corp.models import Corporation

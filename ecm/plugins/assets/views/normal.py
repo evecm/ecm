@@ -19,13 +19,6 @@ __date__ = '2011-05-21'
 __author__ = 'diabeteman'
 
 
-
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.template.defaultfilters import pluralize
@@ -36,6 +29,7 @@ from django.db.models.query_utils import Q
 
 from ecm.utils.format import round_quantity, print_float, print_integer
 from ecm.utils import db
+from ecm.utils import _json as json
 from ecm.views.decorators import check_user_access
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants

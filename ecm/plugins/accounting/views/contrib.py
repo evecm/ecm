@@ -19,11 +19,6 @@ from django.contrib.auth.models import User
 __date__ = "2011 5 25"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 from datetime import datetime, timedelta
 
 from django.db.models.aggregates import Min, Max, Sum
@@ -34,6 +29,7 @@ from django.template.context import RequestContext as Ctx
 from django.utils.translation import gettext as tr
 
 from ecm.utils import db
+from ecm.utils import _json as json
 from ecm.utils.format import print_float
 from ecm.apps.common.models import UpdateDate
 from ecm.views.decorators import check_user_access

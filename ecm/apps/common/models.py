@@ -18,14 +18,9 @@
 __date__ = '2010-05-17'
 __author__ = 'diabeteman'
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-import re
 import random
 import datetime
+import re
 
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
@@ -34,6 +29,9 @@ from django.conf import settings
 from django.utils.hashcompat import sha_constructor
 from django.core.validators import RegexValidator
 from django.utils import timezone
+
+from ecm.utils import _json as json
+
 
 #------------------------------------------------------------------------------
 class Setting(models.Model):

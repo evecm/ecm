@@ -18,17 +18,13 @@
 __date__ = "2011 11 19"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 import logging
 
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response
 
+from ecm.utils import _json as json
 from ecm.utils.format import print_time_min, print_float
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.views.decorators import check_user_access

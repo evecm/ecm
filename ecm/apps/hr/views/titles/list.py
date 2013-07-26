@@ -18,12 +18,6 @@
 __date__ = "2010-07-11"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponseBadRequest
@@ -31,6 +25,7 @@ from django.template.context import RequestContext as Ctx
 from django.utils.translation import ugettext as tr
 
 from ecm.utils import db
+from ecm.utils import _json as json
 from ecm.utils.format import print_time_min
 from ecm.apps.hr.models import TitleComposition, Title
 from ecm.apps.common.models import ColorThreshold, UpdateDate
