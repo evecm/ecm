@@ -33,6 +33,7 @@ class ECMInstanceFeedback(models.Model):
     avg_last_visit_top10 = models.IntegerField(default=0)
     avg_last_visit = models.IntegerField(default=0)
     first_installed = models.DateTimeField(blank=True, null=True)
+    version = models.CharField(max_length=10, blank=True, null=True)
 
     country_code = models.CharField(max_length=2, blank=True, null=True)
     country_name = models.CharField(max_length=255, blank=True, null=True)

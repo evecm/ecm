@@ -19,9 +19,18 @@ __date__ = "2013 07 17"
 __author__ = "diabeteman"
 
 import logging
+from pkg_resources import parse_version
 
 from django.utils import timezone
+from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
+from django.http.request import HttpRequest
+from django.template.context import RequestContext as Ctx
+from django.template.loader import render_to_string
+from django.core.mail import mail_admins
+from django.utils.translation import ugettext_lazy as tr_lazy
 
+import ecm
 from ecm.apps.corp.models import Corporation
 from ecm.apps.hr.models.member import MemberDiff
 from ecm.apps.hr.models.titles import TitleMemberDiff, TitleCompoDiff
@@ -36,7 +45,7 @@ LOG = logging.getLogger(__name__)
 #------------------------------------------------------------------------------
 def send_feedback():
     """
-    This function will collect basic non-critical data about the current server 
+    This function will collect basic non-critical data about the current server
     instance and send it to eve-corp-management.org official server for usage
     statistics feedback.
     """
@@ -64,12 +73,39 @@ def send_feedback():
         'country_code':         geoloc_info.get('country_code'),
         'country_name':         geoloc_info.get('country_name'),
         'city':                 geoloc_info.get('city'),
+
+        'ecm_version':          ecm.VERSION,
     }
 
     # send the data to the server
-    http_client.post(ECM_USAGE_FEEDBACK_URL, json.dumps(usage_data))
+    resp = http_client.post(ECM_USAGE_FEEDBACK_URL, json.dumps(usage_data))
     LOG.info('Usage feedback sent to %r. Thank you for your contribution.',
              ECM_USAGE_FEEDBACK_URL)
+
+    new_version = resp.read().strip()
+    old_version = ecm.VERSION
+
+    if parse_version(new_version) > parse_version(old_version):
+        LOG.info('New version of ecm is available: %r.', new_version)
+
+        ctx_dict = {
+            'host_name': settings.EXTERNAL_HOST_NAME,
+            'use_https': settings.USE_HTTPS,
+            'new_version': new_version,
+            'old_version': old_version,
+        }
+
+        dummy_request = HttpRequest()
+        dummy_request.user = AnonymousUser()
+
+        subject = tr_lazy('ECM version %s is available' % new_version)
+        msg = render_to_string('ecm/common/email/new_version.txt',
+                               ctx_dict, Ctx(dummy_request))
+        html = render_to_string('ecm/common/email/new_version.html',
+                                ctx_dict, Ctx(dummy_request))
+
+        mail_admins(subject=subject, message=msg, html_message=html)
+
 
 #------------------------------------------------------------------------------
 def find_oldest_entry():

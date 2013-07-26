@@ -1,1 +1,1 @@
-ECM_USAGE_FEEDBACK_URL = 'http://feedback.eve-corp-management.org/'
+ECM_USAGE_FEEDBACK_URL = 'http://127.0.0.1:8000/'

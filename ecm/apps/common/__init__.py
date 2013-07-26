@@ -31,7 +31,7 @@ TASKS = [
     }, {
         'function' : 'ecm.apps.common.tasks.usage_feedback.send_feedback',
         'priority' : 0,
-        'frequency' : 7,
+        'frequency' : 2,
         'frequency_units' : 86400, # day
     },
 ]
