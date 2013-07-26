@@ -24,7 +24,7 @@ urlpatterns = patterns('ecm.plugins.mail.views',
     ###########################################################################
     # MAIL VIEWS
     (r'^$',                     'mail.mail_list'),
-    (r'^list/$',                'mail.mail_list_data'),
+    (r'^data/$',                'mail.mail_list_data'),
     (r'^message/(\d+)/$',       'mail.mail_message'),
 )
 

@@ -48,7 +48,7 @@
 {% datatable 'mail_table' columns 
              css_class='table table-bordered table-condensed searchable_table' 
              defaults=datatables_defaults 
-             sAjaxSource='/mail/list/' 
+             sAjaxSource=ajax_url
              sCookiePrefix='ecm_mail_table_' 
              sDom='<"row-fluid"<"span5"l><"span7"C>>rt<"row-fluid"<"span5"i><"span7"p>>' 
              fnRowCallback='mailRowCallback' 
