@@ -23,7 +23,6 @@ __author__ = 'diabeteman'
 import os
 import shutil
 import urllib2
-import sqlite3
 import tempfile
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
@@ -112,6 +111,7 @@ def run(command, global_options, optionsd, args):
         
         log('Patching and importing data (this can be long)...')
         if 'sqlite' in db_engine:
+            import sqlite3
             with open(os.path.join(SQL_ROOT, sql['PATCH'])) as f:
                 sql_script = f.read() 
             connection = sqlite3.connect(os.path.join(instance_dir, 'db/ecm.sqlite'))
