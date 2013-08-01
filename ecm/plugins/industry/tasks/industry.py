@@ -24,6 +24,7 @@ import logging
 
 from django.db import transaction
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from ecm.utils.format import print_float
 from ecm.apps.eve.models import Type
@@ -78,7 +79,8 @@ def update_production_cost(entry):
     if not missing_bps:
         with transaction.commit_manually():
             try:
-                order = Order.objects.create(originator_id=1)
+                user = User.objects.latest('id')
+                order = Order.objects.create(originator_id=user.id)
                 order.modify( [ (entry, 1) ] )
                 missing_prices = order.create_jobs(ignore_fixed_prices=True)
                 if missing_prices:
