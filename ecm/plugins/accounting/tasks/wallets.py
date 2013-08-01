@@ -51,7 +51,7 @@ def update():
 #------------------------------------------------------------------------------
 def update_journal_wallet(wallet):
     try:
-        lastKnownID = JournalEntry.objects.filter(wallet=wallet).latest().refID
+        lastKnownID = JournalEntry.objects.filter(wallet=wallet).latest('refID').refID
     except JournalEntry.DoesNotExist:
         lastKnownID = 0
     entries = fetch_journal_entries(wallet, lastKnownID)
@@ -60,7 +60,7 @@ def update_journal_wallet(wallet):
 #------------------------------------------------------------------------------
 def update_transaction_wallet(wallet):
     try:
-        lastKnownID = TransactionEntry.objects.filter(wallet=wallet).latest().id
+        lastKnownID = TransactionEntry.objects.filter(wallet=wallet).latest('id').id
     except TransactionEntry.DoesNotExist:
         lastKnownID = 0
     entries = fetch_transaction_entries(wallet, lastKnownID)
