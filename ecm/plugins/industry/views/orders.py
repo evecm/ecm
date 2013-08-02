@@ -145,11 +145,11 @@ def change_state(request, order_id, transition):
         elif transition == order.resolve.__name__:
             order.resolve(request.user, '')
         
-        elif transition == order.cancel.__name__:
+        elif transition == order.reject.__name__:
             comment = request.POST.get('comment', None)
             if not comment:
                 raise IllegalTransition('Please leave a comment.')
-            order.cancel(comment)
+            order.reject(request.user, comment)
         
         elif transition == order.start_preparation.__name__:
             order.start_preparation(user=request.user)
