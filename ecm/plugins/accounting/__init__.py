@@ -41,22 +41,22 @@ TASKS = [
         'function' : 'ecm.plugins.accounting.tasks.reftypes.update',
         'priority' : 100,
         'frequency' : 7,
-        'frequency_units' : 86400, # day
+        'frequency_units' : 60 * 60 * 24, # day
     }, {
         'function' : 'ecm.plugins.accounting.tasks.wallets.update',
         'priority' : 0,
         'frequency' : 6,
-        'frequency_units' : 3600, # hour
+        'frequency_units' : 60 * 60, # hour
     }, {
         'function' : 'ecm.plugins.accounting.tasks.contracts.update',
         'priority' : 0,
         'frequency' : 6,
-        'frequency_units' : 3600, # hour
+        'frequency_units' : 60 * 60, # hour
     }, {
         'function' : 'ecm.plugins.accounting.tasks.marketorders.update',
         'priority' : 0,
         'frequency' : 6,
-        'frequency_units' : 3600, # hour
+        'frequency_units' : 60 * 60, # hour
     },
 ]
 

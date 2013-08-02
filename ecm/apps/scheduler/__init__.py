@@ -19,9 +19,18 @@ from django.utils.translation import ugettext_lazy as tr_lazy
 NAME = 'scheduler'
 
 MENUS = [
-    {'title': tr_lazy('Scheduled Tasks'),   'url': 'tasks/',     'items': []},
+    {'title': tr_lazy('Scheduled Tasks'), 'url': 'tasks/', 'items': []},
 ]
 
 URL_PERMISSIONS = [
     r'^/scheduler/.*$',
+]
+
+TASKS = [
+    {
+        'function': 'ecm.apps.scheduler.tasks.garbage.collect_garbage',
+        'priority': 0,
+        'frequency': 7,
+        'frequency_units': 60 * 60 * 24, # day
+    },
 ]

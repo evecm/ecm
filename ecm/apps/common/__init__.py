@@ -22,17 +22,17 @@ TASKS = [
         'function' : 'ecm.apps.common.tasks.users.cleanup_unregistered_users',
         'priority' : 0,
         'frequency' : 1,
-        'frequency_units' : 86400, # day
+        'frequency_units' : 60 * 60 * 24, # day
     }, {
         'function' : 'ecm.apps.common.tasks.outposts.update',
         'priority' : 1000,
         'frequency' : 1,
-        'frequency_units' : 86400, # day
+        'frequency_units' : 60 * 60 * 24, # day
     }, {
         'function' : 'ecm.apps.common.tasks.usage_feedback.send_feedback',
         'priority' : 0,
         'frequency' : 2,
-        'frequency_units' : 86400, # day
+        'frequency_units' : 60 * 60 * 24, # day
     },
 ]
 

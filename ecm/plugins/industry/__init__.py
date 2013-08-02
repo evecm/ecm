@@ -43,14 +43,14 @@ TASKS = [
     {
         'function' : 'ecm.plugins.industry.tasks.industry.update_supply_prices',
         'priority' : 0,
-        'frequency' : 24,
-        'frequency_units' : 3600, # hour
+        'frequency' : 1,
+        'frequency_units' : 60 * 60 * 24, # day
     },
     {
         'function' : 'ecm.plugins.industry.tasks.industry.update_all_production_costs',
         'priority' : 0,
-        'frequency' : 24,
-        'frequency_units' : 3600, # hour
+        'frequency' : 1,
+        'frequency_units' : 60 * 60 * 24, # day
     },
 ]
 
