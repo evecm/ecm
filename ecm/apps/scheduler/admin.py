@@ -36,7 +36,7 @@ class ScheduledTaskOptions(admin.ModelAdmin):
     search_fields = ["function"]
 
 class GarbageCollectorOptions(admin.ModelAdmin):
-    list_display = ["db_table_admin_display",
+    list_display = ["model_admin_display",
                     "max_age_threshold_admin_display",
                     "min_entries_threshold"]
 

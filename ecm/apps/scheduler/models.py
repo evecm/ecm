@@ -67,7 +67,7 @@ class ScheduledTask(models.Model):
     def frequency_admin_display(self):
         freq = self.frequency
         frequnits = self.get_frequency_units_display()
-        return tr("Every "+str(freq)+" "+str(frequnits))
+        return tr("Every " + str(freq) + " " + str(frequnits))
     frequency_admin_display.short_description = tr("frequency")
 
     def function_admin_display(self):
@@ -109,7 +109,7 @@ class ScheduledTask(models.Model):
                 self.is_running = True
                 self.last_execution = timezone.now()
                 self.save()
-            
+
             invalid_function = False
             try:
                 func = self.get_function()
@@ -144,7 +144,7 @@ class GarbageCollector(models.Model):
         (3600 * 24 * 7, tr("weeks")),
         (3600 * 24 * 7 * 30, tr("months"))
     )
-    
+
     DATE_FIELD = 'DATE_FIELD'
 
     model = models.CharField(max_length=255, primary_key=True,
@@ -153,9 +153,9 @@ class GarbageCollector(models.Model):
     max_age_threshold = models.BigIntegerField()
     age_units = models.BigIntegerField(default=3600 * 24 * 7 * 30, choices=AGE_UNIT_CHOICES)
 
-    def db_table_admin_display(self):
+    def model_admin_display(self):
         return self.model
-    db_table_admin_display.short_description = tr("DB Table")
+    model_admin_display.short_description = tr("Database Model")
 
     def max_age_threshold_admin_display(self):
         max_age_thres = self.max_age_threshold
@@ -168,7 +168,7 @@ class GarbageCollector(models.Model):
 
     def get_model(self):
         return extract_model(self.model)
-    
+
     def model_has_date_field(self):
         model = self.get_model()
         if hasattr(model, self.DATE_FIELD):
@@ -176,7 +176,7 @@ class GarbageCollector(models.Model):
             for field in model._meta.fields:
                 if field.name == date_field_name:
                     return True
-        return False 
-        
+        return False
+
 
 

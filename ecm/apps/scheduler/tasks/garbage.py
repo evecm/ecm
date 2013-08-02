@@ -35,10 +35,10 @@ def collect_garbage():
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def collect_one(collector):
-    LOG.info("collecting old records for model: %s" % collector.db_table)
+    LOG.info("collecting old records for model: %s" % collector.model)
     model = collector.get_model()
 
-    if collector.model_has_date_field(model) and model.objects.all().count() > collector.min_entries_threshold:
+    if collector.model_has_date_field() and model.objects.all().count() > collector.min_entries_threshold:
         filter_args = { model.DATE_FIELD + '__lt': collector.get_expiration_date() }
         entries = model.objects.filter(**filter_args)
         deleted_entries = entries.count()
