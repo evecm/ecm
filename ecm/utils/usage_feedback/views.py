@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db.models.aggregates import Sum
-import ecm
 
 __date__ = "2013 07 17"
 __author__ = "diabeteman"
@@ -28,14 +26,17 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http.response import HttpResponse
 from django.shortcuts import render_to_response
 
+import ecm
 from ecm.utils import _json as json
+from django.db.models.aggregates import Sum
 from ecm.utils.usage_feedback.models import ECMInstanceFeedback
 
 #------------------------------------------------------------------------------
 STATS_PER_COUNTRY_SQL = '''\
 SELECT  MAX(key_fingerprint) AS key_fingerprint,
         country_name,
-        SUM(active_user_count) as active_users
+        SUM(active_user_count) as active_users,
+        COUNT(*) as instance_count
 FROM usage_feedback_ecminstancefeedback
 GROUP BY country_name
 ORDER BY active_users DESC;

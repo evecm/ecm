@@ -40,7 +40,10 @@
     </script>
   </head>
   <body>
-    <h1>ECM Throughout The World <small style='font-weight: normal; font-style: italic;'>Last update {{last_update}}</small></h1>
+    <h1>
+      ECM Throughout The World
+      <small style='font-weight: normal; font-style: italic; color: #bbb;'>Last update {{last_update}}</small>
+    </h1>
 
     <p>
       <b>Total users:</b> {{total_users}},
@@ -61,6 +64,7 @@
                 <th>#</th>
                 <th>Country</th>
                 <th>Active Users</th>
+                <th>Installations</th>
               </tr>
             </thead>
             <tbody>{% for country in top_countries %}
@@ -68,6 +72,7 @@
                 <td>{{forloop.counter}}.</td>
                 <td>{{country.country_name}}</td>
                 <td>{{country.active_users}}</td>
+                <td>{{country.instance_count}}</td>
               </tr>{% endfor %}
             </tbody>
           </table>
