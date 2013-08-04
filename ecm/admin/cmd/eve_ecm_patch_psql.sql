@@ -143,86 +143,66 @@ SET "parentBlueprintTypeID" =
 -- material is affected by waste when building.
 -------------------------------------------------------
 INSERT INTO "eve_blueprintreq"
-    SELECT  CAST(rtr."typeID" AS bigint) * 100000000 + CAST(rtr."requiredTypeID" AS bigint) * 100 + CAST(rtr."activityID" AS bigint),
-            rtr."typeID",
-            rtr."activityID",
-            rtr."requiredTypeID",
-            rtr."quantity" + COALESCE(itm."quantity", 0),
-            rtr."damagePerJob",
-            COALESCE(itm."quantity", 0)
-    FROM "invBlueprintTypes" AS b
-       INNER JOIN "ramTypeRequirements" AS rtr
-           ON rtr."typeID" = b."blueprintTypeID"
-          AND rtr."activityID" = 1 -- manufacturing
-       LEFT OUTER JOIN "invTypeMaterials" AS itm
-           ON itm."typeID" = b."productTypeID"
-          AND itm."materialTypeID" = rtr."requiredTypeID"
-    WHERE rtr."quantity" > 0
-;
-----------------------------------------------------------
-INSERT INTO "eve_blueprintreq"
-    SELECT  CAST(b."blueprintTypeID" AS bigint) * 100000000 + CAST(itm."materialTypeID" AS bigint) * 100 + 1,
-            b."blueprintTypeID",
-            1,  -- manufacturing activityID
-            itm."materialTypeID",   -- requiredTypeID
-            (itm."quantity" - COALESCE(sub."quantity" * sub."recycledQuantity", 0)),  -- quantity
-            1,   -- damagePerJob
-            (itm."quantity" - COALESCE(sub."quantity" * sub."recycledQuantity", 0))  -- baseMaterial
-    FROM "invBlueprintTypes" b
-       INNER JOIN "invTypeMaterials" itm
-           ON itm."typeID" = b."productTypeID"
-       LEFT OUTER JOIN "eve_blueprintreq" m
-           ON b."blueprintTypeID" = m."blueprintTypeID"
-           AND m."requiredTypeID" = itm."materialTypeID"
-       LEFT OUTER JOIN (
-           SELECT srtr."typeID" AS "blueprintTypeID", -- tech 2 items recycle into their materials
-                  sitm."materialTypeID" AS "recycledTypeID",   -- plus the t1 item's materials
-                  srtr."quantity" AS "recycledQuantity",
-                  sitm."quantity" AS "quantity"
-           FROM "ramTypeRequirements" AS srtr
-               INNER JOIN "invTypeMaterials" AS sitm
-                   ON srtr."requiredTypeID" = sitm."typeID"
-           WHERE  srtr."recycle" = true   -- the recycle flag determines whether or not this requirement's materials are added
-             AND srtr."activityID" = 1
-       ) AS sub
-           ON sub."blueprintTypeID" = b."blueprintTypeID"
-           AND sub."recycledTypeID" = itm."materialTypeID"
-    WHERE m."blueprintTypeID" IS NULL -- partially waste-affected materials already added
-    AND (itm."quantity" - COALESCE(sub."quantity" * sub."recycledQuantity", 0)) > 0 -- ignore negative quantities
-;
-----------------------------------------------------------
-INSERT INTO "eve_blueprintreq"("id",
-                             "blueprintTypeID",
-                             "activityID",
-                             "requiredTypeID",
-                             "quantity",
-                             "damagePerJob",
-                             "baseMaterial")
-    SELECT  CAST(rtr."typeID" AS bigint) * 100000000 + CAST(rtr."requiredTypeID" AS bigint) * 100 + CAST(rtr."activityID" AS bigint),
-            rtr."typeID",
-            rtr."activityID",
-            rtr."requiredTypeID",
-            rtr."quantity",
-            rtr."damagePerJob",
-            0 AS "baseMaterial"
-    FROM "ramTypeRequirements" AS rtr
-    WHERE rtr."activityID" NOT IN (1)
-      AND rtr."typeID" IN (SELECT "blueprintTypeID" FROM "eve_blueprinttype") 
-;
-----------------------------------------------------------
-UPDATE "eve_blueprintreq" SET "baseMaterial" = 0 WHERE "baseMaterial" IS NULL;
+
+-- This first sub query will select all basic requirements for manufacturing
+-- the quantities gathered here are splitted in 2 categories:
+--    "quantity" : ME affected quantity for manufacturing (from invTypeMaterials)
+--    "extraQuantity" : Non ME-affected quantity for manufacturing (from ramTypeRequirements)
+SELECT
+    CAST(b."blueprintTypeID" AS bigint) * 100000000 + CAST(itm."materialTypeID" AS bigint) * 100 + CAST(1 AS bigint) AS "id",
+    b."blueprintTypeID",
+    1 /* manufacturing */ AS "activityID",
+    itm."materialTypeID" AS "requiredTypeID",
+    itm."quantity", -- ME affected
+    1.0 AS "damagePerJob",
+    COALESCE(rtr."quantity", 0) AS "extraQuantity" -- not affected by ME
+
+  FROM 
+    "invBlueprintTypes" AS b
+    JOIN "invTypeMaterials" AS itm
+       ON itm."typeID" = b."productTypeID"
+    LEFT OUTER JOIN "ramTypeRequirements" AS rtr
+       ON rtr."typeID" = b."blueprintTypeID" AND itm."materialTypeID" = rtr."requiredTypeID"
+
+UNION
+
+-- The second sub-query will gather all other requirements (for manufacturing and other activities)
+SELECT
+    CAST(b."blueprintTypeID" AS bigint) * 100000000 + CAST(rtr."requiredTypeID" AS bigint) * 100 + CAST(rtr."activityID" AS bigint) AS "id",
+    b."blueprintTypeID",
+    rtr."activityID",
+    rtr."requiredTypeID",
+    0 AS "quantity", -- these are not affected by ME
+    rtr."damagePerJob",
+    rtr."quantity" AS "extraQuantity"
+
+  FROM
+    "invBlueprintTypes" AS b
+    JOIN "ramTypeRequirements" AS rtr
+        ON rtr."typeID" = b."blueprintTypeID"
+
+  WHERE
+    -- to exclude the rows already selected from invTypeMaterials
+    NOT EXISTS (SELECT *
+         FROM
+            "invTypeMaterials" AS itm
+         WHERE
+            itm."typeID" = b."productTypeID"
+            AND itm."materialTypeID" = rtr."requiredTypeID")
+
+; -- INSERT
 
 ----------------------------------------------------------
 -- Add noctis blueprint requirements
 INSERT INTO "eve_blueprintreq"
-      --     id            bpTypeID activityID reqTypeID   qty    dmg    base
-      SELECT 286400003401, 2864,    1,         34,       3349410, 1.0, 936043 -- Tritanium
-UNION SELECT 286400003501, 2864,    1,         35,        936043, 1.0, 936043 -- Pyerite
-UNION SELECT 286400003601, 2864,    1,         36,        276936, 1.0, 276936 -- Mexallon
-UNION SELECT 286400003701, 2864,    1,         37,         50713, 1.0,  50713 -- Isogen
-UNION SELECT 286400003801, 2864,    1,         38,         24630, 1.0,  24630 -- Nocxium
-UNION SELECT 286400003901, 2864,    1,         39,          3438, 1.0,   3438 -- Zydrine
-UNION SELECT 286400004001, 2864,    1,         40,          1580, 1.0,   1580 -- Megacyte
+      --     id            bpTypeID act. reqTypeID  qty  dmg   extra
+      SELECT 286400003401, 2864,    1,   34,    3349410, 1.0, 936043 -- Tritanium
+UNION SELECT 286400003501, 2864,    1,   35,     936043, 1.0, 936043 -- Pyerite
+UNION SELECT 286400003601, 2864,    1,   36,     276936, 1.0, 276936 -- Mexallon
+UNION SELECT 286400003701, 2864,    1,   37,      50713, 1.0,  50713 -- Isogen
+UNION SELECT 286400003801, 2864,    1,   38,      24630, 1.0,  24630 -- Nocxium
+UNION SELECT 286400003901, 2864,    1,   39,       3438, 1.0,   3438 -- Zydrine
+UNION SELECT 286400004001, 2864,    1,   40,       1580, 1.0,   1580 -- Megacyte
 ;
 
 -- fill the dataInterfaceID field

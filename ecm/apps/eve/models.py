@@ -234,9 +234,11 @@ class BlueprintType(models.Model):
 
         for mat in self.materials(activity).filter(damagePerJob__gt=0):
             mat.quantity *= rounded_runs
-            if mat.baseMaterial > 0:
-                mat.quantity = apply_material_level(mat.quantity, me_level,
-                                                    self.wasteFactor, round_result)
+            mat.quantity = apply_material_level(mat.quantity,
+                                                me_level,
+                                                self.wasteFactor,
+                                                round_result)
+            mat.quantity += mat.extraQuantity
             materials.append(mat)
         return materials
 
@@ -301,7 +303,7 @@ class BlueprintReq(models.Model):
     required_type = models.ForeignKey('Type', db_column='requiredTypeID')
     quantity = models.IntegerField(default=0)
     damagePerJob = models.FloatField(default=1.0)
-    baseMaterial = models.IntegerField(default=0)
+    extraQuantity = models.IntegerField(default=0)
     __item = None
 
     @property
