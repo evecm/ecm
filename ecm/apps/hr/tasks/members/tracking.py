@@ -139,6 +139,7 @@ def parseOneMember(member, my_corp):
         location = str(member.locationID)
     try:
         mem = Member.objects.get(characterID=member.characterID)
+        mem.corp = my_corp
         mem.nickname   = member.title
         mem.baseID     = member.baseID
         mem.corpDate   = timezone.make_aware(member.startDateTime, timezone.utc)

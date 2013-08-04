@@ -24,6 +24,7 @@ import logging
 
 from django.db import transaction
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from ecm.utils.format import print_float
 from ecm.apps.eve.models import Type
@@ -58,9 +59,10 @@ def update_supply_prices():
 
 #------------------------------------------------------------------------------
 def update_all_production_costs():
+    user = User.objects.latest('id')
     for entry in CatalogEntry.objects.filter(is_available=True):
         try:
-            update_production_cost(entry)
+            update_production_cost(entry, user)
         except Type.NoBlueprintException:
             # this can happen when blueprint requirements are not found in EVE database.
             # no way to work arround this issue for the moment, we just keep the price to None
@@ -72,13 +74,13 @@ def update_all_production_costs():
             logger.warning('Cannot calculate production cost for "%s": %s', entry.typeName, err)
 
 #------------------------------------------------------------------------------
-def update_production_cost(entry):
+def update_production_cost(entry, user):
     cost = None
     missing_bps = entry.missing_blueprints()
     if not missing_bps:
         with transaction.commit_manually():
             try:
-                order = Order.objects.create(originator_id=1)
+                order = Order.objects.create(originator=user)
                 order.modify( [ (entry, 1) ] )
                 missing_prices = order.create_jobs(ignore_fixed_prices=True)
                 if missing_prices:

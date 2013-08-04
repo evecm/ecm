@@ -19,13 +19,6 @@ __date__ = '2011-05-21'
 __author__ = 'diabeteman'
 
 
-
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext as Ctx
 from django.template.defaultfilters import pluralize
@@ -36,11 +29,12 @@ from django.db.models.query_utils import Q
 
 from ecm.utils.format import round_quantity, print_float, print_integer
 from ecm.utils import db
+from ecm.utils import _json as json
 from ecm.views.decorators import check_user_access
 from ecm.apps.eve.models import CelestialObject, Type
 from ecm.apps.eve import constants
 from ecm.plugins.assets.models import Asset
-from ecm.apps.corp.models import Corporation, Hangar
+from ecm.apps.corp.models import Corporation, Hangar, CorpHangar
 from ecm.apps.common.models import Setting, UpdateDate
 from ecm.plugins.assets.views import extract_divisions, HTML_ITEM_SPAN
 
@@ -63,7 +57,7 @@ def root(request):
     all_hangars = Hangar.objects.all().order_by('hangarID')
     for hangar in all_hangars:
         hangar.name = hangar.get_name(my_corp)
-    
+
     try:
         divisions_str = request.GET['divisions']
         divisions = [ int(div) for div in divisions_str.split(',') ]
@@ -310,9 +304,11 @@ def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
     else:
         cursor.execute(sql, [solarSystemID, closest_obj_id, stationID] + list(divisions))
 
-    my_corp = Corporation.objects.mine()
-
     exact_volumes = Setting.get('assets_show_exact_volumes')
+
+    HANGAR = Hangar.DEFAULT_NAMES.copy()
+    for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
+        HANGAR[h.hangar_id] = h.name
 
     jstree_data = []
     for hangarID, items, volume in cursor:
@@ -321,11 +317,9 @@ def get_hangars_data(request, solarSystemID, closest_obj_id, stationID):
             volume = print_float(volume)
         else:
             volume = round_quantity(volume)
-        
-        hangar = Hangar.objects.get(pk=hangarID)
-        
+
         jstree_data.append({
-            'data': HTML_ITEM_SPAN % (hangar.get_name(my_corp), items, pluralize(items), volume),
+            'data': HTML_ITEM_SPAN % (HANGAR[hangarID], items, pluralize(items), volume),
             'attr' : {
                 'id' : '%d_%d_%d_%d_' % (solarSystemID, closest_obj_id, stationID, hangarID),
                 'sort_key' : hangarID,
@@ -425,9 +419,9 @@ def get_can1_content_data(request, solarSystemID, closest_obj_id, stationID, han
 @cache_page(3 * 60 * 60) # 3 hours cache
 def get_can2_content_data(request, solarSystemID, closest_obj_id, stationID, hangarID, container1, container2):
     assets_query = Asset.objects.filter(solarSystemID=int(solarSystemID),
-                                        stationID=int(stationID), 
+                                        stationID=int(stationID),
                                         hangarID=int(hangarID),
-                                        container1=int(container1), 
+                                        container1=int(container1),
                                         container2=int(container2))
     json_data = []
     for a in assets_query.select_related(depth=1):

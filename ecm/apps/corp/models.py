@@ -23,10 +23,10 @@ import logging
 import urlparse
 import urllib2
 
-import django.utils.simplejson as json
 from django.db import models
 from django.core.exceptions import ValidationError
 
+from ecm.utils import _json as json
 from ecm.apps.scheduler.validators import extract_function
 from ecm.utils.http import HttpClient
 

@@ -35,6 +35,9 @@ for me_mod in constants.DECRYPTOR_ATTRIBUTES.keys():
     else:
         ME_CHOICES.append( (me_mod, 'None') )
 
+
+class InventionError(Exception): pass
+
 #------------------------------------------------------------------------------
 class InventionPolicy(models.Model):
     """
@@ -114,6 +117,9 @@ class InventionPolicy(models.Model):
 
         If no decryptor is required, return None as the decryptor typeID
         """
+        if blueprint.parent_blueprint is None:
+            raise InventionError('Blueprint %s has no parent_blueprint and cannot be invented.', blueprint.blueprintTypeID)
+
         decryptor_group = constants.INTERFACES_DECRYPTOR_MAPPING[blueprint.parent_blueprint.dataInterfaceID]
 
         if InventionPolicy.objects.filter(item_id=blueprint.product.typeID):

@@ -154,13 +154,12 @@ LOGGING = {
             'formatter': 'ecm_formatter',
             'level': 'INFO',
             'filename': os.path.join(LOG_FILES_DIR, 'feedback.log'),
-            #'delay': True, # wait until first log record is emitted to open file
             'when': 'midnight', # roll over each day at midnight
             'backupCount': 15, # keep 15 backup files
         },
     },
     'loggers': {
-        'ecm': {                                        # remove console handler on production
+        'ecm': {
             'handlers': ['file_handler'],
             'propagate': True,
             'level': 'DEBUG',

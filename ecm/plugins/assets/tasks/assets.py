@@ -93,36 +93,42 @@ def update():
             except KeyError:
                 # unhandled typeID, this may be a reactor array or some other crap
                 pass
-    
-    LOG.info("%d assets parsed", len(new_items))
-    
-    clear_cache()
 
-    diffs = []
-    if len(old_items) != 0:
-        LOG.debug("computing diffs since last asset scan...")
-        diffs = calc_assets_diff(old_items=old_items, new_items=new_items, date=currentTime)
+    LOG.info("%d assets parsed", len(new_items))
+
+    clear_cache()
 
     # I grouped all the DB writes here so that it doesn't make a too long DB transaction.
     # The assets parsing can last more than 10 minutes on slow servers.
-    write_results(new_items, old_items, diffs, assets_to_locate, currentTime)
+    write_results(new_items, old_items, assets_to_locate, currentTime)
+
+    diffs = []
+    if old_items:
+        LOG.debug("computing diffs since last asset scan...")
+        diffs = calc_assets_diff(old_items=old_items, new_items=new_items, date=currentTime)
+
+    if diffs:
+        write_diff_results(diffs, currentTime)
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
-def write_results(new_items, old_items, diffs, assets_to_locate, currentTime):
-    if diffs:
-        for assetDiff in diffs:
-            assetDiff.save()
-        # we store the update time of the table
-        UpdateDate.mark_updated(model=AssetDiff, date=currentTime)
+def write_results(new_items, old_items, assets_to_locate, currentTime):
     if len(old_items) > 0:
         Asset.objects.all().delete()
     for asset in new_items.values():
         asset.save()
     update_assets_locations(assets_to_locate)
     update_assets_names()
-    UpdateDate.mark_updated(model=Asset, date=currentTime)
     # we store the update time of the table
+    UpdateDate.mark_updated(model=Asset, date=currentTime)
+
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def write_diff_results(diffs, currentTime):
+    for assetDiff in diffs:
+        assetDiff.save()
+    # we store the update time of the table
+    UpdateDate.mark_updated(model=AssetDiff, date=currentTime)
     LOG.info("%d changes since last scan", len(diffs))
 
 #------------------------------------------------------------------------------
@@ -180,6 +186,7 @@ def merge_duplicates(assetlist):
             if assetlist[i].lookslike(assetlist[i + 1]):
                 # the assets are sorted so we can merge and delete the duplicate one
                 assetlist[i].quantity += assetlist[i + 1].quantity
+                assetlist[i].volume += assetlist[i + 1].volume
                 del assetlist[i + 1]
             else:
                 i += 1
@@ -270,7 +277,7 @@ def row_is_in_hangar(item, items_dic, solarSystemID=None, stationID=None, hangar
     except Type.DoesNotExist, err:
         LOG.warning(err)
         return
-    
+
     if solarSystemID is None and stationID is None:
         # we come from the update() method and the item has a locationID attribute
         asset.stationID = locationid_to_stationid(item.locationID)
@@ -366,13 +373,13 @@ def make_asset_from_row(row):
     else:
         is_bpc = None
 
-    return Asset(itemID      = row.itemID,
-                 eve_type    = item,
-                 quantity    = row.quantity,
-                 flag        = row.flag,
-                 singleton   = row.singleton,
-                 volume      = volume,
-                 is_bpc      = is_bpc)
+    return Asset(itemID=row.itemID,
+                 eve_type=item,
+                 quantity=row.quantity,
+                 flag=row.flag,
+                 singleton=row.singleton,
+                 volume=volume,
+                 is_bpc=is_bpc)
 
 #------------------------------------------------------------------------------
 ITEMS_CACHE = {}
@@ -381,14 +388,14 @@ def get_item(typeID):
         return ITEMS_CACHE[typeID]
     except KeyError:
         raise Type.DoesNotExist('Item with typeID=%s not found in eve db.' % typeID)
-        
+
 def fill_cache():
     for item in Type.objects.all():
         ITEMS_CACHE[item.typeID] = item
-    
+
 def clear_cache():
     ITEMS_CACHE.clear()
-    
+
 
 #------------------------------------------------------------------------------
 def locationid_to_stationid(locationID):
@@ -420,10 +427,10 @@ def update_assets_locations(assets_to_locate):
         try:
             locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
             for loc in locations_api.locations:
-                located_assets.append( (loc.itemID, loc.itemName, loc.x, loc.y, loc.z) )
+                located_assets.append((loc.itemID, loc.itemName, loc.x, loc.y, loc.z))
         except api.Error, err:
             # error can happen if a ship/asset found in a SMA/CHA does not belong to the corp
-            LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).', 
+            LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).',
                         err.code, str(err), ids)
 
     LOG.debug('Computing positions...')
@@ -435,13 +442,13 @@ def update_assets_locations(assets_to_locate):
             distances = []
 
             for obj in CelestialObject.objects.filter(solarSystemID=solarSystemID,
-                                                      group__in = [7, 8]):
+                                                      group__in=[7, 8]):
                 # Distances between celestial objects are huge. The error margin
                 # that comes with manhattan distance is totally acceptable.
                 # See http://en.wikipedia.org/wiki/Taxicab_geometry for culture.
                 # manhattan_distance = abs(X - x) + abs(Y - y) + abs(Z - z)
                 manhattan_distance = abs(X - obj.x) + abs(Y - obj.y) + abs(Z - obj.z)
-                distances.append(( obj.itemID, manhattan_distance ))
+                distances.append((obj.itemID, manhattan_distance))
 
             # Sort objects by increasing distance (we only want minimum)
             distances.sort(key=lambda obj:obj[1])
@@ -469,10 +476,10 @@ def update_assets_names():
         try:
             locations_api = api_conn.corp.Locations(characterID=api.get_charID(), ids=ids)
             for loc in locations_api.locations:
-                named_assets.append( (loc.itemID, loc.itemName) )
+                named_assets.append((loc.itemID, loc.itemName))
         except api.Error, err:
             # error can happen if a ship/asset found in a SMA/CHA does not belong to the corp
-            LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).', 
+            LOG.warning('%s (code %s). Item IDs: %s (names will not be retrieved for these items).',
                         err.code, str(err), ids)
 
     LOG.debug('Writing to DB...')

@@ -40,22 +40,22 @@ TASKS = [
         'function': 'ecm.apps.hr.tasks.titles.update',
         'priority': 50,
         'frequency': 6,
-        'frequency_units': 3600, # hour
+        'frequency_units': 60 * 60, # hour
     }, {
         'function': 'ecm.apps.hr.tasks.members.update',
         'priority': 20,
         'frequency': 2,
-        'frequency_units': 3600, # hour
+        'frequency_units': 60 * 60, # hour
     }, {
         'function': 'ecm.apps.hr.tasks.users.update_all_character_associations',
         'priority': 5,
         'frequency': 1,
-        'frequency_units': 86400, # day
+        'frequency_units': 60 * 60 * 24, # day
     }, {
         'function': 'ecm.apps.hr.tasks.users.update_all_users_accesses',
         'priority': 1,
         'frequency': 2,
-        'frequency_units': 3600, # hour
+        'frequency_units': 60 * 60, # hour
     },
 ]
 

@@ -18,11 +18,6 @@
 __date__ = '2010-12-25'
 __author__ = 'diabeteman'
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 from datetime import datetime, timedelta
 
 from django.utils import timezone
@@ -34,6 +29,7 @@ from django.http import HttpResponse
 from django.db import connection
 
 from ecm.utils import db
+from ecm.utils import _json as json
 from ecm.apps.common.models import UpdateDate
 from ecm.utils.format import print_integer, print_time_min
 from ecm.views.decorators import check_user_access
@@ -104,7 +100,7 @@ def root(request, date_str):
     all_hangars = Hangar.objects.all().order_by('hangarID')
     for hangar in all_hangars:
         hangar.name = hangar.get_name(my_corp)
-    
+
     try:
         divisions_str = request.GET['divisions']
         divisions = [ int(div) for div in divisions_str.split(',') ]
@@ -166,7 +162,7 @@ def get_systems_data(request, date_str):
     date = datetime.strptime(date_str, DATE_PATTERN)
     date = timezone.make_aware(date, timezone.utc)
     next_date = date + timedelta(seconds=1)
-    
+
     divisions = extract_divisions(request)
     show_in_space = json.loads(request.GET.get('space', 'true'))
     show_in_stations = json.loads(request.GET.get('stations', 'true'))
@@ -310,7 +306,7 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
     else:
         cursor.execute(sql, [solarSystemID, stationID, date, next_date] + list(divisions))
 
-    HANGAR = {}
+    HANGAR = Hangar.DEFAULT_NAMES.copy()
     for h in CorpHangar.objects.filter(corp=Corporation.objects.mine()):
         HANGAR[h.hangar_id] = h.name
 
@@ -333,13 +329,13 @@ def get_hangars_data(request, date_str, solarSystemID, stationID):
 @check_user_access()
 @cache_page(3 * 60 * 60) # 3 hours cache
 def get_hangar_content_data(request, date_str, solarSystemID, stationID, hangarID):
-    
+
     date = datetime.strptime(date_str, DATE_PATTERN)
     date = timezone.make_aware(date, timezone.utc)
     next_date = date + timedelta(seconds=1)
-    
+
     assets_query = AssetDiff.objects.filter(solarSystemID=int(solarSystemID),
-                                            stationID=int(stationID), 
+                                            stationID=int(stationID),
                                             hangarID=int(hangarID),
                                             date__range=(date, next_date))
     jstree_data = []

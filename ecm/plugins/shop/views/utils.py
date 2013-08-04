@@ -18,15 +18,10 @@
 __date__ = "2012 2 2"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.http import HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse, \
     HttpResponseNotFound
 
+from ecm.utils import _json as json
 from ecm.views import JSON
 from ecm.apps.common import eft
 from ecm.views.decorators import check_user_access

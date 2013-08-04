@@ -20,27 +20,28 @@ __author__ = 'diabeteman'
 
 import re
 from datetime import datetime
-import django.utils.simplejson as JSON
+import json
+
 
 #------------------------------------------------------------------------------
 def loads(s, object_hook=None, **kw):
     object_hook = object_hook or __datetime_json_decoder
-    return JSON.loads(s, object_hook=object_hook, **kw)
+    return json.loads(s, object_hook=object_hook, **kw)
   
 #------------------------------------------------------------------------------  
 def dumps(obj, cls=None, **kw):
     cls = cls or DatetimeJSONEncoder
-    return JSON.dumps(obj, cls=cls, **kw)
+    return json.dumps(obj, cls=cls, **kw)
     
 #------------------------------------------------------------------------------
 DATE_PATTERN = '%Y-%m-%d_%H-%M-%S'
-class DatetimeJSONEncoder(JSON.JSONEncoder):
+class DatetimeJSONEncoder(json.encoder.JSONEncoder):
     
     def default(self, obj):
         if isinstance(obj, datetime):
             return obj.strftime(DATE_PATTERN)
         else:
-            return JSON.JSONEncoder.default(self, obj)
+            return json.encoder.JSONEncoder.default(self, obj)
 
 #------------------------------------------------------------------------------
 DATE_RE = re.compile('\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}')

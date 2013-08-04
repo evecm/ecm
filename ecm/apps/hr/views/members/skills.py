@@ -18,17 +18,12 @@
 __date__ = "2012 08 02"
 __author__ = "Ajurna"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.db.models.aggregates import Count
 from django.template.context import RequestContext as Ctx
 from django.shortcuts import render_to_response
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed
 
+from ecm.utils import _json as json
 from ecm.apps.common import eft
 from ecm.apps.eve.models import Type
 from ecm.views.decorators import check_user_access

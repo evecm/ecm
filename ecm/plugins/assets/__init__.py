@@ -36,7 +36,7 @@ TASKS = [
         'function' : 'ecm.plugins.assets.tasks.assets.update',
         'priority' : 0,
         'frequency' : 6,
-        'frequency_units' : 3600, # hour
+        'frequency_units' : 60 * 60, # hour
     },
 ]
 

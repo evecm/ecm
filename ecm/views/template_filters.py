@@ -18,11 +18,11 @@
 __date__ = "2011 9 10"
 __author__ = "diabeteman"
 
-import json
 from datetime import timedelta
 
 from django.template.defaultfilters import register
 
+from ecm.utils import _json as json
 from ecm.utils.format import print_time_min, print_date, print_duration, print_integer, print_float
 
 #------------------------------------------------------------------------------

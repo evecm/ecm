@@ -134,74 +134,54 @@ SET "parentBlueprintTypeID" =
 -- material is affected by waste when building.
 -------------------------------------------------------
 INSERT INTO "eve_blueprintreq"
-    SELECT  rtr."typeID" * 100000000 + rtr."requiredTypeID" * 100 + rtr."activityID",
-            rtr."typeID",
-            rtr."activityID",
-            rtr."requiredTypeID",
-            rtr."quantity" + IFNULL(itm."quantity", 0),
-            rtr."damagePerJob",
-            IFNULL(itm."quantity", 0)
-    FROM "eve"."invBlueprintTypes" AS b
-       INNER JOIN "eve"."ramTypeRequirements" AS rtr
-           ON rtr."typeID" = b."blueprintTypeID"
-          AND rtr."activityID" = 1 -- manufacturing
-       LEFT OUTER JOIN "eve"."invTypeMaterials" AS itm
-           ON itm."typeID" = b."productTypeID"
-          AND itm."materialTypeID" = rtr."requiredTypeID"
-    WHERE rtr."quantity" > 0
-;
-----------------------------------------------------------
-INSERT INTO "eve_blueprintreq"
-    SELECT  b."blueprintTypeID" * 100000000 + itm."materialTypeID" * 100 + 1,
-            b."blueprintTypeID",
-            1,  -- manufacturing activityID
-            itm."materialTypeID",   -- requiredTypeID
-            (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)),  -- quantity
-            1,   -- damagePerJob
-            (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0))  -- baseMaterial
-    FROM "eve"."invBlueprintTypes" b
-       INNER JOIN "eve"."invTypeMaterials" itm
-           ON itm."typeID" = b."productTypeID"
-       LEFT OUTER JOIN "eve_blueprintreq" m
-           ON b."blueprintTypeID" = m."blueprintTypeID"
-           AND m."requiredTypeID" = itm."materialTypeID"
-       LEFT OUTER JOIN (
-           SELECT srtr."typeID" AS "blueprintTypeID", -- tech 2 items recycle into their materials
-                  sitm."materialTypeID" AS "recycledTypeID",   -- plus the t1 item's materials
-                  srtr."quantity" AS "recycledQuantity",
-                  sitm."quantity" AS "quantity"
-           FROM "eve"."ramTypeRequirements" AS srtr
-               INNER JOIN "eve"."invTypeMaterials" AS sitm
-                   ON srtr."requiredTypeID" = sitm."typeID"
-           WHERE srtr."recycle" = 1   -- the recycle flag determines whether or not this requirement's materials are added
-             AND srtr."activityID" = 1
-       ) AS sub
-           ON sub."blueprintTypeID" = b."blueprintTypeID"
-           AND sub."recycledTypeID" = itm."materialTypeID"
-    WHERE m."blueprintTypeID" IS NULL -- partially waste-affected materials already added
-    AND (itm."quantity" - IFNULL(sub."quantity" * sub."recycledQuantity", 0)) > 0 -- ignore negative quantities
-;
-----------------------------------------------------------
-INSERT INTO "eve_blueprintreq"("id",
-                             "blueprintTypeID",
-                             "activityID",
-                             "requiredTypeID",
-                             "quantity",
-                             "damagePerJob",
-                             "baseMaterial")
-    SELECT  rtr."typeID" * 100000000 + rtr."requiredTypeID" * 100 + rtr."activityID",
-            rtr."typeID",
-            rtr."activityID",
-            rtr."requiredTypeID",
-            rtr."quantity",
-            rtr."damagePerJob",
-            0 AS "baseMaterial"
-    FROM "eve"."ramTypeRequirements" AS rtr
-    WHERE rtr."activityID" NOT IN (1)
-      AND rtr."typeID" IN (SELECT "blueprintTypeID" FROM "eve_blueprinttype") 
-;
-----------------------------------------------------------
-UPDATE "eve_blueprintreq" SET "baseMaterial" = 0 WHERE "baseMaterial" IS NULL;
+
+-- This first sub query will select all basic requirements for manufacturing
+-- the quantities gathered here are splitted in 2 categories:
+--    "quantity" : ME affected quantity for manufacturing (from invTypeMaterials)
+--    "extraQuantity" : Non ME-affected quantity for manufacturing (from ramTypeRequirements)
+SELECT
+    b."blueprintTypeID" * 100000000 + itm."materialTypeID" * 100 + 1 AS "id",
+    b."blueprintTypeID",
+    1 /* manufacturing */ AS "activityID",
+    itm."materialTypeID" AS "requiredTypeID",
+    itm."quantity", -- ME affected
+    1.0 AS "damagePerJob",
+    IFNULL(rtr."quantity", 0) AS "extraQuantity" -- not affected by ME
+
+  FROM 
+    "invBlueprintTypes" AS b
+    JOIN "invTypeMaterials" AS itm
+       ON itm."typeID" = b."productTypeID"
+    LEFT OUTER JOIN "ramTypeRequirements" AS rtr
+       ON rtr."typeID" = b."blueprintTypeID" AND itm."materialTypeID" = rtr."requiredTypeID"
+
+UNION
+
+-- The second sub-query will gather all other requirements (for manufacturing and other activities)
+SELECT
+    b."blueprintTypeID" * 100000000 + rtr."requiredTypeID" * 100 + rtr."activityID" AS "id",
+    b."blueprintTypeID",
+    rtr."activityID",
+    rtr."requiredTypeID",
+    0 AS "quantity", -- these are not affected by ME
+    rtr."damagePerJob",
+    rtr."quantity" AS "extraQuantity"
+
+  FROM
+    "invBlueprintTypes" AS b
+    JOIN "ramTypeRequirements" AS rtr
+        ON rtr."typeID" = b."blueprintTypeID"
+
+  WHERE
+    -- to exclude the rows already selected from invTypeMaterials
+    NOT EXISTS (SELECT *
+         FROM
+            "invTypeMaterials" AS itm
+         WHERE
+            itm."typeID" = b."productTypeID"
+            AND itm."materialTypeID" = rtr."requiredTypeID")
+
+; -- INSERT
 
 ----------------------------------------------------------
 -- Add noctis blueprint requirements

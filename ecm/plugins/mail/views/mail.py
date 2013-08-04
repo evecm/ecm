@@ -53,7 +53,7 @@ def mail_list(request):
         'maillists' : MailingList.objects.all(),
         'datatables_defaults': DATATABLES_DEFAULTS,
         'columns': COLUMNS,
-        'ajax_url': '/mail/list/',
+        'ajax_url': '/mail/data/',
     }
     return render_to_response("ecm/mail/mail_list.html", data, RequestContext(request))
 
@@ -83,7 +83,6 @@ def mail_list_data(request):
     
     mail = Mail.objects.all().order_by('-sentDate')
     mail_list = []
-    
     for message in mail[params.first_id:params.last_id]:
         recp = []
         for target in message.recipients.all():

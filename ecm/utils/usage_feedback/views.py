@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
-from django.db.models.aggregates import Sum
 
 __date__ = "2013 07 17"
 __author__ = "diabeteman"
@@ -27,14 +26,17 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http.response import HttpResponse
 from django.shortcuts import render_to_response
 
-from ecm.utils import json
+import ecm
+from ecm.utils import _json as json
+from django.db.models.aggregates import Sum
 from ecm.utils.usage_feedback.models import ECMInstanceFeedback
 
 #------------------------------------------------------------------------------
 STATS_PER_COUNTRY_SQL = '''\
 SELECT  MAX(key_fingerprint) AS key_fingerprint,
         country_name,
-        SUM(active_user_count) as active_users
+        SUM(active_user_count) as active_users,
+        COUNT(*) as instance_count
 FROM usage_feedback_ecminstancefeedback
 GROUP BY country_name
 ORDER BY active_users DESC;
@@ -60,33 +62,34 @@ def feedback(request):
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
 def post_feedback(request):
-    feedback = json.loads(request.body)
-    key = feedback.get('key_fingerprint')
+    fb = json.loads(request.body)
+    key = fb.get('key_fingerprint')
     now = timezone.now()
-    
+
     try:
         db_feedback = ECMInstanceFeedback.objects.get(key_fingerprint=key)
         if db_feedback.last_updated > now - timedelta(days=1):
-            return HttpResponse('You cannot send feedback more than once a day')
+            return HttpResponse(ecm.VERSION)
     except ECMInstanceFeedback.DoesNotExist:
         db_feedback = ECMInstanceFeedback(key_fingerprint=key)
 
-    db_feedback.active_user_count = feedback.get('active_user_count') or 0
-    db_feedback.avg_last_visit_top10 = feedback.get('avg_last_visit_top10') or 0
-    db_feedback.avg_last_visit = feedback.get('avg_last_visit') or 0
-    db_feedback.country_code = feedback.get('country_code')
-    db_feedback.country_name = feedback.get('country_name')
-    db_feedback.city = feedback.get('city')
-    db_feedback.first_installed = feedback.get('first_installed') or now
+    db_feedback.active_user_count = fb.get('active_user_count') or 0
+    db_feedback.avg_last_visit_top10 = fb.get('avg_last_visit_top10') or 0
+    db_feedback.avg_last_visit = fb.get('avg_last_visit') or 0
+    db_feedback.country_code = fb.get('country_code')
+    db_feedback.country_name = fb.get('country_name')
+    db_feedback.city = fb.get('city')
+    db_feedback.first_installed = fb.get('first_installed') or now
+    db_feedback.version = fb.get('ecm_version')
 
     db_feedback.feedback_count += 1
     db_feedback.save()
-    
-    # remove outdated usage feedbacks (more than 1 month)
-    one_month_ago = now - timedelta(days=30)
-    ECMInstanceFeedback.objects.filter(last_updated__lt=one_month_ago).delete()
-    
-    return HttpResponse('Thank you for your contribution')
+
+    # remove outdated usage feedbacks (more than 2 weeks)
+    two_weeks_ago = now - timedelta(days=14)
+    ECMInstanceFeedback.objects.filter(last_updated__lt=two_weeks_ago).delete()
+
+    return HttpResponse(ecm.VERSION)
 
 #------------------------------------------------------------------------------
 def get_feedback(request):

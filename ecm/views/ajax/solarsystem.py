@@ -18,17 +18,12 @@
 __date__ = "2012 09 06"
 __author__ = "tash"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
+from ecm.utils import _json as json
 from ecm.apps.eve.models import CelestialObject
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params

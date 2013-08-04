@@ -30,19 +30,19 @@ TASKS = [
         'function' : 'ecm.apps.corp.tasks.corp.update',
         'priority' : 200,
         'frequency' : 12,
-        'frequency_units' : 3600, # hour
+        'frequency_units' : 60 * 60, # hour
     },
     {
         'function' : 'ecm.apps.corp.tasks.standings.update',
         'priority' : 200,
         'frequency' : 24,
-        'frequency_units' : 3600, # hour
+        'frequency_units' : 60 * 60, # hour
     },
     {
         'function' : 'ecm.apps.corp.tasks.multicorp.update_all',
         'priority' : 200,
         'frequency' : 24,
-        'frequency_units' : 3600, # hour
+        'frequency_units' : 60 * 60, # hour
     },
 ]
 

@@ -19,11 +19,6 @@ __date__ = "2011 11 13"
 __author__ = "diabeteman"
 
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
 import logging
 
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
@@ -32,6 +27,7 @@ from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, render_to_response
 
 from ecm.utils import db
+from ecm.utils import _json as json
 from ecm.utils.format import print_float
 from ecm.apps.common.models import Setting
 from ecm.apps.eve.models import Type

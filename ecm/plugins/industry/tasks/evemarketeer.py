@@ -19,9 +19,9 @@ __date__ = "2012 4 19"
 __author__ = "Ajurna"
 
 #import logging
-import json
 import urllib2
 
+from ecm.utils import _json as json
 #logger = logging.getLogger(__name__)
 
 

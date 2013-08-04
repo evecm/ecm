@@ -3,7 +3,8 @@ from django.forms.util import flatatt
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from django.utils.simplejson import JSONEncoder
+#from django.utils.simplejson import JSONEncoder
+from ecm.utils import _json as json
 from django.utils.encoding import smart_unicode
 from django.conf.urls.static import static
 
@@ -42,12 +43,12 @@ class ModelAutoCompleteField(forms.TextInput):
         self.attrs = {'autocomplete': 'off'}
         self.source = source
         if len(options) > 0:
-            self.options = JSONEncoder().encode(options)
+            self.options = json.dumps(options)
         self.attrs.update(attrs)
 
     def render_js(self, field_id, limit=10):
         if isinstance(self.source, list):
-            source = JSONEncoder().encode(self.source)
+            source = json.dumps(self.source)
         elif isinstance(self.source, str):
             source = "'%s'" % escape(self.source)
         else:

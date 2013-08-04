@@ -28,6 +28,7 @@ from ecm.apps.eve.models import Type
 from ecm.plugins.industry.models.catalog import CatalogEntry, PricingPolicy
 from ecm.plugins.industry.models.inventory import Supply
 from ecm.plugins.industry.models.job import Job
+from ecm.plugins.industry.models.research import InventionError
 
 #------------------------------------------------------------------------------
 class Order(models.Model):
@@ -162,14 +163,14 @@ class Order(models.Model):
         try:
             self.check_feasibility()
             missing_prices = self.create_jobs(calculate_surcharge=True)
-            if missing_prices: # FIXME moche moche moche
+            if missing_prices: # FIXME: moche moche moche
                 raise OrderCannotBeFulfilled('Missing prices for items %s' % list(missing_prices))
             self.apply_transition(Order.accept, Order.ACCEPTED, user=user, comment="Accepted")
             self.responsible = user
             self.save()
             return True
         except OrderCannotBeFulfilled, err:
-            self.apply_transition(Order.accept, Order.PROBLEMATIC, user=user, comment=str(err))
+            self.apply_transition(Order.accept, Order.PROBLEMATIC, user=user, comment=unicode(err))
             self.responsible = user
             self.save()
             return False
@@ -481,8 +482,11 @@ class OrderRow(models.Model):
 
 
     def create_jobs(self, prices=None):
-        job = Job.create(self.catalog_entry_id, self.quantity, order=self.order, row=self)
-        job.create_requirements()
+        try:
+            job = Job.create(self.catalog_entry_id, self.quantity, order=self.order, row=self)
+            job.create_requirements()
+        except InventionError, err:
+            raise OrderCannotBeFulfilled(msg=unicode(err))
         cost, missing_prices = self.calculate_cost(prices)
         return cost, missing_prices
 
@@ -510,24 +514,27 @@ class OrderRow(models.Model):
 #------------------------------------------------------------------------------
 class OrderCannotBeFulfilled(UserWarning):
 
-    def __init__(self, missing_blueprints=None, missing_prices=None):
+    def __init__(self, msg=None, missing_blueprints=None, missing_prices=None):
+        self.msg = msg
         self.missing_blueprints = missing_blueprints or []
         self.missing_prices = missing_prices or []
 
-    def __str__(self):
+    def __unicode__(self):
+        if self.msg:
+            return self.msg
         if self.missing_blueprints:
             if all([ type(p) == type(0) for p in self.missing_blueprints ]):
                 self.missing_blueprints = Type.objects.filter(typeID__in=self.missing_blueprints)\
                                                       .values_list('typeName', flat=True)
-            output = 'Missing Blueprints: '
-            output += ', '.join(map(str, self.missing_blueprints))
+            output = u'Missing Blueprints: '
+            output += u', '.join(map(str, self.missing_blueprints))
         elif self.missing_prices:
             if all([ type(p) == type(0) for p in self.missing_prices ]):
                 self.missing_prices = Type.objects.filter(typeID__in=self.missing_prices)\
                                                   .values_list('typeName', flat=True)
-            output = 'Missing Supply prices: '
-            output += ', '.join(map(str, self.missing_prices))
-        return output or 'nothing missing'
+            output = u'Missing Supply prices: '
+            output += u', '.join(map(str, self.missing_prices))
+        return output or u'nothing missing'
 
 #------------------------------------------------------------------------------
 class IllegalTransition(UserWarning): pass

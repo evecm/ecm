@@ -18,12 +18,6 @@
 __date__ = "2011 4 17"
 __author__ = "diabeteman"
 
-try:
-    import json
-except ImportError:
-    # fallback for python 2.5
-    import django.utils.simplejson as json
-
 from django.http import HttpResponseBadRequest, HttpResponse, Http404
 from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, get_object_or_404
@@ -31,6 +25,7 @@ from django.db.models.aggregates import Count
 from django.template.context import RequestContext as Ctx
 from django.utils.translation import ugettext as tr
 
+from ecm.utils import _json as json
 from ecm.views.decorators import check_user_access
 from ecm.utils.format import print_time_min
 from ecm.apps.hr.models import Member, Recruit
