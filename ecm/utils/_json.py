@@ -35,14 +35,22 @@ def dumps(obj, cls=None, **kw):
     
 #------------------------------------------------------------------------------
 DATE_PATTERN = '%Y-%m-%d_%H-%M-%S'
-class DatetimeJSONEncoder(json.encoder.JSONEncoder):
-    
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime(DATE_PATTERN)
-        else:
-            return json.encoder.JSONEncoder.default(self, obj)
-
+try:
+    class DatetimeJSONEncoder(json.encoder.JSONEncoder):
+        
+        def default(self, obj):
+            if isinstance(obj, datetime):
+                return obj.strftime(DATE_PATTERN)
+            else:
+                return json.encoder.JSONEncoder.default(self, obj)
+except AttributeError:
+    class DatetimeJSONEncoder(json.JSONEncoder):
+        
+        def default(self, obj):
+            if isinstance(obj, datetime):
+                return obj.strftime(DATE_PATTERN)
+            else:
+                return json.JSONEncoder.default(self, obj)
 #------------------------------------------------------------------------------
 DATE_RE = re.compile('\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}')
 def __datetime_json_decoder(obj_dict):
