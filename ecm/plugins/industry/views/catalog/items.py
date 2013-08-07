@@ -174,7 +174,7 @@ def production_cost(request, item_id):
         error = None
         item = get_object_or_404(CatalogEntry, typeID=int(item_id))
         try:
-            update_production_cost(item)
+            update_production_cost(item, request.user)
         except Type.NoBlueprintException, err:
             # this can happen when blueprint requirements are not found in EVE database.
             # no way to work arround this issue for the moment, we just keep the price to None
