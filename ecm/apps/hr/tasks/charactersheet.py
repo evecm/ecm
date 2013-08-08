@@ -50,7 +50,6 @@ def set_extended_char_attributes(member, sheet):
     member.cloneName = sheet.cloneName
     member.cloneSkillPoints = sheet.cloneSkillPoints
     member.balance = sheet.balance
-    member.location = sheet.lastKnownLocation
     try:
         member.memoryBonusName = sheet.attributeEnhancers.memoryBonus.augmentatorName
         member.memoryBonusValue = sheet.attributeEnhancers.memoryBonus.augmentatorValue
