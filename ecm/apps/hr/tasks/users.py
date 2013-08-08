@@ -28,7 +28,8 @@ from ecm.apps.corp.models import Corporation
 from ecm.apps.common.auth import get_members_group, get_directors_group, alert_user_for_invalid_apis,\
     get_allies_plus_5_group, get_allies_plus_10_group
 from ecm.apps.hr.models import Title, Member
-from ecm.apps.hr.tasks.charactersheet import set_extended_char_attributes, get_character_skills
+from ecm.apps.hr.tasks.charactersheet import set_extended_char_attributes, get_character_skills, \
+    set_char_info_attributes
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.corp.utils import get_corp
 
@@ -61,17 +62,17 @@ def update_character_associations(user):
                     member = Member(characterID=char.characterID,
                                     name=char.name)
 
+                char_info = conn.eve.CharacterInfo(characterID=member.characterID)
+                set_char_info_attributes(member, char_info)
+                sheet = conn.char.CharacterSheet(characterID=member.characterID)
+                set_extended_char_attributes(member, sheet)
+                skills.extend(get_character_skills(member, sheet))
+
                 if not member in new_characters:
                     corp = get_corp(char.corporationID)
                     if member.corp != corp:
                         member.corp = corp
                         new_corps.add(corp)
-                    
-                    if char.is_corped:
-                        sheet = conn.char.CharacterSheet(characterID=member.characterID)
-                        set_extended_char_attributes(member, sheet)
-                        skills.extend(get_character_skills(member, sheet))
-                    
                     new_characters.add(member)
                 
             api_key.is_valid = True

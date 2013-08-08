@@ -85,3 +85,8 @@ def set_extended_char_attributes(member, sheet):
     member.charisma = sheet.attributes.charisma
     member.perception = sheet.attributes.perception
     member.willpower = sheet.attributes.willpower
+
+#-----------------------------------------------------------------------------
+def set_char_info_attributes(member, char_info):
+    member.location = char_info.lastKnownLocation
+    member.ship = char_info.shipTypeName
