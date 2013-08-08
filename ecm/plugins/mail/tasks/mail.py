@@ -25,6 +25,9 @@ from ecm.plugins.mail.models import Mail, MailingList, Notification, Recipient
 from ecm.apps.common import api
 from ecm.apps.common.models import UserAPIKey
 from ecm.apps.hr.models.member import Member
+from ecm.apps.corp.utils import get_corpOrAlliance
+from ecm.apps.hr.utils import get_char
+
 
 #-----------------------------------------------------------------------------
 def update():
@@ -79,7 +82,7 @@ def get_mail(api_conn, charid):
             try:
                 mem = Member.objects.get(characterID = head.senderID)
             except Member.DoesNotExist:
-                mem = api.pull_character(head.senderID)
+                mem = get_char(head.senderID)
             mail.sender = mem    
             mail.sentDate = timezone.make_aware(head.sentDate, timezone.utc)
             mail.title = head.title
@@ -87,7 +90,7 @@ def get_mail(api_conn, charid):
             if not head.toCorpOrAllianceID == '':
                 rec = Recipient()
                 rec.mail = mail
-                rec.recipient = api.pull_corporation(head.toCorpOrAllianceID)
+                rec.recipient = get_corpOrAlliance(head.toCorpOrAllianceID)
                 rec.save()
             for chid in str(head.toCharacterIDs).split(','):
                 if chid == '':
@@ -95,7 +98,7 @@ def get_mail(api_conn, charid):
                 try:
                     mem = Member.objects.get(characterID = chid)
                 except Member.DoesNotExist:
-                    mem = api.pull_character(chid)
+                    mem = get_char(chid)
                 rec = Recipient()
                 rec.mail = mail
                 rec.recipient = mem

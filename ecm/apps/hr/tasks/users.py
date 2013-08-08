@@ -24,13 +24,13 @@ from django.db import transaction
 from django.contrib.auth.models import User, Group
 
 from ecm.apps.common import api
-from ecm.apps.corp.tasks.corp import fix_description
-from ecm.apps.corp.models import Corporation, Alliance
+from ecm.apps.corp.models import Corporation
 from ecm.apps.common.auth import get_members_group, get_directors_group, alert_user_for_invalid_apis,\
     get_allies_plus_5_group, get_allies_plus_10_group
 from ecm.apps.hr.models import Title, Member
 from ecm.apps.hr.tasks.charactersheet import set_extended_char_attributes, get_character_skills
 from ecm.apps.scheduler.models import ScheduledTask
+from ecm.apps.corp.utils import get_corp
 
 LOG = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ def update_character_associations(user):
                                     name=char.name)
 
                 if not member in new_characters:
-                    corp = get_corp(char)
+                    corp = get_corp(char.corporationID)
                     if member.corp != corp:
                         member.corp = corp
                         new_corps.add(corp)
@@ -198,47 +198,3 @@ def update_user_accesses(user, my_corp=None, corp_members_group=None, directors_
         elif standings.filter(value__gt=0):
             # if there are contacts with standings in ]0, 5], we add the user to the +5 allies group
             user.groups.add(allies_plus_5_group)
-
-#------------------------------------------------------------------------------
-def get_corp(char):
-    try:
-        return Corporation.objects.get(corporationID=char.corporationID)
-    except Corporation.DoesNotExist:
-        conn = api.eveapi.EVEAPIConnection()
-        api_corp = conn.corp.CorporationSheet(corporationID=char.corporationID)
-        return Corporation(corporationID   = api_corp.corporationID,
-                           corporationName = api_corp.corporationName,
-                           ticker          = api_corp.ticker,
-                           ceoID           = api_corp.ceoID,
-                           ceoName         = api_corp.ceoName,
-                           stationID       = api_corp.stationID,
-                           stationName     = api_corp.stationName,
-                           description     = fix_description(api_corp.description),
-                           alliance        = get_alliance(api_corp),
-                           taxRate         = api_corp.taxRate,
-                           )
-
-
-#------------------------------------------------------------------------------
-def get_alliance(api_corp):
-    try:
-        try:
-            try:
-                alliance = Alliance.objects.get(allianceID = api_corp.allianceID)
-            except Alliance.DoesNotExist:
-                LOG.exception("Adding new Alliance: "+ api_corp.allianceName)
-                alliance = Alliance()
-                alliance.allianceID = api_corp.allianceID
-                alliance.name = api_corp.allianceName
-                alliancesApi = api.connect().eve.AllianceList()
-                for a in alliancesApi.alliances:
-                    if a.allianceID == api_corp.allianceID:
-                        alliance.shortName = a.shortName
-                        alliance.save()
-                        break
-        except api.Error:
-            LOG.exception("Failed to fetch AllianceList.xml.aspx from EVE API server")
-            alliance = None
-    except:
-        alliance = None
-    return alliance
