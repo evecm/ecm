@@ -67,10 +67,9 @@ def update_character_associations(user):
                         member.corp = corp
                         new_corps.add(corp)
                     
-                    if char.is_corped:
-                        sheet = conn.char.CharacterSheet(characterID=member.characterID)
-                        set_extended_char_attributes(member, sheet)
-                        skills.extend(get_character_skills(member, sheet))
+                    sheet = conn.char.CharacterSheet(characterID=member.characterID)
+                    set_extended_char_attributes(member, sheet)
+                    skills.extend(get_character_skills(member, sheet))
                     
                     new_characters.add(member)
                 
