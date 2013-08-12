@@ -30,7 +30,7 @@ def init_characters(user, characters):
             member = Member(characterID=char.characterID,
                             name=char.name)
     
-        corp = get_corp(char.corp.corporationID)
+        corp = get_corp(char.corporationID)
         if corp != member.corp:
             member.corp = corp
             corps.append(corp)
