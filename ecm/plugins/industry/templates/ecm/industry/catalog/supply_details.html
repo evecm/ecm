@@ -93,7 +93,7 @@ $(document).ready(function() {
             id: {{supply.typeID}},
             value: $(this).val()
         };
-        $.post('/industry/catalog/supplies/supplySource_id/', params);
+        $.post('/industry/catalog/supplies/supply_source_id/', params);
     });
     $('#update_button').click(function () {
         var oldPrice = $('dd#price').html();
