@@ -86,7 +86,7 @@ $(document).ready(function() {
             id: {{supply.typeID}},
             value: $(this).is(':checked')
         };
-        $.post('/industry/catalog/supplies/autoUpdate/', params);
+        $.post('/industry/catalog/supplies/auto_update/', params);
     });
     $('#supply_source').change(function () {
         var params = {
