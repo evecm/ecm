@@ -19,6 +19,7 @@ __date__ = "2011 9 6"
 __author__ = "diabeteman"
 
 import urllib
+import urlparse
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -56,11 +57,11 @@ class Member(models.Model):
     accessLvl = models.BigIntegerField(default=0)
     notes = models.TextField(null=True, blank=True)
 
-    owner = models.ForeignKey(User, related_name='characters', null=True, blank=True, 
+    owner = models.ForeignKey(User, related_name='characters', null=True, blank=True,
                               on_delete=models.SET_NULL)
     corp = models.ForeignKey(Corporation, related_name='members', null=True, blank=True)
 
-    #Character Sheet
+    # Character Sheet
     DoB = models.CharField(max_length=128, null=True, blank=True)
     race = models.CharField(max_length=128, null=True, blank=True)
     bloodLine = models.CharField(max_length=128, null=True, blank=True)
@@ -84,7 +85,7 @@ class Member(models.Model):
     charisma = models.IntegerField(default=0)
     perception = models.IntegerField(default=0)
     willpower = models.IntegerField(default=0)
-    
+
     def get_implied_roles(self):
         """
         Retrieve all Roles assigned to one Member directly or through Titles
@@ -123,29 +124,29 @@ class Member(models.Model):
     def permalink(self):
         return '<a href="%s" class="member">%s</a>' % (self.url, self.name)
 
+    DOTLAN_URL = 'http://evemaps.dotlan.net/'
+    DOTLAN_SEARCH_URL = urlparse.urljoin(DOTLAN_URL, '/search')
+    DOTLAN_LINK = '<a href="%s" target="_blank" class="dotlan">%s</a>'
     @property
     def dotlan_location(self):
-        dlocation = '<a href="'
         if str(self.location) == str(self.locationID):
-            print "match"
             try:
-                station = CelestialObject.objects.get(itemID=self.location)
-                dlocation += 'http://evemaps.dotlan.net/search?' + urllib.urlencode({'q': station.itemName})
-                dlocation += '">%s</a>'% (truncate_words(station.itemName, 5))
+                loc = CelestialObject.objects.get(itemID=self.locationID)
+                location_name = loc.itemName
             except CelestialObject.DoesNotExist:
-                pass
+                location_name = self.location
         else:
-            dlocation += 'http://evemaps.dotlan.net/search?' + urllib.urlencode({'q': self.location})
-            dlocation += '">%s</a>'% (truncate_words(self.location, 5))
-        return dlocation
+            location_name = self.location
+        url = self.DOTLAN_SEARCH_URL + '?' + urllib.urlencode({'q': location_name})
+        return self.DOTLAN_LINK % (url, truncate_words(location_name, 6))
+
     @property
-    def dotlan_jump_range(self, ship = 'Thanatos', skill = 5):
-        #http://evemaps.dotlan.net/range/Thanatos,4/C3N-3S
-        jump_location = '<a href=\"'
-        jump_location += 'http://evemaps.dotlan.net/range/%s,%s' % (ship, skill)
-        jump_location += '/' + urllib.urlencode({'q': self.location})
-        jump_location += '">%s</a>'% (truncate_words(self.location, 5))
-        return jump_location
+    def dotlan_jump_range(self, ship='Thanatos', skill=5):
+        # http://evemaps.dotlan.net/range/Thanatos,4/C3N-3S
+        path = '/range/%s,%s/%s' % (ship, skill, urllib.quote_plus(self.location))
+        url = urlparse.urljoin(self.DOTLAN_URL, path)
+        return self.DOTLAN_LINK % (url, 'Jump Range')
+
     @property
     def owner_url(self):
         if self.owner_id:
@@ -197,7 +198,7 @@ class MemberDiff(models.Model):
         app_label = 'hr'
         ordering = ['date']
 
-    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
+    id = bigintpatch.BigAutoField(primary_key=True)  # @ReservedAssignment
     member = models.ForeignKey(Member, related_name="diffs")
     name = models.CharField(max_length=100, db_index=True)
     nickname = models.CharField(max_length=256, db_index=True)
@@ -206,7 +207,7 @@ class MemberDiff(models.Model):
     # date of change
     date = models.DateTimeField(db_index=True, auto_now_add=True)
 
-    DATE_FIELD = 'date' # used for garbage collection
+    DATE_FIELD = 'date'  # used for garbage collection
 
     @property
     def url(self):
@@ -233,16 +234,16 @@ class MemberSession(models.Model):
     class Meta:
         app_label = 'hr'
 
-    id = bigintpatch.BigAutoField(primary_key=True) #@ReservedAssignment
-    #TODO: somehow use FK's
-    #member = models.ForeignKey(Member, related_name="diffs")
-    #no defaults! forcing valid entries!
+    id = bigintpatch.BigAutoField(primary_key=True)  # @ReservedAssignment
+    # TODO: somehow use FK's
+    # member = models.ForeignKey(Member, related_name="diffs")
+    # no defaults! forcing valid entries!
     character_id = models.BigIntegerField(db_index=True)
     session_begin = models.DateTimeField(db_index=True)
     session_end = models.DateTimeField()
     session_seconds = models.BigIntegerField(default=0)
-    
-    DATE_FIELD = 'session_begin' # used for garbage collection 
+
+    DATE_FIELD = 'session_begin'  # used for garbage collection
 
     def __eq__(self, other):
         return self.id == other.id
@@ -252,22 +253,22 @@ class MemberSession(models.Model):
 
 #------------------------------------------------------------------------------
 class Skill(models.Model):
-    
+
     class Meta:
         app_label = 'hr'
-    
+
     character = models.ForeignKey(Member, related_name='skills')
     eve_type = softfk.SoftForeignKey(to='eve.Type', null=True, blank=True)
     skillpoints = models.IntegerField(default=0)
     level = models.IntegerField(default=0)
-    
+
     def __unicode__(self):
         return self.name
-    
+
     @property
     def name(self):
         return self.eve_type.typeName
-    
+
 #------------------------------------------------------------------------------
 class Recruit(models.Model):
 
