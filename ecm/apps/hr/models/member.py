@@ -18,14 +18,16 @@
 __date__ = "2011 9 6"
 __author__ = "diabeteman"
 
+import urllib
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.text import truncate_words
 
 from ecm.apps.corp.models import Corporation
-
 from ecm.lib import bigintpatch, softfk
 from ecm.apps.hr import NAME as app_prefix
+from ecm.apps.eve.models import CelestialObject
 
 # little trick to change the Users' absolute urls
 User.get_absolute_url = lambda self: '/hr/players/%s/' % self.id
@@ -121,6 +123,29 @@ class Member(models.Model):
     def permalink(self):
         return '<a href="%s" class="member">%s</a>' % (self.url, self.name)
 
+    @property
+    def dotlan_location(self):
+        dlocation = '<a href="'
+        if str(self.location) == str(self.locationID):
+            print "match"
+            try:
+                station = CelestialObject.objects.get(itemID=self.location)
+                dlocation += 'http://evemaps.dotlan.net/search?' + urllib.urlencode({'q': station.itemName})
+                dlocation += '">%s</a>'% (truncate_words(station.itemName, 5))
+            except CelestialObject.DoesNotExist:
+                pass
+        else:
+            dlocation += 'http://evemaps.dotlan.net/search?' + urllib.urlencode({'q': self.location})
+            dlocation += '">%s</a>'% (truncate_words(self.location, 5))
+        return dlocation
+    @property
+    def dotlan_jump_range(self, ship = 'Thanatos', skill = 5):
+        #http://evemaps.dotlan.net/range/Thanatos,4/C3N-3S
+        jump_location = '<a href=\"'
+        jump_location += 'http://evemaps.dotlan.net/range/%s,%s' % (ship, skill)
+        jump_location += '/' + urllib.urlencode({'q': self.location})
+        jump_location += '">%s</a>'% (truncate_words(self.location, 5))
+        return jump_location
     @property
     def owner_url(self):
         if self.owner_id:
