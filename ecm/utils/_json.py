@@ -26,22 +26,31 @@ try:
 except AttributeError:
     JSON_ENCODER = json.JSONEncoder
 
+#------------------------------------------------------------------------------
+def load(fp, object_hook=None, **kw):
+    object_hook = object_hook or __datetime_json_decoder
+    return json.load(fp, object_hook=object_hook, **kw)
+
+#------------------------------------------------------------------------------
+def dump(obj, fp, cls=None, **kw):
+    cls = cls or DatetimeJSONEncoder
+    return json.dump(obj, fp, cls=cls, **kw)
 
 #------------------------------------------------------------------------------
 def loads(s, object_hook=None, **kw):
     object_hook = object_hook or __datetime_json_decoder
     return json.loads(s, object_hook=object_hook, **kw)
-  
-#------------------------------------------------------------------------------  
+
+#------------------------------------------------------------------------------
 def dumps(obj, cls=None, **kw):
     cls = cls or DatetimeJSONEncoder
     return json.dumps(obj, cls=cls, **kw)
-    
+
 #------------------------------------------------------------------------------
 DATE_PATTERN = '%Y-%m-%d_%H-%M-%S'
 
 class DatetimeJSONEncoder(JSON_ENCODER):
-    
+
     def default(self, obj):
         if isinstance(obj, datetime):
             return obj.strftime(DATE_PATTERN)
@@ -51,7 +60,7 @@ class DatetimeJSONEncoder(JSON_ENCODER):
 #------------------------------------------------------------------------------
 DATE_RE = re.compile('\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}')
 def __datetime_json_decoder(obj_dict):
-    
+
     for key, val in obj_dict.items():
         if isinstance(val, basestring) and DATE_RE.search(val):
             try:
