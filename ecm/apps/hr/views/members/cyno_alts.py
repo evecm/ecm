@@ -34,7 +34,7 @@ from ecm.views import DATATABLES_DEFAULTS, datatable_csv_data
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data
 from ecm.apps.hr.models import Member
-from ecm.apps.common.models import ColorThreshold, UpdateDate
+from ecm.apps.common.models import UpdateDate
 from ecm.utils import db, _json as json
 from ecm.apps.corp.models import Standing
 from ecm.apps.common.models import UrlPermission
@@ -135,8 +135,8 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0, asc=True, 
                 member.name,
                 member.corp or '-',
                 get_standing(member),
-                member.owner,
-                member.dotlan_location,
+                member.owner or '-',
+                member.location,
             ])
     else:
         for member in query[first_id:last_id]:
