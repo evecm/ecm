@@ -233,12 +233,12 @@ class BlueprintType(models.Model):
         materials = []
 
         for mat in self.materials(activity).filter(damagePerJob__gt=0):
-            mat.quantity *= rounded_runs
             mat.quantity = apply_material_level(mat.quantity,
                                                 me_level,
                                                 self.wasteFactor,
                                                 round_result)
             mat.quantity += mat.extraQuantity
+            mat.quantity *= rounded_runs
             materials.append(mat)
         return materials
 

@@ -144,7 +144,10 @@ SELECT
     b."blueprintTypeID",
     1 /* manufacturing */ AS "activityID",
     itm."materialTypeID" AS "requiredTypeID",
-    itm."quantity", -- ME affected
+    -- we need to hack the data to have correct values on t2 items.
+	-- CCP uses the table invTypeMaterials as a reprocessing table. It means that
+	-- we need to substract t1 values to the t2 items to get correct requirements.
+    itm."quantity" - IFNULL(itm2."quantity", 0) AS "quantity", -- ME affected
     1.0 AS "damagePerJob",
     IFNULL(rtr."quantity", 0) AS "extraQuantity" -- not affected by ME
 
@@ -154,6 +157,10 @@ SELECT
        ON itm."typeID" = b."productTypeID"
     LEFT OUTER JOIN "ramTypeRequirements" AS rtr
        ON rtr."typeID" = b."blueprintTypeID" AND itm."materialTypeID" = rtr."requiredTypeID"
+    LEFT OUTER JOIN "invMetaTypes" AS m
+       ON b."productTypeID" = m."typeID"
+    LEFT OUTER JOIN "invTypeMaterials" AS itm2
+       ON itm2."typeID" = m."parentTypeID" AND itm2."materialTypeID" = itm."materialTypeID"
 
 UNION
 
@@ -182,6 +189,12 @@ SELECT
             AND itm."materialTypeID" = rtr."requiredTypeID")
 
 ; -- INSERT
+
+-- on some items, the quantities end up negative. We set them to 0
+UPDATE "eve_blueprintreq" SET "quantity" = 0 WHERE "quantity" < 0;
+
+-- Then, remove all useless requirements
+DELETE FROM "eve_blueprintreq" WHERE "quantity" = 0 AND "extraQuantity" = 0;
 
 ----------------------------------------------------------
 -- Add noctis blueprint requirements
