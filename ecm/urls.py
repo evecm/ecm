@@ -20,15 +20,20 @@ __author__ = "diabeteman"
 
 from django.conf.urls.defaults import patterns, include
 from django.contrib import admin
+from django.http import HttpResponse
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from ecm.views.account.forms import PasswordChangeForm, PasswordResetForm, PasswordSetForm
 
 admin.autodiscover()
 
+def robots(request):
+    return HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")
+
 urlpatterns = patterns('',
     ###########################################################################
     # MISC VIEWS
+    (r'^robots\.txt$',                              robots),
     (r'^admin/',                                    include(admin.site.urls)),
     (r'^captcha/',                                  include('captcha.urls')),
 )
