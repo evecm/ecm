@@ -20,7 +20,6 @@ __date__ = "2010-02-03"
 __author__ = "diabeteman"
 
 from django.db.models import Q
-from django.utils.text import truncate_words
 from django.utils.translation import ugettext as tr
 
 from ecm.apps.hr.models import Member
@@ -87,7 +86,7 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0, asc=True, 
         for member in query[first_id:last_id]:
             titles = ["Titles"]
             titles.extend(member.titles.values_list("titleName", flat=True))
-            
+
             if member.corp:
                 corp = '<span title="%s">%s</span>' % (member.corp, member.corp.ticker)
             else:

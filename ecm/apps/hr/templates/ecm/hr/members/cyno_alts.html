@@ -1,0 +1,55 @@
+{% extends "ecm/hr/hr_base.html" %}
+{% load i18n %}
+{% block headtitle %}{% trans 'Cyno Alts' %}{% endblock %}
+
+
+{% block main_content %}
+<div class="page-header">
+<h1>Cyno Alts <small>last update {{ scan_date|ecm_datetime }}</small></h1>
+</div>
+
+<form id="search_form" class="form-search form-inline">
+  <div class="btn-toolbar" >
+    <i class="icon-search"></i>
+    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <div class="btn-group">
+      <button class="btn btn-small" type="submit" id="search_button">{% trans 'Search' %}</button>
+      <button class="btn btn-small" id="clear_search">{% trans 'Reset' %}</button>
+    </div>
+    <span class="label label-info">{% trans 'Display' %}</span>
+    <div class="pull-right">
+      <span class="label label-important">{% trans 'Corp' %}</span>
+      <select class="error" id="corp_selector">
+        <option value="all" class="italic">{% trans 'All' %}</option>
+        <option value="{{my_corp.corporationID}}" class="bold">{{my_corp}}</option>
+        {% if trusted_corps %}
+        <optgroup label="Trusted Corps">{% for corp in trusted_corps %}
+          <option value="{{corp.corporationID}}">{{corp}}</option>{% endfor %}
+        </optgroup>
+        {% endif %}
+        {% if other_corps %}
+        <optgroup label="Other Corps">{% for corp in other_corps %}
+          <option value="{{corp.corporationID}}">{{corp}}</option>{% endfor %}
+        </optgroup>
+        {% endif %}
+      </select>
+    </div>
+  </div>
+</form>
+{% datatable 'members_table' columns 
+             css_class='table table-bordered table-condensed searchable_table' 
+             defaults=datatables_defaults 
+             sAjaxSource='/hr/members/cyno_alts/data/'
+             sCookiePrefix='ecm_members_table_' 
+             sDom='<"row-fluid"<"span5"l><"span7"C>>rt<"row-fluid"<"span5"i><"span7"p>>' 
+             fnRowCallback='membersRowCallback' 
+             fnServerParams='membersServerParams' 
+             fnStateSaveParams='membersStateSaveParams' 
+             fnStateLoadParams='membersStateLoadParams' %}
+
+<script type="text/javascript">
+
+{% include "ecm/hr/members_datatable.js" %}
+{% include "ecm/hr/search_form.js" %}
+</script>
+{% endblock %}

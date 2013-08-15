@@ -57,6 +57,9 @@ urlpatterns += patterns('ecm.apps.hr.views.members',
     (r'^members/skills/itemid/$',               'skills.get_item_id'),
     (r'^members/skills/parseeft/$',             'skills.parse_eft'),
     (r'^members/skills/data/$',                 'skills.skilled_list'),
+    (r'^members/cyno_alts/$',                   'cyno_alts.cyno_list'),
+    (r'^members/cyno_alts/data/$',              'cyno_alts.cyno_alts_data'),
+    (r'^members/(\d+)/is_cyno_alt/$',           'cyno_alts.is_cyno_alt'),
 )
 
 urlpatterns += patterns('ecm.apps.hr.views.titles',

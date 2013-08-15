@@ -26,6 +26,7 @@ MENUS = [
             {'title': tr_lazy('Access Changes'),        'url': 'members/accesschanges/'},
             {'title': tr_lazy('Unassociated Members'),  'url': 'members/unassociated/'},
             {'title': tr_lazy('Skills'),                'url': 'members/skills/'},
+            {'title': tr_lazy('Cyno Alts'),             'url': 'members/cyno_alts/'},
         ]},
         {'title': tr_lazy('Titles'),    'url': 'titles/',      'items': [
             {'title': tr_lazy('Changes'),               'url': 'titles/changes/'},
@@ -65,6 +66,7 @@ URL_PERMISSIONS = [
     r'^/hr/roles/.*$',
     r'^/hr/titles/.*$',
     r'^/hr/players/.*$',
+    r'^/hr/members/cyno_alts/.*$',
 ]
 
 SHARED_DATA = [

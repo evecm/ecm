@@ -86,6 +86,9 @@ class Member(models.Model):
     perception = models.IntegerField(default=0)
     willpower = models.IntegerField(default=0)
 
+    # Extended Properties.
+    is_cyno_alt = models.BooleanField(default=False)
+    
     def get_implied_roles(self):
         """
         Retrieve all Roles assigned to one Member directly or through Titles

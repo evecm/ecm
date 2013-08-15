@@ -39,14 +39,17 @@
     <thead>
       <tr>
         <th>{% trans 'Name' %}</th>
+        <th>{% trans 'Cyno' %}</th>
         <th></th>
       </tr>
     </thead>
     {% for owned in characters %}
     <tr>
       <td>{{ owned.permalink|safe }}</td>
+      <td><input type="checkbox" id="{{ owned.characterID }}cyno" value="{{ owned.characterID }}" {%if owned.is_cyno_alt %}checked{% endif %}></td>
       <td><a class="btn btn-mini btn-danger"
-             href="/account/deletecharacter/{{ owned.characterID }}/"
+             id="{{owned.characterID}}delete"
+             href="/account/deletecharacte/{{ owned.characterID }}/"
              name="{{ owned.name }}">{% trans 'Delete' %}</a></td>
     </tr>
     {% endfor %}
@@ -82,13 +85,21 @@
 {% block post_javascripts %}
 <script type="text/javascript">
 $(document).ready(function () {
-    $("#owned_characters a").click(function (event) {
+    {% for owned in characters %}
+    $("#{{owned.characterID}}delete").click(function (event) {
         var alert_text = "{% trans 'Are you sure you want to get rid of' %} " + this.name + "?\n\n";
         alert_text += "{% trans 'If this character is still attached to one of your registered API Keys, it will be associated with your profile again at next scan.' %}";
         if (!confirm(alert_text)) {
             event.preventDefault();
         }
     });
+    $('#{{owned.characterID}}cyno').on('click', function () {
+        var params = {
+            is_cyno_alt: $(this).is(':checked')
+        }
+        $.post('/hr/members/{{owned.characterID}}/is_cyno_alt/', params);
+    });
+    {% endfor %}
     $("a.del_api").click(function (event) {
         var alert_text = "{% trans 'Are you sure you want to delete this API Key?' %}";
         if (!confirm(alert_text)) {
@@ -101,6 +112,7 @@ $(document).ready(function () {
             event.preventDefault();
         }
     });
+
 });
 </script>
 {% endblock %}
