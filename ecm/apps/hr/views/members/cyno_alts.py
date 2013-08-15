@@ -172,6 +172,9 @@ def get_standing(member):
                 s = Standing.objects.get(contactID=member.corp.alliance.allianceID)
             except Standing.DoesNotExist:
                 return '0'
+            except AttributeError:
+                #if corp is not in alliance
+                return '0'
     return s.value
 
 #------------------------------------------------------------------------------
