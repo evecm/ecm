@@ -281,3 +281,12 @@ class Recruit(models.Model):
     user = models.OneToOneField(User, related_name='user')
     reference = models.ManyToManyField(User, null=True, blank=True, related_name='reference')
     recruiter = models.ForeignKey(User, null=True, blank=True, related_name='recruiter')
+
+#------------------------------------------------------------------------------
+class EmploymentHistory(models.Model):
+    class Meta:
+        app_label = 'hr'
+    member = models.ForeignKey(Member, related_name='employment_history')
+    recordID = models.BigIntegerField()
+    corporation = models.ForeignKey(Corporation, related_name='employment_history')
+    startDate = models.DateTimeField()

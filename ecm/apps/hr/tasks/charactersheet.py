@@ -18,13 +18,17 @@
 __date__ = '2012 3 16'
 __author__ = 'diabeteman'
 
+from django.utils import timezone
+
 from ecm.apps.hr.models.member import Skill
+from ecm.apps.hr.models.member import EmploymentHistory
+from ecm.apps.hr.utils import get_corp
 
 #-----------------------------------------------------------------------------
 def get_character_skills(member, sheet):
     skills = []
     for skill in sheet.skills:
-        
+
         try:
             db_skill = member.skills.get(eve_type_id=skill.typeID)
         except Skill.DoesNotExist:
@@ -33,11 +37,11 @@ def get_character_skills(member, sheet):
             for sk in member.skills.filter(eve_type_id=skill.typeID):
                 sk.delete()
             db_skill = Skill(character=member, eve_type_id=skill.typeID)
-        
+
         db_skill.skillpoints = skill.skillpoints
         db_skill.level = skill.level
         skills.append(db_skill)
-    
+
     return skills
 
 #-----------------------------------------------------------------------------
@@ -90,3 +94,12 @@ def set_extended_char_attributes(member, sheet):
 def set_char_info_attributes(member, char_info):
     member.location = char_info.lastKnownLocation
     member.ship = char_info.shipTypeName
+    history = member.employment_history.values_list('recordID', flat=True)
+    for employer in char_info.employmentHistory:
+        if employer.recordID not in history:
+            eh = EmploymentHistory()
+            eh.member = member
+            eh.recordID = employer.recordID
+            eh.corporation = get_corp(employer.corporationID)
+            eh.startDate = timezone.make_aware(employer.startDate, timezone.utc)
+            eh.save()
