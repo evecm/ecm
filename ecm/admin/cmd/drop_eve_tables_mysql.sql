@@ -1,79 +1,34 @@
-DROP TABLE `agtAgentTypes` CASCADE; 
-DROP TABLE `agtAgents` CASCADE; 
-DROP TABLE `agtResearchAgents` CASCADE; 
-DROP TABLE `chrAncestries` CASCADE; 
-DROP TABLE `chrAttributes` CASCADE; 
-DROP TABLE `chrBloodlines` CASCADE; 
-DROP TABLE `chrFactions` CASCADE; 
-DROP TABLE `chrRaces` CASCADE; 
-DROP TABLE `crpActivities` CASCADE; 
-DROP TABLE `crpNPCCorporationDivisions` CASCADE; 
-DROP TABLE `crpNPCCorporationResearchFields` CASCADE; 
-DROP TABLE `crpNPCCorporationTrades` CASCADE; 
-DROP TABLE `crpNPCCorporations` CASCADE; 
-DROP TABLE `crpNPCDivisions` CASCADE; 
-DROP TABLE `crtCategories` CASCADE; 
-DROP TABLE `crtCertificates` CASCADE; 
-DROP TABLE `crtClasses` CASCADE; 
-DROP TABLE `crtRecommendations` CASCADE; 
-DROP TABLE `crtRelationships` CASCADE; 
-DROP TABLE `dgmAttributeCategories` CASCADE; 
-DROP TABLE `dgmAttributeTypes` CASCADE; 
-DROP TABLE `dgmEffects` CASCADE; 
-DROP TABLE `dgmTypeAttributes` CASCADE; 
-DROP TABLE `dgmTypeEffects` CASCADE; 
-DROP TABLE `eveGraphics` CASCADE;
-DROP TABLE `eveIcons` CASCADE;
-DROP TABLE `eveUnits` CASCADE;
-DROP TABLE `invBlueprintTypes` CASCADE; 
-DROP TABLE `invCategories` CASCADE; 
-DROP TABLE `invContrabandTypes` CASCADE; 
-DROP TABLE `invControlTowerResourcePurposes` CASCADE; 
-DROP TABLE `invControlTowerResources` CASCADE; 
-DROP TABLE `invFlags` CASCADE; 
-DROP TABLE `invGroups` CASCADE; 
-DROP TABLE `invItems` CASCADE; 
-DROP TABLE `invMarketGroups` CASCADE; 
-DROP TABLE `invMetaGroups` CASCADE; 
-DROP TABLE `invMetaTypes` CASCADE; 
-DROP TABLE `invNames` CASCADE; 
-DROP TABLE `invPositions` CASCADE; 
-DROP TABLE `invTypeMaterials` CASCADE; 
-DROP TABLE `invTypeReactions` CASCADE; 
-DROP TABLE `invTypes` CASCADE; 
-DROP TABLE `invUniqueNames` CASCADE; 
-DROP TABLE `mapCelestialStatistics` CASCADE; 
-DROP TABLE `mapConstellationJumps` CASCADE; 
-DROP TABLE `mapConstellations` CASCADE; 
-DROP TABLE `mapDenormalize` CASCADE; 
-DROP TABLE `mapJumps` CASCADE; 
-DROP TABLE `mapLandmarks` CASCADE; 
-DROP TABLE `mapLocationScenes` CASCADE; 
-DROP TABLE `mapLocationWormholeClasses` CASCADE; 
-DROP TABLE `mapRegionJumps` CASCADE; 
-DROP TABLE `mapRegions` CASCADE; 
-DROP TABLE `mapSolarSystemJumps` CASCADE; 
-DROP TABLE `mapSolarSystems` CASCADE; 
-DROP TABLE `mapUniverse` CASCADE; 
-DROP TABLE `planetSchematics` CASCADE;
-DROP TABLE `planetSchematicsPinMap` CASCADE; 
-DROP TABLE `planetSchematicsTypeMap` CASCADE; 
-DROP TABLE `ramActivities` CASCADE; 
-DROP TABLE `ramAssemblyLineStations` CASCADE; 
-DROP TABLE `ramAssemblyLineTypeDetailPerCategory` CASCADE; 
-DROP TABLE `ramAssemblyLineTypeDetailPerGroup` CASCADE; 
-DROP TABLE `ramAssemblyLineTypes` CASCADE; 
-DROP TABLE `ramAssemblyLines` CASCADE; 
-DROP TABLE `ramInstallationTypeContents` CASCADE; 
-DROP TABLE `ramTypeRequirements` CASCADE; 
-DROP TABLE `staOperationServices` CASCADE; 
-DROP TABLE `staOperations` CASCADE; 
-DROP TABLE `staServices` CASCADE; 
-DROP TABLE `staStationTypes` CASCADE; 
-DROP TABLE `staStations` CASCADE; 
-DROP TABLE `translationTables` CASCADE; 
-DROP TABLE `trnTranslationColumns` CASCADE; 
-DROP TABLE `trnTranslationLanguages` CASCADE; 
-DROP TABLE `trnTranslations` CASCADE; 
-DROP TABLE `warCombatZoneSystems` CASCADE; 
-DROP TABLE `warCombatZones` CASCADE; 
+-- Copyright (c) 2010-2013 Robin Jarry
+--
+-- This file is part of EVE Corporation Management.
+--
+-- EVE Corporation Management is free software: you can redistribute it and/or
+-- modify it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or (at your
+-- option) any later version.
+--
+-- EVE Corporation Management is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+-- or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+-- more details.
+--
+-- You should have received a copy of the GNU General Public License along with
+-- EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+
+BEGIN;
+
+-- Extend group_concat size limit (standard is 1024)
+SET SESSION group_concat_max_len = 1024 * 200;
+
+-- Generate drop command and assign to variable
+SELECT CONCAT('DROP TABLE ', GROUP_CONCAT(TABLE_NAME), ';') INTO @dropcmd
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = (SELECT DATABASE() FROM DUAL)
+AND TABLE_NAME NOT LIKE '%\_%';
+
+-- Drop tables
+PREPARE str FROM @dropcmd;
+EXECUTE str;
+DEALLOCATE PREPARE str;
+
+COMMIT;

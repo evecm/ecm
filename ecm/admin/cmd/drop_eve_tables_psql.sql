@@ -1,79 +1,78 @@
-DROP TABLE "agtAgentTypes" CASCADE; 
-DROP TABLE "agtAgents" CASCADE; 
-DROP TABLE "agtResearchAgents" CASCADE; 
-DROP TABLE "chrAncestries" CASCADE; 
-DROP TABLE "chrAttributes" CASCADE; 
-DROP TABLE "chrBloodlines" CASCADE; 
-DROP TABLE "chrFactions" CASCADE; 
-DROP TABLE "chrRaces" CASCADE; 
-DROP TABLE "crpActivities" CASCADE; 
-DROP TABLE "crpNPCCorporationDivisions" CASCADE; 
-DROP TABLE "crpNPCCorporationResearchFields" CASCADE; 
-DROP TABLE "crpNPCCorporationTrades" CASCADE; 
-DROP TABLE "crpNPCCorporations" CASCADE; 
-DROP TABLE "crpNPCDivisions" CASCADE; 
-DROP TABLE "crtCategories" CASCADE; 
-DROP TABLE "crtCertificates" CASCADE; 
-DROP TABLE "crtClasses" CASCADE; 
-DROP TABLE "crtRecommendations" CASCADE; 
-DROP TABLE "crtRelationships" CASCADE; 
-DROP TABLE "dgmAttributeCategories" CASCADE; 
-DROP TABLE "dgmAttributeTypes" CASCADE; 
-DROP TABLE "dgmEffects" CASCADE; 
-DROP TABLE "dgmTypeAttributes" CASCADE; 
-DROP TABLE "dgmTypeEffects" CASCADE; 
-DROP TABLE "eveGraphics" CASCADE; 
-DROP TABLE "eveIcons" CASCADE; 
-DROP TABLE "eveUnits" CASCADE; 
-DROP TABLE "invBlueprintTypes" CASCADE; 
-DROP TABLE "invCategories" CASCADE; 
-DROP TABLE "invContrabandTypes" CASCADE; 
-DROP TABLE "invControlTowerResourcePurposes" CASCADE; 
-DROP TABLE "invControlTowerResources" CASCADE; 
-DROP TABLE "invFlags" CASCADE; 
-DROP TABLE "invGroups" CASCADE; 
-DROP TABLE "invItems" CASCADE; 
-DROP TABLE "invMarketGroups" CASCADE; 
-DROP TABLE "invMetaGroups" CASCADE; 
-DROP TABLE "invMetaTypes" CASCADE; 
-DROP TABLE "invNames" CASCADE; 
-DROP TABLE "invPositions" CASCADE; 
-DROP TABLE "invTypeMaterials" CASCADE; 
-DROP TABLE "invTypeReactions" CASCADE; 
-DROP TABLE "invTypes" CASCADE; 
-DROP TABLE "invUniqueNames" CASCADE; 
-DROP TABLE "mapCelestialStatistics" CASCADE; 
-DROP TABLE "mapConstellationJumps" CASCADE; 
-DROP TABLE "mapConstellations" CASCADE; 
-DROP TABLE "mapDenormalize" CASCADE; 
-DROP TABLE "mapJumps" CASCADE; 
-DROP TABLE "mapLandmarks" CASCADE; 
-DROP TABLE "mapLocationScenes" CASCADE; 
-DROP TABLE "mapLocationWormholeClasses" CASCADE; 
-DROP TABLE "mapRegionJumps" CASCADE; 
-DROP TABLE "mapRegions" CASCADE; 
-DROP TABLE "mapSolarSystemJumps" CASCADE; 
-DROP TABLE "mapSolarSystems" CASCADE; 
-DROP TABLE "mapUniverse" CASCADE; 
-DROP TABLE "planetSchematics" CASCADE;
-DROP TABLE "planetSchematicsPinMap" CASCADE; 
-DROP TABLE "planetSchematicsTypeMap" CASCADE; 
-DROP TABLE "ramActivities" CASCADE; 
-DROP TABLE "ramAssemblyLineStations" CASCADE; 
-DROP TABLE "ramAssemblyLineTypeDetailPerCategory" CASCADE; 
-DROP TABLE "ramAssemblyLineTypeDetailPerGroup" CASCADE; 
-DROP TABLE "ramAssemblyLineTypes" CASCADE; 
-DROP TABLE "ramAssemblyLines" CASCADE; 
-DROP TABLE "ramInstallationTypeContents" CASCADE; 
-DROP TABLE "ramTypeRequirements" CASCADE; 
-DROP TABLE "staOperationServices" CASCADE; 
-DROP TABLE "staOperations" CASCADE; 
-DROP TABLE "staServices" CASCADE; 
-DROP TABLE "staStationTypes" CASCADE; 
-DROP TABLE "staStations" CASCADE; 
-DROP TABLE "translationTables" CASCADE; 
-DROP TABLE "trnTranslationColumns" CASCADE; 
-DROP TABLE "trnTranslationLanguages" CASCADE; 
-DROP TABLE "trnTranslations" CASCADE; 
-DROP TABLE "warCombatZoneSystems" CASCADE; 
-DROP TABLE "warCombatZones" CASCADE; 
+-- Copyright (c) 2010-2013 Robin Jarry
+--
+-- This file is part of EVE Corporation Management.
+--
+-- EVE Corporation Management is free software: you can redistribute it and/or
+-- modify it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or (at your
+-- option) any later version.
+--
+-- EVE Corporation Management is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+-- or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+-- more details.
+--
+-- You should have received a copy of the GNU General Public License along with
+-- EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
+
+BEGIN;
+
+-- First we check if the 'plpgsql' language is installed
+CREATE OR REPLACE FUNCTION create_language_plpgsql()
+RETURNS BOOLEAN AS $$
+    CREATE LANGUAGE plpgsql;
+    SELECT TRUE;
+$$ LANGUAGE SQL;
+
+SELECT CASE WHEN NOT
+    (
+        SELECT  TRUE AS exists
+        FROM    pg_language
+        WHERE   lanname = 'plpgsql'
+        UNION
+        SELECT  FALSE AS exists
+        ORDER BY exists DESC
+        LIMIT 1
+    )
+THEN
+    create_language_plpgsql()
+ELSE
+    FALSE
+END AS plpgsql_created;
+
+DROP FUNCTION create_language_plpgsql();
+
+-- Then create a function that will drop tables
+CREATE OR REPLACE FUNCTION drop_tables_not_like(IN _schema TEXT, IN _pattern TEXT)
+RETURNS void
+LANGUAGE plpgsql
+AS
+$$
+DECLARE
+    row     record;
+BEGIN
+    FOR row IN
+        SELECT
+            table_name
+        FROM
+            information_schema.tables
+        WHERE
+            table_type = 'BASE TABLE'
+          AND
+            table_schema = _schema
+          AND
+            table_name NOT LIKE _pattern
+    LOOP
+        EXECUTE 'DROP TABLE ' || quote_ident(_schema) || '.' || quote_ident(row.table_name);
+        RAISE INFO 'Dropped table: %', quote_ident(_schema) || '.' || quote_ident(row.table_name);
+    END LOOP;
+END;
+$$;
+
+-- Finally drop tables
+SELECT drop_tables_not_like(current_schema(), E'%\\_%');
+
+-- and remove function
+DROP FUNCTION drop_tables_not_like(IN _schema TEXT, IN _pattern TEXT);
+
+COMMIT;
