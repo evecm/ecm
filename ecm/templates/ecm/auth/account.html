@@ -49,7 +49,7 @@
       <td><input type="checkbox" id="{{ owned.characterID }}cyno" value="{{ owned.characterID }}" {%if owned.is_cyno_alt %}checked{% endif %}></td>
       <td><a class="btn btn-mini btn-danger"
              id="{{owned.characterID}}delete"
-             href="/account/deletecharacte/{{ owned.characterID }}/"
+             href="/account/deletecharacter/{{ owned.characterID }}/"
              name="{{ owned.name }}">{% trans 'Delete' %}</a></td>
     </tr>
     {% endfor %}
