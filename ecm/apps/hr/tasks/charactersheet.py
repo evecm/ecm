@@ -97,9 +97,11 @@ def set_char_info_attributes(member, char_info):
     history = member.employment_history.values_list('recordID', flat=True)
     for employer in char_info.employmentHistory:
         if employer.recordID not in history:
+            corp = get_corp(employer.corporationID)
+            corp.save()
             eh = EmploymentHistory()
             eh.member = member
             eh.recordID = employer.recordID
-            eh.corporation = get_corp(employer.corporationID)
+            eh.corporation = corp
             eh.startDate = timezone.make_aware(employer.startDate, timezone.utc)
             eh.save()
