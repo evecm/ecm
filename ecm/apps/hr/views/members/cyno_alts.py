@@ -127,14 +127,15 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0, asc=True, 
         filtered_members = query.count()
     else:
         total_members = filtered_members = query.count()
-
+    
+    my_corp = Corporation.objects.mine()
     member_list = []
     if for_csv:
         for member in query:
             member_list.append([
                 member.name,
                 member.corp or '-',
-                get_standing(member),
+                get_standing(member, my_corp),
                 member.owner or '-',
                 member.location,
             ])
@@ -149,7 +150,7 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0, asc=True, 
             memb = [
                 member.permalink,
                 corp,
-                get_standing(member),
+                get_standing(member, my_corp),
                 member.owner_permalink,
                 member.dotlan_location,
             ]
@@ -159,23 +160,47 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0, asc=True, 
     return total_members, filtered_members, member_list
 
 #------------------------------------------------------------------------------
-def get_standing(member):
-    if member.corp == Corporation.objects.mine():
+def get_standing(member, my_corp):
+
+    if member.corp == my_corp:
         return 'Corp'
+    elif member.corp.alliance == my_corp.alliance:
+        return 'Alliance'
+
+    # first look at corp standings (they have priority over alliance)
+    corp_standings = my_corp.standings.filter(is_corp_contact=True)
     try:
-        s = Standing.objects.get(contactID=member.characterID)
+        return corp_standings.get(contactID=member.characterID).value
     except Standing.DoesNotExist:
+        pass
+    try:
+        return corp_standings.get(contactID=member.corp_id).value
+    except Standing.DoesNotExist:
+        pass
+    if member.corp.alliance_id:
         try:
-            s = Standing.objects.get(contactID=member.corp_id)
+            return corp_standings.get(contactID=member.corp.alliance_id).value
         except Standing.DoesNotExist:
-            try:
-                s = Standing.objects.get(contactID=member.corp.alliance.allianceID)
-            except Standing.DoesNotExist:
-                return '0'
-            except AttributeError:
-                #if corp is not in alliance
-                return '0'
-    return s.value
+            pass
+
+    # then look at alliance standings
+    alliance_standings = my_corp.standings.filter(is_corp_contact=False)
+    try:
+        return alliance_standings.get(contactID=member.characterID).value
+    except Standing.DoesNotExist:
+        pass
+    try:
+        return alliance_standings.get(contactID=member.corp_id).value
+    except Standing.DoesNotExist:
+        pass
+    if member.corp.alliance_id:
+        try:
+            return alliance_standings.get(contactID=member.corp.alliance_id).value
+        except Standing.DoesNotExist:
+            pass
+
+    # no standing towards this member
+    return 'Neutral'
 
 #------------------------------------------------------------------------------
 @login_required
