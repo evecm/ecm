@@ -68,7 +68,9 @@ class Job(models.Model):
     item_id = models.PositiveIntegerField()
     # runs must be a float number, else when jobs are aggregated there may be rounding errors
     runs = models.FloatField()
-    blueprint = models.ForeignKey('OwnedBlueprint', related_name='jobs', null=True, blank=True)
+    blueprint = models.ForeignKey('OwnedBlueprint', related_name='jobs',
+                                  null=True, blank=True,
+                                  on_delete=models.SET_NULL)
     activity = models.SmallIntegerField(default=MANUFACTURING, choices=ACTIVITIES.items())
 
     due_date = models.DateField(null=True, blank=True)
