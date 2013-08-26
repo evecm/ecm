@@ -206,7 +206,7 @@ class Corporation(models.Model):
             self.corporationID = public_info['corporationID']
             self.corporationName = public_info['corporationName']
             self.ticker = public_info['ticker']
-            self.alliance = public_info['alliance']
+            self.alliance_id = public_info['alliance']
             self.public_key = public_info['public_key']
             self.key_fingerprint = public_info['key_fingerprint']
             self.is_my_corp = False
@@ -235,7 +235,7 @@ class Corporation(models.Model):
             'corporationID': self.corporationID,
             'corporationName': self.corporationName,
             'ticker': self.ticker,
-            'alliance': self.alliance.allianceID,
+            'alliance': self.alliance_id,
             'public_key': self.public_key,
             'key_fingerprint': self.key_fingerprint,
         }
@@ -246,7 +246,7 @@ class Corporation(models.Model):
             'corporationID': self.corporationID,
             'corporationName': self.corporationName,
             'ticker': self.ticker,
-            'alliance': self.alliance.allianceID,
+            'alliance': self.alliance_id,
             'ceoID': self.ceoID,
             'ceoName': self.ceoName,
             'stationID': self.stationID,
@@ -260,7 +260,7 @@ class Corporation(models.Model):
     def set_corp_details(self, details):
         self.corporationName = details['corporationName']
         self.ticker = details['ticker']
-        self.alliance = details['alliance']
+        self.alliance_id = details['alliance']
         self.ceoID = details['ceoID']
         self.ceoName = details['ceoName']
         self.stationID = details['stationID']
