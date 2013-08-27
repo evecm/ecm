@@ -30,7 +30,6 @@ from ecm.apps.corp.utils import get_corp
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
-@transaction.commit_on_success
 def get_char(characterID):
     api_conn = api.eveapi.EVEAPIConnection()
     char = api_conn.eve.CharacterInfo(characterID = characterID)

@@ -98,7 +98,6 @@ def set_char_info_attributes(member, char_info):
     for employer in char_info.employmentHistory:
         if employer.recordID not in history:
             corp = get_corp(employer.corporationID)
-            corp.save()
             eh = EmploymentHistory()
             eh.member = member
             eh.recordID = employer.recordID
