@@ -46,9 +46,10 @@ def get_corp(corporationID):
                            stationID       = api_corp.stationID,
                            stationName     = api_corp.stationName,
                            description     = fix_description(api_corp.description),
-                           alliance        = get_alliance(api_corp.allianceID),
                            taxRate         = api_corp.taxRate,
                            )
+        if api_corp.allianceID:
+            corp.alliance = get_alliance(api_corp.allianceID),
         corp.save()
         return corp
 
