@@ -49,7 +49,7 @@ def get_corp(corporationID):
                            taxRate         = api_corp.taxRate,
                            )
         if api_corp.allianceID:
-            corp.alliance = get_alliance(api_corp.allianceID),
+            corp.alliance = get_alliance(api_corp.allianceID)
         corp.save()
         return corp
 
