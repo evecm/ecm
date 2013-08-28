@@ -14,7 +14,7 @@
 <form id="search_form" class="form-search form-inline">
   <div class="btn-toolbar" >
     Sent From
-    <input type="text" id="search_text" class="input-medium search-query" value="" />
+    <input type="text" id="sent_from" class="input-medium search-query" value="" />
     Sent To
     <input type="text" id="sent_to" class="input-medium search-query" value="" />
     Corp
@@ -40,7 +40,7 @@
     </select>
     <div class="btn-group">
       <a class="btn btn-small" id="search_button"><i class="icon-search"></i>{% trans 'Search' %}</a>
-      <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
+        <a class="btn btn-small" id="clear_search">{% trans 'Reset' %}</a>
     </div>
   </div>
 </form>
@@ -51,7 +51,9 @@
              sAjaxSource=ajax_url
              sCookiePrefix='ecm_mail_table_' 
              sDom='<"row-fluid"<"span5"l><"span7"C>>rt<"row-fluid"<"span5"i><"span7"p>>' 
-             fnRowCallback='mailRowCallback' 
+             fnRowCallback='mailRowCallback'
+             fnDrawCallback='drawCallback'
+             aaSorting=sorting
              fnServerParams='mailServerParams' 
              fnStateSaveParams='mailStateSaveParams' 
              fnStateLoadParams='mailStateLoadParams' %}
@@ -59,16 +61,7 @@
 
 
 {% block post_javascripts %}
-<script>
-/*************************
- * "Members" table setup *
- *************************/
-/**
- * Needs three global constants to be defined:
- *      - DIRECTOR_ACCESS_LVL
- *      - COLOR_THRESHOLDS
- *      - AJAX_URL
- **/
+<script type="text/javascript">
 
 function mailRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
 
@@ -77,61 +70,100 @@ function mailRowCallback( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
 
     return nRow;
 }
-        
-function mailServerParams( aoData ) {
+function drawCallback(oSettings) {
+    $('[data-toggle="modal"]').click(function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        $.get(url, function(data) {
+            $(data).modal();
+        });
+    });
+
+}
+function mailServerParams(aoData) {
     /* Add some extra variables to the url */
-	if ($('#sent_to button').length) {
+	if ($('#sent_from').length) {
 		aoData.push( {
-			name: 'sent_to',
-			value: $('#sent_to').val(),
+			name: 'from',
+			value: $('#sent_from').val()
+		});
+	}
+	if ($('#sent_to').length) {
+		aoData.push( {
+			name: 'to',
+			value: $('#sent_to').val()
 		});
 	}
 	if ($('#corp_selector').length) {
 		aoData.push({
 			name: 'corp',
-			value: $('#corp_selector').val(),
+			value: $('#corp_selector').val()
+		});
+	}
+    if ($('#alliance_selector').length) {
+		aoData.push({
+			name: 'ally',
+			value: $('#alliance_selector').val()
+		});
+	}
+    if ($('#mailinglist_selector').length) {
+		aoData.push({
+			name: 'maillist',
+			value: $('#mailinglist_selector').val()
 		});
 	}
 }
         
 function mailStateSaveParams (oSettings, oData) {
-    oData.sFilter = $("#search_text").val();
-    if ($('#ships_selector button').length) {
-    	oData.show_ships = SHOW_SHIPS;
-    }
-    if ($('#corp_selector').length) {
-    	oData.corp = $('#corp_selector').val();
-    }
+    oData.from = $("#sent_from").val();
+    oData.to = $("#sent_to").val();
+  	oData.corp = $('#corp_selector').val();
+   	oData.ally = $('#alliance_selector').val();
+   	oData.maillist = $('#mailinglist_selector').val();
 }
 
 function mailStateLoadParams (oSettings, oData) {
     $("#search_text").val(oData.sFilter);
-    if ('show_ships' in oData) {
-    	var buttons = $('#ships_selector button');
-    	SHOW_SHIPS = oData.show_ships;
-        for (var i = 0; i < buttons.length; i++) {
-            if (buttons[i].id == SHOW_SHIPS) {
-                $(buttons[i]).addClass('active');
-            } else {
-                $(buttons[i]).removeClass('active');
-            }
-        }
-    }
-    if ('corp' in oData) {
-    	$('#corp_selector').val(oData.corp);
-    }
+    $("#sent_from").val(oData.from);
+    $("#sent_to").val(oData.to);
+   	$('#corp_selector').val(oData.corp);
+   	$('#alliance_selector').val(oData.ally);
+   	$('#mailinglist_selector').val(oData.maillist);
     return true;
 }
         
 $(document).ready(function () {
-    $('#ships_selector button').on('click', function (event) {
-    	event.preventDefault();
-    	SHOW_SHIPS = this.id;
+    $('#search_button').on('click', function (event) {
     	$('#mail_table').dataTable().fnDraw();
 	});
-    
-    $('#corp_selector').on('change', function () {
+    $('#clear_search').on('click', function (event) {
+        $("#sent_from").val('');
+        $('#sent_to').val('');
+        $('#alliance_selector').val('0');
+        $('#corp_selector').val('0');
+        $('#mailinglist_selector').val('0');
     	$('#mail_table').dataTable().fnDraw();
+	});
+    $('#corp_selector').on('change', function () {
+        $('#sent_to').val('');
+        $('#alliance_selector').val('0');
+        $('#mailinglist_selector').val('0');
+    	$('#mail_table').dataTable().fnDraw();
+    });
+    $('#alliance_selector').on('change', function () {
+        $('#sent_to').val('');
+        $('#corp_selector').val('0');
+    	$('#mailinglist_selector').val('0');
+        $('#mail_table').dataTable().fnDraw();
+    });
+    $('#mailinglist_selector').on('change', function () {
+        $('#sent_to').val('');
+        $('#alliance_selector').val('0');
+        $('#corp_selector').val('0');
+    	$('#mail_table').dataTable().fnDraw();
+    });
+    $("input, text").keypress(function(e){
+        if(e.which==13) $("#search_button").click();
     });
 });
 

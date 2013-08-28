@@ -39,6 +39,9 @@ class Mail(models.Model):
     @property
     def permalink(self):
         return '<a href="%s" class="pos">%s</a>' % (self.url, self.title)
+    @property
+    def modal_link(self):
+        return '<a href="%s" data-toggle="modal">%s</a>' % (self.url, self.title)
     def __unicode__(self):
         return unicode(self.title)
 
