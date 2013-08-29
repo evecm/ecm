@@ -22,6 +22,7 @@ from django.template.context import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponseBadRequest
 from django.utils.translation import ugettext as tr
+from django.contrib.contenttypes.models import ContentType
 
 from ecm.views.decorators import check_user_access
 from ecm.views import extract_datatable_params, datatable_ajax_data, datatable_csv_data
@@ -44,9 +45,11 @@ COLUMNS = [
 def mail_list(request):
     corps = set()
     alliances = set()
-    for corp in Recipient.objects.filter(content_type_id=38):
+    corp_type = ContentType.objects.get(app_label="corp", model="corporation")
+    alliance_type = ContentType.objects.get(app_label="corp", model="alliance")
+    for corp in Recipient.objects.filter(content_type=corp_type):
         corps.add(corp.recipient)
-    for ally in Recipient.objects.filter(content_type_id=37):
+    for ally in Recipient.objects.filter(content_type=alliance_type):
         alliances.add(ally.recipient)
     data = {
         'corps'               : corps,
