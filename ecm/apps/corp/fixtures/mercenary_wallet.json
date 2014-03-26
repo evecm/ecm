@@ -1,0 +1,7 @@
+[
+    {
+        "pk": 10000,
+        "model": "corp.wallet",
+        "fields": {}
+    }
+]
