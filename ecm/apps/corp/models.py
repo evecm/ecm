@@ -94,6 +94,7 @@ class Wallet(models.Model):
         1004: 'Wallet division 5',
         1005: 'Wallet division 6',
         1006: 'Wallet division 7',
+        10000: 'Mercenary wallet division',
     }
     
     class Meta:

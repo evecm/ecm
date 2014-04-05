@@ -1,60 +1,19 @@
-#@PydevCodeAnalysisIgnore
-import datetime
+# -*- coding: utf-8 -*-
+from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
+class Migration(DataMigration):
 
-class Migration(SchemaMigration):
-    depends_on = (
-        ("hr", "0008_init_corp_field"),
-    )
     def forwards(self, orm):
-        # Adding model 'Alliance'
-        db.create_table('corp_alliance', (
-            ('allianceID', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('shortName', self.gf('django.db.models.fields.CharField')(max_length=10)),
-        ))
-        db.send_create_signal('corp', ['Alliance'])
-
-        # Deleting field 'Corporation.allianceTicker'
-        db.delete_column('corp_corporation', 'allianceTicker')
-
-        # Deleting field 'Corporation.allianceName'
-        db.delete_column('corp_corporation', 'allianceName')
-
-        # Deleting field 'Corporation.allianceID'
-        db.delete_column('corp_corporation', 'allianceID')
-
-        # Adding field 'Corporation.alliance'
-        db.add_column('corp_corporation', 'alliance',
-                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='corporations', null=True, to=orm['corp.Alliance']),
-                      keep_default=False)
-
+        "Write your forwards methods here."
+        # Note: Don't use "from appname.models import ModelName". 
+        # Use orm.ModelName to refer to models in this application,
+        # and orm['appname.ModelName'] for models in other applications.
 
     def backwards(self, orm):
-        # Deleting model 'Alliance'
-        db.delete_table('corp_alliance')
-
-        # Adding field 'Corporation.allianceTicker'
-        db.add_column('corp_corporation', 'allianceTicker',
-                      self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
-                      keep_default=False)
-
-        # Adding field 'Corporation.allianceName'
-        db.add_column('corp_corporation', 'allianceName',
-                      self.gf('django.db.models.fields.CharField')(max_length=256, null=True, blank=True),
-                      keep_default=False)
-
-        # Adding field 'Corporation.allianceID'
-        db.add_column('corp_corporation', 'allianceID',
-                      self.gf('django.db.models.fields.BigIntegerField')(null=True, blank=True),
-                      keep_default=False)
-
-        # Deleting field 'Corporation.alliance'
-        db.delete_column('corp_corporation', 'alliance_id')
-
+        "Write your backwards methods here."
 
     models = {
         'corp.alliance': {
@@ -131,3 +90,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['corp']
+    symmetrical = True

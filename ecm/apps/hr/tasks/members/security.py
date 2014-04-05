@@ -116,12 +116,13 @@ def parseOneMemberRoles(member, allRoleTypes, allRoles):
 #------------------------------------------------------------------------------
 def parseOneMemberTitles(member, my_corp):
     titles = {}
-
-    for t in member.titles:
-        title = Title.objects.get(corp=my_corp, titleID=t.titleID)
-        membership = TitleMembership(member_id=member.characterID, title=title)
-        titles[membership] = membership
-
+ 
+    if 'titles' in member:
+        for t in member.titles:
+            title = Title.objects.get(corp=my_corp, titleID=t.titleID)
+            membership = TitleMembership(member_id=member.characterID, title=title)
+            titles[membership] = membership
+ 
     return titles
 
 #------------------------------------------------------------------------------

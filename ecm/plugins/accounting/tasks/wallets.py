@@ -35,13 +35,15 @@ from ecm.plugins.accounting.models import JournalEntry, TransactionEntry
 LOG = logging.getLogger(__name__)
 
 #------------------------------------------------------------------------------
+
 def update():
     """
     Updates all wallets with the missing accounting entries since last scan.
     """
-    for wallet in Wallet.objects.all():
+# Temporary fix for this new Wallet division (This is the "Mercenary Wallet")
+    for wallet in Wallet.objects.exclude(walletID=10000):
         update_journal_wallet(wallet)
-    for wallet in Wallet.objects.all():
+#   for wallet in Wallet.objects.all():
         update_transaction_wallet(wallet)
 
     UpdateDate.mark_updated(model=JournalEntry, date=timezone.now())
