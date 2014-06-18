@@ -64,12 +64,16 @@ def report(request):
     # !!!TODO: Make period variable (Datepicker)
     end = timezone.now()
     start = end - timedelta(period)
+    # Get our corp ID
+    corp = Corporation.objects.mine()
+    corpID = corp.corporationID
     # Query all journal entries in this period
-    journal_entries = JournalEntry.objects.filter(date__range=(start, end))
+    journal_entries = JournalEntry.objects.filter(date__range=(start, end)).exclude(ownerID1__exact=corpID,ownerID2__exact=corpID)
     # Get an aggregated set of the positive income in this period
     positivie_entries = journal_entries.filter(amount__gt=0)
     # Calculate the total positive income in this period 
     income_total = positivie_entries.aggregate(Sum('amount'))['amount__sum']
+    if income_total == None: income_total = 0.0
     # Calculate the sum for each journal entry type and order by entry type
     income_entries = _group_by_wallet_entry(positivie_entries)
     income_aggregated = []
