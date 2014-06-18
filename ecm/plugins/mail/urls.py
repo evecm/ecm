@@ -18,7 +18,7 @@
 __date__ = "2012 09 06"
 __author__ = "Ajurna"
 
-from django.conf.urls.defaults import patterns
+from django.conf.urls import patterns
 
 urlpatterns = patterns('ecm.plugins.mail.views',
     ###########################################################################

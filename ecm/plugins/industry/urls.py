@@ -18,7 +18,7 @@
 __date__ = "2011 11 8"
 __author__ = "diabeteman"
 
-from django.conf.urls.defaults import patterns
+from django.conf.urls import patterns
 urlpatterns = patterns('ecm.plugins.industry.views',
     (r'^$',                                     'home'),
     (r'^catalog/$',                             'catalog.home'),

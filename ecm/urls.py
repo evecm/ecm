@@ -18,7 +18,7 @@
 __date__ = "2010-01-24"
 __author__ = "diabeteman"
 
-from django.conf.urls.defaults import patterns, include
+from django.conf.urls import patterns, include
 from django.contrib import admin
 from django.http import HttpResponse
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
