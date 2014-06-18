@@ -25,7 +25,7 @@
 	</div>
     <div style="display: inline;">
 	  	<span class="label label-info">{% trans 'Amount' %}</span>
-	  	<select id="comp_selector" class="span1">
+	  	<select id="comp_selector" class="input-small">
 		   	<option value="eq">==</option>
 		   	<option value="neq">&lt;&gt;</option>
 		   	<option value="gte">&gt;=</option>
@@ -82,38 +82,6 @@
         fnServerData='serverData'
 
         %}
-<!--table class="table table-bordered table-condensed" id="journal_table">
-  <thead>
-    <tr>
-      <th class="top" scope="col" >{% trans 'Date' %}</th>
-      <th class="top" scope="col" >{% trans 'Wallet' %}</th>
-      <th class="top" scope="col" >{% trans 'Operation' %}</th>
-      <th class="top" scope="col" >{% trans 'From' %}</th>
-      <th class="top" scope="col" >{% trans 'To' %}</th>
-      <th class="top" scope="col" >{% trans 'Amount' %}</th>
-      <th class="top" scope="col" >{% trans 'Balance' %}</th>
-      <th class="top" scope="col" style="display:none;">{% trans 'Reason' %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="7" class="dataTables_empty">{% trans 'Loading data from server...' %}</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <th>{% trans 'Date' %}</th>
-      <th>{% trans 'Wallet' %}</th>
-      <th>{% trans 'Operation' %}</th>
-      <th>{% trans 'From' %}</th>
-      <th>{% trans 'To' %}</th>
-      <th>{% trans 'Amount' %}</th>
-      <th>{% trans 'Balance' %}</th>
-      <th style="display:none;">{% trans 'Reason' %}</th>
-    </tr>
-  </tfoot>
-
-</table-->
 {% endblock %}
 
 

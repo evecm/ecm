@@ -25,7 +25,7 @@
 	</div>
     <div style="display: inline;">
 	  	<span class="label label-info">{% trans 'Amount' %}</span>
-	  	<select id="comp_selector" class="span1">
+	  	<select id="comp_selector" class="input-small">
 		   	<option value="eq">==</option>
 		   	<option value="neq">&lt;&gt;</option>
 		   	<option value="gte">&gt;=</option>
@@ -149,22 +149,6 @@ $(document).ready(function() {
             } else {
                 $('td:eq(4)', nRow).addClass('journal-debit');
             }
-            /* hide reason column */
-            /*$('td:eq(7)', nRow).hide()*/
-
-            /* set titles tooltip on each row */
-            /*reason = aData[7]
-            if (reason != "") {
-                $('td:eq(5)', nRow).attr("title", reason)
-                $('td:eq(5)', nRow).cluetip({
-                    splitTitle: '|',
-                    dropShadow: false,
-                    cluetipClass: 'jtip',
-                    positionBy: 'mouse',
-                    tracking: true
-                });
-            }*/
-
             return nRow;
         },
 
