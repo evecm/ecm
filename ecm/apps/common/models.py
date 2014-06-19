@@ -26,7 +26,11 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
 from django.db import models, transaction
 from django.conf import settings
-from django.utils.hashcompat import sha_constructor
+from django import VERSION as django_version
+if django_version >= (1, 5, 0):
+    from hashlib import sha1 as sha_constructor
+else:
+    from django.utils.hashcompat import sha_constructor
 from django.core.validators import RegexValidator
 from django.utils import timezone
 
@@ -355,28 +359,28 @@ class Motd(models.Model):
     #  PyTextile       : Textile 
     #  Python-markdown : Markdown 
     #  docutils        : reST (reStructured Text)
-    from django.contrib.markup.templatetags import markup
+#    from django.contrib.markup.templatetags import markup
 
-    MARKUPS = {0: 'Plain Text'}
-    MARKUP_FUNCTIONS = {0: unicode}
-    try:
-        from docutils.core import publish_parts #@UnusedImport
-        MARKUPS[1] = 'reStructured Text'
-        MARKUP_FUNCTIONS[1] = markup.restructuredtext
-    except ImportError:
-        pass
-    try:
-        import markdown #@UnusedImport
-        MARKUPS[2] = 'Markdown'
-        MARKUP_FUNCTIONS[2] = markup.markdown
-    except ImportError:
-        pass
-    try:
-        import textile #@UnusedImport
-        MARKUPS[3] = 'Textile'
-        MARKUP_FUNCTIONS[3] = markup.textile
-    except ImportError:
-        pass
+#    MARKUPS = {0: 'Plain Text'}
+#    MARKUP_FUNCTIONS = {0: unicode}
+#    try:
+#        from docutils.core import publish_parts #@UnusedImport
+#        MARKUPS[1] = 'reStructured Text'
+#        MARKUP_FUNCTIONS[1] = markup.restructuredtext
+#    except ImportError:
+#        pass
+#    try:
+#        import markdown #@UnusedImport
+#        MARKUPS[2] = 'Markdown'
+#        MARKUP_FUNCTIONS[2] = markup.markdown
+#    except ImportError:
+#        pass
+#    try:
+#        import textile #@UnusedImport
+#        MARKUPS[3] = 'Textile'
+#        MARKUP_FUNCTIONS[3] = markup.textile
+#    except ImportError:
+#       pass
     
     class Meta:
         verbose_name = 'Message of the day'
@@ -386,16 +390,16 @@ class Motd(models.Model):
     
     message = models.TextField(default='MOTD Text')
     date = models.DateTimeField(auto_now_add=True)
-    markup = models.SmallIntegerField(default=0, choices=MARKUPS.items())
+    markup = models.SmallIntegerField(default=0)#, choices=MARKUPS.items())
     user = models.ForeignKey(User, default=1)
     
     def __unicode__(self):
         return self.message[:50]
 
     def render_html(self):
-        try:
-            return self.MARKUP_FUNCTIONS[self.markup](self.message)
-        except KeyError:
+#        try:
+#            return self.MARKUP_FUNCTIONS[self.markup](self.message)
+#        except KeyError:
             return self.message
 
 #------------------------------------------------------------------------------

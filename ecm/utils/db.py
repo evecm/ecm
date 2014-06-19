@@ -29,3 +29,12 @@ def fix_mysql_quotes(query):
         return query.replace('"', '`')
     else:
         return query
+        
+def order_by_case_insensitive(query, sort_col, asc):
+    """
+    Sort a query by a field, but case insensitive
+    """
+    sort_col_lower = '%s_lower' % sort_col
+    query = query.extra(select={sort_col_lower : 'lower(%s)' % sort_col})
+    if not asc: sort_col_lower = '-' + sort_col_lower
+    return query.order_by(sort_col_lower)

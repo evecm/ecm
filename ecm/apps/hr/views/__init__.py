@@ -46,15 +46,13 @@ def get_members(query, first_id, last_id, search_str=None, sort_by=0, asc=True, 
     query = query.select_related(depth=2) # improve performance
 
     sort_col = MEMBERS_COLUMNS[sort_by]['db_field']
-    # SQL hack for making a case insensitive sort
-    if sort_by == 0:
-        sort_col = sort_col + "_nocase"
-        sort_val = db.fix_mysql_quotes('LOWER("%s")' % MEMBERS_COLUMNS[sort_by]['db_field'])
-        query = query.extra(select={ sort_col : sort_val })
 
-    
-    if not asc: sort_col = "-" + sort_col
-    query = query.extra(order_by=([sort_col]))
+    # Sort case insensitive
+    if sort_by == 0:
+        query = db.order_by_case_insensitive(query, sort_col, asc)
+    else:
+        if not asc: sort_col = "-" + sort_col
+        query = query.order_by(sort_col)
 
     if search_str:
         total_members = query.count()
