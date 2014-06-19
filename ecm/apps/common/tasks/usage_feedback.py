@@ -24,7 +24,7 @@ from pkg_resources import parse_version
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
-from django.http.request import HttpRequest
+from django.http import HttpRequest
 from django.template.context import RequestContext as Ctx
 from django.template.loader import render_to_string
 from django.core.mail import mail_admins
