@@ -36,7 +36,7 @@ dependencies = [
     'south (>= 0.8)',
     'django_compressor (>= 1.1.2)',
     'setuptools',
-    'django (>= 1.5)',
+    'django (>= 1.5, <1.6)',
     'pytz',
     'pycrypto',
 ]
