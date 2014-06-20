@@ -29,3 +29,16 @@ def fix_mysql_quotes(query):
         return query.replace('"', '`')
     else:
         return query
+        
+def order_by_case_insensitive(query, sort_col):
+    """
+    Sort a query by a field, but case insensitive.  This should be a database agnostic way.
+    """
+    order_by = sort_col + '_lower'
+    if sort_col[0] = '-':
+         = sort_col[1:]
+    
+    new_column = sort_col + '_lower'
+        
+    query = query.extra(select={new_column : 'lower(%s)' % sort_col})
+    return query.order_by(order_by)
