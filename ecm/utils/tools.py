@@ -110,3 +110,12 @@ def start_of_day(datetime):
     return datetime.replace(hour=0, minute=0, second=0)
 
 
+# Replace django.utils.txt truncate_words on django >= 1.6
+# Use ecm.utils.tools truncate_words instead
+from django.utils import six
+from django.utils.text import Truncator
+from django.utils.functional import allow_lazy
+def truncate_words(s, num, end_text='...'):
+    truncate = end_text and ' %s' % end_text or ''
+    return Truncator(s).words(num, truncate=truncate)
+truncate_words = allow_lazy(truncate_words, six.text_type)
