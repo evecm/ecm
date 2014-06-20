@@ -90,8 +90,10 @@ def journal(request):
 
 
 
+
 #------------------------------------------------------------------------------
-journal_cols = ['wallet', 'date', 'type', 'ownerName1', 'ownerName2', 'amount', 'balance']
+# Database columns for ajax sorting
+journal_cols = ['date', 'wallet', 'type', 'ownerName1', 'ownerName2', 'amount', 'balance']
 
 @check_user_access()
 def journal_data(request):
@@ -107,7 +109,9 @@ def journal_data(request):
     except:
         return HttpResponseBadRequest()
 
-    query = JournalEntry.objects.select_related(depth=1).all().order_by('-date')
+    orderBy = journal_cols[params.column]
+    if not params.asc: orderBy = "-" + orderBy    
+    query = JournalEntry.objects.select_related(depth=1).all().order_by(orderBy)
 
     if params.search or params.walletID or params.entryTypeID or params.amount or (params.from_date and params.to_date):
         total_entries = query.count()
@@ -201,11 +205,5 @@ def journal_data(request):
             reason,
         ])
 
-    #json_data = {
-    #    "sEcho" : params.sEcho,
-    #    "iTotalRecords" : total_entries,
-    #    "iTotalDisplayRecords" : filtered_entries,
-    #    "aaData" : entries
-    #}
     return datatable_ajax_data(entries, params.sEcho, total_entries, filtered_entries)
 

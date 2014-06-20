@@ -25,7 +25,7 @@ WALLET_JOURNAL_COLUMNS = [
         {'sTitle':tr('Wallet'),       'sWidth':'15%', 'sType':'html', },
         {'sTitle':tr('Operation'),    'sWidth':'10%', 'sType':'string'},
         {'sTitle':tr('From'),         'sWidth':'15%', 'sType':'html', },
-        {'sTitle':tr('To'),           'sWidth':'15%', 'sType':'html', },
+        {'sTitle':tr('To'),           'sWidth':'15%', 'sType':'html', 'bSortable':False },
         {'sTitle':tr('Amount'),       'sWidth':'15%', 'sType':'string', },
         {'sTitle':tr('Balance'),      'sWidth':'15%', 'sType':'string', 'sClass':'right', },
         {'sTitle':tr('Reason'),     'bVisible':False, },
