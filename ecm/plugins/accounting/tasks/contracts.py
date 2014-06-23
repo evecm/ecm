@@ -91,7 +91,7 @@ def process_contracts(contract_list, connection):
     # Get new items by contractID from EVE API
     new_items = {}
     for contract in added_contracts:
-        if contract.type != 'Courier': # No items for courier contracts from API
+        if contract.type != 2: # 'Courier' No items for courier contracts from API
             try:
                 items_api = connection.corp.ContractItems(contractID=contract.contractID)
                 item_list = items_api.itemList
@@ -101,6 +101,8 @@ def process_contracts(contract_list, connection):
                     new_items[new_item] = new_item
             except api.RequestError:
                 LOG.debug("Invalid or missing contractID: %s" % contract.contractID)
+            except RuntimeError:
+                LOG.debug("Unable to fetch items for contract ID: %s" % contract.contractID)
                 continue
     # Get all contractitem ids for removed contracts
     removed_items = []
