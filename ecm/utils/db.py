@@ -36,7 +36,7 @@ def order_by_case_insensitive(query, sort_col):
     """
     order_by = sort_col + '_lower'
     if sort_col[0] = '-':
-         = sort_col[1:]
+        sort_col = sort_col[1:]
     
     new_column = sort_col + '_lower'
         
