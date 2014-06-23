@@ -37,9 +37,9 @@ def get_corp(corporationID):
     except Corporation.DoesNotExist:
         conn = api.eveapi.EVEAPIConnection()
         api_corp = conn.corp.CorporationSheet(corporationID=corporationID)
-        LOG.info("Adding new Corporation: "+ api_corp.corporationName)
+        LOG.info("Adding new Corporation: "+ str(api_corp.corporationName))
         corp = Corporation(corporationID   = api_corp.corporationID,
-                           corporationName = api_corp.corporationName,
+                           corporationName = str(api_corp.corporationName),
                            ticker          = api_corp.ticker,
                            ceoID           = api_corp.ceoID,
                            ceoName         = api_corp.ceoName,
