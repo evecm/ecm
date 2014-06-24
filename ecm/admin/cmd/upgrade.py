@@ -37,7 +37,7 @@ from ecm.lib.subcommand import Subcommand
 from ecm.admin import instance_template
 from ecm.admin.util import run_python_cmd, log, pipe_to_django_shell
 from ecm.admin.cmd.load import print_load_message
-from ecm.admin.cmd import collect_static_files, print_usage_feedback_message
+from ecm.admin.cmd import collect_static_files
 
 #-------------------------------------------------------------------------------
 def sub_command():
@@ -185,4 +185,3 @@ def run(command, global_options, options, args):
     log('ECM instance upgraded in "%s".' % instance_dir)
 
     print_load_message(instance_dir, config.get('database', 'ecm_engine'))
-    print_usage_feedback_message()

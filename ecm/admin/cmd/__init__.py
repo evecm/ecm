@@ -25,8 +25,6 @@ import os
 import sys
 
 from ecm.admin.util import run_python_cmd, log
-from ecm.utils.usage_feedback import ECM_USAGE_FEEDBACK_URL
-
 
 #-------------------------------------------------------------------------------
 def collect_static_files(instance_dir, options):
@@ -69,21 +67,3 @@ def run_server(instance_dir, address, port, access_log=False):
         server.stop()
 
 #------------------------------------------------------------------------------
-def print_usage_feedback_message():
-    log('')
-    log('*ATTENTION*')
-    log('')
-    log('ECM now has usage feedback system which is enabled by default.')
-    log('This feature is really helpfull for ECM developers because it allows')
-    log('us to know how much the project is used and helps our motivation ;-)')
-    log('')
-    log('It consists in a scheduled task that will run once each week and send')
-    log('*basic* and *anonymous* data to the official server %r.', ECM_USAGE_FEEDBACK_URL)
-    log('This is *NOT* a spying system nor a backdoor to enter your ECM instance.')
-    log('To know what data is sent in detail, please see the source code at http://eve-corp-management.org/projects/ecm/repository/entry/ecm/apps/common/tasks/usage_feedback.py')
-    log('')
-    log('If however you *really* want to disable the usage feedback on your')
-    log('instance, you need to go to the admin panel and change the scheduled')
-    log('task "ecm....send_feedback" to inactive.')
-    log('')
-    log('Thank you for using ECM. Fly safe.')
