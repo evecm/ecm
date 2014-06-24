@@ -64,6 +64,9 @@ def update_character_associations(user):
 
                 char_info = conn.eve.CharacterInfo(characterID=member.characterID)
                 set_char_info_attributes(member, char_info)
+                    # This also sets employment history.
+                    # TODO 1 move employment history into separate function
+                    # TODO 2 optimizie; only check if corp has changed, and add history records in save_all below.
                 sheet = conn.char.CharacterSheet(characterID=member.characterID)
                 set_extended_char_attributes(member, sheet)
                 skills.extend(get_character_skills(member, sheet))

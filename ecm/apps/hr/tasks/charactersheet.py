@@ -97,10 +97,15 @@ def set_char_info_attributes(member, char_info):
     history = member.employment_history.values_list('recordID', flat=True)
     for employer in char_info.employmentHistory:
         if employer.recordID not in history:
-            corp = get_corp(employer.corporationID)
-            eh = EmploymentHistory()
-            eh.member = member
-            eh.recordID = employer.recordID
-            eh.corporation = corp
-            eh.startDate = timezone.make_aware(employer.startDate, timezone.utc)
-            eh.save()
+            try:
+                corp = get_corp(employer.corporationID)
+                eh = EmploymentHistory()
+                eh.member = member
+                eh.recordID = employer.recordID
+                eh.corporation = corp
+                eh.startDate = timezone.make_aware(employer.startDate, timezone.utc)
+                eh.save()
+            # Employment history will fail if member hasn't been added to the table (new char on account)
+            # This is a workaround, would be better to decouple EH from location/ship attributes
+            except:
+                LOG.debug("Cannot save employer history for %s at this time." % member.name)
