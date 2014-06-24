@@ -35,6 +35,11 @@
         "fields": {}
     },
     {
+        "pk": 10000,
+        "model": "corp.wallet",
+        "fields": {}
+    },
+    {
         "pk": 0,
         "model": "corp.hangar",
         "fields": {}
