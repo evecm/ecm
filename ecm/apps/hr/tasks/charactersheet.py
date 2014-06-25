@@ -23,6 +23,8 @@ from django.utils import timezone
 from ecm.apps.hr.models.member import Skill
 from ecm.apps.hr.models.member import EmploymentHistory
 from ecm.apps.hr.utils import get_corp
+import logging
+LOG = logging.getLogger(__name__)
 
 #-----------------------------------------------------------------------------
 def get_character_skills(member, sheet):
