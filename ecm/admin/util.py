@@ -145,15 +145,6 @@ def pipe_to_django_shell(python_code, run_dir, exit_on_failure=True):
 #-------------------------------------------------------------------------------
 def pipe_to_dbshell(sql_file, run_dir, password=None, exit_on_failure=True):
     
-    if os.path.exists(sql_file):
-        log('Piping SQL file to dbshell: %r' % sql_file)
-        sql_fd = open(sql_file, 'rb')
-        sql = sql_fd.read()
-        sql_fd.close()
-    else:
-        log('Piping SQL code to dbshell...')
-        sql = sql_file
-    
     command_line = [sys.executable, 'manage.py', 'dbshell']
     proc = None
     try:
@@ -167,7 +158,13 @@ def pipe_to_dbshell(sql_file, run_dir, password=None, exit_on_failure=True):
         
         if os.path.exists(sql_file):
             sql_fd = open(sql_file, 'rb')
-            sql = sql_fd.read()
+            # Pass data in blocks to avoid huge memory usage when importing sql
+            blocksize = 1000000
+            sql = sql_fd.read(blocksize)
+            while(len(sql)):
+                proc.stdin.write(sql)
+                sql = sql_fd.read(blocksize)
+            
             sql_fd.close()
         else:
             sql = sql_file
