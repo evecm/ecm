@@ -36,14 +36,17 @@ logger = logging.getLogger(__name__)
 #-----------------------------------------------------------------------------
 def update():
     for key in UserAPIKey.objects.filter(is_valid = True):
-        api_conn = api.connect_user(key)
-        for char in api_conn.account.Characters().characters:
-            try:
-                get_mailing_lists(api_conn, char.characterID)
-                get_mail(api_conn, char)
-                #get_notifications(api_conn, char.characterID)
-            except:
-                logger.info('Unable to get mail for %s, likely API mask error.' % char.name)
+        try:
+            api_conn = api.connect_user(key)
+            for char in api_conn.account.Characters().characters:
+                try:
+                    get_mailing_lists(api_conn, char.characterID)
+                    get_mail(api_conn, char)
+                    #get_notifications(api_conn, char.characterID)
+                except:
+                    logger.info('Unable to get mail for %s, likely API mask error.' % char.name)
+        except:
+            logger.info('plugin/mail: API invalid for user %s' % key.user.username)
 
 #-----------------------------------------------------------------------------
 @transaction.commit_on_success
