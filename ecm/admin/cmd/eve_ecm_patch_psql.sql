@@ -31,18 +31,10 @@ DELETE FROM "eve_skillreq";
 
 
 
-INSERT INTO "eve_category" SELECT "categoryID","categoryName","description","iconID",
-	CASE WHEN "published" then 1 else 0 end  FROM "invCategories";
-INSERT INTO "eve_group" SELECT "groupID","categoryID","groupName","description","iconID",
-	CASE WHEN "useBasePrice" then 1 else 0 end ,
-	CASE WHEN "allowManufacture" then 1 else 0 end,
-	CASE WHEN "allowRecycler" then 1 else 0 end,
-	CASE WHEN "anchored" then 1 else 0 end,
-	CASE WHEN "anchorable" then 1 else 0 end,
-	CASE WHEN "fittableNonSingleton" then 1 else 0 end
-	FROM "invGroups";
-INSERT INTO "eve_marketgroup" SELECT "marketGroupID","parentGroupID","marketGroupName","description","iconID",
-	CASE WHEN "hasTypes" then 1 else 0 end  FROM "invMarketGroups";
+INSERT INTO "eve_category" SELECT "categoryID","categoryName","description","iconID","published" FROM "invCategories";
+INSERT INTO "eve_group" SELECT "groupID","categoryID","groupName","description","iconID","useBasePrice","allowManufacture",
+	"allowRecycler","anchored","anchorable","fittableNonSingleton" FROM "invGroups";
+INSERT INTO "eve_marketgroup" SELECT "marketGroupID","parentGroupID","marketGroupName","description","iconID","hasTypes" FROM "invMarketGroups";
 
 --------------------
 -- PATCH invTypes --
@@ -63,7 +55,7 @@ SELECT  t."typeID",
         t."basePrice",
         t."marketGroupID",
         COALESCE(m."metaGroupID", 0),
-        CASE WHEN t."published" then 1 else 0 end
+        t."published"
 FROM "invTypes" t LEFT OUTER JOIN "invBlueprintTypes" b ON t."typeID" = b."productTypeID",
      "invTypes" tt LEFT OUTER JOIN "invMetaTypes" m ON tt."typeID" = m."typeID",
      "invGroups" gg
