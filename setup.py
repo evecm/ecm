@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2010-2012 Robin Jarry
+# Copyright (c) 2010-2014 AUTHORS
 #
 # This file is part of EVE Corporation Management.
 #
@@ -47,10 +47,10 @@ setup(
     version = __import__('ecm').VERSION, # dynamically get version from ecm.VERSION.
     description = 'EVE Corp Management is a management and decision-making helper-application for EVE Online.',
     long_description = open('README').read(),
-    author = 'Robin Jarry',
-    author_email = 'diab@diabeteman.com',
-    url = 'http://eve-corp-management.org/',
-    download_url = 'http://releases.eve-corp-management.org/src/',
+    author = 'ggrog',
+    author_email = 'ecm@ggrog.com',
+    url = 'https://github.com/evecm/ecm',
+    download_url = 'https://pypi.python.org/pypi/ecm',
     license = 'GPLv3',
     keywords = ('eve-online', 'django', 'corporation', 'management'),
     platforms = 'any',

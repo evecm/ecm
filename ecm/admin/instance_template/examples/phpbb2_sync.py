@@ -21,7 +21,7 @@ This script allows the synchronization of PHPBB2 user groups with ECM groups.
 
 You must have previously set up a binding for your forum in ECM.
 
-Please read http://code.google.com/p/eve-corp-management/wiki/ExternalAppsSync
+Please read http://eve-corp-management.org/projects/ecm/wiki/ExternalAppsSync
 for installation instructions.
 '''
 import os
