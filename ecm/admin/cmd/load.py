@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2012 Robin Jarry
+# Copyright (c) 2010-2014 AUTHORS
 #
 # This file is part of EVE Corporation Management.
 #
@@ -17,7 +17,7 @@
 
 from __future__ import with_statement
 
-__date__ = '2012 5 18'
+__date__ = '2014 7 1'
 __author__ = 'diabeteman'
 
 import os
@@ -30,6 +30,7 @@ from ConfigParser import SafeConfigParser
 from ecm.lib.subcommand import Subcommand
 from ecm.admin.util import pipe_to_dbshell, expand
 from ecm.admin.util import log
+from ecm.admin.util import run_python_cmd
 
 
 CCP_DATA_DUMPS = {
@@ -106,11 +107,14 @@ def run(command, global_options, optionsd, args):
             log('Expanding %r to %r...', dump_archive, tempdir)
             dump_file = expand(dump_archive, tempdir)
             log('Expansion complete to %r.' % dump_file)
+            extension = os.path.splitext(dump_file)[-1]
         else:
             dump_file = dump_archive
-        
-        log('Patching and importing data (this can be long)...')
-        if 'sqlite' in db_engine:
+            
+        log('Importing data (this may take a long time)...')
+        if extension in ('.json'):
+            load_json_dump(instance_dir, dump_file, tempdir)
+        elif 'sqlite' in db_engine:
             import sqlite3
             with open(os.path.join(SQL_ROOT, sql['PATCH'])) as f:
                 sql_script = f.read() 
@@ -145,5 +149,51 @@ def print_load_message(instance_dir, db_engine):
     log('')
     log('Now you need to load your database with EVE static data.')
     log('Please execute `ecm-admin load %s <official_dump_file>` to do so.' % instance_dir)
-    log('You will find official dump conversions here http://releases.eve-corp-management.org/eve_sde/')
+    log('You will find links to official dump conversions here https://github.com/evecm/ecm/wiki/Static-Data')
     log('Be sure to take the latest one matching your db engine "%s".' % engine)
+
+#-------------------------------------------------------------------------------
+def load_json_dump(instance_dir, json_file, tempdir):
+    # Break the load into multiple chunks to save memory
+    # blocksize must be large enough to grab the main foreign keys in the first chunk
+    blocksize = 15000000
+    
+    infile = open(json_file, 'r')
+    outfilename = os.path.join(tempdir, 'temp.json')
+    i = 1
+    data = infile.read(blocksize)
+    while(len(data)):
+        outfile = open(outfilename, 'w')
+        if (i > 1):
+            outfile.write('[')
+        outfile.write(data)
+            
+        if (len(data) == blocksize):
+            # Look for "}," and separate there
+            separator = 0
+            while(separator < 2):
+                databyte = infile.read(1)
+                if (databyte == ']'):
+                    separator = 2
+                elif (databyte == '}'):
+                    separator = 1
+                elif (databyte == ',' and separator == 1):
+                    separator = 2
+                    databyte = ']'
+                else:
+                    separator = 0                 
+                outfile.write(databyte)
+
+        outfile.close()
+        
+        run_python_cmd(['manage.py', 'loaddata', os.path.abspath(outfilename)], run_dir=instance_dir)
+        
+        # If len is less than blocksize we're out of data
+        if (len(data) < blocksize):
+            break
+        
+        data = infile.read(blocksize)
+        i = i + 1
+
+    infile.close()
+    os.remove(outfilename)

@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2012 Robin Jarry
+# Copyright (c) 2010-2014 AUTHORS
 #
 # This file is part of EVE Corporation Management.
 #
@@ -16,14 +16,17 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 
-__date__ = '2012 5 18'
+__date__ = '2014 7 1'
 __author__ = 'diabeteman'
 
 import os
 import sys
 import shutil
+import signal
 from optparse import OptionParser
 from ConfigParser import SafeConfigParser
+import subprocess
+from subprocess import PIPE
 
 from ecm.admin.util import pipe_to_dbshell, log, run_command
 from ecm.lib.subcommand import Subcommand
@@ -32,6 +35,18 @@ SUPPORTED_ENGINES = [
     'django.db.backends.postgresql_psycopg2',
     'django.db.backends.mysql',
     'django.db.backends.sqlite3',
+]
+
+SDE_TABLES = [ # Table order is important to not violate foreign key relationships on later import
+    'eve.Category',
+    'eve.Group',
+    'eve.Type',
+    'eve.BlueprintType',
+    'eve.MarketGroup',
+    'eve.BlueprintReq',
+    'eve.ControlTowerResource',
+    'eve.SkillReq',
+    'eve.CelestialObject',
 ]
 
 #-------------------------------------------------------------------------------
@@ -44,6 +59,9 @@ def sub_command():
     dump_cmd.parser.add_option('-o', '--overwrite',
                                dest='overwrite', default=False, action='store_true',
                                help='Force overwrite any existing file.')
+    dump_cmd.parser.add_option('-j', '--json',
+                               dest='json', default=False, action='store_true',
+                               help='Dump the data in JSON Django serializated format.')
     return dump_cmd
 
 #-------------------------------------------------------------------------------
@@ -77,7 +95,9 @@ def run(command, global_options, options, args):
         os.remove(dump_file)
 
     log('Dumping EVE data to %r...' % dump_file)
-    if 'postgresql' in db_engine:
+    if options.json:
+        dump_json(instance_dir, dump_file)
+    elif 'postgresql' in db_engine:
         dump_psql(instance_dir, dump_file, db_user, db_password, db_name)
     elif 'mysql' in db_engine:
         dump_mysql(instance_dir, dump_file, db_user, db_password, db_name)
@@ -162,4 +182,41 @@ def dump_sqlite(instance_dir, dump_file):
     cursor.close()
     connection.commit()
     connection.close()
+    
+#-------------------------------------------------------------------------------
+# Dump the JSON data, one table at a time, and concatenate into one file.
+# Do this in blocks to conserve memory
+def dump_json(instance_dir, dump_file):
+    blocksize = 1000000
+    fd = open(dump_file, 'w')
+    fd.write('[')
+    first = True
+    for table in SDE_TABLES:
+        # Insert commas between tables of json data
+        if not first:
+            fd.write(',')
+        first = False
 
+        command = [sys.executable, 'manage.py', 'dumpdata', table]
+        proc = None
+        try:
+            log('... %s', table)
+            proc = subprocess.Popen(command, stdout=PIPE, stderr=PIPE, cwd=instance_dir)
+            data = proc.stdout.read(blocksize)[1:] # Strip out the first json character, a '['
+            while (len(data)):
+                if data[-1:] == ']': # Strip out the last json character, a ']'
+                    fd.write(data[:-1])
+                else:
+                    fd.write(data)
+                data = proc.stdout.read(blocksize)
+            (_, stderr) = proc.communicate()
+            if len(stderr):
+                stderr = 'Dump error, probable uninitialized database' + stderr
+                raise Exception(stderr)
+        except KeyboardInterrupt:
+            if proc is not None:
+                os.kill(proc.pid, signal.SIGTERM)
+                raise KeyboardInterrupt
+
+    fd.write(']')
+    fd.close()
