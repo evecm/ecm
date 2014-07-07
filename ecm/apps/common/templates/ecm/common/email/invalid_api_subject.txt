@@ -1,15 +1,2 @@
 {% load i18n %}
-
-{% trans 'Hello' %} {{ user_name }},
-	
-{% trans 'The following API Keys are invalid' %}:
-{% for api in invalid_apis %}* {{ api.keyID }}: {{ api.error }}
-{% endfor %}
-{% trans 'All the characters from the accounts related to these API Keys are not associated with your profile anymore. 
-Please log-in to' %} http{% if use_https %}s{% endif %}://{{ host_name }}/ {% trans 'and make sure that these API Keys
-are valid' %}.
-{% trans "NB: If you don't own the accounts related to these API Keys anymore, you can delete them from your profile to
-stop receiving these e-mails." %}
-{% trans 'Thank you in advance' %},
-	
-{{ corp_name }}
+[{{ corp_name }}] {% trans 'Invalid API Key' %}
