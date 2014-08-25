@@ -149,14 +149,12 @@ SELECT
 	-- we need to substract t1 values to the t2 items to get correct requirements.
     itm."quantity" - IFNULL(itm2."quantity", 0) AS "quantity", -- ME affected
     1.0 AS "damagePerJob",
-    IFNULL(rtr."quantity", 0) AS "extraQuantity" -- not affected by ME
+    0 AS "extraQuantity"
 
   FROM 
     "invBlueprintTypes" AS b
     JOIN "invTypeMaterials" AS itm
        ON itm."typeID" = b."productTypeID"
-    LEFT OUTER JOIN "ramTypeRequirements" AS rtr
-       ON rtr."typeID" = b."blueprintTypeID" AND itm."materialTypeID" = rtr."requiredTypeID"
     LEFT OUTER JOIN "invMetaTypes" AS m
        ON b."productTypeID" = m."typeID"
     LEFT OUTER JOIN "invTypeMaterials" AS itm2
