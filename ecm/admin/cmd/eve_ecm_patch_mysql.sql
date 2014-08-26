@@ -122,17 +122,19 @@ SET `parentBlueprintTypeID` = NULL;
 
 -- then we get the parent item (for each tech 2 item)
 -- from the `invMetaTypes` table and resolve its blueprint.
+CREATE TEMPORARY TABLE `temp_bp_table`(`blueprintTypeID` INT, `typeID` INT);
+INSERT INTO `temp_bp_table`
+	SELECT b.`blueprintTypeID` AS `blueprintTypeID`, m.`typeID` AS `typeID`
+    FROM `eve_blueprinttype` AS b,
+          `invMetaTypes` AS m
+    WHERE b.`productTypeID` = m.`parentTypeID` 
+		AND m.`metaGroupID` = 2;
+
 UPDATE `eve_blueprinttype`
 SET `parentBlueprintTypeID` =
-(SELECT sub.`bpID` 
-FROM (SELECT b.`blueprintTypeID` AS `bpID`, m.`typeID` AS `typeID`
-     FROM `eve_blueprinttype` AS b,
-          `invMetaTypes` AS m
-     WHERE b.`productTypeID` = m.`parentTypeID`
-       AND m.`metaGroupID` = 2 /* only tech2 items are concerned with invention */) AS sub
- WHERE `productTypeID` = sub.`typeID`)
-;
-
+	(SELECT t.`blueprintTypeID` 
+		FROM `temp_bp_table` AS t
+		WHERE `productTypeID` = t.`typeID`);
 -- this way, when manufacturing a tech 2 item,
 -- we can easily know on which blueprint we need to run an invention job
 -- in order to obtain the item's tech 2 BPC
