@@ -22,17 +22,17 @@ __author__ = 'diabeteman'
 #------------------------------------------------------------------------------
 def apply_material_level(base, me_level, waste_factor, round_result=False):
     """
-    Calculate the quantity needed for a material
-    considering the waste factor and the material efficiency of the blueprint involved.
+    Calculate the quantity needed for a material considering material efficiency of the blueprint involved.
     """
-    if me_level < 0:
-        value = base * (1.0 - ((me_level - 1) * (waste_factor * 0.01)))
-    else:
-        value = base * (1.0 + ((waste_factor * 0.01) / (1.0 + me_level)))
+    # TODO ignores team and location modifiers
+    matModifier = 1.0 - me_level * 0.01 # ME of zero is 1.0, ME of 10 is 90% of materials required
+    value = base * matModifier
     if round_result:
-        return int(round(value))
-    else:
-        return value
+        value = int(round(value))
+    if value < 1:
+        value = 1
+        
+    return value
 
 #------------------------------------------------------------------------------
 def apply_production_level(base, pe_level, base_productivity_modifier, round_result=False):
@@ -40,12 +40,7 @@ def apply_production_level(base, pe_level, base_productivity_modifier, round_res
     Calculate the duration (in seconds) needed for the manufacturing of an item
     considering the production efficiency of the item's blueprint.
     """
-    base_time = 0.8 * base # we consider the industry skill is at level 5
-    productivity_modifier = base_productivity_modifier / float(base)
-    if pe_level < 0:
-        value = base_time * (1.0 - (productivity_modifier * (pe_level - 1.0)))
-    else:
-        value = base_time * (1.0 - (productivity_modifier * pe_level / (1.0 + pe_level)))
+    value = base * (1.0 - pe_level * 0.01) * base_productivity_modifier
     if round_result:
         return int(round(value))
     else:
