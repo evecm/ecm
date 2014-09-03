@@ -150,17 +150,13 @@ class BlueprintType(models.Model):
     product = models.OneToOneField('Type', db_column='productTypeID', db_index=True,
                                    null=True, blank=True)
     productionTime = models.IntegerField(null=True, blank=True)
-    techLevel = models.SmallIntegerField(null=True, blank=True)
     data_interface = models.ForeignKey('Type', db_index=True, db_column='dataInterfaceID',
                                        null=True, blank=True,
                                        related_name='blueprint_datainterfaces')
     researchProductivityTime = models.IntegerField(null=True, blank=True)
     researchMaterialTime = models.IntegerField(null=True, blank=True)
     researchCopyTime = models.IntegerField(null=True, blank=True)
-    researchTechTime = models.IntegerField(null=True, blank=True)
-    productivityModifier = models.IntegerField(null=True, blank=True)
-    materialModifier = models.SmallIntegerField(null=True, blank=True)
-    wasteFactor = models.SmallIntegerField(null=True, blank=True)
+    inventionTime = models.IntegerField(null=True, blank=True)
     maxProductionLimit = models.IntegerField(null=True, blank=True)
     __item = None
 
@@ -201,10 +197,9 @@ class BlueprintType(models.Model):
         Calculate the duration (in seconds) needed to perform the specified activity.
         """
         if activity == BlueprintType.Activity.MANUFACTURING:
-            return apply_production_level(runs * self.productionTime, pe_level,
-                                          self.productivityModifier)
+            return apply_production_level(runs * self.productionTime, pe_level)
         elif activity == BlueprintType.Activity.INVENTION:
-            return runs * self.researchTechTime
+            return runs * self.inventionTime
         elif activity == BlueprintType.Activity.RESEARCH_ME:
             return runs * self.researchMaterialTime
         elif activity == BlueprintType.Activity.RESEARCH_PE:
@@ -232,12 +227,10 @@ class BlueprintType(models.Model):
         rounded_runs = int(round(runs))
         materials = []
 
-        for mat in self.materials(activity).filter(damagePerJob__gt=0):
+        for mat in self.materials(activity):
             mat.quantity = apply_material_level(mat.quantity,
                                                 me_level,
-                                                self.wasteFactor,
                                                 round_result)
-            mat.quantity += mat.extraQuantity
             mat.quantity *= rounded_runs
             materials.append(mat)
         return materials
@@ -302,8 +295,6 @@ class BlueprintReq(models.Model):
                                           choices=BlueprintType.Activity.NAMES.items())
     required_type = models.ForeignKey('Type', db_column='requiredTypeID')
     quantity = models.IntegerField(default=0)
-    damagePerJob = models.FloatField(default=1.0)
-    extraQuantity = models.IntegerField(default=0)
     __item = None
 
     @property

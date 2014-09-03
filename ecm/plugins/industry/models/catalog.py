@@ -22,6 +22,7 @@ __author__ = "diabeteman"
 from django.db import models
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as tr
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from ecm.apps.common.models import Setting
 from ecm.apps.eve.models import Type, BlueprintType
@@ -98,8 +99,8 @@ class OwnedBlueprint(models.Model):
         get_latest_by = 'id'
 
     typeID = models.IntegerField()
-    me = models.SmallIntegerField(default=0)
-    pe = models.SmallIntegerField(default=0)
+    me = models.SmallIntegerField(default=0, validators=[MinValueValidator(0),MaxValueValidator(10)])
+    pe = models.SmallIntegerField(default=0,  validators=[MinValueValidator(0),MaxValueValidator(20)])
     copy = models.BooleanField(default=False)
     runs = models.SmallIntegerField(default=0)
     invented = models.BooleanField(default=False)

@@ -66,8 +66,7 @@ create_missing_catalog_entries()
 def create_missing_supplies():
     start = time.time()
     eve_supplies = BlueprintReq.objects.filter(required_type__blueprint__isnull=True,
-                                               required_type__published=1,
-                                               damagePerJob__gt=0.0)
+                                               required_type__published=1)
     eve_typeIDs = set(eve_supplies.values_list('required_type', flat=True).distinct())
     ecm_typeIDs = set(Supply.objects.values_list('typeID', flat=True))
 

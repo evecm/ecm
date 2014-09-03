@@ -20,7 +20,7 @@ __author__ = 'diabeteman'
 
 
 #------------------------------------------------------------------------------
-def apply_material_level(base, me_level, waste_factor, round_result=False):
+def apply_material_level(base, me_level, round_result=False):
     """
     Calculate the quantity needed for a material considering material efficiency of the blueprint involved.
     """
@@ -35,12 +35,12 @@ def apply_material_level(base, me_level, waste_factor, round_result=False):
     return value
 
 #------------------------------------------------------------------------------
-def apply_production_level(base, pe_level, base_productivity_modifier, round_result=False):
+def apply_production_level(base, pe_level, round_result=False):
     """
     Calculate the duration (in seconds) needed for the manufacturing of an item
     considering the production efficiency of the item's blueprint.
     """
-    value = base * (1.0 - pe_level * 0.01) * base_productivity_modifier
+    value = base * (1.0 - pe_level * 0.01)
     if round_result:
         return int(round(value))
     else:

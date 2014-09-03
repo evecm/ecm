@@ -24,6 +24,7 @@ import logging
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from django.template.context import RequestContext as Ctx
 from django.shortcuts import get_object_or_404, render_to_response
+from django.core.exceptions import ValidationError
 
 from ecm.utils import _json as json
 from ecm.utils.format import print_integer, print_duration
@@ -137,7 +138,6 @@ def materials(request, blueprint_id):
             mat.requiredTypeID,
             '<a href="%s" class="%s">%s</a>' % (url, css, mat.required_type.typeName),
             print_integer(mat.quantity),
-            '%d%%' % (mat.damagePerJob * 100),
         ])
 
     return datatable_ajax_data(data=mat_table, echo=params.sEcho)
@@ -200,6 +200,7 @@ def info(request, attr):
             value = json.loads(request.POST['value'])
             if type(value) == type(getattr(bp, attr)):
                 setattr(bp, attr, value)
+                bp.full_clean()
                 bp.save()
                 logger.info('"%s" changed "%s" #%d (%s -> %s)' % (request.user, bp.typeName,
                                                                   bp.id, attr, value))
@@ -207,5 +208,7 @@ def info(request, attr):
             return HttpResponseBadRequest('Missing "value" parameter')
         except ValueError:
             return HttpResponseBadRequest('Cannot parse "value" parameter')
+        except ValidationError as e:
+            return HttpResponseBadRequest(str(e))
 
     return HttpResponse(json.dumps(getattr(bp, attr)))

@@ -73,7 +73,7 @@ INSERT INTO "eve_blueprinttype"(
          "researchProductivityTime",
          "researchMaterialTime",
          "researchCopyTime", 
-         "researchTechTime",
+         "inventionTime",
          "maxProductionLimit") 
   SELECT "eve"."invBlueprintTypes"."blueprintTypeID",
          "eve"."invBlueprintTypes"."productTypeID",
@@ -81,7 +81,7 @@ INSERT INTO "eve_blueprinttype"(
          "eve"."invBlueprintTypes"."researchProductivityTime",
          "eve"."invBlueprintTypes"."researchMaterialTime",
          "eve"."invBlueprintTypes"."researchCopyTime", 
-         "eve"."invBlueprintTypes"."researchTechTime",
+         "eve"."invBlueprintTypes"."inventionTime",
          "eve"."invBlueprintTypes"."maxProductionLimit"
   FROM "eve"."invBlueprintTypes"
 ;
@@ -118,16 +118,14 @@ SET "parentBlueprintTypeID" =
 -- into a single table showing all the materials a blueprint requires, and how much of each
 -- material is affected by waste when building.
 --
-INSERT INTO "eve_blueprintreq" ("id", "blueprintTypeID", "activityID", "requiredTypeID", "quantity", "damagePerJob", "extraQuantity")
+INSERT INTO "eve_blueprintreq" ("id", "blueprintTypeID", "activityID", "requiredTypeID", "quantity")
 
 SELECT
     b."blueprintTypeID" * 100000000 + rtr."requiredTypeID" * 100 + rtr."activityID" AS "id",
     b."blueprintTypeID",
     rtr."activityID",
     rtr."requiredTypeID",
-    rtr."quantity",			-- ME affected
-    1.0 AS "damagePerJob",	-- deprecated
-    0 AS "extraQuantity"	-- deprecated
+    rtr."quantity"			-- ME affected
 
   FROM 
 	"eve"."invBlueprintTypes" AS b

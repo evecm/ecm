@@ -84,7 +84,7 @@ INSERT INTO `eve_blueprinttype`(
          `researchProductivityTime`,
          `researchMaterialTime`,
          `researchCopyTime`, 
-         `researchTechTime`,
+         `inventionTime`,
          `maxProductionLimit`) 
   SELECT `blueprintTypeID`,
          `productTypeID`,
@@ -92,7 +92,7 @@ INSERT INTO `eve_blueprinttype`(
          `researchProductivityTime`,
          `researchMaterialTime`,
          `researchCopyTime`, 
-         `researchTechTime`,
+         `inventionTime`,
          `maxProductionLimit`
   FROM `invBlueprintTypes`
 ;
@@ -136,9 +136,7 @@ SELECT
     b.`blueprintTypeID`,
     rtr.`activityID`,
     rtr.`requiredTypeID`,
-    rtr.`quantity`,			-- ME affected
-    1.0 AS `damagePerJob`,	-- deprecated
-    0 AS `extraQuantity`	-- deprecated
+    rtr.`quantity`			-- ME affected
 
   FROM 
 	`invBlueprintTypes` AS b
