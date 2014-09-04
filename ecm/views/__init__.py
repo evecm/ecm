@@ -31,6 +31,7 @@ from ecm import apps, plugins
 from ecm.utils.c_s_v import CSVUnicodeWriter
 from ecm.utils import _json as json
 from ecm.apps.common.models import UrlPermission, Setting
+from ecm.apps.common.auth import get_directors_group
 from ecm.apps.scheduler.models import ScheduledTask
 from ecm.apps.corp.models import SharedData
 
@@ -124,7 +125,9 @@ def create_app_objects(app):
             logger.info("Created task '%s'" % task['function'])
     for perm in app.permissions:
         if not UrlPermission.objects.filter(pattern=perm):
-            UrlPermission.objects.create(pattern=perm)
+            newPattern = UrlPermission.objects.create(pattern=perm)
+            directors = get_directors_group()
+            newPattern.groups.add(directors)
             logger.info("Created UrlPermission r'%s'" % perm)
     for name, value in app.settings.items():
         if not Setting.objects.filter(name=name):

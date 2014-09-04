@@ -28,7 +28,6 @@ from django.core.mail.message import EmailMultiAlternatives
 from django.template.context import RequestContext as Ctx
 
 from ecm.apps.common.models import Setting
-from ecm.views import HTML
 
 LOG = logging.getLogger(__name__)
 
@@ -62,6 +61,7 @@ def get_or_create_group(group_name):
 
 #------------------------------------------------------------------------------
 def alert_user_for_invalid_apis(user, invalid_apis):
+    from ecm.views import HTML
     ctx_dict = {
         'host_name': settings.EXTERNAL_HOST_NAME,
         'use_https': settings.USE_HTTPS,
