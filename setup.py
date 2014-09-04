@@ -46,7 +46,7 @@ setup(
     name = 'ecm',
     version = __import__('ecm').VERSION, # dynamically get version from ecm.VERSION.
     description = 'EVE Corp Management is a management and decision-making helper-application for EVE Online.',
-    long_description = open('README').read(),
+    long_description = open('README.md').read(),
     author = 'ggrog',
     author_email = 'ecm@ggrog.com',
     url = 'https://github.com/evecm/ecm',
@@ -71,6 +71,7 @@ setup(
     # DEPENDENCIES
     provides = ['ecm'],
     #requires = dependencies,
+    dependency_links = [ "http://pypi.python.org/pypi/Django/1.5.7/" ],
     install_requires = [ dep.split()[0] for dep in dependencies ],
 
     # CONTENTS
