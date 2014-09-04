@@ -166,7 +166,7 @@ def access_lvl_distribution(corp=None):
     levels = members.values_list("accessLvl", flat=True)
     i = 0
     for level in levels:
-        if level > thresholds[i].threshold:
+        while level > thresholds[i].threshold:
             i += 1
         thresholds[i].members += 1
     
