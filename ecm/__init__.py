@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2012 Robin Jarry
+# Copyright (c) 2010-2014 AUTHORS
 #
 # This file is part of EVE Corporation Management.
 #
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__author__ = 'diabeteman'
-__date__ = '2011-05-17'
+__author__ = 'ggrog'
+__date__ = '2014-09-04'
 
-VERSION = '2.2.0.dev'
+VERSION = '2.2.0'
