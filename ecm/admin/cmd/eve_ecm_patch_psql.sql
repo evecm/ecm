@@ -30,10 +30,20 @@ DELETE FROM "eve_skillreq";
 
 
 
-INSERT INTO "eve_category" SELECT "categoryID","categoryName","description","iconID","published" FROM "invCategories";
-INSERT INTO "eve_group" SELECT "groupID","categoryID","groupName","description","iconID","useBasePrice","allowManufacture",
-	"allowRecycler","anchored","anchorable","fittableNonSingleton" FROM "invGroups";
-INSERT INTO "eve_marketgroup" SELECT "marketGroupID","parentGroupID","marketGroupName","description","iconID","hasTypes" FROM "invMarketGroups";
+INSERT INTO "eve_category" SELECT "categoryID","categoryName","description","iconID",
+	CASE WHEN "published" then 1 else 0 end
+	FROM "invCategories";
+INSERT INTO "eve_group" SELECT "groupID","categoryID","groupName","description","iconID",
+	CASE WHEN "useBasePrice" then 1 else 0 end,
+ 	CASE WHEN "allowManufacture" then 1 else 0 end,
+ 	CASE WHEN "allowRecycler" then 1 else 0 end,
+ 	CASE WHEN "anchored" then 1 else 0 end,
+ 	CASE WHEN "anchorable" then 1 else 0 end,
+ 	CASE WHEN "fittableNonSingleton" then 1 else 0 end
+ 	FROM "invGroups";
+INSERT INTO "eve_marketgroup" SELECT "marketGroupID","parentGroupID","marketGroupName","description","iconID",
+	CASE WHEN "hasTypes" then 1 else 0 end 
+	FROM "invMarketGroups";
 
 --
 -- PATCH invTypes --
@@ -54,7 +64,7 @@ SELECT  t."typeID",
         t."basePrice",
         t."marketGroupID",
         COALESCE(m."metaGroupID", 0),
-        t."published"
+        CASE WHEN t."published" THEN 1 ELSE 0 END
 FROM "invTypes" t LEFT OUTER JOIN "invBlueprintTypes" b ON t."typeID" = b."productTypeID",
      "invTypes" tt LEFT OUTER JOIN "invMetaTypes" m ON tt."typeID" = m."typeID",
      "invGroups" gg
@@ -76,15 +86,16 @@ INSERT INTO "eve_blueprinttype"(
          "researchCopyTime", 
          "inventionTime",
          "maxProductionLimit") 
-  SELECT "blueprintTypeID",
-         "productTypeID",
-         "productionTime",
-         "researchProductivityTime",
-         "researchMaterialTime",
-         "researchCopyTime", 
-         "inventionTime",
-         "maxProductionLimit"
-  FROM "invBlueprintTypes"
+  SELECT bp."blueprintTypeID",
+         bp."productTypeID",
+         bp."productionTime",
+         bp."researchProductivityTime",
+         bp."researchMaterialTime",
+         bp."researchCopyTime", 
+         bp."inventionTime",
+         bp."maxProductionLimit"
+  FROM "invBlueprintTypes" AS bp
+  JOIN "eve_type" AS t ON t."typeID" = "productTypeID"
 ;
 
 
@@ -131,8 +142,9 @@ SELECT
   FROM
 	"invBlueprintTypes" AS b
     JOIN "ramTypeRequirements" AS rtr ON b."blueprintTypeID" = rtr."typeID"
+    JOIN "eve_blueprinttype" AS bpt ON b."blueprintTypeID" = bpt."blueprintTypeID"
   WHERE
-	rtr."quantity" > 0
+	rtr."quantity" > 0;
 
 -- Remove rows with invalid requiredTypeID fields
 DELETE FROM "eve_blueprintreq" WHERE "requiredTypeID" NOT IN (SELECT "typeID" from "eve_type");
