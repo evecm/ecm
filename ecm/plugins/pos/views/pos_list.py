@@ -113,28 +113,26 @@ def poses_data(request):
     elif params.column in (5, 6):
         # if sorting by fuel or stront. make a sorted list of (hoursleft|quantity,pos)
         # so that we can easily present and sort the data.
-        pos_by_timeleft = []
+        # params.displayMode can be 'quantities', 'days', or 'hours'
         if params.displayMode == 'quantities':
-            for pos in query:
-                if params.column == 5:
-                    quantity = pos.fuel_levels.filter(type_id=pos.fuel_type_id).latest().quantity
-                else:
-                    quantity = pos.fuel_levels.filter(type_id=C.STRONTIUM_CLATHRATES_TYPEID).latest().quantity
-                pos_by_timeleft.append( (quantity, pos, pos.state) )
+            valueType = 'quantities_int'
         else:
-            for pos in query:
-                if params.column == 5:
-                    time_left = getFuelValue(pos, pos.fuel_type_id, 'hours_int')
-                else:
-                    time_left = getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, 'hours_int')
-                pos_by_timeleft.append( (time_left, pos, pos.state) )
-
+            valueType = 'hours_int'
+        
+        pos_by_timeleft = []
+        for pos in query:
+            if params.column == 5:
+                sort_val = getFuelValue(pos, pos.fuel_type_id, valueType)
+            else:
+                sort_val = getFuelValue(pos, C.STRONTIUM_CLATHRATES_TYPEID, valueType)
+            pos_by_timeleft.append( (sort_val, pos, pos.state) )
+        
         if not params.asc:
             pos_by_timeleft.sort(reverse=True)
         else:
             pos_by_timeleft.sort()
         for i, item in enumerate(pos_by_timeleft):
-            if item[2] == 3:
+            if item[2] == 3: # Put reinforced at the top of the list, always
                 pos_by_timeleft.insert(0, pos_by_timeleft.pop(i))
     try:
         # This will fail if sorting by fuel.
@@ -193,19 +191,20 @@ def getFuelValue(pos, fuelTypeID, displayMode):
     except FuelLevel.DoesNotExist:
         quantity = 0
         consumption = 0
-    if displayMode == 'quantities':
+    if consumption == 0:
+        value = '-'
+    elif displayMode == 'quantities_int':
+        value = quantity
+    elif displayMode == 'quantities':
         value = print_fuel_quantity(quantity)
     else:
-        if consumption == 0:
-            value = '-'
-        else:
-            hoursLeft = int(quantity / consumption)
+        hoursLeft = int(quantity / consumption)
 
-            if displayMode == 'hours':
-                value = '%dh' % hoursLeft
-            elif displayMode == 'hours_int':
-                value = hoursLeft
-            else:
-                value = print_duration(seconds=hoursLeft * 3600, verbose=False)
+        if displayMode == 'hours':
+            value = '%dh' % hoursLeft
+        elif displayMode == 'hours_int':
+            value = hoursLeft
+        else: # displayMode == 'days'
+            value = print_duration(seconds=hoursLeft * 3600, verbose=False)
     return value
 
