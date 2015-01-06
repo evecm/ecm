@@ -94,8 +94,14 @@ def set_extended_char_attributes(member, sheet):
 
 #-----------------------------------------------------------------------------
 def set_char_info_attributes(member, char_info):
-    member.location = char_info.lastKnownLocation
-    member.ship = char_info.shipTypeName
+    try:
+        member.location = char_info.lastKnownLocation
+    except AttributeError:
+        member.location = None
+    try:
+        member.ship = char_info.shipTypeName
+    except AttributeError:
+        member.ship = None
     history = member.employment_history.values_list('recordID', flat=True)
     for employer in char_info.employmentHistory:
         if employer.recordID not in history:
