@@ -18,4 +18,4 @@
 __author__ = 'ggrog'
 __date__ = '2014-09-04'
 
-VERSION = '2.2.1.dev'
+VERSION = '2.2.1'
