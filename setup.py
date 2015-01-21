@@ -70,9 +70,7 @@ setup(
 
     # DEPENDENCIES
     provides = ['ecm'],
-    #requires = dependencies,
-    dependency_links = [ "http://pypi.python.org/pypi/Django/1.5.7/" ],
-    install_requires = [ dep.split()[0] for dep in dependencies ],
+    install_requires = dependencies,
 
     # CONTENTS
     packages = find_packages(),
