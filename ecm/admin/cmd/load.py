@@ -17,7 +17,7 @@
 
 from __future__ import with_statement
 
-__date__ = '2014 7 1'
+__date__ = '2015 1 21'
 __author__ = 'diabeteman'
 
 import os
@@ -33,46 +33,54 @@ from ecm.admin.util import log
 from ecm.admin.util import run_python_cmd
 
 
-CCP_DATA_DUMPS = {
-    'django.db.backends.postgresql_psycopg2': {
-        'PATCH': 'eve_ecm_patch_psql.sql',
-        'DROP': 'drop_eve_tables_psql.sql',
-    },
-    'django.db.backends.mysql': {
-        'PATCH': 'eve_ecm_patch_mysql.sql',
-        'DROP': 'drop_eve_tables_mysql.sql',
-    },
-    'django.db.backends.sqlite3': {
-        'PATCH': 'eve_ecm_patch_sqlite.sql',
-        'DROP': None,
-    },
-}
+FUZZWORK_TABLES = [
+    'invTypes',
+    'invCategories',
+    'invGroups',
+    'invMarketGroups',
+    'invMetaTypes',
+    'invControlTowerResources',
+    'mapDenormalize',
+    'mapSolarSystems',
+    'dgmTypeAttributes',
+    'industryBlueprints',
+    'industryActivity',
+    'industryActivityProducts',
+    'industryActivityMaterials',
+    'industryActivityProbabilities',
+]
 
+FUZZWORK_URL_PREFIX = 'https://www.fuzzwork.co.uk/dump/latest/'
+FUZZWORK_URL_SUFFIX = '.sql.bz2'
+FUZZWORK_PATCH_SCRIPT = 'fuzzwork_patch_mysql.sql'
 
 #-------------------------------------------------------------------------------
 def sub_command():
     # INIT
-    description = 'Load official EVE data dump into the instance database.'
+    description = 'Load EVE static data into the instance database.  '\
+                  'The data can be in Fuzzwork table format, or preconverted into ECM format.'
     
     load_cmd = Subcommand('load',
-                          parser=OptionParser(usage='%prog [OPTIONS] instance_dir datadump'),
+                          parser=OptionParser(usage='%prog [OPTIONS] instance_dir [dumppath]'),
                           help=description,
                           callback=run)
-    load_cmd.parser.description = description + ' "datadump" can be either a URL or a local path. '\
-                                 'It can also be an archive file (bz2, gz, zip).'
+    load_cmd.parser.description = description + '  "dumppath" can be an URL or local path to a dump file (.SQL), optionally compressed as bz2, gz, or zip.  ' \
+                                                'If the -f option is specified, "dumppath" is optional and refers to the location of the SDE table files.'
+    load_cmd.parser.add_option('-f', '--fuzzwork',
+                               dest='fuzzwork', default=False, action='store_true',
+                               help='Download and load the EVE static data from the Fuzzwork website, default path is %s.  (MySQL only)' % FUZZWORK_URL_PREFIX)
+    load_cmd.parser.add_option('--save', dest='save', default=False, action='store_true',
+                               help='Save the downloaded file(s) to your current directory for later use.')
 
     return load_cmd
 
 #-------------------------------------------------------------------------------
 SQL_ROOT = os.path.abspath(os.path.dirname(__file__))
-def run(command, global_options, optionsd, args):
+def run(command, global_options, options, args):
     
     if not args:
         command.parser.error('Missing instance directory.')
     instance_dir = args.pop(0)
-    if not args:
-        command.parser.error('Missing datadump.')
-    datadump = args.pop(0)
     
     config = SafeConfigParser()
     if config.read([os.path.join(instance_dir, 'settings.ini')]):
@@ -80,61 +88,78 @@ def run(command, global_options, optionsd, args):
         db_password = config.get('database', 'ecm_password')
     else:
         command.parser.error('Could not read "settings.ini" in instance dir.')
-    try:
-        sql = CCP_DATA_DUMPS[db_engine]
-    except KeyError:
-        command.parser.error('Cannot load datadump with database engine %r. '
-                             'Supported engines: %r' % (db_engine, CCP_DATA_DUMPS.keys()))
-
+    
+    if options.fuzzwork:
+        if not 'mysql' in db_engine:
+            command.parser.error('Fuzzwork download only supported with MySql database engine.')
+        if args:
+            dumppath = args.pop(0)
+        else:
+            dumppath = FUZZWORK_URL_PREFIX
+    elif not args:
+        command.parser.error('Missing dumppath or --fuzzwork option.')
+    else:
+        dumppath = args.pop(0)
+    
     try:
         tempdir = tempfile.mkdtemp()
-        
-        if not os.path.exists(datadump):
-            # download from URL
-            dump_archive = os.path.join(tempdir, os.path.basename(datadump))
-            log('Downloading EVE original dump from %r to %r...', datadump, dump_archive)
-            req = urllib2.urlopen(datadump)
-            with open(dump_archive, 'wb') as fp:
-                shutil.copyfileobj(req, fp)
-            req.close()
-            log('Download complete.')
+    
+        if options.save:
+            savedir = '.'
         else:
-            dump_archive = datadump
+            savedir = tempdir
         
-        extension = os.path.splitext(dump_archive)[-1]
-        if extension in ('.bz2', '.gz', '.zip'):
-            # decompress archive
-            log('Expanding %r to %r...', dump_archive, tempdir)
-            dump_file = expand(dump_archive, tempdir)
-            log('Expansion complete to %r.' % dump_file)
-            extension = os.path.splitext(dump_file)[-1]
+        if options.fuzzwork:
+            for table in FUZZWORK_TABLES:
+                load_dump_file(instance_dir, savedir, tempdir, os.path.join(dumppath, table) + FUZZWORK_URL_SUFFIX, db_engine, db_password)
+            log('Patching CCP format SDE to match ours... (this also takes awhile)')
+            pipe_to_dbshell(os.path.join(SQL_ROOT, FUZZWORK_PATCH_SCRIPT), instance_dir, password=db_password)
         else:
-            dump_file = dump_archive
-            
-        log('Importing data (this may take a long time)...')
-        if extension in ('.json'):
-            load_json_dump(instance_dir, dump_file, tempdir)
-        elif 'sqlite' in db_engine:
-            import sqlite3
-            with open(os.path.join(SQL_ROOT, sql['PATCH'])) as f:
-                sql_script = f.read() 
-            connection = sqlite3.connect(os.path.join(instance_dir, 'db/ecm.sqlite'))
-            cursor = connection.cursor()
-            cursor.execute('ATTACH DATABASE \'%s\' AS "eve";' % dump_file)
-            cursor.executescript(sql_script)
-            cursor.execute('DETACH DATABASE "eve";')
-            cursor.close()
-            connection.commit()
-        else:
-            pipe_to_dbshell(dump_file, instance_dir, password=db_password)
-            pipe_to_dbshell(os.path.join(SQL_ROOT, sql['PATCH']), instance_dir, password=db_password)
-            pipe_to_dbshell(os.path.join(SQL_ROOT, sql['DROP']), instance_dir, password=db_password)
+            load_dump_file(instance_dir, savedir, tempdir, dumppath, db_engine, db_password)        
         
-        log('EVE data successfully imported.')
+        log('EVE static data successfully imported.')
     finally:
         log('Removing temp files...')
         shutil.rmtree(tempdir)
         log('done')
+
+#-------------------------------------------------------------------------------
+def load_dump_file(instance_dir, savedir, tempdir, datadump, db_engine, db_password):
+    if not os.path.exists(datadump):
+        # download from URL
+        dump_archive = os.path.join(savedir, os.path.basename(datadump))
+        log('Downloading %r to %r...', datadump, dump_archive)
+        req = urllib2.urlopen(datadump)
+        with open(dump_archive, 'wb') as fp:
+            shutil.copyfileobj(req, fp)
+        req.close()
+    else:
+        dump_archive = datadump
+    
+    extension = os.path.splitext(dump_archive)[-1]
+    if extension in ('.bz2', '.gz', '.zip'):
+        # decompress archive
+        log('Expanding %r to %r...', dump_archive, tempdir)
+        dump_file = expand(dump_archive, tempdir)
+        extension = os.path.splitext(dump_file)[-1]
+    else:
+        dump_file = dump_archive
+        
+    log('Importing %r... (this may take awhile!)', dump_file)
+    
+    if extension in ('.json'):
+        load_json_dump(instance_dir, dump_file, tempdir)
+    elif 'sqlite' in db_engine:
+        import sqlite3
+        connection = sqlite3.connect(os.path.join(instance_dir, 'db/ecm.sqlite'))
+        cursor = connection.cursor()
+        cursor.execute('ATTACH DATABASE \'%s\' AS "eve";' % dump_file)
+        cursor.execute('DETACH DATABASE "eve";')
+        cursor.close()
+        connection.commit()
+    else:
+        pipe_to_dbshell(dump_file, instance_dir, password=db_password)
+
 
 #-------------------------------------------------------------------------------
 def print_load_message(instance_dir, db_engine):
@@ -148,7 +173,7 @@ def print_load_message(instance_dir, db_engine):
     
     log('')
     log('Now you need to load your database with EVE static data.')
-    log('Please execute `ecm-admin load %s <official_dump_file>` to do so.' % instance_dir)
+    log('Please execute `ecm-admin load %s <ecm_dump_file>` to do so.' % instance_dir)
     log('You will find links to official dump conversions here https://github.com/evecm/ecm/wiki/Static-Data')
     log('Be sure to take the latest one matching your db engine "%s".' % engine)
 

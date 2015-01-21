@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = '2012 3 6'
+__date__ = '2015 1 21'
 __author__ = 'diabeteman'
 
 from django.db import models
@@ -150,14 +150,12 @@ class BlueprintType(models.Model):
     product = models.OneToOneField('Type', db_column='productTypeID', db_index=True,
                                    null=True, blank=True)
     productionTime = models.IntegerField(null=True, blank=True)
-    data_interface = models.ForeignKey('Type', db_index=True, db_column='dataInterfaceID',
-                                       null=True, blank=True,
-                                       related_name='blueprint_datainterfaces')
     researchProductivityTime = models.IntegerField(null=True, blank=True)
     researchMaterialTime = models.IntegerField(null=True, blank=True)
     researchCopyTime = models.IntegerField(null=True, blank=True)
     inventionTime = models.IntegerField(null=True, blank=True)
     maxProductionLimit = models.IntegerField(null=True, blank=True)
+    inventionBaseChance = models.FloatField(null=True, blank=True)
     __item = None
 
     def __getattr__(self, attr):
@@ -176,10 +174,6 @@ class BlueprintType(models.Model):
     @property
     def productTypeID(self):
         return self.product_id
-
-    @property
-    def dataInterfaceID(self):
-        return self.data_interface_id
 
     @cached_property
     def activities(self):
@@ -343,7 +337,6 @@ class Type(models.Model):
     typeName = models.CharField(max_length=100, null=True, blank=True)
     blueprint = models.OneToOneField('BlueprintType', db_column='blueprintTypeID',
                                      null=True, blank=True)
-    techLevel = models.SmallIntegerField(null=True, blank=True, db_index=True)
     description = models.TextField(null=True, blank=True)
     volume = models.FloatField(null=True, blank=True)
     portionSize = models.IntegerField(null=True, blank=True)
@@ -375,7 +368,6 @@ class Type(models.Model):
 
     def __hash__(self):
         return self.typeID
-
 
     class NoBlueprintException(UserWarning):
 

@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = '2012 3 10'
+__date__ = '2015 1 21'
 __author__ = 'diabeteman'
 
 
@@ -47,14 +47,14 @@ def apply_production_level(base, pe_level, round_result=False):
         return value
 
 #------------------------------------------------------------------------------
-def calc_invention_chance(base, encryption_skill_lvl=5, science1_skill_lvl=5,
-                          science2_skill_lvl=5, decryptor_mod=1, meta_item=0):
+def calc_invention_chance(base=0.3, encryption_skill_lvl=5, science1_skill_lvl=5,
+                          science2_skill_lvl=5, decryptor_mod=1):
     """
     Calculate the chance of successfully inventing a tech2 blueprint.
     """
-    encryption = 0.01 * encryption_skill_lvl
-    science = 0.1 * (science1_skill_lvl + science2_skill_lvl) / (5 - meta_item)
-    return base * (1 + encryption) * (1 + science) * decryptor_mod
+    if base is None: base = 0.3
+    # From http://community.eveonline.com/news/dev-blogs/lighting-the-invention-bulb/
+    return base * decryptor_mod * (1.0 + ((science1_skill_lvl + science2_skill_lvl) / 50 + encryption_skill_lvl / 100))
 
 
 #------------------------------------------------------------------------------

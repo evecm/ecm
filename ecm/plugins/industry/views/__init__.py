@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 8 19"
+__date__ = "2015 1 21"
 __author__ = "diabeteman"
 
 import logging
@@ -106,9 +106,9 @@ def create_missing_item_groups():
     capital_ships_group, _ = ItemGroup.objects.get_or_create(name='Capital Ships')
     
     
-    t1_items = all_types.filter(techLevel=1)
-    t2_items = all_types.filter(techLevel=2)
-    t3_items = all_types.filter(techLevel=3)
+    t1_items = all_types.filter(metaGroupID=1)
+    t2_items = all_types.filter(metaGroupID=2)
+    t3_items = all_types.filter(metaGroupID=14) # T3 metaGroup is 14
     
     t1_ships = t1_items.filter(category=constants.SHIP_CATEGORYID)
     t2_ships = t2_items.filter(category=constants.SHIP_CATEGORYID)

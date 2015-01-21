@@ -40,23 +40,33 @@ DELETE FROM `eve_category`;
 DELETE FROM `eve_skillreq`;
 
 
-
-INSERT INTO `eve_category` SELECT * FROM `invCategories`;
-INSERT INTO `eve_group` SELECT * FROM `invGroups`;
-INSERT INTO `eve_marketgroup` SELECT * FROM `invMarketGroups`;
+INSERT INTO `eve_category`
+          (`categoryID`, `categoryName`, `description`, `iconID`, `published`)
+    SELECT `categoryID`, `categoryName`, `description`, `iconID`, `published`
+    FROM `invCategories`;
+INSERT INTO `eve_group`
+          (`groupID`, `categoryID`, `groupName`, `description`, `iconID`, `useBasePrice`, `allowManufacture`, `allowRecycler`, `anchored`, `anchorable`, `fittableNonSingleton`, `published`)
+    SELECT `groupID`, `categoryID`, `groupName`, `description`, `iconID`, `useBasePrice`, `allowManufacture`, `allowRecycler`, `anchored`, `anchorable`, `fittableNonSingleton`, `published`
+    FROM `invGroups`;
+INSERT INTO `eve_marketgroup`
+          (`marketGroupID`, `parentGroupID`, `marketGroupName`, `description`, `iconID`, `hasTypes`)
+    SELECT `marketGroupID`, `parentGroupID`, `marketGroupName`, `description`, `iconID`, `hasTypes`
+    FROM `invMarketGroups`;
 
 --
 -- PATCH invTypes --
 --
 
 -- fill the custom table
+-- TODO remove techLevel
 INSERT INTO `eve_type`
-SELECT  t.`typeID`,
+    ( `typeID`, `groupID`, `categoryID`, `typeName`, `blueprintTypeID`, `description`, `volume`, `portionSize`,
+    `raceID`, `basePrice`, `marketGroupID`, `metaGroupID`, `published`)
+    SELECT  t.`typeID`,
         t.`groupID`,
-        gg.`categoryID`,
+        g.`categoryID`,
         t.`typeName`,
-        b.`blueprintTypeID`,
-        b.`techLevel`,
+        iap.`typeID` AS `blueprintTypeID`,
         t.`description`,
         t.`volume`,
         t.`portionSize`,
@@ -65,117 +75,70 @@ SELECT  t.`typeID`,
         t.`marketGroupID`,
         COALESCE(m.`metaGroupID`, 0),
         t.`published`
-FROM `invTypes` t LEFT OUTER JOIN `invBlueprintTypes` b ON t.`typeID` = b.`productTypeID`,
-     `invTypes` tt LEFT OUTER JOIN `invMetaTypes` m ON tt.`typeID` = m.`typeID`,
-     `invGroups` gg
-WHERE t.`typeID` = tt.`typeID`
-  AND t.`groupID` = gg.`groupID`
-  AND t.`typeID` NOT IN (23693) -- this dummy item has 4 different blueprints,
-                                -- if we do not ignore it, the SQL command fails...
+    FROM `invTypes` t
+    LEFT OUTER JOIN `industryActivityProducts` iap ON t.`typeID` = iap.`productTypeID` AND iap.`activityID` = 1
+    LEFT OUTER JOIN `invMetaTypes` m ON t.`typeID` = m.`typeID`
+    LEFT OUTER JOIN `invGroups` g ON t.`groupID` = g.`groupID`
 ;
 
 --
 -- Fill in eve_blueprinttype table
 --
-INSERT INTO `eve_blueprinttype`(
-         `blueprintTypeID`,
-         `productTypeID`,
-         `productionTime`,
-         `researchProductivityTime`,
-         `researchMaterialTime`,
-         `researchCopyTime`, 
-         `inventionTime`,
-         `maxProductionLimit`) 
-  SELECT `blueprintTypeID`,
-         `productTypeID`,
-         `productionTime`,
-         `researchProductivityTime`,
-         `researchMaterialTime`,
-         `researchCopyTime`, 
-         `inventionTime`,
-         `maxProductionLimit`
-  FROM `invBlueprintTypes`
+INSERT INTO `eve_blueprinttype`
+    (`blueprintTypeID`, `productTypeID`, `productionTime`, `researchProductivityTime`,
+    `researchMaterialTime`, `researchCopyTime`, `maxProductionLimit`, `inventionTime`)
+    SELECT  bp.`typeID` AS `blueprintTypeID`,
+            p.`productTypeID`,
+            prTime.`time` AS `productionTime`,
+            teTime.`time` AS `researchProductivityTime`,
+            meTime.`time` AS `researchMaterialTime`,
+            cpTime.`time` AS `researchCopyTime`, 
+            bp.`maxProductionLimit`,
+            ivTime.`time` AS `inventionTime`
+    FROM `industryBlueprints` bp
+    LEFT JOIN `industryActivity`    prTime ON bp.`typeID` = prTime.`typeID` AND prTime.`activityID` = 1
+    LEFT JOIN `industryActivity`    teTime ON bp.`typeID` = teTime.`typeID` AND teTime.`activityID` = 3
+    LEFT JOIN `industryActivity`    meTime ON bp.`typeID` = meTime.`typeID` AND meTime.`activityID` = 4
+    LEFT JOIN `industryActivity`    cpTime ON bp.`typeID` = cpTime.`typeID` AND cpTime.`activityID` = 5
+    LEFT JOIN `industryActivity`    ivTime ON bp.`typeID` = ivTime.`typeID` AND ivTime.`activityID` = 8
+    LEFT JOIN `industryActivityProducts` p ON bp.`typeID` = p.`typeID` AND p.`activityID` = 1
 ;
 
-
 --
--- UPDATE THE parentBlueprintID FIELD IN THE invBlueprintTypes TABLE
--- FOR TECH II ITEMS BILL OF MATERIALS CALCULATION
+-- UPDATE THE parentBlueprintID FIELD IN THE eve_blueprinttype TABLE for TechII items
 --
--- then we get the parent item (for each tech 2 item)
--- from the `invMetaTypes` table and resolve its blueprint.
-CREATE TEMPORARY TABLE `temp_bp_table`(`blueprintTypeID` INT, `parentID` INT);
-INSERT INTO `temp_bp_table`
-	SELECT b.`blueprintTypeID` AS `blueprintTypeID`, m.`parentTypeID` AS `parentID`
-    FROM `eve_blueprinttype` AS b,
-         `invMetaTypes` AS m
-    WHERE b.`productTypeID` = m.`typeID` AND m.`metaGroupID` = 2;
-
 UPDATE `eve_blueprinttype` bpt
-SET `parentBlueprintTypeID` =
-	(SELECT t1bp.`blueprintTypeID`
-		FROM `temp_bp_table` AS tbpt,
-			 `invBlueprintTypes` AS t1bp
-		WHERE tbpt.`parentID` = t1bp.`productTypeID` AND bpt.`blueprintTypeID` = tbpt.`blueprintTypeID`);
-
--- this way, when manufacturing a tech 2 item,
--- we can easily know on which blueprint we need to run an invention job
--- in order to obtain the item's tech 2 BPC
+    JOIN `eve_type` t ON t.`typeID` = bpt.`productTypeID` AND t.`metaGroupID` = 2 
+    JOIN `industryActivityProducts` bp ON bp.`productTypeID` = bpt.`blueprintTypeID`
+    SET bpt.`parentBlueprintTypeID` = bp.`typeID`;
+    
+-- UPDATE the inventionBaseChance field for blueprints that can invent
+-- Blueprints can invent multiple things, but, the probability should be the same.
+UPDATE `eve_blueprinttype` bpt
+    JOIN `industryActivityProbabilities` prob ON bpt.`blueprintTypeID` = prob.`typeID`
+    SET bpt.`inventionBaseChance` = prob.`probability`;
 
 --
--- CUSTOM blueprints requirements table --
---
--- The following queries take invTypeMaterials and ramTypeRequirements and combine them
--- into a single table showing all the materials a blueprint requires, and how much of each
--- material is affected by waste when building.
+-- CUSTOM blueprints requirements table with primary key --
 --
 INSERT INTO `eve_blueprintreq`
-
-SELECT
-    b.`blueprintTypeID` * 100000000 + rtr.`requiredTypeID` * 100 + rtr.`activityID` AS `id`,
-    b.`blueprintTypeID`,
-    rtr.`activityID`,
-    rtr.`requiredTypeID`,
-    rtr.`quantity`			-- ME affected
-
-  FROM 
-	`invBlueprintTypes` AS b
-    JOIN `ramTypeRequirements` AS rtr ON b.`blueprintTypeID` = rtr.`typeID`
-  WHERE
-	rtr.`quantity` > 0
-;
-
--- Remove rows with invalid requiredTypeID fields
-DELETE bpr FROM `eve_blueprintreq` bpr
-	LEFT JOIN `eve_type` t ON bpr.`requiredTypeID` = t.`typeID`
-	WHERE t.`typeID` IS NULL;
-
--- fill the dataInterfaceID field
-UPDATE `eve_blueprinttype`
-SET `dataInterfaceID` =
-  (SELECT r.`requiredTypeID`
-     FROM `eve_blueprintreq` AS r,
-          `eve_type` AS t
-    WHERE `eve_blueprinttype`.`blueprintTypeID` = r.`blueprintTypeID`
-      AND r.`requiredTypeID` = t.`typeID`
-      AND r.`activityID` = 8 /* invention */
-      AND t.`groupID` = 716 /* data interfaces */)
+    (`id`, `blueprintTypeID`, `activityID`, `requiredTypeID`, `quantity`)
+    SELECT
+        m.`typeID` * 100000000 + m.`materialTypeID` * 100 + m.`activityID` AS `id`,
+        m.`typeID` AS `blueprintTypeID`,
+        m.`activityID`,
+        m.`materialTypeID` AS `requiredTypeID`,
+        m.`quantity`
+    FROM 
+        `industryActivityMaterials` m
 ;
 
 --
 -- CREATE A SPECIAL SYSTEMS, MOONS & PLANETS TABLE for quick name resolution
 
 INSERT INTO `eve_celestialobject`
-SELECT  `itemID`,
-        `typeID`,
-        `groupID`,
-        `solarSystemID`,
-        `regionID`,
-        `itemName`,
-        `security`,
-        `x`,
-        `y`,
-        `z`
+      (`itemID`, `typeID`, `groupID`, `solarSystemID`, `regionID`, `itemName`, `security`, `x`, `y`, `z`)
+SELECT `itemID`, `typeID`, `groupID`, `solarSystemID`, `regionID`, `itemName`, `security`, `x`, `y`, `z`
 FROM `mapDenormalize`
 WHERE `groupID` IN (5 /*Solar System*/, 7 /*Planet*/, 8 /*Moon*/, 15 /*Station*/)
 ;
@@ -193,21 +156,16 @@ WHERE `security` IS NULL
 -- add a unique primary key to the invControlTowerResources table
 --
 INSERT INTO `eve_controltowerresource` 
-    SELECT  1000000 * `controlTowerTypeID` + `resourceTypeID`, 
-            `controlTowerTypeID`,
-            `resourceTypeID`,
-            `purpose`,
-            `quantity`,
-            `minSecurityLevel`,
-            `factionID`
+    (`id`, `controlTowerTypeID`, `resourceTypeID`, `purpose`, `quantity`, `minSecurityLevel`, `factionID`)
+    SELECT  1000000 * `controlTowerTypeID` + `resourceTypeID`,
+            `controlTowerTypeID`, `resourceTypeID`, `purpose`, `quantity`, `minSecurityLevel`, `factionID`
     FROM `invControlTowerResources`
 ;
-
 
 --
 -- add our enhanced skills reference.
 --
-INSERT INTO `eve_skillreq`
+INSERT INTO `eve_skillreq` (`id`, `item_id`, `skill_id`, `required_level`)
     SELECT
         t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `id`,
         t.`typeID` AS `item_id`,
@@ -248,8 +206,21 @@ INSERT INTO `eve_skillreq`
         COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) IN (SELECT `typeID` FROM `eve_type`)
 ;
 
-
-
+-- DROP the EVE SDE tables now that we've converted them
+DROP TABLE `invTypes`;
+DROP TABLE `invCategories`;
+DROP TABLE `invGroups`;
+DROP TABLE `invMarketGroups`;
+DROP TABLE `invMetaTypes`;
+DROP TABLE `invControlTowerResources`;
+DROP TABLE `mapDenormalize`;
+DROP TABLE `mapSolarSystems`;
+DROP TABLE `dgmTypeAttributes`;
+DROP TABLE `industryBlueprints`;
+DROP TABLE `industryActivity`;
+DROP TABLE `industryActivityProducts`;
+DROP TABLE `industryActivityMaterials`;
+DROP TABLE `industryActivityProbabilities`;
 
 --
 ALTER TABLE `eve_celestialobject` ENABLE KEYS;

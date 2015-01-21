@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 8 20"
+__date__ = "2015 1 21"
 __author__ = "diabeteman"
 
 import math
@@ -26,7 +26,6 @@ from django.utils.translation import ugettext_lazy as tr
 from ecm.apps.eve import formulas
 from ecm.plugins.industry import constants
 from ecm.plugins.industry.models.catalog import OwnedBlueprint
-from ecm.plugins.industry.constants import DECRYPTOR_ATTRIBUTES
 
 ME_CHOICES = []
 for me_mod in constants.DECRYPTOR_ATTRIBUTES.keys():
@@ -59,34 +58,18 @@ class InventionPolicy(models.Model):
     item_group_id = models.IntegerField(default=0)
     item_id = models.IntegerField(blank=True, null=True)
     item_group = models.CharField(max_length=255)
-    base_invention_chance = models.FloatField()
     encryption_skill_lvl = models.SmallIntegerField(default=5)
     science1_skill_lvl = models.SmallIntegerField(default=5)
     science2_skill_lvl = models.SmallIntegerField(default=5)
     me_mod = models.IntegerField(choices=ME_CHOICES, blank=True, null=True)
-
-    def base_invention_chance_admin_display(self):
-        return '%d%%' % int(self.base_invention_chance * 100.0)
-    base_invention_chance_admin_display.short_description = "Base Invention Chance"
 
     def skills_admin_display(self):
         return '%s | %s %s' % (self.encryption_skill_lvl, self.science1_skill_lvl, self.science2_skill_lvl)
     skills_admin_display.short_description = 'Skills'
 
     def chance_mod_admin_display(self):
-        return '%+d%%' % int(100 * DECRYPTOR_ATTRIBUTES[self.me_mod][0] - 100)
+        return '%+d%%' % int(100 * constants.DECRYPTOR_ATTRIBUTES[self.me_mod][0] - 100)
     chance_mod_admin_display.short_description = 'Chance mod'
-
-    def invention_chance_admin_display(self):
-        chance = formulas.calc_invention_chance(self.base_invention_chance,
-                                                self.encryption_skill_lvl,
-                                                self.science1_skill_lvl,
-                                                self.science2_skill_lvl,
-                                                DECRYPTOR_ATTRIBUTES[self.me_mod][0])
-        return '%d%%' % int(chance * 100.0)
-    invention_chance_admin_display.short_description = "Invention Chance"
-
-
 
     @staticmethod
     def attempts(blueprint):
@@ -120,8 +103,6 @@ class InventionPolicy(models.Model):
         if blueprint.parent_blueprint is None:
             raise InventionError('Blueprint %s has no parent_blueprint and cannot be invented.', blueprint.blueprintTypeID)
 
-        decryptor_group = constants.INTERFACES_DECRYPTOR_MAPPING[blueprint.parent_blueprint.dataInterfaceID]
-
         if InventionPolicy.objects.filter(item_id=blueprint.product.typeID):
             policy = InventionPolicy.objects.get(item_id=blueprint.product.typeID)
         elif InventionPolicy.objects.filter(item_group_id=blueprint.product.groupID):
@@ -134,9 +115,9 @@ class InventionPolicy(models.Model):
         decriptorTypeID = None
         runs_mod = 0
         chance_mod = 1.0
-        me = -4 # base ME for invented BPCs without decryptor
+        me = -2 # base ME for invented BPCs without decryptor
         pe = -4 # base PE for invented BPCs without decryptor
-        for typeID, _chance, _me, _pe, _runs, _ in constants.DECRYPTOR_INFO[decryptor_group]:
+        for typeID, _chance, _me, _pe, _runs, _ in constants.DECRYPTOR_INFO:
             if policy.me_mod == _me:
                 decriptorTypeID = typeID
                 me += _me
@@ -148,7 +129,7 @@ class InventionPolicy(models.Model):
                                                  blueprint.parent_blueprint.maxProductionLimit,
                                                  blueprint.maxProductionLimit,
                                                  runs_mod)
-        chance = formulas.calc_invention_chance(policy.base_invention_chance,
+        chance = formulas.calc_invention_chance(blueprint.parent_blueprint.inventionBaseChance,
                                                 policy.encryption_skill_lvl,
                                                 policy.science1_skill_lvl,
                                                 policy.science2_skill_lvl,

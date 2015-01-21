@@ -16,7 +16,7 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 from ecm.utils import format
 
-__date__ = "2011 8 20"
+__date__ = "2015 1 21"
 __author__ = "diabeteman"
 
 from django.db import models
@@ -60,7 +60,7 @@ class CatalogEntry(models.Model):
     def missing_blueprints(self, skip_invented=True):
         involved_bps = set()
         for bp in self.blueprint.get_involved_blueprints(recurse=True) | set([self.blueprint]):
-            if skip_invented and bp.product.techLevel == 2 and bp.parentBlueprintTypeID is not None:
+            if skip_invented and bp.product.metaGroupID == 2 and bp.parentBlueprintTypeID is not None:
                 continue
             else:
                 involved_bps.add(bp)

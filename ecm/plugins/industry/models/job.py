@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 8 20"
+__date__ = "2015 1 21"
 __author__ = "diabeteman"
 
 from django.db import models
@@ -166,7 +166,7 @@ class Job(models.Model):
                     runs += 1
                 duration = bp.manufacturing_time(runs)
         except IndexError:
-            if item.techLevel == 2 and item.blueprint.parent_blueprint is not None:
+            if item.metaGroupID == 2 and item.blueprint.parent_blueprint is not None:
                 # we're trying to manufacture a T2 item without owning its BPO
                 # we must create an OwnedBlueprint for this job only (that will
                 # be consumed with it)

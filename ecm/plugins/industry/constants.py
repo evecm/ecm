@@ -15,74 +15,30 @@
 # You should have received a copy of the GNU General Public License along with
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
-__date__ = "2011 11 20"
+__date__ = "2015 1 21"
 __author__ = "diabeteman"
 
+# TODO this fills the "ME Choices" box and is used for some base calcs, but it doesn't reflect the larger array of decryptors available
 DECRYPTOR_ATTRIBUTES = {
 #   ME_mod     CHANCE_mod   PE_mod   RUNS_mod
-    +3:        (1.1,        +3,      +0),
-    +2:        (1.2,        +5,      +1),
-    +1:        (1.0,        +4,      +2),
+    +3:        (1.1,        +6,      +0),
+    +2:        (1.2,       +10,      +1),
+    +1:        (1.0,        +8,      +2),
   None:        (1.0,        +0,      +0),
     -1:        (1.8,        +2,      +4),
     -2:        (0.6,        +1,      +9),
 }
 
-DECRYPTOR_INFO = {
-#            typeID   CHANCE_mod   ME_mod   PE_mod   RUNS_mod  typeName
-# Amarr Interface
-    728: (
-            (23178,   1.1,         3,       3,       0,        "Formation Layout"),
-            (23179,   1.2,         2,       5,       1,        "Classic Doctrine"),
-            (23180,   1.0,         1,       4,       2,        "Sacred Manifesto"),
-            (23182,   1.8,        -1,       2,       4,        "War Strategon"),
-            (23181,   0.6,        -2,       1,       9,        "Circular Logic")
-         ),
-# Minmatar Interface
-    729: (
-            (21579,   1.1,         3,       3,       0,        "Calibration Data"),
-            (21580,   1.2,         2,       5,       1,        "Advanced Theories"),
-            (21581,   1.0,         1,       4,       2,        "Operation Handbook"),
-            (21583,   1.8,        -1,       2,       4,        "Assembly Instructions"),
-            (21582,   0.6,        -2,       1,       9,        "Circuitry Schematics")
-         ),
-# Gallente Interface
-    730: (
-            (23183,   1.1,         3,       3,       0,        "Collision Measurements"),
-            (23184,   1.2,         2,       5,       1,        "Test Reports"),
-            (23185,   1.0,         1,       4,       2,        "Engagement Plan"),
-            (23187,   1.8,        -1,       2,       4,        "Stolen Formulas"),
-            (23186,   0.6,        -2,       1,       9,        "Symbiotic Figures")
-         ),
-# Caldalol Interface
-    731: (
-            (21573,   1.1,         3,       3,       0,        "Tuning Instructions"),
-            (21574,   1.2,         2,       5,       1,        "Prototype Diagram"),
-            (21575,   1.0,         1,       4,       2,        "User Manual"),
-            (21577,   1.8,        -1,       2,       4,        "Installation Guide"),
-            (21576,   0.6,        -2,       1,       9,        "Interface Alignment Chart")
-         )
-}
-DATA_INTERFACES_GROUP_ID = 716
-
-INTERFACES_DECRYPTOR_MAPPING = {
-#   typeID   decryptorGroup   interfaceName
-# Amarr
-    25554:   728,             # Occult Data Interface
-    25851:   728,             # Occult Ship Data Interface
-    26603:   728,             # Occult Tuner Data Interface
-# Minmatar
-    25553:   729,             # Cryptic Data Interface
-    25857:   729,             # Cryptic Ship Data Interface
-    26597:   729,             # Cryptic Tuner Data Interface
-# Gallente
-    25556:   730,             # Incognito Data Interface
-    25855:   730,             # Incognito Ship Data Interface
-    26601:   730,             # Incognito Tuner Data Interface
-# Caldalol
-    25555:   731,             # Esoteric Data Interface
-    25853:   731,             # Esoteric Ship Data Interface
-    26599:   731,             # Esoteric Tuner Data Interface
+DECRYPTOR_INFO = { # (in ME order to match DECRYPTOR_ATTRIBUTES above)
+#    typeID   CHANCE_mod  ME_mod  PE_mod  RUNS_mod  typeName
+    (34205,   1.1,        3,       6,     0,        "Process Decryptor"),
+    (34201,   1.2,        2,      10,     1,        "Accelerant Decryptor"),
+    (34206,   1.0,        1,       8,     2,        "Symmetry Decryptor"),
+    (34202,   1.8,       -1,       4,     4,        "Attainment Decryptor"),
+    (34203,   0.6,       -2,       2,     9,        "Augmentation Decryptor"),
+    (34204,   1.5,        1,      -2,     3,        "Parity Decryptor"),
+    (34207,   1.9,        1,      -2,     2,        "Optimized Attainment Decryptor"),
+    (34208,   0.9,        2,       0,     7,        "Optimized Augmentation Decryptor")
 }
 
 BASE_MINERALS = [
@@ -135,26 +91,14 @@ DATACORES = [
     25887, # Datacore - Caldari Starship Engineering
 ]
 DECRYPTORS = [
-    21573, # Tuning Instructions
-    21574, # Prototype Diagram
-    21575, # User Manual
-    21576, # Interface Alignment Chart
-    21577, # Installation Guide
-    21579, # Calibration Data
-    21580, # Advanced Theories
-    21581, # Operation Handbook
-    21582, # Circuitry Schematics
-    21583, # Assembly Instructions
-    23178, # Formation Layout
-    23179, # Classic Doctrine
-    23180, # Sacred Manifesto
-    23181, # Circular Logic
-    23182, # War Strategon
-    23183, # Collision Measurements
-    23184, # Test Reports
-    23185, # Engagement Plan
-    23186, # Symbiotic Figures
-    23187, # Stolen Formulas
+    34201, # Accelerant Decryptor
+    34202, # Attainment Decryptor
+    34203, # Augmentation Decryptor
+    34204, # Parity Decryptor
+    34205, # Process Decryptor
+    34206, # Symmetry Decryptor
+    34207, # Optimized Attainment Decryptor
+    34208, # Optimized Augmentation Decryptor
 ]
 SLAVAGE = [
     25588, # Scorched Telemetry Processor

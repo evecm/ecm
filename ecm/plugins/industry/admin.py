@@ -105,11 +105,9 @@ class InventionPolicyAdmin(admin.ModelAdmin):
         'item_group',
         'item_group_id',
         'item_id',
-        'base_invention_chance_admin_display',
         'skills_admin_display',
         'me_mod',
-        'chance_mod_admin_display',
-        'invention_chance_admin_display',
+        'chance_mod_admin_display'
     ]
 #------------------------------------------------------------------------------
 class PricingPolicyAdmin(admin.ModelAdmin):

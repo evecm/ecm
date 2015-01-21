@@ -17,7 +17,7 @@
 
 from __future__ import with_statement
 
-__date__ = '2012 3 23'
+__date__ = '2015 1 21'
 __author__ = 'diabeteman'
 
 import os
@@ -81,10 +81,6 @@ def sub_command():
                             help='Server listening address')
     server_group.add_option('--bind-port', dest='bind_port',
                             help='Server listening address')
-    server_group.add_option('--run-as-user', dest='run_as_user',
-                            help='User that will be running the server')
-    server_group.add_option('--pid-file', dest='pid_file',
-                            help='File where to store the PID of the server process.')
     create_cmd.parser.add_option_group(server_group)
 
     return create_cmd
