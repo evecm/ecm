@@ -29,7 +29,7 @@ DECRYPTOR_ATTRIBUTES = {
     -2:        (0.6,        +1,      +9),
 }
 
-DECRYPTOR_INFO = { # (in ME order to match DECRYPTOR_ATTRIBUTES above)
+DECRYPTOR_INFO = [ # (in ME order to match DECRYPTOR_ATTRIBUTES above)
 #    typeID   CHANCE_mod  ME_mod  PE_mod  RUNS_mod  typeName
     (34205,   1.1,        3,       6,     0,        "Process Decryptor"),
     (34201,   1.2,        2,      10,     1,        "Accelerant Decryptor"),
@@ -39,7 +39,7 @@ DECRYPTOR_INFO = { # (in ME order to match DECRYPTOR_ATTRIBUTES above)
     (34204,   1.5,        1,      -2,     3,        "Parity Decryptor"),
     (34207,   1.9,        1,      -2,     2,        "Optimized Attainment Decryptor"),
     (34208,   0.9,        2,       0,     7,        "Optimized Augmentation Decryptor")
-}
+]
 
 BASE_MINERALS = [
     34, # Tritanium
