@@ -133,6 +133,13 @@ INSERT INTO `eve_blueprintreq`
         `industryActivityMaterials` m
 ;
 
+-- Remove blueprint entires that have missing items
+DELETE FROM `eve_blueprinttype` WHERE `blueprintTypeID` NOT IN (SELECT `typeID` FROM `eve_type`);
+DELETE FROM `eve_blueprinttype` WHERE `productTypeID` NOT IN (SELECT `typeID` FROM `eve_type`);
+DELETE FROM `eve_blueprintreq`  WHERE `requiredTypeID` NOT IN (SELECT `typeID` FROM `eve_type`);
+DELETE FROM `eve_blueprintreq`  WHERE `blueprintTypeID` NOT IN (SELECT `blueprintTypeID` FROM `eve_blueprinttype`);
+-- Known issues with the "Clones blueprint" 3927 and whatever 34189 is (no matching invTypes record)
+
 --
 -- CREATE A SPECIAL SYSTEMS, MOONS & PLANETS TABLE for quick name resolution
 
