@@ -11,28 +11,29 @@ class Migration(SchemaMigration):
     )
     
     def forwards(self, orm):
+        from django.db import connection
+        if 'roles_member' in connection.introspection.table_names():
+            try:
+                # if old "roles" app tables are found, rename them to "hr" tables
+                db.rename_table('roles_member', 'hr_member')
+                db.rename_table('roles_memberdiff', 'hr_memberdiff')
 
-        try:
-            # if old "roles" app tables are found, rename them to "hr" tables
-            db.rename_table('roles_member', 'hr_member')
-            db.rename_table('roles_memberdiff', 'hr_memberdiff')
+                db.rename_table('roles_roletype', 'hr_roletype')
+                db.rename_table('roles_role', 'hr_role')
+                db.rename_table('roles_rolemembership', 'hr_rolemembership')
+                db.rename_table('roles_rolememberdiff', 'hr_rolememberdiff')
 
-            db.rename_table('roles_roletype', 'hr_roletype')
-            db.rename_table('roles_role', 'hr_role')
-            db.rename_table('roles_rolemembership', 'hr_rolemembership')
-            db.rename_table('roles_rolememberdiff', 'hr_rolememberdiff')
+                db.rename_table('roles_title', 'hr_title')
+                db.rename_table('roles_titlemembership', 'hr_titlemembership')
+                db.rename_table('roles_titlecomposition', 'hr_titlecomposition')
+                db.rename_table('roles_titlecompodiff', 'hr_titlecompodiff')
+                db.rename_table('roles_titlememberdiff', 'hr_titlememberdiff')
 
-            db.rename_table('roles_title', 'hr_title')
-            db.rename_table('roles_titlemembership', 'hr_titlemembership')
-            db.rename_table('roles_titlecomposition', 'hr_titlecomposition')
-            db.rename_table('roles_titlecompodiff', 'hr_titlecompodiff')
-            db.rename_table('roles_titlememberdiff', 'hr_titlememberdiff')
-
-            return
-        except:
-            # if tables not found, do the standard migration
-            db.rollback_transaction()
-            db.start_transaction()
+                return
+            except:
+                # if tables not found, do the standard migration
+                db.rollback_transaction()
+                db.start_transaction()
         # Adding model 'Member'
         db.create_table('hr_member', (
             ('characterID', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
