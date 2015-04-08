@@ -50,6 +50,7 @@ class UrlPermissionAdmin(admin.ModelAdmin):
     list_display = ['pattern', 'groups_admin_display']
     search_fields = ['pattern']
     filter_horizontal = ['groups']
+    ordering = ['id']
 class UserAPIKeyAdmin(admin.ModelAdmin):
     list_display = ['user', 'keyID', 'vCode', 'is_valid']
     search_fields = ['user__username']
