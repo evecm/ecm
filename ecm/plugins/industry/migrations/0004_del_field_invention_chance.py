@@ -14,9 +14,7 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         # Adding field 'InventionPolicy.base_invention_chance'
-        db.add_column(u'industry_inventionpolicy', 'base_invention_chance',
-                      self.gf('django.db.models.fields.FloatField')(default=0.4),
-                      keep_default=False) # This default is not accurate, reload the fixture to fix
+        db.add_column(u'industry_inventionpolicy', 'base_invention_chance', self.gf('django.db.models.fields.FloatField')(default=0.4), keep_default=False) # This default is not accurate
 
 
     models = {

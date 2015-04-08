@@ -8,7 +8,6 @@
       "me_mod": null,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.4,
       "science1_skill_lvl": 5,
       "item_group_id": -1
     }
@@ -22,7 +21,6 @@
       "me_mod": null,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.3,
       "science1_skill_lvl": 5,
       "item_group_id": 324
     }
@@ -36,7 +34,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.25,
       "science1_skill_lvl": 5,
       "item_group_id": 358
     }
@@ -50,7 +47,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.25,
       "science1_skill_lvl": 5,
       "item_group_id": 380
     }
@@ -64,7 +60,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.2,
       "science1_skill_lvl": 5,
       "item_group_id": 540
     }
@@ -78,7 +73,6 @@
       "me_mod": null,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.3,
       "science1_skill_lvl": 5,
       "item_group_id": 541
     }
@@ -92,7 +86,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": 22544,
-      "base_invention_chance": 0.2,
       "science1_skill_lvl": 5,
       "item_group_id": 543
     }
@@ -106,7 +99,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": 22546,
-      "base_invention_chance": 0.3,
       "science1_skill_lvl": 5,
       "item_group_id": 543
     }
@@ -120,7 +112,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": 22548,
-      "base_invention_chance": 0.25,
       "science1_skill_lvl": 5,
       "item_group_id": 543
     }
@@ -134,7 +125,6 @@
       "me_mod": null,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.3,
       "science1_skill_lvl": 5,
       "item_group_id": 830
     }
@@ -148,7 +138,6 @@
       "me_mod": null,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.3,
       "science1_skill_lvl": 5,
       "item_group_id": 830
     }
@@ -162,7 +151,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.25,
       "science1_skill_lvl": 5,
       "item_group_id": 832
     }
@@ -176,7 +164,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.25,
       "science1_skill_lvl": 5,
       "item_group_id": 833
     }
@@ -190,7 +177,6 @@
       "me_mod": null,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.3,
       "science1_skill_lvl": 5,
       "item_group_id": 834
     }
@@ -204,7 +190,6 @@
       "me_mod": null,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.3,
       "science1_skill_lvl": 5,
       "item_group_id": 893
     }
@@ -218,7 +203,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.25,
       "science1_skill_lvl": 5,
       "item_group_id": 894
     }
@@ -232,7 +216,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.2,
       "science1_skill_lvl": 5,
       "item_group_id": 898
     }
@@ -246,7 +229,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.2,
       "science1_skill_lvl": 5,
       "item_group_id": 900
     }
@@ -260,7 +242,6 @@
       "me_mod": 3,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.3,
       "science1_skill_lvl": 5,
       "item_group_id": 902
     }
@@ -274,7 +255,6 @@
       "me_mod": null,
       "science2_skill_lvl": 5,
       "item_id": null,
-      "base_invention_chance": 0.25,
       "science1_skill_lvl": 5,
       "item_group_id": 906
     }
