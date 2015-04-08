@@ -16,6 +16,6 @@
 # EVE Corporation Management. If not, see <http://www.gnu.org/licenses/>.
 
 __author__ = 'ggrog'
-__date__ = '2015-03-23'
+__date__ = '2015-04-07'
 
-VERSION = '2.2.2'
+VERSION = '2.2.2b'
