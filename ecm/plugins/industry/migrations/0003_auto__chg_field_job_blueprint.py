@@ -66,7 +66,7 @@ class Migration(SchemaMigration):
         },
         'industry.inventionpolicy': {
             'Meta': {'object_name': 'InventionPolicy'},
-            'base_invention_chance': ('django.db.models.fields.FloatField', [], {}),
+            'base_invention_chance': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'encryption_skill_lvl': ('django.db.models.fields.SmallIntegerField', [], {'default': '5'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'item_group': ('django.db.models.fields.CharField', [], {'max_length': '255'}),

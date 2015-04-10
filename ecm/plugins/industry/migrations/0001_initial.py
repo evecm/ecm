@@ -91,7 +91,7 @@ class Migration(SchemaMigration):
             ('item_group_id', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('item_id', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('item_group', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('base_invention_chance', self.gf('django.db.models.fields.FloatField')()),
+            ('base_invention_chance', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
             ('encryption_skill_lvl', self.gf('django.db.models.fields.SmallIntegerField')(default=5)),
             ('science1_skill_lvl', self.gf('django.db.models.fields.SmallIntegerField')(default=5)),
             ('science2_skill_lvl', self.gf('django.db.models.fields.SmallIntegerField')(default=5)),
@@ -243,7 +243,7 @@ class Migration(SchemaMigration):
         },
         'industry.inventionpolicy': {
             'Meta': {'object_name': 'InventionPolicy'},
-            'base_invention_chance': ('django.db.models.fields.FloatField', [], {}),
+            'base_invention_chance': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
             'encryption_skill_lvl': ('django.db.models.fields.SmallIntegerField', [], {'default': '5'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'item_group': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
