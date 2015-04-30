@@ -123,16 +123,16 @@ def create_app_objects(app):
             # be unique in the database
             ScheduledTask.objects.create(**task)
             logger.info("Created task '%s'" % task['function'])
+    for name, value in app.settings.items():
+        if not Setting.objects.filter(name=name):
+            Setting.objects.create(name=name, value=repr(value))
+            logger.info("Created Setting %s=%s" % (repr(name), repr(value)))
     for perm in app.permissions:
         if not UrlPermission.objects.filter(pattern=perm):
             newPattern = UrlPermission.objects.create(pattern=perm)
             directors = get_directors_group()
             newPattern.groups.add(directors)
             logger.info("Created UrlPermission r'%s'" % perm)
-    for name, value in app.settings.items():
-        if not Setting.objects.filter(name=name):
-            Setting.objects.create(name=name, value=repr(value))
-            logger.info("Created Setting %s=%s" % (repr(name), repr(value)))
     for share in app.shared_data:
         url = share['url']
         if not url.startswith('/'):
