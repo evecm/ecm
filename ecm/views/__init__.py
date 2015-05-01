@@ -129,10 +129,15 @@ def create_app_objects(app):
             logger.info("Created Setting %s=%s" % (repr(name), repr(value)))
     for perm in app.permissions:
         if not UrlPermission.objects.filter(pattern=perm):
-            newPattern = UrlPermission.objects.create(pattern=perm)
-            directors = get_directors_group()
-            newPattern.groups.add(directors)
-            logger.info("Created UrlPermission r'%s'" % perm)
+            try:
+                directors = get_directors_group()
+                newPattern = UrlPermission.objects.create(pattern=perm)
+                newPattern.groups.add(directors)
+                logger.info("Created UrlPermission r'%s'" % perm)
+            except:
+                # The init order is such that with a fresh DB the director's group is unknown until the HR settings are loaded, which is later in the app list
+                # Ignore and this will get hit later, hopefully.
+                pass
     for share in app.shared_data:
         url = share['url']
         if not url.startswith('/'):
