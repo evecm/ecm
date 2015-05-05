@@ -151,9 +151,42 @@ def load_dump_file(instance_dir, savedir, tempdir, datadump, db_engine, db_passw
         load_json_dump(instance_dir, dump_file, tempdir)
     elif 'sqlite' in db_engine:
         import sqlite3
-        connection = sqlite3.connect(os.path.join(instance_dir, 'db/ecm.sqlite'))
+        config = SafeConfigParser()
+        db_dir = ''
+        if config.read([os.path.join(instance_dir, 'settings.ini')]):
+            db_dir = config.get('database', 'sqlite_db_dir')
+        if not db_dir:
+            db_dir = os.path.join(instance_dir, 'db')
+            
+        db_file = os.path.join(db_dir, 'ecm.sqlite')
+        
+        # Connect to the instance DB and attach the SDE
+        connection = sqlite3.connect(db_file)
         cursor = connection.cursor()
         cursor.execute('ATTACH DATABASE \'%s\' AS "eve";' % dump_file)
+        
+        # Get the tables from the SDE (import them all)
+        cursor.execute('SELECT "name","sql" FROM "eve"."sqlite_master" WHERE "type"="table" AND "sql" IS NOT NULL;')
+        tables = cursor.fetchall()
+        
+        # Load the table data as brand new tables matching the dump file (to avoid unexplainable errors, maybe because Django/south doesn't set them up the same as the DB dump conversion scripts)
+        for table in tables:
+            tablename = table[0]
+            tablesql  = table[1]
+            
+            # Drop and recreate the table
+            cursor.execute('DROP TABLE "%s";' % tablename)
+            cursor.execute(tablesql)
+            
+            # Insert the data
+            cursor.execute('INSERT INTO "%s" SELECT * FROM "eve"."%s";' % (tablename, tablename))
+
+        # Get the indicies of the attached DB and create them
+        cursor.execute('SELECT "sql" FROM "eve"."sqlite_master" WHERE "type"="index" AND "sql" IS NOT NULL;')
+        indicies = cursor.fetchall()
+        for index in indicies:
+            cursor.execute(index[0])
+            
         cursor.execute('DETACH DATABASE "eve";')
         cursor.close()
         connection.commit()

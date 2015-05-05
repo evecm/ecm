@@ -164,12 +164,6 @@ def run(command, global_options, options, args):
     if not args:
         command.parser.error('Missing instance directory.')
     instance_dir = args[0]
-    sqlite_db_dir = ''
-    config = SafeConfigParser()
-    if config.read([path.join(instance_dir, 'settings.ini')]):
-        sqlite_db_dir = config.get('database', 'sqlite_db_dir')
-    if not sqlite_db_dir:
-        sqlite_db_dir = path.join(instance_dir, 'db')
 
     # upgrade files from template
     upgrade_instance_files(instance_dir, config)
