@@ -184,7 +184,7 @@ def fetch_journal_entries(wallet, lastKnownID):
 
         return entries
     except api.Error, e:
-        LOG.error("API returned: %s. WalletJournal for account key %s might be empty."
+        LOG.warning("API returned: %s. WalletJournal for account key %s might be empty."
                   % (str(e), wallet.walletID))
         return ''
 
@@ -235,6 +235,6 @@ def fetch_transaction_entries(wallet, lastKnownID):
 
         return transactions
     except api.Error, e:
-        LOG.error("API returned: %s. WalletTransactions for account key %s might be empty."
+        LOG.warning("API returned: %s. WalletTransactions for account key %s might be empty."
                   % (str(e), wallet.walletID))
         return ''
