@@ -164,7 +164,9 @@ def run(command, global_options, options, args):
     if not args:
         command.parser.error('Missing instance directory.')
     instance_dir = args[0]
-
+    config = SafeConfigParser()
+    config.read([path.join(instance_dir, 'settings.ini')])
+    
     # upgrade files from template
     upgrade_instance_files(instance_dir, config)
 
