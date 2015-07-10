@@ -41,12 +41,12 @@ DELETE FROM `eve_skillreq`;
 
 
 INSERT INTO `eve_category`
-          (`categoryID`, `categoryName`, `description`, `iconID`, `published`)
-    SELECT `categoryID`, `categoryName`, `description`, `iconID`, `published`
+          (`categoryID`, `categoryName`, `iconID`, `published`)
+    SELECT `categoryID`, `categoryName`, `iconID`, `published`
     FROM `invCategories`;
 INSERT INTO `eve_group`
-          (`groupID`, `categoryID`, `groupName`, `description`, `iconID`, `useBasePrice`, `allowManufacture`, `allowRecycler`, `anchored`, `anchorable`, `fittableNonSingleton`, `published`)
-    SELECT `groupID`, `categoryID`, `groupName`, `description`, `iconID`, `useBasePrice`, `allowManufacture`, `allowRecycler`, `anchored`, `anchorable`, `fittableNonSingleton`, `published`
+          (`groupID`, `categoryID`, `groupName`, `iconID`, `useBasePrice`, `anchored`, `anchorable`, `fittableNonSingleton`, `published`)
+    SELECT `groupID`, `categoryID`, `groupName`, `iconID`, `useBasePrice`, `anchored`, `anchorable`, `fittableNonSingleton`, `published`
     FROM `invGroups`;
 INSERT INTO `eve_marketgroup`
           (`marketGroupID`, `parentGroupID`, `marketGroupName`, `description`, `iconID`, `hasTypes`)
