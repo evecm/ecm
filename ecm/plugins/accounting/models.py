@@ -218,7 +218,11 @@ class Contract(models.Model):
         return '<span class="contract-%s">%s</span>' % (status.lower(), status)
     
     def availability_string(self):
-        return Contract.AVAILABILITY[self.availability]
+        return unicode(Contract.AVAILABILITY[self.availability])
+        
+    def status_string(self):
+        return unicode(Contract.STATUS[self.status])
+        
 #------------------------------------------------------------------------------
 class ContractItem(models.Model):
     """

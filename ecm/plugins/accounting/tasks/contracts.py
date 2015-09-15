@@ -113,6 +113,7 @@ def process_contracts(contract_list, connection):
     write_contracts(added_contracts, removed_contracts)
     LOG.debug("Writing contract items to DB...")
     write_contract_items(new_items, removed_items)
+    update_contract_data(old_contracts, new_contracts)
 
 #------------------------------------------------------------------------------
 @transaction.commit_on_success
@@ -148,6 +149,19 @@ def write_contract_items(new_items, old_items):
     except:
         print item.__dict__
         raise
+
+#------------------------------------------------------------------------------
+@transaction.commit_on_success
+def update_contract_data(old_contracts, new_contracts):
+    """
+    Write updated status and other data (dates, acceptedID) to DB if status has changed.
+    """
+    # Do a union of the old (DB) contracts with the new (API) contracts
+    # using viewkeys() would be more efficient here but requires Python 2.7+.  Ref http://stackoverflow.com/a/18554081
+    for existing_contract in set(old_contracts.keys()) & set(new_contracts.keys()):
+        if old_contracts[existing_contract].status != new_contracts[existing_contract].status:
+            LOG.debug("Contract %d changing state: %s -> %s" % (existing_contract.contractID, old_contracts[existing_contract].status_string(), new_contracts[existing_contract].status_string()))
+            new_contracts[existing_contract].save()
 
 #------------------------------------------------------------------------------
 def populate_contract(row):
