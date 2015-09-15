@@ -185,8 +185,11 @@ def update_user_accesses(user, my_corp=None, corp_members_group=None, directors_
     if owned_characters.filter(corp=my_corp):
         user.groups.add(corp_members_group)
         
-    for titleID in all_titles.values_list("titleID", flat=True):
-        user.groups.add(Group.objects.get(id=titleID))
+    try:
+        for titleID in all_titles.values_list("titleID", flat=True):
+            user.groups.add(Group.objects.get(id=titleID+100))
+    except:
+        pass # Ignore any missing Groups
         
     if director:
         user.groups.add(directors_group)

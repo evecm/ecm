@@ -119,9 +119,14 @@ def parseOneMemberTitles(member, my_corp):
  
     if 'titles' in member:
         for t in member.titles:
-            title = Title.objects.get(corp=my_corp, titleID=t.titleID)
-            membership = TitleMembership(member_id=member.characterID, title=title)
-            titles[membership] = membership
+            try:
+                title = Title.objects.get(corp=my_corp, titleID=t.titleID)
+                membership = TitleMembership(member_id=member.characterID, title=title)
+                titles[membership] = membership
+            except:
+                # It's possible that a member has a title that doesn't exist in the database, because the API doesn't return default titles
+                # Just consider it a non title since there are no roles anyway.
+                pass
  
     return titles
 
