@@ -53,12 +53,14 @@ INSERT INTO `eve_marketgroup`
     SELECT `marketGroupID`, `parentGroupID`, `marketGroupName`, `description`, `iconID`, `hasTypes`
     FROM `invMarketGroups`;
 
+-- Remove any groups with invalid categories (fix for Aegis DB)
+DELETE FROM `eve_group` WHERE `categoryID` NOT IN (SELECT `categoryID` FROM `eve_category`);
+
 --
 -- PATCH invTypes --
 --
 
 -- fill the custom table
--- TODO remove techLevel
 INSERT INTO `eve_type`
     ( `typeID`, `groupID`, `categoryID`, `typeName`, `blueprintTypeID`, `description`, `volume`, `portionSize`,
     `raceID`, `basePrice`, `marketGroupID`, `metaGroupID`, `published`)
@@ -80,6 +82,9 @@ INSERT INTO `eve_type`
     LEFT OUTER JOIN `invMetaTypes` m ON t.`typeID` = m.`typeID`
     LEFT OUTER JOIN `invGroups` g ON t.`groupID` = g.`groupID`
 ;
+
+-- Remove any items without a valid marketGroupID (351296) (fix for Galatea)
+DELETE FROM `eve_type` WHERE `marketGroupID` NOT IN (SELECT `marketGroupID` FROM `eve_marketgroup`);
 
 --
 -- Fill in eve_blueprinttype table
