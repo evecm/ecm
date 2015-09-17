@@ -209,7 +209,12 @@ def storeTitles(oldTitles, newTitles, date):
         titleDiffs = getTitleMemberDiffs(oldTitles, newTitles, date)
         if titleDiffs:
             for d in titleDiffs:
-                d.save()
+                try:
+                    d.save()
+                except Database.Warning:
+                    # When DEBUG=true, MySQLdb warnings get counted as exceptions, and there's often a "Warning: Field 'id' doesn't have a default value"
+                    # thrown here.  Ignore it.  https://github.com/evecm/ecm/issues/14
+                    pass
             # we store the update time of the table
             UpdateDate.mark_updated(model=TitleMemberDiff, date=date)
 

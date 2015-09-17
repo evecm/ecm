@@ -198,7 +198,7 @@ def getDiffs(newList, oldList, date):
     added    = [ a for a in newList if a not in oldList ]
     diffs    = []
 
-    logger.debug("REMOVED ROLES TO TITLES:")
+    logger.debug("REMOVED ROLES FROM TITLES:")
     if not removed : logger.debug("(none)")
     for oldcompo in removed:
         logger.debug("- %s", unicode(oldcompo))
