@@ -126,6 +126,7 @@ UPDATE `eve_blueprinttype` bpt
 --
 -- CUSTOM blueprints requirements table with primary key --
 --
+CREATE TEMPORARY TABLE `industryActivityMaterialsNoDupes` AS (SELECT DISTINCT * FROM `industryActivityMaterials`); -- Known issue with duplicate materials, create a temp table with no dupes
 INSERT INTO `eve_blueprintreq`
     (`id`, `blueprintTypeID`, `activityID`, `requiredTypeID`, `quantity`)
     SELECT
@@ -135,8 +136,7 @@ INSERT INTO `eve_blueprintreq`
         m.`materialTypeID` AS `requiredTypeID`,
         m.`quantity`
     FROM 
-        `industryActivityMaterials` m
-;
+        `industryActivityMaterialsNoDupes` m;
 
 -- Remove blueprint entires that have missing items
 DELETE FROM `eve_blueprinttype` WHERE `blueprintTypeID` NOT IN (SELECT `typeID` FROM `eve_type`);
