@@ -60,6 +60,9 @@ DELETE FROM `eve_group` WHERE `categoryID` NOT IN (SELECT `categoryID` FROM `eve
 -- PATCH invTypes --
 --
 
+ -- This is a workaround CCP's new "multiple blueprints for one item" that breaks our schema.  Just ignore the types we don't like since it's a short list for now.
+CREATE TEMPORARY TABLE iapOneBP AS (SELECT `typeID`, `productTypeID` FROM `industryActivityProducts` WHERE `activityID` = 1 GROUP BY `productTypeID` HAVING COUNT(*) = 1);
+
 -- fill the custom table
 INSERT INTO `eve_type`
     ( `typeID`, `groupID`, `categoryID`, `typeName`, `blueprintTypeID`, `description`, `volume`, `portionSize`,
@@ -78,7 +81,7 @@ INSERT INTO `eve_type`
         COALESCE(m.`metaGroupID`, 0),
         t.`published`
     FROM `invTypes` t
-    LEFT OUTER JOIN `industryActivityProducts` iap ON t.`typeID` = iap.`productTypeID` AND iap.`activityID` = 1
+    LEFT OUTER JOIN `iapOneBP` iap ON t.`typeID` = iap.`productTypeID`
     LEFT OUTER JOIN `invMetaTypes` m ON t.`typeID` = m.`typeID`
     LEFT OUTER JOIN `invGroups` g ON t.`groupID` = g.`groupID`
 ;
@@ -101,12 +104,12 @@ INSERT INTO `eve_blueprinttype`
             bp.`maxProductionLimit`,
             ivTime.`time` AS `inventionTime`
     FROM `industryBlueprints` bp
-    LEFT JOIN `industryActivity`    prTime ON bp.`typeID` = prTime.`typeID` AND prTime.`activityID` = 1
-    LEFT JOIN `industryActivity`    teTime ON bp.`typeID` = teTime.`typeID` AND teTime.`activityID` = 3
-    LEFT JOIN `industryActivity`    meTime ON bp.`typeID` = meTime.`typeID` AND meTime.`activityID` = 4
-    LEFT JOIN `industryActivity`    cpTime ON bp.`typeID` = cpTime.`typeID` AND cpTime.`activityID` = 5
-    LEFT JOIN `industryActivity`    ivTime ON bp.`typeID` = ivTime.`typeID` AND ivTime.`activityID` = 8
-    LEFT JOIN `industryActivityProducts` p ON bp.`typeID` = p.`typeID` AND p.`activityID` = 1
+    LEFT JOIN `industryActivity` prTime ON bp.`typeID` = prTime.`typeID` AND prTime.`activityID` = 1
+    LEFT JOIN `industryActivity` teTime ON bp.`typeID` = teTime.`typeID` AND teTime.`activityID` = 3
+    LEFT JOIN `industryActivity` meTime ON bp.`typeID` = meTime.`typeID` AND meTime.`activityID` = 4
+    LEFT JOIN `industryActivity` cpTime ON bp.`typeID` = cpTime.`typeID` AND cpTime.`activityID` = 5
+    LEFT JOIN `industryActivity` ivTime ON bp.`typeID` = ivTime.`typeID` AND ivTime.`activityID` = 8
+    LEFT JOIN `iapOneBP`         p      ON bp.`typeID` = p.`typeID`
 ;
 
 --
