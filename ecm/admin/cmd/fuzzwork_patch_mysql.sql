@@ -129,7 +129,8 @@ UPDATE `eve_blueprinttype` bpt
 --
 -- CUSTOM blueprints requirements table with primary key --
 --
-CREATE TEMPORARY TABLE `industryActivityMaterialsNoDupes` AS (SELECT DISTINCT * FROM `industryActivityMaterials`); -- Known issue with duplicate materials, create a temp table with no dupes
+ -- Known issue with duplicate materials, create a temp table with no dupes
+CREATE TEMPORARY TABLE `industryActivityMaterialsNoDupes` AS (SELECT * FROM `industryActivityMaterials` GROUP BY `typeID`, `materialTypeID`, `activityID`);
 INSERT INTO `eve_blueprintreq`
     (`id`, `blueprintTypeID`, `activityID`, `requiredTypeID`, `quantity`)
     SELECT
@@ -182,43 +183,43 @@ INSERT INTO `eve_controltowerresource`
 --
 INSERT INTO `eve_skillreq` (`id`, `item_id`, `skill_id`, `required_level`)
     SELECT
-        t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `id`,
+        t.`typeID` * 100000 + COALESCE(CAST(s.`valueFloat` AS UNSIGNED), s.`valueInt`) AS `id`,
         t.`typeID` AS `item_id`,
-        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `skill_id`,
-        COALESCE(r.`valueInt`, CAST(r.`valueFloat` AS UNSIGNED)) AS `required_level`
+        COALESCE(CAST(s.`valueFloat` AS UNSIGNED), s.`valueInt`) AS `skill_id`,
+        COALESCE(CAST(r.`valueFloat` AS UNSIGNED), r.`valueInt`) AS `required_level`
     FROM `eve_type` AS t
         JOIN `dgmTypeAttributes` s ON (t.`typeID` = s.`typeID` AND s.`attributeID` = 182)
         JOIN `dgmTypeAttributes` r ON (t.`typeID` = r.`typeID` AND r.`attributeID` = 277)
     WHERE
         t.`published` = 1
       AND
-        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) IN (SELECT `typeID` FROM `eve_type`)
+        COALESCE(CAST(s.`valueFloat` AS UNSIGNED), s.`valueInt`) IN (SELECT `typeID` FROM `eve_type`)
   UNION
     SELECT
-        t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `id`,
+        t.`typeID` * 100000 + COALESCE(CAST(s.`valueFloat` AS UNSIGNED), s.`valueInt`) AS `id`,
         t.`typeID` AS `item_id`,
-        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `skill_id`,
-        COALESCE(r.`valueInt`, CAST(r.`valueFloat` AS UNSIGNED)) AS `required_level`
+        COALESCE(CAST(s.`valueFloat` AS UNSIGNED), s.`valueInt`) AS `skill_id`,
+        COALESCE(CAST(r.`valueFloat` AS UNSIGNED), r.`valueInt`) AS `required_level`
     FROM `eve_type` AS t
         JOIN `dgmTypeAttributes` s ON (t.`typeID` = s.`typeID` AND s.`attributeID` = 183)
         JOIN `dgmTypeAttributes` r ON (t.`typeID` = r.`typeID` AND r.`attributeID` = 278)
     WHERE
         t.`published` = 1
       AND
-        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) IN (SELECT `typeID` FROM `eve_type`)
+        COALESCE(CAST(s.`valueFloat` AS UNSIGNED), s.`valueInt`) IN (SELECT `typeID` FROM `eve_type`)
   UNION
     SELECT
-        t.`typeID` * 100000 + COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `id`,
+        t.`typeID` * 100000 + COALESCE(CAST(s.`valueFloat` AS UNSIGNED), s.`valueInt`) AS `id`,
         t.`typeID` AS `item_id`,
-        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) AS `skill_id`,
-        COALESCE(r.`valueInt`, CAST(r.`valueFloat` AS UNSIGNED)) AS `required_level`
+        COALESCE(CAST(s.`valueFloat` AS UNSIGNED), s.`valueInt`) AS `skill_id`,
+        COALESCE(CAST(r.`valueFloat` AS UNSIGNED), r.`valueInt`) AS `required_level`
     FROM `eve_type` AS t
         JOIN `dgmTypeAttributes` s ON (t.`typeID` = s.`typeID` AND s.`attributeID` = 184)
         JOIN `dgmTypeAttributes` r ON (t.`typeID` = r.`typeID` AND r.`attributeID` = 279)
     WHERE
         t.`published` = 1
       AND
-        COALESCE(s.`valueInt`, CAST(s.`valueFloat` AS UNSIGNED)) IN (SELECT `typeID` FROM `eve_type`)
+        COALESCE(CAST(s.`valueFloat` AS UNSIGNED), s.`valueInt`) IN (SELECT `typeID` FROM `eve_type`)
 ;
 
 -- DROP the EVE SDE tables now that we've converted them
